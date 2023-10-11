@@ -39,8 +39,8 @@
    X_l = (/ - 1.0_rp_, - infinity, - infinity /) ! variable lower bound
    X_u = (/ 1.0_rp_, infinity, 2.0_rp_ /)        ! variable upper bound
    X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_       ! start from zero
+   W = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 2.0_rp_ /)  ! weights of one and two
    regularization_weight = 0.0_rp_               ! no regularization
-   W = 1.0_rp_                                   ! weights of one
 
 ! vector problem data complete
 

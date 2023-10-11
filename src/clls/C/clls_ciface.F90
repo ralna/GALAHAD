@@ -30,13 +30,13 @@
         f_clls_information    => CLLS_information,                             &
         f_clls_terminate      => CLLS_terminate
 
-    USE GALAHAD_SBLS_precision_ciface, ONLY:                                   &
-        sbls_inform_type,                                                      &
-        sbls_control_type,                                                     &
-        copy_sbls_inform_in   => copy_inform_in,                               &
-        copy_sbls_inform_out  => copy_inform_out,                              &
-        copy_sbls_control_in  => copy_control_in,                              &
-        copy_sbls_control_out => copy_control_out
+    USE GALAHAD_SLS_precision_ciface, ONLY:                                    &
+        sls_inform_type,                                                       &
+        sls_control_type,                                                      &
+        copy_sls_inform_in   => copy_inform_in,                                &
+        copy_sls_inform_out  => copy_inform_out,                               &
+        copy_sls_control_in  => copy_control_in,                               &
+        copy_sls_control_out => copy_control_out
 
     USE GALAHAD_FDC_precision_ciface, ONLY:                                    &
         fdc_inform_type,                                                       &
@@ -140,7 +140,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: qplib_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( fdc_control_type ) :: fdc_control
-      TYPE ( sbls_control_type ) :: sbls_control
+      TYPE ( sls_control_type ) :: sls_control
+      TYPE ( sls_control_type ) :: sls_pounce_control
       TYPE ( fit_control_type ) :: fit_control
       TYPE ( roots_control_type ) :: roots_control
       TYPE ( cro_control_type ) :: cro_control
@@ -179,14 +180,14 @@
       REAL ( KIND = rpc_ ) :: init_primal_infeasibility
       REAL ( KIND = rpc_ ) :: init_dual_infeasibility
       REAL ( KIND = rpc_ ) :: init_complementary_slackness
-      REAL ( KIND = rpc_ ) :: potential
       REAL ( KIND = rpc_ ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       INTEGER ( KIND = ipc_ ), DIMENSION( 16 ) :: checkpointsIter
       REAL ( KIND = rpc_ ), DIMENSION( 16 ) :: checkpointsTime
       TYPE ( clls_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
-      TYPE ( sbls_inform_type ) :: sbls_inform
+      TYPE ( sls_inform_type ) :: sls_inform
+      TYPE ( sls_inform_type ) :: sls_pounce_inform
       TYPE ( fit_inform_type ) :: fit_inform
       TYPE ( roots_inform_type ) :: roots_inform
       TYPE ( cro_inform_type ) :: cro_inform
@@ -340,7 +341,6 @@
     ccontrol%gamma_c = fcontrol%gamma_c
     ccontrol%gamma_f = fcontrol%gamma_f
     ccontrol%reduce_infeas = fcontrol%reduce_infeas
-    ccontrol%obj_unbounded = fcontrol%obj_unbounded
     ccontrol%mu_pounce = fcontrol%mu_pounce
     ccontrol%indicator_tol_p = fcontrol%indicator_tol_p
     ccontrol%indicator_tol_pd = fcontrol%indicator_tol_pd
@@ -474,7 +474,6 @@
     finform%init_primal_infeasibility = cinform%init_primal_infeasibility
     finform%init_dual_infeasibility = cinform%init_dual_infeasibility
     finform%init_complementary_slackness = cinform%init_complementary_slackness
-    finform%potential = cinform%potential
     finform%non_negligible_pivot = cinform%non_negligible_pivot
     finform%checkpointsTime = cinform%checkpointsTime
 
@@ -666,7 +665,7 @@
   TYPE ( clls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, m
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: aone, aoptrne ane, aptrne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: aone, aoptrne, ane, aptrne
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aorow
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aocol
   INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aoptrne ), OPTIONAL :: aoptr
@@ -758,7 +757,7 @@
 !  ------------------------------------
 
   SUBROUTINE clls_solve_clls( cdata, status, n, o, m, aone, aoval, b,          &
-                              ane, aval, cl, cu, xl, xu, x, c, y, z,           &
+                              ane, aval, cl, cu, xl, xu, x, r, c, y, z,        &
                               xstat, cstat, w, regularization_weight ) BIND( C )
   USE GALAHAD_CLLS_precision_ciface
   IMPLICIT NONE
@@ -774,11 +773,12 @@
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, z
   REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( o ) :: r
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
   REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
-  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, VALUE :: regularization_weight
+  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL :: regularization_weight
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -792,7 +792,7 @@
 !  solve the qp
 
   CALL f_clls_solve_clls( fdata, status, aoval, b, aval, cl, cu, xl, xu,       &
-                          x, c, y, z, xstat, cstat, w, regularization_weight )
+                          x, r, c, y, z, xstat, cstat, w, regularization_weight )
   RETURN
 
   END SUBROUTINE clls_solve_clls

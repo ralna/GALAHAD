@@ -146,14 +146,7 @@
   of (3) is ultimately driven to zero.
 
   The Newton equations are solved by applying the
-  GALAHAD matrix factorization package SBLS, but there are options
-  to factorize the matrix as a whole (the so-called "augmented system"
-  approach), to perform a block elimination first (the "Schur-complement"
-  approach), or to let the method itself decide which of the two
-  previous options is more appropriate.
-  The "Schur-complement" approach is usually to be preferred when all the
-  weights are nonzero or when every variable is bounded (at least one side),
-  but may be inefficient if any of the columns of \f$A\f$ is too dense.
+  GALAHAD matrix factorization package SLS.
 
   Optionally, the problem may be pre-processed temporarily to eliminate
   dependent constraints using the GALAHAD package FDC. This may
@@ -301,7 +294,7 @@ extern "C" {
 
 // required packages
 #include "galahad_fdc.h"
-#include "galahad_sbls.h"
+#include "galahad_sls.h"
 #include "galahad_fit.h"
 #include "galahad_roots.h"
 #include "galahad_cro.h"
@@ -759,11 +752,11 @@ struct clls_inform_type {
 
     /// \brief
     /// inform parameters for SLS
-    struct sbls_inform_type sbls_inform;
+    struct sls_inform_type sls_inform;
 
     /// \brief
     /// inform parameters for SLS using CLLS_pounce
-    struct sbls_inform_type sbls_pounce_inform;
+    struct sls_inform_type sls_pounce_inform;
 
     /// \brief
     /// return information from FIT
@@ -985,6 +978,7 @@ void clls_solve_clls( void **data,
                     const real_wp_ x_l[],
                     const real_wp_ x_u[],
                     real_wp_ x[],
+                    real_wp_ r[],
                     real_wp_ c[],
                     real_wp_ y[],
                     real_wp_ z[],
@@ -1082,14 +1076,18 @@ void clls_solve_clls( void **data,
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
-    holds the residual \f$c(x)\f$.
-    The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+ @param[out] r is a one-dimensional array of size o and type double, that
+    holds the residual \f$r(x) = A_o x - b\f$.
+    The i-th component of r, i = 0, ... ,  o-1, contains  \f$r_i(x) \f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[out] c is a one-dimensional array of size m and type double, that
+    holds the residual \f$c(x) = A x\f$.
+    The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+
+ @param[in,out] y is a one-dimensional array of size m and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the general
-    linear constraints. The j-th component
-    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+    linear constraints. The i-th component
+    of y, i = 0, ... , m-1, contains \f$y_i\f$.
 
  @param[in,out] z is a one-dimensional array of size n and type double, that
     holds the values \f$z\f$ of the dual variables.

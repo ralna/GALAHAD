@@ -162,8 +162,8 @@ the default is {\tt dense\_linear\_solver = 3}.
 
 \itt{max\_sparse\_degree} is a scalar variable of type default \integer, 
 that is used to specify the maximum sparse degree if a composite algorithm
-({\tt \%approximation\_algorithm = 3, 4} is employed.
-The default is {\tt max\_sparse\_degree = 50}.
+({\tt \%approximation\_algorithm = 3, 4, 5} is employed.
+The default is {\tt max\_sparse\_degree = 100}.
 
 \itt{extra\_differences} is a scalar variable of type default \integer, 
 that is used to specify how may additional gradients (in addition to the number
@@ -447,19 +447,21 @@ order defined by the list stored in {\tt ROW} and {\tt COL}.
 {\tt \packagename\_data\_type}
 (see Section~\ref{typedata}). It is used to hold data about the problem being 
 solved. It must not have been altered {\bf by the user} since the last call to 
-{\tt \packagename\_initialize}.
+{\tt \packagename\_analyse}.
 
 \itt{control} is a scalar \intentin\ argument of type 
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). Default values may be assigned by calling 
-{\tt \packagename\_initialize} prior to the first call to 
+(see Section~\ref{typecontrol})
+exactly as for
 {\tt \packagename\_analyse}. 
 
 \itt{inform} is a scalar \intentinout\ argument of type 
 {\tt \packagename\_inform\_type}
-(see Section~\ref{typeinform}). 
+(see Section~\ref{typeinform})
+exactly as for
+{\tt \packagename\_analyse}. 
 A successful call to
-{\tt \packagename\_analyse}
+{\tt \packagename\_estimate}
 is indicated when the  component {\tt status} has the value 0. 
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
@@ -499,12 +501,12 @@ On exit, array components will have been deallocated.
 \itt{control} is a scalar \intentin\ argument of type 
 {\tt \packagename\_control\_type}
 exactly as for
-{\tt \packagename\_solve}.
+{\tt \packagename\_analyse}.
 
 \itt{inform} is a scalar \intentout\ argument of type
 {\tt \packagename\_inform\_type}
 exactly as for
-{\tt \packagename\_solve}.
+{\tt \packagename\_analyse}.
 Only the component {\tt status} will be set on exit, and a 
 successful call to 
 {\tt \packagename\_terminate}

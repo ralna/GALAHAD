@@ -1213,10 +1213,10 @@ void dqp_solve_sldqp( void **data,
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[in,out] y is a one-dimensional array of size m and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the general
-    linear constraints. The j-th component
-    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+    linear constraints. The i-th component
+    of y, i = 0, ... , m-1, contains \f$y_i\f$.
 
  @param[in,out] z is a one-dimensional array of size n and type double, that
     holds the values \f$z\f$ of the dual variables.

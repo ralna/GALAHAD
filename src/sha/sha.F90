@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-10-11 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -98,7 +98,7 @@
 
 !  the maximum sparse degree if the combined version is used
 
-       INTEGER ( KIND = ip_ ) :: max_sparse_degree = 50
+       INTEGER ( KIND = ip_ ) :: max_sparse_degree = 100
 
 !  if available use an addition extra_differences differences
 
@@ -727,7 +727,6 @@
             ROW( data%MAP( data%MAP_lower( l ) ) )
         END DO
       END IF
-!stop
 
 !  allocate further workspace to record row (inverse) permutations (PERM_inv)
 !  and the starting addresses for undetermined entries in each row (STU)
@@ -810,14 +809,6 @@
               data%LAST( deg - 1 ) = data%LAST( deg - 1 ) + 1
               min_degree = MIN( min_degree, deg - 1 )
 
-!             DO jj = 0, max_row
-!               write( control%out,"( ' degree ', I0, ' rows:' )" ) jj
-!               write( control%out,"( 6( 1X, I0 ) )" ) &
-!                ( data%LIST( kk ), kk = data%FIRST( jj ), data%LAST( jj ) )
-!             END DO
-!             WRITE( control%out,"( 10( 1X, I0 ) )" )                          &
-!               ( data%ROWS( jj ), jj = 1, n )
-
 !  reduce the count for row j
 
               data%COUNT( j ) = deg - 1
@@ -843,27 +834,7 @@
           END IF
           data%COUNT( i ) = n + 1
           data%PERM_inv( l ) = i
-
-!         DO ll = 1, data%STR( n + 1 ) - 1
-!           write(  control%out, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) ll,    &
-!             ROW( data%MAP( ll ) ), COL( data%MAP( ll ) ),                    &
-!             ROW( data%MAP( data%MAP_lower( ll ) ) ),                         &
-!             COL( data%MAP( data%MAP_lower( ll ) ) )
-!         END DO
-
         END DO
-
-!write( control%out,*) ' inv perm ', data%PERM_inv( : n )
-
-!      DO i = 1, n
-!        write( control%out,"( ' row ', I0 )" ) i
-!        write( control%out,"( 6( '(', I0, ',', I0, ')' ) )" )                 &
-!          ( ROW( data%MAP( l ) ), COL( data%MAP( l ) ),                       &
-!            l = data%STU( i ),  data%STR( i + 1 ) - 1 )
-!      END DO
-!      DO i = 1, n
-!        write( control%out,"( 3I0 )" ) i, data%STU( i ), data%STR( i + 1 ) - 1
-!      END DO
 
         IF ( inform%approximation_algorithm_used == 2 ) THEN
           data%differences_needed                                              &
@@ -873,9 +844,11 @@
           DO i = 1, n
             IF ( data%STR( i + 1 ) - data%STR( i ) <=                          &
                  control%max_sparse_degree ) THEN
+!write(6,"( ' a ' )" )
               data%differences_needed = MAX( data%differences_needed,          &
                                              data%STR( i + 1 ) - data%STR( i ) )
             ELSE
+!write(6,"( ' b ', 3I6 )" ) i, data%STR( i + 1 ) - data%STU( i ), data%STR( i + 1 ) - data%STR( i )
               data%differences_needed = MAX( data%differences_needed,          &
                                              data%STR( i + 1 ) - data%STU( i ) )
             END IF
@@ -986,10 +959,8 @@
 
         data%differences_needed = 0
         data%l_sparse = data%LAST( MIN( max_row, control%max_sparse_degree ) )
-!write(6,*) MIN( max_row, control%max_sparse_degree )
-!write(6,*) data%LAST( MIN( max_row, control%max_sparse_degree ) )
-!stop
         data%LAST( 0 : max_row ) = 0
+
 !  loop over the rows by increasing counts
 
         DO l = 1, data%l_sparse
@@ -998,16 +969,12 @@
           ll = data%STR( i + 1 ) - data%STR( i )
           data%differences_needed = MAX( data%differences_needed, ll )
           IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
-!         write( 6, "( ' ------ i, nz ------', 2I8 )" ) &
-!           i, data%STR( i + 1 ) -  data%STR( i )
 
 !  loop over the entries in the chosen row
 
-!         DO k = data%STR( i ), data%STR( i + 1 ) - 1
           DO k = data%STU( i ), data%STR( i + 1 ) - 1
             kk = data%MAP( k )
             r = ROW( kk ) ; c = COL( kk )
-!           write( 6, "( ' i, r, c, kk ', 4I8 )" ) i, r, c, kk
             IF ( r == c ) CYCLE
 
 !  determine which of row(kk) or col(kk) gives the row number j
@@ -1045,13 +1012,6 @@
           data%differences_needed = MAX( data%differences_needed, ll )
           IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
         END DO
-!      write( 6, * ) ' n, l_sparse, differences_needed ',  &
-!        n, data%l_sparse, data%differences_needed
-!      write( 6, "( '    l    i        st        su        s+' )" )
-!      DO l = 1, n
-!        i = data%LIST( l )
-!        write(6,"(2I5,3I10)") l, i, data%STR(i), data%STU(i), data%STR(i+1)
-!       END DO
 
 !  report the numbers of each block size
 
@@ -1250,8 +1210,7 @@
 
 ! add %extra_differences to accommodate a singularity precaution if possible
 
-!     m_max = MIN( m_needed + control%extra_differences, m_available )
-      m_max = m_needed + control%extra_differences
+      m_max = MIN( m_needed + control%extra_differences, m_available )
       n_max = m_needed
       min_mn = MIN( m_max, n_max )
 
@@ -1263,8 +1222,7 @@
 !  generic solver workspace
 
       IF ( data%la1 < m_max .OR. data%la2 < n_max ) THEN
-!       data%la1 = m_max ; data%la2 = n_max
-        data%la1 = MAX( m_max, m_available ) ; data%la2 = n_max + 1
+        data%la1 = m_max ; data%la2 = n_max
         array_name = 'SHA: data%A'
         CALL SPACE_resize_array( data%la1, data%la2, data%A,                   &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1275,8 +1233,7 @@
       END IF
 
       IF ( data%lb1 < m_max ) THEN
-!       data%lb1 = m_max
-        data%lb1 = MAX( m_max, m_available )
+        data%lb1 = m_max
         array_name = 'SHA: data%B'
         CALL SPACE_resize_array( data%lb1, 1, data%B,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1430,17 +1387,20 @@
           IF ( inform%approximation_algorithm_used < 5 ) EXIT
           ii_start = n ; ii_end = data%l_sparse + 1 ; ii_stride = - 1
         END IF
-!write(6,*) ' pass ', pass
         DO ii = ii_start, ii_end, ii_stride
           i = data%PERM_inv( ii )
-          stri = data%STR( i ) ; strip1 = data%STR( i + 1 ) ; nu = strip1 - stri
+          stri = data%STR( i ) ; strip1 = data%STR( i + 1 ) 
+
+!  there are nu unknowns for this pass
+
+          nu = strip1 - stri
           IF ( nu == 0 ) CYCLE
 
 !  decide whether to exploit symmetry or not
 
           sym = inform%approximation_algorithm_used == 2 .OR.                  &
               ( inform%approximation_algorithm_used == 3 .AND.                 &
-                nu > m_available ) .OR.                                        &
+                mu > control%max_sparse_degree ) .OR.                          &
                 inform%approximation_algorithm_used == 4 .OR.                  &
               ( inform%approximation_algorithm_used == 5 .AND. pass == 2 )
 
@@ -1455,10 +1415,13 @@
 
             nu = strip1 - stui
             IF ( nu == 0 ) CYCLE
+
+!  acknowledge that there may not be sufficient data to find all nu components,
+!  and reset nu to the largest possible (an overdetermined least-squares
+!  problem will be solved instead)
+
 !           mu = MIN( nu + control%extra_differences, m_available )
             mu = MIN( nu, m_available )
-
-!write(6,*) ' m_available, mu, nu ', m_available, mu, nu
 
 !  compute the unknown entries B_{ij}, j in I_i^-, to satisfy
 !    sum_{j in I_i^-} B_{ij} s_{jl}  = y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
@@ -1550,7 +1513,6 @@
 
             IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
               data%singular_matrices = data%singular_matrices + 1
-!write(6,*) ' singular pass, ii, i ', pass, ii, i
 
 !  initialize b to Y(i,l)
 
