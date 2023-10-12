@@ -1210,7 +1210,8 @@
 
 ! add %extra_differences to accommodate a singularity precaution if possible
 
-      m_max = MIN( m_needed + control%extra_differences, m_available )
+!     m_max = MIN( m_needed + control%extra_differences, m_available )
+      m_max = MIN( m_needed + MAX( control%extra_differences, 1 ), m_available )
       n_max = m_needed
       min_mn = MIN( m_max, n_max )
 
@@ -1223,6 +1224,7 @@
 
       IF ( data%la1 < m_max .OR. data%la2 < n_max ) THEN
         data%la1 = m_max ; data%la2 = n_max
+!write(6,*) ' la1, la2 ', data%la1, data%la2
         array_name = 'SHA: data%A'
         CALL SPACE_resize_array( data%la1, data%la2, data%A,                   &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1233,7 +1235,8 @@
       END IF
 
       IF ( data%lb1 < m_max ) THEN
-        data%lb1 = m_max
+        data%lb1 = MAX( m_max, n_max )
+!write(6,*) ' lb1 ', data%lb1
         array_name = 'SHA: data%B'
         CALL SPACE_resize_array( data%lb1, 1, data%B,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
@@ -1307,7 +1310,8 @@
 
 !  discover how much temporary integer and real storage may be needed by SVD
 
-          m_used = m_needed
+!         m_used = m_needed
+          m_used = m_max
           IF ( data%dense_linear_solver == 4 ) THEN
             CALL GELSD( m_used, n_max, 1, data%A, data%la1, data%B, data%lb1,  &
                         data%solve_system_data%S, eps_singular, rank,          &
@@ -1400,9 +1404,11 @@
 
           sym = inform%approximation_algorithm_used == 2 .OR.                  &
               ( inform%approximation_algorithm_used == 3 .AND.                 &
-                mu > control%max_sparse_degree ) .OR.                          &
+                nu > m_available ) .OR.                          &
                 inform%approximation_algorithm_used == 4 .OR.                  &
               ( inform%approximation_algorithm_used == 5 .AND. pass == 2 )
+!               mu > m_needed ) .OR.                          &
+!               mu > control%max_sparse_degree ) .OR.                          &
 
 !  -----------------------------
 !  methods that exploit symmetry
@@ -1422,6 +1428,7 @@
 
 !           mu = MIN( nu + control%extra_differences, m_available )
             mu = MIN( nu, m_available )
+!if ( mu > data%la1 ) write(6,*) mu, data%la1
 
 !  compute the unknown entries B_{ij}, j in I_i^-, to satisfy
 !    sum_{j in I_i^-} B_{ij} s_{jl}  = y_{il} - sum_{j in I_i^+} B_{ij} s_{jl}
@@ -1691,7 +1698,7 @@
                                    data%la1, data%B, data%lb1,                 &
                                    data%solve_system_data, i,                  &
                                    control%out, control%print_level, info )
-!write(6,*) ' mu, nu, info ', mu, nu, info
+
 !  if A appears to be singular, add an extra row if there is one, and
 !  solve the system as a least-squares problem
 
