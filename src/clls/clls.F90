@@ -9,7 +9,7 @@
 
 !  History -
 !   originally released with GALAHAD Version 4.1, July 20th 2022
-!   as a modified version of ccqp 
+!   as a modified version of ccqp
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -1184,7 +1184,7 @@
 !-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
 
       SUBROUTINE CLLS_solve( prob, data, control, inform,                      &
-                             W, regularization_weight )
+                             regularization_weight, W )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1198,10 +1198,10 @@
 !
 !  and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
-!  x is a vector of n components ( x_1, .... , x_n ),  A_o and A are o by n 
-!  and m by n matrices, any of the bounds (c_l)_i, (c_u)_i, (x_l)_i, (x_u)_i 
+!  x is a vector of n components ( x_1, .... , x_n ),  A_o and A are o by n
+!  and m by n matrices, any of the bounds (c_l)_i, (c_u)_i, (x_l)_i, (x_u)_i
 !  may be infinite, and the weighted norm ||v||_W = sqrt( sum_i=1^o w_i v_i^2 ),
-!  using a primal-dual method. The subroutine is particularly appropriate 
+!  using a primal-dual method. The subroutine is particularly appropriate
 !  when A_0 and A are sparse.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1255,7 +1255,7 @@
 !       In this case, the following must be set:
 !
 !       %Ao%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', %Ao%type )
-!       %Ao%val( : ) the values of the components of A_o, stored column 
+!       %Ao%val( : ) the values of the components of A_o, stored column
 !                    by column
 !       %Ao%row( : ) the row indices of the components of A_o
 !       %Ao%ptr( : ) pointers to the start of each column, and past the end of
@@ -1276,7 +1276,7 @@
 !       In this case, the following must be set:
 !
 !       %Ao%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', %Ao%type )
-!       %Ao%val( : ) the values of the components of A_o, stored column 
+!       %Ao%val( : ) the values of the components of A_o, stored column
 !                    by column with each the entries in each column in order
 !                    of increasing row indicies.
 !
@@ -1312,7 +1312,7 @@
 !       In this case, the following must be set:
 !
 !       %A%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', %A%type )
-!       %A%val( : ) the values of the components of A, stored column 
+!       %A%val( : ) the values of the components of A, stored column
 !                    by column
 !       %A%row( : ) the row indices of the components of A
 !       %A%ptr( : ) pointers to the start of each column, and past the end of
@@ -1333,7 +1333,7 @@
 !       In this case, the following must be set:
 !
 !       %A%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', %A%type )
-!       %A%val( : ) the values of the components of A, stored column 
+!       %A%val( : ) the values of the components of A, stored column
 !                    by column with each the entries in each column in order
 !                    of increasing row indicies.
 !
@@ -1395,14 +1395,14 @@
 !                  = 0, the i-th constraint is likely not in the active set
 !    It need not be set on entry.
 !
-!   %X_status is an INTEGER array of length %n, which will be set on exit to 
-!    indicate the likely ultimate status of the simple bound constraints. 
+!   %X_status is an INTEGER array of length %n, which will be set on exit to
+!    indicate the likely ultimate status of the simple bound constraints.
 !    Possible values are
 !    X_status( i ) < 0, the i-th bound constraint is likely in the active set,
 !                       on its lower bound,
 !                  > 0, the i-th bound constraint is likely in the active set
 !                       on its upper bound, and
-!                  = 0, the i-th bound constraint is likely not in the active 
+!                  = 0, the i-th bound constraint is likely not in the active
 !                       set
 !    It need not be set on entry.
 !
@@ -1460,11 +1460,11 @@
 !
 !  On exit from CLLS_solve, other components of inform are given in the preamble
 !
-!  regularization_weight is an OPTIONAL REAL, that may be set by the user 
+!  regularization_weight is an OPTIONAL REAL, that may be set by the user
 !   to the value of the non-negative regularization weight. If it is absent,
 !   the regularization weight will be zero.
 !
-!  W is an OPTIONAL REAL array of length prob%o, that may be set by the user 
+!  W is an OPTIONAL REAL array of length prob%o, that may be set by the user
 !   to the values of the components of the weights W. If it is absent,
 !   the weights will all be taken to be 1.0.
 !
@@ -1563,7 +1563,6 @@
       IF ( prob%n < 1 .OR. prob%o < 0 .OR. prob%m < 0 .OR. weight < zero .OR.  &
            .NOT. QPT_keyword_A( prob%Ao%type ) .OR.                            &
            .NOT. QPT_keyword_A( prob%A%type ) ) THEN
-write(6,*) ' a'
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error, 2010 ) prefix, inform%status
@@ -1572,7 +1571,6 @@ write(6,*) ' a'
 
       IF ( PRESENT( W ) ) THEN
         IF ( MINVAL( W ) <= zero ) THEN
-write(6,*) ' b'
           inform%status = GALAHAD_error_restrictions
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
             WRITE( control%error, 2010 ) prefix, inform%status
@@ -1659,7 +1657,7 @@ write(6,*) ' b'
           data%a_ne = prob%A%ne
         END SELECT
 
-!  make sure that X_status, C_status, C and R have been allocated and are 
+!  make sure that X_status, C_status, C and R have been allocated and are
 !  large enough
 
         array_name = 'clls: prob%X_status'
@@ -2463,8 +2461,8 @@ write(6,*) ' b'
 !
 !  control and inform are exactly as for CLLS_solve
 !
-!  W is an OPTIONAL REAL array of length o, that, if PRESENT, must be set 
-!   by the user to the values of the vector of weights W. If W is absent, 
+!  W is an OPTIONAL REAL array of length o, that, if PRESENT, must be set
+!   by the user to the values of the vector of weights W. If W is absent,
 !   weights of 1.0 will be used.
 !
 !  The remaining arguments are used as internal workspace, and need not be
@@ -2881,7 +2879,7 @@ write(6,*) ' b'
 
 !  where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !        E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
-!  and S is a diagonal constraint scaling matrix (by default I) 
+!  and S is a diagonal constraint scaling matrix (by default I)
 
 !  K will be stored in coordinate form
 
@@ -2894,7 +2892,7 @@ write(6,*) ' b'
       DO l = 1, n
         K_sls%row( l ) = l ; K_sls%col( l ) = l
       END DO
-      
+
 !  input the 2,2 block, E (structure only)
 
       e_start = n
@@ -3882,7 +3880,7 @@ write(6,*) ' b'
 
 !   where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !         E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
-!   and S is a diagonal constraint scaling matrix (by default I) 
+!   and S is a diagonal constraint scaling matrix (by default I)
 
         IF ( printw ) WRITE( out, "( A,                                        &
        &  ' ......... factorization of KKT matrix ............... ' )" ) prefix
@@ -4000,7 +3998,7 @@ write(6,*) ' b'
 !  series approximation of the arc v(1-alpha)) about alpha = 0 (equiv theta
 !  = 1 - alpha about theta = 1) and for which v(theta) satisfies the conditions
 
-!  ( Ao^T W Ao + weight I ) x(theta) - A^T y(theta) - z_l(theta) - z_u(theta) 
+!  ( Ao^T W Ao + weight I ) x(theta) - A^T y(theta) - z_l(theta) - z_u(theta)
 !       - Ao^T W b         = dual(theta)
 !  A x(theta) - S c(theta) = prim(theta)
 !  X(theta) z(theta)       = comp(theta)
@@ -4227,7 +4225,7 @@ write(6,*) ' b'
 !      (                 a^k                       )
 !      (                  0                        )
 !
-!  where we recall that 
+!  where we recall that
 !      D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !  and E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
 !
@@ -6230,15 +6228,15 @@ write(6,*) ' b'
                               SLS_pounce_data, control, inform, optimal, W )
             IF ( printd ) THEN
               WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
-              WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last 
+              WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last
               WRITE( out, "( ' R before ', /, ( 5ES12.4 ) )" ) R
-              WRITE( out, "( ' R ', /, ( 5ES12.4 ) )" ) R_last 
+              WRITE( out, "( ' R ', /, ( 5ES12.4 ) )" ) R_last
               WRITE( out, "( ' C before ', /, ( 5ES12.4 ) )" ) C_res
-              WRITE( out, "( ' C ', /, ( 5ES12.4 ) )" ) C_last 
+              WRITE( out, "( ' C ', /, ( 5ES12.4 ) )" ) C_last
               WRITE( out, "( ' Y before ', /, ( 5ES12.4 ) )" ) Y
-              WRITE( out, "( ' Y ', /, ( 5ES12.4 ) )" ) Y_last 
+              WRITE( out, "( ' Y ', /, ( 5ES12.4 ) )" ) Y_last
               WRITE( out, "( ' Z before ', /, ( 5ES12.4 ) )" ) Z
-              WRITE( out, "( ' Z ', /, ( 5ES12.4 ) )" ) Z_last 
+              WRITE( out, "( ' Z ', /, ( 5ES12.4 ) )" ) Z_last
             END IF
 
             IF ( optimal ) THEN
@@ -6615,11 +6613,11 @@ write(6,*) ' b'
         WRITE( out, "( A, '  Linear system solver ', A, ' is used' )" )        &
             prefix, TRIM( control%symmetric_linear_solver )
         SELECT CASE ( control%indicator_type )
-        CASE( 1 ) 
+        CASE( 1 )
           WRITE( out, "( A, '  Primal indicators used' )" ) prefix
-        CASE( 2 ) 
+        CASE( 2 )
           WRITE( out, "( A, '  Primal-dual indicators used' )" ) prefix
-        CASE( 3 ) 
+        CASE( 3 )
           WRITE( out, "( A, '  Tapia indicators used' )" ) prefix
         END SELECT
       END IF
@@ -7144,7 +7142,7 @@ write(6,*) ' b'
 
       END SUBROUTINE CLLS_terminate
 
-! - G A L A H A D -  C L L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E 
+! - G A L A H A D -  C L L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
 
      SUBROUTINE CLLS_full_terminate( data, control, inform )
 
@@ -7352,7 +7350,7 @@ write(6,*) ' b'
 !  construct the equality-constrained linear least-squares problem according
 !   to the variables and constraints that are predicted to be active via
 
-!  C_stat is an INTEGER array of length m, which must have been be set to 
+!  C_stat is an INTEGER array of length m, which must have been be set to
 !   indicate the likely ultimate status of the constraints.
 !   Possible values are
 !   C_stat( i ) < 0, the i-th constraint is likely in the active set,
@@ -7370,7 +7368,7 @@ write(6,*) ' b'
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is likely not in the active set
 
-!  Report whether the solution to this equality-constrained linear 
+!  Report whether the solution to this equality-constrained linear
 !  least-squares problem is optimal for the original problem
 
 !  Local variables
@@ -7385,8 +7383,8 @@ write(6,*) ' b'
       LOGICAL :: x_feas, c_feas, y_feas, z_feas, present_weight
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 } 
-!  and A = { i | C_stat( i ) = 0 }, the corresponding "optimality" system 
+!  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 }
+!  and A = { i | C_stat( i ) = 0 }, the corresponding "optimality" system
 
 !     ( weight I_B      0      Ao_B^T  A_AB^T  I_B^T ) (   x_B )   (  0  )
 !     (     0      weight I_F  Ao_F^T  A_AF^T    0   ) (   x_F )   (  0  )
@@ -7394,7 +7392,7 @@ write(6,*) ' b'
 !     (    A_AB        A_AF              0       0   ) ( - y_A )   ( c_A )
 !     (    I_B          0                0       0   ) ( - z_B )   ( b_B )
 
-!  may either be solved "as is", or by eliminating x_B = b_B, 
+!  may either be solved "as is", or by eliminating x_B = b_B,
 !  solving the "reduced" system
 
 !     ( weight I_F  Ao_F^T  A_AF^T ) (   x_F )   (        0       )
@@ -7420,7 +7418,7 @@ write(6,*) ' b'
 !  the active components of x to their appropriate bounds and the
 !  inactive dual variables z to zero, and initialize the active dual
 !  varaibles to g_B
-      
+
         n_free = 0
         DO j = 1, n
           IF ( X_stat( j ) == 0 ) THEN ! free variable
@@ -7547,7 +7545,7 @@ write(6,*) ' b'
         IF ( present_weight ) THEN
           DO j = n_free + 1, nfpo
             l = l + 1
-            K_sls%row( l ) = j ;  K_sls%col( l ) = j 
+            K_sls%row( l ) = j ;  K_sls%col( l ) = j
             K_sls%val( l ) = - one / W( j - n_free )
           END DO
         ELSE
@@ -7590,7 +7588,7 @@ write(6,*) ' b'
       ELSE
 
 !  count the number of fixed variables (variables in B)
-      
+
         n_fixed = COUNT( X_stat( 1 : n ) /= 0 )
 
 !  form the (lower triangle of the) matrix
@@ -7908,7 +7906,7 @@ write(6,*) ' b'
 !  equality constraint
 
         ei = SOL( i )
-        IF ( C_l( i ) == C_u( i ) ) THEN 
+        IF ( C_l( i ) == C_u( i ) ) THEN
 
 !  infeasible inequality constraint
 
@@ -7946,7 +7944,7 @@ write(6,*) ' b'
 
 !  fixed variable
 
-        IF ( X_l( j ) == X_u( j ) ) THEN 
+        IF ( X_l( j ) == X_u( j ) ) THEN
 
 !  infeasible simple bound
 
@@ -8053,7 +8051,7 @@ write(6,*) ' b'
       INTEGER ( KIND = ip_ ) :: i
       REAL ( KIND = rp_ ) :: gi
 
-!  compute the gradient of the Lagrangian. Start with the weight x term 
+!  compute the gradient of the Lagrangian. Start with the weight x term
 
       IF ( weight == zero ) THEN
         GRAD_L = zero
@@ -8681,7 +8679,7 @@ write(6,*) ' b'
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0, o >= 0, m >= 0 or requirement that type contains
-!       its relevant string 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS', 
+!       its relevant string 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !       'COORDINATE', 'SPARSE_BY_ROWS' or 'SPARSE_BY_COLUMNS',
 !       has been violated.
 !
@@ -8695,7 +8693,7 @@ write(6,*) ' b'
 !   residuals
 !
 !  Ao_type is a character string that specifies the Jacobian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 
+!   used. It should be one of 'coordinate', 'sparse_by_rows',
 !   'sparse_by_columns', 'dense', 'dense_by_rows' or 'dense_by_columns';
 !   lower or upper case variants are allowed
 !
@@ -9282,10 +9280,10 @@ write(6,*) ' b'
 
      SUBROUTINE CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,     &
                                  X_l, X_u, X, R, C, Y, Z, X_stat, C_stat,      &
-                                 W, regularization_weight )
+                                 regularization_weight, W )
 
-!  solve the constrained linear least-squares problem whose structure was 
-!  previously imported. See CLLS_solve for a description of the required 
+!  solve the constrained linear least-squares problem whose structure was
+!  previously imported. See CLLS_solve for a description of the required
 !  arguments.
 
 !--------------------------------
@@ -9326,7 +9324,7 @@ write(6,*) ' b'
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -9348,8 +9346,8 @@ write(6,*) ' b'
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
-!   that mwill be set on exit to indicate which constraints are in the final 
+!  X_stat is a rank-one array of dimension n and type default integer,
+!   that mwill be set on exit to indicate which constraints are in the final
 !   working set. Possible exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
 !                    on its lower bound,
@@ -9357,8 +9355,8 @@ write(6,*) ' b'
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that will be set on exit to indicate which constraints are in the final 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that will be set on exit to indicate which constraints are in the final
 !   working set. Possible exit values are
 !   C_stat( i ) < 0, the i-th constraint is in the working set,
 !                    on its lower bound,
@@ -9367,11 +9365,11 @@ write(6,*) ' b'
 !               = 0, the i-th constraint is not in the working set
 !
 !  regularization_weight is an optional scalar of type default real that
-!   may be set to the value of the non-negative regularization weight. 
+!   may be set to the value of the non-negative regularization weight.
 !   If it is absent, the regularization weight will be zero.
 !
 !  W is an optional rank-one array of type default real that may be
-!   set to the values of the components of the weights W. 
+!   set to the values of the components of the weights W.
 !   The i-th component of W, i = 1, ... , o, contains (w)_i.
 !   If it is absent, the weights will all be taken to be 1.0.
 
@@ -9429,7 +9427,7 @@ write(6,*) ' b'
 !  call the solver
 
      CALL CLLS_solve( data%prob, data%clls_data, data%clls_control,            &
-                      data%clls_inform, W, regularization_weight )
+                      data%clls_inform, regularization_weight, W )
 
 !  recover the optimal primal and dual variables, Lagrange multipliers,
 !  constraint values and status values for constraints and simple bounds

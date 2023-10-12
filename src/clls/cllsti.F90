@@ -29,7 +29,7 @@
 ! set up problem data
 
    n = 3 ; o = 4 ; m = 2 ; ao_ne = 7 ; a_ne = 4
-   ao_dense_ne = o * n ; a_dense_ne = m * n 
+   ao_dense_ne = o * n ; a_dense_ne = m * n
    ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), X_stat( n ) )
    ALLOCATE( C( m ), Y( m ), C_l( m ), C_u( m ), C_stat( m ) )
    ALLOCATE( B( o ), R( o ), W( o ) )
@@ -67,7 +67,7 @@
                  A_ptr( 0 ) )
        Ao_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                &
                    1.0_rp_, 1.0_rp_ /) ! Ao
-       Ao_row = (/ 1, 1, 2, 2, 3, 3, 4 /) 
+       Ao_row = (/ 1, 1, 2, 2, 3, 3, 4 /)
        Ao_col = (/ 1, 2, 2, 3, 1, 3, 2 /)
        A_val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! A
        A_row = (/ 1, 1, 2, 2 /)
@@ -99,7 +99,7 @@
                  A_ptr( n + 1 ) )
        Ao_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                &
                    1.0_rp_, 1.0_rp_ /) ! Ao
-       Ao_row = (/ 1, 3, 1, 2, 4, 2, 3 /) 
+       Ao_row = (/ 1, 3, 1, 2, 4, 2, 3 /)
        Ao_ptr = (/ 1, 3, 6, 8 /)
        A_val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! A
        A_row = (/ 1, 1, 2, 2 /)
@@ -130,8 +130,9 @@
      END SELECT
      IF ( status == 0 ) THEN
        CALL CLLS_solve_clls( data, status, Ao_val, B, A_val, C_l, C_u,         &
-                             X_l, X_u, X, R, C, Y, Z, X_stat, C_stat, W = W,   &
-                             regularization_weight = regularization_weight )
+                             X_l, X_u, X, R, C, Y, Z, X_stat, C_stat,          &
+                             regularization_weight = regularization_weight,    &
+                             W = W )
      END IF
      DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr )
      DEALLOCATE( A_val, A_row, A_col, A_ptr )

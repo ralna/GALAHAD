@@ -758,7 +758,7 @@
 
   SUBROUTINE clls_solve_clls( cdata, status, n, o, m, aone, aoval, b,          &
                               ane, aval, cl, cu, xl, xu, x, r, c, y, z,        &
-                              xstat, cstat, w, regularization_weight ) BIND( C )
+                              xstat, cstat, regularization_weight, w ) BIND( C )
   USE GALAHAD_CLLS_precision_ciface
   IMPLICIT NONE
 
@@ -777,8 +777,8 @@
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
-  REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL :: regularization_weight
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -791,8 +791,8 @@
 
 !  solve the qp
 
-  CALL f_clls_solve_clls( fdata, status, aoval, b, aval, cl, cu, xl, xu,       &
-                          x, r, c, y, z, xstat, cstat, w, regularization_weight )
+  CALL f_clls_solve_clls( fdata, status, aoval, b, aval, cl, cu, xl, xu, x,    &
+                          r, c, y, z, xstat, cstat, regularization_weight, w )
   RETURN
 
   END SUBROUTINE clls_solve_clls

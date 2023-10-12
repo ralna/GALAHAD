@@ -44,7 +44,7 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$, 
+  where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$,
   the \f$o\f$ by \f$n\f$ matrix \f$A_o\f$
   \f$A\f$, the vectors \f$b\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
   \f$x^u\f$, the diagonal weights $w_i$ and the scalar \f$\sigma\f$ are given.
@@ -209,8 +209,8 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ 
-  and the \f$o\f$ by \f$n\f$ constraint matrix \f$A\f$ objective matrix 
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$
+  and the \f$o\f$ by \f$n\f$ constraint matrix \f$A\f$ objective matrix
   may be presented and stored in a variety of convenient input formats.
   We focus on \f$A\f$, bt everything applies equally to \f$A_o\f$
   (with \f$o\f$ replacing \f$m\f$).
@@ -232,7 +232,7 @@
   stored in order within an appropriate real one-dimensional array.
   In the row case, component \f$n \ast i + j\f$  of the storage array A_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
-  \f$0 \leq j \leq n-1\f$. By contrast, 
+  \f$0 \leq j \leq n-1\f$. By contrast,
   in the column case, component \f$m \ast j + i\f$  of the storage array A_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
@@ -268,11 +268,11 @@
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
   integer array A_ptr holds the position of the first entry in this column,
   while A_ptr(m) holds the total number of entries.
-  The row indices i, \f$0 \leq i \leq m-1\f$, and values   \f$A_{ij}\f$ 
+  The row indices i, \f$0 \leq i \leq m-1\f$, and values   \f$A_{ij}\f$
   of the  nonzero entries in the j-th column are stored in components
   l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1,  \f$0 \leq j \leq n-1\f$,
   of the integer array A_row, and real array A_val, respectively.
-  As before, For sparse matrices, this scheme almost always requires less 
+  As before, For sparse matrices, this scheme almost always requires less
   storage than the co-ordinate format.
 
  */
@@ -455,8 +455,14 @@ struct clls_control_type {
     real_wp_ reduce_infeas;
 
     /// \brief
-    /// start terminal extrapolation when mu reaches mu_lunge
-    real_wp_ mu_lunge;
+    /// any pair of constraint bounds \f$(c_l,c_u)\f$ or \f$(x_l,x_u)\f$ that
+    /// are closer than .identical_bounds_tol will be reset to the average
+    /// of their values
+    real_wp_ identical_bounds_tol;
+
+    /// \brief
+    /// start terminal extrapolation when mu reaches mu_pounce
+    real_wp_ mu_pounce;
 
     /// \brief
     /// if .indicator_type = 1, a constraint/bound will be
@@ -856,8 +862,8 @@ void clls_import( struct clls_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, o > 0 or m >= 0 or requirement that a type 
-       contains its relevant string 'dense', 'dense_by_column', 'coordinate', 
+  \li -3. The restrictions n > 0, o > 0 or m >= 0 or requirement that a type
+       contains its relevant string 'dense', 'dense_by_column', 'coordinate',
        'sparse_by_rows' or 'sparse_by_columns' has been violated.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -872,7 +878,7 @@ void clls_import( struct clls_control_type *control,
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
    used for the objective Jacobian, \f$A_o\f$. It should be one of 'coordinate',
-   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns'; 
+   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns';
    lower or upper case variants are allowed.
 
  @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
@@ -880,8 +886,8 @@ void clls_import( struct clls_control_type *control,
    It need not be set for either of the dense schemes.
 
  @param[in]  Ao_row is a one-dimensional array of size Ao_ne and type int, that
-   holds the row indices of \f$A_o\f$ in the sparse co-ordinate 
-   or sparse column-wise storage schemes. It need not be set for any of the 
+   holds the row indices of \f$A_o\f$ in the sparse co-ordinate
+   or sparse column-wise storage schemes. It need not be set for any of the
    other schemes, and in this case can be NULL.
 
  @param[in]  Ao_col is a one-dimensional array of size Ao_ne and type int,
@@ -889,9 +895,9 @@ void clls_import( struct clls_control_type *control,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  Ao_ptr_ne is a scalar variable of type int, that holds the 
+ @param[in]  Ao_ptr_ne is a scalar variable of type int, that holds the
    length of the pointer array if sparse row or column storage scheme is
-   used for \f$A_o\f$. For the sparse row scheme,  Ao_ptr_ne should be at least 
+   used for \f$A_o\f$. For the sparse row scheme,  Ao_ptr_ne should be at least
    o+1, while for the sparse column scheme,  it should be at least n+1,
    It need not be set when the other schemes are used.
 
@@ -907,7 +913,7 @@ void clls_import( struct clls_control_type *control,
  @param[in]  A_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
    used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
-   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns'; 
+   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns';
    lower or upper case variants are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
@@ -915,8 +921,8 @@ void clls_import( struct clls_control_type *control,
    It need not be set for either of the dense schemes.
 
  @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
-   holds the row indices of \f$A\f$ in the sparse co-ordinate 
-   or sparse column-wise storage schemes. It need not be set for any of the 
+   holds the row indices of \f$A\f$ in the sparse co-ordinate
+   or sparse column-wise storage schemes. It need not be set for any of the
    other schemes, and in this case can be NULL.
 
  @param[in]  A_col is a one-dimensional array of size A_ne and type int,
@@ -924,9 +930,9 @@ void clls_import( struct clls_control_type *control,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  A_ptr_ne is a scalar variable of type int, that holds the 
+ @param[in]  A_ptr_ne is a scalar variable of type int, that holds the
    length of the row pointer array if sparse row or column storage scheme is
-   used for \f$A\f$. For the sparse row scheme,  A_ptr_ne should be at least 
+   used for \f$A\f$. For the sparse row scheme,  A_ptr_ne should be at least
    m+1, while for the sparse column scheme,  it should be at least n+1,
    It need not be set when the other schemes are used.
 
@@ -984,8 +990,8 @@ void clls_solve_clls( void **data,
                     real_wp_ z[],
                     int x_stat[],
                     int c_stat[],
-                    real_wp_ w[],
-                    real_wp_ regularization_weight );
+                    real_wp_ regularization_weight,
+                    real_wp_ w[] );
 
 /*!<
  Solve the quadratic program when the Hessian \f$H\f$ is available.
@@ -1105,14 +1111,13 @@ void clls_solve_clls( void **data,
     lower bound, if it is positive, it lies on its upper bound, and if it
     is zero, it lies  between its bounds.
 
+ @param[in] regularization_weight is a scalar of type double, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
  @param[out] w is a one-dimensional array of size o and type double, that
    holds the vector of strictly-positive observation weights \f$w\f$.
    If the weights are all one, w can be set to NULL.
 
- @param[in] regularization_weight is a scalar of type double, that
-    holds the non-negative regularization weight \f$\sigma\f$. It need only 
-    be set if \f$\sigma>0\f$, and will be taken to be zero if 
-    regularization_weight is NULL.
 */
 
 
@@ -1158,7 +1163,7 @@ void clls_terminate( void **data,
 /** \anchor examples
    \f$\label{examples}\f$
    \example cllst.c
-   This is an example of how to use the package to solve a polyhedrally 
+   This is an example of how to use the package to solve a polyhedrally
    constrained, regularlized linear least-squares problem.
    A variety of supported objective and constraint matrix storage formats are
    shown.

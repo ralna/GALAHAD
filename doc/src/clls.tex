@@ -14,9 +14,9 @@
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galsummary
-This package uses a primal-dual interior-point method to solve the 
+This package uses a primal-dual interior-point method to solve the
 {\bf polyhedrally-constrained regularized linear least-squares problem}
-\eqn{qp}{\mbox{minimize}\;\; \half \| \bmA_o \bmx - \bmb\|_W^2 
+\eqn{qp}{\mbox{minimize}\;\; \half \| \bmA_o \bmx - \bmb\|_W^2
  + \half \sigma \| \bmx \|^2}
 subject to the general linear constraints
 \disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
@@ -24,7 +24,7 @@ subject to the general linear constraints
 and the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the norms $\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}$
-and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$, 
+and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
 and the $o$ by $n$ matrix $\bmA_o$, the
 vectors $\bmb$, $\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
 $\bmx^{u}$ and the weights $w > 0$ and $\sigma \geq 0$ are given,
@@ -114,7 +114,7 @@ value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
 
 \subsubsection{Dense column-wise storage format}\label{densecolumnwise}
 The matrix $\bmA$ is stored as a compact
-dense matrix by columns, that is, the values of the entries of each column 
+dense matrix by columns, that is, the values of the entries of each column
 in turn are stored in order within an appropriate real one-dimensional array.
 Component $m \ast (j-1) + i$ of the storage array {\tt A\%val} will hold the
 value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
@@ -150,7 +150,7 @@ are stored in components
 $l =$ {\tt A\%ptr}$(j)$, \ldots ,{\tt A\%ptr} $(j+1)-1$ of the
 integer array {\tt A\%row}, and real array {\tt A\%val}, respectively.
 
-For sparse matrices, the latter pair schemes almost always require less 
+For sparse matrices, the latter pair schemes almost always require less
 storage than the co-ordinate one.
 
 %%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
@@ -236,11 +236,11 @@ The following components are used:
 \begin{description}
 
 \itt{Ao\%type} is an allocatable array of rank one and type default \character,
-that is used to indicate the storage scheme used. 
+that is used to indicate the storage scheme used.
 If the dense row-wise storage scheme (see Section~\ref{dense}) is used,
 the first five components of {\tt Ao\%type} must contain the
 string {\tt DENSE}.
-By contrast, if the dense column-wise storage scheme 
+By contrast, if the dense column-wise storage scheme
 (see Section~\ref{densecolumnwise}) is used,
 the first fifteen components of {\tt Ao\%type} must contain the
 string {\tt DENSE\_BY\_COLUMNS}.
@@ -254,7 +254,7 @@ and for the sparse column-wise storage scheme (see Section~\ref{columnwise}),
 the first seventeen components of {\tt Ao\%type} must contain the
 string {\tt SPARSE\_BY\_COLUMNS},
 
-The procedure {\tt SMT\_put} may be used to allocate sufficient space and 
+The procedure {\tt SMT\_put} may be used to allocate sufficient space and
 insert the required keyword into {\tt Ao\%type}. For example,
 if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
 and involves an objective Jacobian we wish to store using the co-ordinate
@@ -273,7 +273,7 @@ holds the number of entries in $\bmA$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other appropriate schemes.
 
-\itt{Ao\%val} is a rank-one allocatable array of type default \realdp, that 
+\itt{Ao\%val} is a rank-one allocatable array of type default \realdp, that
 holds the values of the entries of the Jacobian matrix $\bmA$ in any of the
 appropriate storage schemes discussed in Section~\ref{galmatrix}.
 
@@ -290,13 +290,13 @@ that holds the column indices of $\bmA$ in either the sparse co-ordinate
 It need not be allocated for any of the other schemes.
 
 \itt{Ao\%ptr} is a rank-one allocatable array of dimension {\tt o+1} and type
-default \integer, that holds the starting position of each row of $\bmA$, 
-as well as the total number of entries plus one, 
-in the sparse row-wise storage scheme (see Section~\ref{rowwise}). 
-By contrast, for the sparse column-wise storage scheme 
+default \integer, that holds the starting position of each row of $\bmA$,
+as well as the total number of entries plus one,
+in the sparse row-wise storage scheme (see Section~\ref{rowwise}).
+By contrast, for the sparse column-wise storage scheme
 (see Section~\ref{columnwise}), it should be of dimension {\tt n+1}
-and holds the starting position of each column of $\bmA$, 
-as well as the total number of entries plus one, 
+and holds the starting position of each column of $\bmA$,
+as well as the total number of entries plus one,
 It need not be allocated when the other appropriate schemes are used.
 
 \end{description}
@@ -312,11 +312,11 @@ The following components are used:
 \begin{description}
 
 \itt{A\%type} is an allocatable array of rank one and type default \character,
-that is used to indicate the storage scheme used. 
+that is used to indicate the storage scheme used.
 If the dense row-wise storage scheme (see Section~\ref{dense}) is used,
 the first five components of {\tt A\%type} must contain the
 string {\tt DENSE}.
-By contrast, if the dense column-wise storage scheme 
+By contrast, if the dense column-wise storage scheme
 (see Section~\ref{densecolumnwise}) is used,
 the first fifteen components of {\tt A\%type} must contain the
 string {\tt DENSE\_BY\_COLUMNS}.
@@ -330,7 +330,7 @@ and for the sparse column-wise storage scheme (see Section~\ref{columnwise}),
 the first seventeen components of {\tt A\%type} must contain the
 string {\tt SPARSE\_BY\_COLUMNS},
 
-The procedure {\tt SMT\_put} may be used to allocate sufficient space and 
+The procedure {\tt SMT\_put} may be used to allocate sufficient space and
 insert the required keyword into {\tt A\%type}. For example,
 if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
 and involves a Jacobian we wish to store using the sparse row-wise
@@ -366,13 +366,13 @@ that holds the column indices of $\bmA$ in either the sparse co-ordinate
 It need not be allocated for any of the other schemes.
 
 \itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type
-default \integer, that holds the starting position of each row of $\bmA$, 
-as well as the total number of entries plus one, 
-in the sparse row-wise storage scheme (see Section~\ref{rowwise}). 
-By contrast, for the sparse column-wise storage scheme 
+default \integer, that holds the starting position of each row of $\bmA$,
+as well as the total number of entries plus one,
+in the sparse row-wise storage scheme (see Section~\ref{rowwise}).
+By contrast, for the sparse column-wise storage scheme
 (see Section~\ref{columnwise}), it should be of dimension {\tt n+1}
-and holds the starting position of each column of $\bmA$, 
-as well as the total number of entries plus one, 
+and holds the starting position of each column of $\bmA$,
+as well as the total number of entries plus one,
 It need not be allocated when the other appropriate schemes are used.
 
 \end{description}
@@ -462,7 +462,7 @@ is on its upper bound but linearly dependent on others, and
 \itt{0} the $i$-th general constraint is not in the active set.
 \end{description}
 
-\itt{X\_status} is a rank-one allocatable array argument of dimension {\tt n} 
+\itt{X\_status} is a rank-one allocatable array argument of dimension {\tt n}
 and type default \integer, that indicates which of the simple bound
 constraints are in the current active set. Possible values for
 {\tt X\_status(j)}, {\tt j}$=1, \ldots ,$ {\tt n}, and their meanings are
@@ -1014,7 +1014,7 @@ See the specification sheet for the package
 
 \itt{SLS\_inform} and {SLS\_pounce\_inform}
 are scalar variables of type {\tt SLS\_inform\_type}
-whose components are used to provide information about 
+whose components are used to provide information about
 generic and pounce-specific factorizations performed by the package
 {\tt \libraryname\_SLS}.
 See the specification sheet for the package
@@ -1120,12 +1120,12 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 %%%%%%%%% main solution subroutine %%%%%%
 
-\subsubsection{The quadratic programming subroutine}\label{qps}
-The quadratic programming solution algorithm is called as follows:
+\subsubsection{The least-squares subroutine}\label{qps}
+The constrained least-squares solution algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( prob, data, control, inform[, w, regularization\_weight] )}
+{\tt CALL \packagename\_solve( prob, data, control, inform[, regularization\_weight, w] )}
 
 %\vspace*{-3mm}
 \begin{description}
@@ -1178,15 +1178,15 @@ A successful call to
 is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
-\ittf{W} is an \optional\ rank-one allocatable array of dimension {\tt o} and
-type default \realdp, that holds the positive residual weights, $w$. If it 
-is \present, its $i$-th component must contain the value $w_{i}$ for 
-$i = 1, \ldots , o$.
-If all the weights are one, {\tt W} need not be \present.
-
 \ittf{regularization\_weight} is an \optional\ scalar variable of type
 default \realdp, that holds the regularization weight, $\sigma \geq 0$.
 It need not be \present\ if $\sigma = 0$.
+
+\ittf{W} is an \optional\ rank-one allocatable array of dimension {\tt o} and
+type default \realdp, that holds the positive residual weights, $w$. If it
+is \present, its $i$-th component must contain the value $w_{i}$ for
+$i = 1, \ldots , o$.
+If all the weights are one, {\tt W} need not be \present.
 
 \end{description}
 
@@ -1518,11 +1518,11 @@ and
 {\tt GAL\-AHAD\_FDC}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
-\galrestrictions {\tt prob\%n} $> 0$, , {\tt prob\%o} $> 0$, 
+\galrestrictions {\tt prob\%n} $> 0$, , {\tt prob\%o} $> 0$,
 {\tt prob\%m} $\geq  0$,
 {\tt prob\%Ao\_type} and {\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
- {\tt 'DENSE\_BY\_COLUMNS'},  {\tt 'COORDINATE'}, 
-{\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'SPARSE\_BY\_\-COLUMNS'}, 
+ {\tt 'DENSE\_BY\_COLUMNS'},  {\tt 'COORDINATE'},
+{\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'SPARSE\_BY\_\-COLUMNS'},
 $\}$.
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
@@ -1641,7 +1641,7 @@ large-scale  degenerate convex quadratic programming,
 
 \galexample
 Suppose we wish to minimize
-\disp{\half \left\| \vect{ x_1 + x_2 - 2 \\ x_2 + x_3 - 2 \\ 
+\disp{\half \left\| \vect{ x_1 + x_2 - 2 \\ x_2 + x_3 - 2 \\
  x_1 + x_3 - 3 \\ 2 ( x_2 - 1 ) } \right\|^2}
 subject to the general linear constraints
 $1 \leq  2 x_{1}  +  x_{2}  \leq  2$ and
@@ -1687,8 +1687,8 @@ by
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! storage for Ao and A
    ALLOCATE( p%Ao%col( ao_ne ), p%Ao%ptr( o + 1 ), p%Ao%val( ao_ne ) )
    ALLOCATE( p%A%col( a_ne ), p%A%ptr( m + 1 ), p%A%val( a_ne ) )
-   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /)  ! Jacobian Ao                    
-   p%Ao%ptr = (/ 1, 3, 5, 7, 8 /) 
+   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /)  ! Jacobian Ao
+   p%Ao%ptr = (/ 1, 3, 5, 7, 8 /)
    p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
    p%A%col = (/ 1, 2, 2, 3 /) ! Jacobian A
    p%A%ptr = (/ 1, 3, 5 /)

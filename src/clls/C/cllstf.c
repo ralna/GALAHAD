@@ -45,6 +45,9 @@ int main(void) {
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
+        strcpy(control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.fdc_control.symmetric_linear_solver, "sytr ") ;
+        control.fdc_control.use_sls = true;
 
         // Start from 0
         real_wp_ x[] = {0.0,0.0,0.0};
@@ -66,9 +69,9 @@ int main(void) {
                 clls_import( &control, &data, &status, n, o, m,
                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
                             "coordinate", A_ne, A_row, A_col, 0, NULL );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b, 
-                                 A_ne, A_val, c_l, c_u, x_l, x_u, 
-                                 x, r, c, y, z, x_stat, c_stat, w, 0.0 );
+                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
+                                 A_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
                 }
                 break;
             case 2: // sparse by rows
@@ -84,14 +87,14 @@ int main(void) {
                 int A_ptr_ne = 3; // number of row pointers
                 int A_ptr[] = {1, 3, 5}; // row pointers
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
-                clls_import( &control, &data, &status, n, o, m, 
-                             "sparse_by_rows", Ao_ne, NULL, Ao_col, 
+                clls_import( &control, &data, &status, n, o, m,
+                             "sparse_by_rows", Ao_ne, NULL, Ao_col,
                              Ao_ptr_ne, Ao_ptr,
-                             "sparse_by_rows", A_ne, NULL, A_col, 
+                             "sparse_by_rows", A_ne, NULL, A_col,
                              A_ptr_ne, A_ptr );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b, 
-                                 A_ne, A_val, c_l, c_u, x_l, x_u, 
-                                 x, r, c, y, z, x_stat, c_stat, w, 0.0 );
+                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
+                                 A_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
                 }
                 break;
             case 3: // sparse by columns
@@ -107,14 +110,14 @@ int main(void) {
                 int A_ptr_ne = 4; // number of column pointers
                 int A_ptr[] = {1, 2, 4, 5}; // column pointers
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
-                clls_import( &control, &data, &status, n, o, m, 
-                             "sparse_by_columns", Ao_ne, Ao_row, NULL, 
+                clls_import( &control, &data, &status, n, o, m,
+                             "sparse_by_columns", Ao_ne, Ao_row, NULL,
                              Ao_ptr_ne, Ao_ptr,
                              "sparse_by_columns", A_ne, A_row, NULL,
                              A_ptr_ne, A_ptr );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b, 
-                                 A_ne, A_val, c_l, c_u, x_l, x_u, 
-                                 x, r, c, y, z, x_stat, c_stat, w, 0.0 );
+                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
+                                 A_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
                 }
                 break;
             case 4: // dense by rows
@@ -128,9 +131,9 @@ int main(void) {
                 clls_import( &control, &data, &status, n, o, m,
                              "dense", Ao_ne, NULL, NULL, 0, NULL,
                              "dense", A_ne, NULL, NULL, 0, NULL );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b, 
-                                 A_ne, A_dense, c_l, c_u, x_l, x_u, 
-                                 x, r, c, y, z, x_stat, c_stat, w, 0.0 );
+                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
+                                 A_ne, A_dense, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
                 }
                 break;
             case 5: // dense by cols
@@ -144,9 +147,9 @@ int main(void) {
                 clls_import( &control, &data, &status, n, o, m,
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL,
                              "dense_by_columns", A_ne, NULL, NULL, 0, NULL );
-                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b, 
-                                 A_ne, A_dense, c_l, c_u, x_l, x_u, 
-                                 x, r, c, y, z, x_stat, c_stat, w, 0.0 );
+                clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
+                                 A_ne, A_dense, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
                 }
                 break;
             }
@@ -169,4 +172,3 @@ int main(void) {
         clls_terminate( &data, &control, &inform );
     }
 }
-

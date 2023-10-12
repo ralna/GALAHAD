@@ -41,10 +41,9 @@
    CALL CLLS_initialize( data, control, inform ) ! Initialize control parameters
    control%symmetric_linear_solver = 'sytr '
    control%FDC_control%symmetric_linear_solver = 'sytr '
-   control%infinity = infinity                  ! Set infinity
-   CALL CLLS_solve( p, data, control, inform,                                  &
-                    W = W )                     ! Solve
-   IF ( inform%status == 0 ) THEN               ! Successful return
+   control%infinity = infinity                        ! Set infinity
+   CALL CLLS_solve( p, data, control, inform, W = W ) ! Solve
+   IF ( inform%status == 0 ) THEN                     ! Successful return
      WRITE( 6, "( ' CLLS: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
