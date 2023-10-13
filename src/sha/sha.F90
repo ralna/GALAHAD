@@ -844,11 +844,9 @@
           DO i = 1, n
             IF ( data%STR( i + 1 ) - data%STR( i ) <=                          &
                  control%max_sparse_degree ) THEN
-!write(6,"( ' a ' )" )
               data%differences_needed = MAX( data%differences_needed,          &
                                              data%STR( i + 1 ) - data%STR( i ) )
             ELSE
-!write(6,"( ' b ', 3I6 )" ) i, data%STR( i + 1 ) - data%STU( i ), data%STR( i + 1 ) - data%STR( i )
               data%differences_needed = MAX( data%differences_needed,          &
                                              data%STR( i + 1 ) - data%STU( i ) )
             END IF
@@ -1404,11 +1402,11 @@
 
           sym = inform%approximation_algorithm_used == 2 .OR.                  &
               ( inform%approximation_algorithm_used == 3 .AND.                 &
-                nu > m_available ) .OR.                          &
+                nu > control%max_sparse_degree ) .OR.                          &
                 inform%approximation_algorithm_used == 4 .OR.                  &
               ( inform%approximation_algorithm_used == 5 .AND. pass == 2 )
 !               mu > m_needed ) .OR.                          &
-!               mu > control%max_sparse_degree ) .OR.                          &
+!               nu > m_available ) .OR.                          &
 
 !  -----------------------------
 !  methods that exploit symmetry
