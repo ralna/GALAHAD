@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-10-16 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -238,13 +238,13 @@
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_col
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_ptr
 
-        ! Four scalar variables of derived type SMT_type.  Used to hold the
+        ! Five scalar variables of derived type SMT_type.  Used to hold the
         ! Jacobian of the (linear and nonlinear) residuals or constraints,
-        ! the Hessian of the Lagrangian, and the matrix of products of each
-        ! constraint Hessian with a vector.  These will eventually replace all
-        ! of the above.
+        ! the Hessian of the Lagrangian, the matrix of products of each
+        ! constraint Hessian with a vector, and the gradient as a sparse vector.
+        ! These will eventually replace all of the above.
 
-        TYPE ( SMT_type ) :: A, J, H, P
+        TYPE ( SMT_type ) :: A, J, H, P, G_sparse
 
         ! the convential value of infinity (that is the value beyond which
         ! bounds are assumed to be infinite)

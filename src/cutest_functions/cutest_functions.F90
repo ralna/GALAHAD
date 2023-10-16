@@ -533,9 +533,10 @@
 
        nlp%J%ne = 0
        nlp%A%ne = 0
+       nlp%G_sparse%ne = 0
        DO l = 1, nnzj
          IF ( userdata%integer( indfun + l ) == 0 ) THEN
-           ! Relax....objective gradient component.
+           nlp%G_sparse%ne = nlp%G_sparse%ne + 1
          ELSEIF ( userdata%integer( indfun + l ) <= nlp%m_a ) THEN
            nlp%A%ne = nlp%A%ne + 1
          ELSE
@@ -589,15 +590,29 @@
           inform%bad_alloc = 'nlp%J%val' ; GO TO 910
        END IF
 
-!  Untangle J: separate the gradient terms from the linear constraints
-!              and the general constraints in the Jacobian
+       CALL SPACE_resize_array( nlp%G_sparse%ne, nlp%G_sparse%col,             &
+                                inform%status, inform%alloc_status )
+       IF ( inform%status /= 0 ) THEN
+          inform%bad_alloc = 'nlp%G_sparse%col' ; GO TO 910
+       END IF
 
+       CALL SPACE_resize_array( nlp%G_sparse%ne, nlp%G_sparse%val,             &
+                                inform%status, inform%alloc_status )
+       IF ( inform%status /= 0 ) THEN
+          inform%bad_alloc = 'nlp%G_sparse%val' ; GO TO 910
+       END IF
+
+!  Untangle J: separate the gradient terms from the objective, linear
+!              constraints and the general constraints in the Jacobian
+
+       nlp%G_sparse%n = n ; nlp%G_sparse%ne = 0
        nlp%A%n = n ; nlp%A%m = nlp%m_a ; nlp%A%ne = 0
        nlp%J%n = n ; nlp%J%m = m - nlp%m_a ; nlp%J%ne = 0
 
        DO l = 1, nnzj
          IF ( userdata%integer( indfun + l ) == 0 ) THEN
-            ! Relax....objective gradient component.
+           nlp%G_sparse%ne = nlp%G_sparse%ne + 1
+           nlp%G_sparse%col( nlp%J%ne ) = userdata%integer( indvar + l )
          ELSE IF ( userdata%integer( indfun + l ) <= nlp%m_a ) THEN
            nlp%A%ne = nlp%A%ne + 1
            nlp%A%row( nlp%A%ne ) = userdata%integer( indfun + l )
@@ -983,6 +998,32 @@
      RETURN
 
      END SUBROUTINE CUTEst_eval_FC
+
+!-*-*-*-*-*-*-*-   C U T E S T _ e v a l _ C F   S U B R O U T I N E  -*-*-*-*-
+
+     SUBROUTINE CUTEst_eval_CF( status, X, userdata, C )
+
+!  Evaluate the vector (c(X),f(X)) involving the objective function f(X)
+!  and constraint functions C(X)
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+
+! local variables
+
+     INTEGER ( KIND = ip_ ) :: m, n
+
+!  Extract scalar addresses
+
+     m = userdata%integer( loc_m )
+     n = userdata%integer( loc_n )
+
+     CALL CUTEST_cfn( status, n, m, X, C( m + 1 ), C )
+     RETURN
+
+     END SUBROUTINE CUTEst_eval_CF
 
 !-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ G   S U B R O U T I N E  -*-*-*-*-*-*-
 
