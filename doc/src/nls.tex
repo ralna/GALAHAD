@@ -220,7 +220,7 @@ For the matrix $\bmP$, once again only the nonzero entries are
 stored, but this time they are ordered so that those in column $j$ appear
 directly before those in column $j+1$. For the $j$-th column of $\bmP$, the
 $j$-th component of the integer array {\tt P\%ptr} holds the position of the
-first entry in this column, while {\tt P\%ptr} $(n+1)$ holds the total number
+first entry in this column, while {\tt P\%ptr} $(m+1)$ holds the total number
 of entries plus one.  The row indices $i$ and values $\bmP_{ij}$ of the
 entries in the $j$-th column are stored in components $l =$ {\tt
   P\%ptr}$(j)$, \ldots ,{\tt P\%ptr} $(j+1)-1$ of the integer array

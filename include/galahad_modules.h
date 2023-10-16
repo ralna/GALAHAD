@@ -36,6 +36,7 @@
 #define GALAHAD_FILTER_precision GALAHAD_FILTER_single
 #define GALAHAD_FILTRANE_precision GALAHAD_FILTRANE_single
 #define GALAHAD_FISQP_precision GALAHAD_FISQP_single
+#define GALAHAD_NCT_precision GALAHAD_NCT_single
 #define GALAHAD_FIT_precision GALAHAD_FIT_single
 #define GALAHAD_FUNNEL_precision GALAHAD_FUNNEL_single
 #define GALAHAD_FUNNEL_equality_precision GALAHAD_FUNNEL_equality_single
@@ -146,6 +147,7 @@
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_single
 #define GALAHAD_USEFILTRANE_precision GALAHAD_USEFILTRANE_single
 #define GALAHAD_USEFISQP_precision GALAHAD_USEFISQP_single
+#define GALAHAD_USENCT_precision GALAHAD_USENCT_single
 #define GALAHAD_USEFUNNELE_precision GALAHAD_USEFUNNELE_single
 #define GALAHAD_USEFUNNEL_precision GALAHAD_USEFUNNEL_single
 #define GALAHAD_USEGLRT_precision GALAHAD_USEGLRT_single
@@ -359,6 +361,7 @@
 #define RUNWCP_SIF_precision RUNWCP_SIF_single
 #define RUNBARC_SIF_precision RUNBARC_SIF_single
 #define RUNFISQP_SIF_precision RUNFISQP_SIF_single
+#define RUNNCT_SIF_precision RUNNCT_SIF_single
 #define RUNPDQP_SIF_precision RUNPDQP_SIF_single
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single
@@ -433,6 +436,7 @@
 #define GALAHAD_FILTER_precision GALAHAD_FILTER_double
 #define GALAHAD_FILTRANE_precision GALAHAD_FILTRANE_double
 #define GALAHAD_FISQP_precision GALAHAD_FISQP_double
+#define GALAHAD_NCT_precision GALAHAD_NCT_double
 #define GALAHAD_FIT_precision GALAHAD_FIT_double
 #define GALAHAD_FUNNEL_precision GALAHAD_FUNNEL_double
 #define GALAHAD_FUNNEL_equality_precision GALAHAD_FUNNEL_equality_double
@@ -543,6 +547,7 @@
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_double
 #define GALAHAD_USEFILTRANE_precision GALAHAD_USEFILTRANE_double
 #define GALAHAD_USEFISQP_precision GALAHAD_USEFISQP_double
+#define GALAHAD_USENCT_precision GALAHAD_USENCT_double
 #define GALAHAD_USEFUNNELE_precision GALAHAD_USEFUNNELE_double
 #define GALAHAD_USEFUNNEL_precision GALAHAD_USEFUNNEL_double
 #define GALAHAD_USEGLRT_precision GALAHAD_USEGLRT_double
@@ -756,6 +761,7 @@
 #define RUNWCP_SIF_precision RUNWCP_SIF_double
 #define RUNBARC_SIF_precision RUNBARC_SIF_double
 #define RUNFISQP_SIF_precision RUNFISQP_SIF_double
+#define RUNNCT_SIF_precision RUNNCT_SIF_double
 #define RUNPDQP_SIF_precision RUNPDQP_SIF_double
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_double
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_double
