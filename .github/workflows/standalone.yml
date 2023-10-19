@@ -86,7 +86,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true
+          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Db_sanitize=address,undefined
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
