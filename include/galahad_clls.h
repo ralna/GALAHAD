@@ -45,7 +45,7 @@
   \n
 \endmanonly
   where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$,
-  the \f$o\f$ by \f$n\f$ matrix \f$A_o\f$
+  the \f$o\f$ by \f$n\f$ design matrix \f$A_o\f$
   \f$A\f$, the vectors \f$b\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
   \f$x^u\f$, the diagonal weights $w_i$ and the scalar \f$\sigma\f$ are given.
   Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
@@ -71,7 +71,7 @@
   \f[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\f]
 \manonly
   \n
-  (1a) L x = c
+  (1a) A x = c
   \n
 \endmanonly
   and
@@ -210,7 +210,7 @@
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
   The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$
-  and the \f$o\f$ by \f$n\f$ constraint matrix \f$A\f$ objective matrix
+  and the \f$o\f$ by \f$n\f$ objective designt matrix \f$A_o\f$
   may be presented and stored in a variety of convenient input formats.
   We focus on \f$A\f$, bt everything applies equally to \f$A_o\f$
   (with \f$o\f$ replacing \f$m\f$).
@@ -228,7 +228,7 @@
   \subsubsection unsymmetric_matrix_dense Dense storage format
 
   The matrix \f$A\f$ is stored as a compact dense matrix either by rows
-  or by colums, that is,   the values of the entries of each row in turn are
+  or by colums, that is, the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In the row case, component \f$n \ast i + j\f$  of the storage array A_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
@@ -877,9 +877,9 @@ void clls_import( struct clls_control_type *control,
 
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
-   used for the objective Jacobian, \f$A_o\f$. It should be one of 'coordinate',
-   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns';
-   lower or upper case variants are allowed.
+   used for the objective design matrix, \f$A_o\f$. It should be one of 
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns' 
+   'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
  @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
    entries in \f$A_o\f$ in the sparse storage schemes.
@@ -994,7 +994,8 @@ void clls_solve_clls( void **data,
                     real_wp_ w[] );
 
 /*!<
- Solve the quadratic program when the Hessian \f$H\f$ is available.
+ Solve the constrained linear-least squares problem when the design matrix 
+  \f$A_o\f$ is available.
 
  @param[in,out] data holds private internal data
 
@@ -1045,11 +1046,11 @@ void clls_solve_clls( void **data,
     general linear constraints.
 
   @param[in] ao_ne is a scalar variable of type int, that holds the number of
-    entries in the objective Jacobian \f$A_o\f$.
+    entries in the objective design matrix \f$A_o\f$.
 
   @param[in] Ao_val is a one-dimensional array of size ao_ne and type double,
-    that holds the values of the entries of the objective Jacobian
-    Hessian matrix \f$A_o\f$ in any of the available storage schemes.
+    that holds the values of the entries of the objective design
+    matrix \f$A_o\f$ in any of the available storage schemes.
 
  @param[in] b is a one-dimensional array of size o and type double, that
     holds the linear term \f$b\f$ of observations.

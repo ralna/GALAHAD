@@ -29,12 +29,14 @@
 
      PRIVATE
      PUBLIC :: CUTEst_initialize, CUTEst_eval_F, CUTEst_eval_FC,               &
-               CUTEst_eval_C, CUTEst_eval_G, CUTEst_eval_GJ, CUTEst_eval_J,    &
+               CUTEst_eval_C, CUTEst_eval_G, CUTEst_eval_J,                    &
+               CUTEst_eval_GJ, CUTEst_eval_SGJ,                                &
                CUTEst_eval_H, CUTEst_eval_HPROD, CUTEst_eval_SHPROD,           &
                CUTEst_eval_JPROD, CUTEst_eval_SJPROD, CUTEst_eval_HL,          &
-               CUTEst_eval_HLC, CUTEst_eval_HLPROD, CUTEst_eval_SHLPROD,       &
-               CUTEst_eval_HLCPROD, CUTEst_eval_SHLCPROD, CUTEst_eval_HCPRODS, &
-               CUTEst_start_timing, CUTEst_timing,                             &
+               CUTEst_eval_HJ, CUTEst_eval_HLC, CUTEst_eval_HLPROD,            &
+               CUTEst_eval_SHLPROD, CUTEst_eval_HLCPROD,                       &
+               CUTEst_eval_SHLCPROD, CUTEst_eval_HCPRODS,                      &
+               CUTEst_eval_HOCPRODS, CUTEst_start_timing, CUTEst_timing,       &
                CUTEst_terminate, NLPT_problem_type, GALAHAD_userdata_type
 
 !------------------------------------------------
@@ -68,24 +70,29 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: loc_m = 1
      INTEGER ( KIND = ip_ ), PARAMETER :: loc_n = 2
      INTEGER ( KIND = ip_ ), PARAMETER :: loc_m_a = 3
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzh = 4
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_irnh = 5
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_icnh = 6
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_h = 7
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzj = 8
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indfun = 9
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indvar = 10
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_cjac = 11
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzchp = 12
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpind = 13
-     INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpptr = 14
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzg = 4
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indg = 5
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzh = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_irnh = 7
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_icnh = 8
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_h = 9
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzj = 10
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indfun = 11
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indvar = 12
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_cjac = 13
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_lohp = 14
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_ohpind = 15
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_lchp = 16
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpind = 17
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpptr = 18
 
    CONTAINS
 
 !-*-*-  C U T E R _ i n i t i a l i z e   S U B R O U T I N E  -*-*-*-*
 
      SUBROUTINE CUTEst_initialize( nlp, control, inform, userdata,             &
-                                   no_hessian, no_jacobian, hessian_products )
+                                   no_hessian, no_jacobian, hessian_products,  &
+                                   sparse_gradient )
 
      TYPE ( NLPT_problem_type ), INTENT( OUT ) :: nlp
      TYPE ( GALAHAD_userdata_type ), INTENT( OUT ) :: userdata
@@ -93,14 +100,16 @@
      TYPE ( CUTEst_FUNCTIONS_inform_type ), INTENT( OUT ) :: inform
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_hessian, no_jacobian
      LOGICAL, OPTIONAL, INTENT( IN ) :: hessian_products
+     LOGICAL, OPTIONAL, INTENT( IN ) :: sparse_gradient
 
 ! local variables.
 
-     INTEGER ( KIND = ip_ ) :: i, j, l, lcjac, lh, status, iend, rend, h, cjac
-     INTEGER ( KIND = ip_ ) :: m, n, nnzj, nnzh, indfun, indvar, irnh, icnh
-     INTEGER ( KIND = ip_ ) :: nnzchp, l_order, ihsind, ihsptr, cutest_status
+     INTEGER ( KIND = ip_ ) :: i, j, l, lcjac, lg, lh, h, status, iend, rend
+     INTEGER ( KIND = ip_ ) :: m, n, nnzg, nnzj, nnzh, nnzchp, nnzohp
+     INTEGER ( KIND = ip_ ) :: indfun, indvar, irnh, icnh, cjac, cutest_status
+     INTEGER ( KIND = ip_ ) :: l_order, indg, iohpind, ichpind, ichpptr
      REAL ( KIND = rp_ ) :: f, f2, alpha, alpha_min
-     LOGICAL :: no_hess, no_jac, hess_prods
+     LOGICAL :: no_hess, no_jac, hess_prods, sparse_grad
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u, C, X
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C2, lin_const
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: full_CNAMES
@@ -172,6 +181,14 @@
        hess_prods = .FALSE.
      END IF
 
+!  check to see if a sparse gradient is required
+
+     IF ( PRESENT( sparse_gradient ) ) THEN
+       sparse_grad = sparse_gradient
+     ELSE
+       sparse_grad = .FALSE.
+     END IF
+
 !  --------------------------------
 !  -- The problem is constrained --
 !  --------------------------------
@@ -194,7 +211,7 @@
        IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'full_CNAMES' ; GO TO 910 ; END IF
 
-!  Get the problem with linear constraints possibly first.
+!  get the problem with linear constraints possibly first
 
        i = n ; j = m
        IF ( control%separate_linear_constraints ) THEN
@@ -269,13 +286,13 @@
        IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'nlp%ANAMES' ; GO TO 910 ; END IF
 
-!  Obtain the names of the problem, its variables and general constraints
+!  obtain the names of the problem, its variables and general constraints
 
        CALL CUTEST_cnames( cutest_status, n, m, nlp%pname, nlp%VNAMES,         &
                            full_CNAMES )
        IF ( cutest_status /= 0 ) GO TO 930
 
-!  Define the "corrected" separated vectors.
+!  define the "corrected" separated vectors
 
        nlp%Y_a = Y  ( 1 : nlp%m_a ) ;  nlp%Y   = Y  ( nlp%m_a + 1 : m )
        nlp%A_l = C_l( 1 : nlp%m_a ) ;  nlp%C_l = C_l( nlp%m_a + 1 : m )
@@ -284,7 +301,7 @@
        nlp%ANAMES = full_CNAMES( 1 : nlp%m_a )
        nlp%CNAMES = full_CNAMES( nlp%m_a + 1 : m )
 
-!  Deallocate arrays no longer needed.
+!  deallocate arrays no longer needed
 
        array_name = 'cutest_functions : C_l'
        CALL SPACE_dealloc_array( C_l,                                          &
@@ -315,10 +332,9 @@
          no_jac = .FALSE.
        END IF
 
-! Set up sparsity structure for A, J, and H.  ( Assume co-ordinate storage )
-
-! Determine number of non-zeros in the matrix of gradients of the
-! objective function AND constraint functions.
+!  set up sparsity structure for A, J, and H - assume co-ordinate storage.
+!  Determine number of non-zeros in the matrix of gradients of the
+!  objective function AND constraint functions.
 
        IF ( no_jac ) THEN
          nnzj = 0
@@ -327,7 +343,7 @@
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
-!  Determine how many nonzeros are required to store the Hessian matrix of the
+!  determine how many nonzeros are required to store the Hessian matrix of the
 !  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate"
 !  format (only the lower triangular part is stored).
 
@@ -338,37 +354,54 @@
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
-!  Determine how many nonzeros are required to store the matrix of products
+!  determine how many nonzeros are required to store the matrix of products
 !  of the constraint Hessians with a vector, when the matrix is stored in
 !  sparse column-wise format.
 
        IF (  hess_prods ) THEN
+         CALL CUTEST_cdimohp( cutest_status, nnzohp )
+         IF ( cutest_status /= 0 ) GO TO 930
          CALL CUTEST_cdimchp( cutest_status, nnzchp )
          IF ( cutest_status /= 0 ) GO TO 930
        ELSE
          nnzchp = 0
        END IF
 
-!  Set starting addresses for workspace array partitions
+!  determine how many nonzeros are required to store the sparse gradient
+!  of the objective function
 
-       irnh = loc_chpptr
+       IF ( sparse_grad ) THEN
+         CALL CUTEST_cdimsg( cutest_status, nnzg )
+         IF ( cutest_status /= 0 ) GO TO 930
+          nlp%Go%ne = nnzg
+       ELSE 
+         nnzg = 0
+         nlp%Go%ne = n
+       END IF
+
+!  set starting addresses for workspace array partitions
+
+       indg = loc_chpptr
+       irnh = indg + nnzg
        icnh = irnh + nnzh
        indfun = icnh + nnzh
        indvar = indfun + nnzj
-       ihsind = indvar + nnzj
+       iohpind = indvar + nnzj
        IF (  hess_prods ) THEN
-         ihsptr = ihsind + nnzchp
-         iend = ihsptr + m + 1
+         ichpind = iohpind + nnzohp
+         ichpptr = ichpind + nnzchp
+         iend = ichpptr + m + 1
        ELSE
-         ihsptr = ihsind
-         iend = ihsptr
+         ichpind = iohpind
+         ichpptr = ichpind
+         iend = ichpptr
        END IF
 
-       h    = 0
+       h = 0
        cjac = h + nnzh
        rend = MAX( cjac + nnzj, m, n )
 
-! Allocate space to hold scalars/arrays needed for subsequent calls
+!  allocate space to hold scalars/arrays needed for subsequent calls
 
        CALL SPACE_resize_array( iend, userdata%integer, inform%status,         &
                                 inform%alloc_status )
@@ -380,11 +413,13 @@
        IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'userdata%real' ; GO TO 910 ; END IF
 
-! Record workspace partitions in userdata%integer
+!  record workspace partitions in userdata%integer
 
        userdata%integer( loc_m ) = m
        userdata%integer( loc_n ) = n
        userdata%integer( loc_m_a ) = nlp%m_a
+       userdata%integer( loc_nnzg ) = nnzg
+       userdata%integer( loc_indg ) = indg
        userdata%integer( loc_nnzh ) = nnzh
        userdata%integer( loc_irnh ) = irnh
        userdata%integer( loc_icnh ) = icnh
@@ -393,12 +428,13 @@
        userdata%integer( loc_indfun ) = indfun
        userdata%integer( loc_indvar ) = indvar
        userdata%integer( loc_cjac ) = cjac
-       userdata%integer( loc_nnzchp ) = nnzchp
-       userdata%integer( loc_chpind ) = ihsind
-       userdata%integer( loc_chpptr ) = ihsptr
+       userdata%integer( loc_lohp ) = nnzohp
+       userdata%integer( loc_ohpind ) = iohpind
+       userdata%integer( loc_lchp ) = nnzchp
+       userdata%integer( loc_chpind ) = ichpind
 
-! Determine if there is a constant in the linear constraints.
-! Adjust the bounds if necessary
+!  determine if there is a constant in the linear constraints. Adjust the 
+!  bounds if necessary
 
        IF ( nlp%m_a > 0 ) THEN
          CALL SPACE_resize_array( m, C, inform%status, inform%alloc_status )
@@ -418,7 +454,7 @@
          IF ( inform%status /= 0 ) THEN
             inform%bad_alloc = 'userdata%real' ; GO TO 910 ; END IF
 
-! Make X feasible with respect to bounds
+!  make X feasible with respect to bounds
 
          X = zero
          X = MIN( nlp%X_u, MAX( nlp%X_l, X ) )
@@ -470,37 +506,22 @@
          END IF
        END IF
 
-! Evaluate the Jacobian and Hessian and get sparsity pattern.
+!  evaluate the Jacobian and Hessian and get sparsity pattern
 
        IF ( no_hess .AND. no_jac ) THEN
        ELSE IF ( no_jac ) THEN
          lh = nnzh
-!        CALL CUTEST_csh( cutest_status, nlp%n, m, nlp%X, - Y,                 &
-!                     nnzh, lh, userdata%real( h + 1 : h + nnzh ),             &
-!                     userdata%integer( irnh + 1 : irnh + nnzh ),              &
-!                     userdata%integer( icnh + 1 : icnh + nnzh ) )
          CALL CUTEST_cshp( cutest_status, nlp%n, nnzh, lh,                     &
                            userdata%integer( irnh + 1 : irnh + nnzh ),         &
                            userdata%integer( icnh + 1 : icnh + nnzh ) )
        ELSE IF ( no_hess ) THEN
          lcjac = nnzj
-!        CALL CUTEST_csgr( cutest_status, nlp%n, m, nlp%X, - Y, .FALSE.,       &
-!                     nnzj, lcjac, userdata%real( cjac + 1 : cjac + nnzj ),    &
-!                     userdata%integer( indvar + 1 : indvar + nnzj ),          &
-!                     userdata%integer( indfun + 1 : indfun + nnzj ) )
          CALL CUTEST_csgrp( cutest_status, nlp%n, nnzj, lcjac,                 &
                             userdata%integer( indvar + 1 : indvar + nnzj ),    &
                             userdata%integer( indfun + 1 : indfun + nnzj ) )
        ELSE
          lcjac = nnzj
          lh = nnzh
-!        CALL CUTEST_csgrsh( cutest_status, nlp%n, m, nlp%X, - Y, .FALSE.,     &
-!                     nnzj, lcjac, userdata%real( cjac + 1 : cjac + nnzj ),    &
-!                     userdata%integer( indvar + 1 : indvar + nnzj ),          &
-!                     userdata%integer( indfun + 1 : indfun + nnzj ),          &
-!                     nnzh, lh, userdata%real( h + 1 : h + nnzh ),             &
-!                     userdata%integer( irnh + 1 : irnh + nnzh ),              &
-!                     userdata%integer( icnh + 1 : icnh + nnzh ) )
          CALL CUTEST_csgrshp( cutest_status, nlp%n, nnzj, lcjac,               &
                               userdata%integer( indvar + 1 : indvar + nnzj ),  &
                               userdata%integer( indfun + 1 : indfun + nnzj ),  &
@@ -510,33 +531,45 @@
        END IF
        IF ( cutest_status /= 0 ) GO TO 930
 
-!  Evaluate the matrix of constraint Hessian-vector products to get its
+!  evaluate the matrix of constraint Hessian-vector products to get its
 !  sparsity pattern
 
        IF (  hess_prods ) THEN
          CALL SPACE_resize_array( nnzchp, nlp%P%val, inform%status,            &
                                   inform%alloc_status )
-         IF ( inform%status /= 0 ) then
+         IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'nlp%P%val' ; GO TO 910 ; END IF
-
-!        CALL CUTEST_cchprods( cutest_status, nlp%n, m, .FALSE., nlp%X,        &
-!                              nlp%X, nnzchp, nlp%P%val( : nnzchp ),           &
-!                              userdata%integer( ihsind + 1 : ihsind + nnzchp),&
-!                              userdata%integer( ihsptr + 1 : ihsptr + m + 1 ) )
          CALL CUTEST_cchprodsp( cutest_status, m, nnzchp,                      &
-                                userdata%integer( ihsind + 1 :ihsind + nnzchp),&
-                                userdata%integer( ihsptr + 1 :ihsptr + m + 1 ) )
+                                userdata%integer( ichpind + 1 :                &
+                                                  ichpind + nnzchp),           &
+                                userdata%integer( ichpptr + 1 :                &
+                                                  ichpptr + m + 1 ) )
        END IF
 
-! get the number of nonzeros in the linear constraints and Jacobian constraints
-! only
+!  get the sparsity pattern of the objective-function gradient
+
+       IF ( sparse_grad ) THEN
+         CALL SPACE_resize_array( nnzg, nlp%Go%ind, inform%status,       &
+                                  inform%alloc_status )
+         IF ( inform%status /= 0 ) THEN
+           inform%bad_alloc = 'nlp%Go%col' ; GO TO 910 ; END IF
+         lg = nnzg
+         CALL CUTEST_cisgrp( cutest_status, n, 0, nnzg, lg,                    &
+                             userdata%integer( indg + 1 : indg + nnzg ) )
+         nlp%Go%ind( : nnzg ) = userdata%integer( indg + 1 : indg + nnzg )
+         CALL SPACE_resize_array( nnzg, nlp%Go%val, inform%status,       &
+                                  inform%alloc_status )
+         IF ( inform%status /= 0 ) THEN
+           inform%bad_alloc = 'nlp%Go%ind' ; GO TO 910 ; END IF
+       END IF
+
+!  get the number of nonzeros in the linear and nonlinear constraint Jacobians
 
        nlp%J%ne = 0
        nlp%A%ne = 0
-       nlp%G_sparse%ne = 0
        DO l = 1, nnzj
          IF ( userdata%integer( indfun + l ) == 0 ) THEN
-           nlp%G_sparse%ne = nlp%G_sparse%ne + 1
+!          nlp%Go%ne = nlp%Go%ne + 1
          ELSEIF ( userdata%integer( indfun + l ) <= nlp%m_a ) THEN
            nlp%A%ne = nlp%A%ne + 1
          ELSE
@@ -544,7 +577,7 @@
          END IF
        END DO
 
-!  Deallocate arrays no longer needed.
+!  deallocate arrays no longer needed
 
        array_name = 'cutest_functions : Y'
        CALL SPACE_dealloc_array( Y,                                            &
@@ -553,7 +586,7 @@
        IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'Y' ; GO TO 920 ; END IF
 
-!  Allocate arrays that are now of correct length.
+!  allocate arrays that are now of correct length
 
        CALL SPACE_resize_array( nlp%A%ne, nlp%A%row, inform%status,            &
                                 inform%alloc_status )
@@ -590,29 +623,29 @@
           inform%bad_alloc = 'nlp%J%val' ; GO TO 910
        END IF
 
-       CALL SPACE_resize_array( nlp%G_sparse%ne, nlp%G_sparse%col,             &
+       CALL SPACE_resize_array( nlp%Go%ne, nlp%Go%ind,             &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) THEN
-          inform%bad_alloc = 'nlp%G_sparse%col' ; GO TO 910
+          inform%bad_alloc = 'nlp%Go%col' ; GO TO 910
        END IF
 
-       CALL SPACE_resize_array( nlp%G_sparse%ne, nlp%G_sparse%val,             &
+       CALL SPACE_resize_array( nlp%Go%ne, nlp%Go%val,             &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) THEN
-          inform%bad_alloc = 'nlp%G_sparse%val' ; GO TO 910
+          inform%bad_alloc = 'nlp%Go%val' ; GO TO 910
        END IF
 
-!  Untangle J: separate the gradient terms from the objective, linear
-!              constraints and the general constraints in the Jacobian
+!  untangle J: separate the gradient terms from the objective, linear
+!  constraints and the general constraints in the Jacobian
 
-       nlp%G_sparse%n = n ; nlp%G_sparse%ne = 0
+!      nlp%Go%n = n ; nlp%Go%ne = 0
        nlp%A%n = n ; nlp%A%m = nlp%m_a ; nlp%A%ne = 0
        nlp%J%n = n ; nlp%J%m = m - nlp%m_a ; nlp%J%ne = 0
 
        DO l = 1, nnzj
          IF ( userdata%integer( indfun + l ) == 0 ) THEN
-           nlp%G_sparse%ne = nlp%G_sparse%ne + 1
-           nlp%G_sparse%col( nlp%J%ne ) = userdata%integer( indvar + l )
+!           nlp%Go%ne = nlp%Go%ne + 1
+!           nlp%Go%col( nlp%Go%ne ) = userdata%integer( indvar + l )
          ELSE IF ( userdata%integer( indfun + l ) <= nlp%m_a ) THEN
            nlp%A%ne = nlp%A%ne + 1
            nlp%A%row( nlp%A%ne ) = userdata%integer( indfun + l )
@@ -625,7 +658,7 @@
          END IF
        END DO
 
-!  Define the storage type for J
+!  define the storage type for J
 
        CALL SMT_put( nlp%A%type, 'COORDINATE', status )
        IF ( status /= 0 ) GO TO 990
@@ -639,20 +672,20 @@
 
      ELSE
 
-!  Set up the correct data structures for subsequent computations
+!  set up the correct data structures for subsequent computations
 
        CALL CUTEST_usetup( cutest_status, control%input, control%error,        &
                            control%io_buffer, n, nlp%X, nlp%X_l, nlp%X_u )
        IF ( cutest_status /= 0 ) GO TO 930
 
-!  Obtain the names of the problem and its variables
+!  obtain the names of the problem and its variables
 
        CALL CUTEST_unames( cutest_status, n, nlp%pname, nlp%VNAMES )
        IF ( cutest_status /= 0 ) GO TO 930
 
-! Set up sparsity structure for H. ( Assume co-ordinate storage )
+!  set up sparsity structure for H. ( Assume co-ordinate storage )
 
-!  Determine how many nonzeros are required to store the Hessian matrix
+!  determine how many nonzeros are required to store the Hessian matrix
 !  when the matrix is stored as a sparse matrix in "co-ordinate" format
 !  (only the lower triangular part is stored).
 
@@ -663,7 +696,7 @@
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
-!  Set starting addresses for workspace array partitions
+!  set starting addresses for workspace array partitions
 
        irnh = loc_h
        icnh = irnh + nnzh
@@ -671,7 +704,7 @@
        h = 0
        rend = MAX( h + nnzh, n )
 
-! Allocate space to hold scalars/arrays needed for subsequent calls
+!  allocate space to hold scalars/arrays needed for subsequent calls
 
        CALL SPACE_resize_array( iend, userdata%integer, inform%status,         &
                                inform%alloc_status )
@@ -685,7 +718,7 @@
           inform%bad_alloc = 'userdata%real' ; GO TO 910
        END IF
 
-! Record workspace partitions in userdata%integer
+!  record workspace partitions in userdata%integer
 
        userdata%integer( loc_m ) = m
        userdata%integer( loc_n ) = n
@@ -695,7 +728,7 @@
        userdata%integer( loc_icnh ) = icnh
        userdata%integer( loc_h ) = h
 
-! Evaluate the Hessian and get sparsity pattern
+!  evaluate the Hessian and get sparsity pattern
 
        IF ( .NOT. no_hess ) THEN
          lh = nnzh
@@ -709,7 +742,7 @@
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
-!  Define the storage type for the null J and A
+!  define the storage type for the null J and A
 
        nlp%J%ne = 0
        nlp%A%ne = 0
@@ -720,7 +753,7 @@
        CALL SMT_put( nlp%J%type, 'COORDINATE', status )
        IF ( status /= 0 ) GO TO 990
 
-! Allocate zero-length arrays to prevent errors
+!  allocate zero-length arrays to prevent errors
 
        CALL SPACE_resize_array( nlp%m, nlp%Y, inform%status,                   &
                                 inform%alloc_status )
@@ -802,16 +835,16 @@
 
      END IF
 
-! Define reduced costs
+!  define reduced costs
 
      nlp%Z = zero
 
-! Define the storage type for H
+!  define the storage type for H
 
      CALL SMT_put( nlp%H%type, 'COORDINATE', status )
      IF ( status /= 0 ) GO TO 990
 
-! Set the sparsity pattern for H
+!  set the sparsity pattern for H
 
      nlp%H%n = n
      nlp%H%ne = nnzh
@@ -834,7 +867,7 @@
         inform%bad_alloc = 'nlp%H%val' ; GO TO 910
      END IF
 
-!  Ensure that the lower triangle of H is stored
+!  ensure that the lower triangle of H is stored
 
      DO l = 1, nlp%H%ne
        i = userdata%integer( irnh + l )
@@ -848,13 +881,13 @@
        END IF
      END DO
 
-! Set the space and sparsity pattern for P
+!  set the space and sparsity pattern for P
 
      IF ( hess_prods ) THEN
        CALL SMT_put( nlp%P%type, 'SPARSE_BY_COLUMNS', inform%status )
        IF ( inform%status /= 0 ) GO TO 990
 
-       nnzchp = userdata%integer( ihsptr + m + 1 ) - 1
+!      nnzchp = userdata%integer( ichpptr + m + 1 ) - 1
 
        CALL SPACE_resize_array( nnzchp, nlp%P%val, inform%status,              &
                                 inform%alloc_status, exact_size = .TRUE. )
@@ -871,13 +904,13 @@
        IF ( inform%status /= 0 ) then
          inform%bad_alloc = 'nlp%P%ptr' ; GO TO 910 ; END IF
 
-       nlp%P%row( : nnzchp ) = userdata%integer( ihsind + 1 : ihsind + nnzchp )
-       nlp%P%ptr( : m + 1 ) = userdata%integer( ihsptr + 1 : ihsptr + m + 1 )
+       nlp%P%row( : nnzchp ) = userdata%integer( ichpind + 1 : ichpind + nnzchp )
+       nlp%P%ptr( : m + 1 ) = userdata%integer( ichpptr + 1 : ichpptr + m + 1 )
      END IF
 
      RETURN
 
-! Error format statements
+!  error returns
 
  910 CONTINUE
      WRITE( control%error, "( ' ** ERROR - subroutine CUTEst_functions - ',    &
@@ -998,32 +1031,6 @@
      RETURN
 
      END SUBROUTINE CUTEst_eval_FC
-
-!-*-*-*-*-*-*-*-   C U T E S T _ e v a l _ C F   S U B R O U T I N E  -*-*-*-*-
-
-     SUBROUTINE CUTEst_eval_CF( status, X, userdata, C )
-
-!  Evaluate the vector (c(X),f(X)) involving the objective function f(X)
-!  and constraint functions C(X)
-
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-
-! local variables
-
-     INTEGER ( KIND = ip_ ) :: m, n
-
-!  Extract scalar addresses
-
-     m = userdata%integer( loc_m )
-     n = userdata%integer( loc_n )
-
-     CALL CUTEST_cfn( status, n, m, X, C( m + 1 ), C )
-     RETURN
-
-     END SUBROUTINE CUTEst_eval_CF
 
 !-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ G   S U B R O U T I N E  -*-*-*-*-*-*-
 
@@ -1187,6 +1194,66 @@
 
      END SUBROUTINE CUTEst_eval_GJ
 
+!-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ S G J   S U B R O U T I N E  -*-*-*-*-
+
+     SUBROUTINE CUTEst_eval_SGJ( status, X, userdata, G, J_val )
+
+!  Evaluate the values of the gradient of the objective function G(X) and 
+!  those of the constraint Jacobian Jval(X) for the nonzeros corresponding 
+!  to the sparse coordinate formats set in CUTEst_initialize
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G, J_val
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+
+! Local variables
+
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzg, nnzj
+     INTEGER ( KIND = ip_ ) :: indg, indfun, indvar, cjac, Jne, lg, lcjac, l
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_dummy
+
+!  Extract scalar and array addresses
+
+     m = userdata%integer( loc_m )
+     n = userdata%integer( loc_n )
+     nnzg = userdata%integer( loc_nnzg )
+     IF ( m > 0 ) THEN
+       m_a = userdata%integer( loc_m_a )
+       nnzj = userdata%integer( loc_nnzj )
+       indfun = userdata%integer( loc_indfun )
+       indvar = userdata%integer( loc_indvar )
+       cjac = userdata%integer( loc_cjac )
+
+       lcjac = nnzj ; Y_dummy = zero
+       CALL CUTEST_csgr( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,       &
+                         userdata%real( cjac + 1 : cjac + nnzj ),              &
+                         userdata%integer( indvar + 1 : indvar + nnzj ),       &
+                         userdata%integer( indfun + 1 : indfun + nnzj ) )
+       IF ( status /= 0 ) RETURN
+
+! Untangle A: separate the gradient terms from the constraint Jacobian
+
+       Jne = 0
+       DO l = 1, nnzj
+         IF ( userdata%integer( indfun + l ) > m_a ) THEN
+           Jne = Jne + 1
+           J_val( Jne ) = userdata%real( cjac + l )
+         END IF
+       END DO
+     END IF
+
+!  compute the sparse gradient
+
+     lg = nnzg
+     indg = userdata%integer( loc_indg )
+     CALL CUTEST_cisgr( status, n, 0, X, nnzg, lg, G,                          &
+                        userdata%integer( indg + 1 : indg + nnzg ) )
+
+     RETURN
+
+     END SUBROUTINE CUTEst_eval_SGJ
+
 !-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ H    S U B R O U T I N E  -*-*-*-*-*-
 
      SUBROUTINE CUTEst_eval_H( status, X, userdata, H_val )
@@ -1276,6 +1343,47 @@
      RETURN
 
      END SUBROUTINE CUTEst_eval_HL
+
+!-*-*-*-*-*-*-*-  C U T E S T _ e v a l _ H J   S U B R O U T I N E  -*-*-*-*-*-
+
+     SUBROUTINE CUTEst_eval_HJ( status, X, y0, Y, userdata, H_val )
+
+!  Evaluate the values of the Herssian of the John function Hval(X,y0,Y)
+!  for the nonzeros corresponding to the sparse coordinate format set in
+!  CUTEst_initialize. By convention, the John function is y_0 f - sum c_i y_i
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ) :: y0
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+
+! Local variables
+
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzh, irnh, icnh, lh
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_full
+
+!  Extract scalar and array addresses
+
+     m    = userdata%integer( loc_m )
+     m_a  = userdata%integer( loc_m_a )
+     n    = userdata%integer( loc_n )
+     nnzh = userdata%integer( loc_nnzh )
+     irnh = userdata%integer( loc_irnh )
+     icnh = userdata%integer( loc_icnh )
+
+! Evaluate the Hessian
+
+     Y_full = zero
+     Y_full( m_a + 1 : m ) = - Y
+
+     lh = nnzh
+     CALL CUTEST_cshj( status, n, m, X, y0, Y_full, nnzh, lh, H_val,           &
+                      userdata%integer( irnh + 1 : irnh + nnzh ),              &
+                      userdata%integer( icnh + 1 : icnh + nnzh ) )
+     RETURN
+
+     END SUBROUTINE CUTEst_eval_HJ
 
 !-*-*-*-*-*-*-  C U T E S T _ e v a l _ H L C   S U B R O U T I N E  -*-*-*-*-*-
 
@@ -1752,7 +1860,7 @@
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
-! Local variables
+!  local variables
 
      INTEGER ( KIND = ip_ ) :: m, m_a, n
      REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
@@ -1798,9 +1906,9 @@
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
-! Local variables
+!  local variables
 
-     INTEGER ( KIND = ip_ ) :: m, n, ihsind, ihsptr, nnzchp
+     INTEGER ( KIND = ip_ ) :: m, n, ichpind, ichpptr, lchp
      LOGICAL :: got_h_value
 
      IF ( PRESENT( got_h ) ) THEN
@@ -1809,22 +1917,74 @@
        got_h_value = .FALSE.
      END IF
 
-!  Extract scalar and array addresses
+!  extract scalar and array addresses
 
      m = userdata%integer( loc_m )
      n = userdata%integer( loc_n )
-     nnzchp = userdata%integer( loc_nnzchp )
-     ihsind = userdata%integer( loc_chpind )
-     ihsptr = userdata%integer( loc_chpptr )
+     lchp = userdata%integer( loc_lchp )
+     ichpind = userdata%integer( loc_chpind )
+     ichpptr = userdata%integer( loc_chpptr )
 
-!write(6,*) ' nnzchp', nnzchp, userdata%integer( loc_nnzchp ), loc_nnzchp
-!write(6,*) ' s ', V
-     CALL CUTEST_cchprods( status, n, m, got_h_value, X, V, nnzchp, P_val,     &
-                           userdata%integer( ihsind + 1 : ihsind + nnzchp ),   &
-                           userdata%integer( ihsptr + 1 : ihsptr + m + 1 ) )
+!  compute the values of P
+
+     CALL CUTEST_cchprods( status, n, m, got_h_value, X, V, lchp, P_val,       &
+                           userdata%integer( ichpind + 1 : ichpind + lchp ),   &
+                           userdata%integer( ichpptr + 1 : ichpptr + m + 1 ) )
      RETURN
 
      END SUBROUTINE CUTEst_eval_HCPRODS
+
+!-*-*-*-  C U T E S T _ e v a l _ H O C P R O D S    S U B R O U T I N E  -*-*-
+
+     SUBROUTINE CUTEst_eval_HOCPRODS( status, X, V, userdata,                  &
+                                      PO_val, PC_val, got_h )
+
+!  Compute the products P_o = H(X) * V and P_c = H_i(X) * V involving the 
+!  Hessians of the objective (H) and constraints (H_i). If got_h is PRESENT 
+!  and TRUE, the Hessians are as recorded at the last point at which they 
+!  were evaluated.
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: PO_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: PC_val
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+
+!  local variables
+
+     INTEGER ( KIND = ip_ ) :: m, n, nnzohp
+     INTEGER ( KIND = ip_ ) :: ichpind, ichpptr, iohpind, lchp, lohp
+     LOGICAL :: got_h_value
+
+     IF ( PRESENT( got_h ) ) THEN
+       got_h_value = got_h
+     ELSE
+       got_h_value = .FALSE.
+     END IF
+
+!  extract scalar and array addresses
+
+     m = userdata%integer( loc_m )
+     n = userdata%integer( loc_n )
+     lohp = userdata%integer( loc_lohp )
+     lchp = userdata%integer( loc_lchp )
+     iohpind = userdata%integer( loc_ohpind )
+     ichpind = userdata%integer( loc_chpind )
+     ichpptr = userdata%integer( loc_chpptr )
+
+!  compute the values of P_o and P_c
+
+     CALL CUTEST_cohprods( status, n, got_h_value, X, V, nnzohp, lohp, PO_val, &
+                           userdata%integer( iohpind + 1 : iohpind + nnzohp ) )
+
+     CALL CUTEST_cchprods( status, n, m, got_h_value, X, V, lchp, PC_val,      &
+                           userdata%integer( ichpind + 1 : ichpind + lchp ),   &
+                           userdata%integer( ichpptr + 1 : ichpptr + m + 1 ) )
+     RETURN
+
+     END SUBROUTINE CUTEst_eval_HOCPRODS
 
 !-*-*-*-*-*-   C U T E S T  _ t e r m i n a t e   S U B R O U T I N E   -*-*-*-
 
@@ -1841,7 +2001,7 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!  Dummy arguments
+!  dummy arguments
 
      TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
@@ -1852,7 +2012,6 @@
                                inform%alloc_status )
      CALL SPACE_dealloc_array( userdata%real, inform%status,                   &
                                inform%alloc_status )
-
      RETURN
 
 !  End of subroutine CUTEst_terminate

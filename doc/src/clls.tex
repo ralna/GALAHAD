@@ -100,7 +100,7 @@ must be renamed on one of the {\tt USE} statements.
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmatrix
-Both the objective Jacobian matrix $\bmA_o$ and
+Both the objective design matrix $\bmA_o$ and
 the constraint Jacobian $\bmA$, the matrix
 whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$,
 may be stored in a variety of input formats.
@@ -230,7 +230,7 @@ are:
  that holds the number of general linear constraints, $m$.
 
 \ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
-that holds the objective Jacobian matrix $\bmA_o$.
+that holds the objective design matrix $\bmA_o$.
 The following components are used:
 
 \begin{description}
@@ -257,45 +257,45 @@ string {\tt SPARSE\_BY\_COLUMNS},
 The procedure {\tt SMT\_put} may be used to allocate sufficient space and
 insert the required keyword into {\tt Ao\%type}. For example,
 if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
-and involves an objective Jacobian we wish to store using the co-ordinate
+and involves an objective design matrix we wish to store using the co-ordinate
 storage scheme, we may simply
 %\vspace*{-2mm}
 {\tt
 \begin{verbatim}
-        CALL SMT_put( prob%A%type, 'COORDINATE', istat )
+        CALL SMT_put( prob%Ao%type, 'COORDINATE', istat )
 \end{verbatim}
 }
 %\vspace*{-4mm}
 \noindent
 
 \itt{Ao\%ne} is a scalar variable of type default \integer, that
-holds the number of entries in $\bmA$
+holds the number of entries in $\bmA_o$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other appropriate schemes.
 
 \itt{Ao\%val} is a rank-one allocatable array of type default \realdp, that
-holds the values of the entries of the Jacobian matrix $\bmA$ in any of the
+holds the values of the entries of the design matrix $\bmA_o$ in any of the
 appropriate storage schemes discussed in Section~\ref{galmatrix}.
 
 \itt{Ao\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of $\bmA$ in the sparse co-ordinate storage
+that holds the row indices of $\bmA_o$ in the sparse co-ordinate storage
 or sparse column-wise schemes
 (see Sections~\ref{coordinate} and \ref{columnwise}).
 It need not be allocated for any of the other schemes.
 
 \itt{Ao\%col} is a rank-one allocatable array variable of type default \integer,
-that holds the column indices of $\bmA$ in either the sparse co-ordinate
+that holds the column indices of $\bmA_o$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated for any of the other schemes.
 
 \itt{Ao\%ptr} is a rank-one allocatable array of dimension {\tt o+1} and type
-default \integer, that holds the starting position of each row of $\bmA$,
+default \integer, that holds the starting position of each row of $\bmA_o$,
 as well as the total number of entries plus one,
 in the sparse row-wise storage scheme (see Section~\ref{rowwise}).
 By contrast, for the sparse column-wise storage scheme
 (see Section~\ref{columnwise}), it should be of dimension {\tt n+1}
-and holds the starting position of each column of $\bmA$,
+and holds the starting position of each column of $\bmA_o$,
 as well as the total number of entries plus one,
 It need not be allocated when the other appropriate schemes are used.
 
@@ -563,7 +563,7 @@ Possible values are:
    $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$
    will be restored to their input values.
 \itt{2} the entire problem, that is the above vector data along with
-the Jacobian matrix $\bmA$, will be restored.
+the matrices $\bmA_o$ and $\bmA$, will be restored.
 \end{description}
 The default is {\tt restore\_problem = 2}.
 }{}
@@ -1423,7 +1423,6 @@ that each affects are given in Table~\ref{specfile}.
   {\tt relative-dual-accuracy} & {\tt \%stop\_rel\_d} & real \\
   {\tt absolute-complementary-slackness-accuracy} & {\tt \%stop\_abs\_c} & real \\
   {\tt relative-complementary-slackness-accuracy} & {\tt \%stop\_rel\_c} & real \\
-  {\tt perturb-hessian-by} & {\tt \%perturb\_h} & real \\
   {\tt initial-barrier-parameter} & {\tt \%muzero} & real \\
   {\tt feasibility-vs-complementarity-weight} & {\tt \%tao} & real \\
   {\tt balance-complementarity-factor} & {\tt \%gamma\_c} & real \\
@@ -1687,7 +1686,7 @@ by
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! storage for Ao and A
    ALLOCATE( p%Ao%col( ao_ne ), p%Ao%ptr( o + 1 ), p%Ao%val( ao_ne ) )
    ALLOCATE( p%A%col( a_ne ), p%A%ptr( m + 1 ), p%A%val( a_ne ) )
-   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /)  ! Jacobian Ao
+   p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /)  ! design matrix Ao
    p%Ao%ptr = (/ 1, 3, 5, 7, 8 /)
    p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
    p%A%col = (/ 1, 2, 2, 3 /) ! Jacobian A

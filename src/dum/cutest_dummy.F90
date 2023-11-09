@@ -267,12 +267,12 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_uhprod
 
-   SUBROUTINE CUTEST_ushprod( status, n, goth, X,                              &
+   SUBROUTINE CUTEST_ushprod( cutest_status, n, goth, X,                              &
                               nnz_vector, INDEX_nz_vector, VECTOR,             &
                               nnz_result, INDEX_nz_result, RESULT )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nnz_vector
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnz_result
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnz_result
    LOGICAL, INTENT( IN ) :: goth
    INTEGER ( KIND = ip_ ), DIMENSION( nnz_vector ),                            &
                              INTENT( IN ) :: INDEX_nz_vector
@@ -379,10 +379,11 @@
    LOGICAL, INTENT( IN ) :: grad
    END SUBROUTINE CUTEST_cofg
 
-   SUBROUTINE CUTEST_cofsg( status, n, X, f, nnzg, lg, G_val, G_var, grad )
+   SUBROUTINE CUTEST_cofsg( cutest_status, n, X, f, nnzg,                      &
+                            lg, G_val, G_var, grad )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lg
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnzg
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzg
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    LOGICAL, INTENT( IN ) :: grad
    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lg ) :: G_var
@@ -390,22 +391,44 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lg ) :: G_val
    END SUBROUTINE CUTEST_cofsg
 
+   SUBROUTINE CUTEST_cdimsg( cutest_status, nnzg )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzg
+   END SUBROUTINE CUTEST_cdimsg
+
+   SUBROUTINE CUTEST_cisgrp( cutest_status, n, iprob, nnzgr, lgr, GR_var )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iprob, lgr
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzgr
+   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lgr ) :: GR_var
+   END SUBROUTINE CUTEST_cisgrp
+
+   SUBROUTINE CUTEST_cisgr( cutest_status, n, iprob, X, nnzgr, lgr,            &
+                            GR_val, GR_var )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iprob, lgr
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzgr
+   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lgr ) :: GR_var
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lgr ) :: GR_val
+   END SUBROUTINE CUTEST_cisgr
+
    SUBROUTINE CUTEST_cdimsj( cutest_status, nnzj )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzj
    END SUBROUTINE CUTEST_cdimsj
 
-   SUBROUTINE CUTEST_csjp( status, nnzj, lj, J_var, J_fun )
+   SUBROUTINE CUTEST_csjp( cutest_status, nnzj, lj, J_var, J_fun )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: lj
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj, status
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj, cutest_status
    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lj ) :: J_var, J_fun
    END SUBROUTINE CUTEST_csjp
 
-   SUBROUTINE CUTEST_csgrp( status, n, nnzj, lj, J_var, J_fun )
+   SUBROUTINE CUTEST_csgrp( cutest_status, n, nnzj, lj, J_var, J_fun )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lj
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj, status
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj, cutest_status
    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lj ) :: J_var, J_fun
    END SUBROUTINE CUTEST_csgrp
 
@@ -445,10 +468,10 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
    END SUBROUTINE CUTEST_ccfsg
 
-   SUBROUTINE CUTEST_clfg( status, n, m, X, Y, f, G, grad )
+   SUBROUTINE CUTEST_clfg( cutest_status, n, m, X, Y, f, G, grad )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status
    REAL ( KIND = rp_ ), INTENT( OUT ) :: f
    LOGICAL, INTENT( IN ) :: grad
    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
@@ -540,6 +563,18 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
    END SUBROUTINE CUTEST_csh
 
+   SUBROUTINE CUTEST_cshj( cutest_status, n, m, X, y0, Y,                     &
+                           nnzh, lh, H_val, H_row, H_col )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lh
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh, cutest_status
+   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: H_row, H_col
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+   REAL ( KIND = rp_ ), INTENT( IN ) :: y0
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H_val
+   END SUBROUTINE CUTEST_cshj
+
    SUBROUTINE CUTEST_cshc( cutest_status, n, m, X, Y, nnzh, lh, H, IRNH, ICNH )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lh
@@ -560,11 +595,11 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
    END SUBROUTINE CUTEST_cish
 
-   SUBROUTINE CUTEST_csgrshp( status, n, nnzj, lj, J_var, J_fun,               &
+   SUBROUTINE CUTEST_csgrshp( cutest_status, n, nnzj, lj, J_var, J_fun,        &
                               nnzh, lh, H_row, H_col )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lj, lh
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh, nnzj, status
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh, nnzj, cutest_status
    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lj ) :: J_var, J_fun
    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: H_row, H_col
    END SUBROUTINE CUTEST_csgrshp
@@ -629,12 +664,12 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_chprod
 
-   SUBROUTINE CUTEST_cshprod( status, n, m, goth, X, Y,                        &
+   SUBROUTINE CUTEST_cshprod( cutest_status, n, m, goth, X, Y,                 &
                               nnz_vector, INDEX_nz_vector, VECTOR,             &
                               nnz_result, INDEX_nz_result, RESULT )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, nnz_vector
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnz_result
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnz_result
    LOGICAL, INTENT( IN ) :: goth
    INTEGER ( KIND = ip_ ), DIMENSION( nnz_vector ),                            &
                              INTENT( IN ) :: INDEX_nz_vector
@@ -643,6 +678,18 @@
    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_cshprod
+
+   SUBROUTINE CUTEST_chjprod( cutest_status, n, m, goth, X, y0, Y,             &
+                              VECTOR, RESULT )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status
+   LOGICAL ( KIND = ip_ ), INTENT( IN ) :: goth
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, VECTOR
+   REAL ( KIND = rp_ ), INTENT( IN ) :: y0
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
+   END SUBROUTINE CUTEST_chjprod
 
    SUBROUTINE CUTEST_chcprod( cutest_status, n, m, goth, X, Y, P, RESULT )
    USE GALAHAD_KINDS_precision
@@ -654,12 +701,12 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_chcprod
 
-   SUBROUTINE CUTEST_cshcprod( status, n, m, goth, X, Y,                       &
+   SUBROUTINE CUTEST_cshcprod( cutest_status, n, m, goth, X, Y,                &
                                nnz_vector, INDEX_nz_vector, VECTOR,            &
                                nnz_result, INDEX_nz_result, RESULT )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, nnz_vector
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnz_result
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnz_result
    LOGICAL, INTENT( IN ) :: goth
    INTEGER ( KIND = ip_ ), DIMENSION( nnz_vector ),                            &
                              INTENT( IN ) :: INDEX_nz_vector
@@ -700,10 +747,10 @@
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzchp
    END SUBROUTINE CUTEST_cdimchp
 
-   SUBROUTINE CUTEST_cchprodsp( status, m, lchp, CHP_ind, CHP_ptr )
+   SUBROUTINE CUTEST_cchprodsp( cutest_status, m, lchp, CHP_ind, CHP_ptr )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, lchp
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status
    INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m + 1 ) :: CHP_ptr
    INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( lchp ) :: CHP_ind
    END SUBROUTINE CUTEST_cchprodsp
@@ -858,12 +905,12 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_uhprod_threaded
 
-   SUBROUTINE CUTEST_ushprod_threaded( status, n, goth, X,                     &
+   SUBROUTINE CUTEST_ushprod_threaded( cutest_status, n, goth, X,              &
                                nnz_vector, INDEX_nz_vector, VECTOR,            &
                                nnz_result, INDEX_nz_result, RESULT, thread )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nnz_vector, thread
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnz_result
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnz_result
    LOGICAL, INTENT( IN ) :: goth
    INTEGER ( KIND = ip_ ), DIMENSION( nnz_vector ),                            &
                              INTENT( IN ) :: INDEX_nz_vector
@@ -1122,12 +1169,12 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_chprod_threaded
 
-   SUBROUTINE CUTEST_cshprod_threaded( status, n, m, goth, X, Y,               &
+   SUBROUTINE CUTEST_cshprod_threaded( cutest_status, n, m, goth, X, Y,        &
                                nnz_vector, INDEX_nz_vector, VECTOR,            &
                                nnz_result, INDEX_nz_result, RESULT, thread )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, nnz_vector, thread
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnz_result
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnz_result
    LOGICAL, INTENT( IN ) :: goth
    INTEGER ( KIND = ip_ ), DIMENSION( nnz_vector ),                            &
                              INTENT( IN ) :: INDEX_nz_vector
@@ -1148,13 +1195,13 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
    END SUBROUTINE CUTEST_chcprod_threaded
 
-   SUBROUTINE CUTEST_cshcprod_threaded( status, n, m, goth, X, Y,              &
+   SUBROUTINE CUTEST_cshcprod_threaded( cutest_status, n, m, goth, X, Y,       &
                                nnz_vector, INDEX_nz_vector, VECTOR,            &
                                nnz_result, INDEX_nz_result, RESULT,            &
                                thread )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, nnz_vector, thread
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, nnz_result
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnz_result
    LOGICAL, INTENT( IN ) :: goth
    INTEGER ( KIND = ip_ ), DIMENSION( nnz_vector ),                            &
                              INTENT( IN ) :: INDEX_nz_vector

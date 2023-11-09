@@ -10,7 +10,7 @@
 # where: options -e : use the load module architecture.package if it exists
 #                     (Default: create a new load module)
 #                -h : print this help and stop execution
-#                -r : do not recompile the problem functions
+#                -r : do not recompile the problem fucoltions
 #                -s : run the single precision version
 #                     (Default: run the double precision version)
 #                -k : keep the load module after use
@@ -853,6 +853,15 @@ elif [[ $2 == 'fisqp' ]]; then
   [[ ! -e ~/.galahad/specs/RUNFISQP.SPC ]] && $GALOBJ/buildspec fisqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec fisqp update
   [[ ! -L RUNFISQP.SPC ]] && ln -s ~/.galahad/specs/RUNFISQP.SPC RUNFISQP.SPC
+
+# colt
+
+elif [[ $2 == 'colt' ]]; then
+  RUNMAIN=$GALOBJ/runcolt_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNCOLT.SPC ]] && $GALOBJ/buildspec colt
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec colt update
+  [[ ! -L RUNCOLT.SPC ]] && ln -s ~/.galahad/specs/RUNCOLT.SPC RUNCOLT.SPC
 
 # funnel
 

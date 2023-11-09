@@ -18,7 +18,7 @@ PACKAGE = NLPT
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dummy make_zd11 make_smt make_norms \
+DEPENDENCIES = make_dummy make_zd11 make_smt make_svt make_norms \
                make_tools make_userdata
 
 #  other packages that depend on package

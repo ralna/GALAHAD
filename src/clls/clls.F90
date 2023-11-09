@@ -1227,7 +1227,7 @@
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
 !
-!   %Ao is a structure of type SMT_type used to hold the matrix A_o.
+!   %Ao is a structure of type SMT_type used to hold the design matrix A_o.
 !    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -1284,7 +1284,7 @@
 !    of the observations, b. The i-th component of B, i = 1, ...., o should
 !    contain the value of b_i.
 !
-!   %A is a structure of type SMT_type used to hold the matrix A.
+!   %A is a structure of type SMT_type used to hold the constraint matrix A.
 !    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -8692,8 +8692,8 @@
 !  m is a scalar variable of type default integer, that holds the number of
 !   residuals
 !
-!  Ao_type is a character string that specifies the Jacobian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows',
+!  Ao_type is a character string that specifies the objective design matrix 
+!   storage scheme used. It should be one of 'coordinate', 'sparse_by_rows',
 !   'sparse_by_columns', 'dense', 'dense_by_rows' or 'dense_by_columns';
 !   lower or upper case variants are allowed
 !
@@ -8716,8 +8716,8 @@
 !   It need not be set when the other schemes are used, and in this case
 !   can be of length 0
 !
-!  A_type is a character string that specifies the Jacobian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!  A_type is a character string that specifies the constraint Jacobian storage
+!   scheme used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
 !   or 'absent', the latter if m = 0; lower or upper case variants are allowed
 !
 !  A_ne is a scalar variable of type default integer, that holds the number of
@@ -9297,14 +9297,14 @@
 !   For other values see, clls_solve above.
 !
 !  Ao_val is a rank-one array of type default real, that holds the values
-!   of the Jacobian Ao in the storage scheme specified in clls_import.
+!   of the design matrix Ao in the storage scheme specified in clls_import.
 !
 !  B is a rank-one array of dimension o and type default
 !   real, that holds the vector of linear terms of the observations, b.
 !   The i-th component of B, i = 1, ... , o, contains (b)_i.
 !
-!  A_val is a rank-one array of type default real, that holds the values
-!   of the Jacobian A in the storage scheme specified in clls_import.
+!  A_val is a rank-one array of type default real, that holds the values of
+!   the constraint Jacobian A in the storage scheme specified in clls_import.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the general linear constraints.
@@ -9414,7 +9414,7 @@
      data%prob%Z( : n ) = Z( : n )
      data%prob%Y( : m ) = Y( : m )
 
-!  save the objective Jacobian Ao entries
+!  save the objective design matrix Ao entries
 
      IF ( data%prob%Ao%ne > 0 )                                                &
        data%prob%Ao%val( : data%prob%Ao%ne ) = Ao_val( : data%prob%Ao%ne )

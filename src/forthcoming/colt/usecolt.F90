@@ -1,21 +1,21 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-10-13 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ F I S Q P  -*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ C O L T  -*-*-*-*-*-*-*-*-*-*-*-
 
-!  Nick Gould, Yueling Loh and Daniel P. Robinson, for GALAHAD productions
+!  Jessica Farmer, Jaroslav Fowkes and Nick Gould, for GALAHAD productions
 !  Copyright reserved
-!  Started: November 24th 2014
+!  Started: October 13th 2023
 
-   MODULE GALAHAD_USEFISQP_precision
+   MODULE GALAHAD_USECOLT_precision
 
-!  This is the driver program for running FISQP for a variety of computing
+!  This is the driver program for running COLT for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
      USE GALAHAD_KINDS_precision
-     USE GALAHAD_FISQP_precision
+     USE GALAHAD_COLT_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
@@ -24,13 +24,13 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: USE_FISQP
+     PUBLIC :: USE_COLT
 
    CONTAINS
 
-!-*-*-*-*-*-*-*-*-*-  U S E _ F I S Q P   S U B R O U T I N E  -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-  U S E _ N C T   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
-     SUBROUTINE USE_FISQP( input )
+     SUBROUTINE USE_COLT( input )
 
 !  Dummy argument
 
@@ -40,9 +40,9 @@
 !   D e r i v e d   T y p e s
 !-------------------------------
 
-     TYPE ( FISQP_control_type ) :: control
-     TYPE ( FISQP_inform_type ) :: inform
-     TYPE ( FISQP_data_type ) :: data
+     TYPE ( COLT_control_type ) :: control
+     TYPE ( COLT_inform_type ) :: inform
+     TYPE ( COLT_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
      TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
@@ -61,9 +61,9 @@
 
      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 31
-     CHARACTER ( LEN = 16 ) :: specname = 'RUNFISQP'
+     CHARACTER ( LEN = 16 ) :: specname = 'RUNCOLT'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-     CHARACTER ( LEN = 16 ) :: runspec = 'RUNFISQP.SPC'
+     CHARACTER ( LEN = 16 ) :: runspec = 'RUNCOLT.SPC'
 
 !  Default values for specfile-defined parameters
 
@@ -77,11 +77,11 @@
      LOGICAL :: write_solution_vector = .FALSE.
 !    LOGICAL :: write_result_summary  = .FALSE.
      LOGICAL :: write_result_summary  = .TRUE.
-     CHARACTER ( LEN = 30 ) :: dfilename = 'FISQP.data'
-     CHARACTER ( LEN = 30 ) :: rfilename = 'FISQPRES.d'
-     CHARACTER ( LEN = 30 ) :: sfilename = 'FISQPSOL.d'
-     CHARACTER ( LEN = 30 ) :: vfilename = 'FISQPSOLVEC.d'
-     CHARACTER ( LEN = 30 ) :: wfilename = 'FISQPSAVE.d'
+     CHARACTER ( LEN = 30 ) :: dfilename = 'COLT.data'
+     CHARACTER ( LEN = 30 ) :: rfilename = 'COLTRES.d'
+     CHARACTER ( LEN = 30 ) :: sfilename = 'COLTSOL.d'
+     CHARACTER ( LEN = 30 ) :: vfilename = 'COLTSOLVEC.d'
+     CHARACTER ( LEN = 30 ) :: wfilename = 'COLTSAVE.d'
      LOGICAL :: testal = .FALSE.
      LOGICAL :: dechk  = .FALSE.
      LOGICAL :: dechke = .FALSE.
@@ -103,9 +103,9 @@
 
      INTEGER ( KIND = ip_ ) :: out  = 6
      INTEGER ( KIND = ip_ ) :: errout = 6
-     CHARACTER ( LEN =  6 ) :: solv = 'FiSQP'
+     CHARACTER ( LEN =  6 ) :: solv = 'colt'
 
-!  ------------------ Open the specfile for runfisqp ----------------
+!  ------------------ Open the specfile for runcolt ----------------
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
@@ -209,11 +209,13 @@
      END IF
 
      cutest_control%input = input ; cutest_control%error = control%error
-     CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata )
+     CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata,     &
+                             hessian_products = .TRUE.,                        &
+                             sparse_gradient = .TRUE. )
 
 !  Set copyright
 
-     IF ( out > 0 ) CALL COPYRIGHT( out, '2014' )
+     IF ( out > 0 ) CALL COPYRIGHT( out, '2023' )
 
 !  record problem and solver information
 
@@ -222,8 +224,8 @@
 
 !  Set up data for next problem
 
-     CALL FISQP_initialize( data, control, inform )
-     IF ( is_specfile ) CALL FISQP_read_specfile( control, input_specfile )
+     CALL COLT_initialize( data, control, inform )
+     IF ( is_specfile ) CALL COLT_read_specfile( control, input_specfile )
 
 !  override print options if required
 
@@ -232,55 +234,21 @@
        control%print_level = 1
      CASE ( 2 )
        control%print_level = 4
-       control%QP_steer_control%print_level = 1
-       control%QP_steer_control%CQP_control%print_level = 1
-       control%QP_steer_control%DLP_control%print_level = 1
-       control%QP_steer_control%DQP_control%print_level = 1
-       control%QP_pred_control%print_level = 1
-       control%QP_pred_control%CQP_control%print_level = 1
-       control%QP_pred_control%DLP_control%print_level = 1
-       control%QP_pred_control%DQP_control%print_level = 1
-       control%QP_accel_control%print_level = 1
      CASE ( 3 : 100 )
        control%print_level = 4
-       control%QP_steer_control%print_level = 1
-       control%QP_steer_control%CQP_control%print_level = 101
-       control%QP_steer_control%DLP_control%print_level = 1
-       control%QP_steer_control%DQP_control%print_level = 1
-       control%QP_pred_control%print_level = 1
-       control%QP_pred_control%CQP_control%print_level = 101
-       control%QP_pred_control%DLP_control%print_level = 1
-       control%QP_pred_control%DQP_control%print_level = 1
-       control%QP_accel_control%print_level = 1
-       control%QP_accel_control%SBLS_control%print_level = 1
-       control%QP_accel_control%SBLS_control%SLS_control%print_level = 1
-       control%QP_accel_control%SBLS_control%SLS_control%print_level_solver = 1
-       control%QP_accel_control%GLTR_control%print_level = 1
+       control%NLS_control%print_level = 1
      CASE ( 101 : )
        control%print_level = 101
-       control%QP_steer_control%print_level = 101
-       control%QP_steer_control%CQP_control%print_level = 101
-       control%QP_steer_control%CQP_control%CRO_control%print_level = 101
-       control%QP_steer_control%DLP_control%print_level = 1
-       control%QP_steer_control%DQP_control%print_level = 1
-       control%QP_pred_control%print_level = 101
-       control%QP_pred_control%CQP_control%print_level = 101
-       control%QP_pred_control%CQP_control%CRO_control%print_level = 101
-       control%QP_pred_control%DLP_control%print_level = 1
-       control%QP_pred_control%DQP_control%print_level = 1
-       control%QP_accel_control%print_level = 101
-       control%QP_accel_control%SBLS_control%print_level = 1
-       control%QP_accel_control%SBLS_control%SLS_control%print_level = 1
-       control%QP_accel_control%SBLS_control%SLS_control%print_level_solver = 1
-       control%QP_accel_control%GLTR_control%print_level = 1
+       control%NLS_control%print_level = 101
      END SELECT
 
 !  Solve the problem
 
      inform%status = 1
-     CALL FISQP_solve( nlp, control, inform, data, userdata,                   &
-                       eval_FC = CUTEST_eval_FC, eval_GJ = CUTEST_eval_GJ,     &
-                       eval_HL = CUTEST_eval_HL )
+     CALL COLT_solve( nlp, control, inform, data, userdata,                    &
+                     eval_FC = CUTEST_eval_FC, eval_GJ = CUTEST_eval_SGJ,      &
+                     eval_HJ = CUTEST_eval_HJ,                                 &
+                     eval_HOCPRODS = CUTEST_eval_HOCPRODS )
 
 !  If required, append results to a file
 
@@ -381,10 +349,10 @@
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
 
-!  End of subroutine USE_FISQP
+!  End of subroutine USE_COLT
 
-     END SUBROUTINE USE_FISQP
+     END SUBROUTINE USE_COLT
 
-!  End of module USEFISQP
+!  End of module USECOLT
 
-   END MODULE GALAHAD_USEFISQP_precision
+   END MODULE GALAHAD_USECOLT_precision

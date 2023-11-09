@@ -102,6 +102,11 @@ make_checkpoint:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) checkpoint.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/checkpoint )
 
+make_colt:
+	( cd $(GALAHAD)/src/forthcoming/colt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) colt.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/colt )
+
 make_convert:
 	( cd $(GALAHAD)/src/convert ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) convert.o \
@@ -327,6 +332,11 @@ make_nlpt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
 
+make_nls:
+	( cd $(GALAHAD)/src/nls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
+
 make_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms.o \
@@ -465,13 +475,13 @@ make_sils:
 make_sls_deps: make_sls_deps_$(PRECIS)
 
 make_sls_deps_single: make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_space make_sils make_ma57 \
+               make_smt make_svt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \
                make_mc61 make_mc64 make_mc68 make_copyright \
                make_spralrb make_amd make_ssids_dum
 
 make_sls_deps_double: make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_space make_sils make_ma57 \
+               make_smt make_svt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \
                make_mc61 make_mc64 make_mc68 make_copyright \
                make_spralrb make_amd make_$(SSIDS)
@@ -505,6 +515,11 @@ make_string:
 	( cd $(GALAHAD)/src/string ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+make_svt:
+	( cd $(GALAHAD)/src/svt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) svt.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/svt )
 
 make_symbols:
 	( cd $(GALAHAD)/src/symbols ; \
@@ -772,6 +787,11 @@ make_all_checkpoint:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) checkpoint_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/checkpoint )
 
+make_all_colt:
+	( cd $(GALAHAD)/src/forthcoming/colt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) colt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/colt )
+
 make_all_convert:
 	( cd $(GALAHAD)/src/convert ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) convert_silent \
@@ -962,6 +982,11 @@ make_all_nlpt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
 
+make_all_nls:
+	( cd $(GALAHAD)/src/nls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
+
 make_all_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_silent \
@@ -1116,6 +1141,11 @@ make_all_string:
 	( cd $(GALAHAD)/src/string ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+make_all_svt:
+	( cd $(GALAHAD)/src/svt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) svt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/svt )
 
 make_all_symbols:
 	( cd $(GALAHAD)/src/symbols ; \
@@ -1385,6 +1415,11 @@ make_ciface_clock:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
 
+make_ciface_colt:
+	( cd $(GALAHAD)/src/forthcoming/colt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) colt_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/colt )
+
 make_ciface_common:
 	( cd $(GALAHAD)/src/common ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) common_ciface.o \
@@ -1620,6 +1655,11 @@ make_ciface_nlpt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
 
+make_ciface_nls:
+	( cd $(GALAHAD)/src/nls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
+
 make_ciface_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_ciface.o \
@@ -1787,6 +1827,11 @@ make_ciface_string:
 	( cd $(GALAHAD)/src/string ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+make_ciface_svt:
+	( cd $(GALAHAD)/src/svt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) svt_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/svt )
 
 make_ciface_symbols:
 	( cd $(GALAHAD)/src/symbols ; \
@@ -2005,6 +2050,11 @@ make_pyiface_clock:
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
+
+make_pyiface_colt:
+	( cd $(GALAHAD)/src/forthcoming/colt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) colt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/colt )
 
 make_pyiface_common:
 	( cd $(GALAHAD)/src/common ; \
@@ -2243,6 +2293,11 @@ make_pyiface_nlpt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
 
+make_pyiface_nls:
+	( cd $(GALAHAD)/src/nls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nls )
+
 make_pyiface_norms:
 	( cd $(GALAHAD)/src/norms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_pyiface.o \
@@ -2407,6 +2462,11 @@ make_pyiface_string:
 	( cd $(GALAHAD)/src/string ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+make_pyiface_svt:
+	( cd $(GALAHAD)/src/svt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) svt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/svt )
 
 make_pyiface_symbols:
 	( cd $(GALAHAD)/src/symbols ; \

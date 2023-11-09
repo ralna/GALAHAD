@@ -32,6 +32,7 @@
 !    |                                                          |
 !     ----------------------------------------------------------
 
+     USE GALAHAD_KINDS_precision
 !$    USE omp_lib
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
@@ -1520,7 +1521,7 @@
 !   nabla_xx f(x) + sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
 !   at x=X and y=Y with the vector v=V and the vector u=U must be returned in U,
 !   and the status variable set to 0. If the evaluation is impossible at X,
-!   status should be set to a nonzero value. If eval_HPROD is not present,
+!   status should be set to a nonzero value. If eval_HLPROD is not present,
 !   FISQP_solve will return to the user with inform%status = 6 each time an
 !   evaluation is required.
 !

@@ -40,6 +40,7 @@
 
       USE GALAHAD_KINDS_precision
       USE GALAHAD_NORMS_precision
+      USE GALAHAD_SVT_precision
       USE GALAHAD_SMT_precision
       USE GALAHAD_USERDATA_precision, NLPT_USERDATA_type                       &
                                         => GALAHAD_userdata_type
@@ -118,7 +119,7 @@
 
         REAL ( KIND = rp_ ) :: f
 
-        ! gradient of the objective function
+        ! gradient of the objective function (as a dense vector)
 
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: g
 
@@ -238,13 +239,18 @@
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_col
         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_ptr
 
-        ! Five scalar variables of derived type SMT_type.  Used to hold the
+        ! Four scalar variables of derived type SMT_type.  Used to hold the
         ! Jacobian of the (linear and nonlinear) residuals or constraints,
-        ! the Hessian of the Lagrangian, the matrix of products of each
-        ! constraint Hessian with a vector, and the gradient as a sparse vector.
+        ! the Hessian of the Lagrangian, and the matrix of products of each
+        ! constraint Hessian with a vector.
         ! These will eventually replace all of the above.
 
-        TYPE ( SMT_type ) :: A, J, H, P, G_sparse
+        TYPE ( SMT_type ) :: A, J, H, P
+
+        ! A scalar variable of derived type SVT_type.  Used to hold the
+        ! the gradient as a sparse vector (although it may also be dense)
+
+        TYPE ( SVT_type ) :: Go
 
         ! the convential value of infinity (that is the value beyond which
         ! bounds are assumed to be infinite)
