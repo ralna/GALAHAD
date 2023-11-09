@@ -1,0 +1,92 @@
+#  Main body of the installation makefile for the GALAHAD SVT package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2023-10-25
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = svt
+PACKAGE = SVT
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES =
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+LIBS = -lgalahad
+
+#  non-standard package compilation
+
+$(package).o: $(LG)($(package)_$(PRECIS).o)
+
+$(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
+	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
+	cd $(OBJ); $(FORTRAN) -o $(package)_$(PRECIS).o \
+                     $(FFLAGS) $(package).F90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o $(package)_$(PRECIS).o \
+                     $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(ARR) $(package)_$(PRECIS).o; \
+                     $(RM) $(package).F90 $(package)_$(PRECIS).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test programs for specification document
+
+$(package)s.o: $(OBJ)/$(package)s_$(PRECIS).o
+
+$(OBJ)/$(package)s_$(PRECIS).o: ../$(package)/$(package)s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s_$(PRECIS).o \
+                      $(FFLAGS) $(package)s.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  comprehensive test programs
+
+$(package)t.o: $(OBJ)/$(package)t_$(PRECIS).o
+
+$(OBJ)/$(package)t_$(PRECIS).o: ../$(package)/$(package)t.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
+	$(CP) ../$(package)/$(package)t.F90 $(OBJ)/$(package)t.F90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t_$(PRECIS).o \
+                      $(FFLAGSS) $(package)t.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries
