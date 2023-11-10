@@ -1,17 +1,18 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-10-25 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-10 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
    PROGRAM SVT_test_deck
    USE GALAHAD_SVT_precision
-   TYPE ( SVT_type ) :: A
-   A%n = 1 ; A%ne = 1
+   TYPE ( SVT_type ) :: V
+   INTEGER :: status
+   V%ne = 1
 
-   ALLOCATE( A%ind( A%ne ), A%val( A%ne ) )
-   A%ind( 1 ) = 1 ; A%val( 1 ) = 1.0
+   ALLOCATE( V%ind( V%ne ), V%val( V%ne ), stat = status )
+   V%ind( 1 ) = 1 ; V%val( 1 ) = 1.0
 
-   WRITE( 6, "( A, 2I3, /, A, 3I3, ES10.2 )" ) ' n, ne = ', A%n, A%ne,         &
-    ' ind, col, ptr, val = ', A%ind( 1 ), A%val( 1 )
+   WRITE( 6, "( A, I3, /, A, I3, ES10.2 )" ) ' ne = ', V%ne,                   &
+    ' ind, val = ', V%ind( 1 ), V%val( 1 )
 
-   DEALLOCATE( A%ind, A%val )
+   DEALLOCATE( V%ind, V%val )
    END PROGRAM SVT_test_deck
