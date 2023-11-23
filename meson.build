@@ -49,6 +49,7 @@ endif
 
 # Options
 install_modules = get_option('modules')
+galahad_int64 = get_option('galahad_int64')
 
 build_ciface = get_option('ciface')
 build_pythoniface = get_option('pythoniface')
@@ -110,6 +111,11 @@ libdmumps = fc.find_library('dmumps', dirs : libmumps_path, required : false)
 libmkl_pardiso = fc.find_library(libmkl_pardiso_name, dirs : libmkl_pardiso_path, required : false)
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 lm = cc.find_library('m', required : false)
+
+# 64 bits integer
+if galahad_int64
+  add_global_arguments('-DGALAHAD_64BIT_INTEGER', language : 'fortran')
+endif
 
 # OpenMP
 if fc.get_id() == 'nagfor'

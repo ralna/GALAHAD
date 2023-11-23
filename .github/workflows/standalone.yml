@@ -18,12 +18,22 @@ jobs:
             cc_cmd: gcc
             fc_cmd: gfortran
             cxx_cmd: g++
+            int64: false
+          - os: ubuntu-latest
+            compiler: gnu
+            compiler_version: 13
+            cc_cmd: gcc
+            fc_cmd: gfortran
+            cxx_cmd: g++
+            int64: true
+            allow_failure: true
           - os: ubuntu-latest
             compiler: intel-llvm
             compiler_version: 2023.2.0
             cc_cmd: icx
             fc_cmd: ifort
             cxx_cmd: icpx
+            int64: false
             allow_failure: true
           # - os: ubuntu-latest
           #   compiler: intel-llvm
@@ -45,9 +55,27 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja numpy
 
-      - name: Set the environment variable GALAHAD
+      - name: Set the environment variables GALAHAD and DEPS
         shell: bash
-        run: echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+        run: |
+          echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          cd $DEPS
+          mkdir deps
+          if [[ "${{matrix.int64}}" == "true" ]]; then
+            wget https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.11.tar.gz
+            tar -xzvf lapack-3.11.tar.gz -C deps
+            cd deps/lapack-*
+            mkdir build
+            cd build
+            cmake -DCMAKE_INSTALL_LIBDIR=$DEPS/lapack -DBUILD_SHARED_LIBS=ON -DBUILD_INDEX64=ON ..
+            make
+            make install
+          fi
 
       - name: Set the environment variable LD_LIBRARY_PATH
         if: matrix.os != 'windows-latest'
@@ -86,7 +114,13 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
-          meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true
+          if [[ "${{matrix.int64}}" == "true" ]]; then
+            meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Dgalahad_int64=true \
+                                 -Dlibblas_path=$DEPS/lapack -Dliblapack_path=$DEPS/lapack \
+                                 -Dliblas=blas64 -Dliblapack=lapack64
+          else
+            meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Dgalahad_int64=false
+          fi
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
