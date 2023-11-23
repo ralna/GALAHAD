@@ -193,3 +193,8 @@ option('libmetis_version',
        choices : ['4', '5'],
        value : '5',
        description : 'Version of the METIS library')
+
+option('galahad_int64',
+       type : 'boolean',
+       value : false,
+       description : 'option to use 64 bits integer')
