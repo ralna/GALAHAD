@@ -68,12 +68,12 @@ jobs:
           mkdir deps
           if [[ "${{matrix.int64}}" == "true" ]]; then
             wget https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.11.tar.gz
-            tar -xzvf lapack-3.11.tar.gz -C deps
+            tar -xzvf v3.11.tar.gz -C deps
             cd deps/lapack-*
             mkdir build
             cd build
             cmake -DCMAKE_INSTALL_LIBDIR=$DEPS/lapack -DBUILD_SHARED_LIBS=ON -DBUILD_INDEX64=ON ..
-            make
+            make -j4
             make install
           fi
 
@@ -117,7 +117,7 @@ jobs:
           if [[ "${{matrix.int64}}" == "true" ]]; then
             meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Dgalahad_int64=true \
                                  -Dlibblas_path=$DEPS/lapack -Dliblapack_path=$DEPS/lapack \
-                                 -Dliblas=blas64 -Dliblapack=lapack64
+                                 -Dlibblas=blas64 -Dliblapack=lapack64
           else
             meson setup builddir --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true -Dgalahad_int64=false
           fi
