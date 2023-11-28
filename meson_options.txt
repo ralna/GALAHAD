@@ -15,12 +15,12 @@ option('pythoniface',
 
 option('examples',
        type : 'boolean',
-       value : true,
+       value : false,
        description : 'whether to generate the examples')
 
 option('tests',
        type : 'boolean',
-       value : true,
+       value : false,
        description : 'whether to generate the tests')
 
 option('single',
