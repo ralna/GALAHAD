@@ -1,13 +1,13 @@
 project(
   'GALAHAD',
   'c', 'cpp', 'fortran',
-  version: '5.0.0',
+  version: '4.1.1',
   license: 'BSD-3',
   meson_version: '>= 0.63.0',
   default_options: [
-    'buildtype=debug',
+    'buildtype=release',
     'libdir=lib',
-    'default_library=both',
+    'default_library=shared',
     'warning_level=0',
     'c_std=c99',
     'cpp_std=c++11',
