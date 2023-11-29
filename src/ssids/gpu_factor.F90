@@ -2062,9 +2062,9 @@ contains
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
     type(c_ptr), value, intent(in) :: c_asminf
-    integer(c_long_), value, intent(in) :: pc_size
+    integer(c_int64_t), value, intent(in) :: pc_size
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
-    integer(c_long_), dimension(*), intent(in) :: off_LDLT
+    integer(c_int64_t), dimension(*), intent(in) :: off_LDLT
     type(c_ptr), value, intent(in) :: ptr_ccval ! GPU (*ptr_ccval) points to 
       ! previous level's contribution blocks
     type(c_ptr), value, intent(in) :: c_gpu_contribs
@@ -2200,7 +2200,7 @@ contains
     type(c_ptr), value, intent(in) :: c_nodes
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
-    integer(c_long_), dimension(*), intent(in) :: off_LDLT
+    integer(c_int64_t), dimension(*), intent(in) :: off_LDLT
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
     type(c_ptr), value             :: ptr_levLDLT 
     type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
@@ -2428,7 +2428,7 @@ contains
     type(c_ptr), value, intent(in) :: c_child_ptr 
     type(c_ptr), value, intent(in) :: c_child_list 
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
-    integer(c_long_), dimension(*) :: off_LDLT
+    integer(c_int64_t), dimension(*) :: off_LDLT
     type(c_ptr), value, intent(in) :: c_asminf ! Assembly info 
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
@@ -2572,7 +2572,7 @@ contains
     type(c_ptr), value, intent(in) :: c_lvllist
     type(c_ptr), value, intent(in) :: c_nodes
     integer(c_int), value :: ncb ! Number of nodes in level
-    integer(c_long_), value :: level_size ! Number of (fully-summed) entries 
+    integer(c_int64_t), value :: level_size ! Number of (fully-summed) entries
       ! in level  
     type(c_ptr), value, intent(in) :: c_nptr
     type(c_ptr), value, intent(in) :: c_rptr
