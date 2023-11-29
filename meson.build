@@ -10,7 +10,7 @@ project(
     'default_library=both',
     'warning_level=0',
     'c_std=c99',
-    'cpp_std=c++17',
+    'cpp_std=c++11',
   ],
 )
 

@@ -17,7 +17,6 @@ task:
     fi
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
     echo "OMP_CANCELLATION=TRUE" >> $CIRRUS_ENV
-    echo "OMP_NESTED=TRUE" >> $CIRRUS_ENV
     echo "OMP_PROC_BIND=TRUE" >> $CIRRUS_ENV
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then

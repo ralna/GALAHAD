@@ -2414,7 +2414,7 @@ public:
 #ifdef PROFILE
          Profile::Task task_post("TA_LDLT_POST");
 #endif
-         std::vector<int, IntAlloc> failed_perm(n-num_elim, alloc);
+         std::vector<int, IntAlloc> failed_perm(n-num_elim, 0, alloc);
          for(int jblk=0, insert=0, fail_insert=0; jblk<nblk; jblk++) {
             cdata[jblk].move_back(
                   get_ncol(jblk, n, block_size), &perm[jblk*block_size],
@@ -2428,8 +2428,8 @@ public:
 
          // Extract failed entries of a
          int nfail = n-num_elim;
-         std::vector<T, TAlloc> failed_diag(nfail*n, alloc);
-         std::vector<T, TAlloc> failed_rect(nfail*(m-n), alloc);
+         std::vector<T, TAlloc> failed_diag(nfail*n, 0, alloc);
+         std::vector<T, TAlloc> failed_rect(nfail*(m-n), 0, alloc);
          for(int jblk=0, jfail=0, jinsert=0; jblk<nblk; ++jblk) {
             // Diagonal part
             for(int iblk=jblk, ifail=jfail, iinsert=jinsert; iblk<nblk; ++iblk) {

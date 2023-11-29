@@ -87,7 +87,6 @@ jobs:
         shell: bash
         run: |
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
-          echo "OMP_NESTED=TRUE" >> $GITHUB_ENV
           echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
       - name: Install GNU compilers
