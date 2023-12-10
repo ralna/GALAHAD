@@ -81,7 +81,7 @@
 #define PACKAGE_NAME "spral"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "spral 2016.06.24"
+#define PACKAGE_STRING "spral 2023.11.15"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "spral"
@@ -90,7 +90,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2016.06.24"
+#define PACKAGE_VERSION "2023.11.15"
 
 /* Define to 1 to enable profiling */
 /* #undef PROFILE */
@@ -99,4 +99,4 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "2016.06.24"
+#define VERSION "2023.11.15"
