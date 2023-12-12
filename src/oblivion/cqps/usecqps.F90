@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-08 AT 12:40 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P S  M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -181,7 +182,7 @@
 
 !  Determine the number of variables and constraints
 
-      CALL CUTEST_cdimen( cutest_status, input, n, m )
+      CALL CUTEST_cdimen_r( cutest_status, input, n, m )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  Allocate suitable arrays
@@ -201,9 +202,9 @@
 !  Set up the data structures necessary to hold the group partially
 !  separable function.
 
-      CALL CUTEST_csetup( cutest_status, input, out, io_buffer,                &
-                          n, m, prob%X, prob%X_l, prob%X_u,                    &
-                          prob%Y, prob%C_l, prob%C_u,EQUATN, LINEAR, 0, 0, 0 )
+      CALL CUTEST_csetup_r( cutest_status, input, out, io_buffer,              &
+                            n, m, prob%X, prob%X_l, prob%X_u, prob%Y,          &
+                            prob%C_l, prob%C_u,EQUATN, LINEAR, 0, 0, 0 )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( LINEAR )
 
@@ -223,7 +224,7 @@
 
 !  Determine the names of the problem, variables and constraints.
 
-      CALL CUTEST_cnames( cutest_status, n, m, pname, VNAME, CNAME )
+      CALL CUTEST_cnames_r( cutest_status, n, m, pname, VNAME, CNAME )
       IF ( cutest_status /= 0 ) GO TO 910
       WRITE( out, 2020 ) pname 
 
@@ -242,7 +243,7 @@
 !  Evaluate the constant terms of the objective (objf) and constraint 
 !  functions (C)
 
-      CALL CUTEST_cfn( cutest_status, n, m, prob%X0, objf, C( : m ) )
+      CALL CUTEST_cfn_r( cutest_status, n, m, prob%X0, objf, C( : m ) )
       IF ( cutest_status /= 0 ) GO TO 910
       DO i = 1, m 
         IF ( EQUATN( i ) ) THEN 
@@ -256,7 +257,7 @@
 
 !  Determine the number of nonzeros in the Jacobian
 
-      CALL CUTEST_cdimsj( cutest_status, la )
+      CALL CUTEST_cdimsj_r( cutest_status, la )
       IF ( cutest_status /= 0 ) GO TO 910
       la = MAX( la, 1 )
 
@@ -270,8 +271,8 @@
 
 !  Evaluate the linear terms of the constraint functions
 
-      CALL CUTEST_csgr( cutest_status, n, m, prob%X0, prob%Y, .FALSE.,         &
-                        nea, la, prob%A%val, prob%A%col, prob%A%row )
+      CALL CUTEST_csgr_r( cutest_status, n, m, prob%X0, prob%Y, .FALSE.,       &
+                          nea, la, prob%A%val, prob%A%col, prob%A%row )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  Exclude zeros; set the linear term for the objective function
@@ -295,7 +296,7 @@
 
 !  Determine the number of nonzeros in the Hessian
 
-      CALL CUTEST_cdimsh( cutest_status, lh )
+      CALL CUTEST_cdimsh_r( cutest_status, lh )
       IF ( cutest_status /= 0 ) GO TO 910
       lh = MAX( lh, 1 )
 
@@ -311,8 +312,8 @@
 
 !  Evaluate the Hessian of the Lagrangian function at the initial point.
 
-      CALL CUTEST_csh( cutest_status, n, m, prob%X, prob%Y,                    &
-                       neh, lh, prob%H%val, prob%H%row, prob%H%col )
+      CALL CUTEST_csh_r( cutest_status, n, m, prob%X, prob%Y,                  &
+                         neh, lh, prob%H%val, prob%H%row, prob%H%col )
       IF ( cutest_status /= 0 ) GO TO 910
 !      WRITE( out, "( ' nea = ', i8, ' la   = ', i8,                           &
 !     &               ' neh  = ', i8, ' lh   = ', i8 )" ) nea, la, neh, lh
@@ -1072,7 +1073,7 @@
       DEALLOCATE( VNAME, CNAME, C )
       IF ( is_specfile ) CLOSE( input_specfile )
 
-      CALL CUTEST_cterminate( cutest_status )
+      CALL CUTEST_cterminate_r( cutest_status )
       RETURN
 
  910  CONTINUE

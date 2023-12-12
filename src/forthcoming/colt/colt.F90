@@ -1,3 +1,4 @@
+
 ! THIS VERSION: GALAHAD 4.2 - 2023-11-07 AT 11:40 GMT.
 
 #include "galahad_modules.h"
@@ -44,6 +45,7 @@
      USE GALAHAD_OPT_precision
      USE GALAHAD_NLS_precision
      USE GALAHAD_MOP_precision
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
 
      IMPLICIT NONE
 
@@ -59,11 +61,13 @@
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one ) / two
 
-     LOGICAL, PARAMETER :: print_debug = .TRUE.
-!    LOGICAL, PARAMETER :: print_debug = .FALSE.
+!    LOGICAL, PARAMETER :: print_debug = .TRUE.
+     LOGICAL, PARAMETER :: print_debug = .FALSE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -328,12 +332,13 @@
        INTEGER ( KIND = ip_ ) :: h_ne, j_ne, n_slacks
        REAL :: time_start, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_now
-       REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, stop_i
-       REAL ( KIND = rp_ ) :: s_norm
+       REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, stop_i, s_norm
+       REAL ( KIND = rp_ ) :: target_lower, target_upper
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header, accepted
        LOGICAL :: reverse_fc, reverse_gj, reverse_hj, reverse_hocprods
+       LOGICAL :: target_bounded, converged
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SLACKS
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale
 
@@ -891,6 +896,16 @@
 !        instance, if a component of the Hessian is undefined at x - the user
 !        need not alter data%U, but should then set data%eval_status to a
 !        non-zero value.
+!     7. The user should compute the matrix whose columns are the products
+!        H_i(x)v between the HessianH_i(x) of the ith residual function at
+!        the point x indicated in nlp%X a given vector v held in data%V.
+!        The nonzeros for column i must be stored in nlp%P%val(l), for
+!        l = nlp%P%ptr(i), ...,  nlp%P%ptr(i+1) for each i = 1,...,m,
+!        in the same order as the row indices were assigned on input in
+!        nlp%P%row(l). If the user is unable to evaluate the products -
+!        for instance, if a component of H_i(x) is undefined at x - the
+!        user need not assign nlp%P%val, but should then set
+!        data%eval_status to a non-zero value.
 !
 !  alloc_status is a scalar variable of type default integer, that gives
 !   the status of the last attempted array allocation or deallocation.
@@ -1117,8 +1132,8 @@
        GO TO 130
      CASE ( 140 ) ! Hessian evaluation
        GO TO 140
-!    CASE ( 320 ) ! objective and constraint evaluation
-!      GO TO 320
+     CASE ( 200 ) ! various evaluations
+       GO TO 200
      END SELECT
 
 !  =================
@@ -1212,19 +1227,17 @@
 !                            SET UP THE PROBLEM
 ! -----------------------------------------------------------------------------
 
+     nlp%P%ne = nlp%P%ptr( nlp%m + 1 ) - 1
+
 !  project x to ensure feasibility
 
      nlp%X = MAX( nlp%X_l, MIN( nlp%X, nlp%X_u ) )
 
 !  set up static data for the least-squares target objective
 
-     CALL COLT_setup_problem( nlp, data%nls, control, inform, data%n_slacks,   &
-                              data%SLACKS, h_available = .TRUE.,               &
-                              p_available = .TRUE. )
-
-     IF (  data%reverse_hocprods ) &
-write(6,*) ' p%ptr', nlp%P%ptr( : nlp%m + 1 )
-     nlp%P%ne = nlp%P%ptr( nlp%m + 1 ) - 1
+     CALL COLT_setup_problem( nlp, data%nls, data%control, inform,             &
+                              data%n_slacks, data%SLACKS,                      &
+                              h_available = .TRUE., p_available = .TRUE. )
 
 !  evaluate the objective and general constraint function values
 
@@ -1248,7 +1261,7 @@ write(6,*) ' p%ptr', nlp%P%ptr( : nlp%m + 1 )
 
      IF ( data%printi ) WRITE( data%out,                                       &
          "( A, ' +', 76( '-' ), '+', /,                                        &
-      &     A, 18X, 'Target Least-Squares Nonlinear Programming', /,           &
+      &     A, 14X, 'Constrained Optimization via Least-squares Targets', /,   &
       &     A, ' +', 76( '-' ), '+' )" ) prefix, prefix, prefix
 
 !  determine the number of nonzeros in the Hessian
@@ -1302,7 +1315,6 @@ write(6,*) ' p%ptr', nlp%P%ptr( : nlp%m + 1 )
 !  set initial values
 
      data%accepted = .TRUE.
-     inform%target = zero
      data%s_norm = zero
      y0 = one
 
@@ -1321,7 +1333,13 @@ write(6,*) ' p%ptr', nlp%P%ptr( : nlp%m + 1 )
 
 !  set up initial target
 
-     inform%target = zero
+     inform%target = zero   !!! fix this
+     inform%target = 0.25_rp_  !!! fix this
+     data%target_bounded = .FALSE.
+     data%target_upper = inform%target
+     data%target_lower = - infinity
+     data%converged = .FALSE.
+     nlp%X = (/ -1.99_rp_, 0.0_rp_ /) 
 
 !  ----------------------------------------------------------------------------
 !                           START OF MAIN LOOP
@@ -1493,23 +1511,23 @@ write(6,*) ' p%ptr', nlp%P%ptr( : nlp%m + 1 )
 
 !  compute the Hessian
 
-       inform%h_eval = inform%h_eval + 1
-       IF ( data%accepted ) THEN
-!        data%WORK_m( : nlp%m ) = nlp%Y( : nlp%m )  ! temporary copy
-         IF ( data%control%scale_constraints > 0 )                             &
-           nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
+!       inform%h_eval = inform%h_eval + 1
+!       IF ( data%accepted ) THEN
+!!        data%WORK_m( : nlp%m ) = nlp%Y( : nlp%m )  ! temporary copy
+!         IF ( data%control%scale_constraints > 0 )                            &
+!           nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
 
-         IF ( data%reverse_hj ) THEN
-            data%branch = 140 ; inform%status = 4 ; RETURN
-         ELSE
-            CALL eval_HJ( data%eval_status, nlp%X, y0, nlp%Y, userdata,        &
-                          nlp%H%val )
-            IF ( data%eval_status /= 0 ) THEN
-              inform%bad_eval = 'eval_HJ'
-              inform%status = GALAHAD_error_evaluation ; GO TO 900
-            END IF
-         END IF
-       END IF
+!         IF ( data%reverse_hj ) THEN
+!            data%branch = 140 ; inform%status = 4 ; RETURN
+!         ELSE
+!            CALL eval_HJ( data%eval_status, nlp%X, y0, nlp%Y, userdata,       &
+!                          nlp%H%val )
+!            IF ( data%eval_status /= 0 ) THEN
+!              inform%bad_eval = 'eval_HJ'
+!              inform%status = GALAHAD_error_evaluation ; GO TO 900
+!            END IF
+!         END IF
+!       END IF
 
 !  return from reverse communication to obtain the Hessian of the Lagrangian
 
@@ -1519,93 +1537,105 @@ write(6,*) ' p%ptr', nlp%P%ptr( : nlp%m + 1 )
 !  All function evlautions are for the vector of residuals (c(x),f(x)-t)
 
        inform%NLS_inform%status = 1
-
-data%nls%X( : data%nls%n ) = nlp%X
+       data%nls%X( : data%nls%n ) = nlp%X
+write(6,*) ' x ', nlp%X
+       data%control%NLS_control%jacobian_available = 2
+       data%control%NLS_control%subproblem_control%jacobian_available = 2
+       data%control%NLS_control%hessian_available = 2
 
 !      DO        ! loop to solve problem
    200 CONTINUE  ! mock loop to solve problem
 
 !  call the least-squares solver
 
-
-if (.false.) &
-         CALL NLS_solve( data%nls, control%NLS_control, inform%NLS_inform,     &
-                         data%NLS_data, data%NLS_userdata )
-!                        data%NLS_data, data%NLS_userdata, W = W )
+         CALL NLS_solve( data%nls, data%control%NLS_control,                   &
+                         inform%NLS_inform, data%NLS_data, data%NLS_userdata )
 
 !  respond to requests for further details
 
-inform%NLS_inform%status = 7
          SELECT CASE ( inform%NLS_inform%status )
 
 !  obtain the residuals
 
          CASE ( 2 )
-           CALL eval_FC( data%eval_status, data%nls%X, userdata, nlp%f, nlp%C )
-           data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
-           data%nls%C( data%nls%m ) = nlp%f - inform%target
-           IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )      &
-             data%nls%C( : data%nls%m )
+           IF ( data%reverse_fc ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 2 ; RETURN
+           ELSE
+             CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
+                           nlp%f, nlp%C )
+             data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
+             data%nls%C( data%nls%m ) = nlp%f - inform%target
+             IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )    &
+               data%nls%C( : data%nls%m )
+           END IF
 
 !  obtain the Jacobian
 
          CASE ( 3 )
-           CALL eval_GJ( data%eval_status, data%nls%X, userdata,               &
-                         nlp%Go%val, nlp%J%val )   
-
-           SELECT CASE ( SMT_get( data%nls%J%type ) )
-           CASE ( 'DENSE' )
-             j_ne = 0 ; l = 0
-             DO i = 1, nlp%m  ! from each row of J(x) in turn
-               data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                       &
-                 = nlp%J%val( l + 1 : l + nlp%n )
-               j_ne = j_ne + data%nls%n ; l = l + nlp%n
-             END DO
-             IF ( nlp%Go%sparse ) THEN ! from g(x)
-               DO i = 1, nlp%Go%ne 
-                 data%nls%J%val( j_ne + nlp%Go%ind( i ) ) = nlp%Go%val( i )
+           IF ( data%reverse_gj ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 3 ; RETURN
+           ELSE
+             CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
+                           nlp%Go%val, nlp%J%val )   
+             SELECT CASE ( SMT_get( data%nls%J%type ) )
+             CASE ( 'DENSE' )
+               j_ne = 0 ; l = 0
+               DO i = 1, nlp%m  ! from each row of J(x) in turn
+                 data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                     &
+                   = nlp%J%val( l + 1 : l + nlp%n )
+                 j_ne = j_ne + data%nls%n ; l = l + nlp%n
                END DO
-             ELSE
-               data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                       &
-                 = nlp%Go%val( 1 : nlp%n )
-             END IF
-           CASE ( 'SPARSE_BY_ROWS' )
-             DO i = 1, nlp%m  ! from each row of J(x) in turn
-               j_ne = data%nls%J%ptr( i ) - 1
-               DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+               IF ( nlp%Go%sparse ) THEN ! from g(x)
+                 DO i = 1, nlp%Go%ne 
+                   data%nls%J%val( j_ne + nlp%Go%ind( i ) ) = nlp%Go%val( i )
+                 END DO
+               ELSE
+                 data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                     &
+                   = nlp%Go%val( 1 : nlp%n )
+               END IF
+             CASE ( 'SPARSE_BY_ROWS' )
+               DO i = 1, nlp%m  ! from each row of J(x) in turn
+                 j_ne = data%nls%J%ptr( i ) - 1
+                 DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+                   j_ne = j_ne + 1
+                   data%nls%J%val( j_ne ) = nlp%J%val( l )
+                 END DO
+               END DO
+               j_ne = data%nls%J%ptr( data%nls%m ) - 1
+               DO j = 1, nlp%Go%ne
                  j_ne = j_ne + 1
-                 data%nls%J%val( j_ne ) = nlp%J%val( l )
+                 data%nls%J%val( j_ne ) = nlp%Go%val( j )
                END DO
-             END DO
-             j_ne = data%nls%J%ptr( data%nls%m ) - 1
-             DO j = 1, nlp%Go%ne
-               j_ne = j_ne + 1
-               data%nls%J%val( j_ne ) = nlp%Go%val( j )
-             END DO
-           CASE ( 'COORDINATE' )
-             data%nls%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne ) ! from J(x)
-             j_ne = nlp%J%ne + data%n_slacks
-             DO j = 1, nlp%Go%ne
-               j_ne = j_ne + 1
-               data%nls%J%val( j_ne ) = nlp%Go%val( j )
-             END DO
-             IF ( print_debug ) WRITE(6,"( ' nls%J', / ( 3( 2I6, ES12.4 )))" ) &
-              ( data%nls%J%row( i ), data%nls%J%col( i ),                      &
-                data%nls%J%val( i ), i = 1, data%nls%J%ne )
-           END SELECT
+             CASE ( 'COORDINATE' )
+               data%nls%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne ) ! from J
+               j_ne = nlp%J%ne + data%n_slacks
+               DO j = 1, nlp%Go%ne
+                 j_ne = j_ne + 1
+                 data%nls%J%val( j_ne ) = nlp%Go%val( j )
+               END DO
+               IF ( print_debug ) WRITE(6,"( ' nls%J', / ( 3( 2I6, ES12.4 )))")&
+                ( data%nls%J%row( i ), data%nls%J%col( i ),                    &
+                  data%nls%J%val( i ), i = 1, data%nls%J%ne )
+             END SELECT
+           END IF
 
 !  obtain the Hessian
 
          CASE ( 4 )
-           ALLOCATE(  data%NLS_data%Y( data%nls%m ) )
-             data%NLS_data%Y( : data%nls%m ) = one
-           CALL eval_HJ( data%eval_status, data%nls%X,                         &
-                         data%NLS_data%Y( data%nls%m ),                        &
-                         data%NLS_data%Y( 1 : nlp%m ),                         &
-                         userdata, data%nls%H%val )
-           IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 ) ) )" ) &
-            ( data%nls%H%row( i ), data%nls%H%col( i ),                        &
-              data%nls%H%val( i ), i = 1, data%nls%H%ne )
+           IF ( data%reverse_hj ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 4 ; RETURN
+           ELSE
+             CALL eval_HJ( data%eval_status, data%nls%X,                       &
+                           data%NLS_data%Y( data%nls%m ),                      &
+                           data%NLS_data%Y( 1 : nlp%m ),                       &
+                           userdata, data%nls%H%val )
+             IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" ) &
+              ( data%nls%H%row( i ), data%nls%H%col( i ),                      &
+                data%nls%H%val( i ), i = 1, data%nls%H%ne )
+           END IF
 
 !  form a Jacobian-vector product
 
@@ -1627,20 +1657,23 @@ inform%NLS_inform%status = 7
 !  form residual Hessian-vector products
 
          CASE ( 7 )
-           ALLOCATE(  data%NLS_data%V( data%nls%n ) )
-             data%NLS_data%V( : data%nls%n ) = one
-write(6,*) nlp%P%ne, data%nls%P%ne
-           CALL eval_HOCPRODS( data%eval_status, data%nls%X, data%nls_data%V,  &
-                               userdata,                                       &
-                               data%nls%P%val( nlp%P%ne + 1 : data%nls%P%ne ), &
-                               data%nls%P%val( 1 : nlp%P%ne ) )
-           IF ( print_debug ) THEN
-             WRITE(6,"( ' nls%P' )" )
-             DO j = 1, data%nls%n
-               WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
-                 j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
-                      data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
-             END DO
+           IF ( data%reverse_hocprods ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 7 ; RETURN
+           ELSE
+             CALL eval_HOCPRODS( data%eval_status, data%nls%X,                 &
+                                 data%nls_data%V, userdata,                    &
+                                 data%nls%P%val( nlp%P%ne + 1 :                &
+                                                 data%nls%P%ne ),              &
+                                 data%nls%P%val( 1 : nlp%P%ne ) )
+             IF ( print_debug ) THEN
+               WRITE(6,"( ' nls%P' )" )
+               DO j = 1, data%nls%n
+                 WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
+                   j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
+                        data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
+               END DO
+             END IF
            END IF
 
 !  apply the preconditioner
@@ -1654,19 +1687,54 @@ write(6,*) nlp%P%ne, data%nls%P%ne
 !  terminal exit from loop
 
          CASE DEFAULT
+           nlp%X = data%nls%X( : data%nls%n )
            GO TO 290
          END SELECT
-write(6,*) ' forcing stop'
-stop
          GO TO 200
 !      END DO ! end of loop to solve target problem
 
    290  CONTINUE
 
+        WRITE( 6, "( /, ' f, ||c|| = ', 2ES13.5, / )" ) nlp%f,                 &
+          TWO_norm( nlp%C( : nlp%m ) )
+
+!  adjust the target
+
+       IF ( TWO_norm( nlp%C( : nlp%m ) ) <= ten ** ( - 5 ) ) THEN
+         IF ( data%target_bounded ) THEN
+            data%target_upper = inform%target
+            IF ( data%target_upper - data%target_lower < ten ** ( - 5 ) ) THEN
+              data%converged = .TRUE.
+            ELSE
+              inform%target = half * ( data%target_upper + data%target_lower )
+            END IF
+         ELSE
+           inform%target = inform%target - one
+         END IF
+       ELSE
+         data%target_lower = inform%target
+         data%target_bounded = .TRUE.
+!        IF ( data%target_upper - data%target_lower < ten ** ( - 5 ) ) THEN
+         IF ( data%target_upper - data%target_lower < ten ** ( - 8 ) ) THEN
+           data%converged = .TRUE.
+         ELSE
+!           inform%target = half * ( data%target_upper + data%target_lower )
+
+inform%target = inform%target + 0.01_rp_
+
+         END IF
 
 
+       END IF           
 
+write(6,*) ' x ', nlp%X
 
+       WRITE( 6, "( ' lower, target, upper = ', 3ES13.5 )" )                   &
+         data%target_lower, inform%target, data%target_upper
+       IF ( data%converged ) THEN
+         write(6,*) ' forcing stop'
+         stop
+       END IF
 
 !  set print agenda for the next iteration
 
@@ -1892,10 +1960,10 @@ stop
 
 !  non-executable statements
 
- 2000 FORMAT( /, A, ' iter       obj fun  pr_feas du_feas cmp_slk actve ',     &
-                    '  step  #fil   sigma    time' )
- 2010 FORMAT( A, I5, ES12.4, 3ES8.1, ES8.1, ES8.1, F8.1 )
- 2020 FORMAT( A, I5, ES12.4, 3ES8.1, '    -   ', ES8.1, F8.1 )
+ 2000 FORMAT( /, A, ' iter    obj fun  pr_feas du_feas cmp_slk ',              &
+                    '  step    target    time' )
+ 2010 FORMAT( A, I5, ES12.4, 3ES8.1, ES8.1, ES9.1, F8.1 )
+ 2020 FORMAT( A, I5, ES12.4, 3ES8.1, '     -  ', ES9.1, F8.1 )
  2030 FORMAT( A, I7, 1X, A10, 4ES12.4 )
  2040 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2050 FORMAT( A, I7, 4ES12.4 )

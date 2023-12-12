@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ R Q S  -*-*-*-*-*-*-*-*-*-*-
 
@@ -154,17 +155,17 @@
 
 !  Read the initial point and bounds
 
-     CALL CUTEST_udimen( cutest_status, input, n )
+     CALL CUTEST_udimen_r( cutest_status, input, n )
      IF ( cutest_status /= 0 ) GO TO 910
      ALLOCATE( X( n ), X0( n ), X_l( n ), X_u( n ), G( n ), VNAMES( n ) )
-     CALL CUTEST_usetup( cutest_status, input, control%error, io_buffer,       &
-                         n, X0, X_l, X_u )
+     CALL CUTEST_usetup_r( cutest_status, input, control%error, io_buffer,     &
+                           n, X0, X_l, X_u )
      IF ( cutest_status /= 0 ) GO TO 910
      DEALLOCATE( X_l, X_u )
 
 !  Read the problem and variable names
 
-     CALL CUTEST_unames( cutest_status, n, pname, VNAMES )
+     CALL CUTEST_unames_r( cutest_status, n, pname, VNAMES )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Set f to zero
@@ -173,7 +174,7 @@
 
 !  Evaluate the gradient
 
-     CALL CUTEST_ugr( cutest_status, n, X0, G )
+     CALL CUTEST_ugr_r( cutest_status, n, X0, G )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Use RQS
@@ -182,12 +183,12 @@
 
 !  Evaluate the Hessian
 
-     CALL CUTEST_udimsh( cutest_status, nnzh )
+     CALL CUTEST_udimsh_r( cutest_status, nnzh )
      IF ( cutest_status /= 0 ) GO TO 910
      H%ne = nnzh
      CALL SMT_put( H%type, 'COORDINATE', smt_stat )
      ALLOCATE( H%row( nnzh ), H%col( nnzh ), H%val( nnzh ) )
-     CALL CUTEST_ush( cutest_status, n, X0, H%ne, nnzh, H%val, H%row, H%col )
+     CALL CUTEST_ush_r( cutest_status, n, X0, H%ne, nnzh, H%val, H%row, H%col )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  If required, open a file for the results
@@ -296,7 +297,7 @@
      CALL RQS_terminate( data, control, inform )
      DEALLOCATE( H%val, H%row, H%col )
 
-     CALL CUTEST_cterminate( cutest_status )
+     CALL CUTEST_cterminate_r( cutest_status )
      DEALLOCATE( X, X0, G, VNAMES )
 
      RETURN

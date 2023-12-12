@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-  G A L A H A D -  T R T N   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -586,7 +587,7 @@
 !  Record the problem name
 
      ALLOCATE( data%X_name( n ) )
-     CALL CUTEST_unames( cutest_status, n, inform%pname, data%X_name )
+     CALL CUTEST_unames_r( cutest_status, n, inform%pname, data%X_name )
 
 !  See if the problem is unconstrained or bound constrained
 
@@ -620,13 +621,13 @@
 
 !  Evaluate the objective function value
    
-     CALL CUTEST_ufn( cutest_status, n, X, inform%obj )
+     CALL CUTEST_ufn_r( cutest_status, n, X, inform%obj )
      inform%f_eval = inform%f_eval + 1
 
 !  Allocate space to store the gradient and Hessian
 
      ALLOCATE( data%G( n ) )
-     CALL CUTEST_udimsh( cutest_status, nnzh )
+     CALL CUTEST_udimsh_r( cutest_status, nnzh )
      ALLOCATE( data%H%row( nnzh ), data%H%col( nnzh ), data%H%val( nnzh ) )
 
 !  Allocate space to store workspace
@@ -684,7 +685,7 @@ main:DO
 
 !  Evaluate the gradient
 
-       CALL CUTEST_ugr( cutest_status, n, X, data%G )     
+       CALL CUTEST_ugr_r( cutest_status, n, X, data%G )     
        inform%g_eval = inform%g_eval + 1
 
 !  Compute the derivatives of the transformation wrt the transformed variables
@@ -732,8 +733,8 @@ main:DO
 !  Evaluate the Hessian
 
        IF ( precon > 1 ) THEN
-         CALL CUTEST_ush( cutest_status, n, X, data%H%ne, nnzh,                &
-                          data%H%val, data%H%row, data%H%col )
+         CALL CUTEST_ush_r( cutest_status, n, X, data%H%ne, nnzh,              &
+                            data%H%val, data%H%row, data%H%col )
          goth = .TRUE.         
 
 !  Analyse the preconditioner
@@ -1043,13 +1044,13 @@ main:DO
 
            IF ( xney ) THEN
              data%RES =  data%VECTOR * data%X_grad        
-             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%RES,          &
-                                 data%SOL )
+             CALL CUTEST_uhprod_r( cutest_status, n, goth, X, data%RES,        &
+                                   data%SOL )
              data%SOL                                                          &
                = data%SOL * data%X_grad + data%G * data%X_hess * data%VECTOR
            ELSE
-             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%VECTOR,       &
-                                 data%SOL )
+             CALL CUTEST_uhprod_r( cutest_status, n, goth, X, data%VECTOR,     &
+                                   data%SOL )
            END IF
            goth = .TRUE.         
 
@@ -1128,7 +1129,7 @@ main:DO
 
 !  Evaluate the objective function value
    
-       CALL CUTEST_ufn( cutest_status, n, data%X_trial, f_trial )
+       CALL CUTEST_ufn_r( cutest_status, n, data%X_trial, f_trial )
        inform%f_eval = inform%f_eval + 1
 
 !  Compute the actual and predicted reduction

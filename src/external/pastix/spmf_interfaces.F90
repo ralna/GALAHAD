@@ -86,7 +86,11 @@
    INTERFACE spmCheckAxb
      SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,  &
                                  ldx, info )
-       USE GALAHAD_KINDS, ONLY : ipc_, spc_, dpc_
+#ifdef GALAHAD_SINGLE
+       USE GALAHAD_KINDS, ONLY : ipc_, spc_
+#else
+       USE GALAHAD_KINDS, ONLY : ipc_, dpc_
+#endif
        USE spmf_enums, ONLY : spmatrix_t, spm_int_t
        IMPLICIT NONE
 #ifdef GALAHAD_SINGLE

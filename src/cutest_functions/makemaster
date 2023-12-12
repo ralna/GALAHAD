@@ -78,9 +78,11 @@ $(package).o: $(CULG)($(package).o)
 $(CULG)($(package).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).F90 \
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) \
+                -I $(CUTEST)/include $(package).F90 \
               || ( printf ' %-26s' "=> Disabling optimization " ; \
-              $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
+              $(FORTRAN) -o $(package).o $(FFLAGSN) \
+                -I $(CUTEST)/include $(package).F90 )
 	cd $(OBJ); $(CUARR) $(package).o ; $(RM) $(package).F90 $(package).o
 	$(RMARFILES) $(DEPENDS)
 	@printf '[ OK ]\n'

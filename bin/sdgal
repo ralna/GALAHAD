@@ -146,7 +146,7 @@ do
     exit 0
   elif [[ "$opt" == '-s' ]]; then
     PRECISION=0
-    METHARG="$METHARG -s"
+    METHARG="$METHARG -sp"
   elif [[ "$opt" == '-u' ]]; then
     UPDATE=1
   elif [[ "$opt" == '-c' ]]; then
@@ -180,6 +180,8 @@ do
   fi
   (( i++ ))
 done
+
+echo $METHARG
 
 # call with two argument allows user to choose minimization method
 

@@ -1415,13 +1415,13 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
    integer(ip_), intent(in) :: m ! number of rows in matrix
    integer(ip_), intent(in) :: n ! number of columns in matrix
    integer(ip_), intent(in) :: ne ! number of input nonzero entries
-   integer(ip_), dimension(:), intent(in) :: row(ne) ! row indices on input.
+   integer(ip_), dimension(ne), intent(in) :: row ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(ip_), dimension(:), intent(in) :: col(ne) ! column indices on input.
+   integer(ip_), dimension(ne), intent(in) :: col ! column indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(ip_), dimension(:), intent(out) :: ptr_out(n+1) ! col ptr output
+   integer(ip_), dimension(n+1), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row 
       ! indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -1965,13 +1965,13 @@ subroutine convert_coord_to_cscl_ptr64_precision(matrix_type, m, n, ne, row,   &
    integer(ip_), intent(in) :: m ! number of rows in matrix
    integer(ip_), intent(in) :: n ! number of columns in matrix
    integer(long_), intent(in) :: ne ! number of input nonzero entries
-   integer(ip_), dimension(:), intent(in) :: row(ne) ! row indices on input.
+   integer(ip_), dimension(ne), intent(in) :: row ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(ip_), dimension(:), intent(in) :: col(ne) ! column indices on input.
+   integer(ip_), dimension(ne), intent(in) :: col ! column indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(long_), dimension(:), intent(out) :: ptr_out(n+1) ! col ptr output
+   integer(long_), dimension(n+1), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row
       !  indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.

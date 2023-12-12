@@ -34,4 +34,10 @@ INCLUDE COLT
 
 INCLUDE NLS
 
+INCLUDE NLS NLS-INNER
+REPLACE
+! model-used                                        3
+! maximum-number-of-iterations                      50
+! print-objective                                   yes
+
 INCLUDE SLS

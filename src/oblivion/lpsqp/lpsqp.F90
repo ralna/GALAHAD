@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-  G A L A H A D -  L P S Q P  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -667,7 +668,7 @@
 
 !  Discover how many variables and constraints are involved in the problem
 
-     CALL CUTEST_cdimen( cutest_status, input, n, m )
+     CALL CUTEST_cdimen_r( cutest_status, input, n, m )
      IF ( cutest_status /= 0 ) GO TO 930
      prob_m = m + 1
 
@@ -710,9 +711,9 @@
 
 !  Set up the correct data structures for subsequent computations.
 
-     CALL CUTEST_csetup( cutest_status, input, control%error, io_buffer,       &
-                         data%prob%n, data%prob%m, X, X_l, X_u,                &
-                         Y, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
+     CALL CUTEST_csetup_r( cutest_status, input, control%error, io_buffer,     &
+                           data%prob%n, data%prob%m, X, X_l, X_u,              &
+                           Y, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
      IF ( cutest_status /= 0 ) GO TO 930
 
      Y( prob_m ) = zero
@@ -732,14 +733,14 @@
 !  gradients of the objective function and constraints, when the matrix 
 !  is stored in sparse format.
 
-     CALL CUTEST_cdimsj( cutest_status, J_ne )
+     CALL CUTEST_cdimsj_r( cutest_status, J_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
 !  Lagrangian, when the matrix is stored as  sparse matrix in "co-ordinate" 
 !  format
  
-     CALL CUTEST_cdimsh( cutest_status, H_ne )
+     CALL CUTEST_cdimsh_r( cutest_status, H_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Allocate further space to hold the problem
@@ -793,15 +794,15 @@
 
 !  Obtain the names of the problem, its variables and general constraints
 
-     CALL CUTEST_cnames( cutest_status, data%prob%n, m, pname, X_name,         &
-                         C_name( : m ) )
+     CALL CUTEST_cnames_r( cutest_status, data%prob%n, m, pname, X_name,       &
+                           C_name( : m ) )
      IF ( cutest_status /= 0 ) GO TO 930
      C_name( prob_m ) = 'slope'
      C( prob_m ) = zero
 
 !  Evaluate the objective and general constraint function values
    
-     CALL CUTEST_cfn( cutest_status, data%prob%n, m, X, data%prob%f, C( : m ) )
+     CALL CUTEST_cfn_r( cutest_status, data%prob%n, m, X, data%prob%f, C( : m ))
      IF ( cutest_status /= 0 ) GO TO 930
 
 !    write(out,"( 'x', /, (5ES12.4 ))" ) X
@@ -927,11 +928,11 @@
 !  the Lagrangian function. The data is stored in a sparse format.
 
          grlagf = .FALSE. ; J_len = J_ne ; H_len = H_ne
-         CALL CUTEST_csgrsh( cutest_status, data%prob%n, m, X, - Y( : m ),     &
-                             grlagf, J_ne, J_len, data%prob%A%val,             &
-                             data%prob%A%col, data%prob%A%row, data%prob%H%ne, &
-                             H_len, data%prob%H%val, data%prob%H%row,          &
-                             data%prob%H%col )
+         CALL CUTEST_csgrsh_r( cutest_status, data%prob%n, m, X, - Y( : m ),   &
+                               grlagf, J_ne, J_len, data%prob%A%val,           &
+                               data%prob%A%col, data%prob%A%row,               &
+                               data%prob%H%ne, H_len, data%prob%H%val,         &
+                               data%prob%H%row, data%prob%H%col )
          IF ( cutest_status /= 0 ) GO TO 930
 
 !  Untangle A: separate the gradient terms from the constraint Jacobian
@@ -1144,8 +1145,8 @@
 
 !  Compute the new function and gradient values
 
-       CALL CUTEST_cfn( cutest_status, data%prob%n, m, X_trial, f_trial,       &
-                        C_trial( : m ) )
+       CALL CUTEST_cfn_r( cutest_status, data%prob%n, m, X_trial, f_trial,     &
+                          C_trial( : m ) )
        IF ( cutest_status /= 0 ) GO TO 930
 !      write(out,"( ' f_trial ', /, ES16.8 )" ) f_trial
 !      write(out,"( ' c_trial ', /, ( 4ES16.8 ) )" ) C_trial( : m )

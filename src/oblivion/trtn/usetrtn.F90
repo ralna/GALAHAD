@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E T R T N  -*-*-*-*-*-*-*-*-*-*-
 
@@ -181,11 +182,11 @@
 
 !  Read the initial point and bounds
 
-     CALL CUTEST_udimen( cutest_status, input, n )
+     CALL CUTEST_udimen_r( cutest_status, input, n )
      IF ( cutest_status /= 0 ) GO TO 910
      ALLOCATE( X( n ), X_l( n ), X_u( n ) )
-     CALL CUTEST_usetup( cutest_status, input, control%error, io_buffer,       &
-                         n, X, X_l, X_u )
+     CALL CUTEST_usetup_r( cutest_status, input, control%error, io_buffer,     &
+                           n, X, X_l, X_u )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Solve the problem
@@ -203,7 +204,7 @@
 !  Close any opened files
 
      IF ( is_specfile ) CLOSE( input_specfile )
-     CALL CUTEST_uterminate( cutest_status )
+     CALL CUTEST_uterminate_r( cutest_status )
      STOP
 
  910 CONTINUE

@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ U G O  -*-*-*-*-*-*-*-*-*-*-
 
@@ -215,12 +216,12 @@
 
        IF ( inform%status >= 2 ) THEN
          nlp%X = x * S
-         CALL CUTEST_ufn( status, nlp%n, nlp%X, f )
+         CALL CUTEST_ufn_r( status, nlp%n, nlp%X, f )
          IF ( inform%status >= 3 ) THEN
-           CALL CUTEST_ugr( status, nlp%n, nlp%X, V )
+           CALL CUTEST_ugr_r( status, nlp%n, nlp%X, V )
            g = DOT_PRODUCT( S, V )
            IF ( inform%status >= 4 ) THEN
-             CALL CUTEST_uhprod( status, nlp%n, .FALSE., nlp%X, S, V )
+             CALL CUTEST_uhprod_r( status, nlp%n, .FALSE., nlp%X, S, V )
              h = DOT_PRODUCT( S, V )
            END IF
          END IF

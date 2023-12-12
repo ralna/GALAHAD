@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -748,13 +748,13 @@
             DO i = 1, nnzh
               IF ( H_row( i ) > n ) THEN
                 WRITE( out,                                                    &
-                  "( ' Entry out of bounds in CUTEST_assemble_hessian',        &
+                  "( ' Entry out of bounds in assemble_hessian',               &
                  &   ' row number = ', I0 )" ) H_row( i )
 !               STOP
               END IF
               IF ( H_col( i ) > n ) THEN
                 WRITE( out,                                                    &
-                  "( ' Entry out of bounds in CUTEST_assemble_hessian',        &
+                  "( ' Entry out of bounds in assemble_hessian',               &
                  &   ' col number = ', I0 )" ) H_col( i )
 !               STOP
               END IF

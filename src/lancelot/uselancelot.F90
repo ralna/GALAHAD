@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-08-18 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 16:10 GMT.
 
 #include "galahad_modules.h"
+#include "galahad_elgrra.h"
 
 !-*-*-*-*-*-*-*-*-  L A N C E L O T  - B - U S E L A N C E L O T  -*-*-*-*-*-*-
 
@@ -200,10 +201,10 @@
 
      INTERFACE
 
-!  Interface block for RANGE
+!  Interface block for RANGE_r
 
-       SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
-                          lw1, lw2 )
+       SUBROUTINE RANGE_r ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,    &
+                            lw1, lw2 )
        USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
@@ -211,14 +212,14 @@
        REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
 !      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
        REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
-       END SUBROUTINE RANGE
+       END SUBROUTINE RANGE_r
 
-!  Interface block for ELFUN
+!  Interface block for ELFUN_r
 
-       SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
-                          IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
-                          lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,      &
-                          lfuval, lxvalu, lepvlu, ifflag, ifstat )
+       SUBROUTINE ELFUN_r ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,    &
+                            IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,    &
+                            lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,    &
+                            lfuval, lxvalu, lepvlu, ifflag, ifstat )
        USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
@@ -231,13 +232,13 @@
        REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN
+       END SUBROUTINE ELFUN_r
 
-!  Interface block for GROUP
+!  Interface block for GROUP_r
 
-       SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
-                          ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
-                          lcalcg, lfvalu, lgpvlu, derivs, igstat )
+       SUBROUTINE GROUP_r ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,            &
+                            ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,            &
+                            lcalcg, lfvalu, lgpvlu, derivs, igstat )
        USE GALAHAD_KINDS_precision
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
@@ -249,7 +250,7 @@
        REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
        REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
        REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
-       END SUBROUTINE GROUP
+       END SUBROUTINE GROUP_r
 
      END INTERFACE
 
@@ -871,47 +872,49 @@
              prob, ICALCF, inform%ncalcf, XT, FUVALS, lfuval, IELVAR_temp,     &
              X_temp, nelmax, ninmax, epsmch, second, ITEST,                    &
              control%print_level, out,                                         &
-             RANGE , inform%status, DRCHE_S, ELFUN  = ELFUN  )
+             RANGE_r, inform%status, DRCHE_S, ELFUN  = ELFUN_r  )
        ELSE
          CALL DRCHE_check_element_derivatives(                                 &
              prob, ICALCF, inform%ncalcf, XT, FUVALS, lfuval, IELVAR_temp,     &
              X_temp, nelmax, ninmax, epsmch, second, ITEST,                    &
              control%print_level, out,                                         &
-             RANGE , inform%status, DRCHE_S )
+             RANGE_r, inform%status, DRCHE_S )
        END IF
 
 !  compute group values and derivatives as required
 
        IF ( inform%status == - 1 ) THEN
-         CALL ELFUN ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,     &
-                      prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,      &
-                      prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,             &
-                      prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,           &
-                      prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,    &
-                      prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+         CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
+                        prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,    &
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
+                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
+                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
+                        prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
          j = 2
          IF ( second ) j = 3
-         CALL ELFUN ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,     &
-                      prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,      &
-                      prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,             &
-                      prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,           &
-                      prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,    &
-                      prob%ISTEPA( prob%nel + 1 ) - 1, j, i )
+         CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
+                        prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,    &
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
+                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
+                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
+                        prob%ISTEPA( prob%nel + 1 ) - 1, j, i )
        END IF
        IF ( inform%status == - 2 )                                             &
-         CALL ELFUN ( FUVALS, X_temp, prob%EPVALU, inform%ncalcf, prob%ITYPEE, &
-                      prob%ISTAEV, IELVAR_temp, prob%INTVAR, prob%ISTADH,      &
-                      prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,             &
-                      prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,           &
-                      prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,    &
-                      prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+         CALL ELFUN_r ( FUVALS, X_temp, prob%EPVALU,                           &
+                        inform%ncalcf, prob%ITYPEE,                            &
+                        prob%ISTAEV, IELVAR_temp, prob%INTVAR, prob%ISTADH,    &
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
+                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
+                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
+                        prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
        IF ( inform%status == - 3 )                                             &
-         CALL ELFUN ( FUVALS, X_temp, prob%EPVALU, inform%ncalcf, prob%ITYPEE, &
-                      prob%ISTAEV, IELVAR_temp, prob%INTVAR, prob%ISTADH,      &
-                      prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,             &
-                      prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,           &
-                      prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,    &
-                      prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
+         CALL ELFUN_r ( FUVALS, X_temp, prob%EPVALU,                           &
+                       inform%ncalcf, prob%ITYPEE,                             &
+                        prob%ISTAEV, IELVAR_temp, prob%INTVAR, prob%ISTADH,    &
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
+                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
+                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
+                        prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
        IF ( inform%status < 0 ) GO TO 100
 
        DEALLOCATE( ITEST, IELVAR_temp, X_temp )
@@ -982,11 +985,11 @@
        IF ( iauto == 0 .OR. iauto == - 3 ) THEN
          CALL DRCHG_check_group_derivatives(                                   &
              prob, FT, GVALS, ITEST, inform%ncalcg, epsmch,                    &
-             control%print_level, out, inform%status, DRCHG_S, GROUP = GROUP )
+             control%print_level, out, inform%status, DRCHG_S, GROUP = GROUP_r )
        ELSE IF ( iauto == 1 .OR. iauto == 2 ) THEN
          CALL DRCHG_check_group_derivatives(                                   &
              prob, FT, GVALS, ITEST, inform%ncalcg, epsmch,                    &
-             control%print_level, out, inform%status, DRCHG_S, GROUP = GROUP )
+             control%print_level, out, inform%status, DRCHG_S, GROUP = GROUP_r )
        ELSE
          CALL DRCHG_check_group_derivatives(                                   &
              prob, FT, GVALS, ITEST, inform%ncalcg, epsmch,                    &
@@ -996,15 +999,15 @@
 !  compute group values and derivatives as required
 
        IF ( inform%status == - 1 .OR. inform%status == - 2 )                   &
-         CALL GROUP ( GVALS , prob%ng, FT    , prob%GPVALU,                    &
-                      inform%ncalcg, prob%ITYPEG, prob%ISTGPA, ITEST,          &
-                      prob%ng, prob%ng + 1, prob%ng, prob%ng,                  &
-                      prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., i )
+         CALL GROUP_r ( GVALS , prob%ng, FT    , prob%GPVALU,                  &
+                        inform%ncalcg, prob%ITYPEG, prob%ISTGPA, ITEST,        &
+                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
+                        prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., i )
        IF ( inform%status == - 1 .OR. inform%status == - 3 )                   &
-         CALL GROUP ( GVALS , prob%ng, FT    , prob%GPVALU,                    &
-                      inform%ncalcg, prob%ITYPEG, prob%ISTGPA, ITEST,          &
-                      prob%ng, prob%ng + 1, prob%ng, prob%ng,                  &
-                      prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE. , i )
+         CALL GROUP_r ( GVALS , prob%ng, FT    , prob%GPVALU,                  &
+                        inform%ncalcg, prob%ITYPEG, prob%ISTGPA, ITEST,        &
+                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
+                        prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE. , i )
        IF ( inform%status < 0 ) GO TO 200
        DEALLOCATE( ITEST )
 
@@ -1052,31 +1055,31 @@
 !      print_level_scaling = control%print_level
        IF ( iauto == 0 ) THEN
          CALL SCALN_get_scalings(                                              &
-             prob, RANGE , data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,     &
+             prob, RANGE_r, data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,    &
              lfuval, control%stopg, control%stopc, scaleg, scalev, out,        &
              print_level_scaling, control%io_buffer, fdgrad, inform%status,    &
-             SCALN_S, ELFUN = ELFUN, GROUP = GROUP )
+             SCALN_S, ELFUN = ELFUN_r, GROUP = GROUP_r )
        ELSE IF ( iauto == 1 .OR. iauto == 2 ) THEN
          CALL SCALN_get_scalings(                                              &
-             prob, RANGE , data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,     &
+             prob, RANGE_r, data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,    &
              lfuval, control%stopg, control%stopc, scaleg, scalev, out,        &
              print_level_scaling, control%io_buffer, fdgrad, inform%status,    &
-             SCALN_S, ELFUN = ELFUN, GROUP = GROUP )
+             SCALN_S, ELFUN = ELFUN_r, GROUP = GROUP_r )
        ELSE IF ( iauto == - 2 ) THEN
          CALL SCALN_get_scalings(                                              &
-             prob, RANGE , data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,     &
+             prob, RANGE_r, data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,    &
              lfuval, control%stopg, control%stopc, scaleg, scalev, out,        &
              print_level_scaling, control%io_buffer, fdgrad, inform%status,    &
-             SCALN_S, ELFUN = ELFUN )
+             SCALN_S, ELFUN = ELFUN_r )
        ELSE IF ( iauto == - 3 ) THEN
          CALL SCALN_get_scalings(                                              &
-             prob, RANGE , data, inform%ncalcf, ICALCF, FT, GVALS,  FUVALS,    &
+             prob, RANGE_r, data, inform%ncalcf, ICALCF, FT, GVALS,  FUVALS,   &
              lfuval, control%stopg, control%stopc, scaleg, scalev, out,        &
              print_level_scaling, control%io_buffer, fdgrad, inform%status,    &
-             SCALN_S, GROUP = GROUP )
+             SCALN_S, GROUP = GROUP_r )
        ELSE
          CALL SCALN_get_scalings(                                              &
-             prob, RANGE , data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,     &
+             prob, RANGE_r, data, inform%ncalcf, ICALCF, FT, GVALS, FUVALS,    &
              lfuval, control%stopg, control%stopc, scaleg, scalev, out,        &
              print_level_scaling, control%io_buffer, fdgrad, inform%status,    &
              SCALN_S )
@@ -1090,24 +1093,24 @@
 
 !  Evaluate the element function and derivative value
 
-           CALL ELFUN ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
-               prob%ISTAEV, prob%IELVAR, prob%INTVAR,                          &
-               prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,       &
-               prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                  &
-               prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,           &
-               prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
-           IF ( .NOT. fdgrad ) CALL ELFUN ( FUVALS, XT, prob%EPVALU,           &
-               inform%ncalcf, prob%ITYPEE, prob%ISTAEV, prob%IELVAR,           &
-               prob%INTVAR, prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel,        &
-               prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,    &
-               prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,           &
-               prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
+           CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE, &
+                 prob%ISTAEV, prob%IELVAR, prob%INTVAR,                        &
+                 prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,     &
+                 prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                &
+                 prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,         &
+                 prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+           IF ( .NOT. fdgrad ) CALL ELFUN_r ( FUVALS, XT, prob%EPVALU,         &
+                 inform%ncalcf, prob%ITYPEE, prob%ISTAEV, prob%IELVAR,         &
+                 prob%INTVAR, prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel,      &
+                 prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,  &
+                 prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,         &
+                 prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
          END IF
          IF ( inform%status == - 2 ) THEN
 
 !  Evaluate the group function derivatives
 
-           CALL GROUP ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcf,        &
+           CALL GROUP_r ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcf,      &
                prob%ITYPEG, prob%ISTGPA, ICALCF, prob%ng, prob%ng + 1,         &
                prob%ng, prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., i )
          END IF
@@ -1185,20 +1188,20 @@
 
      IF ( iauto == 0 .OR. iauto == 1 .OR. iauto == 2 ) THEN
        CALL LANCELOT_solve(                                                    &
-           prob, RANGE , GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
-           Q, DGRAD , control, inform, data, ELFUN = ELFUN , GROUP = GROUP )
+          prob, RANGE_r, GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
+          Q, DGRAD , control, inform, data, ELFUN = ELFUN_r , GROUP = GROUP_r )
      ELSE IF ( iauto == - 2 ) THEN
        CALL LANCELOT_solve(                                                    &
-           prob, RANGE , GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
-           Q, DGRAD , control, inform, data, ELFUN = ELFUN )
+          prob, RANGE_r, GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
+          Q, DGRAD , control, inform, data, ELFUN = ELFUN_r )
      ELSE IF ( iauto == - 3 ) THEN
        CALL LANCELOT_solve(                                                    &
-           prob, RANGE , GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
-           Q, DGRAD , control, inform, data, GROUP = GROUP )
+          prob, RANGE_r, GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
+          Q, DGRAD , control, inform, data, GROUP = GROUP_r )
      ELSE
        CALL LANCELOT_solve(                                                    &
-           prob, RANGE , GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
-           Q, DGRAD , control, inform, data )
+          prob, RANGE_r, GVALS , FT, XT, FUVALS, lfuval, ICALCF, ICALCG, IVAR, &
+          Q, DGRAD , control, inform, data )
      END IF
 
      CALL CPU_TIME( t )
@@ -1380,7 +1383,7 @@
 
 !  Evaluate the element function values
 
-         CALL ELFUN ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,     &
+         CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
              prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,               &
              prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,                      &
              prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                    &
@@ -1405,7 +1408,7 @@
 !  Evaluate the element function derivatives
 
          IF ( control%print_level >= 10 ) WRITE( out, 2210 )
-         CALL ELFUN ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,     &
+         CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
              prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,               &
              prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,                      &
              prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                    &
@@ -1429,10 +1432,10 @@
          IF ( control%print_level >= 10 ) WRITE( out, 2220 )
          IF ( control%print_level >= 100 )                                     &
            WRITE( out, 2390 ) ( FT( i ), i = 1, prob%ng )
-         CALL GROUP ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcg,          &
-                      prob%ITYPEG, prob%ISTGPA, ICALCG,                        &
-                      prob%ng, prob%ng + 1, prob%ng, prob%ng,                  &
-                      prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., i )
+         CALL GROUP_r ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcg,        &
+                        prob%ITYPEG, prob%ISTGPA, ICALCG,                      &
+                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
+                        prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 2 ) THEN
              inform%status = 13
@@ -1450,10 +1453,10 @@
 !  Evaluate the group function derivatives
 
          IF ( control%print_level >= 10 ) WRITE( out, 2230 )
-         CALL GROUP ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcg,          &
-                      prob%ITYPEG, prob%ISTGPA, ICALCG,                        &
-                      prob%ng, prob%ng + 1, prob%ng, prob%ng,                  &
-                      prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., i )
+         CALL GROUP_r ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcg,        &
+                        prob%ITYPEG, prob%ISTGPA, ICALCG,                      &
+                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
+                        prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 2 ) THEN
              inform%status = 13

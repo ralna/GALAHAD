@@ -274,6 +274,8 @@ all_current_without_s2qp_single: all_cutest_single
                      barc_cutest PRECIS=single PWD=$(PWD)/forthcoming/barc )
 	( cd forthcoming/fisqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      fisqp_cutest PRECIS=single PWD=$(PWD)/forthcoming/fisqp )
+	( cd forthcoming/colt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     colt_cutest PRECIS=single PWD=$(PWD)/forthcoming/colt )
 
 all_current_without_s2qp_double: all_cutest_double
 #	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -298,6 +300,8 @@ all_current_without_s2qp_double: all_cutest_double
                      barc_cutest PRECIS=double PWD=$(PWD)/forthcoming/barc )
 	( cd forthcoming/fisqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      fisqp_cutest PRECIS=double PWD=$(PWD)/forthcoming/fisqp )
+	( cd forthcoming/colt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     colt_cutest PRECIS=double PWD=$(PWD)/forthcoming/colt )
 
 #  -----------------------------------------
 #  everything including current developments
@@ -1345,6 +1349,30 @@ fisqp_single:
 fisqp_double:
 	( cd forthcoming/fisqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                fisqp PRECIS=double PWD=$(PWD)/forthcoming/fisqp )
+
+#  ----
+#  colt
+#  ----
+
+colt_cutest: colt_cutest_$(PRECIS)
+
+colt_cutest_single:
+	( cd forthcoming/colt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+               colt_cutest PRECIS=single PWD=$(PWD)/forthcoming/colt )
+
+colt_cutest_double:
+	( cd forthcoming/colt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+               colt_cutest PRECIS=double PWD=$(PWD)/forthcoming/colt )
+
+colt: colt_$(PRECIS)
+
+colt_single:
+	( cd forthcoming/colt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+               colt PRECIS=single PWD=$(PWD)/forthcoming/colt )
+
+colt_double:
+	( cd forthcoming/colt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+               colt PRECIS=double PWD=$(PWD)/forthcoming/colt )
 
 #  ---
 #  sqp

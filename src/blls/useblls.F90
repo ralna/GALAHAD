@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E B L L S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -155,7 +156,7 @@
 
 !  Determine the number of variables and constraints
 
-      CALL CUTEST_cdimen( cutest_status, input, n, m )
+      CALL CUTEST_cdimen_r( cutest_status, input, n, m )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  allocate temporary arrays
@@ -170,9 +171,9 @@
 !  set up the data structures necessary to hold the group partially
 !  separable function.
 
-      CALL CUTEST_csetup( cutest_status, input, out,                           &
-                          io_buffer, n, m, X, X_l, X_u, Y, C_l, C_u,           &
-                          EQUATN, LINEAR, e_order, l_order, v_order )
+      CALL CUTEST_csetup_r( cutest_status, input, out,                         &
+                            io_buffer, n, m, X, X_l, X_u, Y, C_l, C_u,         &
+                            EQUATN, LINEAR, e_order, l_order, v_order )
       DEALLOCATE( Y, LINEAR, STAT = alloc_stat )
 
 !  count the number of slack variables, and set problem dimensions
@@ -187,7 +188,7 @@
         WRITE( out, 2150 ) 'VNAME etc', alloc_stat ; STOP
       END IF
 
-      CALL CUTEST_cnames( cutest_status, n, m, pname, VNAME, CNAME )
+      CALL CUTEST_cnames_r( cutest_status, n, m, pname, VNAME, CNAME )
       IF ( cutest_status /= 0 ) GO TO 910
       WRITE( out, "( /, ' Problem: ', A )" ) pname
 
@@ -209,7 +210,7 @@
 
 !  determine the number of entries in the Jacobian, and set its dimensions
 
-      CALL CUTEST_cdimsj( cutest_status, nnzj )
+      CALL CUTEST_cdimsj_r( cutest_status, nnzj )
       IF ( cutest_status /= 0 ) GO TO 910
       prob%A%m = prob%m ; prob%A%n = prob%n ; prob%A%ne = nnzj + n_s
       CALL SMT_put( prob%A%type, 'COORDINATE', smt_stat )
@@ -224,8 +225,8 @@
 
 !  compute the values of the constraints and Jacobian
 
-      CALL CUTEST_ccfsg( cutest_status, n, m, X, prob%C, nnzj, prob%A%ne,      &
-                         prob%A%val, prob%A%col, prob%A%row, .TRUE. )
+      CALL CUTEST_ccfsg_r( cutest_status, n, m, X, prob%C, nnzj, prob%A%ne,    &
+                           prob%A%val, prob%A%col, prob%A%row, .TRUE. )
       prob%B = - prob%C
 !write(6,*) ' count ', COUNT( prob%A%col( : nnzj ) == 0 )
 
@@ -506,7 +507,7 @@
                 prob%A%val, prob%A%row, prob%A%col, VNAME, STAT = alloc_stat )
       IF ( is_specfile ) CLOSE( input_specfile )
 
-      CALL CUTEST_cterminate( cutest_status )
+      CALL CUTEST_cterminate_r( cutest_status )
       RETURN
 
  910  CONTINUE

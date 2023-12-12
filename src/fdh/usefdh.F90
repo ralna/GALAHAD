@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ F D H  -*-*-*-*-*-*-*-*-*-*-
 
@@ -184,7 +185,7 @@
 
 !  determine the number of variables
 
-     CALL CUTEST_cdimen( status, input, n, m )
+     CALL CUTEST_cdimen_r( status, input, n, m )
      IF ( status /= 0 ) GO TO 910
 
 !  allocate suitable arrays
@@ -206,11 +207,11 @@
 !  separable objective function
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_csetup( status, input, out, io_buffer, n, m, X, X_l, X_u,   &
-                           LAMBDA, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
+       CALL CUTEST_csetup_r( status, input, out, io_buffer, n, m, X, X_l,      &
+                              X_u, LAMBDA, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
        ptype = 'C'
      ELSE
-       CALL CUTEST_usetup( status, input, out, io_buffer, n, X, X_l, X_u )
+       CALL CUTEST_usetup_r( status, input, out, io_buffer, n, X, X_l, X_u )
        ptype = 'U'
      END IF
      IF ( status /= 0 ) GO TO 910
@@ -238,15 +239,15 @@
 
 !  discover the problem name
 
-     CALL CUTEST_probname( status, pname )
+     CALL CUTEST_probname_r( status, pname )
      IF ( status /= 0 ) GO TO 910
 
 !  compute the number of nonzeros in the Hessian
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_cdimsh( status, nnzh )
+       CALL CUTEST_cdimsh_r( status, nnzh )
      ELSE
-       CALL CUTEST_udimsh( status, nnzh )
+       CALL CUTEST_udimsh_r( status, nnzh )
      END IF
      IF ( status /= 0 ) GO TO 910
 
@@ -264,22 +265,22 @@
 !  compute the Hessian sparsity pattern
 
      IF ( m > 0 ) THEN
-!      CALL CUTEST_cshp( status, n, nnzh, lh, ROW, COL )
+!      CALL CUTEST_cshp_r( status, n, nnzh, lh, ROW, COL )
      ELSE
-!      CALL CUTEST_ushp( status, n, nnzh, lh, ROW, COL )
+!      CALL CUTEST_ushp_r( status, n, nnzh, lh, ROW, COL )
      END IF
      IF ( status /= 0 ) GO TO 910
 
 !  compute the gradient, as well as the exact Hessian for comparison purposes
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_clfg( status, n, m, X, LAMBDA, f, G, .TRUE. )
+       CALL CUTEST_clfg_r( status, n, m, X, LAMBDA, f, G, .TRUE. )
        IF ( status /= 0 ) GO TO 910
-       CALL CUTEST_csh( status, n, m, X, LAMBDA, nnzh, lh, VAL, ROW, COL )
+       CALL CUTEST_csh_r( status, n, m, X, LAMBDA, nnzh, lh, VAL, ROW, COL )
      ELSE
-       CALL CUTEST_ugr( status, n, X, G )
+       CALL CUTEST_ugr_r( status, n, X, G )
        IF ( status /= 0 ) GO TO 910
-       CALL CUTEST_ush( status, n, X, nnzh, lh, VAL, ROW, COL )
+       CALL CUTEST_ush_r( status, n, X, nnzh, lh, VAL, ROW, COL )
      END IF
      IF ( status /= 0 ) GO TO 910
 
@@ -363,10 +364,10 @@
 !       &             ( 5ES12.4 ) )" ) ( H_est( i ), i = 1, nz )
        ELSE IF ( inform%status > 0 ) THEN  ! Reverse communication required
          IF ( m > 0 ) THEN
-           CALL CUTEST_clfg( status, n, m, data%X( : n ), LAMBDA, f,           &
-                             data%G( : n ), .TRUE. )
+           CALL CUTEST_clfg_r( status, n, m, data%X( : n ), LAMBDA, f,         &
+                               data%G( : n ), .TRUE. )
          ELSE
-           CALL CUTEST_ugr( status, n, data%X( : n ), data%G( : n ) )
+           CALL CUTEST_ugr_r( status, n, data%X( : n ), data%G( : n ) )
          END IF
          GO TO 10
        ELSE  ! Failure
@@ -427,9 +428,9 @@
 
      IF ( is_specfile ) CLOSE( input_specfile )
      IF ( m > 0 ) THEN
-       CALL CUTEST_cterminate( status )
+       CALL CUTEST_cterminate_r( status )
      ELSE
-       CALL CUTEST_uterminate( status )
+       CALL CUTEST_uterminate_r( status )
      END IF
      RETURN
 

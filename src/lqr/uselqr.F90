@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ L Q R  -*-*-*-*-*-*-*-*-*-*-
 
@@ -155,19 +156,19 @@
 
 !  Read the initial point and bounds
 
-     CALL CUTEST_udimen( cutest_status, input, n )
+     CALL CUTEST_udimen_r( cutest_status, input, n )
      IF ( cutest_status /= 0 ) GO TO 910
 
      ALLOCATE( X( n ), X0( n ), X_l( n ), X_u( n ), G( n ), VNAMES( n ),       &
                C( n ) )
-     CALL CUTEST_usetup( cutest_status, input, control%error, io_buffer,       &
-                         n, X0, X_l, X_u )
+     CALL CUTEST_usetup_r( cutest_status, input, control%error, io_buffer,     &
+                           n, X0, X_l, X_u )
      IF ( cutest_status /= 0 ) GO TO 910
      DEALLOCATE( X_l, X_u )
 
 !  Read the problem and variable names
 
-     CALL CUTEST_unames( cutest_status, n, pname, VNAMES )
+     CALL CUTEST_unames_r( cutest_status, n, pname, VNAMES )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Set f to zero
@@ -176,7 +177,7 @@
 
 !  Evaluate the gradient
 
-     CALL CUTEST_ugr( cutest_status, n, X0, G )
+     CALL CUTEST_ugr_r( cutest_status, n, X0, G )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Use LQR
@@ -217,7 +218,7 @@
        SELECT CASE( inform%status ) ! Branch as a result of inform%status
        CASE( 2 )         ! Form the preconditioned gradient
        CASE( 3 )         ! Form the matrix-vector product
-         CALL CUTEST_uhprod( status, n, goth, X, data%Q( : n ), data%Y( : n ) )
+         CALL CUTEST_uhprod_r( status, n, goth, X, data%Q( : n ), data%Y( : n ))
          goth = .TRUE.
        CASE ( - 30, 0 )  !  Successful return
          WRITE( 6, "( I6, ' iterations. Solution and Lagrange multiplier = ',  &
@@ -300,7 +301,7 @@
      END IF
      DEALLOCATE( X, X0, G, C, VNAMES )
 
-     CALL CUTEST_cterminate( cutest_status )
+     CALL CUTEST_cterminate_r( cutest_status )
      RETURN
 
  910 CONTINUE

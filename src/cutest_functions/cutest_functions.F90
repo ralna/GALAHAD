@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*  G A L A H A D _ C U T E S T _ F U N C T I O N S  M O D U L E  *-*-*-
 
@@ -117,7 +118,7 @@
 
 ! get dimensions
 
-     CALL CUTEST_cdimen( cutest_status, control%input, n, m )
+     CALL CUTEST_cdimen_r( cutest_status, control%input, n, m )
      IF ( cutest_status /= 0 ) GO TO 930
      nlp%n = n
      nlp%m = m
@@ -219,9 +220,10 @@
        ELSE
          l_order = 0
        END IF
-       CALL CUTEST_csetup( cutest_status, control%input, control%error,        &
-                           control%io_buffer, n, m, nlp%X, nlp%X_l, nlp%X_u,   &
-                           Y, C_l, C_u, nlp%EQUATION, nlp%LINEAR, 0, l_order, 0)
+       CALL CUTEST_csetup_r( cutest_status, control%input, control%error,      &
+                             control%io_buffer, n, m,                          &
+                             nlp%X, nlp%X_l, nlp%X_u, Y, C_l, C_u,             &
+                             nlp%EQUATION, nlp%LINEAR, 0, l_order, 0)
        IF ( cutest_status /= 0 ) GO TO 930
 
        nlp%m_a = 0
@@ -288,8 +290,8 @@
 
 !  obtain the names of the problem, its variables and general constraints
 
-       CALL CUTEST_cnames( cutest_status, n, m, nlp%pname, nlp%VNAMES,         &
-                           full_CNAMES )
+       CALL CUTEST_cnames_r( cutest_status, n, m, nlp%pname, nlp%VNAMES,       &
+                             full_CNAMES )
        IF ( cutest_status /= 0 ) GO TO 930
 
 !  define the "corrected" separated vectors
@@ -339,7 +341,7 @@
        IF ( no_jac ) THEN
          nnzj = 0
        ELSE
-         CALL CUTEST_cdimsj( cutest_status, nnzj )
+         CALL CUTEST_cdimsj_r( cutest_status, nnzj )
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
@@ -350,7 +352,7 @@
        IF ( no_hess ) THEN
          nnzh = 0
        ELSE
-         CALL CUTEST_cdimsh( cutest_status, nnzh )
+         CALL CUTEST_cdimsh_r( cutest_status, nnzh )
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
@@ -359,9 +361,9 @@
 !  sparse column-wise format.
 
        IF (  hess_prods ) THEN
-         CALL CUTEST_cdimohp( cutest_status, nnzohp )
+         CALL CUTEST_cdimohp_r( cutest_status, nnzohp )
          IF ( cutest_status /= 0 ) GO TO 930
-         CALL CUTEST_cdimchp( cutest_status, nnzchp )
+         CALL CUTEST_cdimchp_r( cutest_status, nnzchp )
          IF ( cutest_status /= 0 ) GO TO 930
        ELSE
          nnzchp = 0
@@ -371,7 +373,7 @@
 !  of the objective function
 
        IF ( sparse_grad ) THEN
-         CALL CUTEST_cdimsg( cutest_status, nnzg )
+         CALL CUTEST_cdimsg_r( cutest_status, nnzg )
          IF ( cutest_status /= 0 ) GO TO 930
           nlp%Go%ne = nnzg
        ELSE 
@@ -432,6 +434,7 @@
        userdata%integer( loc_ohpind ) = iohpind
        userdata%integer( loc_lchp ) = nnzchp
        userdata%integer( loc_chpind ) = ichpind
+       userdata%integer( loc_chpptr ) = ichpptr
 
 !  determine if there is a constant in the linear constraints. Adjust the 
 !  bounds if necessary
@@ -472,9 +475,9 @@
          END DO
          alpha_min = max( alpha_min, 1.001_rp_ )
 
-         CALL CUTEST_cfn( cutest_status, n, m, X, f, C )
+         CALL CUTEST_cfn_r( cutest_status, n, m, X, f, C )
          IF ( cutest_status /= 0 ) GO TO 930
-         CALL CUTEST_cfn( cutest_status, n, m, alpha_min * X, f2, C2 )
+         CALL CUTEST_cfn_r( cutest_status, n, m, alpha_min * X, f2, C2 )
          IF ( cutest_status /= 0 ) GO TO 930
 
          lin_const = alpha_min * C( : nlp%m_a ) - C2( : nlp%m_a )
@@ -511,18 +514,18 @@
        IF ( no_hess .AND. no_jac ) THEN
        ELSE IF ( no_jac ) THEN
          lh = nnzh
-         CALL CUTEST_cshp( cutest_status, nlp%n, nnzh, lh,                     &
-                           userdata%integer( irnh + 1 : irnh + nnzh ),         &
-                           userdata%integer( icnh + 1 : icnh + nnzh ) )
+         CALL CUTEST_cshp_r( cutest_status, nlp%n, nnzh, lh,                   &
+                             userdata%integer( irnh + 1 : irnh + nnzh ),       &
+                             userdata%integer( icnh + 1 : icnh + nnzh ) )
        ELSE IF ( no_hess ) THEN
          lcjac = nnzj
-         CALL CUTEST_csgrp( cutest_status, nlp%n, nnzj, lcjac,                 &
-                            userdata%integer( indvar + 1 : indvar + nnzj ),    &
-                            userdata%integer( indfun + 1 : indfun + nnzj ) )
+         CALL CUTEST_csgrp_r( cutest_status, nlp%n, nnzj, lcjac,               &
+                              userdata%integer( indvar + 1 : indvar + nnzj ),  &
+                              userdata%integer( indfun + 1 : indfun + nnzj ) )
        ELSE
          lcjac = nnzj
          lh = nnzh
-         CALL CUTEST_csgrshp( cutest_status, nlp%n, nnzj, lcjac,               &
+         CALL CUTEST_csgrshp_r( cutest_status, nlp%n, nnzj, lcjac,             &
                               userdata%integer( indvar + 1 : indvar + nnzj ),  &
                               userdata%integer( indfun + 1 : indfun + nnzj ),  &
                               nnzh, lh,                                        &
@@ -539,22 +542,22 @@
                                   inform%alloc_status )
          IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'nlp%P%val' ; GO TO 910 ; END IF
-         CALL CUTEST_cchprodsp( cutest_status, m, nnzchp,                      &
-                                userdata%integer( ichpind + 1 :                &
-                                                  ichpind + nnzchp),           &
-                                userdata%integer( ichpptr + 1 :                &
-                                                  ichpptr + m + 1 ) )
+         CALL CUTEST_cchprodsp_r( cutest_status, m, nnzchp,                    &
+                                  userdata%integer( ichpind + 1 :              &
+                                                    ichpind + nnzchp),         &
+                                  userdata%integer( ichpptr + 1 :              &
+                                                    ichpptr + m + 1 ) )
        END IF
 
 !  get the sparsity pattern of the objective-function gradient
 
        IF ( sparse_grad ) THEN
-         CALL SPACE_resize_array( nnzg, nlp%Go%ind, inform%status,       &
+         CALL SPACE_resize_array( nnzg, nlp%Go%ind, inform%status,             &
                                   inform%alloc_status )
          IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'nlp%Go%col' ; GO TO 910 ; END IF
          lg = nnzg
-         CALL CUTEST_cisgrp( cutest_status, n, 0, nnzg, lg,                    &
+         CALL CUTEST_cisgrp_r( cutest_status, n, 0, nnzg, lg,                  &
                              userdata%integer( indg + 1 : indg + nnzg ) )
          nlp%Go%ind( : nnzg ) = userdata%integer( indg + 1 : indg + nnzg )
          CALL SPACE_resize_array( nnzg, nlp%Go%val, inform%status,       &
@@ -674,13 +677,13 @@
 
 !  set up the correct data structures for subsequent computations
 
-       CALL CUTEST_usetup( cutest_status, control%input, control%error,        &
-                           control%io_buffer, n, nlp%X, nlp%X_l, nlp%X_u )
+       CALL CUTEST_usetup_r( cutest_status, control%input, control%error,      &
+                             control%io_buffer, n, nlp%X, nlp%X_l, nlp%X_u )
        IF ( cutest_status /= 0 ) GO TO 930
 
 !  obtain the names of the problem and its variables
 
-       CALL CUTEST_unames( cutest_status, n, nlp%pname, nlp%VNAMES )
+       CALL CUTEST_unames_r( cutest_status, n, nlp%pname, nlp%VNAMES )
        IF ( cutest_status /= 0 ) GO TO 930
 
 !  set up sparsity structure for H. ( Assume co-ordinate storage )
@@ -692,7 +695,7 @@
        IF ( no_hess ) THEN
          nnzh = 0
        ELSE
-         CALL CUTEST_udimsh( cutest_status, nnzh )
+         CALL CUTEST_udimsh_r( cutest_status, nnzh )
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
@@ -732,13 +735,13 @@
 
        IF ( .NOT. no_hess ) THEN
          lh = nnzh
-!        CALL CUTEST_ush( cutest_status, nlp%n, nlp%X, nnzh, lh,               &
+!        CALL CUTEST_ush_r( cutest_status, nlp%n, nlp%X, nnzh, lh,             &
 !                  userdata%real( h + 1 : h + nnzh ),                          &
 !                  userdata%integer( irnh + 1 : irnh + nnzh ),                 &
 !                  userdata%integer( icnh + 1 : icnh + nnzh ) )
-         CALL CUTEST_ushp( cutest_status, nlp%n, nnzh, lh,                     &
-                           userdata%integer( irnh + 1 : irnh + nnzh ),         &
-                           userdata%integer( icnh + 1 : icnh + nnzh ) )
+         CALL CUTEST_ushp_r( cutest_status, nlp%n, nnzh, lh,                   &
+                             userdata%integer( irnh + 1 : irnh + nnzh ),       &
+                             userdata%integer( icnh + 1 : icnh + nnzh ) )
          IF ( cutest_status /= 0 ) GO TO 930
        END IF
 
@@ -904,7 +907,7 @@
        IF ( inform%status /= 0 ) then
          inform%bad_alloc = 'nlp%P%ptr' ; GO TO 910 ; END IF
 
-       nlp%P%row( : nnzchp ) = userdata%integer( ichpind + 1 : ichpind + nnzchp )
+       nlp%P%row( : nnzchp ) = userdata%integer( ichpind + 1 : ichpind + nnzchp)
        nlp%P%ptr( : m + 1 ) = userdata%integer( ichpptr + 1 : ichpptr + m + 1 )
      END IF
 
@@ -960,9 +963,9 @@
      n = userdata%integer( loc_n )
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_cfn( status, n, m, X, f, userdata%real( : m ) )
+       CALL CUTEST_cfn_r( status, n, m, X, f, userdata%real( : m ) )
      ELSE
-       CALL CUTEST_ufn( status, n, X, f )
+       CALL CUTEST_ufn_r( status, n, X, f )
      END IF
 
      RETURN
@@ -991,8 +994,8 @@
      n   = userdata%integer( loc_n )
      m_a = userdata%integer( loc_m_a )
 
-!    CALL CUTEST_cfn( status, n, m, X, f, userdata%real( : m ) )
-     CALL CUTEST_cfn( status, n, m, X, f, userdata%real )
+!    CALL CUTEST_cfn_r( status, n, m, X, f, userdata%real( : m ) )
+     CALL CUTEST_cfn_r( status, n, m, X, f, userdata%real )
      IF ( status == 0 ) C = userdata%real( m_a + 1 : m )
 
      RETURN
@@ -1022,8 +1025,8 @@
      m_a = userdata%integer( loc_m_a )
      n   = userdata%integer( loc_n )
 
-!    CALL CUTEST_cfn( status, n, m, X, f_dummy, userdata%real( : m ) )
-     CALL CUTEST_cfn( status, n, m, X, f_dummy, userdata%real )
+!    CALL CUTEST_cfn_r( status, n, m, X, f_dummy, userdata%real( : m ) )
+     CALL CUTEST_cfn_r( status, n, m, X, f_dummy, userdata%real )
      IF ( status == 0 ) THEN
        IF ( PRESENT( f ) ) f = f_dummy
        IF ( PRESENT( C ) ) C = userdata%real( m_a + 1 : m )
@@ -1056,7 +1059,7 @@
      n = userdata%integer( loc_n )
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_cofg( status, n, X, f_dummy, G, .TRUE. )
+       CALL CUTEST_cofg_r( status, n, X, f_dummy, G, .TRUE. )
        IF ( status /= 0 ) RETURN
 
 !      nnzj = userdata%integer( loc_nnzj )
@@ -1064,10 +1067,10 @@
 !      indvar = userdata%integer( loc_indvar )
 !      cjac = userdata%integer( loc_cjac )
 !      lcjac = nnzj
-!      CALL CUTEST_csgr( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,       &
-!                 userdata%real( cjac + 1 : cjac + nnzj ),                     &
-!                 userdata%integer( indvar + 1 : indvar + nnzj ),              &
-!                 userdata%integer( indfun + 1 : indfun + nnzj ) )
+!      CALL CUTEST_csgr_r( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,     &
+!                          userdata%real( cjac + 1 : cjac + nnzj ),            &
+!                          userdata%integer( indvar + 1 : indvar + nnzj ),     &
+!                          userdata%integer( indfun + 1 : indfun + nnzj ) )
 !      IF ( status /= 0 ) RETURN
 ! Untangle A: separate the gradient terms from the constraint Jacobian
 !      G( : n ) = zero
@@ -1077,7 +1080,7 @@
 !         END IF
 !      END DO
      ELSE
-       CALL CUTEST_ugr( status, n, X, G )
+       CALL CUTEST_ugr_r( status, n, X, G )
      END IF
      RETURN
 
@@ -1114,10 +1117,10 @@
        cjac   = userdata%integer( loc_cjac )
 
        lcjac = nnzj ; Y_dummy = zero
-       CALL CUTEST_csgr( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,       &
-                         userdata%real( cjac + 1 : cjac + nnzj ),              &
-                         userdata%integer( indvar + 1 : indvar + nnzj ),       &
-                         userdata%integer( indfun + 1 : indfun + nnzj ) )
+       CALL CUTEST_csgr_r( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,     &
+                           userdata%real( cjac + 1 : cjac + nnzj ),            &
+                           userdata%integer( indvar + 1 : indvar + nnzj ),     &
+                           userdata%integer( indfun + 1 : indfun + nnzj ) )
        IF ( status /= 0 ) RETURN
 
 ! Untangle A: separate the constraint Jacobian from the objective gradient
@@ -1166,10 +1169,10 @@
        cjac   = userdata%integer( loc_cjac )
 
        lcjac = nnzj ; Y_dummy = zero
-       CALL CUTEST_csgr( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,       &
-                         userdata%real( cjac + 1 : cjac + nnzj ),              &
-                         userdata%integer( indvar + 1 : indvar + nnzj ),       &
-                         userdata%integer( indfun + 1 : indfun + nnzj ) )
+       CALL CUTEST_csgr_r( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,     &
+                           userdata%real( cjac + 1 : cjac + nnzj ),            &
+                           userdata%integer( indvar + 1 : indvar + nnzj ),     &
+                           userdata%integer( indfun + 1 : indfun + nnzj ) )
        IF ( status /= 0 ) RETURN
 
 ! Untangle A: separate the gradient terms from the constraint Jacobian
@@ -1188,7 +1191,7 @@
          END IF
        END DO
      ELSE IF ( PRESENT( G ) ) THEN
-       CALL CUTEST_ugr( status, n, X, G )
+       CALL CUTEST_ugr_r( status, n, X, G )
      END IF
      RETURN
 
@@ -1226,10 +1229,10 @@
        cjac = userdata%integer( loc_cjac )
 
        lcjac = nnzj ; Y_dummy = zero
-       CALL CUTEST_csgr( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,       &
-                         userdata%real( cjac + 1 : cjac + nnzj ),              &
-                         userdata%integer( indvar + 1 : indvar + nnzj ),       &
-                         userdata%integer( indfun + 1 : indfun + nnzj ) )
+       CALL CUTEST_csgr_r( status, n, m, X, Y_dummy, .FALSE., nnzj, lcjac,     &
+                           userdata%real( cjac + 1 : cjac + nnzj ),            &
+                           userdata%integer( indvar + 1 : indvar + nnzj ),     &
+                           userdata%integer( indfun + 1 : indfun + nnzj ) )
        IF ( status /= 0 ) RETURN
 
 ! Untangle A: separate the gradient terms from the constraint Jacobian
@@ -1247,8 +1250,8 @@
 
      lg = nnzg
      indg = userdata%integer( loc_indg )
-     CALL CUTEST_cisgr( status, n, 0, X, nnzg, lg, G,                          &
-                        userdata%integer( indg + 1 : indg + nnzg ) )
+     CALL CUTEST_cisgr_r( status, n, 0, X, nnzg, lg, G,                        &
+                          userdata%integer( indg + 1 : indg + nnzg ) )
 
      RETURN
 
@@ -1281,9 +1284,9 @@
 ! Evaluate the Hessian
 
      lh = nnzh
-     CALL CUTEST_ush( status, n, X, nnzh, lh, H_val,                           &
-                      userdata%integer( irnh + 1 : irnh + nnzh ),              &
-                      userdata%integer( icnh + 1 : icnh + nnzh ) )
+     CALL CUTEST_ush_r( status, n, X, nnzh, lh, H_val,                         &
+                        userdata%integer( irnh + 1 : irnh + nnzh ),            &
+                        userdata%integer( icnh + 1 : icnh + nnzh ) )
      RETURN
 
      END SUBROUTINE CUTEst_eval_H
@@ -1332,13 +1335,13 @@
 
      lh = nnzh
      IF ( no_f_value ) THEN
-       CALL CUTEST_cshc( status, n, m, X, Y_full, nnzh, lh, H_val,             &
-                         userdata%integer( irnh + 1 : irnh + nnzh ),           &
-                         userdata%integer( icnh + 1 : icnh + nnzh ) )
+       CALL CUTEST_cshc_r( status, n, m, X, Y_full, nnzh, lh, H_val,           &
+                           userdata%integer( irnh + 1 : irnh + nnzh ),         &
+                           userdata%integer( icnh + 1 : icnh + nnzh ) )
      ELSE
-       CALL CUTEST_csh( status, n, m, X, Y_full, nnzh, lh, H_val,              &
-                        userdata%integer( irnh + 1 : irnh + nnzh ),            &
-                        userdata%integer( icnh + 1 : icnh + nnzh ) )
+       CALL CUTEST_csh_r( status, n, m, X, Y_full, nnzh, lh, H_val,            &
+                          userdata%integer( irnh + 1 : irnh + nnzh ),          &
+                          userdata%integer( icnh + 1 : icnh + nnzh ) )
      END IF
      RETURN
 
@@ -1378,9 +1381,9 @@
      Y_full( m_a + 1 : m ) = - Y
 
      lh = nnzh
-     CALL CUTEST_cshj( status, n, m, X, y0, Y_full, nnzh, lh, H_val,           &
-                      userdata%integer( irnh + 1 : irnh + nnzh ),              &
-                      userdata%integer( icnh + 1 : icnh + nnzh ) )
+     CALL CUTEST_cshj_r( status, n, m, X, y0, Y_full, nnzh, lh, H_val,         &
+                        userdata%integer( irnh + 1 : irnh + nnzh ),            &
+                        userdata%integer( icnh + 1 : icnh + nnzh ) )
      RETURN
 
      END SUBROUTINE CUTEst_eval_HJ
@@ -1418,9 +1421,9 @@
      Y_full( m_a + 1 : m ) = Y
 
      lh = nnzh
-     CALL CUTEST_cshc( status,  n, m, X, Y_full, nnzh, lh, H_val,              &
-                       userdata%integer( irnh + 1 : irnh + nnzh ),             &
-                       userdata%integer( icnh + 1 : icnh + nnzh ) )
+     CALL CUTEST_cshc_r( status,  n, m, X, Y_full, nnzh, lh, H_val,            &
+                         userdata%integer( irnh + 1 : irnh + nnzh ),           &
+                         userdata%integer( icnh + 1 : icnh + nnzh ) )
      RETURN
 
      END SUBROUTINE CUTEst_eval_HLC
@@ -1469,19 +1472,21 @@
 
      IF ( got_j_value ) THEN
        IF ( transpose ) THEN
-         CALL CUTEST_cjprod( status, n, m, .FALSE., transpose, X, full_V, m,   &
-                      userdata%real( : n ), n )
+         CALL CUTEST_cjprod_r( status, n, m, .FALSE., transpose, X, full_V,    &
+                               m, userdata%real( : n ), n )
        ELSE
-         CALL CUTEST_cjprod( status, n, m, .FALSE., transpose, X, V, n,        &
-                      userdata%real( : m ), m )
+         CALL CUTEST_cjprod_r( status, n, m, .FALSE., transpose, X, V, n,      &
+                               userdata%real( : m ), m )
        END IF
      ELSE
        IF ( transpose ) THEN
-         CALL CUTEST_cjprod( status, n, m, .TRUE., transpose,                  &
-                      userdata%real( : n ), full_V, m, userdata%real( : n ), n )
+         CALL CUTEST_cjprod_r( status, n, m, .TRUE., transpose,                &
+                               userdata%real( : n ), full_V,                   &
+                               m, userdata%real( : n ), n )
        ELSE
-         CALL CUTEST_cjprod( status, n, m, .TRUE., transpose,                  &
-                      userdata%real( : n ), V, n, userdata%real( : m ), m )
+         CALL CUTEST_cjprod_r( status, n, m, .TRUE., transpose,                &
+                               userdata%real( : n ), V,                        &
+                               n, userdata%real( : m ), m )
        END IF
      END IF
      IF ( status /= 0 ) RETURN
@@ -1538,19 +1543,19 @@
 
      IF ( got_j_value ) THEN
        IF ( transpose ) THEN
-         CALL CUTEST_csjprod( status, n, m, .FALSE., transpose, X,             &
-                              nnz_v, INDEX_nz_v, V, m, nnz_u, INDEX_nz_u, U, n )
+         CALL CUTEST_csjprod_r( status, n, m, .FALSE., transpose, X, nnz_v,    &
+                                INDEX_nz_v, V, m, nnz_u, INDEX_nz_u, U, n )
        ELSE
-         CALL CUTEST_csjprod( status, n, m, .FALSE., transpose, X,             &
-                              nnz_v, INDEX_nz_v, V, n, nnz_u, INDEX_nz_u, U, m )
+         CALL CUTEST_csjprod_r( status, n, m, .FALSE., transpose, X, nnz_v,    &
+                                INDEX_nz_v, V, n, nnz_u, INDEX_nz_u, U, m  )
        END IF
      ELSE
        IF ( transpose ) THEN
-         CALL CUTEST_csjprod( status, n, m, .TRUE., transpose, X,              &
-                              nnz_v, INDEX_nz_v, V, m, nnz_u, INDEX_nz_u, U, n )
+         CALL CUTEST_csjprod_r( status, n, m, .TRUE., transpose, X, nnz_v,     &
+                                INDEX_nz_v, V, m, nnz_u, INDEX_nz_u, U, n )
        ELSE
-         CALL CUTEST_csjprod( status, n, m, .TRUE., transpose, X,              &
-                              nnz_v, INDEX_nz_v, V, n, nnz_u, INDEX_nz_u, U, m )
+         CALL CUTEST_csjprod_r( status, n, m, .TRUE., transpose, X, nnz_v,     &
+                                INDEX_nz_v, V, n, nnz_u, INDEX_nz_u, U, m )
        END IF
      END IF
 
@@ -1589,9 +1594,9 @@
      n = userdata%integer( loc_n )
 
      IF ( got_h_value ) THEN
-       CALL CUTEST_uhprod( status, n, .TRUE., X, V, userdata%real( : n ) )
+       CALL CUTEST_uhprod_r( status, n, .TRUE., X, V, userdata%real( : n ) )
      ELSE
-       CALL CUTEST_uhprod( status, n, .FALSE., X, V, userdata%real( : n ) )
+       CALL CUTEST_uhprod_r( status, n, .FALSE., X, V, userdata%real( : n ) )
      END IF
      IF ( status /= 0 ) RETURN
 
@@ -1636,11 +1641,11 @@
      n = userdata%integer( loc_n )
 
      IF ( got_h_value ) THEN
-       CALL CUTEST_ushprod( status, n, .TRUE., X,                              &
-                            nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+       CALL CUTEST_ushprod_r( status, n, .TRUE., X,                            &
+                              nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
      ELSE
-       CALL CUTEST_ushprod( status, n, .FALSE., X,                             &
-                            nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+       CALL CUTEST_ushprod_r( status, n, .FALSE., X,                           &
+                              nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
      END IF
      RETURN
 
@@ -1690,23 +1695,23 @@
 
      IF ( no_f_value ) THEN
        IF ( got_h_value ) THEN
-         CALL CUTEST_chcprod( status, n, m, .TRUE., X, - full_Y, V,            &
-                              userdata%real( : n ) )
+         CALL CUTEST_chcprod_r( status, n, m, .TRUE., X, - full_Y, V,          &
+                                userdata%real( : n ) )
        ELSE
          full_Y( 1 : m_a ) = zero
          full_Y( m_a + 1 : m  ) = Y
-         CALL CUTEST_chcprod( status, n, m, .FALSE., X, - full_Y, V,           &
-                              userdata%real( : n ) )
+         CALL CUTEST_chcprod_r( status, n, m, .FALSE., X, - full_Y, V,         &
+                                userdata%real( : n ) )
        END IF
      ELSE
        IF ( got_h_value ) THEN
-         CALL CUTEST_chprod( status, n, m, .TRUE., X, - full_Y, V,             &
-                             userdata%real( : n ) )
+         CALL CUTEST_chprod_r( status, n, m, .TRUE., X, - full_Y, V,           &
+                               userdata%real( : n ) )
        ELSE
          full_Y( 1 : m_a ) = zero
          full_Y( m_a + 1 : m  ) = Y
-         CALL CUTEST_chprod( status, n, m, .FALSE., X, - full_Y, V,            &
-                             userdata%real( : n ) )
+         CALL CUTEST_chprod_r( status, n, m, .FALSE., X, - full_Y, V,          &
+                               userdata%real( : n ) )
        END IF
      END IF
      IF ( status /= 0 ) RETURN
@@ -1766,23 +1771,23 @@
 
      IF ( no_f_value ) THEN
        IF ( got_h_value ) THEN
-         CALL CUTEST_cshcprod( status, n, m, .TRUE., X, - full_Y,              &
-                               nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+         CALL CUTEST_cshcprod_r( status, n, m, .TRUE., X, - full_Y,            &
+                                 nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
        ELSE
          full_Y( 1 : m_a ) = zero
          full_Y( m_a + 1 : m  ) = Y
-         CALL CUTEST_cshcprod( status, n, m, .FALSE., X, - full_Y,             &
-                               nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+         CALL CUTEST_cshcprod_r( status, n, m, .FALSE., X, - full_Y,           &
+                                 nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
        END IF
      ELSE
        IF ( got_h_value ) THEN
-         CALL CUTEST_cshprod( status, n, m, .TRUE., X, - full_Y,               &
-                              nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+         CALL CUTEST_cshprod_r( status, n, m, .TRUE., X, - full_Y,             &
+                                nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
        ELSE
          full_Y( 1 : m_a ) = zero
          full_Y( m_a + 1 : m  ) = Y
-         CALL CUTEST_cshprod( status, n, m, .FALSE., X, - full_Y,              &
-                              nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+         CALL CUTEST_cshprod_r( status, n, m, .FALSE., X, - full_Y,            &
+                                nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
        END IF
      END IF
      RETURN
@@ -1823,13 +1828,13 @@
      n   = userdata%integer( loc_n )
 
      IF ( got_h_value ) THEN
-       CALL CUTEST_chcprod( status, n, m, .TRUE., X, full_Y, V,                &
-                            userdata%real( : n ) )
+       CALL CUTEST_chcprod_r( status, n, m, .TRUE., X, full_Y, V,              &
+                              userdata%real( : n ) )
      ELSE
        full_Y( 1 : m_a ) = zero
        full_Y( m_a + 1 : m  ) = Y
-       CALL CUTEST_chcprod( status, n, m, .FALSE., X, full_Y, V,               &
-                            userdata%real( : n ) )
+       CALL CUTEST_chcprod_r( status, n, m, .FALSE., X, full_Y, V,             &
+                              userdata%real( : n ) )
      END IF
      IF ( status /= 0 ) RETURN
 
@@ -1879,13 +1884,13 @@
      n   = userdata%integer( loc_n )
 
      IF ( got_h_value ) THEN
-       CALL CUTEST_cshcprod( status, n, m, .TRUE., X, - full_Y,                &
-                             nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+       CALL CUTEST_cshcprod_r( status, n, m, .TRUE., X, - full_Y,              &
+                               nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
      ELSE
        full_Y( 1 : m_a ) = zero
        full_Y( m_a + 1 : m  ) = Y
-       CALL CUTEST_cshcprod( status, n, m, .FALSE., X, - full_Y,               &
-                             nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
+       CALL CUTEST_cshcprod_r( status, n, m, .FALSE., X, - full_Y,             &
+                               nnz_v, INDEX_nz_v, V, nnz_u, INDEX_nz_u, U )
      END IF
      RETURN
 
@@ -1927,9 +1932,9 @@
 
 !  compute the values of P
 
-     CALL CUTEST_cchprods( status, n, m, got_h_value, X, V, lchp, P_val,       &
-                           userdata%integer( ichpind + 1 : ichpind + lchp ),   &
-                           userdata%integer( ichpptr + 1 : ichpptr + m + 1 ) )
+     CALL CUTEST_cchprods_r( status, n, m, got_h_value, X, V, lchp, P_val,     &
+                             userdata%integer( ichpind + 1 : ichpind + lchp ), &
+                             userdata%integer( ichpptr + 1 : ichpptr + m + 1 ) )
      RETURN
 
      END SUBROUTINE CUTEst_eval_HCPRODS
@@ -1976,12 +1981,13 @@
 
 !  compute the values of P_o and P_c
 
-     CALL CUTEST_cohprods( status, n, got_h_value, X, V, nnzohp, lohp, PO_val, &
+     CALL CUTEST_cohprods_r( status, n, got_h_value, X, V,                     &
+                             nnzohp, lohp, PO_val,                             &
                            userdata%integer( iohpind + 1 : iohpind + nnzohp ) )
 
-     CALL CUTEST_cchprods( status, n, m, got_h_value, X, V, lchp, PC_val,      &
-                           userdata%integer( ichpind + 1 : ichpind + lchp ),   &
-                           userdata%integer( ichpptr + 1 : ichpptr + m + 1 ) )
+     CALL CUTEST_cchprods_r( status, n, m, got_h_value, X, V, lchp, PC_val,    &
+                             userdata%integer( ichpind + 1 : ichpind + lchp ), &
+                             userdata%integer( ichpptr + 1 : ichpptr + m + 1 ) )
      RETURN
 
      END SUBROUTINE CUTEst_eval_HOCPRODS
@@ -2033,7 +2039,7 @@
 
 !  enable recording of timings for CUTEst calls
 
-     CALL CUTEST_timings( status, 'start', time_real )
+     CALL CUTEST_timings_r( status, 'start', time_real )
      time = REAL( time_real, rp_ )
 
      RETURN
@@ -2080,77 +2086,77 @@
      SELECT CASE ( TRIM( name_lower_case ) )
      CASE ( 'cutest_eval_f' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_cfn', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_cfn', time_real )
        ELSE
-         CALL CUTEST_timings( status, 'cutest_ufn', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_ufn', time_real )
        END IF
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_fc' )
-       CALL CUTEST_timings( status, 'cutest_cfn', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cfn', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_c' )
-       CALL CUTEST_timings( status, 'cutest_cfn', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cfn', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_g' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_cofg', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_cofg', time_real )
        ELSE
-         CALL CUTEST_timings( status, 'cutest_ugr', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_ugr', time_real )
        END IF
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_gj' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_csgr', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_csgr', time_real )
        ELSE
-         CALL CUTEST_timings( status, 'cutest_ugr', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_ugr', time_real )
        END IF
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_j' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_csgr', time_real )
+         CALL CUTEST_timings_r( status, 'cutest_csgr', time_real )
          time = REAL( time_real, rp_ )
        END IF
      CASE ( 'cutest_eval_h' )
-       CALL CUTEST_timings( status, 'cutest_ush', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_ush', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hprod' )
-       CALL CUTEST_timings( status, 'cutest_uhprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_uhprod', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_shprod' )
-       CALL CUTEST_timings( status, 'cutest_ushprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_ushprod', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_jprod' )
-       CALL CUTEST_timings( status, 'cutest_cjprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cjprod', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_sjprod' )
-       CALL CUTEST_timings( status, 'cutest_csjprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_csjprod', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hl' )
-       CALL CUTEST_timings( status, 'cutest_csh', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_csh', time_real )
        time = REAL( time_real, rp_ )
-       CALL CUTEST_timings( status, 'cutest_cshc', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cshc', time_real )
        time = time + REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hlc' )
-       CALL CUTEST_timings( status, 'cutest_cshc', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cshc', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hlprod' )
-       CALL CUTEST_timings( status, 'cutest_chprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_chprod', time_real )
        time = REAL( time_real, rp_ )
-       CALL CUTEST_timings( status, 'cutest_chcprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_chcprod', time_real )
        time = time + REAL( time_real, rp_ )
      CASE ( 'cutest_eval_shlprod' )
-       CALL CUTEST_timings( status, 'cutest_cshprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cshprod', time_real )
        time = REAL( time_real, rp_ )
-       CALL CUTEST_timings( status, 'cutest_cshcprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cshcprod', time_real )
        time = time + REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hlcprod' )
-       CALL CUTEST_timings( status, 'cutest_chcprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_chcprod', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_shlcprod' )
-       CALL CUTEST_timings( status, 'cutest_cshcprod', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cshcprod', time_real )
        time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hcprods' )
-       CALL CUTEST_timings( status, 'cutest_cchprods', time_real )
+       CALL CUTEST_timings_r( status, 'cutest_cchprods', time_real )
        time = REAL( time_real, rp_ )
      CASE DEFAULT
        status = GALAHAD_unavailable_option

@@ -3,7 +3,11 @@
 ! -*-*- G A L A H A D  -  D U M M Y   P A S T I X F  S U B R O U T I N E S -*-*-
 
    SUBROUTINE pastixInitParam_f08( iparm, dparm )
-     USE GALAHAD_KINDS, ONLY : spc_, dpc_
+#ifdef GALAHAD_SINGLE
+       USE GALAHAD_KINDS, ONLY : spc_
+#else
+       USE GALAHAD_KINDS, ONLY : dpc_
+#endif
      USE pastixf_enums, ONLY : pastix_int_t
      IMPLICIT NONE
      INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target :: iparm( : )
@@ -15,7 +19,11 @@
    END SUBROUTINE pastixInitParam_f08
 
    SUBROUTINE pastixInit_f08( pastix_data, pastix_comm, iparm, dparm )
-     USE GALAHAD_KINDS, ONLY : spc_, dpc_
+#ifdef GALAHAD_SINGLE
+       USE GALAHAD_KINDS, ONLY : spc_
+#else
+       USE GALAHAD_KINDS, ONLY : dpc_
+#endif
      USE spmf_enums, ONLY : MPI_Comm
      USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
      IMPLICIT NONE

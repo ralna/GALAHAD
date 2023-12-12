@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ T R I M S Q P  -*-*-*-*-*-*-*-*-*-
 
@@ -287,9 +288,6 @@
         !                    userdata=userdata )
 
      !END IF
-
-
-
 
  !  If required, append results to a file
 

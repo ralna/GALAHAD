@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ P T R A N S   M O D U L E  *-*-*-*-*-*-*-*-*-*
 
@@ -116,7 +117,7 @@
 
 !  Evaluate f
 
-     CALL CUTEST_ufn( inform%status, n, data%X_orig( : n ), f )
+     CALL CUTEST_ufn_r( inform%status, n, data%X_orig( : n ), f )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform f
@@ -159,7 +160,7 @@
 
 !  Evaluate g
 
-     CALL CUTEST_ugr( inform%status, n, data%X_orig( : n ), G )
+     CALL CUTEST_ugr_r( inform%status, n, data%X_orig( : n ), G )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradient
@@ -199,7 +200,7 @@
 
 !  Evaluate f and psssibly g
 
-     CALL CUTEST_uofg( inform%status, n, data%X_orig, f, G, grad )
+     CALL CUTEST_uofg_r( inform%status, n, data%X_orig, f, G, grad )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform f
@@ -247,7 +248,7 @@
 
 !  Evaluate H
 
-     CALL CUTEST_udh( inform%status, n, data%X_orig( : n ), lh1, H )
+     CALL CUTEST_udh_r( inform%status, n, data%X_orig( : n ), lh1, H )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -297,7 +298,7 @@
 
 !  Evaluate g and H
 
-     CALL CUTEST_ugrdh( inform%status, n, data%X_orig( : n ), G, lh1, H )
+     CALL CUTEST_ugrdh_r( inform%status, n, data%X_orig( : n ), G, lh1, H )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradient
@@ -352,8 +353,8 @@
 
 !  Evaluate H
 
-     CALL CUTEST_ush( inform%status, n, data%X_orig( : n ),                    &
-                      nnzh, lh, H, IRNH, ICNH )
+     CALL CUTEST_ush_r( inform%status, n, data%X_orig( : n ),                  &
+                        nnzh, lh, H, IRNH, ICNH )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -406,8 +407,8 @@
 
 !  Evaluate H
 
-     CALL CUTEST_ueh( inform%status, n, data%X_orig( : n ), ne, le, IPRNHI,    &
-                      IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
+     CALL CUTEST_ueh_r( inform%status, n, data%X_orig( : n ), ne, le, IPRNHI,  &
+                        IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -480,8 +481,8 @@
 
 !  Evaluate g and H
 
-     CALL CUTEST_ugrsh( inform%status, n, data%X_orig( : n ), G,               &
-                        nnzh, lh, H, IRNH, ICNH )
+     CALL CUTEST_ugrsh_r( inform%status, n, data%X_orig( : n ), G,             &
+                          nnzh, lh, H, IRNH, ICNH )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradient
@@ -539,8 +540,8 @@
 
 !  Evaluate g and H
 
-     CALL CUTEST_ugreh( inform%status, n, data%X_orig( : n ), G, ne, le,       &
-                        IPRNHI, IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
+     CALL CUTEST_ugreh_r( inform%status, n, data%X_orig( : n ), G, ne, le,     &
+                          IPRNHI, IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradient
@@ -621,8 +622,8 @@
 
 !  Form the product between H and the unscaled p
 
-     CALL CUTEST_uhprod( inform%status, n, goth, data%X_orig( : n ),           &
-                         data%P_orig( : n ), RESULT )
+     CALL CUTEST_uhprod_r( inform%status, n, goth, data%X_orig( : n ),         &
+                           data%P_orig( : n ), RESULT )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the result
@@ -667,8 +668,8 @@
 
 !  Evaluate a band submatrix of H
 
-     CALL CUTEST_ubandh( inform%status, n, data%X_orig( : n ), nsemib,         &
-                         BANDH, lbandh, maxsbw )
+     CALL CUTEST_ubandh_r( inform%status, n, data%X_orig( : n ), nsemib,       &
+                           BANDH, lbandh, maxsbw )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -724,7 +725,7 @@
 
 !  Evaluate f and c
 
-     CALL CUTEST_cfn( inform%status, n, m, data%X_orig( : n ), f, C )
+     CALL CUTEST_cfn_r( inform%status, n, m, data%X_orig( : n ), f, C )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform f and c
@@ -784,9 +785,9 @@
 
 !  Evaluate g and J
 
-     CALL CUTEST_cgr( inform%status, n, m, data%X_orig( : n ),                 &
-                      data%V_orig( : m ), grlagf, G, jtrans,                   &
-                      lcjac1, lcjac2, CJAC )
+     CALL CUTEST_cgr_r( inform%status, n, m, data%X_orig( : n ),               &
+                        data%V_orig( : m ), grlagf, G, jtrans,                 &
+                        lcjac1, lcjac2, CJAC )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradients
@@ -847,7 +848,7 @@
 
 !  Evaluate f and possibly g
 
-     CALL CUTEST_cofg( inform%status, n, data%X_orig( : n ), f, G, grad )
+     CALL CUTEST_cofg_r( inform%status, n, data%X_orig( : n ), f, G, grad )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform f
@@ -912,9 +913,9 @@
 
 !  Evaluate g and J
 
-     CALL CUTEST_csgr( inform%status, n, m,                                    &
-                       data%X_orig( : n ), data%V_orig( : m ), GRLAGF,         &
-                       nnzj, lcjac, CJAC, INDVAR, INDFUN )
+     CALL CUTEST_csgr_r( inform%status, n, m,                                  &
+                         data%X_orig( : n ), data%V_orig( : m ), GRLAGF,       &
+                         nnzj, lcjac, CJAC, INDVAR, INDFUN )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradients
@@ -968,8 +969,8 @@
 
 !  Evaluate c and possibly J
 
-     CALL CUTEST_ccfg( inform%status, n, m, data%X_orig( : n ), C,             &
-                       jtrans, lcjac1, lcjac2, CJAC, grad )
+     CALL CUTEST_ccfg_r( inform%status, n, m, data%X_orig( : n ), C,           &
+                         jtrans, lcjac1, lcjac2, CJAC, grad )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform c
@@ -1038,8 +1039,8 @@
 
 !  Evaluate c and possibly J
 
-     CALL CUTEST_ccfsg( inform%status, n, m, data%X_orig( : n ), C,            &
-                        nnzj, lcjac, CJAC, INDVAR, INDFUN, grad )
+     CALL CUTEST_ccfsg_r( inform%status, n, m, data%X_orig( : n ), C,          &
+                          nnzj, lcjac, CJAC, INDVAR, INDFUN, grad )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform c
@@ -1120,8 +1121,8 @@
 
 !  Evaluate c_i and possibly grad c_i
 
-     CALL CUTEST_ccifg( inform%status, n, icon, data%X_orig( : n ),            &
-                        ci, GCI, grad )
+     CALL CUTEST_ccifg_r( inform%status, n, icon, data%X_orig( : n ),          &
+                          ci, GCI, grad )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform ci
@@ -1174,8 +1175,8 @@
 
 !  Evaluate c_i and possibly grad c_i
 
-     CALL CUTEST_ccifsg( inform%status, n, icon, data%X_orig( : n ),           &
-                         ci, nnzgci, lgci, GCI, INDVAR, grad )
+     CALL CUTEST_ccifsg_r( inform%status, n, icon, data%X_orig( : n ),         &
+                           ci, nnzgci, lgci, GCI, INDVAR, grad )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform ci
@@ -1267,8 +1268,8 @@
 
 !  Evaluate H
 
-     CALL CUTEST_cdh( inform%status, n, m, data%X_orig( : n ),                 &
-                      data%V_orig( : m ), lh1, H )
+     CALL CUTEST_cdh_r( inform%status, n, m, data%X_orig( : n ),               &
+                        data%V_orig( : m ), lh1, H )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -1317,7 +1318,7 @@
 
 !  Evaluate H
 
-     CALL CUTEST_cidh( inform%status, n, data%X_orig( : n ), iprob, lh1, H )
+     CALL CUTEST_cidh_r( inform%status, n, data%X_orig( : n ), iprob, lh1, H )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -1382,9 +1383,9 @@
 
 !  Evaluate g, J and H
 
-     CALL CUTEST_cgrdh( inform%status, n, m, data%X_orig( : n ),               &
-                        data%V_orig( : m ), grlagf, G, jtrans,                 &
-                        lcjac1, lcjac2, CJAC, lh1, H )
+     CALL CUTEST_cgrdh_r( inform%status, n, m, data%X_orig( : n ),             &
+                          data%V_orig( : m ), grlagf, G, jtrans,               &
+                          lcjac1, lcjac2, CJAC, lh1, H )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradients
@@ -1468,8 +1469,8 @@
 
 !  Evaluate H
 
-     CALL CUTEST_csh( inform%status, n, m, data%X_orig( : n ),                 &
-                      data%V_orig( : m ), nnzh, lh, H, IRNH, ICNH )
+     CALL CUTEST_csh_r( inform%status, n, m, data%X_orig( : n ),               &
+                        data%V_orig( : m ), nnzh, lh, H, IRNH, ICNH )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -1520,8 +1521,8 @@
 
 !  Evaluate H
 
-     CALL CUTEST_cish( inform%status, n, data%X_orig( : n ), iprob,            &
-                       nnzh, lh, H, IRNH, ICNH )
+     CALL CUTEST_cish_r( inform%status, n, data%X_orig( : n ), iprob,          &
+                         nnzh, lh, H, IRNH, ICNH )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -1586,9 +1587,9 @@
 
 !  Evaluate H in element format
 
-     CALL CUTEST_ceh( inform%status, n, m, data%X_orig( : n ),                 &
-                      data%V_orig( : m ), ne, le,                              &
-                      IPRNHI, IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
+     CALL CUTEST_ceh_r( inform%status, n, m, data%X_orig( : n ),               &
+                        data%V_orig( : m ), ne, le,                            &
+                        IPRNHI, IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the Hessian
@@ -1676,9 +1677,9 @@
 
 !  Evaluate g, J and H
 
-     CALL CUTEST_csgrsh( inform%status, n, m, data%X_orig( : n ),              &
-                         data%V_orig( : m ), grlagf, nnzj, lcjac,              &
-                         CJAC, INDVAR, INDFUN, nnzh, lh, H, IRNH, ICNH )
+     CALL CUTEST_csgrsh_r( inform%status, n, m, data%X_orig( : n ),            &
+                           data%V_orig( : m ), grlagf, nnzj, lcjac,            &
+                           CJAC, INDVAR, INDFUN, nnzh, lh, H, IRNH, ICNH )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradients
@@ -1759,10 +1760,10 @@
 
 !  Evaluate g, J and H
 
-     CALL CUTEST_csgreh( inform%status, n, m, data%X_orig( : n ),              &
-                         data%V_orig( : m ), grlagf, nnzj, lcjac,              &
-                         CJAC, INDVAR, INDFUN, ne, le,                         &
-                         IPRNHI, IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
+     CALL CUTEST_csgreh_r( inform%status, n, m, data%X_orig( : n ),            &
+                           data%V_orig( : m ), grlagf, nnzj, lcjac,            &
+                           CJAC, INDVAR, INDFUN, ne, le,                       &
+                           IPRNHI, IPRHI, lirnhi, IRNHI, lhi, HI, byrows )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the gradients
@@ -1860,8 +1861,8 @@
 
 !  Form the product between H and the unscaled p
 
-     CALL CUTEST_chprod( inform%status, n, m, goth, data%X_orig( : n ),        &
-                        data%V_orig( : m ), data%P_orig( : n ), RESULT )
+     CALL CUTEST_chprod_r( inform%status, n, m, goth, data%X_orig( : n ),      &
+                           data%V_orig( : m ), data%P_orig( : n ), RESULT )
      IF ( inform%status /= 0 ) RETURN
 
 !  Transform the result

@@ -69,6 +69,10 @@ TMP=/tmp
 
 PRECISION=1
 
+# PSUFFIX = _s (single precision), = (double precision)
+
+PSUFFIX=""
+
 # RECOMPILE = 0 (use existing problem objects), = 1 (recompile problem objects)
 
 RECOMPILE=0
@@ -134,6 +138,7 @@ do
     UPDATE=1
   elif [[ "$opt" == '-s' ]]; then
     PRECISION=0
+    PSUFFIX="_s"
   elif [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
     echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
     echo ' '
@@ -313,13 +318,13 @@ if [[ $OUTPUT == "1" ]]; then
   echo ' '
 fi
 
-[[ -e RANGE.o && $RECOMPILE == '0' ]] && $RM RANGE.o
-[[ -e ELFUN.o && $RECOMPILE == '0' ]] && $RM ELFUN.o
-[[ -e GROUP.o && $RECOMPILE == '0' ]] && $RM GROUP.o
-[[ -e EXTER.o && $RECOMPILE == '0' ]] && $RM EXTER.o
+[[ -e RANGE${PSUFFIX}.o && $RECOMPILE == '0' ]] && $RM RANGE${PSUFFIX}.o
+[[ -e ELFUN${PSUFFIX}.o && $RECOMPILE == '0' ]] && $RM ELFUN${PSUFFIX}.o
+[[ -e GROUP${PSUFFIX}.o && $RECOMPILE == '0' ]] && $RM GROUP${PSUFFIX}.o
+[[ -e EXTER${PSUFFIX}.o && $RECOMPILE == '0' ]] && $RM EXTER${PSUFFIX}.o
 
-NSUB=( "ELFUN.o GROUP.o RANGE.o" )
-[[ -s EXTER.f ]] && NSUB=( "$NSUB EXTER.o" )
+NSUB=( "ELFUN${PSUFFIX}.o GROUP${PSUFFIX}.o RANGE${PSUFFIX}.o" )
+[[ -s EXTER${PSUFFIX}.f ]] && NSUB=( "$NSUB EXTER${PSUFFIX}.o" )
 
 for i  in  $NSUB; do
   if [[ ! -e $i ]]; then

@@ -191,7 +191,7 @@ $(CDLG)(cutest_dummy_$(PRECIS).o): ../dum/cutest_dummy.F90
 	$(CUARR) ../dum/empty
 	$(CP) ../dum/cutest_dummy.F90 $(OBJ)/cutest_dummy.F90
 	cd $(OBJ); $(FORTRAN) -o cutest_dummy_$(PRECIS).o \
-           $(FFLAGS) cutest_dummy.F90
+           $(FFLAGS) -I $(CUTEST)/include cutest_dummy.F90
 	cd $(OBJ); $(CDARR) cutest_dummy_$(PRECIS).o ; \
            $(RM) cutest_dummy.F90 cutest_dummy_$(PRECIS).o
 	$(RANLIB) $(CDLG)

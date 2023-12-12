@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
    MODULE GALAHAD_USEFILTRANE_precision
             
@@ -181,22 +182,22 @@
      SELECT CASE ( FILTRANE_inform%status )
 
      CASE ( 1, 2 )
-        CALL CUTEST_ccfsg( cutest_status, problem%n, problem%m, problem%x,     &
-                           problem%c, nnzj, J_ne_plus_n, problem%J_val,        &
-                           problem%J_col, problem%J_row, .TRUE. )
+        CALL CUTEST_ccfsg_r( cutest_status, problem%n, problem%m, problem%x,   &
+                             problem%c, nnzj, J_ne_plus_n, problem%J_val,      &
+                             problem%J_col, problem%J_row, .TRUE. )
        IF ( cutest_status /= 0 ) GO TO 910
 
      CASE ( 3 : 5 )
-          CALL CUTEST_ccfsg( cutest_status, problem%n, problem%m, problem%x,   &
-                           problem%c, nnzj, J_ne_plus_n, problem%J_val,        &
-                           problem%J_col, problem%J_row, .FALSE. )
+          CALL CUTEST_ccfsg_r( cutest_status, problem%n, problem%m, problem%x, &
+                             problem%c, nnzj, J_ne_plus_n, problem%J_val,      &
+                             problem%J_col, problem%J_row, .FALSE. )
        IF ( cutest_status /= 0 ) GO TO 910
 
      CASE ( 6 )
-        CALL CUTEST_csgr( cutest_status, problem%n, problem%m,                 &
-                          problem%x, problem%y,.FALSE.,                        &
-                          nnzj, J_ne_plus_n, problem%J_val,                    &
-                          problem%J_col, problem%J_row )
+        CALL CUTEST_csgr_r( cutest_status, problem%n, problem%m,               &
+                            problem%x, problem%y,.FALSE.,                      &
+                            nnzj, J_ne_plus_n, problem%J_val,                  &
+                            problem%J_col, problem%J_row )
          IF ( cutest_status /= 0 ) GO TO 910
 
      CASE ( 7 )
@@ -215,10 +216,10 @@
         EXIT
 
      CASE ( 15, 16 )
-        CALL CUTEST_chprod( cutest_status, problem%n, problem%m,               &
-                            .NOT. FILTRANE_data%RC_newx,                       &
-                            problem%x, problem%y, FILTRANE_data%RC_v,          &
-                            FILTRANE_data%RC_Mv )
+        CALL CUTEST_chprod_r( cutest_status, problem%n, problem%m,             &
+                              .NOT. FILTRANE_data%RC_newx,                     &
+                              problem%x, problem%y, FILTRANE_data%RC_v,        &
+                              FILTRANE_data%RC_Mv )
        IF ( cutest_status /= 0 ) GO TO 910
 
      CASE DEFAULT
@@ -231,7 +232,7 @@
 
 ! Get the CUTEst statistics.
 
-  CALL CUTEST_creport( cutest_status, CUTEst_calls, CUTEst_time )
+  CALL CUTEST_creport_r( cutest_status, CUTEst_calls, CUTEst_time )
   IF ( cutest_status /= 0 ) GO TO 910
 
 ! Terminate FILTRANE.
@@ -303,7 +304,7 @@
 ! Clean up the problem space
 
    CALL NLPT_cleanup( problem )
-   CALL CUTEST_cterminate( cutest_status )
+   CALL CUTEST_cterminate_r( cutest_status )
    RETURN
 
  910 CONTINUE
@@ -398,7 +399,7 @@ CONTAINS
 ! Get the problem's dimensions
 ! --------------------------------------------------------------------------
 
-  CALL CUTEST_cdimen( cutest_status, isif, problem%n, problem%m )
+  CALL CUTEST_cdimen_r( cutest_status, isif, problem%n, problem%m )
   IF ( cutest_status /= 0 ) GO TO 910
 
 ! --------------------------------------------------------------------------
@@ -493,22 +494,22 @@ CONTAINS
 ! CUTEst setup
 ! --------------------------------------------------------------------------
 
-  CALL CUTEST_csetup( cutest_status, isif, errout, io_buffer,                  &
-                      problem%n, problem%m, problem%x,                         &
-                      problem%x_l, problem%x_u,                                &
-                      problem%y, problem%c_l, problem%c_u,                     &
-                      problem%equation, problem%linear, 0, 0, 0 )
+  CALL CUTEST_csetup_r( cutest_status, isif, errout, io_buffer,                &
+                        problem%n, problem%m, problem%x,                       &
+                        problem%x_l, problem%x_u,                              &
+                        problem%y, problem%c_l, problem%c_u,                   &
+                        problem%equation, problem%linear, 0, 0, 0 )
   IF ( cutest_status /= 0 ) GO TO 910
 
-  CALL CUTEST_cnames( cutest_status, problem%n, problem%m,                     &
-                      problem%pname, problem%vnames, problem%cnames )
+  CALL CUTEST_cnames_r( cutest_status, problem%n, problem%m,                   &
+                        problem%pname, problem%vnames, problem%cnames )
   IF ( cutest_status /= 0 ) GO TO 910
 
 ! --------------------------------------------------------------------------
 ! Allocate the Jacobian space.
 ! --------------------------------------------------------------------------
 
-  CALL CUTEST_cdimsj( cutest_status, J_size )
+  CALL CUTEST_cdimsj_r( cutest_status, J_size )
   IF ( cutest_status /= 0 ) GO TO 910
 
   problem%J_ne = J_size - problem%n

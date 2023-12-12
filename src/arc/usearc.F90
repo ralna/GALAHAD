@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -270,7 +270,7 @@
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
      CALL ARC_solve( nlp, control, inform, data, userdata,                     &
-                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,             &
+                     eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           &
                      eval_H = CUTEST_eval_H, eval_HPROD = CUTEST_eval_HPROD )
 !    CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
@@ -438,7 +438,6 @@
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
  2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F5.1, I4, F9.2, I5 )
  2050 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, I9, ' :', F9.2, I5 )
-
 
 !  End of subroutine USE_ARC
 

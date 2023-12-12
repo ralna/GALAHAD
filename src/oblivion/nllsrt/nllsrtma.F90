@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 Program NLLSRTMA
   ! Version 9 July 2008
@@ -30,21 +31,21 @@ Program NLLSRTMA
   !
   !  Get problem dimensions 
   !
-  Call CUTEST_cdimen( cutest_status, INPUT, N, M )
+  Call CUTEST_cdimen_r( cutest_status, INPUT, N, M )
   IF ( cutest_status /= 0 ) GO TO 910
   !
   !  Set up SIF data from the problem file
   !
   Allocate(TOL(4), OUTPUT(2),  X( N ), BL( N ), BU( N ),V( M+1 ), CL( M+1 ),   &
              CU( M+1 ), EQUATN( M+1 ), LINEAR( M+1 ) )
-  Call CUTEST_csetup( cutest_status, INPUT, IOUT, io_buffer, N, M, X, BL, BU,  &
-                      V, CL, CU, EQUATN, LINEAR, 1, 0, 0 )
+  Call CUTEST_csetup_r( cutest_status, INPUT, IOUT, io_buffer, N, M, X,        &
+                        BL, BU, V, CL, CU, EQUATN, LINEAR, 1, 0, 0 )
   IF ( cutest_status /= 0 ) GO TO 910
   !
   !  Obtain problem/variables/constraints names.
   !
   Allocate( VNAMES( N ) ,GNAMES( M ))
-  Call CUTEST_cnames( cutest_status, N, M, PNAME, VNAMES, GNAMES )
+  Call CUTEST_cnames_r( cutest_status, N, M, PNAME, VNAMES, GNAMES )
   IF ( cutest_status /= 0 ) GO TO 910
   !
   !  Call the optimizer.
@@ -59,14 +60,14 @@ Program NLLSRTMA
 
   iprint=1  !iprint>0 print one line per iteration
 
-  if (iprint.gt.0) then   
+  IF ( iprint > 0 ) THEN   
      !
      ! Open the history_rt file
      !
      OPEN( UNIT = 200, FILE = 'history_rt', STATUS='old' , POSITION='append')
      write(200,'(''Problem '',A10, ''N='',I5,'' M='',I5)') PNAME , N,M
-  end if
-  CALL NLLSRT(N,M, X, MYMAXIT,TOL,OUTPUT,IERR,iter,iter_int,iter_int_tot,iprint)
+  END IF
+  CALL NLLSRT(N,M,X,MYMAXIT,TOL,OUTPUT,IERR,iter,iter_int,iter_int_tot,iprint)
 	
   !
   !  Close the problem file
@@ -95,7 +96,7 @@ Program NLLSRTMA
   
   !  (N, is the dimension of the problem, M is the number of constraints)
   !
-  Call CUTEST_creport( cutest_status, CALLS, CPU )      
+  Call CUTEST_creport_r( cutest_status, CALLS, CPU )      
   IF ( cutest_status /= 0 ) GO TO 910
   !
   ! print on results_rt
@@ -124,15 +125,15 @@ Program NLLSRTMA
   end if
   !
   !
-  Write ( IOUT, 2000 ) PNAME, N, M,        &
-        CALLS( 5 ), CALLS( 6 ), iter, iter_int, iter_int_tot
+  Write ( IOUT, 2000 ) PNAME, N, M, CALLS( 5 ), CALLS( 6 ),                    &
+                       iter, iter_int, iter_int_tot
   Write ( IOUT, 2001 ) IERR, OUTPUT(1), OUTPUT(2),  CPU( 1 ), CPU( 2 )
   !
   !  Free allocated memory
   !
   Deallocate( OUTPUT,TOL,X, BU, BL, VNAMES, EQUATN, LINEAR )
   Deallocate( V, CL, CU, GNAMES )
-  CALL CUTEST_cterminate( cutest_status )
+  CALL CUTEST_cterminate_r( cutest_status )
   !
   !  Exit
   !

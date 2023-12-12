@@ -5,7 +5,7 @@
 ! start-print                                       -1
 ! stop-print                                        -1
 ! iterations-between-printing                       1
-! maximum-number-of-iterations                      3
+! maximum-number-of-iterations                      100
 ! scale-constraints                                 0
 ! infinity-value                                    1.0D+19
 ! absolute-primal-accuracy                          6.0D-6

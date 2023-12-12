@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-10-04 AT 10:40 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E B Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -162,7 +163,7 @@
 
 !  Determine the number of variables and constraints
 
-      CALL CUTEST_udimen( cutest_status, input, n )
+      CALL CUTEST_udimen_r( cutest_status, input, n )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  Allocate suitable arrays
@@ -176,8 +177,8 @@
 !  Set up the data structures necessary to hold the group partially
 !  separable function.
 
-      CALL CUTEST_usetup( cutest_status, input, out, io_buffer,                &
-                          n, prob%X, prob%X_l, prob%X_u )
+      CALL CUTEST_usetup_r( cutest_status, input, out, io_buffer,              &
+                            n, prob%X, prob%X_l, prob%X_u )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  Allocate derived types
@@ -190,7 +191,7 @@
 
 !  Determine the names of the problem, variables and constraints.
 
-      CALL CUTEST_unames( cutest_status, n, pname, VNAME )
+      CALL CUTEST_unames_r( cutest_status, n, pname, VNAME )
       IF ( cutest_status /= 0 ) GO TO 910
       WRITE( out, 2020 ) pname 
 
@@ -208,7 +209,7 @@
 
 !  Evaluate the constant term of the objective function
 
-      CALL CUTEST_ufn( cutest_status, n, prob%X0, objf )
+      CALL CUTEST_ufn_r( cutest_status, n, prob%X0, objf )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  Allocate arrays to hold the Jacobian
@@ -221,12 +222,12 @@
 
 !  Evaluate the gradient of the objective function
 
-      CALL CUTEST_ugr( cutest_status, n, prob%X0, prob%G )
+      CALL CUTEST_ugr_r( cutest_status, n, prob%X0, prob%G )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  Determine the number of nonzeros in the Hessian
 
-      CALL CUTEST_udimsh( cutest_status, lh )
+      CALL CUTEST_udimsh_r( cutest_status, lh )
       IF ( cutest_status /= 0 ) GO TO 910
       lh = MAX( lh, 1 )
 
@@ -241,8 +242,8 @@
 
 !  Evaluate the Hessian of the objective at the initial point.
 
-      CALL CUTEST_ush( cutest_status, n, prob%X,                               &
-                       neh, lh, prob%H%val, prob%H%row, prob%H%col )
+      CALL CUTEST_ush_r( cutest_status, n, prob%X,                             &
+                        neh, lh, prob%H%val, prob%H%row, prob%H%col )
       IF ( cutest_status /= 0 ) GO TO 910
 !      WRITE( out, "( ' neh  = ', i8, ' lh   = ', i8 )" ) neh, lh
 
@@ -516,10 +517,10 @@
 !  If the problem was scaled, unscale it.
 
       IF ( scale > 0 ) THEN
-        CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                   &
+        CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                     &
                             SCALE_control, SCALE_inform )
         IF ( SCALE_inform%status < 0 ) THEN
-          WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" ) &
+          WRITE( out, "( '  ERROR return from SCALE (status =', I0, ')' )" )   &
             SCALE_inform%status
           STOP
         END IF
@@ -663,7 +664,7 @@
       DEALLOCATE( VNAME )
       IF ( is_specfile ) CLOSE( input_specfile )
 
-      CALL CUTEST_cterminate( cutest_status )
+      CALL CUTEST_cterminate_r( cutest_status )
       RETURN
 
  910  CONTINUE

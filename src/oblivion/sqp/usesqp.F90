@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ S Q P  -*-*-*-*-*-*-*-*-*-*-
 
@@ -81,7 +82,7 @@
 
      IF ( out > 0 ) CALL COPYRIGHT( out, '2006' )
 
-     CALL CUTEST_cdimen( cutest_status, input, nlp%n, nlp%m )
+     CALL CUTEST_cdimen_r( cutest_status, input, nlp%n, nlp%m )
      IF ( cutest_status /= 0 ) GO TO 910
      n = nlp%n ; m = nlp%m ; npm = n + m
 
@@ -130,9 +131,9 @@
      IF ( status /= 0 ) GO TO 990
 
      i = n
-     CALL CUTEST_csetup( cutest_status, input, error, io_buffer, n, m,         &
-                         nlp%X, nlp%X_l, nlp%X_u, nlp%Y, nlp%C_l, nlp%C_u,     &
-                         nlp%EQUATION, nlp%LINEAR, 0, 0, 0 )
+     CALL CUTEST_csetup_r( cutest_status, input, error, io_buffer, n, m,       &
+                           nlp%X, nlp%X_l, nlp%X_u, nlp%Y, nlp%C_l, nlp%C_u,   &
+                           nlp%EQUATION, nlp%LINEAR, 0, 0, 0 )
      IF ( cutest_status /= 0 ) GO TO 910
      inequality = .FALSE.
      DO i = 1, n
@@ -154,22 +155,22 @@
 
 !  Obtain the names of the problem, its variables and general constraints
 
-     CALL CUTEST_cnames( cutest_status, n, m,                                  &
-                         nlp%pname, nlp%VNAMES, nlp%CNAMES )
+     CALL CUTEST_cnames_r( cutest_status, n, m,                                &
+                           nlp%pname, nlp%VNAMES, nlp%CNAMES )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Determine how many nonzeros are required to store the matrix of 
 !  gradients of the objective function and constraints, when the matrix 
 !  is stored in sparse format.
 
-     CALL CUTEST_cdimsj( cutest_status, J_ne )
+     CALL CUTEST_cdimsj_r( cutest_status, J_ne )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
 !  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate" 
 !  format
  
-     CALL CUTEST_cdimsh( cutest_status, H_ne )
+     CALL CUTEST_cdimsh_r( cutest_status, H_ne )
      IF ( cutest_status /= 0 ) GO TO 910
 
      CALL SPACE_resize_array( J_ne, A%row, status, alloc_status )
@@ -273,7 +274,7 @@
 
 !  Evaluate the function and constraint values
 
-       CALL CUTEST_cfn( cutest_status, n, m, nlp%X, nlp%f, nlp%C )
+       CALL CUTEST_cfn_r( cutest_status, n, m, nlp%X, nlp%f, nlp%C )
        IF ( cutest_status /= 0 ) GO TO 910
 
        pr_feas = MAX( MAXVAL( MAX( nlp%X_l - nlp%X, zero ) ),                  &
@@ -299,9 +300,9 @@
 !  Evaluate the Jacobian and Hessian
 
          grlagf = .FALSE. ; J_len = J_ne ; H_len = H_ne
-         CALL CUTEST_csgrsh( cutest_status, n, m, nlp%X, - nlp%Y, grlagf,      &
-                             J_ne, J_len, A%val, A%col, A%row,                 &
-                             H%ne, H_len, H%val, H%row, H%col )
+         CALL CUTEST_csgrsh_r( cutest_status, n, m, nlp%X, - nlp%Y, grlagf,    &
+                               J_ne, J_len, A%val, A%col, A%row,               &
+                               H%ne, H_len, H%val, H%row, H%col )
          IF ( cutest_status /= 0 ) GO TO 910
 
 !  Untangle A: separate the gradient terms from the constraint Jacobian
@@ -390,7 +391,7 @@
            write(6, "( ' alpha, merit ', 2ES12.4 )" ) zero, merit
            DO 
              X_trial = nlp%X + alpha * prob%X
-             CALL CUTEST_cfn( cutest_status,  n, m, X_trial, nlp%f, nlp%C )
+             CALL CUTEST_cfn_r( cutest_status,  n, m, X_trial, nlp%f, nlp%C )
              IF ( cutest_status /= 0 ) GO TO 910
 
              pr_feas = MAX( MAXVAL( MAX( nlp%X_l - nlp%X, zero ) ),            &
@@ -409,7 +410,7 @@
            END DO
          ELSE
            nlp%X = nlp%X + prob%X
-           CALL CUTEST_cfn( cutest_status,  n, m, nlp%X, nlp%f, nlp%C )
+           CALL CUTEST_cfn_r( cutest_status,  n, m, nlp%X, nlp%f, nlp%C )
            IF ( cutest_status /= 0 ) GO TO 910
            pr_feas = MAX( MAXVAL( MAX( nlp%X_l - nlp%X, zero ) ),              &
                           MAXVAL( MAX( nlp%X - nlp%X_u, zero ) ) )
@@ -463,7 +464,7 @@
 
 !  Evaluate the function and constraint values
 
-         CALL CUTEST_cfn( cutest_status,  n, m, nlp%X, obj, nlp%C )
+         CALL CUTEST_cfn_r( cutest_status,  n, m, nlp%X, obj, nlp%C )
          IF ( cutest_status /= 0 ) GO TO 910
          pr_feas = MAXVAL( ABS( nlp%C ) )
 !        IF ( out_sol > 0 ) WRITE( out_sol, "( ' f ', ES24.16 )" ) obj
@@ -474,9 +475,9 @@
 
          grlagf = .FALSE. ; J_len = J_ne ; H_len = H_ne
 !        Y = - nlp%Y
-         CALL CUTEST_csgrsh( cutest_status, n, m, nlp%X, - nlp%Y, grlagf,      &
-                            J_ne, J_len, A%val, A%col, A%row,                  &
-                            H%ne, H_len, H%val, H%row, H%col )
+         CALL CUTEST_csgrsh_r( cutest_status, n, m, nlp%X, - nlp%Y, grlagf,    &
+                              J_ne, J_len, A%val, A%col, A%row,                &
+                              H%ne, H_len, H%val, H%row, H%col )
          IF ( cutest_status /= 0 ) GO TO 910
 
 !write(6,*) ' H: row ', H%row(:H%ne)
@@ -624,7 +625,7 @@
        WRITE( 6, "( /, ' SQP unsuccessful termination, status = ', I0 )" )     &
          status
      END IF
-     CALL CUTEST_cterminate( cutest_status )
+     CALL CUTEST_cterminate_r( cutest_status )
      RETURN
 
  910 CONTINUE

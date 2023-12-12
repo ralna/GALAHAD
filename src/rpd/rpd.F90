@@ -77,7 +77,7 @@
                 RPD_get_H, RPD_get_A, RPD_get_H_c, RPD_get_x_type,             &
                 RPD_get_x, RPD_get_y, RPD_get_z, RPD_terminate,                &
                 RPD_full_initialize, RPD_full_terminate, RPD_information,      &
-                QPT_problem_type
+                RPD_read_specfile, QPT_problem_type
 
 !----------------------
 !   I n t e r f a c e s

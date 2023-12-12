@@ -382,10 +382,10 @@ $(CULG)(use$(package)_$(PRECIS).o): ../$(package)/use$(package).F90
 	$(CP) ../$(package)/use$(package).F90 $(OBJ)/use$(package).F90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package)_$(PRECIS).o \
-                     $(FFLAGSOMP) use$(package).F90 \
+                     $(FFLAGSOMP) -I $(CUTEST)/include use$(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o use$(package)_$(PRECIS).o \
-                      $(FFLAGSN) use$(package).F90 )
+                      $(FFLAGSN)  -I $(CUTEST)/include use$(package).F90 )
 	cd $(OBJ); $(CUARR) use$(package)_$(PRECIS).o ; \
                    $(RM) use$(package).F90 use$(package)_$(PRECIS).o
 	$(RMOBFILE) run$(package)_sif_$(PRECIS).o

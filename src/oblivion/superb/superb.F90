@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ S U P E R B   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -1166,7 +1167,7 @@
 
 !  Discover how many variables and constraints are involved in the problem
 
-     CALL CUTEST_cdimen( cutest_status, input, n, m )
+     CALL CUTEST_cdimen_r( cutest_status, input, n, m )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Allocate sufficient space to hold the problem
@@ -1263,10 +1264,10 @@
 
 !  Set up the correct data structures for subsequent computations.
 
-     CALL CUTEST_csetup( cutest_status, input, control%error, io_buffer,       &
-                         n, m, data%X, data%X_l, data%X_u,                     &
-                         data%LAMBDA, data%C_l, data%C_u,                      &
-                         data%EQUATN, data%LINEAR, 1, 1, 0 )
+     CALL CUTEST_csetup_r( cutest_status, input, control%error, io_buffer,     &
+                           n, m, data%X, data%X_l, data%X_u,                   &
+                           data%LAMBDA, data%C_l, data%C_u,                    &
+                           data%EQUATN, data%LINEAR, 1, 1, 0 )
      IF ( cutest_status /= 0 ) GO TO 930
      IF ( printd ) WRITE( out, "( ' x ', /, ( 5ES12.4 ) )" )  data%X( : n )
 
@@ -1350,14 +1351,14 @@
 !  gradients of the objective function and constraints, when the matrix 
 !  is stored in sparse format.
 
-     CALL CUTEST_cdimsj( cutest_status, J_ne )
+     CALL CUTEST_cdimsj_r( cutest_status, J_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
 !  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate" 
 !  format
  
-     CALL CUTEST_cdimsh( cutest_status, H_ne )
+     CALL CUTEST_cdimsh_r( cutest_status, H_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Allocate further space to hold the problem
@@ -1651,8 +1652,8 @@
 
 !  Obtain the names of the problem, its variables and general constraints
 
-     CALL CUTEST_cnames( cutest_status, n, m,                                  &
-                         inform%pname, data%X_name, data%C_name )
+     CALL CUTEST_cnames_r( cutest_status, n, m,                                &
+                           inform%pname, data%X_name, data%C_name )
      IF ( cutest_status /= 0 ) GO TO 930
 
      WRITE( out, "( /, ' Solver:         SUPERB', /, ' Problem: ', 7X, A10 )" )&
@@ -1697,9 +1698,9 @@
 !  Evaluate the gradients of the constraints
 
        grlagf = .FALSE. ; J_len = J_ne
-       CALL CUTEST_csgr( cutest_status, n, m, data%X, data%LAMBDA, grlagf,     &
-                         J_ne, J_len, data%prob%A%val, data%prob%A%col,        &
-                         data%prob%A%row )
+       CALL CUTEST_csgr_r( cutest_status, n, m, data%X, data%LAMBDA, grlagf,   &
+                           J_ne, J_len, data%prob%A%val, data%prob%A%col,      &
+                           data%prob%A%row )
        IF ( cutest_status /= 0 ) GO TO 930
        inform%g_eval = inform%g_eval + 1
 
@@ -1747,7 +1748,7 @@
 
 !  Evaluate the objective and general constraint function values
    
-     CALL CUTEST_cfn( cutest_status, n, m, data%X, f, data%C )
+     CALL CUTEST_cfn_r( cutest_status, n, m, data%X, f, data%C )
      IF ( cutest_status /= 0 ) GO TO 930
      inform%obj = f ; inform%f_eval = inform%f_eval + 1
      g_recent = .FALSE.
@@ -1762,9 +1763,9 @@
 
        IF ( control%scale_c > 2 .OR. control%scale_f > 2 ) THEN
          grlagf = .FALSE. ; J_len = J_ne
-         CALL CUTEST_csgr( cutest_status,  n, m, data%X, data%LAMBDA, grlagf,  &
-                           J_ne, J_len, data%prob%A%val, data%prob%A%col,      &
-                           data%prob%A%row )
+         CALL CUTEST_csgr_r( cutest_status,  n, m, data%X, data%LAMBDA,        &
+                             grlagf, J_ne, J_len, data%prob%A%val,             &
+                             data%prob%A%col, data%prob%A%row )
          IF ( cutest_status /= 0 ) GO TO 930
          inform%g_eval = inform%g_eval + 1
        END IF
@@ -2271,9 +2272,9 @@
                              data%ptrans_transform, data%ptrans_data,          &
                              inform%ptrans_inform )
          ELSE
-           CALL CUTEST_csgr( cutest_status, n, m, data%X, data%LAMBDA, grlagf, &
-                             J_ne, J_len, data%prob%A%val, data%prob%A%col,    &
-                             data%prob%A%row )
+           CALL CUTEST_csgr_r( cutest_status, n, m, data%X, data%LAMBDA,       &
+                               grlagf, J_ne, J_len, data%prob%A%val,           &
+                               data%prob%A%col, data%prob%A%row )
            IF ( cutest_status /= 0 ) GO TO 930
          END IF     
          inform%g_eval = inform%g_eval + 1
@@ -3181,12 +3182,12 @@ inner: DO
                                      data%prob%H%col, data%ptrans_transform,   &
                                      data%ptrans_data, inform%ptrans_inform )
                ELSE
-                 CALL CUTEST_csgrsh( cutest_status, n, m, data%X, data%LAMBDA, &
-                                     grlagf, J_ne, J_len,                      &
-                                     data%prob%A%val, data%prob%A%col,         &
-                                     data%prob%A%row, data%prob%H%ne,          &
-                                     H_len, data%prob%H%val, data%prob%H%row,  &
-                                     data%prob%H%col )
+                 CALL CUTEST_csgrsh_r( cutest_status, n, m, data%X,            &
+                                       data%LAMBDA, grlagf, J_ne, J_len,       &
+                                       data%prob%A%val, data%prob%A%col,       &
+                                       data%prob%A%row, data%prob%H%ne,        &
+                                       H_len, data%prob%H%val,                 &
+                                       data%prob%H%row, data%prob%H%col )
                END IF     
                IF ( cutest_status /= 0 ) GO TO 930
              ELSE
@@ -3198,9 +3199,9 @@ inner: DO
                                    data%prob%A%row, data%ptrans_transform,     &
                                    data%ptrans_data, inform%ptrans_inform )
                ELSE
-                 CALL CUTEST_csgr( cutest_status, n, m, data%X, data%LAMBDA,   &
-                                   grlagf, J_ne, J_len, data%prob%A%val,       &
-                                   data%prob%A%col, data%prob%A%row )
+                 CALL CUTEST_csgr_r( cutest_status, n, m, data%X, data%LAMBDA, &
+                                     grlagf, J_ne, J_len, data%prob%A%val,     &
+                                     data%prob%A%col, data%prob%A%row )
                  IF ( cutest_status /= 0 ) GO TO 930
                END IF     
                IF ( control%model == 2 ) THEN
@@ -3263,9 +3264,9 @@ inner: DO
                                   data%ptrans_transform, data%ptrans_data,     &
                                   inform%ptrans_inform )
                ELSE
-                 CALL CUTEST_csh( cutest_status, n, m, data%X, data%LAMBDA,    &
-                                  data%prob%H%ne, H_len, data%prob%H%val,      &
-                                  data%prob%H%row, data%prob%H%col )
+                 CALL CUTEST_csh_r( cutest_status, n, m, data%X, data%LAMBDA,  &
+                                    data%prob%H%ne, H_len, data%prob%H%val,    &
+                                    data%prob%H%row, data%prob%H%col )
                  IF ( cutest_status /= 0 ) GO TO 930
                END IF     
              ELSE IF ( control%model == 2 ) THEN
@@ -4877,8 +4878,8 @@ inner: DO
                               data%ptrans_transform, data%ptrans_data,         &
                               inform%ptrans_inform )
            ELSE
-             CALL CUTEST_cfn( cutest_status, n, m, data%X_trial,               &
-                              f_trial, data%C_trial )
+             CALL CUTEST_cfn_r( cutest_status, n, m, data%X_trial,             &
+                                f_trial, data%C_trial )
              IF ( cutest_status /= 0 ) GO TO 930
            END IF     
            inform%f_eval = inform%f_eval + 1
@@ -6083,7 +6084,7 @@ inner: DO
        WRITE( control%error, "( ' ** Message from -SUPERB_solve- ',            &
       &  '    Error exit (status = ', I6, ')', / )" ) inform%status
      END IF
-     CALL CUTEST_cterminate( cutest_status )
+     CALL CUTEST_cterminate_r( cutest_status )
 
      RETURN
 
@@ -7637,7 +7638,7 @@ inner: DO
          CALL PTRANS_cfn( n, m, X_trial, f_trial, m, C_trial,                  &
                           ptrans_transform, ptrans_data, inform%ptrans_inform )
        ELSE
-         CALL CUTEST_cfn( cutest_status, n, m, X_trial, f_trial, C_trial )
+         CALL CUTEST_cfn_r( cutest_status, n, m, X_trial, f_trial, C_trial )
          IF ( cutest_status /= 0 ) GO TO 930
        END IF     
        inform%f_eval = inform%f_eval + 1
@@ -7806,7 +7807,7 @@ inner: DO
          CALL PTRANS_cfn( n, m, X_trial, f_trial, m, C_trial,                  &
                           ptrans_transform, ptrans_data, inform%ptrans_inform )
        ELSE
-         CALL CUTEST_cfn( cutest_status,  n, m, X_trial, f_trial, C_trial )
+         CALL CUTEST_cfn_r( cutest_status,  n, m, X_trial, f_trial, C_trial )
          IF ( cutest_status /= 0 ) GO TO 930
        END IF     
        inform%f_eval = inform%f_eval + 1
@@ -7912,8 +7913,8 @@ inner: DO
                               ptrans_transform, ptrans_data,                   &
                               inform%ptrans_inform )
          ELSE
-           CALL CUTEST_csgr( cutest_status, n, m, X_trial, LAMBDA, grlagf,     &
-                             J_ne, J_len, prob%A%val, prob%A%col, prob%A%row )
+           CALL CUTEST_csgr_r( cutest_status, n, m, X_trial, LAMBDA, grlagf,   &
+                               J_ne, J_len, prob%A%val, prob%A%col, prob%A%row )
            IF ( cutest_status /= 0 ) GO TO 930
          END IF     
          inform%g_eval = inform%g_eval + 1

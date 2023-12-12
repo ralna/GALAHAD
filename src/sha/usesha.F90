@@ -1,6 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-10-11 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
 
 #include "galahad_modules.h"
+#include "cutest_routines.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ S H A  -*-*-*-*-*-*-*-*-*-*-
 
@@ -183,7 +184,7 @@
 
 !  determine the number of variables
 
-     CALL CUTEST_cdimen( status, input, n, m )
+     CALL CUTEST_cdimen_r( status, input, n, m )
      IF ( status /= 0 ) GO TO 910
 
 !  allocate suitable arrays
@@ -205,11 +206,11 @@
 !  separable objective function
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_csetup( status, input, out, io_buffer, n, m, X, X_l, X_u,   &
-                           LAMBDA, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
+       CALL CUTEST_csetup_r( status, input, out, io_buffer, n, m, X, X_l, X_u, &
+                             LAMBDA, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
        ptype = 'C'
      ELSE
-       CALL CUTEST_usetup( status, input, out, io_buffer, n, X, X_l, X_u )
+       CALL CUTEST_usetup_r( status, input, out, io_buffer, n, X, X_l, X_u )
        ptype = 'U'
      END IF
      IF ( status /= 0 ) GO TO 910
@@ -237,15 +238,15 @@
 
 !  discover the problem name
 
-     CALL CUTEST_probname( status, pname )
+     CALL CUTEST_probname_r( status, pname )
      IF ( status /= 0 ) GO TO 910
 
 !  compute the number of nonzeros in the Hessian
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_cdimsh( status, nnzh )
+       CALL CUTEST_cdimsh_r( status, nnzh )
      ELSE
-       CALL CUTEST_udimsh( status, nnzh )
+       CALL CUTEST_udimsh_r( status, nnzh )
      END IF
      IF ( status /= 0 ) GO TO 910
 
@@ -264,18 +265,18 @@
 !  compute the Hessian sparsity pattern
 
      IF ( m > 0 ) THEN
-!      CALL CUTEST_cshp( status, n, nnzh, lh, ROW, COL )
+!      CALL CUTEST_cshp_r( status, n, nnzh, lh, ROW, COL )
      ELSE
-!      CALL CUTEST_ushp( status, n, nnzh, lh, ROW, COL )
+!      CALL CUTEST_ushp_r( status, n, nnzh, lh, ROW, COL )
      END IF
      IF ( status /= 0 ) GO TO 910
 
 !  compute the exact Hessian for comparison purposes
 
      IF ( m > 0 ) THEN
-       CALL CUTEST_csh( status, n, m, X, LAMBDA, nnzh, lh, VAL, ROW, COL )
+       CALL CUTEST_csh_r( status, n, m, X, LAMBDA, nnzh, lh, VAL, ROW, COL )
      ELSE
-       CALL CUTEST_ush( status, n, X, nnzh, lh, VAL, ROW, COL )
+       CALL CUTEST_ush_r( status, n, X, nnzh, lh, VAL, ROW, COL )
       END IF
 
      IF ( status /= 0 ) GO TO 910
@@ -355,10 +356,10 @@
 !write(6, "( ' ||s(', I0, ')|| = ', ES12.4 )" ) k, TWO_NORM( S( : n, k ) )
        level = level * reduce
        IF ( m > 0 ) THEN
-         CALL CUTEST_chprod( status, n, m, .FALSE., X, LAMBDA, S( : , k ),     &
-                             Y( : , k ) )
+         CALL CUTEST_chprod_r( status, n, m, .FALSE., X, LAMBDA, S( : , k ),   &
+                               Y( : , k ) )
        ELSE
-         CALL CUTEST_uhprod( status, n, .FALSE., X, S( : , k ), Y( : , k ) )
+         CALL CUTEST_uhprod_r( status, n, .FALSE., X, S( : , k ), Y( : , k ) )
        END IF
        IF ( status /= 0 ) GO TO 910
 !      Y( : , k ) = Y( : , k ) + 0.0001_rp_
@@ -517,9 +518,9 @@
 
      IF ( is_specfile ) CLOSE( input_specfile )
      IF ( m > 0 ) THEN
-       CALL CUTEST_cterminate( status )
+       CALL CUTEST_cterminate_r( status )
      ELSE
-       CALL CUTEST_uterminate( status )
+       CALL CUTEST_uterminate_r( status )
      END IF
      RETURN
 
