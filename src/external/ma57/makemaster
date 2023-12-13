@@ -201,7 +201,8 @@ ma57s.o: $(HLG)(ma57s.o)
 $(HLG)(ma57s.o): $(MA57)/ma57s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma57s"
 	$(CP) $(MA57)/ma57s.f $(OBJ)/ma57s.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma57s.o $(FFLAGS77) ma57s.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma57s.o $(FFLAGS77) \
+                     -DMETIS_NODEND=galahad_metis ma57s.f90
 	cd $(OBJ) ; $(HARR) ma57s.o ; $(RM) ma57s.f90 ma57s.o
 	@printf '[ OK ]\n'
 
@@ -210,7 +211,8 @@ ma57d.o: $(HLG)(ma57d.o)
 $(HLG)(ma57d.o): $(MA57)/ma57d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma57d"
 	$(CP) $(MA57)/ma57d.f $(OBJ)/ma57d.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma57d.o $(FFLAGS77) ma57d.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma57d.o $(FFLAGS77) \
+                      -DMETIS_NODEND=galahad_metis ma57d.f90
 	cd $(OBJ) ; $(HARR) ma57d.o ; $(RM) ma57d.f90 ma57d.o
 	@printf '[ OK ]\n'
 
@@ -219,7 +221,8 @@ hsl_ma57s.o: $(HLG)(hsl_ma57s.o)
 $(HLG)(hsl_ma57s.o): $(MA57)/hsl_ma57s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57s"
 	$(CP) $(MA57)/hsl_ma57s.f90 $(OBJ)/hsl_ma57s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57s.o $(FFLAGS) hsl_ma57s.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57s.o $(FFLAGS) \
+                      -DMETIS_NODEND=galahad_metis hsl_ma57s.f90
 	cd $(OBJ) ; $(HARR) hsl_ma57s.o ; $(RM) hsl_ma57s.f90 hsl_ma57s.o
 	$(RMARFILES) mdchl.o
 	$(RMARFILES) lancelot_types.o
