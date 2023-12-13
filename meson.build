@@ -196,6 +196,11 @@ else
   add_global_arguments('-DSPRAL_NO_HWLOC', language : 'cpp')
 endif
 
+# HSL
+if libhsl.found()
+  add_global_arguments('-DLANCELOT_USE_MA57', language : 'fortran')
+endif
+
 extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
 extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
 
