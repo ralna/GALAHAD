@@ -1,4 +1,12 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-07-03 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 11:10 GMT.
+
+#ifdef LANCELOT_USE_MA57
+#define SILS_factors MA57_factors
+#define SILS_enquire MA57_enquire
+#define SILS_alter_d MA57_alter_d
+#define SILS_control MA57_control
+#define SILS_part_solve MA57_part_solve
+#endif
 
 #include "galahad_modules.h"
 

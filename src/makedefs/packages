@@ -85,8 +85,8 @@ HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 #  If Metis is unavailable, a dummy version will be substituted, but some
 #  options of HSL_MA57 will not possible.
 
-LINEARSOLVER = sils
-#LINEARSOLVER = ma57
+#LINEARSOLVER = sils
+LINEARSOLVER = ma57
 
 # -------------------- MA27 environment variable ------------------------
 
@@ -95,8 +95,8 @@ LINEARSOLVER = sils
 #     ma27 (single precision): ./ma27s.f
 #     ma27 (double precision): ./ma27d.f
 
-MA27 = $(GALAHAD)/src/dum
-#MA27 = $(GALAHAD)/../hslarchive-galahad/ma27
+#MA27 = $(GALAHAD)/src/dum
+MA27 = $(GALAHAD)/../hslarchive-galahad/ma27
 
 # -------------------- MA33 environment variable ------------------------
 
@@ -109,8 +109,8 @@ MA27 = $(GALAHAD)/src/dum
 #     auxiliary routines (single precision):
 #       ./mc13df ./mc20d.f ./mc21d.f
 
-MA33 = $(GALAHAD)/src/dum
-#MA33 = $(GALAHAD)/../hslarchive-galahad/ma33
+#MA33 = $(GALAHAD)/src/dum
+MA33 = $(GALAHAD)/../hslarchive-galahad/ma33
 
 # -------------------- AD02 environment variable ------------------------
 
@@ -119,8 +119,8 @@ MA33 = $(GALAHAD)/src/dum
 #     hsl_ad02 (single precision): ./hsl_ad02s.f90
 #     hsl_ad02 (double precision): ./hsl_ad02d.f90
 
-AD02 = $(GALAHAD)/src/dum
-#AD02 = $(GALAHAD)/../hslarchive-galahad/ad02
+#AD02 = $(GALAHAD)/src/dum
+AD02 = $(GALAHAD)/../hslarchive-galahad/ad02
 
 # -------------------- MA57 environment variable ------------------------
 
@@ -135,8 +135,8 @@ AD02 = $(GALAHAD)/src/dum
 #      ./ma57d.f ./mc21d.f ./mc34d.f ./mc47d.f ./mc59d.f ./mc64d.f
 #      ./mc71d.f and optionally ./metis.f
 
-MA57 = $(GALAHAD)/src/dum
-#MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
+#MA57 = $(GALAHAD)/src/dum
+MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
 
 # ---------------- ULINEARSOLVER environment variable -------------------
 
@@ -149,8 +149,8 @@ MA57 = $(GALAHAD)/src/dum
 # charge for non-commercial purposes). See
 # http://www.cse.clrc.ac.uk/Activity/HSL for further details
 
-ULINEARSOLVER = gls
-#ULINEARSOLVER = ma48
+#ULINEARSOLVER = gls
+ULINEARSOLVER = ma48
 
 # -------------------- MA48 environment variable ------------------------
 
@@ -165,8 +165,8 @@ ULINEARSOLVER = gls
 #       ./mc13d.f ./mc21d.f ./ma50d.f ./ma48d.f ./ma51d.f
 #       ./hsl_zb01d.f90 ./hsl_zb01i.f90
 
-MA48 = $(GALAHAD)/src/dum
-#MA48 = $(GALAHAD)/../hsl-galahad/hsl_ma48
+#MA48 = $(GALAHAD)/src/dum
+MA48 = $(GALAHAD)/../hsl-galahad/hsl_ma48
 
 # -------------------- MA61 environment variable ------------------------
 
@@ -175,8 +175,8 @@ MA48 = $(GALAHAD)/src/dum
 #     hsl_ma61 (single precision): ./ma61s.f90
 #     hsl_ma61 (double precision): ./ma61d.f90
 
-MA61 = $(GALAHAD)/src/dum
-#MA61 = $(GALAHAD)/../hsl-galahad/ma61
+#MA61 = $(GALAHAD)/src/dum
+MA61 = $(GALAHAD)/../hsl-galahad/ma61
 
 # -------------------- MA77 environment variable ------------------------
 
@@ -189,8 +189,8 @@ MA61 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision): ./kb07i.f ./hsl_ma54d.f90
 #        ./hsl_of01d.f90 ./hsl_of01i.f90 ./hsl_kb22l.f90 ./hsl_ma64d.f90
 
-MA77 = $(GALAHAD)/src/dum
-#MA77 = $(GALAHAD)/../hsl-galahad/hsl_ma77
+#MA77 = $(GALAHAD)/src/dum
+MA77 = $(GALAHAD)/../hsl-galahad/hsl_ma77
 
 # -------------------- MA86 environment variable ------------------------
 
@@ -203,8 +203,8 @@ MA77 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision): ./hsl_mc34d.f90 ./hsl_mc78i.f90
 #       ./hsl_zb01i.f90
 
-MA86 = $(GALAHAD)/src/dum
-#MA86 = $(GALAHAD)/../hsl-galahad/hsl_ma86
+#MA86 = $(GALAHAD)/src/dum
+MA86 = $(GALAHAD)/../hsl-galahad/hsl_ma86
 
 # ------------------ MA86_VERSION environment variable ------------------
 
@@ -226,8 +226,8 @@ MA86_VERSION = ma86v2
 #     auxiliary routines (double precision): ./hsl_mc34d.f90 ./hsl_mc78i.f90
 #       ./hsl_zb01i.f90
 
-MA87 = $(GALAHAD)/src/dum
-#MA87 = $(GALAHAD)/../hsl-galahad/hsl_ma87
+#MA87 = $(GALAHAD)/src/dum
+MA87 = $(GALAHAD)/../hsl-galahad/hsl_ma87
 
 # -------------------- MA97 environment variable ------------------------
 
@@ -240,8 +240,8 @@ MA87 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision): ./hsl_mc34d.f90 ./hsl_mc78i.f90
 #       ./ma64d.f ./hsl_mc68i.f90 ./hsl_mc69d.f90 ./mc77d.f
 
-MA97 = $(GALAHAD)/src/dum
-#MA97 = $(GALAHAD)/../hsl-galahad/hsl_ma97
+#MA97 = $(GALAHAD)/src/dum
+MA97 = $(GALAHAD)/../hsl-galahad/hsl_ma97
 
 # -------------------- MC61 environment variable ------------------------
 
@@ -252,8 +252,8 @@ MA97 = $(GALAHAD)/src/dum
 #     auxiliary routines (single precision): ./mc60s.f
 #     auxiliary routines (double precision): ./mc60d.f
 
-MC61 = $(GALAHAD)/src/dum
-#MC61 = $(GALAHAD)/../hsl-galahad/mc61
+#MC61 = $(GALAHAD)/src/dum
+MC61 = $(GALAHAD)/../hsl-galahad/mc61
 
 # -------------------- MC64 environment variable ------------------------
 
@@ -266,8 +266,8 @@ MC61 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision):
 #      ./mc21d.f ./mc34d.f ./mc64d.f ./hsl_zd11d.f90
 
-MC64 = $(GALAHAD)/src/dum
-#MC64 = $(GALAHAD)/../hsl-galahad/hsl_mc64
+#MC64 = $(GALAHAD)/src/dum
+MC64 = $(GALAHAD)/../hsl-galahad/hsl_mc64
 
 # -------------------- MC68 environment variable ------------------------
 
@@ -276,8 +276,8 @@ MC64 = $(GALAHAD)/src/dum
 #     hsl_mc68: ./hsl_mc68i.f90
 #     auxiliary routines: ./hsl_zb01i.f90
 
-MC68 = $(GALAHAD)/src/dum
-#MC68 = $(GALAHAD)/../hsl-galahad/hsl_mc68
+#MC68 = $(GALAHAD)/src/dum
+MC68 = $(GALAHAD)/../hsl-galahad/hsl_mc68
 
 # -------------------- MC77 environment variable ------------------------
 
@@ -286,8 +286,8 @@ MC68 = $(GALAHAD)/src/dum
 #     mc77 (single precision): ./mc77s.f
 #     mc77 (double precision): ./mc77d.f
 
-MC77 = $(GALAHAD)/src/dum
-#MC77 = $(GALAHAD)/../hsl-galahad/mc77
+#MC77 = $(GALAHAD)/src/dum
+MC77 = $(GALAHAD)/../hsl-galahad/mc77
 
 # -------------------- MI20 environment variable ------------------------
 
@@ -298,8 +298,8 @@ MC77 = $(GALAHAD)/src/dum
 #     auxiliary routines (single precision): ./hsl_mc65s.f90
 #     auxiliary routines (double precision): ./hsl_mc65d.f90
 
-MI20 = $(GALAHAD)/src/dum
-#MI20 = $(GALAHAD)/../hsl-galahad/hsl_mi20
+#MI20 = $(GALAHAD)/src/dum
+MI20 = $(GALAHAD)/../hsl-galahad/hsl_mi20
 
 # -------------------- MI28 environment variable ------------------------
 
@@ -312,8 +312,8 @@ MI20 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision): ./kb07i.f ./mc61d.f ./mc77d.f
 #      ./hsl_mc68i.f90 ./mc64d.f ./hsl_mc64d.f90 ./hsl_mc69d.f90
 
-MI28 = $(GALAHAD)/src/dum
-#MI28 = $(GALAHAD)/../hsl-galahad/hsl_mi28
+#MI28 = $(GALAHAD)/src/dum
+MI28 = $(GALAHAD)/../hsl-galahad/hsl_mi28
 
 # -------------------- MI35 environment variable ------------------------
 
@@ -326,8 +326,8 @@ MI28 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision): ./kb07i.f ./mc61d.f ./mc77d.f
 #      ./hsl_mc68i.f90 ./mc64d.f ./hsl_mc64d.f90 ./hsl_mc69d.f90
 
-MI35 = $(GALAHAD)/src/dum
-#MI35 = $(GALAHAD)/../hsl-galahad/hsl_mi35
+#MI35 = $(GALAHAD)/src/dum
+MI35 = $(GALAHAD)/../hsl-galahad/hsl_mi35
 
 # -------------------- LA04 environment variable ------------------------
 
@@ -340,8 +340,8 @@ MI35 = $(GALAHAD)/src/dum
 #     auxiliary routines (double precision): ./fa14d.f  ./fd15d.f  ./mc29d.f
 #       ./mc59d.f ./la15d.f
 
-LA04 = $(GALAHAD)/src/dum
-#LA04 = $(GALAHAD)/../hsl-galahad/la04
+#LA04 = $(GALAHAD)/src/dum
+LA04 = $(GALAHAD)/../hsl-galahad/la04
 
 # -------------------- MKLPARDISO environment variable ----------------------
 

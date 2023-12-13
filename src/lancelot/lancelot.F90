@@ -1,6 +1,20 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-07-03 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 10:50 GMT.
+
+#ifdef LANCELOT_USE_MA57
+#define SILS_initialize MA57_initialize
+#define SILS_data MA57_data
+#define SILS_cntl MA57_cntl
+#define SILS_control MA57_control
+#define SILS_factors MA57_factors
+#define SILS_finalize MA57_finalize
+#endif
 
 #include "galahad_modules.h"
+
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_double HSL_MA57_double
+#define GALAHAD_SILS_single HSL_MA57_single
+#endif
 
 !-*-*-*-*-*-*-  L A N C E L O T  -B-  LANCELOT   M O D U L E  *-*-*-*-*-*-*-*
 
