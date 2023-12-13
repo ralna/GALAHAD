@@ -55,12 +55,12 @@ if not libpastix.found()
 endif
 
 if not libsmumps.found()
-  libgalahad_single_src += files('mumps.F90')
+  libgalahad_mumps_single_src += files('mumps.F90')
   galahad_headers += files('include/smumps_struc.h')
 endif
 
 if not libdmumps.found()
-  libgalahad_double_src += files('mumps.F90')
+  libgalahad_mumps_double_src += files('mumps.F90')
   galahad_headers += files('include/dmumps_struc.h')
 endif
 
