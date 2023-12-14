@@ -8,6 +8,7 @@
 #define SILS_part_solve MA57_part_solve
 #endif
 
+#define IS_LANCELOT_MODULE 1
 #include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  L A N C E L O T  -B-  MDCHL   M O D U L E  *-*-*-*-*-*-*-*

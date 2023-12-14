@@ -101,8 +101,12 @@
 #define GALAHAD_TR1_precision GALAHAD_TR1_single
 #define GALAHAD_SEC_precision GALAHAD_SEC_single
 #define GALAHAD_SHA_precision GALAHAD_SHA_single
+#ifdef IS_LANCELOT_MODULE
 #ifdef LANCELOT_USE_MA57
 #define GALAHAD_SILS_precision HSL_MA57_single
+#else
+#define GALAHAD_SILS_precision GALAHAD_SILS_single
+#endif
 #else
 #define GALAHAD_SILS_precision GALAHAD_SILS_single
 #endif
@@ -502,8 +506,12 @@
 #define GALAHAD_TR1_precision GALAHAD_TR1_double
 #define GALAHAD_SEC_precision GALAHAD_SEC_double
 #define GALAHAD_SHA_precision GALAHAD_SHA_double
+#ifdef IS_LANCELOT_MODULE
 #ifdef LANCELOT_USE_MA57
 #define GALAHAD_SILS_precision HSL_MA57_double
+#else
+#define GALAHAD_SILS_precision GALAHAD_SILS_double
+#endif
 #else
 #define GALAHAD_SILS_precision GALAHAD_SILS_double
 #endif

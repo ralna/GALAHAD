@@ -9,12 +9,27 @@
 #define SILS_finalize MA57_finalize
 #endif
 
+#define IS_LANCELOT_MODULE 1
 #include "galahad_modules.h"
 
-#ifdef LANCELOT_USE_MA57
-#define GALAHAD_SILS_double HSL_MA57_double
-#define GALAHAD_SILS_single HSL_MA57_single
-#endif
+!!$ #ifdef LANCELOT_USE_MA57
+!!$ #define GALAHAD_SILS_double HSL_MA57_double
+!!$ #define GALAHAD_SILS_single HSL_MA57_single
+!!$ #endif
+
+!!$ #ifdef GALAHAD_SINGLE
+!!$ #ifdef LANCELOT_USE_MA57
+!!$ #define GALAHAD_SILS_precision HSL_MA57_single
+!!$ #else
+!!$ #define GALAHAD_SILS_precision GALAHAD_SILS_single
+!!$ #endif
+!!$ #else
+!!$ #ifdef LANCELOT_USE_MA57
+!!$ #define GALAHAD_SILS_precision HSL_MA57_double
+!!$ #else
+!!$ #define GALAHAD_SILS_precision GALAHAD_SILS_double
+!!$ #endif
+!!$ #endif
 
 !-*-*-*-*-*-*-  L A N C E L O T  -B-  LANCELOT   M O D U L E  *-*-*-*-*-*-*-*
 

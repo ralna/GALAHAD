@@ -16,12 +16,13 @@
 #define SILS_solve MA57_solve
 #endif
 
+#define IS_LANCELOT_MODULE 1
 #include "galahad_modules.h"
 
-#ifdef LANCELOT_USE_MA57
-#define GALAHAD_SILS_double HSL_MA57_double
-#define GALAHAD_SILS_single HSL_MA57_single
-#endif
+!!$ #ifdef LANCELOT_USE_MA57
+!!$ #define GALAHAD_SILS_double HSL_MA57_double
+!!$ #define GALAHAD_SILS_single HSL_MA57_single
+!!$ #endif
 
 !-*-*-*-*-*-*-*-  L A N C E L O T  -B-   PRECN   M O D U L E  -*-*-*-*-*-*-*-*-
 

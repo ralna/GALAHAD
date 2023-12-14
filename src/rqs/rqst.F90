@@ -263,10 +263,12 @@
    WRITE( 6, "( /, ' ==== normal exits ===== ', / )" )
 
    DO pass = 1, 13
+!  DO pass = 1, 1
      C = (/ 5.0_rp_, 0.0_rp_, 4.0_rp_ /)
      CALL RQS_initialize( data, control, inform )
 !    control%definite_linear_solver = 'ma57'
      control%error = 23 ; control%out = 23 ; control%print_level = 10
+!    control%error = 6 ; control%out = 6 ; control%print_level = 10
 !     IF ( pass == 13 ) THEN
 !       control%error = 6 ; control%out = 6 ; control%print_level = 10 ; END IF
      sigma = one
@@ -284,7 +286,8 @@
      IF ( pass == 6 .OR. pass == 13 ) control%stop_normal = epsmch ** 0.666
 
      CALL RQS_solve( n, p, sigma, f, C, H, X, data, control, inform, M = M )
-
+!write(6,*) 'ssids flag = ', inform%sls_inform%ssids_inform%flag
+!write( 6, * ) ' solver used is ', inform%sls_inform%solver
      WRITE( 6, "( ' pass  ', I3, ': RQS_solve exit status = ', I6 )" )         &
             pass, inform%status
 !    WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )")&
