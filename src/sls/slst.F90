@@ -63,8 +63,8 @@
      ORDER( i ) = n - i + 1
    END DO
 ! Read matrix order and number of entries
-   DO type = 1, 3   ! all
-!  DO type = 1, 1   ! coordinate
+!  DO type = 1, 3   ! all
+   DO type = 1, 1   ! coordinate
 !  DO type = 2, 2   ! row-wise
 !  DO type = 3, 3   ! dense
 ! Allocate arrays of appropriate sizes

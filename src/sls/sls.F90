@@ -5342,6 +5342,7 @@
      CASE ( 'potr', 'sytr' )
 
        data%matrix_dense( : matrix%n, : matrix%n ) = 0.0_rp_
+       data%matrix%type =  matrix%type
 
        SELECT CASE ( SMT_get( matrix%type ) )
        CASE ( 'COORDINATE' )
@@ -5493,6 +5494,7 @@
      CASE ( 'pbtr' )
 
        data%matrix_dense( : inform%semi_bandwidth + 1, : matrix%n ) = 0.0_rp_
+       data%matrix%type =  matrix%type
 
        SELECT CASE ( SMT_get( matrix%type ) )
        CASE ( 'COORDINATE' )

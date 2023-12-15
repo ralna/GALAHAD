@@ -235,7 +235,21 @@ In order to get GALAHAD working, here is what you need to do.
    for Macs under OSX.
 
    You will also need to set environment variables  OMP_CANCELLATION, 
-   OMP_NESTED and OMP_PROC_BIND to TRUE
+   OMP_NESTED and OMP_PROC_BIND to TRUE, and OMP_MAX_ACTIVE_LEVEL to 
+   the maximum number of parallel threads you wish to use. 
+   Under the sh/bash shell, put
+
+     export OMP_CANCELLATION=true
+     export OMP_NESTED=true
+     export OMP_PROC_BIND=true
+     export OMP_MAX_ACTIVE_LEVELS=8
+
+   in your startup script, to use a maximum of 8 threads, and for csh/tcsh
+
+     setenv OMP_CANCELLATION true
+     setenv OMP_NESTED true
+     setenv OMP_PROC_BIND true
+     setenv OMP_MAX_ACTIVE_LEVELS 8
 
    Check with your system administrator if you need help!
 

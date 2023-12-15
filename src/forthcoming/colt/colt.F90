@@ -1,4 +1,3 @@
-
 ! THIS VERSION: GALAHAD 4.2 - 2023-11-07 AT 11:40 GMT.
 
 #include "galahad_modules.h"
@@ -984,6 +983,14 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
+!  eval_C is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The value of the residual
+!   function c(x) evaluated at x=X must be returned in C, and the status
+!   variable set to 0. If the evaluation is impossible at X, status should
+!   be set to a nonzero value. If eval_C is not present, COLT_solve will
+!   return to the user with inform%status = 2 each time an evaluation is
+!   required.
+!
 !  eval_FC is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The value of the objective
 !   function f(x) evaluated at x=X must be returned in f, and the status
@@ -992,6 +999,14 @@
 !   to 0. If the evaluation is impossible at X, status should be set to a 
 !   nonzero value. If eval_FC is not present, COLT_solve will return to the 
 !   user with inform%status = 2 each time an evaluation is required.
+!
+!  eval_J is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The nonzeros of the Jacobian
+!   nabla_x c(x) of the residual function evaluated at x=X must be returned in
+!   J_val in the same order as presented in nlp%J,, and the status variable set
+!   to 0. If the evaluation is impossible at X, status should be set to a
+!   nonzero value. If eval_J is not present, COLT_solve will return to the
+!   user with inform%status = 3 each time an evaluation is required.
 !
 !  eval_GJ is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). If G is present, the components of
@@ -1004,6 +1019,15 @@
 !   nonzero value. If eval_GJ is not present, COLT_solve will return to the
 !   user with inform%status = 3 or 5 each time an evaluation is required.
 !
+!  eval_HC is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The nonzeros of the weighted Hessian
+!   H(x,y) = sum_i y_i nabla_xx c_i(x) of the residual function evaluated at
+!   x=X and y=Y must be returned in H_val in the same order as presented in
+!   nlp%H, and the status variable set to 0. If the evaluation is impossible
+!   at X, status should be set to a nonzero value. If eval_HC is not present,
+!   COLT_solve will return to the user with inform%status = 4 each time an
+!   evaluation is required.
+!
 !  eval_HJ is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the Hessian
 !   y_0 nabla_xx f(x) - sum_i=1^m y_i c_i(x) of the John function evaluated
@@ -1013,15 +1037,29 @@
 !   not present, COLT_solve will return to the user with inform%status = 4 or 5
 !   each time an evaluation is required.
 !
-!  eval_HJPROD is an optional subroutine which if present must have
-!   the arguments given below (see the interface blocks). The sum
-!   u + y_0 nabla_xx ( f(x) - sum_i=1^m y_i c_i(x) ) v of the product of the 
-!   nHessian y_o  abla_xx f(x) + sum_i=1^m y_i c_i(x) of the John function 
-!   evaluated at x=X, y_0 = y0  and y=Y with the vector v=V and the vector 
-!   u=U must be returned in U, and the status variable set to 0. If the 
-!   evaluation is impossible at X, status should be set to a nonzero value. 
-!   If eval_HJPROD is not present, COLT_solve will return to the user with #
-!   inform%status = 6 each time an evaluation is required.
+!  eval_HCPRODS is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The nonzeros of
+!   the matrix whose ith column is the product nabla_xx c_i(x) v between
+!   the Hessian of the ith residual function evaluated at x=X and the
+!   vector v=V must be returned in PC_val in the same order as presented in
+!   nlp%P, and the status variable set to 0. If the evaluation is impossible
+!   at X, status should be set to a nonzero value. If eval_HCPRODS is not
+!   present, NLS_solve will return to the user with inform%status = 7
+!   each time an evaluation is required. The Hessians have already been
+!   evaluated or used at x=X if got_h is .TRUE.
+!
+!  eval_HOCPRODS is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The nonzeros of
+!   the matrix whose ith column is the product nabla_xx c_i(x) v between
+!   the Hessian of the ith residual function evaluated at x=X and the
+!   vector v=V must be returned in PC_val in the same order as presented in
+!   nlp%P, and the status variable set to 0. The nonzeros of the vector
+!   the product nabla_xx f(x) v between the Hessian of the objective 
+!   function evaluated at x=X and the vector v=V must be returned in PO_val.
+!   If the evaluation is impossible at X, status should be set to a nonzero 
+!   value. If eval_HOCPRODS is not present, NLS_solve will return to the user 
+!   with inform%status = 7 each time an evaluation is required. The Hessians 
+!   have already been evaluated or used at x=X if got_h is .TRUE.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1034,11 +1072,22 @@
      TYPE ( COLT_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( COLT_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     OPTIONAL :: eval_FC, eval_GJ, eval_HJ, eval_HOCPRODS
+     OPTIONAL :: eval_FC, eval_GJ, eval_HJ, eval_HOCPRODS,                     &
+                 eval_C, eval_J, eval_HC, eval_HCPRODS
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
 !----------------------------------
+
+     INTERFACE
+       SUBROUTINE eval_C( status, X, userdata, C )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_C
+     END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_FC( status, X, userdata, f, C )
@@ -1049,6 +1098,16 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_J( status, X, userdata, J )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_J
      END INTERFACE
 
      INTERFACE
@@ -1063,6 +1122,16 @@
      END INTERFACE
 
      INTERFACE
+       SUBROUTINE eval_HC( status, X, Y, userdata, Hval )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_HC
+     END INTERFACE
+
+     INTERFACE
        SUBROUTINE eval_HJ( status, X, y0, Y, userdata, Hval )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
@@ -1071,6 +1140,18 @@
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_HJ
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_HCPRODS( status, X, V, userdata, PCval, got_h )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: PCval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+       END SUBROUTINE eval_HCPRODS
      END INTERFACE
 
      INTERFACE
@@ -1132,8 +1213,8 @@
        GO TO 130
      CASE ( 140 ) ! Hessian evaluation
        GO TO 140
-     CASE ( 200 ) ! various evaluations
-       GO TO 200
+     CASE ( 300 ) ! various evaluations
+       GO TO 300
      END SELECT
 
 !  =================
@@ -1330,6 +1411,175 @@
        IF ( inform%status /= 0 ) GO TO 910
        data%C_scale( : nlp%m ) = one
      END IF
+
+!  ----------------------------------------------------------------------------
+!                           INITIAL TARGET PHASE
+!  ----------------------------------------------------------------------------
+
+!  solve the target problem: min 1/2||c(x),f)x)-t||^2 using the nls solver.
+!  All function evlautions are for the vector of residuals (c(x),f(x)-t)
+
+       inform%NLS_inform%status = 1
+       data%nls%X( : data%nls%n ) = nlp%X
+write(6,*) ' x ', nlp%X
+       data%control%NLS_control%jacobian_available = 2
+       data%control%NLS_control%subproblem_control%jacobian_available = 2
+       data%control%NLS_control%hessian_available = 2
+
+!      DO        ! loop to solve problem
+   200 CONTINUE  ! mock loop to solve problem
+
+!  call the least-squares solver
+
+         CALL NLS_solve( data%nls, data%control%NLS_control,                   &
+                         inform%NLS_inform, data%NLS_data, data%NLS_userdata )
+
+!  respond to requests for further details
+
+         SELECT CASE ( inform%NLS_inform%status )
+
+!  obtain the residuals
+
+         CASE ( 2 )
+           IF ( data%reverse_fc ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 2 ; RETURN
+           ELSE
+             CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
+                           nlp%f, nlp%C )
+             data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
+             data%nls%C( data%nls%m ) = nlp%f - inform%target
+             IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )    &
+               data%nls%C( : data%nls%m )
+           END IF
+
+!  obtain the Jacobian
+
+         CASE ( 3 )
+           IF ( data%reverse_gj ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 3 ; RETURN
+           ELSE
+             CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
+                           nlp%Go%val, nlp%J%val )   
+             SELECT CASE ( SMT_get( data%nls%J%type ) )
+             CASE ( 'DENSE' )
+               j_ne = 0 ; l = 0
+               DO i = 1, nlp%m  ! from each row of J(x) in turn
+                 data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                     &
+                   = nlp%J%val( l + 1 : l + nlp%n )
+                 j_ne = j_ne + data%nls%n ; l = l + nlp%n
+               END DO
+               IF ( nlp%Go%sparse ) THEN ! from g(x)
+                 DO i = 1, nlp%Go%ne 
+                   data%nls%J%val( j_ne + nlp%Go%ind( i ) ) = nlp%Go%val( i )
+                 END DO
+               ELSE
+                 data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                     &
+                   = nlp%Go%val( 1 : nlp%n )
+               END IF
+             CASE ( 'SPARSE_BY_ROWS' )
+               DO i = 1, nlp%m  ! from each row of J(x) in turn
+                 j_ne = data%nls%J%ptr( i ) - 1
+                 DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+                   j_ne = j_ne + 1
+                   data%nls%J%val( j_ne ) = nlp%J%val( l )
+                 END DO
+               END DO
+               j_ne = data%nls%J%ptr( data%nls%m ) - 1
+               DO j = 1, nlp%Go%ne
+                 j_ne = j_ne + 1
+                 data%nls%J%val( j_ne ) = nlp%Go%val( j )
+               END DO
+             CASE ( 'COORDINATE' )
+               data%nls%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne ) ! from J
+               j_ne = nlp%J%ne + data%n_slacks
+               DO j = 1, nlp%Go%ne
+                 j_ne = j_ne + 1
+                 data%nls%J%val( j_ne ) = nlp%Go%val( j )
+               END DO
+               IF ( print_debug ) WRITE(6,"( ' nls%J', / ( 3( 2I6, ES12.4 )))")&
+                ( data%nls%J%row( i ), data%nls%J%col( i ),                    &
+                  data%nls%J%val( i ), i = 1, data%nls%J%ne )
+             END SELECT
+           END IF
+
+!  obtain the Hessian
+
+         CASE ( 4 )
+           IF ( data%reverse_hj ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 4 ; RETURN
+           ELSE
+             CALL eval_HJ( data%eval_status, data%nls%X,                       &
+                           data%NLS_data%Y( data%nls%m ),                      &
+                           data%NLS_data%Y( 1 : nlp%m ),                       &
+                           userdata, data%nls%H%val )
+             IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" ) &
+              ( data%nls%H%row( i ), data%nls%H%col( i ),                      &
+                data%nls%H%val( i ), i = 1, data%nls%H%ne )
+           END IF
+
+!  form a Jacobian-vector product
+
+         CASE ( 5 )
+           write(6,*) ' no nls_status = 5 as yet, stopping'
+           stop
+!          CALL JACPROD( data%eval_status, data%nls%X,                         &
+!                        data%NLS_userdata, data%NLS_data%transpose,           &
+!                        data%NLS_data%U, data%NLS_data%V )
+
+!  form a Hessian-vector product
+
+         CASE ( 6 )
+           write(6,*) ' no nls_status = 6 as yet, stopping'
+           stop
+!          CALL HESSPROD( data%eval_status, data%nls%X, data%NLS_data%Y,       &
+!                         data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
+
+!  form residual Hessian-vector products
+
+         CASE ( 7 )
+           IF ( data%reverse_hocprods ) THEN
+             nlp%X = data%nls%X( : data%nls%n )
+             data%branch = 200 ; inform%status = 7 ; RETURN
+           ELSE
+             CALL eval_HOCPRODS( data%eval_status, data%nls%X,                 &
+                                 data%nls_data%V, userdata,                    &
+                                 data%nls%P%val( nlp%P%ne + 1 :                &
+                                                 data%nls%P%ne ),              &
+                                 data%nls%P%val( 1 : nlp%P%ne ) )
+             IF ( print_debug ) THEN
+               WRITE(6,"( ' nls%P' )" )
+               DO j = 1, data%nls%n
+                 WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
+                   j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
+                        data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
+               END DO
+             END IF
+           END IF
+
+!  apply the preconditioner
+
+         CASE ( 8 )
+           write(6,*) ' no nls_status = 8 as yet, stopping'
+           stop
+!          CALL SCALE( data%eval_status, data%nls%X,                           &
+!                      data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
+
+!  terminal exit from loop
+
+         CASE DEFAULT
+           nlp%X = data%nls%X( : data%nls%n )
+           GO TO 290
+         END SELECT
+         GO TO 200
+!      END DO ! end of loop to solve target problem
+
+   290  CONTINUE
+
+
+
 
 !  set up initial target
 
@@ -1544,7 +1794,7 @@ write(6,*) ' x ', nlp%X
        data%control%NLS_control%hessian_available = 2
 
 !      DO        ! loop to solve problem
-   200 CONTINUE  ! mock loop to solve problem
+   300 CONTINUE  ! mock loop to solve problem
 
 !  call the least-squares solver
 
@@ -1560,7 +1810,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 2 )
            IF ( data%reverse_fc ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 2 ; RETURN
+             data%branch = 300 ; inform%status = 2 ; RETURN
            ELSE
              CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
                            nlp%f, nlp%C )
@@ -1575,7 +1825,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 3 )
            IF ( data%reverse_gj ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 3 ; RETURN
+             data%branch = 300 ; inform%status = 3 ; RETURN
            ELSE
              CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
                            nlp%Go%val, nlp%J%val )   
@@ -1626,7 +1876,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 4 )
            IF ( data%reverse_hj ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 4 ; RETURN
+             data%branch = 300 ; inform%status = 4 ; RETURN
            ELSE
              CALL eval_HJ( data%eval_status, data%nls%X,                       &
                            data%NLS_data%Y( data%nls%m ),                      &
@@ -1659,7 +1909,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 7 )
            IF ( data%reverse_hocprods ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 7 ; RETURN
+             data%branch = 300 ; inform%status = 7 ; RETURN
            ELSE
              CALL eval_HOCPRODS( data%eval_status, data%nls%X,                 &
                                  data%nls_data%V, userdata,                    &
@@ -1688,12 +1938,12 @@ write(6,*) ' x ', nlp%X
 
          CASE DEFAULT
            nlp%X = data%nls%X( : data%nls%n )
-           GO TO 290
+           GO TO 390
          END SELECT
-         GO TO 200
+         GO TO 300
 !      END DO ! end of loop to solve target problem
 
-   290  CONTINUE
+   390  CONTINUE
 
         WRITE( 6, "( /, ' f, ||c|| = ', 2ES13.5, / )" ) nlp%f,                 &
           TWO_norm( nlp%C( : nlp%m ) )
