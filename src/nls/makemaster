@@ -27,7 +27,7 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS = colt
 
 #  auxiliary packages that the C interface to the current package depends 
 #  on (prepend with make_ciface_)

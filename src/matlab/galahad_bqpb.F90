@@ -85,7 +85,6 @@
       USE GALAHAD_TRANSFER_MATLAB
       USE GALAHAD_BQPB_MATLAB_TYPES
       USE GALAHAD_BQPB_double
-      USE GALAHAD_USERDATA_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
@@ -138,7 +137,6 @@
       TYPE ( BQPB_control_type ), SAVE :: control
       TYPE ( BQPB_inform_type ), SAVE :: inform
       TYPE ( BQPB_data_type ), SAVE :: data
-      TYPE ( GALAHAD_userdata_type ) :: userdata
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
 

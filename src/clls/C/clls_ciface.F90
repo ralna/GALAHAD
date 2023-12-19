@@ -131,6 +131,7 @@
       LOGICAL ( KIND = C_BOOL ) :: feasol
       LOGICAL ( KIND = C_BOOL ) :: balance_initial_complentarity
       LOGICAL ( KIND = C_BOOL ) :: crossover
+      LOGICAL ( KIND = C_BOOL ) :: reduced_pounce_system
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
@@ -177,9 +178,6 @@
       REAL ( KIND = rpc_ ) :: primal_infeasibility
       REAL ( KIND = rpc_ ) :: dual_infeasibility
       REAL ( KIND = rpc_ ) :: complementary_slackness
-      REAL ( KIND = rpc_ ) :: init_primal_infeasibility
-      REAL ( KIND = rpc_ ) :: init_dual_infeasibility
-      REAL ( KIND = rpc_ ) :: init_complementary_slackness
       REAL ( KIND = rpc_ ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       INTEGER ( KIND = ipc_ ), DIMENSION( 16 ) :: checkpointsIter
@@ -263,6 +261,7 @@
     fcontrol%balance_initial_complentarity                                     &
       = ccontrol%balance_initial_complentarity
     fcontrol%crossover = ccontrol%crossover
+    fcontrol%reduced_pounce_system = ccontrol%reduced_pounce_system
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
@@ -361,6 +360,7 @@
     ccontrol%balance_initial_complentarity                                     &
       = fcontrol%balance_initial_complentarity
     ccontrol%crossover = fcontrol%crossover
+    ccontrol%reduced_pounce_system = fcontrol%reduced_pounce_system
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
@@ -471,9 +471,6 @@
     finform%primal_infeasibility = cinform%primal_infeasibility
     finform%dual_infeasibility = cinform%dual_infeasibility
     finform%complementary_slackness = cinform%complementary_slackness
-    finform%init_primal_infeasibility = cinform%init_primal_infeasibility
-    finform%init_dual_infeasibility = cinform%init_dual_infeasibility
-    finform%init_complementary_slackness = cinform%init_complementary_slackness
     finform%non_negligible_pivot = cinform%non_negligible_pivot
     finform%checkpointsTime = cinform%checkpointsTime
 
@@ -524,9 +521,6 @@
     cinform%primal_infeasibility = finform%primal_infeasibility
     cinform%dual_infeasibility = finform%dual_infeasibility
     cinform%complementary_slackness = finform%complementary_slackness
-    cinform%init_primal_infeasibility = finform%init_primal_infeasibility
-    cinform%init_dual_infeasibility = finform%init_dual_infeasibility
-    cinform%init_complementary_slackness = finform%init_complementary_slackness
     cinform%non_negligible_pivot = finform%non_negligible_pivot
     cinform%checkpointsTime = finform%checkpointsTime
 

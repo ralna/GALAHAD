@@ -7280,7 +7280,7 @@
 !  print one-line summary
 
          IF ( data%printi ) THEN
-            IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
+           IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
              WRITE( data%out, 2090 ) prefix
              IF ( data%control%subproblem_direct ) THEN
                IF ( data%control%print_obj ) THEN
@@ -7398,16 +7398,18 @@
              data%clock_now = data%clock_now - data%clock_start
              IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
                WRITE( data%out, 2090 ) prefix
-               IF ( data%control%print_obj ) THEN
-                 WRITE( data%out, 2170 ) prefix
+               IF ( data%control%subproblem_direct ) THEN
+                 IF ( data%control%print_obj ) THEN
+                   WRITE( data%out, 2170 ) prefix
+                 ELSE
+                   WRITE( data%out, 2160 ) prefix
+                 END IF
                ELSE
-                 WRITE( data%out, 2160 ) prefix
-               END IF
-             ELSE
-               IF ( data%control%print_obj ) THEN
-                 WRITE( data%out, 2110 ) prefix
-               ELSE
-                 WRITE( data%out, 2100 ) prefix
+                 IF ( data%control%print_obj ) THEN
+                   WRITE( data%out, 2110 ) prefix
+                 ELSE
+                   WRITE( data%out, 2100 ) prefix
+                 END IF
                END IF
              END IF
              data%print_1st_header = .FALSE.

@@ -230,6 +230,9 @@
         CASE( 'balance_initial_complentarity' )
           CALL MATLAB_get_value( ps, 'balance_initial_complentarity',          &
                                  pc, BQPB_control%balance_initial_complentarity)
+        CASE( 'crossover' )
+          CALL MATLAB_get_value( ps, 'crossover',                              &
+                                 pc, BQPB_control%crossover )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, BQPB_control%space_critical )
@@ -283,7 +286,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 49
+      INTEGER * 4, PARAMETER :: ninform = 50
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -307,7 +310,8 @@
          'treat_zero_bounds_as_general   ', 'just_feasible                  ', &
          'getdua                         ', 'puiseux                        ', &
          'every_order                    ', 'feasol                         ', &
-         'balance_initial_complentarity  ', 'space_critical                 ', &
+         'balance_initial_complentarity  ', 'crossover                      ', &
+         'space_critical                 ',                                    &
          'deallocate_error_fatal         ', 'prefix                         ', &
          'FDC_control                    ', 'SBLS_control                   ' /)
 
@@ -411,6 +415,8 @@
                                   BQPB_control%feasol )
       CALL MATLAB_fill_component( pointer, 'balance_initial_complentarity',    &
                                   BQPB_control%balance_initial_complentarity )
+      CALL MATLAB_fill_component( pointer, 'crossover',                        &
+                                  BQPB_control%crossover )
       CALL MATLAB_fill_component( pointer, 'space_critical',                   &
                                   BQPB_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &

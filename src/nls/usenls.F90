@@ -347,7 +347,8 @@
          &  F5.2, / )" ) nlp%m, nlp%n,                                         &
             inform%subproblem_inform%RQS_inform%SLS_inform%entries,            &
             REAL( inform%subproblem_inform%RQS_inform%SLS_inform%entries       &
-              - nlp%n ) / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) / 2.0_rp_ )
+              - nlp%n ) / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) /      &
+                2.0_rp_ )
         ELSE
           WRITE( 6, "(' m, n, nnz(lower[J^TJ]), density =', 3( ' ', I0, ',' ), &
          &  F5.2, / )" ) nlp%m, nlp%n, inform%RQS_inform%SLS_inform%entries,   &

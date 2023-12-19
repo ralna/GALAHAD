@@ -40,4 +40,15 @@ REPLACE
 ! maximum-number-of-iterations                      50
 ! print-objective                                   yes
 
+COMMENT
+! ******************* initial phase NLS ********************
+
+INCLUDE NLS NLS-INITIAL
+
+INCLUDE NLS NLS-INITIAL-INNER
+REPLACE
+! model-used                                        3
+! maximum-number-of-iterations                      50
+! print-objective                                   yes
+
 INCLUDE SLS

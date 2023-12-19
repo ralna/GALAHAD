@@ -121,7 +121,7 @@
       mwPointer :: aux_z_pr, aux_x_stat_pr
 
       CHARACTER ( len = 80 ) :: char_output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode

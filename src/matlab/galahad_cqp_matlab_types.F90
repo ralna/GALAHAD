@@ -57,7 +57,7 @@
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc, iter, factorization_status
         mwPointer :: factorization_integer, factorization_real, nfacts, nbacts
-        mwPointer :: obj, primal_infeasibility, dual_infeasibility
+        mwPointer :: threads, obj, primal_infeasibility, dual_infeasibility
         mwPointer :: complementary_slackness, potential, non_negligible_pivot
         mwPointer :: feasible
         TYPE ( CQP_time_pointer_type ) :: time_pointer
@@ -230,6 +230,9 @@
         CASE( 'balance_initial_complentarity' )
           CALL MATLAB_get_value( ps, 'balance_initial_complentarity',          &
                                  pc, CQP_control%balance_initial_complentarity )
+        CASE( 'crossover' )
+          CALL MATLAB_get_value( ps, 'crossover',                              &
+                                 pc, CQP_control%crossover )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, CQP_control%space_critical )
@@ -283,7 +286,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 49
+      INTEGER * 4, PARAMETER :: ninform = 50
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -307,7 +310,8 @@
          'treat_zero_bounds_as_general   ', 'just_feasible                  ', &
          'getdua                         ', 'puiseux                        ', &
          'every_order                    ', 'feasol                         ', &
-         'balance_initial_complentarity  ', 'space_critical                 ', &
+         'balance_initial_complentarity  ', 'crossover                      ', &
+         'space_critical                 ',                                    &
          'deallocate_error_fatal         ', 'prefix                         ', &
          'FDC_control                    ', 'SBLS_control                   ' /)
 
@@ -411,6 +415,8 @@
                                   CQP_control%feasol )
       CALL MATLAB_fill_component( pointer, 'balance_initial_complentarity',    &
                                   CQP_control%balance_initial_complentarity )
+      CALL MATLAB_fill_component( pointer, 'crossover',                        &
+                                  CQP_control%crossover )
       CALL MATLAB_fill_component( pointer, 'space_critical',                   &
                                   CQP_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &
@@ -459,18 +465,18 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 19
+      INTEGER * 4, PARAMETER :: ninform = 20
       CHARACTER ( LEN = 24 ), PARAMETER :: finform( ninform ) = (/             &
            'status                  ', 'alloc_status            ',             &
            'bad_alloc               ', 'iter                    ',             &
            'factorization_status    ', 'factorization_integer   ',             &
            'factorization_real      ', 'nfacts                  ',             &
-           'nbacts                  ', 'obj                     ',             &
-           'primal_infeasibility    ', 'dual_infeasibility      ',             &
-           'complementary_slackness ', 'potential               ',             &
-           'non_negligible_pivot    ', 'feasible                ',             &
-           'time                    ', 'FDC_inform              ',             &
-           'SBLS_inform             '   /)
+           'nbacts                  ', 'threads                 ',             &
+           'obj                     ', 'primal_infeasibility    ',             &
+           'dual_infeasibility      ', 'complementary_slackness ',             &
+           'potential               ', 'non_negligible_pivot    ',             &
+           'feasible                ', 'time                    ',             &
+           'FDC_inform              ', 'SBLS_inform             '   /)
       INTEGER * 4, PARAMETER :: t_ninform = 12
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'preprocess           ',                   &
@@ -510,6 +516,8 @@
         'nfacts', CQP_pointer%nfacts )
       CALL MATLAB_create_integer_component( CQP_pointer%pointer,               &
         'nbacts', CQP_pointer%nbacts )
+      CALL MATLAB_create_real_component( CQP_pointer%pointer,                  &
+        'threads', CQP_pointer%threads )
       CALL MATLAB_create_real_component( CQP_pointer%pointer,                  &
         'obj', CQP_pointer%obj )
       CALL MATLAB_create_real_component( CQP_pointer%pointer,                  &
@@ -610,6 +618,8 @@
                                mxGetPr( CQP_pointer%nfacts ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%nbacts,                              &
                                mxGetPr( CQP_pointer%nbacts ) )
+      CALL MATLAB_copy_to_ptr( CQP_inform%threads,                             &
+                               mxGetPr( CQP_pointer%threads ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%obj,                                 &
                                mxGetPr( CQP_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%primal_infeasibility,                &

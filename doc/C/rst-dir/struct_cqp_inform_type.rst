@@ -204,7 +204,7 @@ the value of the complementary slackness
 
 	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` init_primal_infeasibility
 
-these values at the initial point (needed bg GALAHAD_CCQP)
+these values at the initial point (needed by GALAHAD_CQP)
 
 .. index:: pair: variable; init_dual_infeasibility
 .. _doxid-structcqp__inform__type_1a8a03c79f840170d644609f1fb95d06e3:

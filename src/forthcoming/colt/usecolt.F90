@@ -246,9 +246,13 @@
 
      inform%status = 1
      CALL COLT_solve( nlp, control, inform, data, userdata,                    &
-                     eval_FC = CUTEST_eval_FC, eval_GJ = CUTEST_eval_SGJ,      &
-                     eval_HJ = CUTEST_eval_HJ,                                 &
-                     eval_HOCPRODS = CUTEST_eval_HOCPRODS )
+                      eval_FC = CUTEST_eval_FC,                                &
+                      eval_J = CUTEST_eval_J,                                  &
+                      eval_GJ = CUTEST_eval_SGJ,                               &
+                      eval_HC = CUTEST_eval_HLC,                               &
+                      eval_HJ = CUTEST_eval_HJ,                                &
+                      eval_HCPRODS = CUTEST_eval_HCPRODS,                      &
+                      eval_HOCPRODS = CUTEST_eval_HOCPRODS )
 
 !  If required, append results to a file
 

@@ -196,36 +196,6 @@ the value of the dual infeasibility
 
 the value of the complementary slackness
 
-.. index:: pair: variable; init_primal_infeasibility
-.. _doxid-structbqpb__inform__type_1a85355c90bdd4cdd2e09bfed7fd9f66e1:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` init_primal_infeasibility
-
-these values at the initial point (needed by GALAHAD_CCQP)
-
-.. index:: pair: variable; init_dual_infeasibility
-.. _doxid-structbqpb__inform__type_1a8a03c79f840170d644609f1fb95d06e3:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` init_dual_infeasibility
-
-see init_primal_infeasibility
-
-.. index:: pair: variable; init_complementary_slackness
-.. _doxid-structbqpb__inform__type_1adbb8b72850a5e57700268fc582064615:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` init_complementary_slackness
-
-see init_primal_infeasibility
-
 .. index:: pair: variable; potential
 .. _doxid-structbqpb__inform__type_1a85f37aa42c9e051ea61ae035ff63059e:
 

@@ -537,12 +537,6 @@
 
         REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
 
-!  these values at the initial point (needed bg GALAHAD_CDQP)
-
-        REAL ( KIND = rp_ ) :: init_primal_infeasibility = HUGE( one )
-        REAL ( KIND = rp_ ) :: init_dual_infeasibility = HUGE( one )
-        REAL ( KIND = rp_ ) :: init_complementary_slackness = HUGE( one )
-
 !  the smallest pivot which was not judged to be zero when detecting linearly
 !   dependent constraints
 
@@ -3442,10 +3436,6 @@
         mu = control%muzero
       END IF
       inform%complementary_slackness = slknes
-
-      inform%init_primal_infeasibility = inform%primal_infeasibility
-      inform%init_dual_infeasibility = inform%dual_infeasibility
-      inform%init_complementary_slackness = inform%complementary_slackness
 
 !  compute the binomial coefficients b_i^k = b_i^{k-1} + b_{i-1}^{k-1}
 

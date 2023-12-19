@@ -197,6 +197,7 @@
 
 !  control parameters for NLS
 
+       TYPE ( NLS_control_type ) :: NLS_initial_control
        TYPE ( NLS_control_type ) :: NLS_control
 
      END TYPE COLT_control_type
@@ -325,14 +326,20 @@
 !   data derived type
 !  - - - - - - - - - -
 
+     TYPE, PUBLIC :: COLT_nls_dims_type
+       INTEGER ( KIND = ip_ ) :: n, m, j_ne, h_ne, p_ne
+       INTEGER ( KIND = ip_ ) :: n_f, m_f, j_f_ne, h_f_ne, p_f_ne
+     END TYPE COLT_nls_dims_type
+
      TYPE, PUBLIC :: COLT_data_type
        INTEGER ( KIND = ip_ ) :: branch, eval_status, out, error
        INTEGER ( KIND = ip_ ) :: print_level, start_print, stop_print
-       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, n_slacks
+       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, n_slacks, nt
        REAL :: time_start, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_now
        REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, stop_i, s_norm
        REAL ( KIND = rp_ ) :: target_lower, target_upper
+       REAL ( KIND = rp_ ) :: tl, tu, cl, cu
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header, accepted
@@ -347,6 +354,7 @@
 
 !   NLS data
 
+       TYPE ( COLT_nls_dims_type ) :: nls_dims
        TYPE ( NLPT_problem_type ) :: nls
        TYPE ( NLS_data_type ) :: NLS_data
        TYPE ( GALAHAD_userdata_type ) :: nls_userdata
@@ -377,6 +385,8 @@
 
 !  initalize NLS components
 
+     CALL NLS_initialize( data%NLS_data, control%NLS_initial_control,          &
+                          inform%NLS_inform )
      CALL NLS_initialize( data%NLS_data, control%NLS_control,                  &
                           inform%NLS_inform )
      RETURN
@@ -633,12 +643,16 @@
 
        CALL NLS_read_specfile( control%NLS_control, device,                    &
              alt_specname = TRIM( alt_specname ) // '-NLS' )
+       CALL NLS_read_specfile( control%NLS_initial_control, device,            &
+             alt_specname = TRIM( alt_specname ) // '-NLS-INITIAL' )
 
      ELSE
 
 !  set NLS control values
 
        CALL NLS_read_specfile( control%NLS_control, device )
+       CALL NLS_read_specfile( control%NLS_initial_control, device,            &
+             alt_specname = 'NLS-INITIAL' )
      END IF
 
      RETURN
@@ -650,7 +664,8 @@
 !-*-*-*-  G A L A H A D -  C O L T _ s o l v e  S U B R O U T I N E  -*-*-*-
 
      SUBROUTINE COLT_solve( nlp, control, inform, data, userdata,              &
-                            eval_FC, eval_GJ, eval_HJ, eval_HOCPRODS )
+                            eval_FC, eval_J, eval_GJ, eval_HC, eval_HJ,        &
+                            eval_HOCPRODS, eval_HCPRODS )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -983,14 +998,6 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
-!  eval_C is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The value of the residual
-!   function c(x) evaluated at x=X must be returned in C, and the status
-!   variable set to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_C is not present, COLT_solve will
-!   return to the user with inform%status = 2 each time an evaluation is
-!   required.
-!
 !  eval_FC is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The value of the objective
 !   function f(x) evaluated at x=X must be returned in f, and the status
@@ -1017,7 +1024,7 @@
 !   order as presented in nlp%J, and the status variable set to 0.
 !   If the evaluation is impossible at x=X, status should be set to a
 !   nonzero value. If eval_GJ is not present, COLT_solve will return to the
-!   user with inform%status = 3 or 5 each time an evaluation is required.
+!   user with inform%status = 4 each time an evaluation is required.
 !
 !  eval_HC is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the weighted Hessian
@@ -1025,7 +1032,7 @@
 !   x=X and y=Y must be returned in H_val in the same order as presented in
 !   nlp%H, and the status variable set to 0. If the evaluation is impossible
 !   at X, status should be set to a nonzero value. If eval_HC is not present,
-!   COLT_solve will return to the user with inform%status = 4 each time an
+!   COLT_solve will return to the user with inform%status = 5 each time an
 !   evaluation is required.
 !
 !  eval_HJ is an optional subroutine which if present must have the arguments
@@ -1034,7 +1041,7 @@
 !   at x=X, y_0 = y0 and y=Y must be returned in H_val in the same order as 
 !   presented in nlp%H, and the status variable set to 0. If the evaluation is
 !   impossible at X, status should be set to a nonzero value. If eval_HJ is 
-!   not present, COLT_solve will return to the user with inform%status = 4 or 5
+!   not present, COLT_solve will return to the user with inform%status = 6
 !   each time an evaluation is required.
 !
 !  eval_HCPRODS is an optional subroutine which if present must have the
@@ -1058,7 +1065,7 @@
 !   function evaluated at x=X and the vector v=V must be returned in PO_val.
 !   If the evaluation is impossible at X, status should be set to a nonzero 
 !   value. If eval_HOCPRODS is not present, NLS_solve will return to the user 
-!   with inform%status = 7 each time an evaluation is required. The Hessians 
+!   with inform%status = 8 each time an evaluation is required. The Hessians 
 !   have already been evaluated or used at x=X if got_h is .TRUE.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1072,22 +1079,12 @@
      TYPE ( COLT_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( COLT_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     OPTIONAL :: eval_FC, eval_GJ, eval_HJ, eval_HOCPRODS,                     &
-                 eval_C, eval_J, eval_HC, eval_HCPRODS
+     OPTIONAL :: eval_FC, eval_J, eval_GJ, eval_HC, eval_HJ,                   &
+                 eval_HOCPRODS, eval_HCPRODS
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
 !----------------------------------
-
-     INTERFACE
-       SUBROUTINE eval_C( status, X, userdata, C )
-       USE GALAHAD_USERDATA_precision
-       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_C
-     END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_FC( status, X, userdata, f, C )
@@ -1184,7 +1181,7 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, ir, ic, j, j_ne, l
-     REAL ( KIND = rp_ ) :: y0, multiplier_norm
+     REAL ( KIND = rp_ ) :: y0, multiplier_norm, t_star
      LOGICAL :: names
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1209,10 +1206,12 @@
        GO TO 10
      CASE ( 20 )  ! initial objective and constraint evaluation
        GO TO 20
-     CASE ( 130 ) ! gradient and Jacobian evaluation
-       GO TO 130
-     CASE ( 140 ) ! Hessian evaluation
-       GO TO 140
+     CASE ( 100 ) ! various evaluations
+       GO TO 100
+     CASE ( 210 ) ! gradient and Jacobian evaluation
+       GO TO 210
+!    CASE ( 240 ) ! Hessian evaluation
+!      GO TO 240
      CASE ( 300 ) ! various evaluations
        GO TO 300
      END SELECT
@@ -1316,8 +1315,8 @@
 
 !  set up static data for the least-squares target objective
 
-     CALL COLT_setup_problem( nlp, data%nls, data%control, inform,             &
-                              data%n_slacks, data%SLACKS,                      &
+     CALL COLT_setup_problem( nlp, data%nls, data%nls_dims, data%control,      &
+                              inform, data%n_slacks, data%SLACKS,              &
                               h_available = .TRUE., p_available = .TRUE. )
 
 !  evaluate the objective and general constraint function values
@@ -1337,6 +1336,8 @@
   20 CONTINUE
      inform%obj = nlp%f
      inform%fc_eval = inform%fc_eval + 1
+
+     inform%primal_infeasibility = TWO_NORM( nlp%C )
 
 !  print problem name and header, if requested
 
@@ -1397,7 +1398,6 @@
 
      data%accepted = .TRUE.
      data%s_norm = zero
-     y0 = one
 
 !  set scale factors if required
 
@@ -1412,193 +1412,233 @@
        data%C_scale( : nlp%m ) = one
      END IF
 
+!  compute norms of the primal and dual feasibility and the complemntary
+!  slackness
+
+     multiplier_norm = one
+     inform%primal_infeasibility =                                             &
+      OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                       &
+                                nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
+     inform%dual_infeasibility = zero
+!  NB. Compute this properly later
+     inform%complementary_slackness =                                          &
+       OPT_complementary_slackness( nlp%n, nlp%X( : nlp%n ),                   &
+          nlp%X_l( : nlp%n ), nlp%X_u( : nlp%n ), nlp%Z( : nlp%n ),            &
+          nlp%m, nlp%C( : nlp%m ), nlp%C_l( : nlp%m ),                         &
+          nlp%C_u( : nlp%m ), nlp%Y( : nlp%m ) ) / multiplier_norm
+
+!  compute the stopping tolerances
+
+     data%stop_p = MAX( data%control%stop_abs_p,                               &
+        data%control%stop_rel_p * inform%primal_infeasibility )
+     data%stop_d = MAX( data%control%stop_abs_d,                               &
+       data%control%stop_rel_d * inform%dual_infeasibility )
+     data%stop_c = MAX( data%control%stop_abs_c,                               &
+       data%control%stop_rel_c * inform%complementary_slackness )
+     data%stop_i = MAX( data%control%stop_abs_i, data%control%stop_rel_i )
+     IF ( data%printi ) WRITE( data%out,                                       &
+         "(  /, A, '  Primal    convergence tolerance =', ES11.4,              &
+        &    /, A, '  Dual      convergence tolerance =', ES11.4,              &
+        &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )          &
+             prefix, data%stop_p, prefix, data%stop_d, prefix, data%stop_c
+
 !  ----------------------------------------------------------------------------
 !                           INITIAL TARGET PHASE
 !  ----------------------------------------------------------------------------
 
-!  solve the target problem: min 1/2||c(x),f)x)-t||^2 using the nls solver.
-!  All function evlautions are for the vector of residuals (c(x),f(x)-t)
+!  solve the feasibility problem: min 1/2||c(x)||^2 using the nls solver.
+!  All function evlautions are for the vector of residuals c(x)
 
-       inform%NLS_inform%status = 1
-       data%nls%X( : data%nls%n ) = nlp%X
-write(6,*) ' x ', nlp%X
-       data%control%NLS_control%jacobian_available = 2
-       data%control%NLS_control%subproblem_control%jacobian_available = 2
-       data%control%NLS_control%hessian_available = 2
+     inform%NLS_inform%status = 1
+     data%nls%X( : data%nls%n ) = nlp%X
+!write(6,*) ' x ', nlp%X
+     data%control%NLS_initial_control%jacobian_available = 2
+     data%control%NLS_initial_control%subproblem_control%jacobian_available = 2
+     data%control%NLS_initial_control%hessian_available = 2
+     data%nls%m = data%nls%m - 1
 
-!      DO        ! loop to solve problem
-   200 CONTINUE  ! mock loop to solve problem
+!  record dimensions for feasibility problem
+
+     data%nls%n = data%nls_dims%n_f ; data%nls%m = data%nls_dims%m_f   
+     data%nls%J%ne = data%nls_dims%j_f_ne ; data%nls%H%ne = data%nls_dims%h_f_ne
+     data%nls%P%ne = data%nls_dims%p_f_ne
+
+!    DO        ! loop to solve the feasibility problem
+ 100 CONTINUE  ! mock loop to solve the feasibility problem
 
 !  call the least-squares solver
 
-         CALL NLS_solve( data%nls, data%control%NLS_control,                   &
-                         inform%NLS_inform, data%NLS_data, data%NLS_userdata )
+       CALL NLS_solve( data%nls, data%control%NLS_initial_control,             &
+                       inform%NLS_inform, data%NLS_data, data%NLS_userdata )
 
 !  respond to requests for further details
 
-         SELECT CASE ( inform%NLS_inform%status )
+       SELECT CASE ( inform%NLS_inform%status )
 
-!  obtain the residuals
+!  obtain the residuals (and the objective function)
 
-         CASE ( 2 )
-           IF ( data%reverse_fc ) THEN
-             nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 2 ; RETURN
-           ELSE
-             CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
-                           nlp%f, nlp%C )
-             data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
-             data%nls%C( data%nls%m ) = nlp%f - inform%target
-             IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )    &
-               data%nls%C( : data%nls%m )
-           END IF
+       CASE ( 2 )
+         IF ( data%reverse_fc ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 100 ; inform%status = 2 ; RETURN
+         ELSE
+           CALL eval_FC( data%eval_status, data%nls%X, userdata,               &
+                         nlp%f, nlp%C )
+           data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
+           IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )      &
+             data%nls%C( : data%nls%m )
+         END IF
 
 !  obtain the Jacobian
 
-         CASE ( 3 )
-           IF ( data%reverse_gj ) THEN
-             nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 3 ; RETURN
-           ELSE
-             CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
-                           nlp%Go%val, nlp%J%val )   
-             SELECT CASE ( SMT_get( data%nls%J%type ) )
-             CASE ( 'DENSE' )
-               j_ne = 0 ; l = 0
-               DO i = 1, nlp%m  ! from each row of J(x) in turn
-                 data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                     &
-                   = nlp%J%val( l + 1 : l + nlp%n )
-                 j_ne = j_ne + data%nls%n ; l = l + nlp%n
-               END DO
-               IF ( nlp%Go%sparse ) THEN ! from g(x)
-                 DO i = 1, nlp%Go%ne 
-                   data%nls%J%val( j_ne + nlp%Go%ind( i ) ) = nlp%Go%val( i )
-                 END DO
-               ELSE
-                 data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                     &
-                   = nlp%Go%val( 1 : nlp%n )
-               END IF
-             CASE ( 'SPARSE_BY_ROWS' )
-               DO i = 1, nlp%m  ! from each row of J(x) in turn
-                 j_ne = data%nls%J%ptr( i ) - 1
-                 DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
-                   j_ne = j_ne + 1
-                   data%nls%J%val( j_ne ) = nlp%J%val( l )
-                 END DO
-               END DO
-               j_ne = data%nls%J%ptr( data%nls%m ) - 1
-               DO j = 1, nlp%Go%ne
+       CASE ( 3 )
+         IF ( data%reverse_gj ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 100 ; inform%status = 3 ; RETURN
+         ELSE
+           CALL eval_J( data%eval_status, data%nls%X, userdata,                &
+                        nlp%J%val )   
+           SELECT CASE ( SMT_get( data%nls%J%type ) )
+           CASE ( 'DENSE' )
+             j_ne = 0 ; l = 0
+             DO i = 1, nlp%m  ! from each row of J(x) in turn
+               data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                       &
+                 = nlp%J%val( l + 1 : l + nlp%n )
+               j_ne = j_ne + data%nls%n ; l = l + nlp%n
+             END DO
+           CASE ( 'SPARSE_BY_ROWS' )
+             DO i = 1, nlp%m  ! from each row of J(x) in turn
+               j_ne = data%nls%J%ptr( i ) - 1
+               DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
                  j_ne = j_ne + 1
-                 data%nls%J%val( j_ne ) = nlp%Go%val( j )
+                 data%nls%J%val( j_ne ) = nlp%J%val( l )
                END DO
-             CASE ( 'COORDINATE' )
-               data%nls%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne ) ! from J
-               j_ne = nlp%J%ne + data%n_slacks
-               DO j = 1, nlp%Go%ne
-                 j_ne = j_ne + 1
-                 data%nls%J%val( j_ne ) = nlp%Go%val( j )
-               END DO
-               IF ( print_debug ) WRITE(6,"( ' nls%J', / ( 3( 2I6, ES12.4 )))")&
-                ( data%nls%J%row( i ), data%nls%J%col( i ),                    &
-                  data%nls%J%val( i ), i = 1, data%nls%J%ne )
-             END SELECT
-           END IF
+             END DO
+           CASE ( 'COORDINATE' )
+             data%nls%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne ) ! from J
+             IF ( print_debug ) WRITE(6,"( ' nls%J', / ( 3( 2I6, ES12.4 )))")  &
+              ( data%nls%J%row( i ), data%nls%J%col( i ),                      &
+                data%nls%J%val( i ), i = 1, nlp%J%ne )
+           END SELECT
+         END IF
 
 !  obtain the Hessian
 
-         CASE ( 4 )
-           IF ( data%reverse_hj ) THEN
-             nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 4 ; RETURN
-           ELSE
-             CALL eval_HJ( data%eval_status, data%nls%X,                       &
-                           data%NLS_data%Y( data%nls%m ),                      &
-                           data%NLS_data%Y( 1 : nlp%m ),                       &
-                           userdata, data%nls%H%val )
-             IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" ) &
-              ( data%nls%H%row( i ), data%nls%H%col( i ),                      &
-                data%nls%H%val( i ), i = 1, data%nls%H%ne )
-           END IF
+       CASE ( 4 )
+         IF ( data%reverse_hj ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 100 ; inform%status = 5 ; RETURN
+         ELSE
+           CALL eval_HC( data%eval_status, data%nls%X,                         &
+                         data%NLS_data%Y( 1 : nlp%m ),                         &
+                         userdata, data%nls%H%val )
+           IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )   &
+            ( data%nls%H%row( i ), data%nls%H%col( i ),                        &
+              data%nls%H%val( i ), i = 1, data%nls%H%ne )
+         END IF
 
 !  form a Jacobian-vector product
 
-         CASE ( 5 )
-           write(6,*) ' no nls_status = 5 as yet, stopping'
-           stop
-!          CALL JACPROD( data%eval_status, data%nls%X,                         &
-!                        data%NLS_userdata, data%NLS_data%transpose,           &
-!                        data%NLS_data%U, data%NLS_data%V )
+       CASE ( 5 )
+         write(6,*) ' no nls_status = 5 as yet, stopping'
+         stop
+!        CALL JACPROD( data%eval_status, data%nls%X,                           &
+!                      data%NLS_userdata, data%NLS_data%transpose,             &
+!                      data%NLS_data%U, data%NLS_data%V )
 
 !  form a Hessian-vector product
 
-         CASE ( 6 )
-           write(6,*) ' no nls_status = 6 as yet, stopping'
-           stop
-!          CALL HESSPROD( data%eval_status, data%nls%X, data%NLS_data%Y,       &
-!                         data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
+       CASE ( 6 )
+         write(6,*) ' no nls_status = 6 as yet, stopping'
+         stop
+!        CALL HESSPROD( data%eval_status, data%nls%X, data%NLS_data%Y,         &
+!                       data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
 
 !  form residual Hessian-vector products
 
-         CASE ( 7 )
-           IF ( data%reverse_hocprods ) THEN
-             nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 200 ; inform%status = 7 ; RETURN
-           ELSE
-             CALL eval_HOCPRODS( data%eval_status, data%nls%X,                 &
-                                 data%nls_data%V, userdata,                    &
-                                 data%nls%P%val( nlp%P%ne + 1 :                &
-                                                 data%nls%P%ne ),              &
-                                 data%nls%P%val( 1 : nlp%P%ne ) )
-             IF ( print_debug ) THEN
-               WRITE(6,"( ' nls%P' )" )
-               DO j = 1, data%nls%n
-                 WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
-                   j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
-                        data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
-               END DO
-             END IF
+       CASE ( 7 )
+         IF ( data%reverse_hocprods ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 100 ; inform%status = 7 ; RETURN
+         ELSE
+           CALL eval_HCPRODS( data%eval_status, data%nls%X,                    &
+                               data%nls_data%V, userdata,                      &
+                               data%nls%P%val( 1 : nlp%P%ne ) )
+           IF ( print_debug ) THEN
+             WRITE(6,"( ' nls%P' )" )
+             DO j = 1, nlp%m
+               WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
+                 j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
+                      data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
+             END DO
            END IF
+         END IF
 
 !  apply the preconditioner
 
-         CASE ( 8 )
-           write(6,*) ' no nls_status = 8 as yet, stopping'
-           stop
-!          CALL SCALE( data%eval_status, data%nls%X,                           &
-!                      data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
+       CASE ( 8 )
+         write(6,*) ' no nls_status = 8 as yet, stopping'
+         stop
+!        CALL SCALE( data%eval_status, data%nls%X,                             &
+!                    data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
 
-!  terminal exit from loop
+!  terminal exit from feasibility problem solver
 
-         CASE DEFAULT
-           nlp%X = data%nls%X( : data%nls%n )
-           GO TO 290
-         END SELECT
-         GO TO 200
-!      END DO ! end of loop to solve target problem
+       CASE DEFAULT
+         nlp%X = data%nls%X( : data%nls%n )
+         GO TO 190
+       END SELECT
 
-   290  CONTINUE
+!  perform another iteration
 
+       GO TO 100
 
+!    END DO ! end of loop to solve the feasibility problem
+ 190 CONTINUE
+!stop
 
+     inform%obj = nlp%f
+     inform%primal_infeasibility = inform%nls_inform%norm_c
+
+!  check for feasibility
+
+     IF ( inform%primal_infeasibility > data%stop_p ) THEN
+       WRITE( data%out, "( ' no feasible point found, infeasibility = ',       &
+      &  ES12.4 )" )  inform%primal_infeasibility
+       inform%status = GALAHAD_error_primal_infeasible
+       GO TO 910
+     ELSE
+       WRITE( data%out, "( ' feasible point found, infeasibility and',         &
+      & ' objective =', 2ES12.4 )" ) inform%primal_infeasibility, inform%obj
+     END IF
 
 !  set up initial target
 
-     inform%target = zero   !!! fix this
-     inform%target = 0.25_rp_  !!! fix this
-     data%target_bounded = .FALSE.
-     data%target_upper = inform%target
+     y0 = one
+     data%target_upper = inform%obj
      data%target_lower = - infinity
+     inform%target = data%target_upper - one
+     data%target_bounded = .FALSE.
      data%converged = .FALSE.
-     nlp%X = (/ -1.99_rp_, 0.0_rp_ /) 
+     WRITE( data%out, 2070 ) data%target_lower, inform%target, data%target_upper
+     data%nt = 0
+
+!  restore dimensions for target problem
+
+     data%nls%n = data%nls_dims%n ; data%nls%m = data%nls_dims%m
+     data%nls%J%ne = data%nls_dims%j_ne ; data%nls%H%ne = data%nls_dims%h_ne
+     data%nls%P%ne = data%nls_dims%p_ne
 
 !  ----------------------------------------------------------------------------
-!                           START OF MAIN LOOP
+!                  START OF MAIN LOOP OVER EVOLVING TARGETS
 !  ----------------------------------------------------------------------------
+
+!  solve the target problem: min 1/2||c(x),f)x)-t||^2 for a given target t
 
      IF ( data%printd ) WRITE( data%out, "( A, ' (A1:3)' )" ) prefix
 
 !    DO
-  50   CONTINUE
+  200   CONTINUE
 !      IF ( inform%status == GALAHAD_ok ) GO TO 900
 
        IF ( data%printd ) THEN
@@ -1614,7 +1654,7 @@ write(6,*) ' x ', nlp%X
        IF ( data%accepted ) THEN
          inform%gj_eval = inform%gj_eval + 1
          IF ( data%reverse_gj ) THEN
-           data%branch = 130 ; inform%status = 3 ; RETURN
+           data%branch = 210 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%Go%val,        &
                          nlp%J%val )
@@ -1627,7 +1667,7 @@ write(6,*) ' x ', nlp%X
 
 !  return from reverse communication to obtain the gradient and Jacobian
 
-  130  CONTINUE
+  210  CONTINUE
 !    write( 6, "( ' sparse gradient ( ind, val )', /, ( 3( I6, ES12.4 ) ) )" ) &
 !      ( nlp%Go%ind( i ), nlp%Go%val( i ), i = 1, nlp%Go%ne )
 
@@ -1647,43 +1687,8 @@ write(6,*) ' x ', nlp%X
 !      WRITE( data%out, "(A, /, ( 4ES20.12 ) )" ) ' gl_after ',  nlp%gl
 
        inform%obj = nlp%f
-
-!  compute norms of the primal and dual feasibility and the complemntary
-!  slackness
-
-       multiplier_norm = one
-       inform%primal_infeasibility =                                           &
-        OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                     &
-                                  nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
        inform%dual_infeasibility =                                             &
          OPT_dual_infeasibility( nlp%n, nlp%gL( : nlp%n ) ) / multiplier_norm
-       inform%complementary_slackness =                                        &
-         OPT_complementary_slackness( nlp%n, nlp%X( : nlp%n ),                 &
-            nlp%X_l( : nlp%n ), nlp%X_u( : nlp%n ), nlp%Z( : nlp%n ),          &
-            nlp%m, nlp%C( : nlp%m ), nlp%C_l( : nlp%m ),                       &
-            nlp%C_u( : nlp%m ), nlp%Y( : nlp%m ) ) / multiplier_norm
-
-!  ---------------------
-!  first-iteration tasks
-!  ---------------------
-
-       IF ( inform%iter == 0 ) THEN
-
-!  compute the stopping tolerances
-
-         data%stop_p = MAX( data%control%stop_abs_p,                           &
-            data%control%stop_rel_p * inform%primal_infeasibility )
-         data%stop_d = MAX( data%control%stop_abs_d,                           &
-           data%control%stop_rel_d * inform%dual_infeasibility )
-         data%stop_c = MAX( data%control%stop_abs_c,                           &
-           data%control%stop_rel_c * inform%complementary_slackness )
-         data%stop_i = MAX( data%control%stop_abs_i, data%control%stop_rel_i )
-         IF ( data%printi ) WRITE( data%out,                                   &
-             "(  /, A, '  Primal    convergence tolerance =', ES11.4,          &
-            &    /, A, '  Dual      convergence tolerance =', ES11.4,          &
-            &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )      &
-                 prefix, data%stop_p, prefix, data%stop_d, prefix, data%stop_c
-       END IF
 
 !  ---------------------
 !  check for termination
@@ -1722,7 +1727,7 @@ write(6,*) ' x ', nlp%X
              inform%target, data%clock_now
          END IF
 
-!        IF ( mod( inform%iter, 50 ) == 0 ) WRITE( data%out, 2100 )
+!        IF ( mod( inform%iter, 200 ) == 0 ) WRITE( data%out, 2100 )
 !        WRITE( data%out, 2110 ) inform%iter, data%p_mode, nlp%f,              &
 !          data%primal_viol, data%comp_viol, data%sigma
        END IF
@@ -1768,7 +1773,7 @@ write(6,*) ' x ', nlp%X
 !           nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
 
 !         IF ( data%reverse_hj ) THEN
-!            data%branch = 140 ; inform%status = 4 ; RETURN
+!            data%branch = 240 ; inform%status = 4 ; RETURN
 !         ELSE
 !            CALL eval_HJ( data%eval_status, nlp%X, y0, nlp%Y, userdata,       &
 !                          nlp%H%val )
@@ -1781,10 +1786,11 @@ write(6,*) ' x ', nlp%X
 
 !  return from reverse communication to obtain the Hessian of the Lagrangian
 
-  140  CONTINUE
+! 240  CONTINUE
 
-!  solve the target problem: min 1/2||c(x),f)x)-t||^2 using the nls solver.
-!  All function evlautions are for the vector of residuals (c(x),f(x)-t)
+!  solve the target problem: find x(t) = (local) argmin 1/2||c(x),f)x)-t||^2 
+!  using the the nls solver.  All function evlautions are for the vector of 
+!  residuals (c(x),f(x)-t)
 
        inform%NLS_inform%status = 1
        data%nls%X( : data%nls%n ) = nlp%X
@@ -1796,7 +1802,7 @@ write(6,*) ' x ', nlp%X
 !      DO        ! loop to solve problem
    300 CONTINUE  ! mock loop to solve problem
 
-!  call the least-squares solver
+!  call the least-squares solver to find x(t)
 
          CALL NLS_solve( data%nls, data%control%NLS_control,                   &
                          inform%NLS_inform, data%NLS_data, data%NLS_userdata )
@@ -1825,7 +1831,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 3 )
            IF ( data%reverse_gj ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 3 ; RETURN
+             data%branch = 300 ; inform%status = 4 ; RETURN
            ELSE
              CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
                            nlp%Go%val, nlp%J%val )   
@@ -1876,7 +1882,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 4 )
            IF ( data%reverse_hj ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 4 ; RETURN
+             data%branch = 300 ; inform%status = 6 ; RETURN
            ELSE
              CALL eval_HJ( data%eval_status, data%nls%X,                       &
                            data%NLS_data%Y( data%nls%m ),                      &
@@ -1909,7 +1915,7 @@ write(6,*) ' x ', nlp%X
          CASE ( 7 )
            IF ( data%reverse_hocprods ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 7 ; RETURN
+             data%branch = 300 ; inform%status = 8 ; RETURN
            ELSE
              CALL eval_HOCPRODS( data%eval_status, data%nls%X,                 &
                                  data%nls_data%V, userdata,                    &
@@ -1934,23 +1940,24 @@ write(6,*) ' x ', nlp%X
 !          CALL SCALE( data%eval_status, data%nls%X,                           &
 !                      data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
 
-!  terminal exit from loop
+!  terminal exit from the minimization loop
 
          CASE DEFAULT
            nlp%X = data%nls%X( : data%nls%n )
            GO TO 390
          END SELECT
          GO TO 300
-!      END DO ! end of loop to solve target problem
+!      END DO ! end of loop to solve the target problem
 
    390  CONTINUE
 
-        WRITE( 6, "( /, ' f, ||c|| = ', 2ES13.5, / )" ) nlp%f,                 &
-          TWO_norm( nlp%C( : nlp%m ) )
+        inform%primal_infeasibility = TWO_NORM( nlp%C )
+        WRITE( data%out, "( /, ' f, ||c|| = ', 2ES13.5, / )" )                 &
+         nlp%f, inform%primal_infeasibility
 
 !  adjust the target
 
-       IF ( TWO_norm( nlp%C( : nlp%m ) ) <= ten ** ( - 5 ) ) THEN
+       IF ( inform%primal_infeasibility <= ten ** ( - 5 ) ) THEN
          IF ( data%target_bounded ) THEN
             data%target_upper = inform%target
             IF ( data%target_upper - data%target_lower < ten ** ( - 5 ) ) THEN
@@ -1968,19 +1975,27 @@ write(6,*) ' x ', nlp%X
          IF ( data%target_upper - data%target_lower < ten ** ( - 8 ) ) THEN
            data%converged = .TRUE.
          ELSE
-!           inform%target = half * ( data%target_upper + data%target_lower )
 
-inform%target = inform%target + 0.01_rp_
-
+           data%nt = MIN( data%nt + 1, 2 )
+           IF ( data%nt == 1 ) THEN
+             data%tu = inform%target ; data%cu = inform%primal_infeasibility
+             inform%target = half * ( data%target_upper + data%target_lower )
+           ELSE
+             data%tl = data%tu ; data%cl = data%cu
+             data%tu = inform%target ; data%cu = inform%primal_infeasibility
+             t_star = ( data%tu * data%cl - data%tl * data%cu ) /              &
+                      ( data%cl - data%cu )
+             WRITE( 6, "( ' t_* = ', ES16.8 )" ) t_star
+             inform%target                                                     &
+               = inform%target + 0.99_rp_ * ( t_star - inform%target )
+           END IF
          END IF
-
-
        END IF           
 
-write(6,*) ' x ', nlp%X
+!write(6,*) ' x ', nlp%X
 
-       WRITE( 6, "( ' lower, target, upper = ', 3ES13.5 )" )                   &
-         data%target_lower, inform%target, data%target_upper
+       WRITE( data%out, 2070 ) data%target_lower, inform%target,               &
+                               data%target_upper
        IF ( data%converged ) THEN
          write(6,*) ' forcing stop'
          stop
@@ -2012,10 +2027,10 @@ write(6,*) ' x ', nlp%X
        END IF
 
 !  ----------------------------------------------------------------------------
-!                      END OF MAIN LOOP (STARTED A1:3)
+!                      END OF MAIN LOOP TARGET LOOP
 !  ----------------------------------------------------------------------------
 
-       GO TO 50
+       GO TO 200
 !    END DO
 
 !  summarize the final results
@@ -2218,6 +2233,7 @@ write(6,*) ' x ', nlp%X
  2040 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2050 FORMAT( A, I7, 4ES12.4 )
  2060 FORMAT( A, 6X, '.', 4( 2X, 10( '.' ) ) )
+ 2070 FORMAT( ' lower, new target, upper = ', 3ES16.8 )
 
 !  end of subroutine COLT_solve
 
@@ -2225,7 +2241,7 @@ write(6,*) ' x ', nlp%X
 
 !-  G A L A H A D -  C O L T _ s e t u p _ p r o b l e m  S U B R O U T I N E  -
 
-     SUBROUTINE COLT_setup_problem( nlp, nls, control, inform,                 &
+     SUBROUTINE COLT_setup_problem( nlp, nls, nls_dims, control, inform,       &
                                     n_slacks, SLACKS, h_available, p_available )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -2239,6 +2255,7 @@ write(6,*) ' x ', nlp%X
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 !  **NB  currently, all constraints are equations, and variables are free **
+!  nlsi is nls without f-t component, only sizes components recorded
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -2246,6 +2263,7 @@ write(6,*) ' x ', nlp%X
 
      TYPE ( NLPT_problem_type ), INTENT( IN ) :: nlp
      TYPE ( NLPT_problem_type ), INTENT( OUT ) :: nls
+     TYPE ( COLT_nls_dims_type ) :: nls_dims
      TYPE ( COLT_control_type ), INTENT( IN ) :: control
      TYPE ( COLT_inform_type ), INTENT( INOUT ) :: inform
      INTEGER ( KIND = ip_ ), INTENT( OUT) :: n_slacks
@@ -2297,6 +2315,8 @@ write(6,*) ' x ', nlp%X
 !  set the numbers of variables and resdiduals for nls
 
      nls%n = nlp%n + n_slacks ; nls%m = nlp%m + 1
+     nls_dims%n = nls%n ; nls_dims%m = nls%m
+     nls_dims%n_f = nls%n ; nls_dims%m_f = nlp%m
 
 !  allocate space for the variables, residuals and gradients for nls
 
@@ -2367,14 +2387,19 @@ write(6,*) ' x ', nlp%X
 
 !  calculate the size of the resiual Jacobian
     
+     nls%J%m = nls%m ; nls%J%n = nls%n
      SELECT CASE ( SMT_get( nls%J%type ) )
      CASE ( 'DENSE' )
-       nls%J%ne = nls%J%m * nls%J%n
+       nls_dims%j_f_ne = nls_dims%m_f *  nls_dims%n_f
+       nls_dims%j_ne = nls%J%m * nls%J%n
      CASE ( 'SPARSE_BY_ROWS' )
-       nls%J%ne = nlp%J%ptr( nlp%m + 1 ) - 1 + n_slacks + nlp%Go%ne
+       nls_dims%j_f_ne = nlp%J%ptr( nlp%m + 1 ) - 1 + n_slacks 
+       nls_dims%j_ne =  nls_dims%j_f_ne + nlp%Go%ne
      CASE ( 'COORDINATE' )
-       nls%J%ne = nlp%J%ne  + n_slacks + nlp%Go%ne
+       nls_dims%j_f_ne = nlp%J%ne + n_slacks 
+       nls_dims%j_ne =  nls_dims%j_f_ne + nlp%Go%ne
      END SELECT
+     nls%J%ne = nls_dims%j_ne
 
 !  make room for the values
 
@@ -2534,6 +2559,7 @@ write(6,*) ' x ', nlp%X
        IF ( inform%alloc_status /= 0 ) THEN
          inform%status = GALAHAD_error_allocate ; RETURN ; END IF
       
+       nls%H%n = nls%n
        IF ( array_name( 1 : len_array ) == 'DENSE' ) THEN
          nls%H%ne = nls%H%n * ( nls%H%n + 1 ) / 2
        ELSE
@@ -2576,6 +2602,7 @@ write(6,*) ' x ', nlp%X
            nls%H%col( : nlp%H%ne ) = nlp%H%col( : nlp%H%ne )
          END SELECT
        END IF
+       nls_dims%h_ne = nls%H%ne ; nls_dims%h_f_ne = nls%H%ne
 
 !  make room for the values
 
@@ -2586,6 +2613,8 @@ write(6,*) ' x ', nlp%X
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 910
+     ELSE
+       nls_dims%h_ne = - 1 ; nls_dims%h_f_ne = - 1  ! unset values
      END IF
 
 !  if required set up space for the matrix of residual Hessian-vector products, 
@@ -2601,7 +2630,9 @@ write(6,*) ' x ', nlp%X
        CALL CUTEST_cdimchp( inform%status, lchp )
        CALL CUTEST_cdimohp( inform%status, lohp )
 
-       nls%P%ne = lchp + lohp
+       nls_dims%p_f_ne = lchp ; nls_dims%p_ne = lchp + lohp
+       nls%P%ne = nls_dims%p_ne
+
        array_name = 'colt: nls%P%ptr'
        CALL SPACE_resize_array( nls%m + 1, nls%P%ptr,                          &
               inform%status, inform%alloc_status, array_name = array_name,     &
@@ -2640,6 +2671,8 @@ write(6,*) ' x ', nlp%X
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 910
+     ELSE
+       nls_dims%p_f_ne = - 1 ; nls_dims%p_ne = - 1   ! unset values
      END IF
 
 

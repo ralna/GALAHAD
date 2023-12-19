@@ -543,7 +543,13 @@ struct clls_control_type {
     bool crossover;
 
     /// \brief
-    /// if .space_critical true, every effort will be made to use as little
+    /// if .reduced_pounce_system is true, eliminate fixed variables when
+    /// solving the linear system required by the attempted pounce to 
+    /// the solution
+    bool reduced_pounce_system;
+
+    /// \brief
+    /// if .space_critical is true, every effort will be made to use as little
     /// space as possible. This may result in longer computation time
     bool space_critical;
 
@@ -723,14 +729,6 @@ struct clls_inform_type {
     /// \brief
     /// the value of the complementary slackness
     real_wp_ complementary_slackness;
-
-    /// \brief
-    /// these values at the initial point (needed bg GALAHAD_CDQP)
-    real_wp_ init_primal_infeasibility;
-    /// see init_primal_infeasibility
-    real_wp_ init_dual_infeasibility;
-    /// see init_primal_infeasibility
-    real_wp_ init_complementary_slackness;
 
     /// \brief
     /// the smallest pivot which was not judged to be zero when detecting linear
@@ -967,31 +965,31 @@ void clls_reset_control( struct clls_control_type *control,
   \li  0. The import was succesful.
  */
 
-//  *-*-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E _ C L L S   -*-*-*-*-*-*-*-*-*-*-
 
 void clls_solve_clls( void **data,
-                    int *status,
-                    int n,
-                    int o,
-                    int m,
-                    int Ao_ne,
-                    const real_wp_ Ao_val[],
-                    const real_wp_ b[],
-                    int A_ne,
-                    const real_wp_ A_val[],
-                    const real_wp_ c_l[],
-                    const real_wp_ c_u[],
-                    const real_wp_ x_l[],
-                    const real_wp_ x_u[],
-                    real_wp_ x[],
-                    real_wp_ r[],
-                    real_wp_ c[],
-                    real_wp_ y[],
-                    real_wp_ z[],
-                    int x_stat[],
-                    int c_stat[],
-                    real_wp_ regularization_weight,
-                    real_wp_ w[] );
+                      int *status,
+                      int n,
+                      int o,
+                      int m,
+                      int Ao_ne,
+                      const real_wp_ Ao_val[],
+                      const real_wp_ b[],
+                      int A_ne,
+                      const real_wp_ A_val[],
+                      const real_wp_ c_l[],
+                      const real_wp_ c_u[],
+                      const real_wp_ x_l[],
+                      const real_wp_ x_u[],
+                      real_wp_ x[],
+                      real_wp_ r[],
+                      real_wp_ c[],
+                      real_wp_ y[],
+                      real_wp_ z[],
+                      int x_stat[],
+                      int c_stat[],
+                      real_wp_ regularization_weight,
+                      real_wp_ w[] );
 
 /*!<
  Solve the constrained linear-least squares problem when the design matrix 
@@ -1056,10 +1054,10 @@ void clls_solve_clls( void **data,
     holds the linear term \f$b\f$ of observations.
     The j-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type int, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
- @param[in] A_val is a one-dimensional array of size L_ne and type double,
+ @param[in] A_val is a one-dimensional array of size a_ne and type double,
     that holds the values of the entries of the constraint Jacobian matrix
     \f$A\f$ in any of the available storage schemes.
 
@@ -1115,7 +1113,7 @@ void clls_solve_clls( void **data,
  @param[in] regularization_weight is a scalar of type double, that
     holds the non-negative regularization weight \f$\sigma \geq 0\f$.
 
- @param[out] w is a one-dimensional array of size o and type double, that
+ @param[in] w is a one-dimensional array of size o and type double, that
    holds the vector of strictly-positive observation weights \f$w\f$.
    If the weights are all one, w can be set to NULL.
 

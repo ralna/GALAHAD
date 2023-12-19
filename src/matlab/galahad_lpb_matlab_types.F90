@@ -57,7 +57,7 @@
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc, iter, factorization_status
         mwPointer :: factorization_integer, factorization_real, nfacts, nbacts
-        mwPointer :: obj, primal_infeasibility, dual_infeasibility
+        mwPointer :: threads, obj, primal_infeasibility, dual_infeasibility
         mwPointer :: complementary_slackness, potential, non_negligible_pivot
         mwPointer :: feasible
         TYPE ( LPB_time_pointer_type ) :: time_pointer
@@ -454,18 +454,18 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 19
+      INTEGER * 4, PARAMETER :: ninform = 20
       CHARACTER ( LEN = 24 ), PARAMETER :: finform( ninform ) = (/             &
            'status                  ', 'alloc_status            ',             &
            'bad_alloc               ', 'iter                    ',             &
            'factorization_status    ', 'factorization_integer   ',             &
            'factorization_real      ', 'nfacts                  ',             &
-           'nbacts                  ', 'obj                     ',             &
-           'primal_infeasibility    ', 'dual_infeasibility      ',             &
-           'complementary_slackness ', 'potential               ',             &
-           'non_negligible_pivot    ', 'feasible                ',             &
-           'time                    ', 'FDC_inform              ',             &
-           'SBLS_inform             '   /)
+           'nbacts                  ', 'threads                 ',             &
+           'obj                     ', 'primal_infeasibility    ',             &
+           'dual_infeasibility      ', 'complementary_slackness ',             &
+           'potential               ', 'non_negligible_pivot    ',             &
+           'feasible                ', 'time                    ',             &
+           'FDC_inform              ', 'SBLS_inform             '   /)
       INTEGER * 4, PARAMETER :: t_ninform = 12
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'preprocess           ',                   &
@@ -505,6 +505,8 @@
         'nfacts', LPB_pointer%nfacts )
       CALL MATLAB_create_integer_component( LPB_pointer%pointer,               &
         'nbacts', LPB_pointer%nbacts )
+      CALL MATLAB_create_real_component( LPB_pointer%pointer,                  &
+        'threads', LPB_pointer%threads )
       CALL MATLAB_create_real_component( LPB_pointer%pointer,                  &
         'obj', LPB_pointer%obj )
       CALL MATLAB_create_real_component( LPB_pointer%pointer,                  &
@@ -605,6 +607,8 @@
                                mxGetPr( LPB_pointer%nfacts ) )
       CALL MATLAB_copy_to_ptr( LPB_inform%nbacts,                              &
                                mxGetPr( LPB_pointer%nbacts ) )
+      CALL MATLAB_copy_to_ptr( LPB_inform%threads,                             &
+                               mxGetPr( LPB_pointer%threads ) )
       CALL MATLAB_copy_to_ptr( LPB_inform%obj,                                 &
                                mxGetPr( LPB_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( LPB_inform%primal_infeasibility,                &

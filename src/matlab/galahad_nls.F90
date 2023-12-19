@@ -470,7 +470,7 @@
         IF ( w_in /= 0 ) THEN
           nz = INT( mxGetNumberOfElements( w_in ), KIND = int4 )
           IF ( nz < m ) CALL mexErrMsgTxt(                                     &
-            ' length of pattern.w must be at least patter.m' //                &
+            ' length of pattern.w must be at least pattern.m' //               &
             ' on input to galahad_nls' )
 
 !  allocate space for the weights, and assign their values
