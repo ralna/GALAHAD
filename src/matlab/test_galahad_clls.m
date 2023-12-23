@@ -34,8 +34,8 @@ control.SLS_control.definite_linear_solver = 'ma57' ;
 %control.SLS_control.print_level = 1 ;
 control.out = 6 ;
 %control.print_level = 1 ;
-[ x, inform, aux ] = galahad_clls( A_o, b, A, c_l, c_u, x_l, x_u, ...
-                                   0.0, control ) ;
+[ x, inform, aux ] = galahad_clls( A_o, b, 0.0, A, c_l, c_u, x_l, x_u, ...
+                                   control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - clls: optimal f =', inform.obj, '- status =', inform.status ) )
 
@@ -48,8 +48,8 @@ SA_o = sparse(A_o) ;
 
 [ control ] = galahad_clls( 'initial' ) ;
 control.print_level = 0 ;
-[ x, inform, aux ] = galahad_clls( 'existing', A_o, b, A, c_l, c_u, ...
-                                    x_l, x_u, 0.0, control ) ;
+[ x, inform, aux ] = galahad_clls( 'existing', A_o, b, 0.0, A, c_l, c_u, ...
+                                    x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - clls: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_clls( 'final' )
@@ -62,8 +62,8 @@ w(1:o)= 2.0 ;
 
 [ control ] = galahad_clls( 'initial' ) ;
 control.print_level = 0 ;
-[ x, inform, aux ] = galahad_clls( 'existing', A_o, b, A, c_l, c_u, ...
-                                    x_l, x_u, 0.0, w, control ) ;
+[ x, inform, aux ] = galahad_clls( 'existing', A_o, b, 0.0, A, c_l, c_u, ...
+                                    x_l, x_u, w, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - clls: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_clls( 'final' )

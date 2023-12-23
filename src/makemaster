@@ -628,8 +628,12 @@ test_spec_single:
                           PRECIS=single PWD=$(PWD)/sls )
 	( cd uls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=single PWD=$(PWD)/uls )
+	( cd sils     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          PRECIS=single PWD=$(PWD)/sils )
 	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=single PWD=$(PWD)/sbls )
+	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          PRECIS=single PWD=$(PWD)/psls )
 
 test_spec_double:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -660,8 +664,12 @@ test_spec_double:
                           PRECIS=double PWD=$(PWD)/sls )
 	( cd uls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=double PWD=$(PWD)/uls )
+	( cd sils     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                         PRECIS=double PWD=$(PWD)/sils )
 	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                          PRECIS=double PWD=$(PWD)/sbls )
+	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                         PRECIS=double PWD=$(PWD)/psls )
 
 #  ---------------------------------
 #  test everything with C interfaces

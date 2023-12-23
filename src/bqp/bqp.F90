@@ -877,30 +877,8 @@
 !
 !    -23 an entry from the strict upper triangle of H has been input.
 !
-!  On exit from BQP_solve, other components of inform give the
-!  following:
-!
-!     alloc_status = The status of the last attempted allocation/deallocation
-!     factorization_integer = The total integer workspace required for the
-!       factorization.
-!     factorization_real = The total real workspace required for the
-!       factorization.
-!     nfacts = The total number of factorizations performed.
-!     nmods = The total number of factorizations which were modified to
-!       ensure that the matrix was an appropriate preconditioner.
-!     factorization_status = the return status from the matrix factorization
-!       package.
-!     obj = the value of the objective function at the best estimate of the
-!       solution determined by BQP_solve.
-!     non_negligible_pivot = the smallest pivot which was not judged to be
-!       zero when detecting linearly dependent constraints
-!     bad_alloc = the name of the array for which an allocation/deallocation
-!       error ocurred
-!     time%total = the total time spent in the package.
-!     time%analyse = the time spent analysing the required matrices prior to
-!       factorization.
-!     time%factorize = the time spent factorizing the required matrices.
-!     time%solve = the time spent computing the search direction.
+!   On exit from BQP_solve, other components of inform are set as described
+!   in the comments to BQP_inform_type, see above
 !
 !  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
 !   used to pass user data to and from the eval_* subroutines (see below)

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-21 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -194,7 +194,7 @@
 !  minimum-objective-before-unbounded                -1.0D+32
 !  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
-!  barrier-rqeuired-before-final-lunge               1.0D-5
+!  required-barrier-value-before-pounce              1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
@@ -265,8 +265,8 @@
                                             =obj_unbounded + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol                &
                                             = potential_unbounded + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: mu_lunge = identical_bounds_tol + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_lunge + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: mu_pounce = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_pounce + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_pd                    &
                                             = indicator_tol_p + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_tapia                 &
@@ -344,7 +344,7 @@
       spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
       spec( potential_unbounded )%keyword = 'minimum-potential-before-unbounded'
       spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
-      spec( mu_lunge )%keyword = 'minimum-barrier-before-final-extrapolation'
+      spec( mu_pounce )%keyword = 'required-barrier-value-before-pounce'
       spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
       spec( indicator_tol_pd )%keyword = 'primal-dual-indicator-tolerance'
       spec( indicator_tol_tapia )%keyword = 'tapia-indicator-tolerance'
@@ -489,8 +489,8 @@
      CALL SPECFILE_assign_value( spec( identical_bounds_tol ),                 &
                                  control%identical_bounds_tol,                 &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( mu_lunge ),                             &
-                                 control%mu_lunge,                             &
+     CALL SPECFILE_assign_value( spec( mu_pounce ),                            &
+                                 control%mu_pounce,                            &
                                  control%error )
      CALL SPECFILE_assign_value( spec( indicator_tol_p ),                      &
                                  control%indicator_tol_p,                      &

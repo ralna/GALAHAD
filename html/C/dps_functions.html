@@ -717,22 +717,22 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="p">;</span>
 <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-time-type"><span class="std std-ref">dps_time_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a29104b1214a3af5b4dc76dca722250b4"><span class="std std-ref">dps_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a2b7fed0d89483ec1c49b517be04acdcf"><span class="std std-ref">dps_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a29104b1214a3af5b4dc76dca722250b4"><span class="std std-ref">dps_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a2b7fed0d89483ec1c49b517be04acdcf"><span class="std std-ref">dps_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a7bc05b1c7fd874e96481d0521262bdee"><span class="std std-ref">dps_import</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -744,7 +744,7 @@
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a445d31a1c3e3aa63af85ceddd9769a5c"><span class="std std-ref">dps_reset_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
@@ -754,11 +754,11 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1ae3baff5b8a4b59c37a6ada62dff67cc6"><span class="std std-ref">dps_solve_rq_problem</span></a><span></span><span class="p">(</span>
@@ -766,41 +766,41 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1af244a0e386040d5da2d11c3bd9d1e34d"><span class="std std-ref">dps_resolve_tr_problem</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a19e02a1d80eaedcb9e339f9963db352a"><span class="std std-ref">dps_resolve_rq_problem</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a7617a692133347cb651f9a96244eb9f6"><span class="std std-ref">dps_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a7617a692133347cb651f9a96244eb9f6"><span class="std std-ref">dps_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-dps-8h-1a1e67ac91c520fc4ec65df30e4140f57e"><span class="std std-ref">dps_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -812,7 +812,7 @@
 </section>
 <section id="function-calls">
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a29104b1214a3af5b4dc76dca722250b4"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">dps_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a29104b1214a3af5b4dc76dca722250b4"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">dps_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -825,7 +825,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -840,7 +840,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a2b7fed0d89483ec1c49b517be04acdcf"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">dps_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a2b7fed0d89483ec1c49b517be04acdcf"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">dps_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
 <p>Read the content of a specification file, and assign values
 associated with given keywords to the corresponding control
 parameters. An in-depth discussion of specification files is
@@ -857,7 +857,7 @@ relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
@@ -865,7 +865,7 @@ relate to the components of the control structure.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a7bc05b1c7fd874e96481d0521262bdee"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">dps_import</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -884,7 +884,7 @@ relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -949,7 +949,7 @@ or ‘sparse_by_rows’ has been violated.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a445d31a1c3e3aa63af85ceddd9769a5c"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">dps_reset_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -962,7 +962,7 @@ or ‘sparse_by_rows’ has been violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -984,11 +984,11 @@ or ‘sparse_by_rows’ has been violated.</p>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Find the global minimizer of the trust-region problem (1).</p>
 <p class="rubric">Parameters:</p>
@@ -1094,12 +1094,12 @@ preconditioner.</p>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">H_val</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Find the global minimizer of the regularized-quadartic problem (2).</p>
 <p class="rubric">Parameters:</p>
@@ -1207,10 +1207,10 @@ preconditioner.</p>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.</p>
 <p class="rubric">Parameters:</p>
@@ -1289,11 +1289,11 @@ progress is impossible.</p>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">power</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.</p>
 <p class="rubric">Parameters:</p>
@@ -1364,7 +1364,7 @@ progress is impossible.</p>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a7617a692133347cb651f9a96244eb9f6"><span id="index-10"></span><span></span><span class="kt">void</span> <span class="n">dps_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a7617a692133347cb651f9a96244eb9f6"><span id="index-10"></span><span></span><span class="kt">void</span> <span class="n">dps_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -1377,7 +1377,7 @@ progress is impossible.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -1394,8 +1394,8 @@ progress is impossible.</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-dps-8h-1a1e67ac91c520fc4ec65df30e4140f57e"><span id="index-11"></span><span></span><span class="kt">void</span> <span class="n">dps_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -1409,10 +1409,10 @@ progress is impossible.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="dps.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="dps.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

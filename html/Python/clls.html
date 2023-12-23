@@ -1,0 +1,1450 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>CLLS &#8212; GALAHAD Python Interface 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'clls';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="NLS" href="nls.html" />
+    <link rel="prev" title="BLLS" href="blls.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="blls.html">BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">CLLS - linearly-constrained linear least-squares using an interior-point method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="module-galahad.clls">
+<span id="clls"></span><h1>CLLS<a class="headerlink" href="#module-galahad.clls" title="Permalink to this heading">#</a></h1>
+<section id="purpose">
+<h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">clls</span></code> package uses a <strong>primal-dual interior-point crossover method</strong>
+to solve a <strong>constrained linear least-squares</strong> problem
+The aim is to minimize the (regularized) least-squares objective function
+<div class="math notranslate nohighlight">
+\[q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2\]</div>
+
+subject to the general linear constraints and simple bounds
+<div class="math notranslate nohighlight">
+\[c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,\]</div>
+
+where the norms <span class="math notranslate nohighlight">\(\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}\)</span>
+and <span class="math notranslate nohighlight">\(\|x\| = \sqrt{\sum_{i=1}^n x_i^2}\)</span>,
+<span class="math notranslate nohighlight">\(A_o\)</span> and <span class="math notranslate nohighlight">\(A\)</span> are, respectively, given  <span class="math notranslate nohighlight">\(o\)</span> by <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span>
+matrices, <span class="math notranslate nohighlight">\(b\)</span>, and <span class="math notranslate nohighlight">\(w\)</span> are vectors, <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span> is a scalar,
+and any of the components
+of the vectors <span class="math notranslate nohighlight">\(c_l\)</span>, <span class="math notranslate nohighlight">\(c_u\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
+The method offers the choice of direct and iterative solution of the key
+regularization subproblems, and is most suitable for problems
+involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p>See Section 4 of $GALAHAD/doc/clls.pdf for additional details.</p>
+</section>
+<section id="terminology">
+<h2>terminology<a class="headerlink" href="#terminology" title="Permalink to this heading">#</a></h2>
+<p>Any required solution <span class="math notranslate nohighlight">\(x\)</span> necessarily satisfies
+the <strong>primal optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[A x = c\;\;\mbox{(1a)}\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[c_l \leq c \leq c_u, \;\; x_l \leq x \leq x_u,\;\;\mbox{(1b)}\]</div>
+
+the <strong>dual optimality conditions</strong>
+<div class="math notranslate nohighlight">
+\[A_o^T W ( A_o x-b ) + \sigma x = A^{T} y + z,\;\;
+y = y_l + y_u \;\;\mbox{and}\;\; z = z_l + z_u,\;\;\mbox{(2a)}\]</div>
+
+and
+<div class="math notranslate nohighlight">
+\[y_l \geq 0, \;\; y_u \leq 0, \;\; z_l \geq 0 \;\;\mbox{and}\;\;
+z_u \leq 0,\;\;\mbox{(2b)}\]</div>
+
+and the <strong>complementary slackness conditions</strong>
+<div class="math notranslate nohighlight">
+\[( A x - c_l )^{T} y_l = 0,\;\; ( A x - c_u )^{T} y_u = 0,\;\;
+(x -x_l )^{T} z_l = 0 \;\;\mbox{and}\;\;(x -x_u )^{T} z_u = 0,\;\;\mbox{(3)}\]</div>
+
+where the vectors <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> are known as the <strong>Lagrange multipliers</strong> for
+the general linear constraints, and the <strong>dual variables</strong> for the bounds,
+respectively,  where the vector inequalities hold component-wise,
+and where <span class="math notranslate nohighlight">\(W\)</span> is the diagonal matrix whose entries are the <span class="math notranslate nohighlight">\(w_j\)</span>.</p>
+</section>
+<section id="method">
+<h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
+<p>Primal-dual interior point methods iterate towards a point that satisfies
+these optimality conditions by ultimately aiming to satisfy
+(1a), (2a) and (3), while ensuring that (1b) and (2b) are
+satisfied as strict inequalities at each stage.
+Appropriate norms of the amounts by
+which (1a), (2a) and (3) fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that (1b) and (2b) are satisfied as strict
+inequalities gives such methods their other title, namely
+interior-point methods.</p>
+<p>The method aims at each stage to reduce the
+overall violation of (1a), (2a) and (3),
+rather than reducing each of the terms individually. Given an estimate
+<span class="math notranslate nohighlight">\(v = (x, \; c, \; y, \; y^{l}, \; y^{u}, \; z, \; z^{l}, \; z^{u})\)</span>
+of the primal-dual variables, a correction
+<span class="math notranslate nohighlight">\(\Delta v = \Delta (x, \; c, \; y, \; y^{l}, \;
+y^{u} ,\;z,\;z^{l} ,\;z^{u} )\)</span>
+is obtained by solving a suitable linear system of Newton equations for the
+nonlinear systems (1a), (2a) and a parameterized <a href="#id1"><span class="problematic" id="id2">``</span></a>residual
+trajectory’’ perturbation of (3); residual trajectories
+proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities.
+An improved estimate <span class="math notranslate nohighlight">\(v + \alpha \Delta v\)</span>
+is then used, where the step-size <span class="math notranslate nohighlight">\(\alpha\)</span>
+is chosen as close to 1.0 as possible while ensuring both that
+(1b) and (2b) continue to hold and that the individual components
+which make up the complementary slackness
+(3) do not deviate too significantly
+from their average value. The parameter that controls the perturbation
+of (3) is ultimately driven to zero.</p>
+<p>If the algorithm believes that it is close to the solution, it may take a
+speculative <a href="#id3"><span class="problematic" id="id4">``</span></a>pounce’’, based on an estimate of the ultimate active set,
+to avoid further costly iterations. If the pounce is unsuccessful, the
+iteration continues, and further pounces may be attempted later.</p>
+<p>The Newton equations are solved  by applying the matrix factorization
+package <code class="docutils literal notranslate"><span class="pre">SLS</span></code>.
+Optionally, the problem may be pre-processed temporarily to eliminate dependent
+constraints using the package <code class="docutils literal notranslate"><span class="pre">FDC</span></code>. This may improve the
+performance of the subsequent iteration.</p>
+</section>
+<section id="references">
+<h2>references<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<p>The basic algorithm is a generalisation of those of</p>
+<blockquote>
+<div><p>Y. Zhang,
+<a href="#id5"><span class="problematic" id="id6">``</span></a>On the convergence of a class of infeasible interior-point methods
+for the horizontal linear complementarity problem’’.
+<em>SIAM J. Optimization</em> <strong>4(1)</strong> (1994) 208-227,</p>
+</div></blockquote>
+<p>and</p>
+<blockquote>
+<div><p>G. Zhao and J. Sun,
+<a href="#id7"><span class="problematic" id="id8">``</span></a>On the rate of local convergence of high-order infeasible
+path-following algorithms for <span class="math notranslate nohighlight">\(P_*\)</span> linear complementarity problems’’.
+<em>Computational Optimization and Applications</em> <a href="#id9"><span class="problematic" id="id10">**</span></a>14(1)* (1999) 293-307,</p>
+</div></blockquote>
+<p>with many enhancements described by</p>
+<blockquote>
+<div><p>N. I. M. Gould, D. Orban and D. P. Robinson,
+<a href="#id11"><span class="problematic" id="id12">``</span></a>Trajectory-following methods for large-scale degenerate
+convex quadratic programming’’,
+<em>Mathematical Programming Computation</em> <strong>5(2)</strong> (2013) 113-142</p>
+</div></blockquote>
+<p>and tailored for a regularized linear least-squares objective.</p>
+</section>
+<section id="matrix-storage">
+<h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(o\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrices <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(A_o\)</span>
+may be presented and stored in a variety of convenient input formats.
+Let <span class="math notranslate nohighlight">\(A\)</span> be <span class="math notranslate nohighlight">\(A_o\)</span> (with <span class="math notranslate nohighlight">\(o\)</span> instead of <span class="math notranslate nohighlight">\(m\)</span>) below as appropriate.</p>
+<p><em>Dense</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense’ should be specified.</p>
+<p><em>Dense by columns</em> storage format:
+The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+the values of the entries of each column in turn are
+stored in order within an appropriate real one-dimensional array.
+In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
+will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string A_type = ‘dense_by_columns’ should be specified.</p>
+<p><em>Sparse co-ordinate</em> storage format:
+Only the nonzero entries of the matrices are stored.
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
+<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays A_row and A_col and real array A_val,
+respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string A_type = ‘coordinate’should be specified.</p>
+<p><em>Sparse row-wise storage</em> format:
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row i appear directly before those
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
+integer array A_ptr holds the position of the first entry in this row,
+while A_ptr(m) holds the total number of entries.
+The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
+<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1,\)</span>
+of the integer array A_col, and real array A_val, respectively.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+The string A_type = ‘sparse_by_rows’ should be specified.</p>
+<p><em>Sparse column-wise</em> storage format:
+Once again only the nonzero entries are stored, but this time
+they are ordered so that those in column j appear directly before those
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
+integer array A_ptr holds the position of the first entry in this column,
+while A_ptr(n) holds the total number of entries.
+The row indices i, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+of the  nonzero entries in the j-th columns are stored in components
+l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,
+of the integer array A_row, and real array A_val, respectively.
+As before, for sparse matrices, this scheme almost always requires less
+storage than the co-ordinate format.
+The string A_type = ‘sparse_by_columns’ should be specified.</p>
+</section>
+<section id="functions">
+<h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><dl class="py function">
+<dt class="sig sig-object py" id="galahad.clls.clls.initialize">
+<span class="sig-prename descclassname"><span class="pre">clls.</span></span><span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.clls.clls.initialize" title="Permalink to this definition">#</a></dt>
+<dd><p>Set default option values and initialize private data</p>
+<p><strong>Returns:</strong></p>
+<dl>
+<dt>options<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing default control options:</dt><dd><dl>
+<dt>error<span class="classifier">int</span></dt><dd><p>error and warning diagnostics occur on stream error.</p>
+</dd>
+<dt>out<span class="classifier">int</span></dt><dd><p>general output occurs on stream out.</p>
+</dd>
+<dt>print_level<span class="classifier">int</span></dt><dd><p>the level of output required is specified by print_level.
+Possible values are</p>
+<ul>
+<li><p><strong>&lt;=0</strong></p>
+<p>gives no output,</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>gives a one-line summary for every iteration.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>gives a summary of the inner iteration for each iteration.</p>
+</li>
+<li><p><strong>&gt;=3</strong></p>
+<p>gives increasingly verbose (debugging) output.</p>
+</li>
+</ul>
+</dd>
+<dt>start_print<span class="classifier">int</span></dt><dd><p>any printing will start on this iteration.</p>
+</dd>
+<dt>stop_print<span class="classifier">int</span></dt><dd><p>any printing will stop on this iteration.</p>
+</dd>
+<dt>maxit<span class="classifier">int</span></dt><dd><p>at most maxit inner iterations are allowed.</p>
+</dd>
+<dt>infeas_max<span class="classifier">int</span></dt><dd><p>the number of iterations for which the overall
+infeasibility of the problem is not reduced by at least a
+factor <code class="docutils literal notranslate"><span class="pre">reduce_infeas</span></code> before the problem is flagged as
+infeasible (see reduce_infeas).</p>
+</dd>
+<dt>muzero_fixed<span class="classifier">int</span></dt><dd><p>the initial value of the barrier parameter will not be
+changed for the first muzero_fixed iterations.</p>
+</dd>
+<dt>restore_problem<span class="classifier">int</span></dt><dd><p>indicate whether and how much of the input problem should
+be restored on output. Possible values are</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>nothing restored.</p>
+</li>
+<li><p><strong>1</strong></p>
+<p>scalar and vector parameters.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>all parameters.</p>
+</li>
+</ul>
+</dd>
+<dt>indicator_type<span class="classifier">int</span></dt><dd><p>specifies the type of indicator function used. Possible values are</p>
+<ul>
+<li><p><strong>1</strong></p>
+<p>primal indicator: a constraint is active if and only
+if  the distance to its nearest bound &lt;= <code class="docutils literal notranslate"><span class="pre">indicator_p_tol</span></code>.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>primal-dual indicator: a constraint is active if and only if the
+distance to its nearest bound &lt;= <code class="docutils literal notranslate"><span class="pre">indicator_tol_pd</span></code> times the
+size of the corresponding multiplier.</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>primal-dual indicator: a constraint is active if and
+only if  the distance to its nearest bound &lt;=
+<code class="docutils literal notranslate"><span class="pre">indicator_tol_tapia</span></code> times the distance to same bound at the
+previous iteration.</p>
+</li>
+</ul>
+</dd>
+<dt>arc<span class="classifier">int</span></dt><dd><p>which residual trajectory should be used to aim from the
+current iterate to the solution. Possible values are</p>
+<ul>
+<li><p><strong>1</strong></p>
+<p>the Zhang linear residual trajectory.</p>
+</li>
+<li><p><strong>2</strong></p>
+<p>the Zhao-Sun quadratic residual trajectory.</p>
+</li>
+<li><p><strong>3</strong></p>
+<p>the Zhang arc ultimately switching to the Zhao-Sun
+residual  trajectory.</p>
+</li>
+<li><p><strong>4</strong></p>
+<p>the mixed linear-quadratic residual trajectory.</p>
+</li>
+<li><p><strong>5</strong></p>
+<p>the Zhang arc ultimately switching to the mixed
+linear-quadratic  residual trajectory.</p>
+</li>
+</ul>
+</dd>
+<dt>series_order<span class="classifier">int</span></dt><dd><p>the order of (Taylor/Puiseux) series to fit to the path
+data.</p>
+</dd>
+<dt>sif_file_device<span class="classifier">int</span></dt><dd><p>specifies the unit number to write generated SIF file
+describing the current problem.</p>
+</dd>
+<dt>qplib_file_device<span class="classifier">int</span></dt><dd><p>specifies the unit number to write generated QPLIB file
+describing the current problem.</p>
+</dd>
+<dt>infinity<span class="classifier">float</span></dt><dd><p>any bound larger than infinity in modulus will be regarded
+as infinite.</p>
+</dd>
+<dt>stop_abs_p<span class="classifier">float</span></dt><dd><p>the required absolute and relative accuracies for the
+primal infeasibility.</p>
+</dd>
+<dt>stop_rel_p<span class="classifier">float</span></dt><dd><p>see stop_abs_p.</p>
+</dd>
+<dt>stop_abs_d<span class="classifier">float</span></dt><dd><p>the required absolute and relative accuracies for the dual
+infeasibility.</p>
+</dd>
+<dt>stop_rel_d<span class="classifier">float</span></dt><dd><p>see stop_abs_d.</p>
+</dd>
+<dt>stop_abs_c<span class="classifier">float</span></dt><dd><p>the required absolute and relative accuracies for the
+complementarity.</p>
+</dd>
+<dt>stop_rel_c<span class="classifier">float</span></dt><dd><p>see stop_abs_c.</p>
+</dd>
+<dt>prfeas<span class="classifier">float</span></dt><dd><p>initial primal variables will not be closer than
+<code class="docutils literal notranslate"><span class="pre">prfeas</span></code> from their bounds.</p>
+</dd>
+<dt>dufeas<span class="classifier">float</span></dt><dd><p>initial dual variables will not be closer than <code class="docutils literal notranslate"><span class="pre">dufeas</span></code>
+from their bounds.</p>
+</dd>
+<dt>muzero<span class="classifier">float</span></dt><dd><p>the initial value of the barrier parameter. If muzero is
+not positive, it will be reset to an appropriate value.</p>
+</dd>
+<dt>tau<span class="classifier">float</span></dt><dd><p>the weight attached to primal-dual infeasibility compared
+to complementa when assessing step acceptance.</p>
+</dd>
+<dt>gamma_c<span class="classifier">float</span></dt><dd><p>individual complementarities will not be allowed to be
+smaller than gamma_c times the average value.</p>
+</dd>
+<dt>gamma_f<span class="classifier">float</span></dt><dd><p>the average complementarity will not be allowed to be
+smaller than gamma_f times the primal/dual infeasibility.</p>
+</dd>
+<dt>reduce_infeas<span class="classifier">float</span></dt><dd><p>if the overall infeasibility of the problem is not reduced
+by at least a factor <code class="docutils literal notranslate"><span class="pre">reduce_infeas</span></code> over <code class="docutils literal notranslate"><span class="pre">infeas_max</span></code>
+iterations, the problem is flagged as infeasible (see
+infeas_max).</p>
+</dd>
+<dt>identical_bounds_tol<span class="classifier">float</span></dt><dd><p>any pair of constraint bounds <span class="math notranslate nohighlight">\((c_l,c_u)\)</span> or <span class="math notranslate nohighlight">\((x_l,x_u)\)</span>
+that are closer than <code class="docutils literal notranslate"><span class="pre">identical_bounds_tol</span></code> will be
+reset to the average of their values.</p>
+</dd>
+<dt>mu_pounce<span class="classifier">float</span></dt><dd><p>start terminal extrapolation when mu reaches mu_pounce.</p>
+</dd>
+<dt>indicator_tol_p<span class="classifier">float</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">indicator_type</span></code> = 1, a constraint/bound will be
+deemed to be active if and only if the distance to its
+nearest bound &lt;= <code class="docutils literal notranslate"><span class="pre">indicator_p_tol</span></code>.</p>
+</dd>
+<dt>indicator_tol_pd<span class="classifier">float</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">indicator_type</span></code> = 2, a constraint/bound will be
+deemed to be active if and only if the distance to its
+nearest bound &lt;= <code class="docutils literal notranslate"><span class="pre">indicator_tol_pd</span></code> * size of
+corresponding multiplier.</p>
+</dd>
+<dt>indicator_tol_tapia<span class="classifier">float</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">indicator_type</span></code> = 3, a constraint/bound will be
+deemed to be active if and only if the distance to its
+nearest bound &lt;= <code class="docutils literal notranslate"><span class="pre">indicator_tol_tapia</span></code> * distance to
+same bound at previous iteration.</p>
+</dd>
+<dt>cpu_time_limit<span class="classifier">float</span></dt><dd><p>the maximum CPU time allowed (-ve means infinite).</p>
+</dd>
+<dt>clock_time_limit<span class="classifier">float</span></dt><dd><p>the maximum elapsed clock time allowed (-ve means
+infinite).</p>
+</dd>
+<dt>remove_dependencies<span class="classifier">bool</span></dt><dd><p>the equality constraints will be preprocessed to remove
+any linear dependencies if True.</p>
+</dd>
+<dt>treat_zero_bounds_as_general<span class="classifier">bool</span></dt><dd><p>any problem bound with the value zero will be treated as
+if it were a general value if True.</p>
+</dd>
+<dt>treat_separable_as_general<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">just_feasible</span></code> is True, the algorithm will stop as
+soon as a feasible point is found. Otherwise, the optimal
+solution to the problem will be found.</p>
+</dd>
+<dt>just_feasible<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">treat_separable_as_general,</span></code> is True, any
+separability in the problem structure will be ignored.</p>
+</dd>
+<dt>getdua<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">getdua,</span></code> is True, advanced initial values are
+obtained for the dual variables.</p>
+</dd>
+<dt>puiseux<span class="classifier">bool</span></dt><dd><p>decide between Puiseux and Taylor series approximations to
+the arc.</p>
+</dd>
+<dt>every_order<span class="classifier">bool</span></dt><dd><p>try every order of series up to series_order?.</p>
+</dd>
+<dt>feasol<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">feasol</span></code> is True, the final solution obtained will be
+perturbed so that variables close to their bounds are
+moved onto these bounds.</p>
+</dd>
+<dt>balance_initial_complentarity<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">balance_initial_complentarity</span></code> is True, the initial
+complemetarity is required to be balanced.</p>
+</dd>
+<dt>crossover<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">crossover</span></code> is True, cross over the solution to one
+defined by linearly-independent constraints if possible.</p>
+</dd>
+<dt>reduced_pounce_system<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">reduced_pounce_system</span></code> is True, eliminate fixed variables
+when solving the linear system required by the attempted pounce
+to the solution</p>
+</dd>
+<dt>space_critical<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">space_critical</span></code> is True, every effort will be made to
+use as little space as possible. This may result in longer
+computation time.</p>
+</dd>
+<dt>deallocate_error_fatal<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">deallocate_error_fatal</span></code> is True, any array/pointer
+deallocation error will terminate execution. Otherwise,
+computation will continue.</p>
+</dd>
+<dt>generate_sif_file<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">generate_sif_file</span></code> is True, a SIF file
+describing the current problem is to be generated.</p>
+</dd>
+<dt>generate_qplib_file<span class="classifier">bool</span></dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">generate_qplib_file</span></code> is True, a QPLIB file
+describing the current problem is to be generated.</p>
+</dd>
+<dt>sif_file_name<span class="classifier">str</span></dt><dd><p>name of generated SIF file containing input problem.</p>
+</dd>
+<dt>qplib_file_name<span class="classifier">str</span></dt><dd><p>name of generated QPLIB file containing input problem.</p>
+</dd>
+<dt>prefix<span class="classifier">str</span></dt><dd><p>all output lines will be prefixed by the string contained
+in quotes within <code class="docutils literal notranslate"><span class="pre">prefix</span></code>, e.g. ‘word’ (note the qutoes)
+will result in the prefix word.</p>
+</dd>
+<dt>fdc_options<span class="classifier">dict</span></dt><dd><p>default control options for FDC (see <code class="docutils literal notranslate"><span class="pre">fdc.initialize</span></code>).</p>
+</dd>
+<dt>sls_options<span class="classifier">dict</span></dt><dd><p>default control options for SLS (see <code class="docutils literal notranslate"><span class="pre">sls.initialize</span></code>).</p>
+</dd>
+<dt>sls_pounce_options<span class="classifier">dict</span></dt><dd><p>default control options for the SLS pounce
+(see <code class="docutils literal notranslate"><span class="pre">sls.initialize</span></code>).</p>
+</dd>
+<dt>fit_options<span class="classifier">dict</span></dt><dd><p>default control options for FIT (see <code class="docutils literal notranslate"><span class="pre">fit.initialize</span></code>).</p>
+</dd>
+<dt>roots_options<span class="classifier">dict</span></dt><dd><p>default control options for ROOTS (see <code class="docutils literal notranslate"><span class="pre">roots.initialize</span></code>).</p>
+</dd>
+<dt>cro_options<span class="classifier">dict</span></dt><dd><p>default control options for CRO (see <code class="docutils literal notranslate"><span class="pre">cro.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.clls.clls.load">
+<span class="sig-prename descclassname"><span class="pre">clls.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_ptr_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.clls.clls.load" title="Permalink to this definition">#</a></dt>
+<dd><p>Import problem data into internal storage prior to solution.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
+</dd>
+<dt>o<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
+</dd>
+<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of general linear constraints.</p>
+</dd>
+<dt>Ao_type<span class="classifier">string</span></dt><dd><p>specifies the unsymmetric storage scheme used for the objective
+design matrix <span class="math notranslate nohighlight">\(A_o\)</span>. It should be one of ‘coordinate’,
+‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense’ or ‘dense_by_columns’;
+lower or upper case variants are allowed.</p>
+</dd>
+<dt>Ao_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate
+storage scheme. It need not be set for any of the other schemes.</p>
+</dd>
+<dt>Ao_row<span class="classifier">ndarray(Ao_ne)</span></dt><dd><p>holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and
+and sparse column-wise storage schemes. It need not be set for
+any of the other schemes, and in this case can be None.</p>
+</dd>
+<dt>Ao_col<span class="classifier">ndarray(Ao_ne)</span></dt><dd><p>holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in either the sparse co-ordinate,
+or the sparse row-wise storage scheme. It need not be set for
+any of the other schemes, and in this case can be None.</p>
+</dd>
+<dt>Ao_ptr_ne<span class="classifier">int</span></dt><dd><p>holds the length of the pointer array if sparse row or column
+storage scheme is used for <span class="math notranslate nohighlight">\(A_o\)</span>. For the sparse row scheme,
+Ao_ptr_ne should be at least o+1, while for the sparse column scheme,
+it should be at least n+1, It need not be set when the other schemes
+are used.</p>
+</dd>
+<dt>Ao_ptr<span class="classifier">ndarray(Ao_ptr_ne)</span></dt><dd><p>holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the
+total number of entries, in the sparse row-wise storage scheme.
+By contrast, it holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>,
+as well as the total number of entries, in the sparse column-wise
+storage scheme. It need not be set when the other schemes are used,
+and in this case can be None.</p>
+</dd>
+<dt>A_type<span class="classifier">string</span></dt><dd><p>specifies the unsymmetric storage scheme used for the constraint
+Jacobian <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’,
+‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense’ or ‘dense_by_columns’;
+lower or upper case variants are allowed.</p>
+</dd>
+<dt>A_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate
+storage scheme. It need not be set for any of the other schemes.</p>
+</dd>
+<dt>A_row<span class="classifier">ndarray(A_ne)</span></dt><dd><p>holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate and
+and sparse column-wise storage schemes. It need not be set for
+any of the other schemes, and in this case can be None.</p>
+</dd>
+<dt>A_col<span class="classifier">ndarray(A_ne)</span></dt><dd><p>holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate,
+or the sparse row-wise storage scheme. It need not be set for
+any of the other schemes, and in this case can be None.</p>
+</dd>
+<dt>A_ptr_ne<span class="classifier">int</span></dt><dd><p>holds the length of the pointer array if sparse row or column
+storage scheme is used for <span class="math notranslate nohighlight">\(A\)</span>. For the sparse row scheme,
+A_ptr_ne should be at least m+1, while for the sparse column scheme,
+it should be at least n+1, It need not be set when the other schemes
+are used.</p>
+</dd>
+<dt>A_ptr<span class="classifier">ndarray(A_ptr_ne)</span></dt><dd><p>holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the
+total number of entries, in the sparse row-wise storage scheme.
+By contrast, it holds the starting position of each column of <span class="math notranslate nohighlight">\(A\)</span>,
+as well as the total number of entries, in the sparse column-wise
+storage scheme. It need not be set when the other schemes are used,
+and in this case can be None.</p>
+</dd>
+<dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">clls.initialize</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.clls.clls.solve_clls">
+<span class="sig-prename descclassname"><span class="pre">clls.</span></span><span class="sig-name descname"><span class="pre">solve_clls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ao_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.clls.clls.solve_clls" title="Permalink to this definition">#</a></dt>
+<dd><p>Find a solution to the constrained (regularized) linear least-squares
+problem.</p>
+<p><strong>Parameters:</strong></p>
+<dl class="simple">
+<dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
+</dd>
+<dt>o<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
+</dd>
+<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of general linear constraints.</p>
+</dd>
+<dt>ao_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the objective design matrix <span class="math notranslate nohighlight">\(A_o\)</span>.</p>
+</dd>
+<dt>Ao_val<span class="classifier">ndarray(ao_ne)</span></dt><dd><p>holds the values of the nonzeros in <span class="math notranslate nohighlight">\(A_o\)</span> in the same order as
+specified in the sparsity pattern in <code class="docutils literal notranslate"><span class="pre">clls.load</span></code>.</p>
+</dd>
+<dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the linear term <span class="math notranslate nohighlight">\(g\)</span> in the objective function.</p>
+</dd>
+<dt>sigma<span class="classifier">float</span></dt><dd><p>holds the regularization weight <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span>.</p>
+</dd>
+<dt>a_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the constraint Jacobian <span class="math notranslate nohighlight">\(A\)</span>.</p>
+</dd>
+<dt>A_val<span class="classifier">ndarray(a_ne)</span></dt><dd><p>holds the values of the nonzeros in the constraint Jacobian
+<span class="math notranslate nohighlight">\(A\)</span> in the same order as specified in the sparsity pattern in
+<code class="docutils literal notranslate"><span class="pre">clls.load</span></code>.</p>
+</dd>
+<dt>c_l<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the lower bounds <span class="math notranslate nohighlight">\(c_l\)</span> on the constraints
+The lower bound on any component of <span class="math notranslate nohighlight">\(A x\)</span> that is unbounded from
+below should be set no larger than minus <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
+</dd>
+<dt>c_u<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the upper bounds <span class="math notranslate nohighlight">\(c_l\)</span> on the  constraints
+The upper bound on any component of <span class="math notranslate nohighlight">\(A x\)</span> that is unbounded from
+above should be set no smaller than <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
+</dd>
+<dt>x_l<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the lower bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables.
+The lower bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
+below should be set no larger than minus <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
+</dd>
+<dt>x_u<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the upper bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables.
+The upper bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
+above should be set no smaller than <code class="docutils literal notranslate"><span class="pre">options.infinity</span></code>.</p>
+</dd>
+<dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the minimizer <span class="math notranslate nohighlight">\(x\)</span>, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(x=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>y<span class="classifier">ndarray(m)</span></dt><dd><p>holds the initial estimate of the Lagrange multipliers <span class="math notranslate nohighlight">\(y\)</span>
+associated with the general constraints, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(y=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>z<span class="classifier">ndarray(n)</span></dt><dd><p>holds the initial estimate of the dual variables <span class="math notranslate nohighlight">\(z\)</span>
+associated with the simple bound constraints, if known.
+This is not crucial, and if no suitable value is known, then any
+value, such as <span class="math notranslate nohighlight">\(z=0\)</span>, suffices and will be adjusted accordingly.</p>
+</dd>
+<dt>w<span class="classifier">ndarray(o)</span></dt><dd><p>holds the positive regularization weights <span class="math notranslate nohighlight">\(w\)</span>. If unit weights are
+to be used, this can be replaced by None.</p>
+</dd>
+</dl>
+<p><strong>Returns:</strong></p>
+<dl class="simple">
+<dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the approximate minimizer <span class="math notranslate nohighlight">\(x\)</span> after
+a successful call.</p>
+</dd>
+<dt>r<span class="classifier">ndarray(o)</span></dt><dd><p>holds the values of the residuals <span class="math notranslate nohighlight">\(r(x) = A_ox-b\)</span>.</p>
+</dd>
+<dt>c<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the residuals <span class="math notranslate nohighlight">\(c(x) = Ax\)</span>.</p>
+</dd>
+<dt>y<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the Lagrange multipliers associated with the
+general linear constraints.</p>
+</dd>
+<dt>z<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the dual variables associated with the
+simple bound constraints.</p>
+</dd>
+<dt>c_stat<span class="classifier">ndarray(m)</span></dt><dd><p>holds the return status for each constraint. The i-th component will
+be negative if the value of the <span class="math notranslate nohighlight">\(i\)</span>-th constraint <span class="math notranslate nohighlight">\((Ax)_i\)</span>) lies on
+its lower bound, positive if it lies on its upper bound, and
+zero if it lies between bounds.</p>
+</dd>
+<dt>x_stat<span class="classifier">ndarray(n)</span></dt><dd><p>holds the return status for each variable. The i-th component will be
+negative if the <span class="math notranslate nohighlight">\(i\)</span>-th variable lies on its lower bound,
+positive if it lies on its upper bound, and zero if it lies
+between bounds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">[optional]</span> <span class="pre">clls.information()</span></span></dt>
+<dd><p>Provide optional output information</p>
+<p><strong>Returns:</strong></p>
+<dl>
+<dt>inform<span class="classifier">dict</span></dt><dd><dl>
+<dt>dictionary containing output information:</dt><dd><dl>
+<dt>status<span class="classifier">int</span></dt><dd><p>return status.  Possible values are:</p>
+<ul>
+<li><p><strong>0</strong></p>
+<p>The run was successful.</p>
+</li>
+<li><p><strong>-1</strong></p>
+<p>An allocation error occurred. A message indicating the
+offending array is written on unit options[‘error’], and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-2</strong></p>
+<p>A deallocation error occurred.  A message indicating the
+offending array is written on unit options[‘error’] and
+the returned allocation status and a string containing
+the name of the offending array are held in
+inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
+</li>
+<li><p><strong>-3</strong></p>
+<p>The restriction n &gt; 0 or m &gt; 0 or requirement that type contains
+its relevant string ‘dense’, ‘coordinate’, ‘sparse_by_rows’,
+‘diagonal’, ‘scaled_identity’,  ‘identity’, ‘zero’ or ‘none’
+has been violated.</p>
+</li>
+<li><p><strong>-4</strong></p>
+<p>The bound constraints are inconsistent.</p>
+</li>
+<li><p><strong>-5</strong></p>
+<p>The constraints appear to have no feasible point.</p>
+</li>
+<li><p><strong>-7</strong></p>
+<p>The objective function appears to be unbounded from below
+on the feasible set.</p>
+</li>
+<li><p><strong>-9</strong></p>
+<p>The analysis phase of the factorization failed; the return
+status from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-10</strong></p>
+<p>The factorization failed; the return status from the
+factorization package is given by inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-11</strong></p>
+<p>The solution of a set of linear equations using factors
+from the factorization package failed; the return status
+from the factorization package is given by
+inform[‘factor_status’].</p>
+</li>
+<li><p><strong>-16</strong></p>
+<p>The problem is so ill-conditioned that further progress
+is impossible.</p>
+</li>
+<li><p><strong>-18</strong></p>
+<p>Too many iterations have been performed. This may happen if
+options[‘maxit’] is too small, but may also be symptomatic
+of a badly scaled problem.</p>
+</li>
+<li><p><strong>-19</strong></p>
+<p>The CPU time limit has been reached. This may happen if
+options[‘cpu_time_limit’] is too small, but may also be
+symptomatic of a badly scaled problem.</p>
+</li>
+</ul>
+</dd>
+<dt>alloc_status<span class="classifier">int</span></dt><dd><p>the status of the last attempted allocation/deallocation.</p>
+</dd>
+<dt>bad_alloc<span class="classifier">str</span></dt><dd><p>the name of the array for which an allocation/deallocation
+error occurred.</p>
+</dd>
+<dt>iter<span class="classifier">int</span></dt><dd><p>the total number of iterations required.</p>
+</dd>
+<dt>factorization_status<span class="classifier">int</span></dt><dd><p>the return status from the factorization.</p>
+</dd>
+<dt>factorization_integer<span class="classifier">long</span></dt><dd><p>the total integer workspace required for the factorization.</p>
+</dd>
+<dt>factorization_real<span class="classifier">long</span></dt><dd><p>the total real workspace required for the factorization.</p>
+</dd>
+<dt>nfacts<span class="classifier">int</span></dt><dd><p>the total number of factorizations performed.</p>
+</dd>
+<dt>nbacts<span class="classifier">int</span></dt><dd><p>the total number of “wasted” function evaluations during
+the linesearch.</p>
+</dd>
+<dt>threads<span class="classifier">int</span></dt><dd><p>the number of threads used.</p>
+</dd>
+<dt>obj<span class="classifier">float</span></dt><dd><p>the value of the objective function at the best estimate
+of the solution determined by CLLS_solve.</p>
+</dd>
+<dt>primal_infeasibility<span class="classifier">float</span></dt><dd><p>the value of the primal infeasibility.</p>
+</dd>
+<dt>dual_infeasibility<span class="classifier">float</span></dt><dd><p>the value of the dual infeasibility.</p>
+</dd>
+<dt>complementary_slackness<span class="classifier">float</span></dt><dd><p>the value of the complementary slackness.</p>
+</dd>
+<dt>init_primal_infeasibility<span class="classifier">float</span></dt><dd><p>these values at the initial point (needed by <code class="docutils literal notranslate"><span class="pre">cclls</span></code>).</p>
+</dd>
+<dt>init_dual_infeasibility<span class="classifier">float</span></dt><dd><p>see init_primal_infeasibility.</p>
+</dd>
+<dt>init_complementary_slackness<span class="classifier">float</span></dt><dd><p>see init_primal_infeasibility.</p>
+</dd>
+<dt>non_negligible_pivot<span class="classifier">float</span></dt><dd><p>the smallest pivot which was not judged to be zero when
+detecting linear dependent constraints.</p>
+</dd>
+<dt>feasible<span class="classifier">bool</span></dt><dd><p>is the returned “solution” feasible?.</p>
+</dd>
+<dt>checkpointsIter<span class="classifier">ndarray(16)</span></dt><dd><p>checkpointsIter(i) records the iteration at which the
+criticality measures first fall below
+<span class="math notranslate nohighlight">\(10^{-i-1}, i = 0, \ldots 15\)</span> (where -1 means not achieved).</p>
+</dd>
+<dt>checkpointsTime<span class="classifier">ndarray(16)</span></dt><dd><p>checkpointsTime(i) records the CPU time at which the
+criticality measures first fall below
+<span class="math notranslate nohighlight">\(10^{-i-1}, i = 0, \ldots 15\)</span> (where -1 means not achieved).</p>
+</dd>
+<dt>time<span class="classifier">dict</span></dt><dd><dl class="simple">
+<dt>dictionary containing timing information:</dt><dd><dl class="simple">
+<dt>total<span class="classifier">float</span></dt><dd><p>the total CPU time spent in the package.</p>
+</dd>
+<dt>preprocess<span class="classifier">float</span></dt><dd><p>the CPU time spent preprocessing the problem.</p>
+</dd>
+<dt>find_dependent<span class="classifier">float</span></dt><dd><p>the CPU time spent detecting linear dependencies.</p>
+</dd>
+<dt>analyse<span class="classifier">float</span></dt><dd><p>the CPU time spent analysing the required matrices prior
+to factorization.</p>
+</dd>
+<dt>factorize<span class="classifier">float</span></dt><dd><p>the CPU time spent factorizing the required matrices.</p>
+</dd>
+<dt>solve<span class="classifier">float</span></dt><dd><p>the CPU time spent computing the search direction.</p>
+</dd>
+<dt>clock_total<span class="classifier">float</span></dt><dd><p>the total clock time spent in the package.</p>
+</dd>
+<dt>clock_preprocess<span class="classifier">float</span></dt><dd><p>the clock time spent preprocessing the problem.</p>
+</dd>
+<dt>clock_find_dependent<span class="classifier">float</span></dt><dd><p>the clock time spent detecting linear dependencies.</p>
+</dd>
+<dt>clock_analyse<span class="classifier">float</span></dt><dd><p>the clock time spent analysing the required matrices prior
+to factorization.</p>
+</dd>
+<dt>clock_factorize<span class="classifier">float</span></dt><dd><p>the clock time spent factorizing the required matrices.</p>
+</dd>
+<dt>clock_solve<span class="classifier">float</span></dt><dd><p>the clock time spent computing the search direction.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>fdc_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for FDC (see <code class="docutils literal notranslate"><span class="pre">fdc.information</span></code>).</p>
+</dd>
+<dt>sls_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for SLS (see <code class="docutils literal notranslate"><span class="pre">sbls.information</span></code>).</p>
+</dd>
+<dt>sls_pounce_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for the SLS pounce (see <code class="docutils literal notranslate"><span class="pre">sbls.information</span></code>).</p>
+</dd>
+<dt>fit_inform<span class="classifier">dict</span></dt><dd><p>return information from FIT (see <code class="docutils literal notranslate"><span class="pre">fit.information</span></code>).</p>
+</dd>
+<dt>roots_inform<span class="classifier">dict</span></dt><dd><p>return information from ROOTS (see <code class="docutils literal notranslate"><span class="pre">roots.information</span></code>).</p>
+</dd>
+<dt>cro_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for CRO (see <code class="docutils literal notranslate"><span class="pre">cro.information</span></code>).</p>
+</dd>
+<dt>rpd_inform<span class="classifier">dict</span></dt><dd><p>inform parameters for RPD (see <code class="docutils literal notranslate"><span class="pre">rpd.information</span></code>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="galahad.clls.clls.terminate">
+<span class="sig-prename descclassname"><span class="pre">clls.</span></span><span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galahad.clls.clls.terminate" title="Permalink to this definition">#</a></dt>
+<dd><p>Deallocate all internal private storage.</p>
+</dd></dl>
+
+</div></blockquote>
+</section>
+<section id="example-code">
+<h2>example code<a class="headerlink" href="#example-code" title="Permalink to this heading">#</a></h2>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">galahad</span> <span class="kn">import</span> <span class="n">clls</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">floatmode</span><span class="o">=</span><span class="s1">&#39;fixed&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">** python test: clls&quot;</span><span class="p">)</span>
+
+<span class="c1"># set parameters</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">o</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">infinity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+
+<span class="c1">#  describe objective function</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">])</span>
+<span class="n">Ao_type</span> <span class="o">=</span> <span class="s1">&#39;coordinate&#39;</span>
+<span class="n">Ao_ne</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">Ao_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">Ao_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">Ao_ptr</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">Ao_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">])</span>
+
+<span class="c1">#  describe constraints</span>
+
+<span class="n">A_type</span> <span class="o">=</span> <span class="s1">&#39;coordinate&#39;</span>
+<span class="n">A_ne</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">A_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">A_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">A_ptr</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">A_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">])</span>
+<span class="n">c_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">])</span>
+<span class="n">c_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">])</span>
+<span class="n">x_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span><span class="o">-</span><span class="n">infinity</span><span class="p">,</span><span class="o">-</span><span class="n">infinity</span><span class="p">])</span>
+<span class="n">x_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="n">infinity</span><span class="p">,</span><span class="mf">2.0</span><span class="p">])</span>
+
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">])</span>
+
+<span class="c1"># allocate internal data and set default options</span>
+<span class="n">options</span> <span class="o">=</span> <span class="n">clls</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1"># set some non-default options</span>
+<span class="n">options</span><span class="p">[</span><span class="s1">&#39;print_level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1">#print(&quot;options:&quot;, options)</span>
+
+<span class="c1"># load data (and optionally non-default options)</span>
+<span class="n">clls</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">Ao_type</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_row</span><span class="p">,</span> <span class="n">Ao_col</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Ao_ptr</span><span class="p">,</span>
+          <span class="n">A_type</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">A_ptr</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+<span class="c1">#  provide starting values (not crucial)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+
+<span class="c1"># find optimum of clls</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> problem: solve clls&quot;</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">c_stat</span> \
+  <span class="o">=</span> <span class="n">clls</span><span class="o">.</span><span class="n">solve_clls</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span>
+                    <span class="n">c_l</span><span class="p">,</span> <span class="n">c_u</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x:&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; r:&quot;</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; c:&quot;</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; y:&quot;</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; z:&quot;</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x_stat:&quot;</span><span class="p">,</span><span class="n">x_stat</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; c_stat:&quot;</span><span class="p">,</span><span class="n">c_stat</span><span class="p">)</span>
+
+<span class="c1"># get information</span>
+<span class="n">inform</span> <span class="o">=</span> <span class="n">clls</span><span class="o">.</span><span class="n">information</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; f: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">inform</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+
+<span class="c1"># deallocate internal data</span>
+
+<span class="n">clls</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example code is available in $GALAHAD/src/clls/Python/test_clls.py .</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="blls.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">BLLS</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="nls.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">NLS</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#purpose">
+   purpose
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#terminology">
+   terminology
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#method">
+   method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   references
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matrix-storage">
+   matrix storage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#functions">
+   functions
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.clls.clls.initialize">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       clls.initialize()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.clls.clls.load">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       clls.load()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.clls.clls.solve_clls">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       clls.solve_clls()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#galahad.clls.clls.terminate">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       clls.terminate()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-code">
+   example code
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/clls.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

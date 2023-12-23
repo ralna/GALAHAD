@@ -736,13 +736,13 @@
 <span class="k">struct</span> <span class="n">bsc_inform_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <span class="kt">int</span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
-    <span class="kt">char</span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
-    <span class="kt">int</span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1afa7a035a987c746be5967674390199c2"><span class="std std-ref">max_col_a</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1a182eb2982f975bbbdce953a362bf0c2d"><span class="std std-ref">exceeds_max_col</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1afb418c91547eccd73ea85693be0e1cea"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="bsc.html#doxid-structbsc-inform-type-1a70a6a867f00d49b434e314b7177c6f23"><span class="std std-ref">clock_time</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structbsc-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structbsc-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structbsc-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structbsc-inform-type-1afa7a035a987c746be5967674390199c2"><span class="std std-ref">max_col_a</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structbsc-inform-type-1a182eb2982f975bbbdce953a362bf0c2d"><span class="std std-ref">exceeds_max_col</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structbsc-inform-type-1afb418c91547eccd73ea85693be0e1cea"><span class="std std-ref">time</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structbsc-inform-type-1a70a6a867f00d49b434e314b7177c6f23"><span class="std std-ref">clock_time</span></a><span></span><span class="p">;</span>
 <span class="p">};</span></pre>
 </section>
 <section id="detailed-documentation">
@@ -782,9 +782,9 @@ violated.</p>
 <p>the maximum number of entries in a column of <span class="math notranslate nohighlight">\(A\)</span></p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1a182eb2982f975bbbdce953a362bf0c2d"><span id="index-5"></span><span></span><span class="kt">int</span> <span class="n">exceeds_max_col</span></pre>
 <p>the number of columns of <span class="math notranslate nohighlight">\(A\)</span> that have more than control.max_col entries</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1afb418c91547eccd73ea85693be0e1cea"><span id="index-6"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1afb418c91547eccd73ea85693be0e1cea"><span id="index-6"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">time</span></pre>
 <p>the total CPU time spent in the package</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1a70a6a867f00d49b434e314b7177c6f23"><span id="index-7"></span><a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbsc-inform-type-1a70a6a867f00d49b434e314b7177c6f23"><span id="index-7"></span><a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">clock_time</span></pre>
 <p>the total clock time spent in the package</p>
 </section>
 </section>

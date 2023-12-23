@@ -501,22 +501,22 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="p">;</span>
 <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-time-type"><span class="std std-ref">lpb_time_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// function calls</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1a63dd5d968d870274e0abc9c3e1e553f6"><span class="std std-ref">lpb_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1ad3cf4da5c65e4b31d2d4ff45a392c567"><span class="std std-ref">lpb_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1a63dd5d968d870274e0abc9c3e1e553f6"><span class="std std-ref">lpb_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1ad3cf4da5c65e4b31d2d4ff45a392c567"><span class="std std-ref">lpb_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1ac3308e860ab39acf9d7f293f75d80fbd"><span class="std std-ref">lpb_import</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -529,7 +529,7 @@
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1aac79b2577895e28d4a92deb9f3bd24a6"><span class="std std-ref">lpb_reset_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
@@ -539,28 +539,28 @@
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_l</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_u</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_l</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_u</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">x_stat</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">c_stat</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1ad3b3173cbeb7a9b01995d678324cbe4e"><span class="std std-ref">lpb_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1ad3b3173cbeb7a9b01995d678324cbe4e"><span class="std std-ref">lpb_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-lpb-8h-1ac7258f2afb0b15c191838ecfa377d264"><span class="std std-ref">lpb_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -572,7 +572,7 @@
 </section>
 <section id="function-calls">
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1a63dd5d968d870274e0abc9c3e1e553f6"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">lpb_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1a63dd5d968d870274e0abc9c3e1e553f6"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">lpb_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -585,7 +585,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -600,7 +600,7 @@
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1ad3cf4da5c65e4b31d2d4ff45a392c567"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">lpb_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1ad3cf4da5c65e4b31d2d4ff45a392c567"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">lpb_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
 <p>Read the content of a specification file, and assign values
 associated with given keywords to the corresponding control
 parameters. An in-depth discussion of specification files is
@@ -617,7 +617,7 @@ relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
@@ -625,7 +625,7 @@ relate to the components of the control structure.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1ac3308e860ab39acf9d7f293f75d80fbd"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">lpb_import</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
@@ -645,7 +645,7 @@ relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -712,7 +712,7 @@ A_type contains its relevant string ‘dense’,
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1aac79b2577895e28d4a92deb9f3bd24a6"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">lpb_reset_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -725,7 +725,7 @@ A_type contains its relevant string ‘dense’,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -748,18 +748,18 @@ A_type contains its relevant string ‘dense’,
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">g</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">f</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">a_ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_l</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_u</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_l</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c_u</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">c</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">y</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">x_stat</span><span class="p">[],</span>
     <span class="kt">int</span> <span class="n">c_stat</span><span class="p">[]</span>
 <span class="p">)</span></pre>
@@ -920,7 +920,7 @@ be symptomatic of a badly scaled problem.</p>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1ad3b3173cbeb7a9b01995d678324cbe4e"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">lpb_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1ad3b3173cbeb7a9b01995d678324cbe4e"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">lpb_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -933,7 +933,7 @@ be symptomatic of a badly scaled problem.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -950,8 +950,8 @@ be symptomatic of a badly scaled problem.</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-lpb-8h-1ac7258f2afb0b15c191838ecfa377d264"><span id="index-8"></span><span></span><span class="kt">void</span> <span class="n">lpb_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -965,10 +965,10 @@ be symptomatic of a badly scaled problem.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="lpb.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="lpb.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

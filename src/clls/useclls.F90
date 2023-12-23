@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-22 AT 08:20 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -9,7 +9,7 @@
 !  Principal authors: Nick Gould and Dominique Orban
 
 !  History -
-!   originally released with GALAHAD Version 4.1, July 20th 2022
+!   originally released with GALAHAD Version 4.2, December 22nd 2023
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -25,7 +25,6 @@
 !$    USE omp_lib
       USE CUTEST_INTERFACE_precision
       USE GALAHAD_CLOCK
-      USE GALAHAD_RAND_precision
       USE GALAHAD_QPT_precision
       USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
       USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
@@ -36,11 +35,11 @@
       USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
-          ACTIVE                => GALAHAD_ACTIVE,                             &
-          TRACE                 => GALAHAD_TRACE,                              &
-          DEBUG                 => GALAHAD_DEBUG,                              &
-          GENERAL               => GALAHAD_GENERAL,                            &
-          ALL_ZEROS             => GALAHAD_ALL_ZEROS
+          ACTIVE    => GALAHAD_ACTIVE,                                         &
+          TRACE     => GALAHAD_TRACE,                                          &
+          DEBUG     => GALAHAD_DEBUG,                                          &
+          GENERAL   => GALAHAD_GENERAL,                                        &
+          ALL_ZEROS => GALAHAD_ALL_ZEROS                            
       USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
@@ -79,24 +78,18 @@
       REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
       REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
-!     CHARACTER ( len = 10 ) :: filename = 'k.val'
-
 !  Scalars
 
-      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, la, lh, liw, iores, smt_stat
-!     INTEGER ( KIND = ip_ ) :: np1, npm
-      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, status
+      INTEGER ( KIND = ip_ ) :: n, o, m, ir, ic, la, liw, iores, smt_stat
+      INTEGER ( KIND = ip_ ) :: i, j, l, nea, status
       INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, A_ne, Ao_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
       REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
-      REAL ( KIND = rp_ ) :: objf, qfval, stopr, dummy, wnorm, wnorm_old
-      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs, max_d, lambda_lower
+      REAL ( KIND = rp_ ) :: objf, stopr, dummy
+      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs, max_d
       LOGICAL :: filexx, printo, printe, is_specfile
 !     LOGICAL :: ldummy
-      TYPE ( RAND_seed ) :: seed
 
 !  Specfile characteristics
 
@@ -115,7 +108,6 @@
 !  write-initial-sif                         NO
 !  initial-sif-file-name                     INITIAL.SIF
 !  initial-sif-file-device                   51
-!  least-squares-qp                          NO
 !  scale-problem                             0
 !  pre-solve-problem                         NO
 !  write-presolved-sif                       NO
@@ -132,8 +124,8 @@
 !  write-result-summary                      NO
 !  result-summary-file-name                  CLLSRES.d
 !  result-summary-file-device                47
-!  perturb-hessian-diagonals-by              0.0
-!  convexify                                 NO
+!  perturb-bounds-by                         0.0
+!  regularization-weight                     0.0
 !  save-checkpoint-info                      NO
 !  checkpoint-fine-name                      CLLS.checkpoints
 !  checkpoint-fine-device                    65
@@ -167,9 +159,7 @@
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
       REAL ( KIND = rp_ ) :: pert_bnd = zero
-      REAL ( KIND = rp_ ) :: H_pert = zero
-      REAL ( KIND = rp_ ) :: wnorm_stop = 0.0000000000001_rp_
-      LOGICAL :: convexify = .FALSE.
+      REAL ( KIND = rp_ ) :: regularization_weight = zero
 
 !  Output file characteristics
 
@@ -183,8 +173,8 @@
 !  Arrays
 
       TYPE ( CLLS_data_type ) :: data
-      TYPE ( CLLS_control_type ) :: CLLS_control
-      TYPE ( CLLS_inform_type ) :: CLLS_inform
+      TYPE ( CLLS_control_type ) :: control
+      TYPE ( CLLS_inform_type ) :: inform
       TYPE ( QPT_problem_type ) :: prob
       TYPE ( PRESOLVE_control_type ) :: PRE_control
       TYPE ( PRESOLVE_inform_type )  :: PRE_inform
@@ -193,14 +183,11 @@
       TYPE ( SCALE_data_type ) :: SCALE_data
       TYPE ( SCALE_control_type ) :: SCALE_control
       TYPE ( SCALE_inform_type ) :: SCALE_inform
-      TYPE ( sls_data_type ) :: sls_data
-      TYPE ( sls_control_type ) :: sls_control
-      TYPE ( sls_inform_type ) :: sls_inform
 
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX, D, O
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
 
@@ -239,8 +226,8 @@
         spec( 22 )%keyword = 'write-scaled-sif'
         spec( 23 )%keyword = 'scaled-sif-file-name'
         spec( 24 )%keyword = 'scaled-sif-file-device'
-        spec( 25 )%keyword = 'perturb-hessian-diagonals-by'
-        spec( 26 )%keyword = 'convexify'
+        spec( 25 )%keyword = 'regularization-weight'
+        spec( 26 )%keyword = ''
         spec( 27 )%keyword = 'save-checkpoint-info'
         spec( 28 )%keyword = 'checkpoint-fine-name'
         spec( 29 )%keyword = 'checkpoint-fine-device'
@@ -274,8 +261,7 @@
         CALL SPECFILE_assign_logical( spec( 22 ), write_scaled_sif, errout )
         CALL SPECFILE_assign_string ( spec( 23 ), qfilename, errout )
         CALL SPECFILE_assign_integer( spec( 24 ), qfiledevice, errout )
-        CALL SPECFILE_assign_real( spec( 25 ), H_pert, errout )
-        CALL SPECFILE_assign_logical( spec( 26 ), convexify, errout )
+        CALL SPECFILE_assign_real( spec( 25 ), regularization_weight, errout )
         CALL SPECFILE_assign_logical( spec( 27 ), write_checkpoints, errout )
         CALL SPECFILE_assign_string ( spec( 28 ), cfilename, errout )
         CALL SPECFILE_assign_integer ( spec( 29 ), cfiledevice, errout )
@@ -381,8 +367,6 @@
 !  constraint Jacobian
 
       A_ne = 0
-      prob%G( : n )      = zero
-      prob%gradient_kind = ALL_ZEROS
       DO i = 1, nea
         IF ( prob%A%val( i ) /= zero ) THEN
           IF ( prob%A%row( i ) > 0 ) THEN
@@ -390,242 +374,12 @@
             prob%A%row( A_ne ) = prob%A%row( i )
             prob%A%col( A_ne ) = prob%A%col( i )
             prob%A%val( A_ne ) = prob%A%val( i )
-          ELSE
-            prob%G( prob%A%col( i ) ) = prob%A%val( i )
-            prob%gradient_kind        = GENERAL
           END IF
         END IF
       END DO
-
-!  Determine the number of nonzeros in the Hessian
-
-      CALL CUTEST_cdimsh_r( cutest_status, lh )
-      IF ( cutest_status /= 0 ) GO TO 910
-      lh = MAX( lh, 1 )
-      IF ( convexify .OR. H_pert > 0.0_rp_ ) lh = lh + n
-
-!  Allocate arrays to hold the Hessian
-
-      ALLOCATE( prob%H%row( lh ), prob%H%col( lh ), prob%H%val( lh ),          &
-                STAT = alloc_stat )
-      IF ( alloc_stat /= 0 ) THEN
-!       WRITE( out, "( ' nea = ', i8, ' la   = ', i8 )" ) nea, la
-        WRITE( out, 2150 ) 'H', alloc_stat
-        STOP
-      END IF
-
-!  Evaluate the Hessian of the Lagrangian function at the initial point.
-
-      CALL CUTEST_csh_r( cutest_status, n, m, prob%X, prob%Y,                  &
-                         neh, lh, prob%H%val, prob%H%row, prob%H%col )
-      IF ( cutest_status /= 0 ) GO TO 910
-!      WRITE( out, "( ' nea = ', i8, ' la   = ', i8,                           &
-!     &               ' neh  = ', i8, ' lh   = ', i8 )" ) nea, la, neh, lh
-
-!  Remove Hessian out of range
-
-      H_ne = 0
-      DO l = 1, neh
-        i = prob%H%row( l ) ; j = prob%H%col( l )
-        IF ( i < 1 .OR. i > n .OR. j < 1 .OR. j > n ) CYCLE
-        H_ne = H_ne + 1 ; prob%H%val( H_ne ) = prob%H%val( l )
-        IF ( i >= j ) THEN
-          prob%H%row( H_ne ) = i
-          prob%H%col( H_ne ) = j
-        ELSE
-          prob%H%row( H_ne ) = j
-          prob%H%col( H_ne ) = i
-        END IF
-      END DO
-
-      IF ( ALLOCATED( prob%H%type ) ) DEALLOCATE( prob%H%type )
-      CALL SMT_put( prob%H%type, 'COORDINATE', smt_stat )
-      prob%H%ne = H_ne ; prob%H%n = n
-
-!  convexify?
-
-      IF ( convexify ) THEN
-
-!  find the leftmost eigenvalue of H by minimizing x^T H x : || x ||_2 = 1
-
-        CALL SLS_initialize(CLLS_control%SBLS_control%symmetric_linear_solver, &
-                             sls_data, sls_control, sls_inform )
-!sls_control%print_level = 2
-
-        CALL SLS_analyse( prob%H, sls_data, sls_control, sls_inform )
-        IF ( sls_inform%status < 0 ) THEN
-          WRITE( 6, '( A, I0 )' )                                              &
-               ' Failure of SLS_analyse with status = ', sls_inform%status
-          STOP
-        END IF
-        CALL SLS_factorize( prob%H, sls_data, sls_control, sls_inform )
-
-        WRITE( out, "( ' convexifying - computed inertia of H = ( ',           &
-       &    I0, ', ', I0, ', ', I0, ' )' )" )                                  &
-          sls_inform%rank - sls_inform%negative_eigenvalues,                   &
-          sls_inform%negative_eigenvalues, prob%H%n - sls_inform%rank
-
-!  the Hessian is not positive definite. Compute the Gershgorin lower bound
-!  on the leftmost eigenvalue
-
-!write(6,*) n, sls_inform%rank, sls_inform%negative_eigenvalues, &
-! sls_inform%status
-        IF ( n > sls_inform%rank .OR. sls_inform%negative_eigenvalues > 0 .OR. &
-            sls_inform%status == GALAHAD_error_inertia ) THEN
-          ALLOCATE( D( n ), O( n ), STAT = alloc_stat )
-          D = 0.0_rp_ ; O = 0.0_rp_
-          DO l = 1, prob%H%ne
-            i = prob%H%row( l ) ; j = prob%H%col( l )
-            IF ( i == j ) THEN
-              D( i ) = D( i ) + prob%H%val( l )
-            ELSE
-              O( i ) = O( i ) + ABS( prob%H%val( l ) )
-              O( j ) = O( j ) + ABS( prob%H%val( l ) )
-            END IF
-          END DO
-          lambda_lower = 0.0_rp_
-          DO i = 1, n
-            lambda_lower = MIN( lambda_lower, D( i ) - O( i ) )
-          END DO
-
-!  add - the Gershgorin lower bound (plus a tiny bit) to the diagonals of H
-
-          lambda_lower = - ( 1.000001_rp_ * lambda_lower ) + 0.000001_rp_
-!write(6,*)  lambda_lower
-          DO i = 1, n
-            H_ne = H_ne + 1
-            prob%H%row( H_ne ) = i ; prob%H%col( H_ne ) = i
-            prob%H%val( H_ne ) = lambda_lower
-          END DO
-          prob%H%ne = H_ne
-
-!  refactorize H
-
-          CALL SLS_terminate( sls_data, sls_control, sls_inform )
-          CALL SLS_initialize(CLLS_control%SBLS_control%definite_linear_solver,&
-                               sls_data, sls_control, sls_inform )
-          CALL SLS_analyse( prob%H, sls_data, sls_control, sls_inform )
-          IF ( sls_inform%status < 0 ) THEN
-            WRITE( 6, '( A, I0 )' )                                            &
-                 ' Failure of SLS_analyse with status = ', sls_inform%status
-            STOP
-          END IF
-          CALL SLS_factorize( prob%H, sls_data, sls_control, sls_inform )
-          IF ( sls_inform%status < 0 ) THEN
-            WRITE( 6, '( A, I0 )' )                                            &
-                 ' Failure of SLS_factorize with status = ', sls_inform%status
-            STOP
-          END IF
-
-!  compute a random vector
-
-          wnorm_old = - 1.0_rp_
-          DO i = 1, n
-            CALL RAND_random_real( seed, .TRUE., D( i ) )
-          END DO
-
-!  inverse iteration
-
-          DO iter = 1, 100
-
-!  solve ( H + lambda I ) w = d, overwriting d with the solution
-
-            sls_control%max_iterative_refinements = 1
-!           control%acceptable_residual_relative = 0.0_rp_
-            CALL SLS_solve( prob%H, D, sls_data, sls_control, sls_inform )
-
-!  Normalize w
-
-            wnorm = one / TWO_NORM( D )
-            IF ( ABS( wnorm_old - wnorm ) <= wnorm_stop * lambda_lower ) EXIT
-            D = D * wnorm
-            wnorm_old = wnorm
-          END DO
-
-!  compute the leftmost eigenvalue
-
-          lambda_lower = wnorm - lambda_lower
-
-!  perturb it a bit
-
-          lambda_lower = ABS( lambda_lower ) + MAX( H_pert, wnorm_stop )
-          WRITE( out, "( /, ' -- Hessian perturbed by', ES11.4,                &
-         &  ' to ensure positive definiteness' )" ) lambda_lower
-
-!  this ensures that the diagonal perturbation to H is large enough
-
-          prob%H%val( H_ne - n + 1 : H_ne ) = lambda_lower
-          DEALLOCATE( D, O, STAT = alloc_stat )
-
-        ELSE IF ( sls_inform%status < 0 ) THEN
-          WRITE( 6, '( A, I0 )' )                                              &
-               ' Failure of SLS_factorize with status = ', sls_inform%status
-          STOP
-        END IF
-
-!  add ddiagonal perturbations, if any
-
-      ELSE IF ( H_pert > 0.0_rp_ ) THEN
-        DO i = 1, n
-          H_ne = H_ne + 1 ; prob%H%val( H_ne ) = H_pert
-          prob%H%row( H_ne ) = i ; prob%H%col( H_ne ) = i
-        END DO
-      END IF
-
-!  Allocate and initialize dual variables.
-
-      ALLOCATE( prob%Z( n ), STAT = alloc_stat )
-      IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, 2150 ) 'Z', alloc_stat
-        STOP
-      END IF
-      prob%Z( : n ) = one
-!     prob%Z( : n ) = zero
-
-!   ldummy = .TRUE.
-!   IF ( .not. ldummy ) THEN
-
-!     WRITE( out, "( ' maximum element of A = ', ES12.4,                       &
-!    &                ' maximum element of H = ', ES12.4 )" )                  &
-!      MAXVAL( ABS( prob%A%val( : A_ne ) ) ),                                  &
-!      MAXVAL( ABS( prob%H%val( : H_ne ) ) )
 
       liw = MAX( m, n ) + 1
-      ALLOCATE( prob%A%ptr( m + 1 ), prob%H%ptr( n + 1 ) )
-      ALLOCATE( IW( liw ) )
-
-!     WRITE( 27, "( ( 3( 2I6, ES12.4 ) ) )" )                                  &
-!        ( prob%H%row( i ), prob%H%col( i ), prob%H%val( i ), i = 1, H_ne )
-!     WRITE( 26, "( ' H_row ', /, ( 10I6 ) )" ) prob%H%row( : H_ne )
-!     WRITE( 26, "( ' H_col ', /, ( 10I6 ) )" ) prob%H%col( : H_ne )
-!     WRITE( 26, "( ' H_val ', /, ( 5ES12.4 ) )" ) prob%H%val( : H_ne )
-
-!     ALLOCATE( k_val( n_k, n_k ) )
-!     OPEN( in, FILE = filename, FORM = 'FORMATTED', STATUS = 'OLD' )
-!     REWIND in
-!     DO j = 1, n_k
-!       DO i = 1, n_k
-!          READ( in, "( ES24.16 )" ) k_val( i, j )
-!       END DO
-!     END DO
-!     CLOSE( in )
-!     DO l = 1, H_ne
-!       i = MOD( prob%H%row( l ), n_k ) ; IF ( i == 0 ) i = n_k
-!       j = MOD( prob%H%col( l ), n_k ) ; IF ( j == 0 ) j = n_k
-!       IF ( prob%H%row( l ) <= k_k * n_k .AND.                                &
-!            prob%H%col( l ) <= k_k * n_k ) THEN
-!         IF ( ABS( prob%H%val( l ) - k_val( i, j ) ) > 0.0001 )               &
-!           WRITE( 6, "( 2I6, 2ES22.14 )" )                                    &
-!             prob%H%row( l ), prob%H%col( l ), prob%H%val( l ),  k_val( i, j )
-!          prob%H%val( l ) = k_val( i, j )
-!       ELSE
-!         IF ( ABS( prob%H%val( l ) + k_val( i, j ) / k_k ) > 0.0001 )         &
-!           WRITE( 6, "( 2I6, 2ES22.14 )" ) prob%H%row( l ), prob%H%col( l ),  &
-!             prob%H%val( l ), - k_val( i, j ) / k_k
-!          prob%H%val( l ) = - k_val( i, j ) / k_k
-!       END IF
-!     END DO
-!     DEALLOCATE( k_val )
+      ALLOCATE( prob%A%ptr( m + 1 ), IW( liw ) )
 
 !  Transform A to row storage format
 
@@ -636,51 +390,57 @@
       ELSE
         prob%A%ptr = 0
       END IF
-
-!  Same for H
-
-      IF ( H_ne /= 0 ) THEN
-        CALL SORT_reorder_by_rows( n, n, H_ne, prob%H%row, prob%H%col, H_ne,   &
-                                   prob%H%val, prob%H%ptr, n + 1, IW, liw,     &
-                                   out, out, i )
-      ELSE
-        prob%H%ptr = 0
-      END IF
-
-! try negating the constraints
-!prob%A%val( : A_ne ) = - prob%A%val( : A_ne )
-!do i = 1, m
-! dummy = - prob%C_l( i )
-! prob%C_l( i ) = - prob%C_u( i )
-! prob%C_u( i )  = dummy
-!end do
+      CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', smt_stat )
 
 !  Deallocate arrays holding matrix row indices
 
-      DEALLOCATE( prob%A%row, prob%H%row )
-      DEALLOCATE( IW )
-      ALLOCATE( prob%A%row( 0 ), prob%H%row( 0 ) )
+      DEALLOCATE( prob%A%row, IW )
+      ALLOCATE( prob%A%row( 0 ), prob%Ao%row( 0 ) )
+
+!  Introduce an artificial design matrix Ao, stored by rows, and observations b
+
+      o = n + 1
+      Ao_ne = 2 * n
+
+      ALLOCATE( prob%Ao%col( Ao_ne ), prob%Ao%ptr( o + 1 ),                 &
+                prob%Ao%val( Ao_ne ), prob%B( o ), STAT = alloc_stat )
+      IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'Ao', alloc_stat ; STOP
+      END IF
+
+      DO i = 1, n
+        prob%Ao%col( i ) = i
+        prob%Ao%ptr( i ) = i
+        prob%Ao%val( i ) = one
+        prob%B( i ) = one
+        prob%Ao%col( n + i ) = i
+      END DO
+      prob%Ao%ptr( o ) = o
+      prob%Ao%val( n + 1 : Ao_ne ) = one
+      prob%B( o ) = one
+      prob%Ao%ptr( o + 1 ) = Ao_ne + 1
+      prob%Ao%m = o ; prob%Ao%n = n ;  prob%Ao%ne = Ao_ne
+      CALL SMT_put( prob%Ao%type, 'SPARSE_BY_ROWS', smt_stat )
+      
+!  Allocate and initialize dual variables.
+
+      ALLOCATE( prob%Z( n ), STAT = alloc_stat )
+      IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'Z', alloc_stat
+        STOP
+      END IF
+      prob%Z( : n ) = one
+
+!     WRITE( out, "( ' maximum element of A   = ', ES12.4,                     &
+!    &               ' maximum element of Ao = ', ES12.4 )" )                 &
+!      MAXVAL( ABS( prob%A%val( : A_ne ) ) ),                                  &
+!      MAXVAL( ABS( prob%Ao%val( : Ao_ne ) ) )
 
       prob%new_problem_structure = .TRUE.
 
 !  Store the problem dimensions
 
-      prob%n = n ; prob%m = m
-      IF ( ALLOCATED( prob%H%type ) ) DEALLOCATE( prob%H%type )
-      CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', smt_stat )
-      IF ( ALLOCATED( prob%A%type ) ) DEALLOCATE( prob%A%type )
-      CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', smt_stat )
-      prob%f    = objf
-
-!     WRITE( out, "( ' maximum element of A = ', ES12.4,                       &
-!    &                ' maximum element of H = ', ES12.4 )" )                  &
-!      MAXVAL( ABS( prob%A%val( : A_ne ) ) ),                                  &
-!      MAXVAL( ABS( prob%H%val( : H_ne ) ) )
-!   END IF
-
-!    prob%H%val( : H_ne ) = 100000.0 * prob%H%val( : H_ne )
-!    prob%g = 100000.0 * prob%g
-!    prob%f = 100000.0 * prob%f
+      prob%n = n ; prob%o = o ; prob%m = m
 
 !  ------------------- problem set-up complete ----------------------
 
@@ -724,22 +484,23 @@
           STOP
         END IF
 
-        WRITE( dfiledevice, "( 'n, m = ', 2I6, ' obj = ', ES12.4 )" )          &
-          n, m, prob%f
-        WRITE( dfiledevice, "( ' g ', /, ( 5ES12.4 ) )" ) prob%G( : n )
-        WRITE( dfiledevice, "( ' x_l ', /, ( 5ES12.4 ) )" ) prob%X_l( : n )
-        WRITE( dfiledevice, "( ' x_u ', /, ( 5ES12.4 ) )" ) prob%X_u( : n )
-        WRITE( dfiledevice, "( ' c_l ', /, ( 5ES12.4 ) )" ) prob%C_l( : m )
-        WRITE( dfiledevice, "( ' c_u ', /, ( 5ES12.4 ) )" ) prob%C_u( : m )
+        WRITE( dfiledevice, "( 'n, o, m = ', 3I6, ' weight = ', ES12.4 )" )    &
+          n, o, m, regularization_weight
+        WRITE( dfiledevice, "( ' Ao_ptr ', /, ( 10I6 ) )" )                    &
+          prob%Ao%ptr( : o + 1 )
+        WRITE( dfiledevice, "( ' Ao_col ', /, ( 10I6 ) )" )                    &
+          prob%Ao%col( : Ao_ne )
+        WRITE( dfiledevice, "( ' Ao_val ', /, ( 5ES12.4 ) )" )                 &
+          prob%Ao%val( : Ao_ne )
+        WRITE( dfiledevice, "( ' b ', /, ( 5ES12.4 ) )" ) prob%B( : m )
         WRITE( dfiledevice, "( ' A_ptr ', /, ( 10I6 ) )" ) prob%A%ptr( : m + 1 )
         WRITE( dfiledevice, "( ' A_col ', /, ( 10I6 ) )" ) prob%A%col( : A_ne )
         WRITE( dfiledevice, "( ' A_val ', /, ( 5ES12.4 ) )" )                  &
           prob%A%val( : A_ne )
-        WRITE( dfiledevice, "( ' H_ptr ', /, ( 10I6 ) )" ) prob%H%ptr( : n + 1 )
-        WRITE( dfiledevice, "( ' H_col ', /, ( 10I6 ) )" ) prob%H%col( : H_ne )
-        WRITE( dfiledevice, "( ' H_val ', /, ( 5ES12.4 ) )" )                  &
-          prob%H%val( : H_ne )
-
+        WRITE( dfiledevice, "( ' x_l ', /, ( 5ES12.4 ) )" ) prob%X_l( : n )
+        WRITE( dfiledevice, "( ' x_u ', /, ( 5ES12.4 ) )" ) prob%X_u( : n )
+        WRITE( dfiledevice, "( ' c_l ', /, ( 5ES12.4 ) )" ) prob%C_l( : m )
+        WRITE( dfiledevice, "( ' c_u ', /, ( 5ES12.4 ) )" ) prob%C_u( : m )
         CLOSE( dfiledevice )
       END IF
 
@@ -787,19 +548,19 @@
 
 !  Set all default values, and override defaults if requested
 
-      CALL CLLS_initialize( data, CLLS_control, CLLS_inform )
+      CALL CLLS_initialize( data, control, inform )
 
       IF ( is_specfile )                                                       &
-        CALL CLLS_read_specfile( CLLS_control, input_specfile )
+        CALL CLLS_read_specfile( control, input_specfile )
       IF ( scale /= 0 )                                                        &
         CALL SCALE_read_specfile( SCALE_control, input_specfile )
-!     SCALE_control%print_level = CLLS_control%print_level
+!     SCALE_control%print_level = control%print_level
 
-      printo = out > 0 .AND. CLLS_control%print_level > 0
-      printe = out > 0 .AND. CLLS_control%print_level >= 0
-      WRITE( out, 2200 ) n, m, A_ne, H_ne
+      printo = out > 0 .AND. control%print_level > 0
+      printe = out > 0 .AND. control%print_level >= 0
+      WRITE( out, 2200 ) n, o, m, A_ne, Ao_ne
 
-      IF ( printo ) CALL COPYRIGHT( out, '2010' )
+      IF ( printo ) CALL COPYRIGHT( out, '2023' )
 
       prob%C = zero
 
@@ -885,9 +646,9 @@
 
 !       Overide some defaults
 
-        PRE_control%infinity = CLLS_control%infinity
-        PRE_control%c_accuracy = ten * CLLS_control%stop_abs_p
-        PRE_control%z_accuracy = ten * CLLS_control%stop_abs_d
+        PRE_control%infinity = control%infinity
+        PRE_control%c_accuracy = ten * control%stop_abs_p
+        PRE_control%z_accuracy = ten * control%stop_abs_d
 
 !  Call the presolver
 
@@ -901,8 +662,8 @@
         CALL CPU_TIME( timep2 )
 
         A_ne = MAX( 0, prob%A%ptr( prob%m + 1 ) - 1 )
-        H_ne = MAX( 0, prob%H%ptr( prob%n + 1 ) - 1 )
-        IF ( printo ) WRITE( out, 2300 ) prob%n, prob%m, A_ne, H_ne,           &
+        Ao_ne = MAX( 0, prob%Ao%ptr( prob%o + 1 ) - 1 )
+        IF ( printo ) WRITE( out, 2300 ) prob%n, prob%o, prob%m, A_ne, Ao_ne, &
            timep2 - timep1, PRE_inform%nbr_transforms
 
 !  If required, write a SIF file containing the presolved problem
@@ -910,13 +671,11 @@
         IF ( write_presolved_sif ) THEN
           CALL QPT_write_to_sif( prob, pname, pfilename, pfiledevice,          &
                                  .FALSE., .FALSE.,                             &
-                                 CLLS_control%infinity )
+                                 control%infinity )
         END IF
       END IF
 
 !  Call the optimizer
-
-      qfval = objf
 
       IF ( do_solve .AND. prob%n > 0 ) THEN
 
@@ -964,24 +723,23 @@
 
         solv = ' CLLS'
         IF ( printo ) WRITE( out, " ( ' ** CLLS solver used ** ' ) " )
-        CALL CLLS_solve( prob, data, CLLS_control, CLLS_inform )
+        CALL CLLS_solve( prob, data, control, inform,               & 
+                         regularization_weight = regularization_weight )
 
         IF ( printo ) WRITE( out, " ( /, ' ** CLLS solver used ** ' ) " )
-        qfval = CLLS_inform%obj
 
         CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
 
 !  Deallocate arrays from the minimization
 
-        status = CLLS_inform%status
-        iter = CLLS_inform%iter
-        stopr = CLLS_control%stop_abs_d
-        CALL CLLS_terminate( data, CLLS_control, CLLS_inform )
+        status = inform%status
+        iter = inform%iter
+        stopr = control%stop_abs_d
+        CALL CLLS_terminate( data, control, inform )
 
 !  If the problem was scaled, unscale it
 
         IF ( scale > 0 ) THEN
-          qfval = qfval * SCALE_trans%f_scale
           CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                   &
                               SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
@@ -996,8 +754,7 @@
         iter  = 0
         solv   = ' NONE'
         status = 0
-        stopr  = CLLS_control%stop_abs_d
-        qfval  = prob%f
+        stopr  = control%stop_abs_d
       END IF
 
 !  Restore from presolve
@@ -1012,7 +769,6 @@
           WRITE( out, " ( /, ' Warning: info%status following',                &
        &  ' PRESOLVE_restore is ', I5, / ) " ) PRE_inform%status
 !       IF ( PRE_inform%status /= 0 ) STOP
-        qfval = prob%q
         CALL PRESOLVE_terminate( PRE_control, PRE_inform, PRE_data )
         IF ( PRE_inform%status /= 0 .AND. printo )                             &
           WRITE( out, " ( /, ' Warning: info%status following',                &
@@ -1079,39 +835,6 @@
           max_cs = MAX( max_cs, ABS( ( prob%X_u( i ) - dummy ) * prob%Z( i ) ) )
         END IF
       END DO
-
-!  Compute maximum KKT residual
-
-      ALLOCATE( AY( n ), HX( n ), STAT = alloc_stat )
-      AY = zero ; HX = prob%G( : n )
-!     prob%G( : n ) = prob%G( : n ) - prob%Z( : n )
-      DO i = 1, m
-        DO l = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-          j = prob%A%col( l )
-!         prob%G( j ) = prob%G( j ) - prob%A%val( l ) * prob%Y( i )
-          AY( j ) = AY( j ) - prob%A%val( l ) * prob%Y( i )
-!if(j == 10228) WRITE(6,*) i, prob%A%val( l ), prob%Y( i )
-        END DO
-      END DO
-      DO i = 1, n
-        DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-          j = prob%H%col( l )
-!         prob%G( i ) = prob%G( i ) + prob%H%val( l ) * prob%X( j )
-!         IF ( j /= i )                                                        &
-!           prob%G( j ) = prob%G( j ) + prob%H%val( l ) * prob%X( i )
-          HX( i ) = HX( i ) + prob%H%val( l ) * prob%X( j )
-          IF ( j /= i )                                                        &
-            HX( j ) = HX( j ) + prob%H%val( l ) * prob%X( i )
-        END DO
-      END DO
-!     DO i = 1, n
-!       WRITE(6,"( i6, 4ES12.4 )" ) i, HX( i ), prob%Z( i ), AY( i ),          &
-!                                   HX( i ) - prob%Z( i ) + AY( i )
-!     END DO
-!     WRITE(6,"( ( 5ES12.4 ) ) " ) MAXVAL( ABS( prob%Z ) )
-!     WRITE(6,"( ' G ', /, ( 5ES12.4 ) )" ) prob%G( : n )
-      res_k = MAXVAL( ABS( HX( : n ) - prob%Z( : n ) + AY( : n ) ) )
-      DEALLOCATE( AY, HX )
 
 !  Print details of the solution obtained
 
@@ -1223,7 +946,8 @@
            WRITE( out, 2110 ) m, mequal, mredun
            IF ( m /= mequal ) WRITE( out, 2120 ) m - mequal, mfixed, mdegen
         END IF
-        WRITE( out, 2030 ) qfval, max_d, res_c, res_k, max_cs, iter
+        res_k = inform%dual_infeasibility
+        WRITE( out, 2030 ) inform%obj, max_d, res_c, res_k, max_cs, iter
 
 !  If required, write the solution to a file
 
@@ -1241,7 +965,7 @@
             STOP
           END IF
 
-          WRITE( sfiledevice, 2250 ) pname, solv, qfval
+          WRITE( sfiledevice, 2250 ) pname, solv, inform%obj
           WRITE( sfiledevice, 2090 )
 
           DO i = 1, n
@@ -1271,55 +995,53 @@
             END DO
           END IF
 
-          WRITE( sfiledevice, 2030 ) qfval, max_d, res_c, res_k, max_cs, iter
+          WRITE( sfiledevice, 2030 )                                           &
+            inform%obj, max_d, res_c, res_k, max_cs, iter
           CLOSE( sfiledevice )
         END IF
       END IF
 
-      sls_solv = CLLS_control%SBLS_control%symmetric_linear_solver
+      sls_solv = inform%SLS_inform%solver
       CALL STRING_upper_word( sls_solv )
       WRITE( out, "( /, 1X, A, ' symmetric equation solver used' )" )          &
         TRIM( sls_solv )
       WRITE( out, "( ' Typically ', I0, ', ', I0,                              &
     &                ' entries in matrix, factors' )" )                        &
-        CLLS_inform%SBLS_inform%SLS_inform%entries,                            &
-        CLLS_inform%SBLS_inform%SLS_inform%entries_in_factors
+        inform%SLS_inform%entries, inform%SLS_inform%entries_in_factors
       WRITE( out, "( ' Analyse, factorize & solve CPU   times =',              &
      &  3( 1X, F8.3 ), /, ' Analyse, factorize & solve clock times =',         &
      &  3( 1X, F8.3 ) )" )                                                     &
-        CLLS_inform%time%analyse, CLLS_inform%time%factorize,                  &
-        CLLS_inform%time%solve, CLLS_inform%time%clock_analyse,                &
-        CLLS_inform%time%clock_factorize, CLLS_inform%time%clock_solve
+        inform%time%analyse, inform%time%factorize,                            &
+        inform%time%solve, inform%time%clock_analyse,                          &
+        inform%time%clock_factorize, inform%time%clock_solve
 
       times = times - time ; timet = timet - timeo
       clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total CPU, clock times = ', F8.3, ', ', F8.3 )" )    &
         times + timet, clocks + clockt
-      WRITE( out, "( ' number of threads = ', I0 )" ) CLLS_inform%threads
+      WRITE( out, "( ' number of threads = ', I0 )" ) inform%threads
       WRITE( out, 2070 ) pname
 
 !  Compare the variants used so far
 
-      WRITE( out, 2080 ) solv, iter, qfval, status, clocks,                    &
+      WRITE( out, 2080 ) solv, iter, inform%obj, status, clocks,               &
                          clockt, clocks + clockt
 
       IF ( write_checkpoints ) THEN
         BACKSPACE( cfiledevice )
         WRITE( cfiledevice, "( A10, 16( 1X, I7 ), 16( 1X, F0.2 ) )" )          &
-          pname, CLLS_inform%checkpointsIter( 1 : 16 ),                        &
-          CLLS_inform%checkpointsTime( 1 : 16 )
+          pname, inform%checkpointsIter( 1 : 16 ),                             &
+          inform%checkpointsTime( 1 : 16 )
       END IF
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-!       WRITE( rfiledevice, 2190 )                                             &
-!          pname, n, m, iter, qfval, status, clockt
         IF ( status >= 0 ) THEN
           WRITE( rfiledevice, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )   &
-            pname, qfval, res_c, res_k, max_cs, iter, clockt, status
+            pname, inform%obj, res_c, res_k, max_cs, iter, clockt, status
         ELSE
           WRITE( rfiledevice, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )   &
-            pname, qfval, res_c, res_k, max_cs, - iter, - clockt, status
+            pname, inform%obj, res_c, res_k, max_cs, - iter, - clockt, status
         END IF
         CLOSE( rfiledevice )
       END IF
@@ -1337,7 +1059,7 @@
 !     END IF
 !     DEALLOCATE( RES )
 
-      IF ( clls_control%print_level > 5 ) THEN
+      IF ( control%print_level > 5 ) THEN
         WRITE( 6, "( ' c_status')" )
         WRITE( 6, "( ( 10I8 ) )" ) prob%c_status
         WRITE( 6, "( ' x_status')" )
@@ -1418,10 +1140,10 @@
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
  2180 FORMAT( A10 )
 !2190 FORMAT( A10, I7, 2I6, ES13.4, I6, 0P, F8.2 )
- 2200 FORMAT( /, ' problem dimensions:  n = ', I0, ', m = ', I0,               &
-              ', a_ne = ', I0, ', h_ne = ', I0 )
- 2300 FORMAT( ' updated dimensions:  n = ', I0, ', m = ', I0,                  &
-              ', a_ne = ', I0, ', h_ne = ', I0, /,                             &
+ 2200 FORMAT( /, ' problem dimensions:  n = ', I0, ', o = ', I0, ', m = ', I0, &
+              ', a_ne = ', I0, ', ao_ne = ', I0 )
+ 2300 FORMAT( ' updated dimensions:  n = ', I0, ', o = ', I0, ', m = ', I0,    &
+              ', a_ne = ', I0, ', ao_ne = ', I0, /,                           &
               ' preprocessing time = ', F0.2,                                  &
               ', number of transformations = ', I0 )
  2210 FORMAT( ' postprocessing time = ', F0.2,                                 &

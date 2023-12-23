@@ -14,7 +14,7 @@
 %
 %  to solve the constrained linear least-squares problem
 %   [ x, inform, aux ] 
-%    = galahad_clls( A_o, b, A, c_l, c_u, x_l, x_u, sigma, w, control )
+%    = galahad_clls( A_o, b, sigma, A, c_l, c_u, x_l, x_u, w, control )
 %
 %  Sophisticated usage -
 %
@@ -24,7 +24,7 @@
 %
 %  to solve the convex quadratic program using existing data structures
 %   [ x, inform, aux ]
-%    = galahad_clls( 'existing', A_o, b, A, c_l, c_u, x_l, x_u, sigma, ...
+%    = galahad_clls( 'existing', A_o, b, sigma, A, c_l, c_u, x_l, x_u, ...
 %                    w, control )
 %
 %  to remove data structures after solution
@@ -34,12 +34,12 @@
 %    A_o: the o by n matrix A_o
 %    H: the symmetric, positive-definite n by n matrix H
 %    b: the o-vector b
+%    sigma: the regularization parameter sigma >= 0
 %    A: the m by n matrix A
 %    c_l: the m-vector c_l. The value -inf should be used for infinite bounds
 %    c_u: the m-vector c_u. The value inf should be used for infinite bounds
 %    x_l: the n-vector x_l. The value -inf should be used for infinite bounds
 %    x_u: the n-vector x_u. The value inf should be used for infinite bounds
-%    sigma: the regularization parameter sigma >= 0
 %
 %  Optional Input - (either or both may be given, with w before control)
 %    w: the (diagonal) components of the diagonal scaling matrix W

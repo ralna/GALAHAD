@@ -42,7 +42,7 @@
 
 \newcommand{\libraryname}{GA\-LA\-H\-AD}
 %\newcommand{\releasename}{GALAHAD Optimization Library version $2.\epsilon$}
-\newcommand{\releasename}{GALAHAD Optimization Library version $4.1$}
+\newcommand{\releasename}{GALAHAD Optimization Library version $4.2$}
 
 \newcommand\@ptsize{}
 \newif\if@restonecol
@@ -667,7 +667,7 @@
 %{\tt http://galahad.rl.ac.uk/galahad-www/cou.html} . \\
 % For any commercial application, a separate license must be signed.}}
 \newcommand{\botl}{{\bf \large All use is subject to the conditions of
-the GNU Lesser General Public License version 3. \\
+a BSD-3-Clause License. \\
 See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 
 \newcommand{\bottr}{\packagename \, (\today) \,\,\,\, \thepage}

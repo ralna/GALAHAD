@@ -834,13 +834,13 @@ of use.</p>
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
 <span class="k">struct</span> <a class="reference internal" href="struct_sha_control_type.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// function calls</span>
 
@@ -875,12 +875,12 @@ of use.</p>
 <span class="p">);</span>
 
 
-<span class="kt">void</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-sha-8h-information"><span class="std std-ref">sha_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-sha-8h-information"><span class="std std-ref">sha_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-sha-8h-terminate"><span class="std std-ref">sha_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="k">struct</span> <a class="reference internal" href="struct_sha_control_type.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -1160,7 +1160,7 @@ order should be NULL.</p></td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-information"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">sha_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-information"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">sha_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -1174,7 +1174,7 @@ order should be NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
 <td><p>is a struct containing output information (see
-<a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
+<a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit
@@ -1194,7 +1194,7 @@ status from the package. Possible values are
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sha-8h-terminate"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sha_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="k">struct</span> <a class="reference internal" href="struct_sha_control_type.html#doxid-structsha-control-type"><span class="std std-ref">sha_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -1213,7 +1213,7 @@ status from the package. Possible values are
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a struct containing output information (see
-<a class="reference internal" href="#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
+<a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type"><span class="std std-ref">sha_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1294,13 +1294,13 @@ status from the package. Possible values are
 <span class="k">struct</span> <span class="n">sha_inform_type</span> <span class="p">{</span>
     <span class="c1">// fields</span>
 
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span class="std std-ref">max_degree</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span class="std std-ref">differences_needed</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span class="std std-ref">max_reduced_degree</span></a><span></span><span class="p">;</span>
-    <span class="kt">int</span> <a class="reference internal" href="#doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span class="std std-ref">bad_row</span></a><span></span><span class="p">;</span>
-    <span class="kt">char</span> <a class="reference internal" href="#doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span class="std std-ref">status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span class="std std-ref">alloc_status</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1a8eabc621540d71c2a7e3076d6c3826bc"><span class="std std-ref">max_degree</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1a962f442a0dd78d06c760ec5df7bf79a6"><span class="std std-ref">differences_needed</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1a389835dfe2e9309431892a98be9beb2c"><span class="std std-ref">max_reduced_degree</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1ab9c826769c483d92749a2bad8b0b972b"><span class="std std-ref">bad_row</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="struct_sha_inform_type.html#doxid-structsha-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span class="std std-ref">bad_alloc</span></a><span></span><span class="p">[</span><span class="mi">81</span><span class="p">];</span>
 <span class="p">};</span></pre>
 </section>
 <section id="details-structsha-inform-type">

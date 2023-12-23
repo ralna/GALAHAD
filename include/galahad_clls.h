@@ -876,7 +876,7 @@ void clls_import( struct clls_control_type *control,
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
    used for the objective design matrix, \f$A_o\f$. It should be one of 
-   'coordinate', 'sparse_by_rows', 'sparse_by_columns' 
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
    'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
  @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
@@ -911,7 +911,7 @@ void clls_import( struct clls_control_type *control,
  @param[in]  A_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
    used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
-   'sparse_by_rows', 'sparse_by_columns' 'dense' or 'dense_by_columns';
+   'sparse_by_rows', 'sparse_by_columns', 'dense' or 'dense_by_columns';
    lower or upper case variants are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
@@ -975,6 +975,7 @@ void clls_solve_clls( void **data,
                       int Ao_ne,
                       const real_wp_ Ao_val[],
                       const real_wp_ b[],
+                      real_wp_ regularization_weight,
                       int A_ne,
                       const real_wp_ A_val[],
                       const real_wp_ c_l[],
@@ -988,7 +989,6 @@ void clls_solve_clls( void **data,
                       real_wp_ z[],
                       int x_stat[],
                       int c_stat[],
-                      real_wp_ regularization_weight,
                       real_wp_ w[] );
 
 /*!<
@@ -1054,6 +1054,9 @@ void clls_solve_clls( void **data,
     holds the linear term \f$b\f$ of observations.
     The j-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
+ @param[in] regularization_weight is a scalar of type double, that
+    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
+
  @param[in] a_ne is a scalar variable of type int, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
@@ -1109,9 +1112,6 @@ void clls_solve_clls( void **data,
     negative, the constraint value \f$l_i^Tx\f$ most likely lies on its
     lower bound, if it is positive, it lies on its upper bound, and if it
     is zero, it lies  between its bounds.
-
- @param[in] regularization_weight is a scalar of type double, that
-    holds the non-negative regularization weight \f$\sigma \geq 0\f$.
 
  @param[in] w is a one-dimensional array of size o and type double, that
    holds the vector of strictly-positive observation weights \f$w\f$.

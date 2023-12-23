@@ -46,7 +46,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'blls_functions';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="GALAHAD NLS package" href="nls.html" />
+    <link rel="next" title="GALAHAD CLLS package" href="clls.html" />
     <link rel="prev" title="GALAHAD BLLS package" href="blls.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -372,7 +372,11 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="clls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
@@ -422,7 +426,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -456,7 +460,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -474,7 +478,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -553,7 +557,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -614,7 +618,7 @@ respectively.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1049,7 +1053,7 @@ control.preconditioner = 2.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="blls.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_blls_inform_type.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -1077,10 +1081,10 @@ control.preconditioner = 2.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="blls.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_blls_inform_type.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1101,10 +1105,10 @@ control.preconditioner = 2.</p>
           <p class="prev-next-title">GALAHAD BLLS package</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="nls.html" title="next page">
+  <a class='right-next' id="next-link" href="clls.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">GALAHAD NLS package</p>
+      <p class="prev-next-title">GALAHAD CLLS package</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

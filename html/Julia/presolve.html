@@ -869,13 +869,13 @@ the string H_type = ‘zero’ or ‘none’ should be specified.</p>
 <p>To solve a given problem, functions from the presolve package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1a30348a4e0a189046f55d995941693ed9"><span class="std std-ref">presolve_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1a78f57f6dd2885f41e9b79cc784ff673f"><span class="std std-ref">presolve_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1aca96df1bce848a32af9f599a11c4c991"><span class="std std-ref">presolve_import_problem</span></a> - import the problem data and report the dimensions of the transformed problem</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1af6da8ac04a1d4fdfd1b91cd8868791a1"><span class="std std-ref">presolve_transform_problem</span></a> - apply the presolve algorithm to transform the data</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1acf572e4805407de63003cd712f0fc495"><span class="std std-ref">presolve_restore_solution</span></a> - restore the solution from that of the transformed problem</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1adc22ebe32d1361b83889645ff473ca9b"><span class="std std-ref">presolve_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-presolve-8h-1abe2d3138390135885716064c3befb36b"><span class="std std-ref">presolve_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1a30348a4e0a189046f55d995941693ed9"><span class="std std-ref">presolve_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1a78f57f6dd2885f41e9b79cc784ff673f"><span class="std std-ref">presolve_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1aca96df1bce848a32af9f599a11c4c991"><span class="std std-ref">presolve_import_problem</span></a> - import the problem data and report the dimensions of the transformed problem</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1af6da8ac04a1d4fdfd1b91cd8868791a1"><span class="std std-ref">presolve_transform_problem</span></a> - apply the presolve algorithm to transform the data</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1acf572e4805407de63003cd712f0fc495"><span class="std std-ref">presolve_restore_solution</span></a> - restore the solution from that of the transformed problem</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1adc22ebe32d1361b83889645ff473ca9b"><span class="std std-ref">presolve_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="presolve_functions.html#doxid-galahad-presolve-8h-1abe2d3138390135885716064c3befb36b"><span class="std std-ref">presolve_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-presolve-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -903,7 +903,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -937,7 +937,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -960,7 +960,7 @@ crucial characteristics of the transformed variant</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1018,7 +1018,7 @@ been specified.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of general linear constraints.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-ah-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian, <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="qpb.html#details-ah-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian, <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -1042,7 +1042,7 @@ been specified.</p>
 <td><p>is a scalar of type T that holds the constant term <span class="math notranslate nohighlight">\(f\)</span> of the objective function.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-ah-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the constraint Jacobian, <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="qpb.html#details-ah-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the constraint Jacobian, <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -1335,7 +1335,7 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a structure containing output information (see <a class="reference internal" href="struct_presolve_inform_type.html#doxid-structpresolve-inform-type"><span class="std std-ref">presolve_inform_type</span></a>)</p></td>
@@ -1350,7 +1350,7 @@ status from the package. Possible values are
 <span id="doxid-structpresolve-control-type"></span><span id="index-7"></span><h2>presolve_control_type structure<a class="headerlink" href="#presolve-control-type-structure" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 </div>
-<p>control derived type as a Julia structureure <a class="reference internal" href="#details-structpresolve-control-type"><span class="std std-ref">More…</span></a></p>
+<p>control derived type as a Julia structureure <a class="reference internal" href="struct_presolve_control_type.html#details-structpresolve-control-type"><span class="std std-ref">More…</span></a></p>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="w">    </span><span class="k">struct</span> <span class="kt">presolve_control_type</span><span class="p">{</span><span class="kt">T</span><span class="p">}</span><span class="w"></span>
 <span class="w">      </span><span class="n">f_indexing</span><span class="o">::</span><span class="kt">Bool</span><span class="w"></span>
 <span class="w">      </span><span class="n">termination</span><span class="o">::</span><span class="kt">Int32</span><span class="w"></span>

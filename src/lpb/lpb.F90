@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-10 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-11 AT 11:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -269,9 +269,9 @@
 
         REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
-!  start terminal extrapolation when mu reaches mu_lunge
+!  start terminal extrapolation when mu reaches mu_pounce
 
-        REAL ( KIND = rp_ ) :: mu_lunge = ten ** ( - 5 )
+        REAL ( KIND = rp_ ) :: mu_pounce = ten ** ( - 5 )
 
 !   if %indicator_type = 1, a constraint/bound will be
 !    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
@@ -739,7 +739,7 @@
 !  minimum-objective-before-unbounded                -1.0D+32
 !  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
-!  barrier-rqeuired-before-final-lunge               1.0D-5
+!  required-barrier-value-before-pounce              1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
@@ -808,8 +808,8 @@
                                              = obj_unbounded + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol                &
                                              = potential_unbounded + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: mu_lunge = identical_bounds_tol + 1
-      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_lunge + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: mu_pounce = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_pounce + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_pd                    &
                                              = indicator_tol_p + 1
       INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_tapia                 &
@@ -884,7 +884,7 @@
       spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
       spec( potential_unbounded )%keyword = 'minimum-potential-before-unbounded'
       spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
-      spec( mu_lunge )%keyword = 'minimum-barrier-before-final-extrapolation'
+      spec( mu_pounce )%keyword = 'required-barrier-value-before-pounce'
       spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
       spec( indicator_tol_pd )%keyword = 'primal-dual-indicator-tolerance'
       spec( indicator_tol_tapia )%keyword = 'tapia-indicator-tolerance'
@@ -1025,8 +1025,8 @@
      CALL SPECFILE_assign_value( spec( identical_bounds_tol ),                 &
                                  control%identical_bounds_tol,                 &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( mu_lunge ),                             &
-                                 control%mu_lunge,                             &
+     CALL SPECFILE_assign_value( spec( mu_pounce ),                            &
+                                 control%mu_pounce,                            &
                                  control%error )
      CALL SPECFILE_assign_value( spec( indicator_tol_p ),                      &
                                  control%indicator_tol_p,                      &
@@ -5730,18 +5730,18 @@
         END DO step
 
 
-!  if the complementarity is small enough, try a lunge at the solution
+!  if the complementarity is small enough, try a pounce at the solution
 
-        IF ( mu <= control%mu_lunge .AND. alpha < one ) THEN
+        IF ( mu <= control%mu_pounce .AND. alpha < one ) THEN
 
-!  evaluate the lunge
+!  evaluate the pounce
 
           CALL LPB_compute_v_alpha( dims, n, m, order, X_coef, C_coef,         &
                            Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
                            X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,              &
                            C_l, C_u, one, comp )
 
-!  project the lunge into the feasible region
+!  project the pounce into the feasible region
 
           DO i = dims%x_free + 1, dims%x_l_end
             X( i ) = MAX( X( i ), X_l( i ) )
@@ -5888,7 +5888,7 @@
             inform%status = GALAHAD_ok ; GO TO 600
           END IF
 
-!  if the lunge failed, revert to the best point found in the linesearch
+!  if the pounce failed, revert to the best point found in the linesearch
 
         END IF
 

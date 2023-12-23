@@ -797,7 +797,7 @@
 !  minimum-objective-before-unbounded                -1.0D+32
 !  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
-!  barrier-rqeuired-before-final-pounce              1.0D-5
+!  required-barrier-value-before-pounce              1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
@@ -947,7 +947,7 @@
       spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
       spec( potential_unbounded )%keyword = 'minimum-potential-before-unbounded'
       spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
-      spec( mu_pounce )%keyword = 'minimum-barrier-before-final-extrapolation'
+      spec( mu_pounce )%keyword = 'required-barrier-value-before-pounce'
       spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
       spec( indicator_tol_pd )%keyword = 'primal-dual-indicator-tolerance'
       spec( indicator_tol_tapia )%keyword = 'tapia-indicator-tolerance'

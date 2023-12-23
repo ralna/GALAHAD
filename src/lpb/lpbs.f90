@@ -10,7 +10,7 @@
    TYPE ( LPB_inform_type ) :: inform
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    INTEGER :: s
-   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
+   INTEGER, PARAMETER :: n = 3, m = 2, a_ne = 4
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ), p%X( n ), p%Z( n ), X_stat( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ), p%Y( m ), C_stat( m ) )

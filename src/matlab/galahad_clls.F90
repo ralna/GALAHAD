@@ -22,7 +22,7 @@
 !
 !  to solve the constrained linear least-squares problem
 !   [ x, inform, aux ] 
-!    = galahad_clls( A_o, b, A, c_l, c_u, x_l, x_u, sigma, w, control )
+!    = galahad_clls( A_o, b, sigma, A, c_l, c_u, x_l, x_u, w, control )
 !
 !  Sophisticated usage -
 !
@@ -32,7 +32,7 @@
 !
 !  to solve the same problem using existing data structures
 !   [ x, inform, aux ]
-!    = galahad_clls( 'existing', A_o, b, A, c_l, c_u, x_l, x_u, sigma, ...
+!    = galahad_clls( 'existing', A_o, b, sigma, A, c_l, c_u, x_l, x_u, ...
 !                     w, control )
 !
 !  to remove data structures after solution
@@ -42,12 +42,12 @@
 !    A_o: the o by n matrix A_o
 !    H: the symmetric, positive-definite n by n matrix H
 !    b: the o-vector b
+!    sigma: the regularization parameter sigma >= 0
 !    A: the m by n matrix A
 !    c_l: the m-vector c_l. The value -inf should be used for infinite bounds
 !    c_u: the m-vector c_u. The value inf should be used for infinite bounds
 !    x_l: the n-vector x_l. The value -inf should be used for infinite bounds
 !    x_u: the n-vector x_u. The value inf should be used for infinite bounds
-!    sigma: the regularization parameter sigma >= 0
 !
 !  Optional Input (either or both may be given, with w before control)
 !    w: the (diagonal) components of the diagonal scaling matrix W
@@ -170,9 +170,9 @@
                      TRIM( mode ) == 'final' ) ) THEN
           IF ( nrhs < 2 )                                                      &
             CALL mexErrMsgTxt( ' Too few input arguments to galahad_clls' )
-          ao_arg = 2 ; b_arg = 3 ; a_arg = 4
-          cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8
-          sigma_arg = 9 ; w_arg = 10 ; c_arg = 11
+          ao_arg = 2 ; b_arg = 3 ; sigma_arg = 4 ; a_arg = 5
+          cl_arg = 6 ; cu_arg = 7 ; xl_arg = 8 ; xu_arg = 9
+          w_arg = 10 ; c_arg = 11
           x_arg = 1 ; i_arg = 2 ; aux_arg = 3
           IF ( nrhs > c_arg )                                                  &
             CALL mexErrMsgTxt( ' Too many input arguments to galahad_clls' )
@@ -181,9 +181,9 @@
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_clls' )
-        ao_arg = 1 ; b_arg = 2 ; a_arg = 3
-        cl_arg = 4 ; cu_arg = 5 ; xl_arg = 6 ; xu_arg = 7
-        sigma_arg = 8 ; w_arg = 9 ; c_arg = 10
+        ao_arg = 1 ; b_arg = 2 ; sigma_arg = 3 ; a_arg = 4
+        cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8
+        w_arg = 9 ; c_arg = 10
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
         IF ( nrhs > c_arg )                                                    &
           CALL mexErrMsgTxt( ' Too many input arguments to galahad_clls' )
@@ -292,6 +292,14 @@
         b_pr = mxGetPr( b_in )
         CALL MATLAB_copy_from_ptr( b_pr, p%B, p%n )
 
+!  Input sigma
+
+        sigma_in = prhs( sigma_arg )
+        IF ( mxIsNumeric( sigma_in ) == 0 )                                    &
+           CALL mexErrMsgTxt( ' There must a scalar sigma ' )
+        sigma_pr = mxGetPr( sigma_in )
+        CALL MATLAB_copy_from_ptr( sigma_pr, sigma )
+
 !  Input x_l
 
         xl_in = prhs( xl_arg )
@@ -327,14 +335,6 @@
         cu_pr = mxGetPr( cu_in )
         CALL MATLAB_copy_from_ptr( cu_pr, p%C_u, p%m )
         p%C_u = MIN( p%C_u, 10.0_wp * CONTROL%infinity )
-
-!  Input sigma
-
-        sigma_in = prhs( sigma_arg )
-        IF ( mxIsNumeric( sigma_in ) == 0 )                                    &
-           CALL mexErrMsgTxt( ' There must a scalar sigma ' )
-        sigma_pr = mxGetPr( sigma_in )
-        CALL MATLAB_copy_from_ptr( sigma_pr, sigma )
 
 !  Input w
 

@@ -39,10 +39,10 @@
    CALL CQP_initialize( data, control, inform ) ! Initialize control parameters
    control%SBLS_control%symmetric_linear_solver = 'sytr'
    control%FDC_control%symmetric_linear_solver = 'sytr'
-   control%SBLS_control%print_level = 1
-   control%FDC_control%print_level = 1
-   control%FDC_control%use_sls = .TRUE.
-   control%print_level = 1
+!  control%SBLS_control%print_level = 1
+!  control%FDC_control%print_level = 1
+!  control%FDC_control%use_sls = .TRUE.
+!  control%print_level = 1
    control%infinity = infinity                  ! Set infinity
    CALL CQP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return

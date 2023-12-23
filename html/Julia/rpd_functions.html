@@ -466,7 +466,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="rpd.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -500,7 +500,7 @@ status from the package. Possible values are
 <td><p>is a scalar variable of type Int32 that gives the number of characters in the name encoded in qplib_file.</p></td>
 </tr>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="rpd.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -775,7 +775,7 @@ status from the package. Possible values are:</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>h_row</p></td>
-<td><p>is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the <a class="reference internal" href="rpd.html#details-rpd-storage"><span class="std std-ref">sparse co-ordinate storage scheme</span></a>.</p></td>
+<td><p>is a one-dimensional array of size h_ne and type Int32 that gives the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the <a class="reference internal" href="rpd_storage.html#details-rpd-storage"><span class="std std-ref">sparse co-ordinate storage scheme</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>h_col</p></td>
 <td><p>is a one-dimensional array of size h_ne and type Int32 that gives the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme.</p></td>
@@ -818,7 +818,7 @@ status from the package. Possible values are:</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the constraint Jacobian matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>a_row</p></td>
-<td><p>is a one-dimensional array of size a_ne and type Int32 that gives the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the <a class="reference internal" href="rpd.html#details-rpd-storage"><span class="std std-ref">sparse co-ordinate storage scheme</span></a>.</p></td>
+<td><p>is a one-dimensional array of size a_ne and type Int32 that gives the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the <a class="reference internal" href="rpd_storage.html#details-rpd-storage"><span class="std std-ref">sparse co-ordinate storage scheme</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>a_col</p></td>
 <td><p>is a one-dimensional array of size a_ne and type Int32 that gives the column indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate, storage scheme.</p></td>
@@ -862,7 +862,7 @@ status from the package. Possible values are:</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>h_c_ptr</p></td>
-<td><p>is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> in the <a class="reference internal" href="rpd.html#details-rpd-storage"><span class="std std-ref">joint sparse co-ordinate storage scheme</span></a>.</p></td>
+<td><p>is a one-dimensional array of size h_c_ne and type Int32 that gives the constraint indices of the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> in the <a class="reference internal" href="rpd_storage.html#details-rpd-storage"><span class="std std-ref">joint sparse co-ordinate storage scheme</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>h_c_row</p></td>
 <td><p>is a one-dimensional array of size h_c_ne and type Int32 that gives the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H_c\)</span> in the joint sparse co-ordinate storage scheme.</p></td>
@@ -1042,7 +1042,7 @@ status from the package. Possible values are:</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="rpd.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1072,10 +1072,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="rpd.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_rpd_control_type.html#doxid-structrpd-control-type"><span class="std std-ref">rpd_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="rpd.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_rpd_inform_type.html#doxid-structrpd-inform-type"><span class="std std-ref">rpd_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

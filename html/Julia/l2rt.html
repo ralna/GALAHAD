@@ -551,12 +551,12 @@ least-squares problems’’.
 <p>To solve a given problem, functions from the l2rt package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#doxid-galahad-l2rt-8h-1a0103448a3db662f9c483f9f44a5112bc"><span class="std std-ref">l2rt_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-l2rt-8h-1a1b63f8b501208629cceb662b03f35684"><span class="std std-ref">l2rt_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-l2rt-8h-1adf880b26c8aea32493857f8576e58ae8"><span class="std std-ref">l2rt_import_control</span></a> - import control parameters prior to solution</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-l2rt-8h-1a53042b19cef3a62c34631b00111ce754"><span class="std std-ref">l2rt_solve_problem</span></a> - solve the problem by reverse communication, a sequence of calls are made under control of a status parameter, each exit either asks the user to provide additional informaton and to re-enter, or reports that either the solution has been found or that an error has occurred</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-l2rt-8h-1a4fa18245556cf87b255b2b9ac5748ca9"><span class="std std-ref">l2rt_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-l2rt-8h-1aa9b62de33c3d6c129cca1e90a3d548b7"><span class="std std-ref">l2rt_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1a0103448a3db662f9c483f9f44a5112bc"><span class="std std-ref">l2rt_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1a1b63f8b501208629cceb662b03f35684"><span class="std std-ref">l2rt_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1adf880b26c8aea32493857f8576e58ae8"><span class="std std-ref">l2rt_import_control</span></a> - import control parameters prior to solution</p></li>
+<li><p><a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1a53042b19cef3a62c34631b00111ce754"><span class="std std-ref">l2rt_solve_problem</span></a> - solve the problem by reverse communication, a sequence of calls are made under control of a status parameter, each exit either asks the user to provide additional informaton and to re-enter, or reports that either the solution has been found or that an error has occurred</p></li>
+<li><p><a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1a4fa18245556cf87b255b2b9ac5748ca9"><span class="std std-ref">l2rt_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1aa9b62de33c3d6c129cca1e90a3d548b7"><span class="std std-ref">l2rt_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-l2rt-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -584,7 +584,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_l2rt_control_type.html#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -618,7 +618,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_l2rt_control_type.html#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -635,7 +635,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_l2rt_control_type.html#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -817,7 +817,7 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_l2rt_control_type.html#doxid-structl2rt-control-type"><span class="std std-ref">l2rt_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a structure containing output information (see <a class="reference internal" href="struct_l2rt_inform_type.html#doxid-structl2rt-inform-type"><span class="std std-ref">l2rt_inform_type</span></a>)</p></td>
@@ -927,7 +927,7 @@ status from the package. Possible values are
 <section id="id8">
 <h3>components<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structl2rt-inform-type-1a6e27f49150e9a14580fb313cc2777e00"><span id="index-28"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">status</span></pre>
-<p>return status. See <a class="reference internal" href="#doxid-galahad-l2rt-8h-1a53042b19cef3a62c34631b00111ce754"><span class="std std-ref">l2rt_solve_problem</span></a> for details</p>
+<p>return status. See <a class="reference internal" href="l2rt_functions.html#doxid-galahad-l2rt-8h-1a53042b19cef3a62c34631b00111ce754"><span class="std std-ref">l2rt_solve_problem</span></a> for details</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structl2rt-inform-type-1a4335d5f44067aca76d5fff71eeb7d381"><span id="index-29"></span><span></span><span class="kt">Int32</span><span class="w"> </span><span class="n">alloc_status</span></pre>
 <p>the status of the last attempted allocation/deallocation</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structl2rt-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-30"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>

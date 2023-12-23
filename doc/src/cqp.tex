@@ -1046,6 +1046,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt minimum-objective-before-unbounded} & {\tt \%obj\_unbounded} & real \\
   {\tt minimum-potential-before-unbounded} & {\tt \%potential\_unbounded} & real \\
   {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
+  {\tt required-barrier-value-before-pounce} & {\tt mu\_pounce} & real \\
   {\tt primal-indicator-tolerance} & {\tt \%indicator\_tol\_p} & real \\
   {\tt primal-dual-indicator-tolerance} & {\tt \%indicator\_tol\_pd} & real \\
   {\tt tapia-indicator-tolerance} & {\tt \%indicator\_tol\_tapia} & real \\
@@ -1206,6 +1207,11 @@ which make up the complementary slackness
 \req{4.3} do not deviate too significantly
 from their average value. The parameter that controls the perturbation
 of \req{4.3} is ultimately driven to zero.
+
+If the algorithm believes that it is close to the solution, it may take a
+speculative ``pounce'' extrapolation, based on an estimate of the ultimate 
+active set, to avoid further costly iterations. If the pounce is unsuccessful, 
+the iteration continues, but further pounces may be attempted later.
 
 The Newton equations are solved  by applying the
 \galahad\ matrix factorization package

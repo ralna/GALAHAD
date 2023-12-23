@@ -739,7 +739,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -773,7 +773,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -793,7 +793,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -846,7 +846,7 @@ been violated.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix <span class="math notranslate nohighlight">\(C\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -861,7 +861,7 @@ been violated.</p>
 <td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-sbls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -876,7 +876,7 @@ been violated.</p>
 <td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>C_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(C\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(C=0\)</span>; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(C\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(C=0\)</span>; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>C_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -902,7 +902,7 @@ been violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1141,7 +1141,7 @@ the GALAHAD package ULS for further details.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1171,10 +1171,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1332,7 +1332,7 @@ status from the package. Possible values are
 <p>unsymmetric linear equation solver</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-47"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-48"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-48"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for SLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ac6782df4602dd9c04417e2554d72bb00"><span id="index-49"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="w"> </span><span class="n">uls_control</span></pre>
 <p>control parameters for ULS</p>
@@ -1434,9 +1434,9 @@ status from the package. Possible values are
 <p>the norm of the residual</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a48c07c7da1803ed8af25ca949f4854b5"><span id="index-74"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">alternative</span></pre>
 <p>has an “alternative” <span class="math notranslate nohighlight">\(y\)</span> : <span class="math notranslate nohighlight">\(K y = 0\)</span> and <span class="math notranslate nohighlight">\(y^T c &gt; 0\)</span> been found when trying to solve <span class="math notranslate nohighlight">\(K y = c\)</span> for generic <span class="math notranslate nohighlight">\(K\)</span>?</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1aaa565e03cbc8470593f946cf00beb639"><span id="index-75"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structsbls-time-type"><span class="std std-ref">sbls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1aaa565e03cbc8470593f946cf00beb639"><span id="index-75"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_time_type.html#doxid-structsbls-time-type"><span class="std std-ref">sbls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-76"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-76"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>inform parameters from the GALAHAD package SLS used</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-inform-type-1aa39eb0d7b50d4a858849f8ef652ae84c"><span id="index-77"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-inform-type"><span class="std std-ref">uls_inform_type</span></a><span></span><span class="w"> </span><span class="n">uls_inform</span></pre>
 <p>inform parameters from the GALAHAD package ULS used</p>

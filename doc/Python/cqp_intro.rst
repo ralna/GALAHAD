@@ -77,6 +77,11 @@ which make up the complementary slackness
 from their average value. The parameter that controls the perturbation
 of (3) is ultimately driven to zero.
 
+If the algorithm believes that it is close to the solution, it may take a
+speculative ``pounce'' extrapolation, based on an estimate of the ultimate 
+active set, to avoid further costly iterations. If the pounce is unsuccessful, 
+the iteration continues, but further pounces may be attempted later.
+
 The Newton equations are solved  by applying the matrix factorization 
 package ``SBLS``, but there are options
 to factorize the matrix as a whole (the so-called "augmented system"

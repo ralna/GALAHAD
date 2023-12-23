@@ -146,8 +146,6 @@ functions
              complementarity.
           stop_rel_c : float
              see stop_abs_c.
-          perturb_h : float
-             ``perturb_h`` will be added to the Hessian.
           prfeas : float
              initial primal variables will not be closer than
              ``prfeas`` from their bounds.
@@ -171,19 +169,12 @@ functions
              by at least a factor ``reduce_infeas`` over ``infeas_max``
              iterations, the problem is flagged as infeasible (see
              infeas_max).
-          obj_unbounded : float
-             if the objective function value is smaller than
-             obj_unbounded, it will be flagged as unbounded from below.
-          potential_unbounded : float
-             if W=0 and the potential function value is smaller than
-             ``potential_unbounded`` $\ast$ number of one-sided bounds,
-             the analytic center will be flagged as unbounded.
           identical_bounds_tol : float
              any pair of constraint bounds $(c_l,c_u)$ or $(x_l,x_u)$
              that are closer than ``identical_bounds_tol`` will be
              reset to the average of their values.
-          mu_lunge : float
-             start terminal extrapolation when mu reaches mu_lunge.
+          mu_pounce : float
+             start terminal extrapolation when mu reaches mu_pounce.
           indicator_tol_p : float
              if ``indicator_type`` = 1, a constraint/bound will be
              deemed to be active if and only if the distance to its
@@ -274,7 +265,7 @@ functions
           cro_options : dict
              default control options for CRO (see ``cro.initialize``).
 
-   .. function:: clls.load(n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+   .. function:: clls.load(n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, A_type, A_ne, A_row, A_col, A_ptr_ne, A_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -288,50 +279,66 @@ functions
           holds the number of general linear constraints.
       Ao_type : string
           specifies the unsymmetric storage scheme used for the objective
-          design matrix $A_o$.
-          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+          design matrix $A_o$. It should be one of 'coordinate', 
+          'sparse_by_rows', 'sparse_by_columns', 'dense' or 'dense_by_columns';
           lower or upper case variants are allowed.
       Ao_ne : int
           holds the number of entries in $A_o$ in the sparse co-ordinate 
-          storage scheme. It need not be set for any of the other two schemes.
+          storage scheme. It need not be set for any of the other schemes.
       Ao_row : ndarray(Ao_ne)
-          holds the row indices of $A$
-          in the sparse co-ordinate storage scheme. It need not be set for
-          any of the other two schemes, and in this case can be None.
+          holds the row indices of $A_o$ in the sparse co-ordinate and
+          and sparse column-wise storage schemes. It need not be set for
+          any of the other schemes, and in this case can be None.
       Ao_col : ndarray(Ao_ne)
           holds the column indices of $A_o$ in either the sparse co-ordinate, 
-          or the sparse row-wise storage scheme. It need not be set when the 
-          dense storage scheme is used, and in this case can be None.
-      Ao_ptr : ndarray(o+1)
+          or the sparse row-wise storage scheme. It need not be set for
+          any of the other schemes, and in this case can be None.
+      Ao_ptr_ne : int
+          holds the length of the pointer array if sparse row or column 
+          storage scheme is used for $A_o$. For the sparse row scheme,  
+          Ao_ptr_ne should be at least o+1, while for the sparse column scheme,
+          it should be at least n+1, It need not be set when the other schemes
+          are used.
+      Ao_ptr : ndarray(Ao_ptr_ne)
           holds the starting position of each row of $A_o$, as well as the 
-          total number of entries, in the sparse row-wise storage 
-          scheme. It need not be set when the other schemes are used, and in 
-          this case can be None.
+          total number of entries, in the sparse row-wise storage scheme. 
+          By contrast, it holds the starting position of each column of $A_o$, 
+          as well as the total number of entries, in the sparse column-wise 
+          storage scheme. It need not be set when the other schemes are used, 
+          and in this case can be None.
       A_type : string
-          specifies the unsymmetric storage scheme used for the constraints 
-          Jacobian $A$.
-          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+          specifies the unsymmetric storage scheme used for the constraint
+          Jacobian $A$. It should be one of 'coordinate', 
+          'sparse_by_rows', 'sparse_by_columns', 'dense' or 'dense_by_columns';
           lower or upper case variants are allowed.
       A_ne : int
-          holds the number of entries in $A$ in the sparse co-ordinate storage 
-          scheme. It need not be set for any of the other two schemes.
+          holds the number of entries in $A$ in the sparse co-ordinate 
+          storage scheme. It need not be set for any of the other schemes.
       A_row : ndarray(A_ne)
-          holds the row indices of $A$
-          in the sparse co-ordinate storage scheme. It need not be set for
-          any of the other two schemes, and in this case can be None.
+          holds the row indices of $A$ in the sparse co-ordinate and
+          and sparse column-wise storage schemes. It need not be set for
+          any of the other schemes, and in this case can be None.
       A_col : ndarray(A_ne)
           holds the column indices of $A$ in either the sparse co-ordinate, 
-          or the sparse row-wise storage scheme. It need not be set when the 
-          dense storage scheme is used, and in this case can be None.
-      A_ptr : ndarray(m+1)
+          or the sparse row-wise storage scheme. It need not be set for
+          any of the other schemes, and in this case can be None.
+      A_ptr_ne : int
+          holds the length of the pointer array if sparse row or column 
+          storage scheme is used for $A$. For the sparse row scheme,  
+          A_ptr_ne should be at least m+1, while for the sparse column scheme,
+          it should be at least n+1, It need not be set when the other schemes
+          are used.
+      A_ptr : ndarray(A_ptr_ne)
           holds the starting position of each row of $A$, as well as the 
-          total number of entries, in the sparse row-wise storage 
-          scheme. It need not be set when the other schemes are used, and in 
-          this case can be None.
+          total number of entries, in the sparse row-wise storage scheme. 
+          By contrast, it holds the starting position of each column of $A$, 
+          as well as the total number of entries, in the sparse column-wise 
+          storage scheme. It need not be set when the other schemes are used, 
+          and in this case can be None.
       options : dict, optional
           dictionary of control options (see ``clls.initialize``).
 
-   .. function:: clls.solve_clls(n, o, m, b, ao_ne, Ao_val, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z, sigma, w)
+   .. function:: clls.solve_clls(n, o, m, ao_ne, Ao_val, b, sigma, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z, w)
 
       Find a solution to the constrained (regularized) linear least-squares 
       problem.
@@ -344,13 +351,15 @@ functions
           holds the number of residuals.
       m : int
           holds the number of general linear constraints.
-      b : ndarray(m)
-          holds the values of the linear term $g$ in the objective function.
       ao_ne : int
           holds the number of entries in the objective design matrix $A_o$.
       Ao_val : ndarray(ao_ne)
           holds the values of the nonzeros in $A_o$ in the same order as 
           specified in the sparsity pattern in ``clls.load``.
+      b : ndarray(m)
+          holds the values of the linear term $g$ in the objective function.
+      sigma : float
+          holds the regularization weight $\sigma \geq 0$.
       a_ne : int
           holds the number of entries in the constraint Jacobian $A$.
       A_val : ndarray(a_ne)
@@ -387,8 +396,6 @@ functions
           associated with the simple bound constraints, if known.
           This is not crucial, and if no suitable value is known, then any
           value, such as $z=0$, suffices and will be adjusted accordingly.
-      sigma : float
-          holds the regularization weight $\sigma \geq 0$.
       w : ndarray(o)
           holds the positive regularization weights $w$. If unit weights are
           to be used, this can be replaced by None.

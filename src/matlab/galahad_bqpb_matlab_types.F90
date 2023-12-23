@@ -1,8 +1,8 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 04/03/2011 AT 18:00 GMT.
+!  THIS VERSION: GALAHAD 4.2 - 2023-12-21 AT 10:30 GMT.
 
-!-*-*-*-  G A L A H A D _  B Q P B _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
+!-*-*-  G A L A H A D _  B Q P B _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -188,9 +188,9 @@
         CASE( 'identical_bounds_tol' )
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, BQPB_control%identical_bounds_tol )
-        CASE( 'mu_lunge' )
-          CALL MATLAB_get_value( ps, 'mu_lunge',                               &
-                                 pc, BQPB_control%mu_lunge )
+        CASE( 'mu_pounce' )
+          CALL MATLAB_get_value( ps, 'mu_pounce',                              &
+                                 pc, BQPB_control%mu_pounce )
         CASE( 'indicator_tol_p' )
           CALL MATLAB_get_value( ps, 'indicator_tol_p',                        &
                                  pc, BQPB_control%indicator_tol_p )
@@ -303,7 +303,7 @@
          'gamma_c                        ', 'gamma_f                        ', &
          'reduce_infeas                  ', 'obj_unbounded                  ', &
          'potential_unbounded            ', 'identical_bounds_tol           ', &
-         'mu_lunge                       ', 'indicator_tol_p                ', &
+         'mu_pounce                      ', 'indicator_tol_p                ', &
          'indicator_tol_pd               ', 'indicator_tol_tapia            ', &
          'cpu_time_limit                 ', 'clock_time_limit               ', &
          'remove_dependencies            ',                                    &
@@ -387,8 +387,8 @@
                                   BQPB_control%potential_unbounded )
       CALL MATLAB_fill_component( pointer, 'identical_bounds_tol',             &
                                   BQPB_control%identical_bounds_tol )
-      CALL MATLAB_fill_component( pointer, 'mu_lunge',                         &
-                                  BQPB_control%mu_lunge )
+      CALL MATLAB_fill_component( pointer, 'mu_pounce',                        &
+                                  BQPB_control%mu_pounce )
       CALL MATLAB_fill_component( pointer, 'indicator_tol_p',                  &
                                   BQPB_control%indicator_tol_p )
       CALL MATLAB_fill_component( pointer, 'indicator_tol_pd',                 &

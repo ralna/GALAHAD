@@ -5,7 +5,6 @@ MAIN
 ! write-initial-sif                                 no
 ! initial-sif-file-name                             INITIAL.SIF
 ! initial-sif-file-device                           51
-! least-squares-qp                                  no
 ! scale-problem                                     0
 ! pre-solve-problem                                 no
 ! presolved-sif-file-name                           PRESOLVE.SIF
@@ -22,16 +21,13 @@ MAIN
 ! result-summary-file-name                          CLLSRES.d
 ! result-summary-file-device                        47
 ! perturb-bounds-by                                 0.0
-! perturb-hessian-diagonals-by                      0.0
-! convexify                                         no
+! regularization-weight                             1.0
 
 INCLUDE CLLS
 
-INCLUDE SBLS
-
-INCLUDE SBLS SBLS-POUNCE
-
 INCLUDE SLS
+
+INCLUDE SLS SLS-POUNCE
 
 INCLUDE ULS
 

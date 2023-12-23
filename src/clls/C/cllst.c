@@ -19,6 +19,7 @@ int main(void) {
     int n = 3; // dimension
     int o = 4; // number of observations
     int m = 2; // number of general constraints
+    real_wp_ sigma = 1.0; // regularization weight
     real_wp_ b[] = {2.0, 2.0, 3.0, 1.0};   // observations
     real_wp_ c_l[] = {1.0, 2.0};   // constraint lower bound
     real_wp_ c_u[] = {2.0, 2.0};   // constraint upper bound
@@ -70,8 +71,8 @@ int main(void) {
                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
                             "coordinate", A_ne, A_row, A_col, 0, NULL );
                 clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
-                                 A_ne, A_val, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
+                                 sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, w );
                 }
                 break;
             case 2: // sparse by rows
@@ -79,12 +80,12 @@ int main(void) {
                 {
                 int Ao_ne = 7; // objective Jacobian elements
                 int Ao_col[] = {0, 1, 1, 2, 0, 2, 1};    // column indices
-                int Ao_ptr_ne = 5; // number of row pointers
+                int Ao_ptr_ne = o + 1; // number of row pointers
                 int Ao_ptr[] = {0, 2, 4, 6, 7}; // row pointers
                 real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
                 int A_ne = 4; // constraint Jacobian elements
                 int A_col[] = {0, 1, 1, 2}; // column indices
-                int A_ptr_ne = 3; // number of row pointers
+                int A_ptr_ne = m + 1; // number of row pointers
                 int A_ptr[] = {0, 2, 4}; // row pointers
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
                 clls_import( &control, &data, &status, n, o, m,
@@ -93,8 +94,8 @@ int main(void) {
                              "sparse_by_rows", A_ne, NULL, A_col,
                              A_ptr_ne, A_ptr );
                 clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
-                                 A_ne, A_val, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
+                                 sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, w );
                 }
                 break;
             case 3: // sparse by columns
@@ -102,12 +103,12 @@ int main(void) {
                 {
                 int Ao_ne = 7; // objective Jacobian elements
                 int Ao_row[] = {0, 2, 0, 1, 3, 1, 2};   // row indices
-                int Ao_ptr_ne = 4; // number of column pointers
+                int Ao_ptr_ne = n + 1; // number of column pointers
                 int Ao_ptr[] = {0, 2, 5, 7}; // column pointers
                 real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
                 int A_ne = 4; // constraint Jacobian elements
                 int A_row[] = {0, 0, 1, 1}; // row indices
-                int A_ptr_ne = 4; // number of column pointers
+                int A_ptr_ne = n + 1; // number of column pointers
                 int A_ptr[] = {0, 1, 3, 4}; // column pointers
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
                 clls_import( &control, &data, &status, n, o, m,
@@ -116,8 +117,8 @@ int main(void) {
                              "sparse_by_columns", A_ne, A_row, NULL,
                              A_ptr_ne, A_ptr );
                 clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_val, b,
-                                 A_ne, A_val, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
+                                 sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, w );
                 }
                 break;
             case 4: // dense by rows
@@ -132,8 +133,8 @@ int main(void) {
                              "dense", Ao_ne, NULL, NULL, 0, NULL,
                              "dense", A_ne, NULL, NULL, 0, NULL );
                 clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
-                                 A_ne, A_dense, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
+                                 sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, w );
                 }
                 break;
             case 5: // dense by cols
@@ -148,8 +149,8 @@ int main(void) {
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL,
                              "dense_by_columns", A_ne, NULL, NULL, 0, NULL );
                 clls_solve_clls( &data, &status, n, o, m, Ao_ne, Ao_dense, b,
-                                 A_ne, A_dense, c_l, c_u, x_l, x_u,
-                                 x, r, c, y, z, x_stat, c_stat, 0.0, w );
+                                 sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
+                                 x, r, c, y, z, x_stat, c_stat, w );
                 }
                 break;
             }

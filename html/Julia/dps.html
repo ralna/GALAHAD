@@ -578,7 +578,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -610,7 +610,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -628,7 +628,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -677,7 +677,7 @@ or ‘sparse_by_rows’ has been violated.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="bqpb.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’; lower or upper case variants are allowed</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="h_storage.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’; lower or upper case variants are allowed</p></td>
 </tr>
 <tr class="row-even"><td><p>ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -703,7 +703,7 @@ or ‘sparse_by_rows’ has been violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1089,7 +1089,7 @@ progress is impossible.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1119,10 +1119,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_dps_control_type.html#doxid-structdps-control-type"><span class="std std-ref">dps_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_dps_inform_type.html#doxid-structdps-inform-type"><span class="std std-ref">dps_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1201,7 +1201,7 @@ status from the package. Possible values are
 <p>symmetric (indefinite) linear equation solver</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-28"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-29"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-29"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for the Cholesky factorization and solution</p>
 </section>
 </section>
@@ -1288,9 +1288,9 @@ status from the package. Possible values are
 <p>has the hard case occurred?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-50"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
 <p>name of array that provoked an allocate failure</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-inform-type-1ac1ae6841280bc6d2f24f9665cb75c40e"><span id="index-51"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structdps-time-type"><span class="std std-ref">dps_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-inform-type-1ac1ae6841280bc6d2f24f9665cb75c40e"><span id="index-51"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_dps_time_type.html#doxid-structdps-time-type"><span class="std std-ref">dps_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>time information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-52"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structdps-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-52"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>information from SLS</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

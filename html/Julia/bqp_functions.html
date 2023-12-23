@@ -450,7 +450,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="bqp.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -482,7 +482,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="bqp.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -500,7 +500,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="bqp.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -549,7 +549,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 <td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="bqpb.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="h_storage.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-even"><td><p>ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.</p></td>
@@ -575,7 +575,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="bqp.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -629,7 +629,7 @@ respectively.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="bqp.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1016,7 +1016,7 @@ nz_p_end-nz_p_start will be small).</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="bqp.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -1046,10 +1046,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="bqp.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="bqp.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

@@ -50,6 +50,16 @@ is a scalar variable of type default \realdp,
 that holds the norm of the violation of complementary slackness
 (see Section~\ref{typetime}) at the best estimate of the solution found.
 
+\itt{potential}
+is a scalar variable of type default \realdp,
+that holds the value of the logarithmic potential function
+sum -log(distance to constraint boundary).
+
+\itt{non\_negligible\_pivot}
+is a scalar variable of type default \realdp,
+that holds the value of the smallest pivot which was not judged to be 
+zero when detecting linearly dependent constraints.
+
 \itt{feasible} is a scalar variable of type default \logical, that has the
 value \true\ if the output value of $\bmx$ satisfies the constraints,
 and the value \false\ otherwise.

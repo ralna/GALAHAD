@@ -49,7 +49,7 @@ clls_control_type structure
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj_unbounded<doxid-structclls__control__type_1a7eed67e26bc4e17ca334031b7fd608a6>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`potential_unbounded<doxid-structclls__control__type_1a0c5882a8efc33627a50dce09db1ba40a>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`identical_bounds_tol<doxid-structclls__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`mu_lunge<doxid-structclls__control__type_1a32eb4d353d409b46521eb28008a74c36>`;
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`mu_pounce<doxid-structclls__control__type_1a32eb4d353d409b46521eb28008a74c36>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`indicator_tol_p<doxid-structclls__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`indicator_tol_pd<doxid-structclls__control__type_1aa131ce5e639e5601d1b61fb540ac7187>`;
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`indicator_tol_tapia<doxid-structclls__control__type_1abf4fb7dcdbaa9f729af1f063d357000a>`;
@@ -448,15 +448,15 @@ if W=0 and the potential function value is smaller than .potential_unbounded $\a
 
 any pair of constraint bounds $(c_l,c_u)$ or $(x_l,x_u)$ that are closer than .identical_bounds_tol will be reset to the average of their values
 
-.. index:: pair: variable; mu_lunge
+.. index:: pair: variable; mu_pounce
 .. _doxid-structclls__control__type_1a32eb4d353d409b46521eb28008a74c36:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` mu_lunge
+	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` mu_pounce
 
-start terminal extrapolation when mu reaches mu_lunge
+start terminal extrapolation when mu reaches mu_pounce
 
 .. index:: pair: variable; indicator_tol_p
 .. _doxid-structclls__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd:

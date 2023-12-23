@@ -370,7 +370,11 @@
 <li class="toctree-l2"><a class="reference internal" href="blls_functions.html">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="clls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
@@ -408,17 +412,18 @@
   <section id="least-squares">
 <h1>Least-Squares<a class="headerlink" href="#least-squares" title="Permalink to this heading">#</a></h1>
 <p><strong>Release:</strong> 1.0</p>
-<p><strong>Date:</strong> Aug 06, 2023</p>
+<p><strong>Date:</strong> Dec 23, 2023</p>
 <p><strong>Author:</strong> <a class="reference external" href="mailto:jaroslav&#46;fowkes&#37;&#52;&#48;stfc&#46;ac&#46;uk">Jaroslav Fowkes</a>, <a class="reference external" href="mailto:nick&#46;gould&#37;&#52;&#48;stfc&#46;ac&#46;uk">Nick Gould</a>, <a class="reference external" href="mailto:alexis&#46;montoison&#37;&#52;&#48;polymtl&#46;ca">Alexis Montoison</a> and <a class="reference external" href="mailto:dominique&#46;orban&#37;&#52;&#48;polymtl&#46;ca">Dominique Orban</a></p>
 <p>GALAHAD <a class="footnote-reference superscript" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a suite of open-source routines for large-scale continuous
 optimization.  Currently there is a single package designed to find a local
-minimizer of a sum-of-squares function whose variables may take any values
-and a second that targets linear problems
-with simple bounds on the variables.</p>
+minimizer of a sum-of-squares function whose variables may take any values,
+a second that targets linear problems with simple bounds on the variables,
+and another for which the constraints are linear (polyhedral).</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="blls.html">BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
 </ul>
 </div>

@@ -43,7 +43,7 @@ lpb_control_type structure
           obj_unbounded::T
           potential_unbounded::T
           identical_bounds_tol::T
-          mu_lunge::T
+          mu_pounce::T
           indicator_tol_p::T
           indicator_tol_pd::T
           indicator_tol_tapia::T
@@ -421,15 +421,15 @@ if W=0 and the potential function value is smaller than potential_unbounded \* n
 
 any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values
 
-.. index:: pair: variable; mu_lunge
+.. index:: pair: variable; mu_pounce
 .. _doxid-structlpb__control__type_1a32eb4d353d409b46521eb28008a74c36:
 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-	T mu_lunge
+	T mu_pounce
 
-start terminal extrapolation when mu reaches mu_lunge
+start terminal extrapolation when mu reaches mu_pounce
 
 .. index:: pair: variable; indicator_tol_p
 .. _doxid-structlpb__control__type_1a9f245bb23cea009fc7a95d86ebe57ddd:

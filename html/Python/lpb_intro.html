@@ -461,6 +461,10 @@ which make up the complementary slackness
 (3) do not deviate too significantly
 from their average value. The parameter that controls the perturbation
 of (3) is ultimately driven to zero.</p>
+<p>If the algorithm believes that it is close to the solution, it may take a
+speculative <a href="#id3"><span class="problematic" id="id4">``</span></a>pounce’’ extrapolation, based on an estimate of the ultimate
+active set, to avoid further costly iterations. If the pounce is unsuccessful,
+the iteration continues, but further pounces may be attempted later.</p>
 <p>The Newton equations are solved  by applying the matrix factorization
 package <code class="docutils literal notranslate"><span class="pre">SBLS</span></code>, but there are options
 to factorize the matrix as a whole (the so-called “augmented system”
@@ -479,21 +483,21 @@ performance of the subsequent iteration.</p>
 <p>The basic algorithm is a generalisation of those of</p>
 <blockquote>
 <div><p>Y. Zhang,
-<a href="#id3"><span class="problematic" id="id4">``</span></a>On the convergence of a class of infeasible interior-point methods
+<a href="#id5"><span class="problematic" id="id6">``</span></a>On the convergence of a class of infeasible interior-point methods
 for the horizontal linear complementarity problem’’.
 <em>SIAM J. Optimization</em> <strong>4(1)</strong> (1994) 208-227,</p>
 </div></blockquote>
 <p>and</p>
 <blockquote>
 <div><p>G. Zhao and J. Sun,
-<a href="#id5"><span class="problematic" id="id6">``</span></a>On the rate of local convergence of high-order infeasible
+<a href="#id7"><span class="problematic" id="id8">``</span></a>On the rate of local convergence of high-order infeasible
 path-following algorithms for <span class="math notranslate nohighlight">\(P_*\)</span> linear complementarity problems’’.
-<em>Computational Optimization and Applications</em> <a href="#id7"><span class="problematic" id="id8">**</span></a>14(1)* (1999) 293-307,</p>
+<em>Computational Optimization and Applications</em> <a href="#id9"><span class="problematic" id="id10">**</span></a>14(1)* (1999) 293-307,</p>
 </div></blockquote>
 <p>with many enhancements described by</p>
 <blockquote>
 <div><p>N. I. M. Gould, D. Orban and D. P. Robinson,
-<a href="#id9"><span class="problematic" id="id10">``</span></a>Trajectory-following methods for large-scale degenerate
+<a href="#id11"><span class="problematic" id="id12">``</span></a>Trajectory-following methods for large-scale degenerate
 convex quadratic programming’’,
 <em>Mathematical Programming Computation</em> <strong>5(2)</strong> (2013) 113-142.</p>
 </div></blockquote>

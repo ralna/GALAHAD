@@ -719,20 +719,20 @@ the string A_type = ‘zero’ or ‘none’ should be specified.</p>
 <p>To solve a given problem, functions from the psls package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1af5cb66dbf5b9e4f094e2e0a29631fd1b"><span class="std std-ref">psls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a34b978446b6aa5636f9e6efc18860366"><span class="std std-ref">psls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a3ff902c85fb82f1929a93514bb63c5d6"><span class="std std-ref">psls_import</span></a> - set up matrix data structures for <span class="math notranslate nohighlight">\(A\)</span> prior to solution</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a90493b62c689237c97fe4aea665cd0ab"><span class="std std-ref">psls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1af5cb66dbf5b9e4f094e2e0a29631fd1b"><span class="std std-ref">psls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a34b978446b6aa5636f9e6efc18860366"><span class="std std-ref">psls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a3ff902c85fb82f1929a93514bb63c5d6"><span class="std std-ref">psls_import</span></a> - set up matrix data structures for <span class="math notranslate nohighlight">\(A\)</span> prior to solution</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a90493b62c689237c97fe4aea665cd0ab"><span class="std std-ref">psls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
 <li><p>one of</p>
 <ul>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a9cd4c449dcc5133932972866fd58cfc1"><span class="std std-ref">psls_form_preconditioner</span></a> - form and factorize a preconditioner <span class="math notranslate nohighlight">\(P\)</span> of the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a75fa79fcbe08ab367b9fa0b7f39adf65"><span class="std std-ref">psls_form_subset_preconditioner</span></a> - form and factorize a preconditioner <span class="math notranslate nohighlight">\(P\)</span> of a symmetric submatrix of the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a9cd4c449dcc5133932972866fd58cfc1"><span class="std std-ref">psls_form_preconditioner</span></a> - form and factorize a preconditioner <span class="math notranslate nohighlight">\(P\)</span> of the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a75fa79fcbe08ab367b9fa0b7f39adf65"><span class="std std-ref">psls_form_subset_preconditioner</span></a> - form and factorize a preconditioner <span class="math notranslate nohighlight">\(P\)</span> of a symmetric submatrix of the matrix <span class="math notranslate nohighlight">\(A\)</span></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a42a8097e64b527cff18ab66c07a32d1d"><span class="std std-ref">psls_update_preconditioner</span></a> (optional) - update the preconditioner <span class="math notranslate nohighlight">\(P\)</span> when rows (amd columns) are removed</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1a1bae97d4a0e63bce7380422ed83306e8"><span class="std std-ref">psls_apply_preconditioner</span></a> - solve the linear system of equations <span class="math notranslate nohighlight">\(Px=b\)</span></p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1ace5f302a9ccb0c3f8c29b28b42da7793"><span class="std std-ref">psls_information</span></a> (optional) - recover information about the preconditioner and solution process</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-psls-8h-1ab62a2e262e7466fac3a2dc8cd300720d"><span class="std std-ref">psls_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a42a8097e64b527cff18ab66c07a32d1d"><span class="std std-ref">psls_update_preconditioner</span></a> (optional) - update the preconditioner <span class="math notranslate nohighlight">\(P\)</span> when rows (amd columns) are removed</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1a1bae97d4a0e63bce7380422ed83306e8"><span class="std std-ref">psls_apply_preconditioner</span></a> - solve the linear system of equations <span class="math notranslate nohighlight">\(Px=b\)</span></p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1ace5f302a9ccb0c3f8c29b28b42da7793"><span class="std std-ref">psls_information</span></a> (optional) - recover information about the preconditioner and solution process</p></li>
+<li><p><a class="reference internal" href="psls_functions.html#doxid-galahad-psls-8h-1ab62a2e262e7466fac3a2dc8cd300720d"><span class="std std-ref">psls_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-psls-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -760,7 +760,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -794,7 +794,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -811,7 +811,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -886,7 +886,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1203,7 +1203,7 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_psls_control_type.html#doxid-structpsls-control-type"><span class="std std-ref">psls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a structure containing output information (see <a class="reference internal" href="struct_psls_inform_type.html#doxid-structpsls-inform-type"><span class="std std-ref">psls_inform_type</span></a>)</p></td>
@@ -1301,7 +1301,7 @@ status from the package. Possible values are
 <p>the definite linear equation <a class="reference internal" href="sls.html#details-sls-solvers"><span class="std std-ref">solver package</span></a> used when .preconditioner = 3,4. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4.0-compliant compilers, ssids are installed by default.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-30"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-31"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-31"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for SLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-control-type-1a0a72ba6769963a38f2428b875b1d295e"><span id="index-32"></span><span></span><span class="n">struct</span><span class="w"> </span>mi28_control<span></span><span class="w"> </span><span class="n">mi28_control</span></pre>
 <p>control parameters for HSL_MI28</p>
@@ -1453,9 +1453,9 @@ status from the package. Possible values are
 <p>the integer and real output arrays from mc61</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a6966776cf11a3b9c447f7a1c9621152f"><span id="index-69"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">mc61_rinfo</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span></pre>
 <p>see mc61_info</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a4e85e8fc22799defca71ba5c448216ed"><span id="index-70"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structpsls-time-type"><span class="std std-ref">psls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a4e85e8fc22799defca71ba5c448216ed"><span id="index-70"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_psls_time_type.html#doxid-structpsls-time-type"><span class="std std-ref">psls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>times for various stages</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-71"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-71"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>inform values from SLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structpsls-inform-type-1aa5913427f989eb08152b78bf6390c0b9"><span id="index-72"></span><span></span><span class="n">struct</span><span class="w"> </span>mi28_info<span></span><span class="w"> </span><span class="n">mi28_info</span></pre>
 <p>the output info structure from HSL’s mi28</p>

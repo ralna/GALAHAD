@@ -758,7 +758,7 @@
 !  balance-feasibility-factor                        1.0D-5
 !  poor-iteration-tolerance                          0.98
 !  identical-bounds-tolerance                        1.0D-15
-!  barrier-rqeuired-before-final-pounce              1.0D-5
+!  required-barrier-value-before-pounce              1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
@@ -774,6 +774,7 @@
 !  try-every-order-of-series                         T
 !  move-final-solution-onto-bound                    F
 !  cross-over-solution                               T
+!  solve-reduced-pounce-system                       T
 !  array-syntax-worse-than-do-loop                   F
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
@@ -904,7 +905,7 @@
       spec( gamma_f )%keyword = 'balance-feasibility-factor'
       spec( reduce_infeas )%keyword = 'poor-iteration-tolerance'
       spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
-      spec( mu_pounce )%keyword = 'minimum-barrier-before-final-extrapolation'
+      spec( mu_pounce )%keyword = 'required-barrier-value-before-pounce'
       spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
       spec( indicator_tol_pd )%keyword = 'primal-dual-indicator-tolerance'
       spec( indicator_tol_tapia )%keyword = 'tapia-indicator-tolerance'
@@ -2826,7 +2827,7 @@
         END IF
         C_RES = zero ; Y = zero
         inform%obj = zero
-        GO TO 810
+        GO TO 800
       END IF
 
 !  set control parameters
@@ -2950,7 +2951,7 @@
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
                                   SLS_data, inform%SLS_inform, check = .TRUE. )
       IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
-        inform%status = GALAHAD_error_unknown_solver ; GO TO 700
+        inform%status = GALAHAD_error_unknown_solver ; GO TO 600
       ELSE
         CALL SLS_initialize_solver( inform%SLS_inform%solver, SLS_pounce_data, &
                                     inform%SLS_pounce_inform )
@@ -3041,7 +3042,7 @@
 
         IF ( X_u( i ) - X_l( i ) <= epsmch ) THEN
           inform%status = GALAHAD_error_bad_bounds
-          GO TO 700
+          GO TO 600
         END IF
         nbnds_x = nbnds_x + 2
         IF ( X_l( i ) + prfeas >= X_u( i ) - prfeas ) THEN
@@ -3146,7 +3147,7 @@
 
           IF ( C_u( i ) - C_l( i ) <= epsmch ) THEN
             inform%status = GALAHAD_error_bad_bounds
-            GO TO 700
+            GO TO 600
           END IF
           nbnds_c = nbnds_c + 2
 
@@ -3283,7 +3284,7 @@
         IF ( printi ) WRITE( out, 2070 ) prefix
         IF ( control%just_feasible ) THEN
           inform%status = GALAHAD_ok
-          GO TO 500
+          GO TO 600
         END IF
       END IF
 
@@ -3901,7 +3902,7 @@
 !  it didn't. We might have run out of options
 
           IF ( maxpiv ) THEN
-            inform%status = GALAHAD_error_factorization ; GO TO 700
+            inform%status = GALAHAD_error_factorization ; GO TO 600
 
 !  ... or we can increase the pivot tolerance
 
@@ -5015,7 +5016,7 @@
           clock_solve = clock_solve + clock_now - clock_record
 
           inform%status = inform%status
-          IF ( inform%status /= GALAHAD_ok ) GO TO 700
+          IF ( inform%status /= GALAHAD_ok ) GO TO 600
 
           IF ( printd ) THEN
 !           WRITE( out, 2100 ) prefix, ' SOL ', RHS( : K_sls%n )
@@ -5249,7 +5250,7 @@
           END IF
 
           inform%status = inform%status
-          IF ( inform%status /= GALAHAD_ok ) GO TO 700
+          IF ( inform%status /= GALAHAD_ok ) GO TO 600
 
 
 !  if the residual of the linear system is larger than the current
@@ -5384,7 +5385,7 @@
 
 !  check that resulting alpha is not too small
 
-          IF ( inform%status == GALAHAD_error_tiny_step ) GO TO 500
+          IF ( inform%status == GALAHAD_error_tiny_step ) GO TO 600
 
 ! :::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !  Use a safeguarded arc-search, starting from alpha_max
@@ -5417,8 +5418,7 @@
             END IF
             IF ( alpha_u <= epsmch ) THEN
               IF ( inform%iter - 1 > muzero_fixed ) THEN
-                inform%status = GALAHAD_error_tiny_step
-                GO TO 500
+                inform%status = GALAHAD_error_tiny_step ; GO TO 600
               ELSE
                 muzero_fixed = inform%iter - 2
                 EXIT
@@ -6147,7 +6147,7 @@
                 clock_now - clock_start
               IF ( printt ) WRITE( out, 2000 ) prefix
             END IF
-            GO TO 500
+            GO TO 600
           END IF
 
           IF ( .NOT. inform%feasible ) THEN
@@ -6234,7 +6234,7 @@
              &   '  pounce successful, optimal solution found' )" ) prefix
               X = X_last ; R = R_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
               stat_known = .TRUE.
-              GO TO 500
+              GO TO 600
             ELSE
               IF ( printi ) WRITE( out, "( A,                                  &
              &   '  pounce unsuccessful, continuing' )" ) prefix
@@ -6307,172 +6307,8 @@
 !  ---------------------- End of Major Iteration -----------------------
 !  ---------------------------------------------------------------------
 
-  500 CONTINUE
-
-!  print details of the solution obtained
-
   600 CONTINUE
-
-!  compute the final objective residual ...
-
-      R = - B
-      CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
-
-!  ... the objective function ...
-
-      IF ( present_weight ) THEN
-        inform%obj = half * DOT_PRODUCT( R, W * R )
-      ELSE
-        inform%obj = half * DOT_PRODUCT( R, R )
-      END IF
-      IF ( weight > zero )                                                     &
-        inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
-
-!  ... the gradient of the Lagrangian function ..
-
-      CALL CLLS_Lagrangian_gradient( dims, n, o, m, weight,                    &
-                                     X, R, Y, Y_l, Y_u, Z_l, Z_u,              &
-                                     Ao_ne, Ao_val, Ao_row, Ao_ptr,            &
-                                     A_ne, A_val, A_col, A_ptr,                &
-                                     DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
-                                     GRAD_L( dims%x_s : dims%x_e ),            &
-                                     .FALSE., dufeas, W )
-
-!  ... and the norm of the projected gradient
-
-      pjgnrm = zero
-      DO i = 1, n
-        gi = GRAD_L( i )
-        IF ( gi < zero ) THEN
-          gi = - MIN( ABS( X_u( i ) - X( i ) ), - gi )
-        ELSE
-          gi = MIN( ABS( X_l( i ) - X( i ) ), gi )
-        END IF
-        pjgnrm = MAX( pjgnrm, ABS( gi ) )
-      END DO
-
-!  print statistics
-
-      IF ( printi ) THEN
-        WRITE( out, "( /, A, '  Final objective function value is', ES21.14,   &
-      &       /, A, '  Total number of iterations = ', I0,                     &
-      &       /, A, '  Total number of backtracks = ', I0 )" )                 &
-          prefix, inform%obj, prefix, inform%iter, prefix, inform%nbacts
-        WRITE( out, 2110 ) prefix, pjgnrm, prefix, inform%primal_infeasibility
-        IF ( control%getdua ) WRITE( out,                                      &
-         "( /, A, ' Advanced starting point is used for dual variables' )" )   &
-           prefix
-        WRITE( out, "( A, '  gamma_c,f are', 2ES11.4 )" )                      &
-          prefix, gamma_c, gamma_f
-        IF ( puiseux ) THEN
-          IF ( control%every_order ) THEN
-            IF ( control%arc == 1 ) THEN
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
-           &   ' fit to the Zhang arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 2 ) THEN
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
-           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 4 ) THEN
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
-           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 5 ) THEN
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
-           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
-            ELSE
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
-           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
-            END IF
-          ELSE
-            IF ( control%arc == 1 ) THEN
-              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
-           &   ' fit to the Zhang arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 2 ) THEN
-              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
-           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 4 ) THEN
-              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
-           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 5 ) THEN
-              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
-           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
-            ELSE
-              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
-           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
-            END IF
-          END IF
-        ELSE
-          IF ( control%every_order ) THEN
-            IF ( control%arc == 1 ) THEN
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
-           &   ' fit to the Zhang arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 2 ) THEN
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
-           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
-!           ELSE IF ( control%arc == 4 ) THEN
-!             WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
-!          &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
-            ELSE
-              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
-           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
-            END IF
-          ELSE
-            IF ( control%arc == 1 ) THEN
-              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
-           &   ' fit to the Zhang arc is used' )" ) prefix, order
-            ELSE IF ( control%arc == 2 ) THEN
-              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
-           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
-!           ELSE IF ( control%arc == 4 ) THEN
-!             WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
-!          &   ' fit to the Zhang Puiseux arc is used' )" ) prefix, order
-            ELSE
-              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
-           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
-            END IF
-          END IF
-        END IF
-      END IF
-
-!  if required, make the solution exactly complementary
-
-      IF ( control%feasol ) THEN
-        DO i = dims%x_free + 1, dims%x_l_start - 1
-          IF ( ABS( Z_l( i ) ) < ABS( X( i ) ) ) THEN
-            Z_l( i ) = zero
-          ELSE
-            X( i ) = X_l( i )
-          END IF
-        END DO
-
-        DO i = dims%x_l_start, dims%x_l_end
-          IF ( ABS( Z_l( i ) ) < ABS( DIST_X_l( i ) ) ) THEN
-            Z_l( i ) = zero
-          ELSE
-            X( i ) = X_l( i )
-          END IF
-        END DO
-
-        DO i = dims%x_u_start, dims%x_u_end
-          IF ( ABS( Z_u( i ) ) < ABS( DIST_X_u( i ) ) ) THEN
-            Z_u( i ) = zero
-          ELSE
-            X( i ) = X_u( i )
-          END IF
-        END DO
-
-        DO i = dims%x_u_end + 1, n
-          IF ( ABS( Z_u( i ) ) < ABS( X( i ) ) ) THEN
-            Z_u( i ) = zero
-          ELSE
-            X( i ) = X_u( i )
-          END IF
-        END DO
-      END IF
-
-!  Exit
-
- 700  CONTINUE
-      IF ( optimal ) GO TO 810
+      IF ( optimal ) GO TO 800
 
 !  Set the dual variables
 
@@ -6574,9 +6410,208 @@
         END IF
       END IF
 
-!  If necessary, print warning messages
+!  compute the final objective residual ...
 
-  810 CONTINUE
+      R = - B
+      CALL CLLS_AoX( o, R, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
+!  ... the objective function ...
+
+      IF ( present_weight ) THEN
+        inform%obj = half * DOT_PRODUCT( R, W * R )
+      ELSE
+        inform%obj = half * DOT_PRODUCT( R, R )
+      END IF
+      IF ( weight > zero )                                                     &
+        inform%obj = inform%obj + half * weight * DOT_PRODUCT( X, X )
+
+!  ... the distances to the bounds ...
+
+      DO i = dims%x_l_start, dims%x_l_end
+        DIST_X_l( i ) = X( i ) - X_l( i )
+      END DO
+
+      DO i = dims%x_u_start, dims%x_u_end
+        DIST_X_u( i ) = X_u( i ) - X( i )
+      END DO
+
+      DO i = dims%c_l_start, dims%c_l_end
+        DIST_C_l( i ) = C( i ) - C_l( i )
+      END DO
+
+      DO i = dims%c_u_start, dims%c_u_end
+        DIST_C_u( i ) = C_u( i ) - C( i )
+      END DO
+
+!  ... the dual variables and Lagrange multipliers ...
+
+      DO i = dims%x_free + 1, dims%x_l_end
+        Z_l( i ) = MAX( Z( i ), zero )
+      END DO
+
+      DO i = dims%x_u_start, n
+        Z_u( i ) = MIN( Z( i ), zero )
+      END DO
+
+      DO i = dims%c_l_start, dims%c_l_end
+        Y_l( i ) = MAX( Y( i ), zero )
+      END DO
+
+      DO i = dims%c_u_start, dims%c_u_end
+        Y_u( i ) = MIN( Y( i ), zero )
+      END DO
+
+!  ... the gradient of the Lagrangian function ..
+
+      CALL CLLS_Lagrangian_gradient( dims, n, o, m, weight,                    &
+                                     X, R, Y, Y_l, Y_u, Z_l, Z_u,              &
+                                     Ao_ne, Ao_val, Ao_row, Ao_ptr,            &
+                                     A_ne, A_val, A_col, A_ptr,                &
+                                     DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
+                                     GRAD_L( dims%x_s : dims%x_e ),            &
+                                     .FALSE., dufeas, W )
+
+!  ... the norm of the projected gradient ...
+
+      pjgnrm = zero
+      DO i = 1, n
+        gi = GRAD_L( i )
+        IF ( gi < zero ) THEN
+          gi = - MIN( ABS( X_u( i ) - X( i ) ), - gi )
+        ELSE
+          gi = MIN( ABS( X_l( i ) - X( i ) ), gi )
+        END IF
+        pjgnrm = MAX( pjgnrm, ABS( gi ) )
+      END DO
+
+!  ... and the primal and dual infeasibility
+
+      merit = CLLS_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,          &
+                                DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,        &
+                                GRAD_L( dims%x_s : dims%x_e ), C_RES,          &
+                                tau, res_primal, inform%dual_infeasibility,    &
+                                res_primal_dual, res_cs )                      
+
+!  if required, make the solution exactly complementary
+
+      IF ( control%feasol ) THEN
+        DO i = dims%x_free + 1, dims%x_l_start - 1
+          IF ( ABS( Z_l( i ) ) < ABS( X( i ) ) ) THEN
+            Z_l( i ) = zero
+          ELSE
+            X( i ) = X_l( i )
+          END IF
+        END DO
+
+        DO i = dims%x_l_start, dims%x_l_end
+          IF ( ABS( Z_l( i ) ) < ABS( DIST_X_l( i ) ) ) THEN
+            Z_l( i ) = zero
+          ELSE
+            X( i ) = X_l( i )
+          END IF
+        END DO
+
+        DO i = dims%x_u_start, dims%x_u_end
+          IF ( ABS( Z_u( i ) ) < ABS( DIST_X_u( i ) ) ) THEN
+            Z_u( i ) = zero
+          ELSE
+            X( i ) = X_u( i )
+          END IF
+        END DO
+
+        DO i = dims%x_u_end + 1, n
+          IF ( ABS( Z_u( i ) ) < ABS( X( i ) ) ) THEN
+            Z_u( i ) = zero
+          ELSE
+            X( i ) = X_u( i )
+          END IF
+        END DO
+      END IF
+
+!  print statistics
+
+  800 CONTINUE
+      IF ( printi ) THEN
+        WRITE( out, "( /, A, '  Final objective function value is', ES21.14,   &
+      &       /, A, '  Total number of iterations = ', I0,                     &
+      &       /, A, '  Total number of backtracks = ', I0 )" )                 &
+          prefix, inform%obj, prefix, inform%iter, prefix, inform%nbacts
+        WRITE( out, 2110 ) prefix, pjgnrm, prefix, inform%primal_infeasibility
+        IF ( control%getdua ) WRITE( out,                                      &
+         "( /, A, ' Advanced starting point is used for dual variables' )" )   &
+           prefix
+        WRITE( out, "( A, '  gamma_c,f are', 2ES11.4 )" )                      &
+          prefix, gamma_c, gamma_f
+        IF ( puiseux ) THEN
+          IF ( control%every_order ) THEN
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 4 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 5 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          ELSE
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 4 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 5 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          END IF
+        ELSE
+          IF ( control%every_order ) THEN
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+!           ELSE IF ( control%arc == 4 ) THEN
+!             WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+!          &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          ELSE
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+!           ELSE IF ( control%arc == 4 ) THEN
+!             WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+!          &   ' fit to the Zhang Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          END IF
+        END IF
+      END IF
+
+!  If necessary, print warning messages
 
       IF ( printi ) then
         SELECT CASE( inform%status )

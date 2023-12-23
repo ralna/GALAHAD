@@ -372,7 +372,11 @@
 <li class="toctree-l2"><a class="reference internal" href="blls_functions.html">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="clls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
@@ -553,23 +557,23 @@ The string A_type = ‘sparse_by_columns’ should be specified.</p>
 <p>To solve a given problem, functions from the blls package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1a12708c98f2473e03cd46f4dcfdb03409"><span class="std std-ref">blls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1aa24c9c2fdaaaac84df5b98abbf84c859"><span class="std std-ref">blls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1a12708c98f2473e03cd46f4dcfdb03409"><span class="std std-ref">blls_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1aa24c9c2fdaaaac84df5b98abbf84c859"><span class="std std-ref">blls_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
 <li><p>set up problem data structures and fixed values by caling one of</p>
 <ul>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1afacd84f0b7592f4532cf7b77d278282f"><span class="std std-ref">blls_import</span></a> - in the case that <span class="math notranslate nohighlight">\(A\)</span> is explicitly available</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1a419f9b0769b4389beffbbc5f7d0fd58c"><span class="std std-ref">blls_import_without_a</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(A\)</span> and its transpose to a vector is possible</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1afacd84f0b7592f4532cf7b77d278282f"><span class="std std-ref">blls_import</span></a> - in the case that <span class="math notranslate nohighlight">\(A\)</span> is explicitly available</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1a419f9b0769b4389beffbbc5f7d0fd58c"><span class="std std-ref">blls_import_without_a</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(A\)</span> and its transpose to a vector is possible</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1a96981ac9a0e3f44b2b38362fc3ab9991"><span class="std std-ref">blls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1a96981ac9a0e3f44b2b38362fc3ab9991"><span class="std std-ref">blls_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
 <li><p>solve the problem by calling one of</p>
 <ul>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1acf6d292989a5ac09f7f3e507283fb5bf"><span class="std std-ref">blls_solve_given_a</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(A\)</span></p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1ac139bc1c65cf12cb532c4ab09f3af9d0"><span class="std std-ref">blls_solve_reverse_a_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(A\)</span> and its transpose with specified vectors</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1acf6d292989a5ac09f7f3e507283fb5bf"><span class="std std-ref">blls_solve_given_a</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(A\)</span></p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1ac139bc1c65cf12cb532c4ab09f3af9d0"><span class="std std-ref">blls_solve_reverse_a_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(A\)</span> and its transpose with specified vectors</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1a457b8ee7c630715bcb43427f254b555f"><span class="std std-ref">blls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-blls-8h-1ade863ffb6b142bfce669729f56911ac1"><span class="std std-ref">blls_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1a457b8ee7c630715bcb43427f254b555f"><span class="std std-ref">blls_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="blls_functions.html#doxid-galahad-blls-8h-1ade863ffb6b142bfce669729f56911ac1"><span class="std std-ref">blls_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-blls-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -597,7 +601,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -631,7 +635,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -649,7 +653,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -702,7 +706,7 @@ violated.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of residuals.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="uls.html#details-a-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the Jacobian <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense_by_rows’, or ‘dense_by_columns’; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="wcp.html#details-a-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the Jacobian <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense_by_rows’, or ‘dense_by_columns’; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
@@ -728,7 +732,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -789,7 +793,7 @@ respectively.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1224,7 +1228,7 @@ control.preconditioner = 2.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_blls_inform_type.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -1252,10 +1256,10 @@ control.preconditioner = 2.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_blls_inform_type.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1379,9 +1383,9 @@ control.preconditioner = 2.</p>
 <p>name (max 30 characters) of generated SIF file containing input problem</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-43"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by a string (max 30 characters) prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-44"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-44"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
 <p>control parameters for SBLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-control-type-1ad5c7fdb1978f9943554af877e3e1e37b"><span id="index-45"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="convert.html#doxid-structconvert-control-type"><span class="std std-ref">convert_control_type</span></a><span></span><span class="w"> </span><span class="n">convert_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-control-type-1ad5c7fdb1978f9943554af877e3e1e37b"><span id="index-45"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_convert_control_type.html#doxid-structconvert-control-type"><span class="std std-ref">convert_control_type</span></a><span></span><span class="w"> </span><span class="n">convert_control</span></pre>
 <p>control parameters for CONVERT</p>
 </section>
 </section>
@@ -1460,9 +1464,9 @@ control.preconditioner = 2.</p>
 <p>current value of the Euclidean norm of projected gradient of r(x).</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-63"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
 <p>name of array which provoked an allocate failure</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-inform-type-1ac8d53b198a1597a4a9fe75d4c1191ec0"><span id="index-64"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structblls-time-type"><span class="std std-ref">blls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-inform-type-1ac8d53b198a1597a4a9fe75d4c1191ec0"><span id="index-64"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_blls_time_type.html#doxid-structblls-time-type"><span class="std std-ref">blls_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>times for various stages</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-65"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-65"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
 <p>inform values from SBLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structblls-inform-type-1a7006a98737e58bb90259d7705ef537ae"><span id="index-66"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_convert_inform_type.html#doxid-structconvert-inform-type"><span class="std std-ref">convert_inform_type</span></a><span></span><span class="w"> </span><span class="n">convert_inform</span></pre>
 <p>inform values for CONVERT</p>

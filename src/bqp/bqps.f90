@@ -1,17 +1,15 @@
-! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 08:15 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-22 AT 14:45 GMT.
    PROGRAM GALAHAD_BQP_EXAMPLE
    USE GALAHAD_BQP_double         ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
-   TYPE ( BQP_reverse_type ) :: reverse
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control        
    TYPE ( BQP_inform_type ) :: inform
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: s
-   REAL ( KIND = wp ) :: t1, t2
    INTEGER, PARAMETER :: n = 3, h_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat
 ! start problem data

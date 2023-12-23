@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-12-21 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -119,7 +119,7 @@
       REAL ( KIND = rpc_ ) :: obj_unbounded
       REAL ( KIND = rpc_ ) :: potential_unbounded
       REAL ( KIND = rpc_ ) :: identical_bounds_tol
-      REAL ( KIND = rpc_ ) :: mu_lunge
+      REAL ( KIND = rpc_ ) :: mu_pounce
       REAL ( KIND = rpc_ ) :: indicator_tol_p
       REAL ( KIND = rpc_ ) :: indicator_tol_pd
       REAL ( KIND = rpc_ ) :: indicator_tol_tapia
@@ -248,7 +248,7 @@
     fcontrol%obj_unbounded = ccontrol%obj_unbounded
     fcontrol%potential_unbounded = ccontrol%potential_unbounded
     fcontrol%identical_bounds_tol = ccontrol%identical_bounds_tol
-    fcontrol%mu_lunge = ccontrol%mu_lunge
+    fcontrol%mu_pounce = ccontrol%mu_pounce
     fcontrol%indicator_tol_p = ccontrol%indicator_tol_p
     fcontrol%indicator_tol_pd = ccontrol%indicator_tol_pd
     fcontrol%indicator_tol_tapia = ccontrol%indicator_tol_tapia
@@ -343,7 +343,7 @@
     ccontrol%obj_unbounded = fcontrol%obj_unbounded
     ccontrol%potential_unbounded = fcontrol%potential_unbounded
     ccontrol%identical_bounds_tol = fcontrol%identical_bounds_tol
-    ccontrol%mu_lunge = fcontrol%mu_lunge
+    ccontrol%mu_pounce = fcontrol%mu_pounce
     ccontrol%indicator_tol_p = fcontrol%indicator_tol_p
     ccontrol%indicator_tol_pd = fcontrol%indicator_tol_pd
     ccontrol%indicator_tol_tapia = fcontrol%indicator_tol_tapia

@@ -450,7 +450,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="cqp.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_cqp_control_type.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -484,7 +484,7 @@ components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="cqp.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_cqp_control_type.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -502,7 +502,7 @@ components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="cqp.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_cqp_control_type.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -587,7 +587,7 @@ been specified.</p></li>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="cqp.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_cqp_control_type.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -719,10 +719,10 @@ been specified.</p></li>
 <td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>c</p></td>
-<td><p>is a one-dimensional array of size m and type T that holds the residual <span class="math notranslate nohighlight">\(c(x)\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c</span></code>, j = 1, … , m, contains <span class="math notranslate nohighlight">\(c_j(x)\)</span>.</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the residual <span class="math notranslate nohighlight">\(c(x)\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(c_i(x)\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>y</p></td>
-<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(y\)</span> of the Lagrange multipliers for the general linear constraints. The j-th component of <code class="docutils literal notranslate"><span class="pre">y</span></code>, j = 1, … , m, contains <span class="math notranslate nohighlight">\(y_j\)</span>.</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(y\)</span> of the Lagrange multipliers for the general linear constraints. The i-th component of <code class="docutils literal notranslate"><span class="pre">y</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(y_i\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>z</p></td>
 <td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">z</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
@@ -877,7 +877,7 @@ be symptomatic of a badly scaled problem.</p></li>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="cqp.html#doxid-structcqp-inform-type"><span class="std std-ref">cqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_cqp_inform_type.html#doxid-structcqp-inform-type"><span class="std std-ref">cqp_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -904,10 +904,10 @@ The values were recorded successfully</p></li>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="cqp.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_cqp_control_type.html#doxid-structcqp-control-type"><span class="std std-ref">cqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="cqp.html#doxid-structcqp-inform-type"><span class="std std-ref">cqp_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="struct_cqp_inform_type.html#doxid-structcqp-inform-type"><span class="std std-ref">cqp_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

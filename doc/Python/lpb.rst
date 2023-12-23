@@ -175,8 +175,8 @@ functions
              any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that
              are closer than identical_bounds_tol will be reset to the
              average of their values.
-          mu_lunge : float
-             start terminal extrapolation when mu reaches mu_lunge.
+          mu_pounce : float
+             start terminal extrapolation when mu reaches mu_pounce.
           indicator_tol_p : float
              if ``indicator_type`` = 1, a constraint/bound will be
              deemed to be active if and only if distance to nearest

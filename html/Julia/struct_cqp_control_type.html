@@ -420,7 +420,7 @@
 <span class="w">      </span><span class="n">obj_unbounded</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
 <span class="w">      </span><span class="n">potential_unbounded</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
 <span class="w">      </span><span class="n">identical_bounds_tol</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
-<span class="w">      </span><span class="n">mu_lunge</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
+<span class="w">      </span><span class="n">mu_pounce</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
 <span class="w">      </span><span class="n">indicator_tol_p</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
 <span class="w">      </span><span class="n">indicator_tol_pd</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
 <span class="w">      </span><span class="n">indicator_tol_tapia</span><span class="o">::</span><span class="kt">T</span><span class="w"></span>
@@ -543,8 +543,8 @@
 <p>if W=0 and the potential function value is smaller than .potential_unbounded <span class="math notranslate nohighlight">\(\ast\)</span> number of one-sided bounds, the analytic center will be flagged as unbounded</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcqp-control-type-1abc74ac9bbf6375075f8943aac6ee09e4"><span id="index-33"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">identical_bounds_tol</span></pre>
 <p>any pair of constraint bounds <span class="math notranslate nohighlight">\((c_l,c_u)\)</span> or <span class="math notranslate nohighlight">\((x_l,x_u)\)</span> that are closer than .identical_bounds_tol will be reset to the average of their values</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcqp-control-type-1a32eb4d353d409b46521eb28008a74c36"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">mu_lunge</span></pre>
-<p>start terminal extrapolation when mu reaches mu_lunge</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcqp-control-type-1a32eb4d353d409b46521eb28008a74c36"><span id="index-34"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">mu_pounce</span></pre>
+<p>start terminal extrapolation when mu reaches mu_pounce</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcqp-control-type-1a9f245bb23cea009fc7a95d86ebe57ddd"><span id="index-35"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">indicator_tol_p</span></pre>
 <p>if .indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <span class="math notranslate nohighlight">\(\leq\)</span>.indicator_p_tol</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structcqp-control-type-1aa131ce5e639e5601d1b61fb540ac7187"><span id="index-36"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">indicator_tol_pd</span></pre>

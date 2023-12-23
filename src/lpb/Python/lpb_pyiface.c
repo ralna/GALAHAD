@@ -1,7 +1,7 @@
 //* \file lpb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-19 AT 16:00 GMT.
+ * THIS VERSION: GALAHAD 4.2 - 2023-12-21 AT 11:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LPB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -255,9 +255,9 @@ static bool lpb_update_control(struct lpb_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "mu_lunge") == 0){
-            if(!parse_double_option(value, "mu_lunge",
-                                  &control->mu_lunge))
+        if(strcmp(key_name, "mu_pounce") == 0){
+            if(!parse_double_option(value, "mu_pounce",
+                                  &control->mu_pounce))
                 return false;
             continue;
         }
@@ -494,8 +494,8 @@ PyObject* lpb_make_options_dict(const struct lpb_control_type *control){
                          PyFloat_FromDouble(control->potential_unbounded));
     PyDict_SetItemString(py_options, "identical_bounds_tol",
                          PyFloat_FromDouble(control->identical_bounds_tol));
-    PyDict_SetItemString(py_options, "mu_lunge",
-                         PyFloat_FromDouble(control->mu_lunge));
+    PyDict_SetItemString(py_options, "mu_pounce",
+                         PyFloat_FromDouble(control->mu_pounce));
     PyDict_SetItemString(py_options, "indicator_tol_p",
                          PyFloat_FromDouble(control->indicator_tol_p));
     PyDict_SetItemString(py_options, "indicator_tol_pd",

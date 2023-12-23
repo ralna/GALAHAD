@@ -699,6 +699,12 @@ The default is {\tt identical\_bounds\_tol =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
+\itt{mu\_pounce}
+is a scalar variable of type default \realdp that specifies
+the value of the barrier parameter that must be attained before an 
+extrapolating ``pounce'' may be attempted.
+The default is {\tt mu\_pounce =} $10^{-5}$.
+
 \itt{indicator\_tol\_p}
 is a scalar variable of type default \realdp that
 provides the indicator tolerance associated with the test
@@ -792,11 +798,23 @@ and \false\ otherwise.
 The default is {\tt feasol = .FALSE.}.
 %The default is {\tt feasol = .TRUE.}.
 
+\itt{balance\_initial\_complentarity} is a scalar variable of type 
+default \logical, that should be set \true\
+if the initial complementarity is required to be balanced,
+and \false\ otherwise.
+The default is {\tt balance\_initial\_complentarity = .FALSE.}.
+
 \itt{crossover} is a scalar variable of type default \logical,
 that must be set \true\ if the solution is to be defined in terms
 of linearly-independent constraints,
 and  \false\ otherwise.
 The default is {\tt crossover = .TRUE.}.
+
+\itt{reduced\_pounce\_system} is a scalar variable of type 
+default \logical, that should be set \true\
+if fixed variables will be eliminated when solving the linear system 
+required by attempted pounces to the solution, and \false\ otherwise.
+The default is {\tt reduced\_pounce\_system = .TRUE.}.
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
@@ -994,6 +1012,11 @@ that holds the norm of the violation of dual optimality
 is a scalar variable of type default \realdp,
 that holds the norm of the violation of complementary slackness
 (see Section~\ref{typetime}) at the best estimate of the solution found.
+
+\itt{non\_negligible\_pivot}
+is a scalar variable of type default \realdp,
+that holds the value of the smallest pivot which was not judged to be 
+zero when detecting linearly dependent constraints.
 
 \itt{feasible} is a scalar variable of type default \logical, that has the
 value \true\ if the output value of $\bmx$ satisfies the constraints,
@@ -1428,9 +1451,8 @@ that each affects are given in Table~\ref{specfile}.
   {\tt balance-complementarity-factor} & {\tt \%gamma\_c} & real \\
   {\tt balance-feasibility-factor} & {\tt \%gamma\_f} & real \\
   {\tt poor-iteration-tolerance} & {\tt \%reduce\_infeas} & real \\
-  {\tt minimum-objective-before-unbounded} & {\tt \%obj\_unbounded} & real \\
-  {\tt minimum-potential-before-unbounded} & {\tt \%potential\_unbounded} & real \\
   {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
+  {\tt required-barrier-value-before-pounce} & {\tt mu\_pounce} & real \\
   {\tt primal-indicator-tolerance} & {\tt \%indicator\_tol\_p} & real \\
   {\tt primal-dual-indicator-tolerance} & {\tt \%indicator\_tol\_pd} & real \\
   {\tt tapia-indicator-tolerance} & {\tt \%indicator\_tol\_tapia} & real \\
@@ -1442,6 +1464,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt puiseux-series} & {\tt \%puiseux} & logical \\
   {\tt try-every-order-of-series} & {\tt \%every\_order} & logical \\
   {\tt cross-over-solution}   & {\tt \%crossover} & logical \\
+  {\tt solve-reduced-pounce-system} & {\tt \%reduced\_pounce\_system} & logical \\
   {\tt space-critical}   & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt symmetric-linear-equation-solver} & {\tt \%symmetric\_linear\_solver} & character \\
@@ -1591,6 +1614,11 @@ which make up the complementary slackness
 \req{4.3} do not deviate too significantly
 from their average value. The parameter that controls the perturbation
 of \req{4.3} is ultimately driven to zero.
+
+If the algorithm believes that it is close to the solution, it may take a
+speculative ``pounce'' extrapolation, based on an estimate of the ultimate 
+active set, to avoid further costly iterations. If the pounce is unsuccessful, 
+the iteration continues, but further pounces may be attempted later.
 
 The Newton equations are solved  by applying the
 \galahad\ matrix factorization package

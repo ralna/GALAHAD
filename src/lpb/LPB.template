@@ -29,7 +29,7 @@
 ! minimum-objective-before-unbounded                -1.0D+32
 ! minimum-potential-before-unbounded                -10.0
 ! identical-bounds-tolerance                        1.0D-15
-! barrier-rqeuired-before-final-lunge               1.0D-5
+! required-barrier-value-before-pounce              1.0D-5
 ! primal-indicator-tolerance                        1.0D-5
 ! primal-dual-indicator-tolerance                   1.0
 ! tapia-indicator-tolerance                         0.9

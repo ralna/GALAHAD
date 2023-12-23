@@ -44,10 +44,12 @@ overview of functions provided
 		const int Ao_row[],
 		const int Ao_col[],
 		const int Ao_ptr[],
+		int Ao_ptr_ne,
 		const char A_type[],
 		int A_ne,
 		const int A_row[],
 		const int A_col[],
+		int A_ptr_ne,
 		const int A_ptr[]
 	);
 
@@ -66,6 +68,7 @@ overview of functions provided
 		int ao_ne,
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` regularization_weight,
 		int a_ne,
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
@@ -79,7 +82,6 @@ overview of functions provided
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
 		int x_stat[],
 		int c_stat[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` regularization_weight,
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[]
 	);
 
@@ -206,10 +208,12 @@ relate to the components of the control structure.
 		const int Ao_row[],
 		const int Ao_col[],
 		const int Ao_ptr[],
+		int Ao_ptr_ne,
 		const char A_type[],
 		int A_ne,
 		const int A_row[],
 		const int A_col[],
+		int A_ptr_ne,
 		const int A_ptr[]
 	)
 
@@ -258,11 +262,10 @@ Import problem data into internal storage prior to solution.
                     respectively.
 		  
 		  * **-3**
-                    The restrictions n > 0 or m > 0 or requirement that
-                    a type contains its relevant string 'dense',
-                    'coordinate', 'sparse_by_rows', 'diagonal',
-                    'scaled_identity', 'identity', 'zero' or 'none' has
-                    been violated.
+                    The restrictions n > 0, o > 0 or m > 0 or requirement that
+                    a type contains its relevant string 
+                    'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+                    'dense' or 'dense_by_columns'  has been violated.
 		  
 	*
 		- n
@@ -282,7 +285,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- Ao_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the objective design matrix, $A_o$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the objective design matrix, $A_o$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
 		- Ao_ne
@@ -292,22 +295,27 @@ Import problem data into internal storage prior to solution.
 	*
 		- Ao_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A_o$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A_o$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- Ao_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A_o$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.
+
+	*
+		- Ao_ptr_ne
+
+		- is a scalar variable of type int, that holds the length of the pointer array if sparse row or column storage scheme is used for $A_o$. For the sparse row scheme,  Ao_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.
 
 	*
 		- Ao_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size o+1 and type int, that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type int, that holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_type
 
-		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`unsymmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the constraint Jacobian, $A$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
 		- A_ne
@@ -317,17 +325,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.
+
+	*
+		- A_ptr_ne
+
+		- is a scalar variable of type int, that holds the length of the pointer array if sparse row or column storage scheme is used for $A$. For the sparse row scheme,  A_ptr_ne should be at least m+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type int, that holds the starting position of each column of $A$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; clls_reset_control
 .. _doxid-galahad__clls_8h_1a9f7ccb0cffa909a2be7556edda430190:
@@ -369,13 +382,13 @@ Reset control parameters after import if required.
 		  * **0**
                     The import was successful.
 
-.. index:: pair: function; clls_solve_qp
+.. index:: pair: function; clls_solve_clls
 .. _doxid-galahad__clls_8h_1ac2d720ee7b719bf63c3fa208d37f1bc1:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void clls_solve_qp(
+	void clls_solve_clls(
 		void** data,
 		int* status,
 		int n,
@@ -384,6 +397,7 @@ Reset control parameters after import if required.
 		int ao_ne,
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` Ao_val[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` regularization_weight,
 		int a_ne,
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
@@ -397,12 +411,10 @@ Reset control parameters after import if required.
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
 		int x_stat[],
 		int c_stat[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` regularization_weight,
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[]
 	)
 
-Solve the quadratic program when the Hessian $H$ is available.
-
+Solve the linearly-constrained regularized linear least-squares problem.
 
 
 .. rubric:: Parameters:
@@ -443,11 +455,10 @@ Solve the quadratic program when the Hessian $H$ is available.
                     respectively.
 		  
 		  * **-3**
-                    The restrictions n > 0 and m > 0 or requirement that
-                    a type contains its relevant string 'dense',
-                    'coordinate', 'sparse_by_rows', 'diagonal',
-                    'scaled_identity', 'identity', 'zero' or 'none' has
-                    been violated.
+                    The restrictions n > 0, o > 0 or m > 0 or requirement that
+                    a type contains its relevant string 
+                    'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+                    'dense' or 'dense_by_columns'  has been violated.
 		  
 		  * **-5**
                     The simple-bound constraints are inconsistent.
@@ -511,28 +522,22 @@ Solve the quadratic program when the Hessian $H$ is available.
 	*
 		- ao_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the objective design matrix $A$.
+		- is a scalar variable of type int, that holds the number of entries in the objective design matrix $A_o$.
 
 	*
 		- Ao_val
 
-		- is a one-dimensional array of size ao_ne and type double, that holds the values of the entries of the objective design Jacobian matrix $A$ in any of the available storage schemes.
-
-
-	*
-		- h_ne
-
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
-
-	*
-		- H_val
-
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size ao_ne and type double, that holds the values of the entries of the objective design matrix $A_o$ in any of the available storage schemes.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the linear term $b$ of observations. The j-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size o and type double, that holds the linear term $b$ of observations. The i-th component of b, i = 0, ... , o-1, contains $b_i$.
+
+	*
+		- regularization_weight
+
+		- is a scalar of type double, that holds the non-negative regularization weight $\sigma \geq 0$.
 
 	*
 		- a_ne
@@ -600,14 +605,9 @@ Solve the quadratic program when the Hessian $H$ is available.
 		- is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value $a_i^Tx$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
-		- regularization_weight
-
-		- is a scalar of type double, that holds the  non-negative regularization weight $\sigma \geq 0$.
-
-	*
 		- w
 
-		- is a one-dimensional array of size o and type double, that holds the values $w$ of strictly-positive observation weights. The i-th component of w, j = 0, ... , o-1, contains $w_i$. If the weights are all one, w can be set to NULL.
+		- is a one-dimensional array of size o and type double, that holds the values $w$ of strictly-positive observation weights. The i-th component of w, i = 0, ... , o-1, contains $w_i$. If the weights are all one, w can be set to NULL.
 
 .. index:: pair: function; clls_information
 .. _doxid-galahad__clls_8h_1adfb7589696e4e07fdb65f02bc42c5daf:

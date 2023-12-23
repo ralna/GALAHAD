@@ -1,7 +1,7 @@
 //* \file galahad_cqp.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-02-07 AT 15:45 GMT.
+ * THIS VERSION: GALAHAD 4.2 - 2022-12-21 AT 11:25 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -542,8 +542,8 @@ struct cqp_control_type {
     real_wp_ identical_bounds_tol;
 
     /// \brief
-    /// start terminal extrapolation when mu reaches mu_lunge
-    real_wp_ mu_lunge;
+    /// start terminal extrapolation when mu reaches mu_pounce
+    real_wp_ mu_pounce;
 
     /// \brief
     /// if .indicator_type = 1, a constraint/bound will be

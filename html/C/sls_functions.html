@@ -637,8 +637,8 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
@@ -679,17 +679,17 @@
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span class="std std-ref">sls_solve_system</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span class="std std-ref">sls_solve_system</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1ac66dc50d8b54acab90d70ae649b92905"><span class="std std-ref">sls_partial_solve_system</span></a><span></span><span class="p">(</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">part</span><span class="p">[],</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-sls-8h-1a0ca4a126813c3aafac9d791a152b233c"><span class="std std-ref">sls_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
@@ -964,7 +964,7 @@ details.</p>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">ne</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">val</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Form and factorize the symmetric matrix <span class="math notranslate nohighlight">\(A\)</span>.</p>
 <p class="rubric">Parameters:</p>
@@ -1094,7 +1094,7 @@ details.</p>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sls_solve_system</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[])</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-sls-8h-1a1b3e7546b59b06160c51e16b6781bc0b"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">sls_solve_system</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[])</span></pre>
 <p>Solve the linear system <span class="math notranslate nohighlight">\(Ax=b\)</span>.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -1167,7 +1167,7 @@ for more details.</p>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">sol</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Given the factorization <span class="math notranslate nohighlight">\(A = L D U\)</span> with <span class="math notranslate nohighlight">\(U = L^T\)</span>, solve the linear system <span class="math notranslate nohighlight">\(Mx=b\)</span>, where <span class="math notranslate nohighlight">\(M\)</span> is one of <span class="math notranslate nohighlight">\(L\)</span>, <span class="math notranslate nohighlight">\(D\)</span>, <span class="math notranslate nohighlight">\(U\)</span> or <span class="math notranslate nohighlight">\(S = L \sqrt{D}\)</span>.</p>
 <p class="rubric">Parameters:</p>

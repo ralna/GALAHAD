@@ -566,23 +566,23 @@ the string H_type = ‘zero’ or ‘none’ should be specified.</p>
 <p>To solve a given problem, functions from the bqp package must be
 called in the following order:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a4466621895dd2314f1b3c21b4bc7f615"><span class="std std-ref">bqp_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a0e3ffdd29be95753292694c7619a43e6"><span class="std std-ref">bqp_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a4466621895dd2314f1b3c21b4bc7f615"><span class="std std-ref">bqp_initialize</span></a> - provide default control parameters and set up initial data structures</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a0e3ffdd29be95753292694c7619a43e6"><span class="std std-ref">bqp_read_specfile</span></a> (optional) - override control values by reading replacement values from a file</p></li>
 <li><p>set up problem data structures and fixed values by caling one of</p>
 <ul>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a0cfa65e832fd80e3dfcf9e0c65a69e56"><span class="std std-ref">bqp_import</span></a> - in the case that <span class="math notranslate nohighlight">\(H\)</span> is explicitly available</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a9a99d880b3bfbcfb7b093756019c5f0e"><span class="std std-ref">bqp_import_without_h</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(H\)</span> to a vector is possible</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a0cfa65e832fd80e3dfcf9e0c65a69e56"><span class="std std-ref">bqp_import</span></a> - in the case that <span class="math notranslate nohighlight">\(H\)</span> is explicitly available</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a9a99d880b3bfbcfb7b093756019c5f0e"><span class="std std-ref">bqp_import_without_h</span></a> - in the case that only the effect of applying <span class="math notranslate nohighlight">\(H\)</span> to a vector is possible</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a315ce83042f67a466cfdd868c27a2850"><span class="std std-ref">bqp_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a315ce83042f67a466cfdd868c27a2850"><span class="std std-ref">bqp_reset_control</span></a> (optional) - possibly change control parameters if a sequence of problems are being solved</p></li>
 <li><p>solve the problem by calling one of</p>
 <ul>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1acb5ad644890efe38b7cf7048d6297308"><span class="std std-ref">bqp_solve_given_h</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(H\)</span></p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a116b9b4ff28b9e2d18be0f0900ce2755"><span class="std std-ref">bqp_solve_reverse_h_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(H\)</span> with specified vectors</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1acb5ad644890efe38b7cf7048d6297308"><span class="std std-ref">bqp_solve_given_h</span></a> - solve the problem using values of <span class="math notranslate nohighlight">\(H\)</span></p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a116b9b4ff28b9e2d18be0f0900ce2755"><span class="std std-ref">bqp_solve_reverse_h_prod</span></a> - solve the problem by returning to the caller for products of <span class="math notranslate nohighlight">\(H\)</span> with specified vectors</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a75b662635f281148e9c19e12e0788362"><span class="std std-ref">bqp_information</span></a> (optional) - recover information about the solution and solution process</p></li>
-<li><p><a class="reference internal" href="#doxid-galahad-bqp-8h-1a34db499197d1fd6fb78b294473796fbc"><span class="std std-ref">bqp_terminate</span></a> - deallocate data structures</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a75b662635f281148e9c19e12e0788362"><span class="std std-ref">bqp_information</span></a> (optional) - recover information about the solution and solution process</p></li>
+<li><p><a class="reference internal" href="bqp_functions.html#doxid-galahad-bqp-8h-1a34db499197d1fd6fb78b294473796fbc"><span class="std std-ref">bqp_terminate</span></a> - deallocate data structures</p></li>
 </ul>
 <p>See the <a class="reference internal" href="#doxid-index-bqp-examples"><span class="std std-ref">examples</span></a> section for
 illustrations of use.</p>
@@ -610,7 +610,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -642,7 +642,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -660,7 +660,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -709,7 +709,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 <td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="h_storage.html#details-h-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the Hessian. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’ or ‘absent’, the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-even"><td><p>ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.</p></td>
@@ -735,7 +735,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -789,7 +789,7 @@ respectively.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1206,7 +1206,7 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="struct_bqp_control_type.html#doxid-structbqp-control-type"><span class="std std-ref">bqp_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
 <td><p>is a structure containing output information (see <a class="reference internal" href="struct_bqp_inform_type.html#doxid-structbqp-inform-type"><span class="std std-ref">bqp_inform_type</span></a>)</p></td>
@@ -1313,7 +1313,7 @@ status from the package. Possible values are
 <p>name (max 30 characters) of generated SIF file containing input problem</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-37"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by a string (max 30 characters) prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-38"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-38"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
 <p>control parameters for SBLS</p>
 </section>
 </section>
@@ -1396,9 +1396,9 @@ status from the package. Possible values are
 <p>current value of the projected gradient</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-52"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
 <p>name of array which provoked an allocate failure</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a7f44be002389597b3f6c06e9a9b6eefa"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structbqp-time-type"><span class="std std-ref">bqp_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a7f44be002389597b3f6c06e9a9b6eefa"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_bqp_time_type.html#doxid-structbqp-time-type"><span class="std std-ref">bqp_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>times for various stages</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbqp-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
 <p>inform values from SBLS</p>
 <div class="line-block">
 <div class="line"><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></div>

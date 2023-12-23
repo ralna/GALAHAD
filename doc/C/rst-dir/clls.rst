@@ -1,4 +1,6 @@
-.. _doxid-index_clls:
+
+
+Builder name help not registered or available through entry point.. _doxid-index_clls:
 
 GALAHAD CLLS package
 ===================

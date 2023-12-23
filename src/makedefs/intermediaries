@@ -1,7 +1,7 @@
 #  GALAHAD makefile intermediaries
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-11-20
+#  This version: 2022-12-21
 
 ########################
 #  basic packages alone
@@ -91,6 +91,11 @@ make_check:
 	( cd $(GALAHAD)/src/check ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) check.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/check )
+
+make_clls:
+	( cd $(GALAHAD)/src/clls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
 
 make_clock:
 	( cd $(GALAHAD)/src/clock ; \
@@ -777,6 +782,11 @@ make_all_cg:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cg.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
 
+make_all_clls:
+	( cd $(GALAHAD)/src/clls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+
 make_all_clock:
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_silent \
@@ -1410,6 +1420,11 @@ make_ciface_check:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) check_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/check )
 
+make_ciface_clls:
+	( cd $(GALAHAD)/src/clls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+
 make_ciface_clock:
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_ciface.o \
@@ -1803,6 +1818,11 @@ make_ciface_sls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sls_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sls )
 
+make_ciface_slls:
+	( cd $(GALAHAD)/src/slls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
 make_ciface_smt:
 	( cd $(GALAHAD)/src/smt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) smt_ciface.o \
@@ -2045,6 +2065,11 @@ make_pyiface_check:
 	( cd $(GALAHAD)/src/check ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) check_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/check )
+
+make_pyiface_clls:
+	( cd $(GALAHAD)/src/clls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
 
 make_pyiface_clock:
 	( cd $(GALAHAD)/src/clock ; \
@@ -2437,6 +2462,11 @@ make_pyiface_sls:
 	( cd $(GALAHAD)/src/sls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sls_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sls )
+
+make_pyiface_slls:
+	( cd $(GALAHAD)/src/slls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
 make_pyiface_smt:
 	( cd $(GALAHAD)/src/smt ; \

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-10-06 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.2 - 2023-12-20 AT 11:20 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -751,8 +751,8 @@
 !  ------------------------------------
 
   SUBROUTINE clls_solve_clls( cdata, status, n, o, m, aone, aoval, b,          &
-                              ane, aval, cl, cu, xl, xu, x, r, c, y, z,        &
-                              xstat, cstat, regularization_weight, w ) BIND( C )
+                              regularization_weight, ane, aval, cl, cu,        &
+                              xl, xu, x, r, c, y, z, xstat, cstat, w ) BIND( C )
   USE GALAHAD_CLLS_precision_ciface
   IMPLICIT NONE
 
@@ -762,6 +762,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( aone ) :: aoval
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( o ) :: b
+  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ) :: cl, cu
   REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
@@ -771,7 +772,6 @@
   REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( m ) :: cstat
-  REAL ( KIND = rpc_ ), INTENT( IN ), VALUE :: regularization_weight
   REAL ( KIND = rpc_ ), INTENT( IN ), OPTIONAL, DIMENSION( o ) :: w
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 

@@ -1,7 +1,7 @@
 //* \file galahad_lpb.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-21 AT 09:00 GMT.
+ * THIS VERSION: GALAHAD 4.2 - 2022-12-21 AT 11:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LPB C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -446,8 +446,8 @@ struct lpb_control_type {
     real_wp_ identical_bounds_tol;
 
     /// \brief
-    /// start terminal extrapolation when mu reaches mu_lunge
-    real_wp_ mu_lunge;
+    /// start terminal extrapolation when mu reaches mu_pounce
+    real_wp_ mu_pounce;
 
     /// \brief
     /// if .indicator_type = 1, a constraint/bound will be deemed to be active

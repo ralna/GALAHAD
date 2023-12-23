@@ -744,6 +744,29 @@
    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lresult ) :: RESULT
    END SUBROUTINE CUTEST_csjprod_r
 
+   SUBROUTINE CUTEST_cdimohp_r( cutest_status, nnzohp )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzohp
+   END SUBROUTINE CUTEST_cdimohp_r
+
+   SUBROUTINE CUTEST_cohprodsp_r( cutest_status, nnzohp, lp, IND )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lp
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzohp
+   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lp ) :: IND
+   END SUBROUTINE CUTEST_cohprodsp_r
+
+   SUBROUTINE CUTEST_cohprods_r( cutest_status, n, goth, X, VECTOR,            &
+                                 nnzohp, lp, RESULT, IND )
+   USE GALAHAD_KINDS_precision
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lp
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzohp
+   LOGICAL, INTENT( IN ) :: goth
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, VECTOR
+   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lp ) :: IND
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lp ) :: RESULT
+   END SUBROUTINE CUTEST_cohprods_r
+
    SUBROUTINE CUTEST_cdimchp_r( cutest_status, nnzchp )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status, nnzchp

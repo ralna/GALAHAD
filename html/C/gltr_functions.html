@@ -717,29 +717,29 @@
 </div>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
 
-<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
-<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// structs</span>
 
-<span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="p">;</span>
-<span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="p">;</span>
 
 <span class="c1">// global functions</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-gltr-8h-1ac06a7060d9355146e801157c2f29ca5c"><span class="std std-ref">gltr_initialize</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-gltr-8h-1a68a3273a88b27601e72b61f10a23de31"><span class="std std-ref">gltr_read_specfile</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]</span>
 <span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-gltr-8h-1acb8a654fc381e3f231c3d10858f111b3"><span class="std std-ref">gltr_import_control</span></a><span></span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">);</span>
@@ -748,18 +748,18 @@
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">vector</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">vector</span><span class="p">[]</span>
 <span class="p">);</span>
 
-<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-gltr-8h-1a1b1b4d87884833c4bfe184ff79c1e2bb"><span class="std std-ref">gltr_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-gltr-8h-1a1b1b4d87884833c4bfe184ff79c1e2bb"><span class="std std-ref">gltr_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
 
 <span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-gltr-8h-1ac3e0cbd0ecc79b37251fad7fd6f47631"><span class="std std-ref">gltr_terminate</span></a><span></span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">);</span></pre>
 </section>
 <section id="typedefs">
@@ -773,7 +773,7 @@
 <h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gltr-8h-1ac06a7060d9355146e801157c2f29ca5c"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">gltr_initialize</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
 <p>Set default control values and initialize private data</p>
@@ -788,7 +788,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -804,7 +804,7 @@
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gltr-8h-1a68a3273a88b27601e72b61f10a23de31"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">gltr_read_specfile</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Read the content of a specification file, and assign values
@@ -823,7 +823,7 @@ relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a character string containing the name of the specification file</p></td>
@@ -831,7 +831,7 @@ relate to the components of the control structure.</p>
 </tbody>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gltr-8h-1acb8a654fc381e3f231c3d10858f111b3"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">gltr_import_control</span><span class="p">(</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
 <span class="p">)</span></pre>
@@ -844,7 +844,7 @@ relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -865,10 +865,10 @@ relate to the components of the control structure.</p>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
-    <span class="k">const</span> <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r</span><span class="p">[],</span>
-    <a class="reference internal" href="sha_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">vector</span><span class="p">[]</span>
+    <span class="k">const</span> <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">radius</span><span class="p">,</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r</span><span class="p">[],</span>
+    <a class="reference internal" href="wcp_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">vector</span><span class="p">[]</span>
 <span class="p">)</span></pre>
 <p>Solve the trust-region problem using reverse communication.</p>
 <p class="rubric">Parameters:</p>
@@ -986,7 +986,7 @@ Steihaug-Toint mode</p>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gltr-8h-1a1b1b4d87884833c4bfe184ff79c1e2bb"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">gltr_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gltr-8h-1a1b1b4d87884833c4bfe184ff79c1e2bb"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">gltr_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
 <p>Provides output information</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -999,7 +999,7 @@ Steihaug-Toint mode</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
@@ -1016,8 +1016,8 @@ Steihaug-Toint mode</p>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-gltr-8h-1ac3e0cbd0ecc79b37251fad7fd6f47631"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">gltr_terminate</span><span class="p">(</span>
     <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
-    <span class="k">struct</span> <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
 <span class="p">)</span></pre>
 <p>Deallocate all internal private storage</p>
 <p class="rubric">Parameters:</p>
@@ -1031,10 +1031,10 @@ Steihaug-Toint mode</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a struct containing control information (see <a class="reference internal" href="gltr.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="struct_gltr_control_type.html#doxid-structgltr-control-type"><span class="std std-ref">gltr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a struct containing output information (see <a class="reference internal" href="gltr.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a>)</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="struct_gltr_inform_type.html#doxid-structgltr-inform-type"><span class="std std-ref">gltr_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

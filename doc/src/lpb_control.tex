@@ -211,6 +211,12 @@ The default is {\tt identical\_bounds\_tol =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
+\itt{mu\_pounce}
+is a scalar variable of type default \realdp that specifies
+the value of the barrier parameter that must be attained before an 
+extrapolating ``pounce'' may be attempted.
+The default is {\tt mu\_pounce =} $10^{-5}$.
+
 \itt{indicator\_tol\_p}
 is a scalar variable of type default \realdp that
 provides the indicator tolerance associated with the test
@@ -309,6 +315,12 @@ that must be set \true\ if the solution is to be defined in terms
 of linearly-independent constraints,
 and  \false\ otherwise.
 The default is {\tt crossover = .TRUE.}.
+
+\itt{balance\_initial\_complentarity} is a scalar variable of type 
+default \logical, that should be set \true\
+if the initial complementarity is required to be balanced,
+and \false\ otherwise.
+The default is {\tt balance\_initial\_complentarity = .FALSE.}.
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays

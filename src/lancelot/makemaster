@@ -233,15 +233,15 @@ test_spec_double: lancelotds
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
-lancelotss: $(OBJECTSS) $(OBJS)/lancelots.o
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJS)/lancelots.o \
+lancelotss: $(OBJECTSS) $(OBJS)/lancelots_single.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJS)/lancelots_single.o \
             -L$(OBJS) $(LIBS)
 	- ./run_lancelot > lancelotss.output 2>&1
 	cat lancelotss.output
 	rm ./run_lancelot
 
-lancelotds: $(OBJECTSD) $(OBJD)/lancelots.o
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJD)/lancelots.o \
+lancelotds: $(OBJECTSD) $(OBJD)/lancelots_double.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJD)/lancelots_double.o \
             -L$(OBJD) $(LIBS)
 	- ./run_lancelot > lancelotds.output 2>&1
 	cat lancelotds.output

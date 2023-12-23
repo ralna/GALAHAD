@@ -69,6 +69,14 @@ TEST_FULL = make_trs_test_full make_rqs_test_full \
             make_glrt_test_full make_lstr_test_full \
             make_lsrt_test_full make_l2rt_test_full
 
+#  all tests except CUTEst ones to be performed (prepend with make_)
+
+TEST_SPEC = make_trs_test_spec make_rqs_test_spec \
+            make_dps_test_spec make_llsr_test_spec \
+            make_llst_test_spec make_gltr_test_spec \
+            make_glrt_test_spec make_lstr_test_spec \
+            make_lsrt_test_spec make_l2rt_test_spec
+
 #  tests of C interfaces to be performed (prepend with make_)
 
 TEST_CIFACE = make_ciface_trs_test make_ciface_rqs_test \
@@ -110,6 +118,7 @@ all_cutest: $(package)_cutest
 test: all $(TEST)
 tests: all $(TESTS)
 test_full: all $(TEST_FULL)
+test_spec: all $(TEST_SPEC)
 test_ciface: all_ciface $(TEST_CIFACE)
 test_pyiface: all_pyiface $(TEST_PYIFACE)
 
@@ -305,7 +314,7 @@ make_dps_tests:
 
 make_llsr_tests:
 	( cd $(GALAHAD)/src/llsr ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llsr )
 
 make_llst_tests:
@@ -388,6 +397,58 @@ make_lsrt_test_full:
 make_l2rt_test_full:
 	( cd $(GALAHAD)/src/l2rt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+#  all tests except for CUTEst
+
+make_trs_test_spec:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+make_rqs_test_spec:
+	( cd $(GALAHAD)/src/rqs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
+
+make_dps_test_spec:
+	( cd $(GALAHAD)/src/dps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dps )
+
+make_llsr_test_spec:
+	( cd $(GALAHAD)/src/llsr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llsr )
+
+make_llst_test_spec:
+	( cd $(GALAHAD)/src/llst ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llst )
+
+make_gltr_test_spec:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_glrt_test_spec:
+	( cd $(GALAHAD)/src/glrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/glrt )
+
+make_lstr_test_spec:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_lsrt_test_spec:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_l2rt_test_spec:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 #  comprehensive C interface tests

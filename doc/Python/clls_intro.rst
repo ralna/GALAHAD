@@ -4,13 +4,14 @@ purpose
 The ``clls`` package uses a **primal-dual interior-point crossover method** 
 to solve a **constrained linear least-squares** problem
 The aim is to minimize the (regularized) least-squares objective function
-$$q(x) = \frac{1}{2} \| A_o x - b\|_w^2 +  \frac{1}{2}\|x\|^2$$ 
+$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
 subject to the general linear constraints and simple bounds
 $$c_l \leq A x \leq c_u \;\;\mbox{and} \;\; x_l \leq x \leq x_u,$$
-where $A_o$ and $A$ are, respectively, given  $o$ by $n$ and
- $m$ by $n$ matrices,  
-$b$, and $w$ are vectors, $\sigma \geq 0$ is a scalar, and any of the 
-components 
+where the norms $\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}$
+and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
+$A_o$ and $A$ are, respectively, given  $o$ by $n$ and $m$ by $n$ 
+matrices, $b$, and $w$ are vectors, $\sigma \geq 0$ is a scalar, 
+and any of the components 
 of the vectors $c_l$, $c_u$, $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
@@ -74,9 +75,13 @@ which make up the complementary slackness
 from their average value. The parameter that controls the perturbation
 of (3) is ultimately driven to zero.
 
+If the algorithm believes that it is close to the solution, it may take a
+speculative ``pounce'', based on an estimate of the ultimate active set, 
+to avoid further costly iterations. If the pounce is unsuccessful, the 
+iteration continues, and further pounces may be attempted later.
+
 The Newton equations are solved  by applying the matrix factorization 
 package ``SLS``.
-
 Optionally, the problem may be pre-processed temporarily to eliminate dependent
 constraints using the package ``FDC``. This may improve the
 performance of the subsequent iteration.

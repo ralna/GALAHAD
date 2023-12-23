@@ -87,6 +87,9 @@ include("wrappers/ccqp.jl")
 # cqp requires fdc, sls, sils, uls, gls, sbls, fit, roots, cro, ir, scu, rpd.
 include("wrappers/cqp.jl")
 
+# clls requires fdc, sls, sils, uls, gls, fit, roots, cro, ir, scu, rpd.
+include("wrappers/clls.jl")
+
 # dgo requires trb, trs, sls, sils, ir, gltr, psls, lms, sha, ugo, hash.
 include("wrappers/dgo.jl")
 

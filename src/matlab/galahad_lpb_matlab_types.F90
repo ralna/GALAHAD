@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 3.1 - 09/08/2018 AT 14:20 GMT.
+!  THIS VERSION: GALAHAD 4.2 - 2023-12-21 AT 11:20 GMT.
 
 !-*-*-*-  G A L A H A D _ L P B _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 
@@ -185,9 +185,9 @@
         CASE( 'identical_bounds_tol' )
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, LPB_control%identical_bounds_tol )
-        CASE( 'mu_lunge' )
-          CALL MATLAB_get_value( ps, 'mu_lunge',                               &
-                                 pc, LPB_control%mu_lunge )
+        CASE( 'mu_pounce' )
+          CALL MATLAB_get_value( ps, 'mu_pounce',                              &
+                                 pc, LPB_control%mu_pounce )
         CASE( 'indicator_tol_p' )
           CALL MATLAB_get_value( ps, 'indicator_tol_p',                        &
                                  pc, LPB_control%indicator_tol_p )
@@ -297,7 +297,7 @@
          'gamma_c                        ', 'gamma_f                        ', &
          'reduce_infeas                  ', 'obj_unbounded                  ', &
          'potential_unbounded            ', 'identical_bounds_tol           ', &
-         'mu_lunge                       ', 'indicator_tol_p                ', &
+         'mu_pounce                      ', 'indicator_tol_p                ', &
          'indicator_tol_pd               ', 'indicator_tol_tapia            ', &
          'cpu_time_limit                 ', 'clock_time_limit               ', &
          'remove_dependencies            ',                                    &
@@ -378,8 +378,8 @@
                                   LPB_control%potential_unbounded )
       CALL MATLAB_fill_component( pointer, 'identical_bounds_tol',             &
                                   LPB_control%identical_bounds_tol )
-      CALL MATLAB_fill_component( pointer, 'mu_lunge',                         &
-                                  LPB_control%mu_lunge )
+      CALL MATLAB_fill_component( pointer, 'mu_pounce',                        &
+                                  LPB_control%mu_pounce )
       CALL MATLAB_fill_component( pointer, 'indicator_tol_p',                  &
                                   LPB_control%indicator_tol_p )
       CALL MATLAB_fill_component( pointer, 'indicator_tol_pd',                 &

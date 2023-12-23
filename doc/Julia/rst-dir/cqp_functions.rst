@@ -391,12 +391,12 @@ Solve the quadratic program when the Hessian $H$ is available.
         *
                 - c
 
-                - is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of ``c``, j = 1, ... , m, contains $c_j(x)$.
+                - is a one-dimensional array of size m and type T that holds the residual $c(x)$. The i-th component of ``c``, i = 1, ... , m, contains $c_i(x)$.
 
         *
                 - y
 
-                - is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The j-th component of ``y``, j = 1, ... , m, contains $y_j$.
+                - is a one-dimensional array of size n and type T that holds the values $y$ of the Lagrange multipliers for the general linear constraints. The i-th component of ``y``, i = 1, ... , m, contains $y_i$.
 
         *
                 - z
