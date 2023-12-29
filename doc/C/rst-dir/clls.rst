@@ -1,6 +1,4 @@
-
-
-Builder name help not registered or available through entry point.. _doxid-index_clls:
+.. _doxid-index_clls:
 
 GALAHAD CLLS package
 ===================
@@ -61,7 +59,7 @@ example calls
 
 This is an example of how to use the package to solve a given convex quadratic 
 program; the code is available in $GALAHAD/src/clls/C/cllst.c .
-A variety of supported Hessian and constraint matrix storage formats are shown.
+A variety of supported design and constraint matrix storage formats are shown.
 
 Notice that C-style indexing is used, and that this is flaggeed by setting 
 ``control.f_indexing`` to ``false``. The floating-point type ``real_wp_``

@@ -86,6 +86,7 @@ MAT_NLS = $(MAT_GLRT) $(MAT_RQS) $(MAT_PSLS) $(MAT_BSC) $(MAT_ROOTS) \
           $(MLG)(galahad_nls_matlab_types.o)
 MAT_BLLS = $(MAT_SBLS) $(MLG)(galahad_blls_matlab_types.o)
 MAT_CLLS = $(MAT_SLS)  $(MAT_FDC) $(MLG)(galahad_clls_matlab_types.o)
+MAT_BLLSB = $(MAT_CLLS) $(MLG)(galahad_bllsb_matlab_types.o)
 MAT_SLLS = $(MAT_SBLS) $(MLG)(galahad_slls_matlab_types.o)
 MAT_LLST = $(MAT_IR) $(MAT_SBLS) $(MLG)(galahad_llst_matlab_types.o)
 MAT_GLRT = $(MAT_BASIC) $(MLG)(galahad_glrt_matlab_types.o)
@@ -111,10 +112,11 @@ USES_BASIC = *.$(MEXEXT)
 USES_ARC = galahad_arc.$(MEXEXT)
 USES_BGO = galahad_bgo.$(MEXEXT)
 USES_BLLS = galahad_blls.$(MEXEXT)
+USES_BLLSB = galahad_bllsb.$(MEXEXT)
 USES_BQP = galahad_bqp.$(MEXEXT)
 USES_BQPB = galahad_bqpb.$(MEXEXT)
 USES_BSC = galahad_bsc.$(MEXEXT) galahad_nls.$(MEXEXT)
-USES_CLLS = galahad_clls.$(MEXEXT)
+USES_CLLS = galahad_clls.$(MEXEXT) galahad_bllsb.$(MEXEXT)
 USES_CQP = galahad_cqp.$(MEXEXT) galahad_bqpb.$(MEXEXT) galahad_qpc.$(MEXEXT)
 USES_DEBUG = galahad_debug.$(MEXEXT)
 USES_DEMO = galahad_demo.$(MEXEXT)
@@ -184,7 +186,7 @@ all: all_$(PRECIS)
 #	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_double: basic_double sils sls sbls bqp bqpb blls slls clls \
+all_double: basic_double sils sls sbls bqp bqpb blls slls clls bllsb \
             lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
             qpa qpb qpc qp rqs trs wcp tru arc trb nls ugo bgo dgo
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
@@ -206,10 +208,10 @@ all_current_double: all_double ugo bgo dgo
 
 allqp: allqp_$(PRECIS)
 
-allqp_single: basic_single bqp bqpb blls slls clls lpa lpb cqp dqp eqp lsqp \
-              qpa qpb qpc qp wcp
-allqp_double: basic_double bqp bqpb blls slls clls lpa lpb cqp dqp eqp lsqp \
-              qpa qpb qpc qp wcp
+allqp_single: basic_single bqp bqpb blls slls clls bllsb lpa lpb \
+              cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_double: basic_double  bqp bqpb blls slls clls bllsb lpa lpb \
+              cqp dqp eqp lsqp qpa qpb qpc qp wcp
 
 #  everything for un/bound-constrained optimization from the distribution
 
@@ -281,6 +283,17 @@ galahad_blls.$(MEXEXT): galahad_blls.F90
                      blls_silent PRECIS=double PWD=$(PWD)/../blls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_blls"
 	$(MEX) galahad_blls.F90 -output galahad_blls $(MEXFLAGS)
+	@printf '[ OK ]\n'
+
+#  bllsb
+
+bllsb: $(MAT_BLLSB) galahad_bllsb.$(MEXEXT)
+
+galahad_bllsb.$(MEXEXT): galahad_bllsb.F90
+	( cd ../bllsb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     bllsb_silent PRECIS=double PWD=$(PWD)/../bllsb )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_bllsb"
+	$(MEX) galahad_bllsb.F90 -output galahad_bllsb $(MEXFLAGS)
 	@printf '[ OK ]\n'
 
 #  clls
@@ -741,6 +754,24 @@ $(MLG)(galahad_blls_matlab_types.o): galahad_blls_matlab_types.F90
               $(OBJ)/galahad_blls_matlab_types.F90
 	$(MVMODS)
 	$(RM) $(USES_BLLS)
+	@printf '[ OK ]\n'
+
+# bllsb
+
+galahad_bllsb_matlab_types.o: $(MLG)(galahad_bllsb_matlab_types.o)
+
+$(MLG)(galahad_bllsb_matlab_types.o): galahad_bllsb_matlab_types.F90
+	( cd ../bllsb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     bllsb_silent PRECIS=double PWD=$(PWD)/../bllsb )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_bllsb_matlab_types"
+	$(CP) galahad_bllsb_matlab_types.F90 \
+              $(OBJ)/galahad_bllsb_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_bllsb_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_bllsb_matlab_types.o
+	$(RM) $(OBJ)/galahad_bllsb_matlab_types.o \
+              $(OBJ)/galahad_bllsb_matlab_types.F90
+	$(MVMODS)
+	$(RM) $(USES_BLLSB)
 	@printf '[ OK ]\n'
 
 # clls

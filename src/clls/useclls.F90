@@ -55,14 +55,14 @@
 
 !  --------------------------------------------------------------------
 !
-!  Solve the quadratic program from CUTEst
+!  Solve the linearly-constrained regularized quadratic program from CUTEst
 !
-!     minimize     1/2 x(T) H x + g(T) x
+!     minimize     1/2 ||A_o x - b||^2_W + 1/2 sigma ||x||_2^2
 !
 !     subject to     c_l <= A x <= c_u
 !                    x_l <=  x <= x_u
 !
-!  using the GALAHAD package GALAHAD_CLLS
+!  (with contrived A_o and b) using the GALAHAD package GALAHAD_CLLS
 !
 !  --------------------------------------------------------------------
 
@@ -1078,8 +1078,8 @@
       DEALLOCATE( prob%X, prob%X_l, prob%X_u, prob%G, VNAME,                   &
                   prob%C_l, prob%C_u, prob%Y, prob%Z, CNAME, EQUATN,           &
                   prob%C, prob%A%row, prob%A%col, prob%A%val, prob%A%ptr,      &
-                  prob%H%row, prob%H%col, prob%H%val, prob%H%ptr,              &
-                  prob%A%type, prob%H%type, C, prob%X_status, prob%C_status,   &
+                  prob%Ao%row, prob%Ao%col, prob%Ao%val, prob%Ao%ptr,          &
+                  prob%A%type, prob%Ao%type, C, prob%X_status, prob%C_status,  &
                   STAT = alloc_stat )
       CALL CUTEST_cterminate_r( cutest_status )
       GO TO 920

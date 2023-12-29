@@ -28,6 +28,13 @@
 #define blls_solve_reverse_a_prod blls_solve_reverse_a_prod_s
 #define blls_information blls_information_s
 #define blls_terminate blls_terminate_s
+#define bllsb_initialize bllsb_initialize_s
+#define bllsb_read_specfile bllsb_read_specfile_s
+#define bllsb_import bllsb_import_s
+#define bllsb_reset_control bllsb_reset_control_s
+#define bllsb_solve_blls bllsb_solve_blls_s
+#define bllsb_information bllsb_information_s
+#define bllsb_terminate bllsb_terminate_s
 #define bqpb_initialize bqpb_initialize_s
 #define bqpb_read_specfile bqpb_read_specfile_s
 #define bqpb_import bqpb_import_s

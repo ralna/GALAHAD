@@ -1,0 +1,38 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            BLLSB.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         50
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                BLLSBSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          BLLSBRES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+! regularization-weight                             1.0
+
+INCLUDE BLLSB
+
+INCLUDE SLS
+
+INCLUDE SLS SLS-POUNCE
+
+INCLUDE ROOTS
+
+INCLUDE CRO
+
+INCLUDE PRESOLVE
+
+INCLUDE SCALE

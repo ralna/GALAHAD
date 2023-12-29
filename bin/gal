@@ -1003,6 +1003,14 @@ elif [[ $2 == 'blls' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec blls update
   [[ ! -L RUNBLLS.SPC ]] && ln -s ~/.galahad/specs/RUNBLLS.SPC RUNBLLS.SPC
 
+# bllsb
+
+elif [[ $2 == 'bllsb' ]]; then
+  RUNMAIN=$GALOBJ/runbllsb_sif_$PRECIS.o
+  [[ ! -e ~/.galahad/specs/RUNBLLSB.SPC ]] && $GALOBJ/buildspec bllsb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bllsb update
+  [[ ! -L RUNBLLSB.SPC ]] && ln -s ~/.galahad/specs/RUNBLLSB.SPC RUNBLLSB.SPC
+
 # demo
 
 elif [[ $2 == 'demo' ]]; then

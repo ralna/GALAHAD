@@ -40,7 +40,6 @@
 !
 !  Usual Input -
 !    A_o: the o by n matrix A_o
-!    H: the symmetric, positive-definite n by n matrix H
 !    b: the o-vector b
 !    sigma: the regularization parameter sigma >= 0
 !    A: the m by n matrix A
@@ -259,7 +258,7 @@
 
          p%new_problem_structure = .TRUE.
 
-!  Check to ensure the input for H is a number
+!  Check to ensure the input for Ao is a number
 
         ao_in = prhs( ao_arg )
         IF ( mxIsNumeric( ao_in ) == 0 )                                       &
@@ -402,7 +401,7 @@
           plhs( aux_arg ) = mxCreateStructMatrix( 1_mws_, 1_mws_, naux, faux )
 
           CALL MATLAB_create_real_component( plhs( aux_arg ),                  &
-            'r', p%m, aux_r_pr )
+            'r', p%o, aux_r_pr )
           CALL MATLAB_create_real_component( plhs( aux_arg ),                  &
             'c', p%m, aux_c_pr )
           CALL MATLAB_create_real_component( plhs( aux_arg ),                  &

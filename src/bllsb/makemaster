@@ -1,0 +1,85 @@
+#  Main body of the installation makefile for the GALAHAD BLLSB package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2022-12-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = bllsb
+PACKAGE = BLLSB
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_qpd_deps make_qpd make_checkpoint make_rpd make_cqp \
+               make_clls
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps make_ciface_sbls \
+                make_ciface_fdc make_ciface_scu make_ciface_fit \
+                make_ciface_ir make_ciface_roots make_ciface_cro \
+                make_ciface_rpd make_ciface_clls
+
+#  other C interface packages that depend on current interface package 
+
+CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_pyiface_sbls_deps make_pyiface_sbls make_pyiface_fdc \
+                 make_pyiface_scu make_pyiface_fit make_pyiface_ir \
+                 make_pyiface_cro make_pyiface_rpd make_pyiface_clls
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = QPBAND.SIF
+
+#  QPLIB example for tests
+
+QPLIB_EXAMPLE = QPBAND.qplib
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries

@@ -1339,13 +1339,17 @@
 !    the row numbers corresponding to the values in A%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (ii).
 !
-!   %C is a REAL array of length %m, which is used to store the values of
-!    A x. It need not be set on entry. On exit, it will have been filled
-!    with appropriate values.
-!
 !   %X is a REAL array of length %n, which must be set by the user
 !    to estimaes of the solution, x. On successful exit, it will contain
 !    the required solution, x.
+!
+!   %R is a REAL array of length %o, which is used to store the values of
+!    the residuals A_o x - b. It need not be set on entry. On exit, it will 
+!    have been filled with appropriate values.
+!
+!   %C is a REAL array of length %m, which is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
+!    with appropriate values.
 !
 !   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
@@ -1422,8 +1426,10 @@
 !
 !   - 3 one of the restrictions
 !        prob%n     >=  1
+!        prob%m     >=  1
 !        prob%m     >=  0
-!        prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
+!        prob%Ao%type, prob%A%type, in { 'DENSE', 'DENSE_BY_COLUMNS', 
+!              'SPARSE_BY_ROWS', SPARSE_BY_COLUMNS','COORDINATE' }
 !       has been violated.
 !
 !    -4 The constraints are inconsistent.
@@ -7215,12 +7221,6 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'clls: data%prob%G'
-     CALL SPACE_dealloc_array( data%prob%G,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
      array_name = 'clls: data%prob%Y'
      CALL SPACE_dealloc_array( data%prob%Y,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -7229,6 +7229,12 @@
 
      array_name = 'clls: data%prob%Z'
      CALL SPACE_dealloc_array( data%prob%Z,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'clls: data%prob%R'
+     CALL SPACE_dealloc_array( data%prob%R,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

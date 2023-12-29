@@ -45,8 +45,8 @@
   \n
 \endmanonly
   where the norm \f$\|r\|_W = \sqrt{ \sum_{i=1}^o w_i r_i^2}\f$,
-  the \f$o\f$ by \f$n\f$ design matrix \f$A_o\f$
-  \f$A\f$, the vectors \f$b\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
+  the \f$o\f$ by \f$n\f$ design matrix \f$A_o\f$,
+  the vectors \f$b\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
   \f$x^u\f$, the diagonal weights $w_i$ and the scalar \f$\sigma\f$ are given.
   Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
   \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
@@ -190,9 +190,7 @@
       values
   - \link clls_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of
-     - \link clls_solve_qp \endlink - solve the quadratic program
-     - \link clls_solve_sldqp \endlink - solve the shifted least-distance problem
+  - \link clls_solve_clls \endlink - solve the east-squares problem
   - \link clls_information \endlink (optional) - recover information about
     the solution and solution process
   - \link clls_terminate \endlink - deallocate data structures

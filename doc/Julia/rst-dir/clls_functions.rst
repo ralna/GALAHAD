@@ -122,15 +122,11 @@ Import problem data into internal storage prior to solution.
                     respectively.
 
                   * **-3**
-                    The restrictions n > 0 or m > 0 or requirement that
-                    a type contains its relevant string 'dense',
+                    The restrictions n > 0, o > 0 or m $\geq$ 0 or requirement 
+                    that a type contains its relevant string 'dense',
                     'coordinate', 'sparse_by_rows', 'diagonal',
                     'scaled_identity', 'identity', 'zero' or 'none' has
                     been violated.
-
-                  * **-23**
-                    An entry from the strict upper triangle of $H$ has
-                    been specified.
 
         *
                 - n
@@ -253,7 +249,7 @@ Reset control parameters after import if required.
 
         function clls_solve_clls(data, status, n, o, m, 
                                  Ao_ne, Ao_val, b, sigma, a_ne, A_val, 
-                                 c_l, c_u, x_l, x_u, x, c, y, z, 
+                                 c_l, c_u, x_l, x_u, x, r, c, y, z, 
                                  x_stat, c_stat, w)
 
 Solve the linearly-constrained regularized linear least-squares problem.
@@ -296,8 +292,8 @@ Solve the linearly-constrained regularized linear least-squares problem.
                     respectively.
 
                   * **-3**
-                    The restrictions n > 0 and m > 0 or requirement that
-                    a type contains its relevant string 'dense',
+                    The restrictions n > 0, o > 0 and m $\geq$ 0 or requirement
+                    that a type contains its relevant string 'dense',
                     'coordinate', 'sparse_by_rows', 'diagonal',
                     'scaled_identity', 'identity', 'zero' or 'none' has
                     been violated.
@@ -340,10 +336,6 @@ Solve the linearly-constrained regularized linear least-squares problem.
                     The CPU time limit has been reached. This may happen
                     if control.cpu_time_limit is too small, but may also
                     be symptomatic of a badly scaled problem.
-
-                  * **-23**
-                    An entry from the strict upper triangle of $H$ has
-                    been specified.
 
         *
                 - n

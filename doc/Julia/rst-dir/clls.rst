@@ -7,7 +7,7 @@ GALAHAD CLLS package
 
 .. include:: ../../Python/clls_intro.rst
 
-.. include:: ao_storage.rst
+.. include:: aao_storage.rst
 
 .. toctree::
 	:hidden:

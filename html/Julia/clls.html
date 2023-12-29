@@ -47,7 +47,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="callable functions" href="clls_functions.html" />
-    <link rel="prev" title="callable functions" href="blls_functions.html" />
+    <link rel="prev" title="callable functions" href="bllsb_functions.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -372,11 +372,15 @@
 <li class="toctree-l2"><a class="reference internal" href="blls_functions.html">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bllsb_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="clls_functions.html">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
@@ -534,10 +538,11 @@ convex quadratic programming’’,
 <p>and tailored for a regularized linear least-squares objective.</p>
 </section>
 <section id="matrix-storage">
-<span id="details-ao-storage-unsym"></span><span id="details-ao-storage"></span><h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
+<span id="details-aao-storage-unsym"></span><span id="details-aao-storage"></span><h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
 <p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(o\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrices <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(A_o\)</span>
 may be presented and stored in a variety of convenient input formats.
-Let <span class="math notranslate nohighlight">\(A\)</span> be <span class="math notranslate nohighlight">\(A_o\)</span> (with <span class="math notranslate nohighlight">\(o\)</span> instead of <span class="math notranslate nohighlight">\(m\)</span>) below as appropriate.</p>
+Let <span class="math notranslate nohighlight">\(A\)</span> be <span class="math notranslate nohighlight">\(A_o\)</span> (with <span class="math notranslate nohighlight">\(o\)</span> instead of <span class="math notranslate nohighlight">\(m\)</span> and <a href="#id17"><span class="problematic" id="id18">Ao_</span></a> instead of <a href="#id19"><span class="problematic" id="id20">A_</span></a>)
+below as appropriate.</p>
 <p><em>Dense</em> storage format:
 The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
 the values of the entries of each row in turn are
@@ -627,7 +632,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_clls_control_type.html#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -661,7 +666,7 @@ components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_clls_control_type.html#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -680,7 +685,7 @@ components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_clls_control_type.html#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -706,14 +711,11 @@ containing the name of the offending array are held
 in inform.alloc_status and inform.bad_alloc
 respectively.</p></li>
 <li><p><strong>-3</strong>
-The restrictions n &gt; 0 or m &gt; 0 or requirement that
-a type contains its relevant string ‘dense’,
+The restrictions n &gt; 0, o &gt; 0 or m <span class="math notranslate nohighlight">\(\geq\)</span> 0 or requirement
+that a type contains its relevant string ‘dense’,
 ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
 ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
 been violated.</p></li>
-<li><p><strong>-23</strong>
-An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
-been specified.</p></li>
 </ul>
 </td>
 </tr>
@@ -775,7 +777,7 @@ been specified.</p></li>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_clls_control_type.html#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -793,7 +795,7 @@ The import was successful.</p></li>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-clls-8h-1ac2d720ee7b719bf63c3fa208d37f1bc1"><span id="index-4"></span><span></span><span class="k">function</span><span class="w"> </span><span class="n">clls_solve_clls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"></span>
 <span class="w">                         </span><span class="n">Ao_ne</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_val</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">a_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_val</span><span class="p">,</span><span class="w"></span>
-<span class="w">                         </span><span class="n">c_l</span><span class="p">,</span><span class="w"> </span><span class="n">c_u</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">c_l</span><span class="p">,</span><span class="w"> </span><span class="n">c_u</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"></span>
 <span class="w">                         </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">c_stat</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span></pre>
 <p>Solve the linearly-constrained regularized linear least-squares problem.</p>
 <p class="rubric">Parameters:</p>
@@ -828,8 +830,8 @@ containing the name of the offending array are held
 in inform.alloc_status and inform.bad_alloc
 respectively.</p></li>
 <li><p><strong>-3</strong>
-The restrictions n &gt; 0 and m &gt; 0 or requirement that
-a type contains its relevant string ‘dense’,
+The restrictions n &gt; 0, o &gt; 0 and m <span class="math notranslate nohighlight">\(\geq\)</span> 0 or requirement
+that a type contains its relevant string ‘dense’,
 ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
 ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
 been violated.</p></li>
@@ -863,9 +865,6 @@ be symptomatic of a badly scaled problem.</p></li>
 The CPU time limit has been reached. This may happen
 if control.cpu_time_limit is too small, but may also
 be symptomatic of a badly scaled problem.</p></li>
-<li><p><strong>-23</strong>
-An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
-been specified.</p></li>
 </ul>
 </td>
 </tr>
@@ -947,7 +946,7 @@ been specified.</p></li>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_clls_inform_type.html#doxid-structclls-inform-type"><span class="std std-ref">clls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structclls-inform-type"><span class="std std-ref">clls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -974,10 +973,10 @@ The values were recorded successfully</p></li>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_clls_control_type.html#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structclls-control-type"><span class="std std-ref">clls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_clls_inform_type.html#doxid-structclls-inform-type"><span class="std std-ref">clls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structclls-inform-type"><span class="std std-ref">clls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1497,7 +1496,7 @@ are shown.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="blls_functions.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="bllsb_functions.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>

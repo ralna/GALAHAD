@@ -1,0 +1,1154 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>overview of functions provided &#8212; GALAHAD C interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'bllsb_functions';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bllsb_control_type structure" href="struct_bllsb_control_type.html" />
+    <link rel="prev" title="GALAHAD BLLSB package" href="bllsb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="blls.html">BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="blls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_blls_control_type.html">blls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_blls_inform_type.html">blls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_blls_time_type.html">blls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_blls_control_type.html">blls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_blls_inform_type.html">blls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_blls_time_type.html">blls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">overview of functions provided</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_bllsb_control_type.html">bllsb_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_bllsb_inform_type.html">bllsb_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_bllsb_time_type.html">bllsb_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_bllsb_control_type.html">bllsb_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_bllsb_inform_type.html">bllsb_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_bllsb_time_type.html">bllsb_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="clls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_clls_control_type.html">clls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_clls_inform_type.html">clls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_clls_time_type.html">clls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_clls_control_type.html">clls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_clls_inform_type.html">clls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_clls_time_type.html">clls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="nls_functions.html">overview of functions provided</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_nls_subproblem_control_type.html">nls_subproblem_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_nls_control_type.html">nls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_nls_subproblem_inform_type.html">nls_subproblem_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_nls_inform_type.html">nls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l3 has-children"><a class="reference internal" href="struct_nls_time_type.html">nls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_nls_subproblem_control_type.html">nls_subproblem_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_nls_control_type.html">nls_control_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_nls_subproblem_inform_type.html">nls_subproblem_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_nls_inform_type.html">nls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-35"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="struct_nls_time_type.html">nls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-36"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+</li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="overview-of-functions-provided">
+<span id="global"></span><h1>overview of functions provided<a class="headerlink" href="#overview-of-functions-provided" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// typedefs</span>
+
+<span class="k">typedef</span> <span class="kt">float</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span class="std std-ref">real_sp_</span></a><span></span><span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">double</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// structs</span>
+
+<span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a><span></span><span class="p">;</span>
+<span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-time-type"><span class="std std-ref">bllsb_time_type</span></a><span></span><span class="p">;</span>
+
+<span class="c1">// function calls</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1a782387ad9cccc5f2e2da9df9016fb923"><span class="std std-ref">bllsb_initialize</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1ade439e5e06c2852fcb089bb39a667a74"><span class="std std-ref">bllsb_read_specfile</span></a><span></span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[]);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1a6a2be17b6f871df80bbac93940b83af3"><span class="std std-ref">bllsb_import</span></a><span></span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">o</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="n">Ao_type</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">Ao_ne</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">Ao_row</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">Ao_col</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">Ao_ptr_ne</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">Ao_ptr</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1a9f7ccb0cffa909a2be7556edda430190"><span class="std std-ref">bllsb_reset_control</span></a><span></span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1ac2d720ee7b719bf63c3fa208d37f1bc1"><span class="std std-ref">bllsb_solve_blls</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">o</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">ao_ne</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">A_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">b</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">regularization_weight</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">x_stat</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">w</span><span class="p">[]</span>
+<span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1adfb7589696e4e07fdb65f02bc42c5daf"><span class="std std-ref">bllsb_information</span></a><span></span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">);</span>
+
+<span class="kt">void</span> <a class="reference internal" href="#doxid-galahad-bllsb-8h-1a84e12e9e546f51762d305333dce68e2b"><span class="std std-ref">bllsb_terminate</span></a><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+<span class="p">);</span></pre>
+</section>
+<section id="typedefs">
+<span id="details-global"></span><h1>typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h1>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1a3455cab03087949fd428a31cf302f98b"><span id="index-0"></span><span></span><span class="k">typedef</span> <span class="kt">float</span> <span class="n">real_sp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_sp_</span></code> is real single precision</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span id="index-1"></span><span></span><span class="k">typedef</span> <span class="kt">double</span> <span class="n">real_wp_</span></pre>
+<p><code class="docutils literal notranslate"><span class="pre">real_wp_</span></code> is the real working precision used</p>
+</section>
+<section id="function-calls">
+<h1>function calls<a class="headerlink" href="#function-calls" title="Permalink to this heading">#</a></h1>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1a782387ad9cccc5f2e2da9df9016fb923"><span id="index-2"></span><span></span><span class="kt">void</span> <span class="n">bllsb_initialize</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Set default control values and initialize private data</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The initialization was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1ade439e5e06c2852fcb089bb39a667a74"><span id="index-3"></span><span></span><span class="kt">void</span> <span class="n">bllsb_read_specfile</span><span class="p">(</span><span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">specfile</span><span class="p">[])</span></pre>
+<p>Read the content of a specification file, and assign values
+associated with given keywords to the corresponding control
+parameters. An in-depth discussion of specification files is
+<a class="reference internal" href="spec.html#details-spec-file"><span class="std std-ref">available</span></a>, and a detailed list of keywords
+with associated default values is provided in $GALAHAD/src/bllsb/BLLSB.template.
+See also Table 2.1 in the Fortran documentation provided in
+$GALAHAD/doc/bllsb.pdf for a list of how these keywords
+relate to the components of the control structure.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>specfile</p></td>
+<td><p>is a character string containing the name of the specification file</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1a6a2be17b6f871df80bbac93940b83af3"><span id="index-4"></span><span></span><span class="kt">void</span> <span class="n">bllsb_import</span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">o</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="n">Ao_type</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">Ao_ne</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">Ao_row</span><span class="p">[],</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">Ao_col</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">Ao_ptr_ne</span><span class="p">,</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">Ao_ptr</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0, o &gt; 0 or m &gt; 0 or requirement that
+a type contains its relevant string
+‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’,
+‘dense’ or ‘dense_by_columns’  has been violated.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p>o</p></td>
+<td><p>is a scalar variable of type int, that holds the number of residulas.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ao_type</p></td>
+<td><p>is a one-dimensional array of type char that specifies the <span class="xref std std-ref">unsymmetric storage scheme</span> used for the objective design matrix, <span class="math notranslate nohighlight">\(A_o\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense’ or ‘dense_by_columns’; lower or upper case variants are allowed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ao_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ao_row</p></td>
+<td><p>is a one-dimensional array of size A_ne and type int, that holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ao_col</p></td>
+<td><p>is a one-dimensional array of size A_ne and type int, that holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ao_ptr_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the length of the pointer array if sparse row or column storage scheme is used for <span class="math notranslate nohighlight">\(A_o\)</span>. For the sparse row scheme,  Ao_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ao_ptr</p></td>
+<td><p>is a one-dimensional array of size o+1 and type int, that holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type int, that holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1a9f7ccb0cffa909a2be7556edda430190"><span id="index-5"></span><span></span><span class="kt">void</span> <span class="n">bllsb_reset_control</span><span class="p">(</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span>
+<span class="p">)</span></pre>
+<p>Reset control parameters after import if required.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>control</p></td>
+<td><p>is a struct whose members provide control paramters for the remaining prcedures (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The import was successful.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1ac2d720ee7b719bf63c3fa208d37f1bc1"><span id="index-6"></span><span></span><span class="kt">void</span> <span class="n">bllsb_solve_blls</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">o</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">ao_ne</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">Ao_val</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">b</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">regularization_weight</span><span class="p">,</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_l</span><span class="p">[],</span>
+    <span class="k">const</span> <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x_u</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">x</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">r</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">z</span><span class="p">[],</span>
+    <span class="kt">int</span> <span class="n">x_stat</span><span class="p">[],</span>
+    <a class="reference internal" href="#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">w</span><span class="p">[]</span>
+<span class="p">)</span></pre>
+<p>Solve the linearly-constrained regularized linear least-squares problem.</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the entry and exit status from the package.</p>
+<p>Possible exit values are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The run was successful.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-1</strong></dt><dd><p>An allocation error occurred. A message indicating
+the offending array is written on unit
+control.error, and the returned allocation status
+and a string containing the name of the offending
+array are held in inform.alloc_status and
+inform.bad_alloc respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-2</strong></dt><dd><p>A deallocation error occurred. A message indicating
+the offending array is written on unit control.error
+and the returned allocation status and a string
+containing the name of the offending array are held
+in inform.alloc_status and inform.bad_alloc
+respectively.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0, o &gt; 0, or requirement that
+a type contains its relevant string
+‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’,
+‘dense’ or ‘dense_by_columns’  has been violated.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-5</strong></dt><dd><p>The simple-bound constraints are inconsistent.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-7</strong></dt><dd><p>The constraints appear to have no feasible point.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-9</strong></dt><dd><p>The analysis phase of the factorization failed; the
+return status from the factorization package is
+given in the component inform.factor_status</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-10</strong></dt><dd><p>The factorization failed; the return status from the
+factorization package is given in the component
+inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-11</strong></dt><dd><p>The solution of a set of linear equations using
+factors from the factorization package failed; the
+return status from the factorization package is
+given in the component inform.factor_status.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-16</strong></dt><dd><p>The problem is so ill-conditioned that further
+progress is impossible.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-17</strong></dt><dd><p>The step is too small to make further impact.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-18</strong></dt><dd><p>Too many iterations have been performed. This may
+happen if control.maxit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-19</strong></dt><dd><p>The CPU time limit has been reached. This may happen
+if control.cpu_time_limit is too small, but may also
+be symptomatic of a badly scaled problem.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>-23</strong></dt><dd><p>An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span>
+has been specified.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>n</p></td>
+<td><p>is a scalar variable of type int, that holds the number of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p>o</p></td>
+<td><p>is a scalar variable of type int, that holds the number of residulas.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ao_ne</p></td>
+<td><p>is a scalar variable of type int, that holds the number of entries in the objective design matrix <span class="math notranslate nohighlight">\(A_o\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Ao_val</p></td>
+<td><p>is a one-dimensional array of size ao_ne and type double, that holds the values of the entries of the objective design matrix <span class="math notranslate nohighlight">\(A_o\)</span> in any of the available storage schemes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>b</p></td>
+<td><p>is a one-dimensional array of size o and type double, that holds the linear term <span class="math notranslate nohighlight">\(b\)</span> of observations. The i-th component of b, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(b_i\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>regularization_weight</p></td>
+<td><p>is a scalar of type double, that holds the non-negative regularization weight <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x_l</p></td>
+<td><p>is a one-dimensional array of size n and type double, that holds the lower bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of x_l, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_u</p></td>
+<td><p>is a one-dimensional array of size n and type double, that holds the upper bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of x_u, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>is a one-dimensional array of size n and type double, that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of x, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>r</p></td>
+<td><p>is a one-dimensional array of size o and type double, that holds the residuals <span class="math notranslate nohighlight">\(r(x)=A_0x-b\)</span>. The i-th component of r, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(r_i\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>z</p></td>
+<td><p>is a one-dimensional array of size n and type double, that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of z, j = 0, … , n-1, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p>x_stat</p></td>
+<td><p>is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
+</tr>
+<tr class="row-odd"><td><p>w</p></td>
+<td><p>is a one-dimensional array of size o and type double, that holds the values <span class="math notranslate nohighlight">\(w\)</span> of strictly-positive observation weights. The i-th component of w, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(w_i\)</span>. If the weights are all one, w can be set to NULL.</p></td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1adfb7589696e4e07fdb65f02bc42c5daf"><span id="index-7"></span><span></span><span class="kt">void</span> <span class="n">bllsb_information</span><span class="p">(</span><span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">status</span><span class="p">)</span></pre>
+<p>Provides output information</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>inform</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>0</strong></dt><dd><p>The values were recorded successfully</p>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-bllsb-8h-1a84e12e9e546f51762d305333dce68e2b"><span id="index-8"></span><span></span><span class="kt">void</span> <span class="n">bllsb_terminate</span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a><span></span><span class="o">*</span> <span class="n">control</span><span class="p">,</span>
+    <span class="k">struct</span> <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a><span></span><span class="o">*</span> <span class="n">inform</span>
+<span class="p">)</span></pre>
+<p>Deallocate all internal private storage</p>
+<p class="rubric">Parameters:</p>
+<table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>holds private internal data</p></td>
+</tr>
+<tr class="row-even"><td><p>control</p></td>
+<td><p>is a struct containing control information (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-control-type"><span class="std std-ref">bllsb_control_type</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>inform</p></td>
+<td><p>is a struct containing output information (see <a class="reference internal" href="bllsb.html#doxid-structbllsb-inform-type"><span class="std std-ref">bllsb_inform_type</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="bllsb.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">GALAHAD BLLSB package</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="struct_bllsb_control_type.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">bllsb_control_type structure</p>
+  </div>
+  <i class="fa-solid fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   overview of functions provided
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#typedefs">
+   typedefs
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#function-calls">
+   function calls
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/bllsb_functions.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -420,6 +420,10 @@ default \realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 
+\ittf{R} is a rank-one allocatable array of dimension {\tt o} and type default
+\realdp, that holds the values $\bmr = \bmA_o \bmx - \bmb$ of the residuals.
+The $i$-th component of {\tt R}, $i = 1,  \ldots , o$, contains $\bmr_{i}$.
+
 \ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default
 \realdp, that holds
 the values $\bmA \bmx$ of the constraints.
@@ -559,8 +563,7 @@ specifies how much of the input problem is to be restored on output.
 Possible values are:
 \begin{description}
 \itt{0} nothing is restored.
-\itt{1} the vector data $\bmw$, $\bmg$,
-   $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$
+\itt{1} the vector data $\bmw$, $\bmb$,  $\bmx^{l}$, and $\bmx^{u}$
    will be restored to their input values.
 \itt{2} the entire problem, that is the above vector data along with
 the matrices $\bmA_o$ and $\bmA$, will be restored.
@@ -569,17 +572,16 @@ The default is {\tt restore\_problem = 2}.
 }{}
 
 \itt{indicator\_type} is a scalar variable of type default \integer,
-that specifies the type of indicator used to assess when a variable or
-constraint is active.
-Possible values are:
+that specifies the type of indicator used to assess when a variable 
+bound or constraint is active. Possible values are:
 
 \begin{description}
-\itt{1} a variable/constraint is active if and only if the distance
+\itt{1} a variable bound/constraint is active if and only if the distance
 to its neaerest bound is no larger than {\tt indicator\-\_tol\_p} (see below).
-\itt{2} a variable/constraint is active if and only if the distance
+\itt{2} a variable bound/constraint is active if and only if the distance
 to its neaerest bound is no larger than {\tt indicator\-\_tol\_pd}
 (see below) times the magnitude of its corresponding dual variable.
-\itt{3} a variable/constraint is active if and only if the distance
+\itt{3} a variable bound/constraint is active if and only if the distance
 to its neaerest bound is no larger than {\tt indicator\-\_tol\_tapia}
 (see below) times the distance to the same bound at the previous iteration.
 \end{description}
@@ -1669,13 +1671,13 @@ large-scale  degenerate convex quadratic programming,
 \galexample
 Suppose we wish to minimize
 \disp{\half \left\| \vect{ x_1 + x_2 - 2 \\ x_2 + x_3 - 2 \\
- x_1 + x_3 - 3 \\ 2 ( x_2 - 1 ) } \right\|^2}
+ x_1 + x_3 - 3 \\ \sqrt{2} ( x_2 - 1 ) } \right\|^2}
 subject to the general linear constraints
 $1 \leq  2 x_{1}  +  x_{2}  \leq  2$ and
 $x_{2}  +  x_{3}  =  2$, and simple bounds
 $-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
 Then, on writing the data for this problem as
-\disp{\bmA = \mat{ccc}{1 & 1 & \\ & 1 & 1 \\ 1 &  & 1  \\ & 1 & }, \;\;
+\disp{\bmA_o = \mat{ccc}{1 & 1 & \\ & 1 & 1 \\ 1 &  & 1  \\ & 1 & }, \;\;
 \bmb = \vect{ 2 \\ 2 \\ 3 \\ 1 }, \;\;
 \bmw = \vect{ 1 \\ 1 \\ 1 \\ 2 }, \;\;
 \bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty }, \;\;

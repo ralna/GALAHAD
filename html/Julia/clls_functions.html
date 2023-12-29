@@ -372,11 +372,15 @@
 <li class="toctree-l2"><a class="reference internal" href="blls_functions.html">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bllsb_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
@@ -505,14 +509,11 @@ containing the name of the offending array are held
 in inform.alloc_status and inform.bad_alloc
 respectively.</p></li>
 <li><p><strong>-3</strong>
-The restrictions n &gt; 0 or m &gt; 0 or requirement that
-a type contains its relevant string ‘dense’,
+The restrictions n &gt; 0, o &gt; 0 or m <span class="math notranslate nohighlight">\(\geq\)</span> 0 or requirement
+that a type contains its relevant string ‘dense’,
 ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
 ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
 been violated.</p></li>
-<li><p><strong>-23</strong>
-An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
-been specified.</p></li>
 </ul>
 </td>
 </tr>
@@ -592,7 +593,7 @@ The import was successful.</p></li>
 </table>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-clls-8h-1ac2d720ee7b719bf63c3fa208d37f1bc1"><span id="index-4"></span><span></span><span class="k">function</span><span class="w"> </span><span class="n">clls_solve_clls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"></span>
 <span class="w">                         </span><span class="n">Ao_ne</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_val</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">a_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_val</span><span class="p">,</span><span class="w"></span>
-<span class="w">                         </span><span class="n">c_l</span><span class="p">,</span><span class="w"> </span><span class="n">c_u</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">c_l</span><span class="p">,</span><span class="w"> </span><span class="n">c_u</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"></span>
 <span class="w">                         </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">c_stat</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span></pre>
 <p>Solve the linearly-constrained regularized linear least-squares problem.</p>
 <p class="rubric">Parameters:</p>
@@ -627,8 +628,8 @@ containing the name of the offending array are held
 in inform.alloc_status and inform.bad_alloc
 respectively.</p></li>
 <li><p><strong>-3</strong>
-The restrictions n &gt; 0 and m &gt; 0 or requirement that
-a type contains its relevant string ‘dense’,
+The restrictions n &gt; 0, o &gt; 0 and m <span class="math notranslate nohighlight">\(\geq\)</span> 0 or requirement
+that a type contains its relevant string ‘dense’,
 ‘coordinate’, ‘sparse_by_rows’, ‘diagonal’,
 ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’ has
 been violated.</p></li>
@@ -662,9 +663,6 @@ be symptomatic of a badly scaled problem.</p></li>
 The CPU time limit has been reached. This may happen
 if control.cpu_time_limit is too small, but may also
 be symptomatic of a badly scaled problem.</p></li>
-<li><p><strong>-23</strong>
-An entry from the strict upper triangle of <span class="math notranslate nohighlight">\(H\)</span> has
-been specified.</p></li>
 </ul>
 </td>
 </tr>

@@ -32,7 +32,6 @@
 %
 %  Usual Input -
 %    A_o: the o by n matrix A_o
-%    H: the symmetric, positive-definite n by n matrix H
 %    b: the o-vector b
 %    sigma: the regularization parameter sigma >= 0
 %    A: the m by n matrix A

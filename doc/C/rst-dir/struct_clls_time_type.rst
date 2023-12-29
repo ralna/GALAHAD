@@ -2,7 +2,7 @@
 .. _doxid-structclls__time__type:
 
 clls_time_type structure
------------------------
+------------------------
 
 .. toctree::
 	:hidden:

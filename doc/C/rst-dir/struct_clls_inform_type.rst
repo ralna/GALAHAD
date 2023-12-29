@@ -2,7 +2,7 @@
 .. _doxid-structclls__inform__type:
 
 clls_inform_type structure
--------------------------
+--------------------------
 
 .. toctree::
 	:hidden:

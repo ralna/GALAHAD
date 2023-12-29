@@ -2,7 +2,7 @@
 .. _doxid-structclls__control__type:
 
 clls_control_type structure
---------------------------
+---------------------------
 
 .. toctree::
 	:hidden:

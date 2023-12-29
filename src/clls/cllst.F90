@@ -669,7 +669,7 @@
    CALL SMT_put( p%Ao%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%Ao%ne = ao_ne ; p%A%ne = a_ne
+   p%n = n ; p%o = o ; p%m = m ; p%Ao%ne = ao_ne ; p%A%ne = a_ne
    p%B = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
             0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /)
    p%X_l = (/ - infty, - infty, - infty, - infty, - infty, - infty, - infty,   &
