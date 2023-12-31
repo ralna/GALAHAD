@@ -126,6 +126,7 @@ mutable struct clls_inform_type{T}
 
   function clls_inform_type{T}() where T
     type = new()
+    type.time = clls_time_type{T}()
     type.fdc_inform = fdc_inform_type{T}()
     type.sls_inform = sls_inform_type{T}()
     type.sls_pounce_inform = sls_inform_type{T}()
