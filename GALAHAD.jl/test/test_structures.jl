@@ -22,6 +22,14 @@ blls_time_type{Float64}()
 blls_inform_type{Float32}()
 blls_inform_type{Float64}()
 
+# Structures for bllsb
+bllsb_control_type{Float32}()
+bllsb_control_type{Float64}()
+bllsb_time_type{Float32}()
+bllsb_time_type{Float64}()
+bllsb_inform_type{Float32}()
+bllsb_inform_type{Float64}()
+
 # Structures for bqp
 bqp_control_type{Float32}()
 bqp_control_type{Float64}()
@@ -49,6 +57,14 @@ ccqp_time_type{Float32}()
 ccqp_time_type{Float64}()
 ccqp_inform_type{Float32}()
 ccqp_inform_type{Float64}()
+
+# Structures for clls
+clls_control_type{Float32}()
+clls_control_type{Float64}()
+clls_time_type{Float32}()
+clls_time_type{Float64}()
+clls_inform_type{Float32}()
+clls_inform_type{Float64}()
 
 # Structures for convert
 convert_control_type()

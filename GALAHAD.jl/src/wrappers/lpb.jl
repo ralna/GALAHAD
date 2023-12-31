@@ -33,7 +33,7 @@ mutable struct lpb_control_type{T}
   obj_unbounded::T
   potential_unbounded::T
   identical_bounds_tol::T
-  mu_lunge::T
+  mu_pounce::T
   indicator_tol_p::T
   indicator_tol_pd::T
   indicator_tol_tapia::T

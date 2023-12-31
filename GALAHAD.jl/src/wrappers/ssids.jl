@@ -39,6 +39,7 @@ mutable struct spral_ssids_inform
   matrix_rank::Cint
   maxdepth::Cint
   maxfront::Cint
+  maxsupernode::Cint
   num_delay::Cint
   num_factor::Int64
   num_flops::Int64

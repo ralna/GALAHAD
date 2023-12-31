@@ -1,19 +1,28 @@
-libgalahad_src += files('clls.F90')
+libgalahad_src += files('bllsb.F90')
 
 if build_ciface
-  libgalahad_c_src += files('C/clls_ciface.F90')
+  libgalahad_c_src += files('C/bllsb_ciface.F90')
 endif
 
-libgalahad_cutest_src += files('useclls.F90')
+if build_pythoniface
+  libgalahad_python_src += [['bllsb', files('Python/bllsb_pyiface.c',
+                                            '../fdc/Python/fdc_pyiface.c','../sls/Python/sls_pyiface.c',
+                                            '../fit/Python/fit_pyiface.c','../roots/Python/roots_pyiface.c',
+                                            '../cro/Python/cro_pyiface.c','../rpd/Python/rpd_pyiface.c')]]
+endif
 
-galahad_cutest_binaries += [['runclls_sif', files('runclls_sif.F90')]]
+libgalahad_cutest_src += files('usebllsb.F90')
 
-galahad_tests += [['clls', 'cllst', files('cllst.F90')],
-                  ['clls', 'cllsti', files('cllsti.F90')]]
+galahad_cutest_binaries += [['runbllsb_sif', files('runbllsb_sif.F90')]]
 
-galahad_c_tests += [['clls', 'cllst_c', files('C/cllst.c')],
-                    ['clls', 'cllstf_c', files('C/cllstf.c')]]
+galahad_tests += [['bllsb', 'bllsbt', files('bllsbt.F90')],
+                  ['bllsb', 'bllsbti', files('bllsbti.F90')]]
 
-galahad_examples += [['cllss', files('cllss.f90')],
-                     ['cllss2', files('cllss2.f90')],
-                     ['cllss3', files('cllss3.f90')]]
+galahad_c_tests += [['bllsb', 'bllsbt_c', files('C/bllsbt.c')],
+                    ['bllsb', 'bllsbtf_c', files('C/bllsbtf.c')]]
+
+galahad_python_tests += [['bllsb', 'bllsb_py', files('Python/test_bllsb.py')]]
+
+galahad_examples += [['bllsbs', files('bllsbs.f90')],
+                     ['bllsbs2', files('bllsbs2.f90')],
+                     ['bllsbs3', files('bllsbs3.f90')]]
