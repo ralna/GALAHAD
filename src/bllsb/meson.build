@@ -8,7 +8,8 @@ if build_pythoniface
   libgalahad_python_src += [['bllsb', files('Python/bllsb_pyiface.c',
                                             '../fdc/Python/fdc_pyiface.c','../sls/Python/sls_pyiface.c',
                                             '../fit/Python/fit_pyiface.c','../roots/Python/roots_pyiface.c',
-                                            '../cro/Python/cro_pyiface.c','../rpd/Python/rpd_pyiface.c')]]
+                                            '../cro/Python/cro_pyiface.c','../rpd/Python/rpd_pyiface.c',
+                                            '../ir/Python/ir_pyiface.c')]]
 endif
 
 libgalahad_cutest_src += files('usebllsb.F90')
