@@ -9,7 +9,7 @@ if build_pythoniface
                                             '../fdc/Python/fdc_pyiface.c','../sls/Python/sls_pyiface.c',
                                             '../fit/Python/fit_pyiface.c','../roots/Python/roots_pyiface.c',
                                             '../cro/Python/cro_pyiface.c','../rpd/Python/rpd_pyiface.c',
-                                            '../ir/Python/ir_pyiface.c')]]
+                                            '../ir/Python/ir_pyiface.c','../uls/Python/uls_pyiface.c')]]
 endif
 
 libgalahad_cutest_src += files('usebllsb.F90')
