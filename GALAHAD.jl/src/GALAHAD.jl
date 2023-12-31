@@ -132,7 +132,7 @@ include("wrappers/llsr.jl")
 # llst requires sbls, sls, sils, uls, gls, ir.
 include("wrappers/llst.jl")
 
-# bllsb requires fdc, sls, fit, roots, cro, rpd, ir.
+# bllsb requires fdc, sls, uls, fit, roots, cro, rpd, ir.
 include("wrappers/bllsb.jl")
 
 end # module GALAHAD
