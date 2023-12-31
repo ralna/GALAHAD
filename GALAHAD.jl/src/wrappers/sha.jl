@@ -41,73 +41,68 @@ end
 
 export sha_initialize
 
-export sha_read_specfile_s
-
-function sha_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.sha_read_specfile_s(control::Ref{sha_control_type{Float32}},
-                                               specfile::Ptr{Cchar})::Cvoid
+function sha_initialize(data, control, status)
+  @ccall libgalahad_double.sha_initialize(data::Ptr{Ptr{Cvoid}},
+                                          control::Ref{sha_control_type},
+                                          status::Ptr{Cint})::Cvoid
 end
 
-export sha_read_specfile
+export sha_reset_control_s
 
-function sha_read_specfile(control, specfile)
-  @ccall libgalahad_double.sha_read_specfile(control::Ref{sha_control_type{Float64}},
-                                             specfile::Ptr{Cchar})::Cvoid
+function sha_reset_control_s(control, data, status)
+  @ccall libgalahad_single.sha_reset_control_s(control::Ref{sha_control_type},
+                                               data::Ptr{Ptr{Cvoid}},
+                                               status::Ptr{Cint})::Cvoid
 end
 
+export sha_reset_control
+
+function sha_reset_control(control, data, status)
+  @ccall libgalahad_double.sha_reset_control(control::Ref{sha_control_type},
+                                             data::Ptr{Ptr{Cvoid}},
+                                             status::Ptr{Cint})::Cvoid
+end
 
 export sha_analyse_matrix_s
 
 function sha_analyse_matrix_s(control, data, status, n, ne, row, col, m)
-  @ccall libgalahad_single.sha_analyse_matrix_s(control::Ref{sha_control_type{Float64}},
-                                              data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                              n::Cint, ne::Cint,
-                                              row::Ptr{Cint}, col::Ptr{Cint},
-                                              m::Cint)::Cvoid
+  @ccall libgalahad_single.sha_analyse_matrix_s(control::Ref{sha_control_type},
+                                                data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                n::Cint, ne::Cint, row::Ptr{Cint},
+                                                col::Ptr{Cint}, m::Ptr{Cint})::Cvoid
 end
 
 export sha_analyse_matrix
 
 function sha_analyse_matrix(control, data, status, n, ne, row, col, m)
-  @ccall libgalahad_double.sha_analyse_matrix(control::Ref{sha_control_type{Float64}},
+  @ccall libgalahad_double.sha_analyse_matrix(control::Ref{sha_control_type},
                                               data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                              n::Cint, ne::Cint,
-                                              row::Ptr{Cint}, col::Ptr{Cint},
-                                              m::Cint)::Cvoid
+                                              n::Cint, ne::Cint, row::Ptr{Cint},
+                                              col::Ptr{Cint}, m::Ptr{Cint})::Cvoid
 end
 
 export sha_recover_matrix_s
 
-function sha_recover_matrix_s(data, status, ne, m, ls1, ls2, strans, ly1, ly2, ytrans, val, order)
-  @ccall libgalahad_single.sha_recover_matrix_s(data::Ptr{Ptr{Cvoid}}, 
-                                              status::Ptr{Cint},
-                                              ne::Cint, m::Cint, 
-                                              ls1::Cint, ls2::Cint, 
-                                              strans::Ptr{Float32}, 
-                                              ly1::Cint, ly2::Cint, 
-                                              ytrans::Ptr{Float32}, 
-                                              val::Ptr{Float32}, 
-                                              order::Ptr{Cint})::Cvoid
+function sha_recover_matrix_s(data, status, ne, m, ls1, ls2, strans, ly1, ly2, ytrans, val,
+                            precedence)
+  @ccall libgalahad_single.sha_recover_matrix_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                                ne::Cint, m::Cint, ls1::Cint, ls2::Cint,
+                                                strans::Ptr{Ptr{Float32}}, ly1::Cint,
+                                                ly2::Cint, ytrans::Ptr{Ptr{Float32}},
+                                                val::Ptr{Float32},
+                                                precedence::Ptr{Cint})::Cvoid
 end
 
 export sha_recover_matrix
 
-function sha_recover_matrix(data, status, ne, m, ls1, ls2, strans, ly1, ly2, ytrans, val, order)
-  @ccall libgalahad_double.sha_recover_matrix(data::Ptr{Ptr{Cvoid}}, 
-                                              status::Ptr{Cint},
-                                              ne::Cint, m::Cint, 
-                                              ls1::Cint, ls2::Cint, 
-                                              strans::Ptr{Float64}, 
-                                              ly1::Cint, ly2::Cint, 
-                                              ytrans::Ptr{Float64}, 
-                                              val::Ptr{Float64}, 
-                                              order::Ptr{Cint})::Cvoid
-end
-
-function sha_initialize(data, control, status)
-  @ccall libgalahad_double.sha_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{sha_control_type},
-                                          status::Ptr{Cint})::Cvoid
+function sha_recover_matrix(data, status, ne, m, ls1, ls2, strans, ly1, ly2, ytrans, val,
+                          precedence)
+  @ccall libgalahad_double.sha_recover_matrix(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
+                                              ne::Cint, m::Cint, ls1::Cint, ls2::Cint,
+                                              strans::Ptr{Ptr{Float64}}, ly1::Cint,
+                                              ly2::Cint, ytrans::Ptr{Ptr{Float64}},
+                                              val::Ptr{Float64},
+                                              precedence::Ptr{Cint})::Cvoid
 end
 
 export sha_information_s

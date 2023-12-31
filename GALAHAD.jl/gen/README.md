@@ -14,6 +14,7 @@ The possible values for `library` are:
 - `"arc"`;
 - `"bgo"`;
 - `"blls"`;
+- `"bllsb"`;
 - `"bqp"`;
 - `"bqpb"`;
 - `"bsc"`;

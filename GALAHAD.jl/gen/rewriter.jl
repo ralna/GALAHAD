@@ -1,9 +1,10 @@
-packages = ("arc", "bgo", "blls", "bqp", "bqpb", "bsc", "ccqp", "convert",
-            "cqp", "cro", "dgo", "dps", "dqp", "eqp", "fdc", "fit", "glrt",
-            "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
-            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "presolve", "psls",
-            "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha",
-            "sils", "slls", "sls", "trb", "trs", "tru", "ugo", "uls", "wcp")
+packages = ("arc", "bgo", "blls", "bllsb", "bqp", "bqpb", "bsc", "ccqp",
+            "clls", "convert", "cqp", "cro", "dgo", "dps", "dqp", "eqp",
+            "fdc", "fit", "glrt", "gls", "gltr", "hash", "ir", "l2rt", "lhs",
+            "llsr", "llst", "lms", "lpa", "lpb", "lsqp", "lsrt", "lstr",
+            "nls", "presolve", "psls", "qpa", "qpb", "roots", "rpd", "rqs",
+            "sbls", "scu", "sec", "sha", "sils", "slls", "sls", "trb", "trs",
+            "tru", "ugo", "uls", "wcp")
 
 types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 
