@@ -50,12 +50,6 @@ endif
 # Options
 install_modules = get_option('modules')
 galahad_int64 = get_option('galahad_int64')
-
-# 64 bits integer
-if galahad_int64
-  pp_options += '-DGALAHAD_64BIT_INTEGER'
-endif
-
 build_ciface = get_option('ciface')
 build_pythoniface = get_option('pythoniface')
 build_single = get_option('single')
@@ -63,6 +57,12 @@ build_double = get_option('double')
 build_tests = get_option('tests')
 build_examples = get_option('examples')
 build_ssids = get_option('ssids')
+
+# 64 bits integer
+if galahad_int64
+  pp_options += '-DGALAHAD_64BIT_INTEGER'
+  build_ssids = false
+endif
 
 libblas_name = get_option('libblas')
 liblapack_name = get_option('liblapack')
