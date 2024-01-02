@@ -239,7 +239,7 @@ the explicit factorization used:
 
 * 2 augmented system
 
-* 3 null-space
+* 3 C_NULL-space
 
 * 4 Schur-complement if $G$ is diagonal and successful otherwise failure
 
@@ -423,7 +423,7 @@ compute the residual when applying the preconditioner?
 
 	Bool check_basis
 
-if an implicit or null-space preconditioner is used, assess and correct for ill conditioned basis matrices
+if an implicit or C_NULL-space preconditioner is used, assess and correct for ill conditioned basis matrices
 
 .. index:: pair: variable; space_critical
 .. _doxid-structsbls__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

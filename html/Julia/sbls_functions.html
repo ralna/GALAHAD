@@ -610,49 +610,49 @@ been violated.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of rows in the symmetric matrix <span class="math notranslate nohighlight">\(C\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(H\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(H=0\)</span>; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_row</p></td>
-<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_col</p></td>
-<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls.html#details-sbls-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’ or ‘absent’, the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_row</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_col</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>C_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls_storage.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(C\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(C=0\)</span>; lower or upper case variants are allowed.</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="sbls.html#details-sbls-storage-sym"><span class="std std-ref">symmetric storage scheme</span></a> used for the matrix <span class="math notranslate nohighlight">\(C\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘dense’, ‘diagonal’, ‘scaled_identity’, ‘identity’, ‘zero’ or ‘none’, the latter pair if <span class="math notranslate nohighlight">\(C=0\)</span>; lower or upper case variants are allowed.</p></td>
 </tr>
 <tr class="row-odd"><td><p>C_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>C_row</p></td>
-<td><p>is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size C_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>C_col</p></td>
-<td><p>is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size C_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>C_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(C\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -905,7 +905,7 @@ the GALAHAD package ULS for further details.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -938,7 +938,7 @@ status from the package. Possible values are
 <td><p>is a structure containing control information (see <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

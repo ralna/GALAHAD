@@ -147,17 +147,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; lpb_reset_control
 .. _doxid-galahad__lpb_8h_1aac79b2577895e28d4a92deb9f3bd24a6:

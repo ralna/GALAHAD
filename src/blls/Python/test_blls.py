@@ -5,34 +5,34 @@ print("\n** python test: blls")
 
 # set parameters
 n = 10
-m = n + 1
+o = n + 1
 infinity = float("inf")
 
 #  describe A = (  I  ) and b = ( i * e )
 #               ( e^T )         ( n + 1 )
 
-A_type = 'coordinate'
-A_ne = 2 * n
-A_row = np.empty(A_ne, int)
-A_col = np.empty(A_ne, int)
-A_val = np.empty(A_ne)
-A_ptr = None
-b = np.empty(m)
-b[n] = m
+Ao_type = 'coordinate'
+Ao_ne = 2 * n
+Ao_row = np.empty(Ao_ne, int)
+Ao_col = np.empty(Ao_ne, int)
+Ao_val = np.empty(Ao_ne)
+Ao_ptr = None
+b = np.empty(o)
+b[n] = o
 for i in range(n):
-  A_row[i] = i
-  A_row[n+i] = m - 1
-  A_col[i] = i
-  A_col[n+i] = i
-  A_val[i] = 1.0
-  A_val[n+i] = 1.0
+  Ao_row[i] = i
+  Ao_row[n+i] = o - 1
+  Ao_col[i] = i
+  Ao_col[n+i] = i
+  Ao_val[i] = 1.0
+  Ao_val[n+i] = 1.0
   b[i] = i + 1
 
 #  set the weights
 
-w = np.empty(m)
+w = np.empty(o)
 w[0] = 2.0
-for i in range(1,m):
+for i in range(1,o):
   w[i] = 1.0
 
 #  specify the bounds on the variables
@@ -55,7 +55,7 @@ options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
-blls.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options)
+blls.load(n, o, Ao_type, Ao_ne, Ao_row, Ao_col, 0, Ao_ptr, options)
 
 #  provide starting values (not crucial)
 
@@ -67,10 +67,10 @@ for i in range(n):
 
 # find minimizer
 #print("\n solve blls")
-x, c, z, g, x_stat \
-  = blls.solve_ls(n, m, w, A_ne, A_val, b, x_l, x_u, x, z)
+x, r, z, g, x_stat \
+  = blls.solve_ls(n, o, w, Ao_ne, Ao_val, b, x_l, x_u, x, z)
 print(" x:",x)
-print(" c:",c)
+print(" r:",r)
 print(" z:",z)
 print(" g:",g)
 print(" x_stat:",x_stat)

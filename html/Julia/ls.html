@@ -382,6 +382,10 @@
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="slls_functions.html">callable functions</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
@@ -416,13 +420,14 @@
   <section id="least-squares">
 <h1>Least-Squares<a class="headerlink" href="#least-squares" title="Permalink to this heading">#</a></h1>
 <p><strong>Release:</strong> 1.0</p>
-<p><strong>Date:</strong> Dec 29, 2023</p>
+<p><strong>Date:</strong> Jan 02, 2024</p>
 <p><strong>Author:</strong> <a class="reference external" href="mailto:jaroslav&#46;fowkes&#37;&#52;&#48;stfc&#46;ac&#46;uk">Jaroslav Fowkes</a>, <a class="reference external" href="mailto:nick&#46;gould&#37;&#52;&#48;stfc&#46;ac&#46;uk">Nick Gould</a>, <a class="reference external" href="mailto:alexis&#46;montoison&#37;&#52;&#48;polymtl&#46;ca">Alexis Montoison</a> and <a class="reference external" href="mailto:dominique&#46;orban&#37;&#52;&#48;polymtl&#46;ca">Dominique Orban</a></p>
 <p>GALAHAD <a class="footnote-reference superscript" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a suite of open-source routines for large-scale continuous
 optimization.  Currently there is a single package designed to find a local
 minimizer of a sum-of-squares function whose variables may take any values,
 a second pair that target linear problems with simple bounds on the variables,
-and another for which the constraints are linear (polyhedral).</p>
+another for which the feasible region is a regular simplex, and a
+final one for which the constraints are linear (polyhedral).</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
@@ -430,6 +435,7 @@ and another for which the constraints are linear (polyhedral).</p>
 <li class="toctree-l1"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
 </ul>
 </div>
 <section id="references">

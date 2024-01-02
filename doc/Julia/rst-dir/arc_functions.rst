@@ -142,17 +142,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL
 
 .. index:: pair: function; arc_reset_control
 .. _doxid-galahad__arc_8h_1aee92716b81a84655569637e028bc53c8:
@@ -373,7 +373,7 @@ function calls.
 		- eval_prec
 
 		- is an optional user-supplied function that may be
-		  NULL. If non-NULL, it must have the following
+		  C_NULL. If non-NULL, it must have the following
 		  signature:
 
 		  .. ref-code-block:: julia
@@ -566,7 +566,7 @@ information is available by function calls.
 		- eval_prec
 
 		- is an optional user-supplied function that may be
-		  NULL. If non-NULL, it must have the following
+		  C_NULL. If non-NULL, it must have the following
 		  signature:
 
 		  .. ref-code-block:: julia

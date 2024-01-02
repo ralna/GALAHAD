@@ -146,17 +146,17 @@ Import structural matrix data into internal storage prior to solution.
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the lower triangular part of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the lower triangular part of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; psls_reset_control
 .. _doxid-galahad__psls_8h_1a90493b62c689237c97fe4aea665cd0ab:

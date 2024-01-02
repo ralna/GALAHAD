@@ -16,21 +16,21 @@
 \galsummary
 This package uses a preconditioned, projected-gradient method
 to solve the {\bf simplex-constrained regularized linear least-squares problem}
-\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_W^2
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA_o \bmx - \bmb\|_W^2
 + \half \sigma \|\bmx\|_2^2,}
 where the variables $\bmx$ are required to lie within the
 {\bf regular simplex}
 \disp{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
-where the $m$ by $n$ real matrix $\bmA$, the vector $\bmb$
+where the $o$ by $n$ real matrix $\bmA_o$, the vector $\bmb$
 and the non-negative weights $\bmw$ and $\sigma$ are given, 
 where $\bme$ is the vector of ones, 
 and where the Euclidean and weighted-Euclidean norms
 are given by $\|\bmv\|_2^2 = \bmv^T \bmv$ and $\|\bmv\|_W^2 = \bmv^T \bmW \bmv$,
 respectively, with $\bmW = \mbox{diag}(\bmw)$.
-Full advantage is taken of any zero coefficients of the Jacobian matrix $\bmA$
-of the {\bf residuals} $\bmc(\bmx) = \bmA \bmx - \bmb$;
+Full advantage is taken of any zero coefficients of the Jacobian matrix $\bmA_o$
+of the {\bf residuals} $\bmr(\bmx) = \bmA_o \bmx - \bmb$;
 the matrix need not be provided as there are options to obtain matrix-vector
-products involving $\bmA$ and its transpose either by reverse communication
+products involving $\bmA_o$ and its transpose either by reverse communication
 or from a user-provided subroutine.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,8 +95,8 @@ must be renamed on one of the {\tt USE} statements.
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmatrix
-When it is explicitly available,
-the coefficient matrix $\bmA$ may be stored in a variety of input formats.
+When it is explicitly available, an $m$ by $n$ matrix $\bmA$ 
+(in our case $\bmA_o$) may be stored in a variety of input formats.
 
 \subsubsection{Dense row-wise storage format}\label{dense-row}
 The matrix $\bmA$ is stored as a compact dense matrix by rows,
@@ -207,39 +207,39 @@ are:
 \ittf{n} is a scalar variable of type default \integer,
  that holds the number of optimization variables, $n$.
 
-\ittf{m} is a scalar variable of type default \integer,
- that holds the number of residuals, $m$.
+\ittf{o} is a scalar variable of type default \integer,
+ that holds the number of residuals, $o$.
 
-\ittf{A} is scalar variable of type {\tt SMT\_TYPE}
-that holds the Jacobian matrix $\bmA$ of the residuals (if it is available).
+\ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
+that holds the design matrix $\bmA_o$ (if it is available).
 The following components are used here:
 
 \begin{description}
 
-\itt{A\%type} is an allocatable array of rank one and type default
+\itt{Ao\%type} is an allocatable array of rank one and type default
 \character, that
 is used to indicate the storage scheme used. If the dense row-wise
 storage scheme (see Section~\ref{dense-row}) is used,
-the first twelve components of {\tt A\%type} must contain the
+the first twelve components of {\tt Ao\%type} must contain the
 string {\tt DENSE\_BY\_ROWS}, while if the column-wise scheme
 (see Section~\ref{dense-column}) is used,
-the fifteen components of {\tt A\%type} must contain the
+the fifteen components of {\tt Ao\%type} must contain the
 string {\tt DENSE\_BY\_COLUMNS}.
 For the sparse coordinate scheme (see Section~\ref{coordinate}),
-the first ten components of {\tt A\%type} must contain the
+the first ten components of {\tt Ao\%type} must contain the
 string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
-the first fourteen components of {\tt A\%type} must contain the
+the first fourteen components of {\tt Ao\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS}.
 and for the sparse column-wise storage scheme (see Section~\ref{columnwise}),
-the first seventeen components of {\tt A\%type} must contain the
+the first seventeen components of {\tt Ao\%type} must contain the
 string {\tt SPARSE\_BY\_COLUMNS}.
 
 For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
-into {\tt A\%type}.
+into {\tt Ao\%type}.
 For example, if {\tt nlp} is of derived type {\tt \packagename\_problem\_type}
-and involves a Jacobian we wish to store using the coordinate scheme,
+and involves a design matrix we wish to store using the coordinate scheme,
 we may simply
 %\vspace*{-2mm}
 {\tt
@@ -253,63 +253,63 @@ See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
 \noindent
-{\tt A\%type} should {\bf not} be allocated if $\bmA$ is unavailable
-(and access provided to  $\bmA$ provided by other means, see later sections), 
+{\tt Ao\%type} should {\bf not} be allocated if $\bmA_o$ is unavailable
+(and access provided to  $\bmA_o$ provided by other means, see later sections), 
 and in this case the remaining components of {\tt A} need not be set.
 
-\itt{A\%ne} is a scalar variable of type default \integer, that
-holds the number of entries in $\bmA$
+\itt{Ao\%ne} is a scalar variable of type default \integer, that
+holds the number of entries in $\bmA_o$
 in the sparse coordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
-\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
-the values of the entries of the Jacobian matrix $\bmA$ in any of the
+\itt{Ao\%val} is a rank-one allocatable array of type default \realdp, that 
+holds the values of the entries of the design matrix $\bmA_o$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{A\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of $\bmA$ in the sparse coordinate storage
+\itt{Ao\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of $\bmA_o$ in the sparse coordinate storage
 scheme (see Section~\ref{coordinate}).
 It need not be allocated for any of the other three schemes.
 
-\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
-that holds the column indices of $\bmA$ in either the sparse coordinate
+\itt{Ao\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of $\bmA_o$ in either the sparse coordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated when the dense or column-wise storage schemes are used.
 
-\itt{A\%row} is a rank-one allocatable array variable of type default \integer,
-that holds the row indices of $\bmA$ in either the sparse coordinate
+\itt{Ao\%row} is a rank-one allocatable array variable of type default \integer,
+that holds the row indices of $\bmA_o$ in either the sparse coordinate
 (see Section~\ref{coordinate}), or the sparse column-wise
 (see Section~\ref{columnwise}) storage scheme.
 It need not be allocated when the dense or row-wise storage schemes are used.
 
-\itt{A\%ptr} is a rank-one allocatable array and type default \integer,
-that must be of dimension {\tt m+1}
-and hold the starting position of each row of $\bmA$, as well
+\itt{Ao\%ptr} is a rank-one allocatable array and type default \integer,
+that must be of dimension {\tt o+1}
+and hold the starting position of each row of $\bmA_o$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}).
 If the sparse column-wise storage scheme (see Section~\ref{columnwise})
 is used, it must instead be of dimension {\tt n+1}
-and hold the starting position of each column of $\bmA$, as well
+and hold the starting position of each column of $\bmA_o$, as well
 as the total number of entries plus one.
 It need not be allocated when the
 other schemes are used.
 
 \end{description}
 
-\ittf{B} is a rank-one allocatable array of dimension {\tt m} and type
+\ittf{B} is a rank-one allocatable array of dimension {\tt o} and type
 default \realdp, that holds the constant term $\bmb$ in the residuals.
-The $i$-th component of {\tt B}, $i = 1, \ldots, m$, contains $\bmb_{i}$.
+The $i$-th component of {\tt B}, $i = 1, \ldots, o$, contains $\bmb_{i}$.
 
-\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds the residuals, $\bmc(\bmx) = \bmA \bmx - \bmb$,
+\ittf{R} is a rank-one allocatable array of dimension {\tt o} and type
+default \realdp, that holds the residuals, $\bmr(\bmx) = \bmA_o \bmx - \bmb$,
 at the point $\bmx$. The $i$-th component of
-{\tt C}, $i = 1, \ldots, m$, contains $\bmc_{i}(\bmx)$.
+{\tt R}, $i = 1, \ldots, o$, contains $\bmr_{i}(\bmx)$.
 
 \ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
 default \realdp, that holds the gradient of the objective
- $\bmg(\bmx) = \bmA^T \bmc(\bmx)$, at the point $\bmx$. The $j$-th component of
-{\tt G}, $j = 1, \ldots, n$, contains $\bmg_{j}(\bmx)$.
+ $\bmg(\bmx) = \bmA_o^T \bmW \bmr(\bmx)$, at the point $\bmx$. 
+The $j$-th component of {\tt G}, $j = 1, \ldots, n$, contains $\bmg_{j}(\bmx)$.
 
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
 default \realdp,
@@ -392,7 +392,7 @@ The default is {\tt cold\_start = 1}.
 specifies the type of preconditioner (scaling) used when computing the
 search direction. Currently this can be 
 {\tt 0} (no preconditioner), 
-{\tt 1} (a diagonal preconditioner that normalises the rows of $\bmA$) or
+{\tt 1} (a diagonal preconditioner that normalises the rows of $\bmA_o$) or
 {\tt 2} (a preconditioner supplied by the user either via a subroutine
 call of {\tt eval\_PREC}, see \S\ref{prec}, or via reverse communication, 
 see \S\ref{reverse}),
@@ -656,17 +656,17 @@ nonzero components of $\bmv$. If used, components
 and type default \realdp, that is used to hold the components of the
 output vector $\bmv$.
 
-\itt{P} is a rank-one allocatable array of dimension $m$
+\itt{P} is a rank-one allocatable array of dimension $o$
 and type default \realdp, that is used to record the components of the
-resulting vector $\bmA \bmv$.
+resulting vector $\bmA_o \bmv$.
 
 \itt{nz\_p\_end} is a scalar variable of type default \integer, that
 is used to record the finishing position in {\tt NZ\_p} (see below)
-of the list of indices of nonzero components of $\bmA \bmv$ if required.
+of the list of indices of nonzero components of $\bmA_o \bmv$ if required.
 
 \itt{NZ\_p} is a rank-one allocatable array of dimension $n$
 and type default \integer, that is used to record the list of
-indices of nonzero components of $\bmA \bmv$ if required. Components
+indices of nonzero components of $\bmA_o \bmv$ if required. Components
 {\tt NZ\_p(1:nz\_prod\_end)} of {\tt P} should then be nonzero.
 
 \end{description}
@@ -724,8 +724,8 @@ These values should only be changed after calling
 
 %%%%%%%%% main solution subroutine %%%%%%
 
-\subsubsection{The bound-constrained linear least-squares subroutine}\label{qps}
-The bound-constrained linear least-squares solution algorithm is called
+\subsubsection{The simplex-constrained linear least-squares subroutine}\label{qps}
+The simplex-constrained linear least-squares solution algorithm is called
 as follows:
 \vspace*{1mm}
 
@@ -747,15 +747,15 @@ eval\_APROD, eval\_ASPROD, eval\_AFPROD, eval\_PREC] )}
 It is used to hold data about the problem being solved.
 The user must allocate and set values for the array components,
 and set values for the component {\tt prob\%B}.
-Additionally, the user can provide $\bmA$ by allocating the
-relevant array components and setting values for {\tt prob\%A}
+Additionally, the user can provide $\bmA_o$ by allocating the
+relevant array components and setting values for {\tt prob\%Ao}
 using whichever
 of the matrix formats described in Section~\ref{galmatrix}
 is appropriate for the user's application;
-if the effect of $\bmA$ and its transpose are only available to form products
+if the effect of $\bmA_o$ and its transpose are only available to form products
 via reverse communication (see {\tt reverse} below)
 or with a set of user-supplied subroutines (see {\tt eval\_APROD}
-{\tt eval\_ASPROD} and {\tt eval\_AFPROD} below), {\tt prob\%A} is not needed.
+{\tt eval\_ASPROD} and {\tt eval\_AFPROD} below), {\tt prob\%Ao} is not needed.
 
 The components {\tt prob\%X}
 must be set to initial estimates of the primal variables, $\bmx$.
@@ -768,14 +768,15 @@ need not be set or allocated on entry.
 On exit, the components {\tt prob\%X} and {\tt prob\%Z}
 will contain the best estimates of the primal variables $\bmx$,
 and dual variables for the bound constraints $\bmz$, respectively.
-The components {\tt prob\%C} and {\tt prob\%G}
-will contain the residuals $\bmc(\bmx)$
+The components {\tt prob\%R} and {\tt prob\%G}
+will contain the residuals $\bmr(\bmx)$
 and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
-\restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$
-              and (if $\bmA$ is provided) {\tt prob\%A\%ne} $\geq 0$.
-{\tt prob\%A\_type} $\in \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
- {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt SPARSE\_BY\_COLUMNS}
-$\}$.
+\restrictions {\tt prob\%n} $> 0$, {\tt prob\%o} $> 0$
+              and (if $\bmA_o$ is provided) {\tt prob\%A\%ne} $\geq 0$.
+              {\tt prob\%Ao\_type} $\in 
+               \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
+                  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, 
+                  {\tt SPARSE\_BY\_COLUMNS}$\}$.
 
 \itt{X\_stat} is a rank-one \intentinout\ array argument of dimension {\tt prob\%n}
 and type default \integer, that indicates which of the simple bound
@@ -839,7 +840,7 @@ If {\tt reverse} is \present\ and {\tt eval\%APROD} or {\tt eval\%ASPROD}
 
 \itt{eval\_APROD} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
-product $\bmp + \bmA \bmv$ or $\bmp + \bmA^T \bmv$
+product $\bmp + \bmA_o \bmv$ or $\bmp + \bmA_o^T \bmv$
 involving the Jacobian (and its transpose) and given vectors $\bmv$ and $\bmp$.
 See Section~\ref{jvp} for details.
 If {\tt eval\_APROD} is present,
@@ -852,7 +853,7 @@ components of {\tt prob\%A}.
 
 \itt{eval\_ASPROD} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
-product $\bmA \bmv$  involving the Jacobian and a given {\em sparse}
+product $\bmA_o \bmv$  involving the Jacobian and a given {\em sparse}
 vector $\bmv$.
 See Section~\ref{jvps} for details.
 If {\tt eval\_ASPROD} is present,
@@ -865,7 +866,7 @@ components of {\tt prob\%A}.
 
 \itt{eval\_AFPROD} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
-product $\bmA \bmv$ or $\bmA^T v$ involving the Jacobian (and its transpose)
+product $\bmA_o \bmv$ or $\bmA_o^T v$ involving the Jacobian (and its transpose)
 and a given vector $\bmv$ in which either only some components of $\bmv$ or
 the resulting product are set/required.
 See Section~\ref{jvsp} for details.
@@ -939,8 +940,8 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 If the argument {\tt eval\_APROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-sum $\bmp + \bmA \bmv$ or $\bmp + \bmA^T\bmv$ involving the
-product of the residual Jacobian $\bmA$ or its transpose $\bmA^T$
+sum $\bmp + \bmA_o \bmv$ or $\bmp + \bmA_o^T\bmv$ involving the
+product of the residual Jacobian $\bmA_o$ or its transpose $\bmA_o^T$
 and a given vector $\bmv$.
 The routine must be specified as
 
@@ -955,7 +956,7 @@ The routine must be specified as
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type default \integer,
 that should be set to 0 if the routine has been able to evaluate the
-sum $\bmp + \bmA \bmv$ or $\bmp + \bmA^T\bmv$
+sum $\bmp + \bmA_o \bmv$ or $\bmp + \bmA_o^T\bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -966,16 +967,16 @@ to communicate user-supplied data to and from the subroutines
 
 \itt{transpose} is a scalar \intentin\ array argument of type
 default that will be set \true\ if the product involves the transpose
-of the Jacobian $\bmA^T$ and \false\ if the product involves
-the Jacobian $\bmA$ itself.
+of the Jacobian $\bmA_o^T$ and \false\ if the product involves
+the Jacobian $\bmA_o$ itself.
 
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmv$.
 
 \ittf{P} is a rank-one \intentinout\ array argument of type default \realdp\
 whose components on input contain the vector $\bmp$ and on output the
-sum $\bmp + \bmA \bmv$ when {\tt \%transpose} is \false\ or
-$\bmp + \bmA^T \bmv$ when {\tt \%transpose} is \true.
+sum $\bmp + \bmA_o \bmv$ when {\tt \%transpose} is \false\ or
+$\bmp + \bmA_o^T \bmv$ when {\tt \%transpose} is \true.
 
 \end{description}
 
@@ -986,7 +987,7 @@ $\bmp + \bmA^T \bmv$ when {\tt \%transpose} is \true.
 
 If the argument {\tt eval\_ASPROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product of the Jacobian $\bmA$ with a given vector $\bmv$.
+product of the Jacobian $\bmA_o$ with a given vector $\bmv$.
 The routine must be specified as
 
 \def\baselinestretch{0.8}
@@ -1000,7 +1001,7 @@ The routine must be specified as
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type default \integer,
 that should be set to 0 if the routine has been able to evaluate the
-product $\bmA \bmv$
+product $\bmA_o \bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -1021,7 +1022,7 @@ will be nonzero and the remaining components of {\tt V} should be
 ignored. Otherwise, all components of {\tt V} should be presumed to be nonzero.
 
 \ittf{P} is a rank-one \intentout\ array argument of type default \realdp\
-whose components on output contain the required components of $\bmA \bmv$.
+whose components on output contain the required components of $\bmA_o \bmv$.
 If components
 {\tt nz\_out\_end}
 and
@@ -1050,11 +1051,11 @@ are absent, all components of {\tt V} are assumed to be nonzero.
 
 \itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer,
 that, if \present, must be set to record the number of non-zeros in
-$\bmA \bmv$.
+$\bmA_o \bmv$.
 
-\itt{NZ\_out} is an \optional\ rank-one array of dimension $m$
+\itt{NZ\_out} is an \optional\ rank-one array of dimension $o$
 and type default \integer, that, if \present, must be set to record the list
-of indices of nonzero components of $\bmA \bmv$.
+of indices of nonzero components of $\bmA_o \bmv$.
 If either of
 {\tt nz\_out\_end}
 and
@@ -1070,9 +1071,9 @@ are absent, all components of {\tt P} should be set even if they are zero.
 
 If the argument {\tt eval\_AFPROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product of the Jacobian $\bmA$, or its transpose, with a given vector $\bmv$.
+product of the Jacobian $\bmA_o$, or its transpose, with a given vector $\bmv$.
 Here, either only a subset of the components of the vector $\bmv$ are nonzero,
-or only a subset of the components product $\bmA^T \bmv$ are to required.
+or only a subset of the components product $\bmA_o^T \bmv$ are to required.
 The routine must be specified as
 
 \def\baselinestretch{0.8}
@@ -1085,7 +1086,7 @@ The routine must be specified as
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type default \integer,
 that should be set to 0 if the routine has been able to evaluate the
-sum $\bmA \bmv$ or $\bmA^T\bmv$
+sum $\bmA_o \bmv$ or $\bmA_o^T\bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -1096,8 +1097,8 @@ to communicate user-supplied data to and from the subroutines
 
 \itt{transpose} is a scalar \intentin\ array argument of type
 default that will be set \true\ if the product involves the transpose
-of the Jacobian $\bmA^T$ and \false\ if the product involves
-the Jacobian $\bmA$ itself.
+of the Jacobian $\bmA_o^T$ and \false\ if the product involves
+the Jacobian $\bmA_o$ itself.
 
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmv$. If {\tt transpose} is \false\
@@ -1106,14 +1107,14 @@ will by set, and the remainder will be presumed to be zero.
 
 \ittf{P} is a rank-one \intentout\ array argument of type default \realdp\
 whose components on output must be set to the
-product $\bmA \bmv$ when {\tt \%transpose} is \false. If
+product $\bmA_o \bmv$ when {\tt \%transpose} is \false. If
 {\tt \%transpose} is \true, components with indices {\tt FREE(:n\_free)}
 (see below) should be set to the corresponding components of the
-product $\bmA^T \bmv$, and the remaining components ignored.
+product $\bmA_o^T \bmv$, and the remaining components ignored.
 
 \itt{FREE} is a rank-one \intentin\ array argument of
 type default \integer\ that flags the input components of $\bmv$ that are set
-(when {\tt transpose} is \false) or output components of $\bmA^T \bmv$ that
+(when {\tt transpose} is \false) or output components of $\bmA_o^T \bmv$ that
 are required (when {\tt transpose} is \true). Specifically, only indices
 {\tt FREE(:n\_free)} of the relevant vector is set or required, and the
 remainder should be treated as zero (if {\tt transpose} is \false)
@@ -1135,8 +1136,8 @@ product $\bmP^{-1} \bmv$ involving a symmetric, positive definite
 preconditioner $\bmP$ and a given $n$-vector $\bmv$.
 Ideally the $n$ by $n$ matrix $\bmP$ should be chosen so that the
 of the product is inexpensive to compute, but also so that $\bmP$ is
-a good approximation of $\bmA^T \bmA$ in the sense that the eigenvalues
-of $\bmP^{-1} \bmA^T \bmA$ are clustered around a small number of values
+a good approximation of $\bmA_o^T \bmA_o^{}$ in the sense that the eigenvalues
+of $\bmP^{-1} \bmA_o^T \bmA_o^{}$ are clustered around a small number of values
 (preferably all around 1.0). The routine must be specified as
 
 \def\baselinestretch{0.8}
@@ -1185,27 +1186,27 @@ mentioned below) unchanged.
 Possible values of {\tt inform\%status} and the information required are
 \begin{description}
 
-\ittf{2.} The user should compute the product $\bmA \bmv$
-     involving the product of the residual Jacobian, $\bmA$,
+\ittf{2.} The user should compute the product $\bmA_o \bmv$
+     involving the product of the residual Jacobian, $\bmA_o$,
      with a given vector $\bmv$.
      The vector $\bmv$ is given in {\tt reverse\%V}, and the
-     product $\bmA \bmv$ should be written to {\tt reverse\%P},
+     product $\bmA_o \bmv$ should be written to {\tt reverse\%P},
      and  {\tt reverse\%eval\_status} should be set to 0.
      If the user is unable to evaluate the product,
      the user need not set {\tt reverse\%P}, but
      should then set {\tt reverse\%eval\_status} to a non-zero value.
 
-\ittf{3.} The user should compute the product $\bmA^T \bmv$
+\ittf{3.} The user should compute the product $\bmA_o^T \bmv$
      involving the product of the transpose of the residual
-     Jacobian, $\bmA$,  with a given vector $\bmv$.
+     Jacobian, $\bmA_o$,  with a given vector $\bmv$.
      The vector $\bmv$ is given in {\tt reverse\%V}, and the
-     product $\bmA^T \bmv$ should be written to {\tt reverse\%P},
+     product $\bmA_o^T \bmv$ should be written to {\tt reverse\%P},
      and  {\tt reverse\%eval\_status} should be set to 0.
      If the user is unable to evaluate the product,
      the user need not set {\tt reverse\%P}, but
      should then set {\tt reverse\%eval\_status} to a non-zero value.
 
-\ittf{4.} The user should compute the matrix-vector product $\bmA \bmv$
+\ittf{4.} The user should compute the matrix-vector product $\bmA_o \bmv$
      using the vector $\bmv$ whose nonzero components are stored in positions
      {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
      of {\tt reverse\%V}. The remaining components of
@@ -1216,7 +1217,7 @@ Possible values of {\tt inform\%status} and the information required are
      remaining components left unaltered.
 
 \ittf{5.} The user should compute the nonzero components of the
-     matrix-vector product $\bmA \bmv$ using the vector $\bmv$ whose
+     matrix-vector product $\bmA_o \bmv$ using the vector $\bmv$ whose
      nonzero components are stored in positions
      {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
      of \linebreak {\tt reverse\%V}. The remaining components of
@@ -1230,9 +1231,9 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt reverse\%eval\_status} should be set to a non-zero value, and the
       remaining components left unaltered.
 
-\ittf{6.} The user should compute the matrix-vector product $\bmA^T \bmv$
+\ittf{6.} The user should compute the matrix-vector product $\bmA_o^T \bmv$
      using the vector $\bmv$ given in {\tt reverse\%V}. The components
-     $(\bmA^T \bmv)_j$ of the product $\bmA^T \bmv$, for
+     $(\bmA_o^T \bmv)_j$ of the product $\bmA_o^T \bmv$, for
      {\tt j = reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)},
      should be written to {\tt reverse\%P(j)}.
      The component {\tt reverse\%eval\_status} should set to 0 unless the
@@ -1284,13 +1285,13 @@ and {\tt inform\%bad\_alloc} respectively.
 
 \itt{\galerrrestrictions.} One of the restrictions
  {\tt prob\%n} $> 0$,
- {\tt prob\%m} $> 0$
+ {\tt prob\%o} $> 0$
     or the requirement that
-    {\tt prob\%A\_type} contain its relevant string
+    {\tt prob\%Ao\_type} contain its relevant string
     {\tt 'DENSE\_BY\_ROWS'}, 
     {\tt 'DENSE\_BY\_COLUMNS'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
     or {\tt SPARSE\_BY\_COLUMNS},
-    when $\bmA$ is available,  has been violated.
+    when $\bmA_o$ is available,  has been violated.
 
 %\itt{-3.} At least one of the arrays
 % {\tt prob\%A\_val}, {\tt prob\%A\_row}, {\tt prob\%A\_col},
@@ -1529,11 +1530,11 @@ variables and Lagrange multiplier.
 {\tt GALAHAD\_SPECFILE}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
-\galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$,
+\galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%o} $> 0$,
 {\tt prob\%A\_type} $\in \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'},
  {\tt SPARSE\_BY\_COLUMNS} $\}$
-(if $\bmA$ is explicit).
+(if $\bmA_o$ is explicit).
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
 
@@ -1544,7 +1545,8 @@ The required solution $\bmx$ necessarily satisfies
 the primal optimality conditions
 \eqn{4.1}{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
 the dual optimality conditions
-\eqn{4.2a}{\bmA^T \bmW (\bmA \bmx - \bmb ) + \sigma x = \lambda \bme + \bmz,}
+\eqn{4.2a}{\bmA_o^T \bmW (\bmA_o \bmx - \bmb ) + \sigma x = 
+ \lambda \bme + \bmz,}
 for some scalar Lagrange multiplier $\lambda$ and dual variables
 \eqn{4.2b}{ \bmz \geq 0,}
 and the complementary slackness conditions
@@ -1577,7 +1579,7 @@ thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set
 of increasing breakpoints at which it changes direction, or inexactly,
 by evaluating a sequence of different $\alpha$  on the arc.
-All computation is designed to exploit sparsity in $\bmA$.
+All computation is designed to exploit sparsity in $\bmA_o$.
 
 \vspace*{1mm}
 
@@ -1602,7 +1604,7 @@ Suppose we wish to minimize
 within the simplex
 \disp{ x_1 + x_2 + x_3 = 1, \;\; x_1, x_2, x_3 \geq 0.}
 Then, on writing the data for this problem as
-\disp{\bmA = \mat{ccc}{1 & & \\ 1 & 1 &   \\ &  & 1 \\ &  & 1}, \;\;
+\disp{\bmA_o = \mat{ccc}{1 & & \\ 1 & 1 &   \\ &  & 1 \\ &  & 1}, \;\;
  \bmb = \vect{ 0 \\ 2 \\ 1  \\ 2}, \;\;
 \bmx^{l} = \vect{ -1 \\ - \infty \\ 0 } \tim{and}
 \bmx^{u} = \vect{ \infty \\ 1 \\ 2 }}
@@ -1702,7 +1704,7 @@ products as follows:
 }
 \noindent
 This produces the same output.
-Now notice how the matrix $\bmA$ is passed to the matrix-vector product
+Now notice how the matrix $\bmA_o$ is passed to the matrix-vector product
 evaluation routines via the {\tt integer} and
 {\tt real} components of the derived type {\tt userdata}.
 

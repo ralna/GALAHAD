@@ -384,21 +384,20 @@
 <h1>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">blls</span></code> package uses a <strong>preconditioned project-gradient method</strong> to solve
 a given <strong>bound-constrained linear least-squares problem</strong>.
-The aim is to minimize the regularized linear least-squares objective function
+The aim is to minimize the (regularized) least-squares objective function
 <div class="math notranslate nohighlight">
-\[r(x) = q(x) + \frac{1}{2} \sigma \|x\|_2^2, \;\; \mbox{where} \;\;
-q(x) =  \frac{1}{2} \| A x - b\|_W^2,\]</div>
+\[q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2\]</div>
 
 subject to the simple bounds
 <div class="math notranslate nohighlight">
 \[x_l \leq x \leq x_u,\]</div>
 
-where the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span>, the vectors
-<span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span>, <span class="math notranslate nohighlight">\(x_u\)</span> and the non-negative weights <span class="math notranslate nohighlight">\(w\)</span> and
-<span class="math notranslate nohighlight">\(\sigma\)</span> are given, and where the Euclidean and weighted-Euclidean norms
-are given by <span class="math notranslate nohighlight">\(\|v\|_2^2 = v^T v\)</span> and <span class="math notranslate nohighlight">\(\|v\|_W^2 = v^T W v\)</span>,
-respectively, with <span class="math notranslate nohighlight">\(W = \mbox{diag}(w)\)</span>. Any of the components of
-the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
+where the norms <span class="math notranslate nohighlight">\(\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}\)</span>
+and <span class="math notranslate nohighlight">\(\|x\| = \sqrt{\sum_{i=1}^n x_i^2}\)</span>,
+<span class="math notranslate nohighlight">\(A_o\)</span> is a given  <span class="math notranslate nohighlight">\(o\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix,
+<span class="math notranslate nohighlight">\(b\)</span>, and <span class="math notranslate nohighlight">\(w\)</span> are vectors, <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span> is a scalar,
+and any of the components
+of the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -413,7 +412,7 @@ the <strong>primal optimality conditions</strong>
 
 the <strong>dual optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[A^T( A x - b) + \sigma x = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+\[A_o^T W( A_o x - b) + \sigma x = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
 
 and the <strong>complementary slackness conditions</strong>
 <div class="math notranslate nohighlight">
@@ -426,7 +425,7 @@ and where the vector inequalities hold component-wise.</p>
 <h1>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h1>
 <p>Projected-gradient methods iterate towards a point that satisfies
 these optimality conditions by ultimately aiming to satisfy
-<span class="math notranslate nohighlight">\(A^T( A x - b) + \sigma x = z\)</span>, while ensuring that the remaining
+<span class="math notranslate nohighlight">\(A_o^T W ( A_o x - b) + \sigma x = z\)</span>, while ensuring that the remaining
 conditions are satisfied at each stage.
 Appropriate norms of the amounts by which the optimality conditions
 fail to be satisfied are known as the primal and dual infeasibility,
@@ -452,7 +451,7 @@ thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set
 of increasing breakpoints at which it changes direction, or inexactly,
 by evaluating a sequence of different <span class="math notranslate nohighlight">\(\alpha\)</span>  on the arc.
-All computation is designed to exploit sparsity in <span class="math notranslate nohighlight">\(A\)</span>.</p>
+All computation is designed to exploit sparsity in <span class="math notranslate nohighlight">\(A_o\)</span>.</p>
 </section>
 <section id="reference">
 <h1>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h1>

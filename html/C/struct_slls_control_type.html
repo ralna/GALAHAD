@@ -1,0 +1,648 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>slls_control_type structure &#8212; GALAHAD C interfaces 1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/doxyrest-pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/target-highlight.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'struct_slls_control_type';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="_static/galahad.small.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/galahad.small.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="uco.html">
+                        Unconstrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="bco.html">
+                        Bound-constrained Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="ls.html">
+                        Least-Squares
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="lp.html">
+                        Linear Programming
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="qp.html">
+                        Quadratic Programming
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="reg.html">
+                        Regularization subproblems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="sys.html">
+                        Linear Systems
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="go.html">
+                        Global Optimization
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="auxiliary.html">
+                        Auxiliary Procedures
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">slls_control_type structure</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="struct_slls_inform_type.html">slls_inform_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+<li class="toctree-l1 has-children"><a class="reference internal" href="struct_slls_time_type.html">slls_time_type structure</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="simple">
+</ul>
+</li>
+
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="slls-control-type-structure">
+<span id="doxid-structslls-control-type"></span><span id="index-0"></span><h1>slls_control_type structure<a class="headerlink" href="#slls-control-type-structure" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="cp">#include</span> <span class="cpf">&lt;galahad_slls.h&gt;</span><span class="cp"></span>
+
+<span class="k">struct</span> <span class="n">slls_control_type</span> <span class="p">{</span>
+    <span class="c1">// components</span>
+
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structslls-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span class="std std-ref">f_indexing</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a11614f44ef4d939bdd984953346a7572"><span class="std std-ref">error</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span class="std std-ref">out</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span class="std std-ref">print_level</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1ae0eb21dc79b53664e45ce07c9109b3aa"><span class="std std-ref">start_print</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a9a3d9960a04602d2a18009c82ae2124e"><span class="std std-ref">stop_print</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a31edaef6b722ef2721633484405a649b"><span class="std std-ref">print_gap</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1ab717630b215f0362699acac11fb3652c"><span class="std std-ref">maxit</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1ad5e3138a19f7400e9d5c8105fa724831"><span class="std std-ref">cold_start</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1adf7719f1a4491459e361e80a00c55656"><span class="std std-ref">preconditioner</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1ab589a429c71e34b9c07c4d79a1e02902"><span class="std std-ref">ratio_cg_vs_sd</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a4a70200c62828c4d82e2e3efa5ebdac4"><span class="std std-ref">change_max</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a7a1029142a22f3e2a1963c3428276849"><span class="std std-ref">cg_maxit</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a7dceaf3624973df51f1baa0937420517"><span class="std std-ref">arcsearch_max_steps</span></a><span></span><span class="p">;</span>
+    <span class="kt">int</span> <a class="reference internal" href="#doxid-structslls-control-type-1a65c6f8382f1e75cd0b8abd5d148188d0"><span class="std std-ref">sif_file_device</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1adcd20aeaf7042e972ddab56f3867ce70"><span class="std std-ref">weight</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a12784541c48f57127781bc1c5937c616"><span class="std std-ref">stop_d</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1acd5b41623ff5db9a81dc5a8421fe5e2f"><span class="std std-ref">stop_cg_relative</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="doxyrest-code-target target" id="doxid-structslls-control-type-1ad8ba10f33e624074c203f079afed54f8"><span></span><span class="n">stop_cg_absolute</span></span><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a283df1a15f52c266a119dc0b37262f93"><span class="std std-ref">alpha_max</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a9c84d5b6142e91ff0c56960bcdcf9eb5"><span class="std std-ref">alpha_initial</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a94762277f055ecfb1c48bd439066fb21"><span class="std std-ref">alpha_reduction</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1ac73142611027bffbf7cdb6552704152b"><span class="std std-ref">arcsearch_acceptance_tol</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a6024e0b85e16b28075c69743433267cd"><span class="std std-ref">stabilisation_weight</span></a><span></span><span class="p">;</span>
+    <a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a52f14ff3f85e6805f2373eef5d0f3dfd"><span class="std std-ref">cpu_time_limit</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structslls-control-type-1ade9a921baa01ea4f50c39b7f640cd416"><span class="std std-ref">direct_subproblem_solve</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structslls-control-type-1abd8ff06ab50d29e781cf407702346a4b"><span class="std std-ref">exact_arc_search</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structslls-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span class="std std-ref">space_critical</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structslls-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span class="std std-ref">deallocate_error_fatal</span></a><span></span><span class="p">;</span>
+    <span class="kt">bool</span> <a class="reference internal" href="#doxid-structslls-control-type-1aa75b3a16d146c0d7ad57bf9817033843"><span class="std std-ref">generate_sif_file</span></a><span></span><span class="p">;</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structslls-control-type-1aaa95e830b709da79d9790471bab54193"><span class="std std-ref">sif_file_name</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+    <span class="kt">char</span> <a class="reference internal" href="#doxid-structslls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span class="std std-ref">prefix</span></a><span></span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+    <span class="k">struct</span> <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span class="std std-ref">sbls_control</span></a><span></span><span class="p">;</span>
+    <span class="k">struct</span> <a class="reference internal" href="convert.html#doxid-structconvert-control-type"><span class="std std-ref">convert_control_type</span></a><span></span> <a class="reference internal" href="#doxid-structslls-control-type-1ad5c7fdb1978f9943554af877e3e1e37b"><span class="std std-ref">convert_control</span></a><span></span><span class="p">;</span>
+<span class="p">};</span></pre>
+</section>
+<section id="detailed-documentation">
+<span id="details-structslls-control-type"></span><h1>detailed documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h1>
+<p>control derived type as a C struct</p>
+<section id="components">
+<h2>components<a class="headerlink" href="#components" title="Permalink to this heading">#</a></h2>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a6e8421b34d6b85dcb33c1dd0179efbb3"><span id="index-1"></span><span></span><span class="kt">bool</span> <span class="n">f_indexing</span></pre>
+<p>use C or Fortran sparse matrix indexing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a11614f44ef4d939bdd984953346a7572"><span id="index-2"></span><span></span><span class="kt">int</span> <span class="n">error</span></pre>
+<p>unit number for error and warning diagnostics</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1aa8000eda101cade7c6c4b913fce0cc9c"><span id="index-3"></span><span></span><span class="kt">int</span> <span class="n">out</span></pre>
+<p>general output unit number</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a12dae630bd8f5d2d00f6a86d652f5c81"><span id="index-4"></span><span></span><span class="kt">int</span> <span class="n">print_level</span></pre>
+<p>the level of output required</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ae0eb21dc79b53664e45ce07c9109b3aa"><span id="index-5"></span><span></span><span class="kt">int</span> <span class="n">start_print</span></pre>
+<p>on which iteration to start printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a9a3d9960a04602d2a18009c82ae2124e"><span id="index-6"></span><span></span><span class="kt">int</span> <span class="n">stop_print</span></pre>
+<p>on which iteration to stop printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a31edaef6b722ef2721633484405a649b"><span id="index-7"></span><span></span><span class="kt">int</span> <span class="n">print_gap</span></pre>
+<p>how many iterations between printing</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ab717630b215f0362699acac11fb3652c"><span id="index-8"></span><span></span><span class="kt">int</span> <span class="n">maxit</span></pre>
+<p>how many iterations to perform (-ve reverts to HUGE(1)-1)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ad5e3138a19f7400e9d5c8105fa724831"><span id="index-9"></span><span></span><span class="kt">int</span> <span class="n">cold_start</span></pre>
+<p>cold_start should be set to 0 if a warm start is required (with variable assigned according to X_stat, see below), and to any other value if the values given in prob.X suffice</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1adf7719f1a4491459e361e80a00c55656"><span id="index-10"></span><span></span><span class="kt">int</span> <span class="n">preconditioner</span></pre>
+<p>the preconditioner (scaling) used. Possible values are: /li 0. no preconditioner. /li 1. a diagonal preconditioner that normalizes the rows of <span class="math notranslate nohighlight">\(A\)</span>. /li anything else. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ab589a429c71e34b9c07c4d79a1e02902"><span id="index-11"></span><span></span><span class="kt">int</span> <span class="n">ratio_cg_vs_sd</span></pre>
+<p>the ratio of how many iterations use CGLS rather than steepest descent</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a4a70200c62828c4d82e2e3efa5ebdac4"><span id="index-12"></span><span></span><span class="kt">int</span> <span class="n">change_max</span></pre>
+<p>the maximum number of per-iteration changes in the working set permitted when allowing CGLS rather than steepest descent</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a7a1029142a22f3e2a1963c3428276849"><span id="index-13"></span><span></span><span class="kt">int</span> <span class="n">cg_maxit</span></pre>
+<p>how many CG iterations to perform per SLLS iteration (-ve reverts to n+1)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a7dceaf3624973df51f1baa0937420517"><span id="index-14"></span><span></span><span class="kt">int</span> <span class="n">arcsearch_max_steps</span></pre>
+<p>the maximum number of steps allowed in a piecewise arcsearch (-ve=infini</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a65c6f8382f1e75cd0b8abd5d148188d0"><span id="index-15"></span><span></span><span class="kt">int</span> <span class="n">sif_file_device</span></pre>
+<p>the unit number to write generated SIF file describing the current probl</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1adcd20aeaf7042e972ddab56f3867ce70"><span id="index-16"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">weight</span></pre>
+<p>the value of the non-negative regularization weight sigma, i.e., the quadratic objective function q(x) will be regularized by adding 1/2 weight ||x||^2; any value smaller than zero will be regarded as zero.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a12784541c48f57127781bc1c5937c616"><span id="index-17"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">stop_d</span></pre>
+<p>the required accuracy for the dual infeasibility</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1acd5b41623ff5db9a81dc5a8421fe5e2f"><span id="index-18"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">stop_cg_relative</span></pre>
+<p>the CG iteration will be stopped as soon as the current norm of the preconditioned gradient is smaller than max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a283df1a15f52c266a119dc0b37262f93"><span id="index-19"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">alpha_max</span></pre>
+<p>the largest permitted arc length during the piecewise line search</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a9c84d5b6142e91ff0c56960bcdcf9eb5"><span id="index-20"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">alpha_initial</span></pre>
+<p>the initial arc length during the inexact piecewise line search</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a94762277f055ecfb1c48bd439066fb21"><span id="index-21"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">alpha_reduction</span></pre>
+<p>the arc length reduction factor for the inexact piecewise line search</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ac73142611027bffbf7cdb6552704152b"><span id="index-22"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">arcsearch_acceptance_tol</span></pre>
+<p>the required relative reduction during the inexact piecewise line search</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a6024e0b85e16b28075c69743433267cd"><span id="index-23"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">stabilisation_weight</span></pre>
+<p>the stabilisation weight added to the search-direction subproblem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a52f14ff3f85e6805f2373eef5d0f3dfd"><span id="index-24"></span><a class="reference internal" href="slls_functions.html#doxid-galahad-precision-8h-1ab82133d435678ff159433d2e50cf295e"><span class="std std-ref">real_wp_</span></a><span></span> <span class="n">cpu_time_limit</span></pre>
+<p>the maximum CPU time allowed (-ve = no limit)</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ade9a921baa01ea4f50c39b7f640cd416"><span id="index-25"></span><span></span><span class="kt">bool</span> <span class="n">direct_subproblem_solve</span></pre>
+<p>direct_subproblem_solve is true if the least-squares subproblem is to be solved using a matrix factorization, and false if conjugate gradients are to be preferred</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1abd8ff06ab50d29e781cf407702346a4b"><span id="index-26"></span><span></span><span class="kt">bool</span> <span class="n">exact_arc_search</span></pre>
+<p>exact_arc_search is true if an exact arc_search is required, and false if an approximation suffices</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-27"></span><span></span><span class="kt">bool</span> <span class="n">space_critical</span></pre>
+<p>if space_critical is true, every effort will be made to use as little space as possible. This may result in longer computation times</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-28"></span><span></span><span class="kt">bool</span> <span class="n">deallocate_error_fatal</span></pre>
+<p>if deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1aa75b3a16d146c0d7ad57bf9817033843"><span id="index-29"></span><span></span><span class="kt">bool</span> <span class="n">generate_sif_file</span></pre>
+<p>if generate_sif_file is true, a SIF file describing the current problem will be generated</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1aaa95e830b709da79d9790471bab54193"><span id="index-30"></span><span></span><span class="kt">char</span> <span class="n">sif_file_name</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>name (max 30 characters) of generated SIF file containing input problem</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-31"></span><span></span><span class="kt">char</span> <span class="n">prefix</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span></pre>
+<p>all output lines will be prefixed by a string (max 30 characters) prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-32"></span><span></span><span class="k">struct</span> <a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span> <span class="n">sbls_control</span></pre>
+<p>control parameters for SBLS</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structslls-control-type-1ad5c7fdb1978f9943554af877e3e1e37b"><span id="index-33"></span><span></span><span class="k">struct</span> <a class="reference internal" href="convert.html#doxid-structconvert-control-type"><span class="std std-ref">convert_control_type</span></a><span></span> <span class="n">convert_control</span></pre>
+<p>control parameters for CONVERT</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   slls_control_type structure
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#detailed-documentation">
+   detailed documentation
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#components">
+     components
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/struct_slls_control_type.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

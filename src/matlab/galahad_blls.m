@@ -1,17 +1,17 @@
 % GALAHAD_BLLS -
 %
-%  Given an m by n matrix A, an m-vector b, and a constant sigma >= 0, find
+%  Given an o by n matrix Ao, an o-vector b, and a constant sigma >= 0, find
 %  a local mimimizer of the BOUND_CONSTRAINED LINER LEAST-SQUARES problem
-%    minimize 0.5 || A x - b ||^2 + 0.5 sigma ||x||^2
+%    minimize 0.5 || Ao x - b ||^2 + 0.5 sigma ||x||^2
 %    subject to x_l <= x <= x_u
 %  using a projection method.
-%  Advantage is taken of sparse A.
+%  Advantage is taken of sparse Ao.
 %
 %  Simple usage -
 %
 %  to solve the bound-constrained liner least-squares problem
 %   [ x, inform, aux ]
-%     = galahad_blls( A, b, x_l, x_u, control )
+%     = galahad_blls( Ao, b, x_l, x_u, control )
 %
 %  Sophisticated usage -
 %
@@ -21,14 +21,14 @@
 %
 %  to solve the problem using existing data structures
 %   [ x, inform, aux ]
-%     = galahad_blls( 'existing', A, b, x_l, x_u, control )
+%     = galahad_blls( 'existing', Ao, b, x_l, x_u, control )
 %
 %  to remove data structures after solution
 %   galahad_blls( 'final' )
 %
 %  Usual Input -
-%    A: the m by n matrix A
-%    b: the m-vector b
+%    Ao: the o by n matrix Ao
+%    b: the o-vector b
 %    x_l: the n-vector x_l. The value -inf should be used for infinite bounds
 %    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 %
@@ -62,4 +62,4 @@
 %            x_stat(i) > 0 if (x_u)_i = (x)_i
 %
 % This version copyright Nick Gould for GALAHAD productions
-% 12/December/2020
+% 30/December/2023

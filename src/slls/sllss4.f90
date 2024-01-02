@@ -1,12 +1,12 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-12 AT 10:15 GMT
+! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 10:00 GMT
    PROGRAM GALAHAD_SLLS_EXAMPLE4
 
 ! use slls to solve a bilinear fitting problem
 !  min 1/2 sum_i ( xi y^T A_i x + b - mu_i)^2,
-! where x and y lie in n and m regular simplexes {z : e^T z = 1, z >= 0},
+! where x and y lie in n and o regular simplexes {z : e^T z = 1, z >= 0},
 ! using alternating solves with x free and y fixed, and vice versa
 
-! For this example, n = 3m/2, A_i is given by subroutine calls (below)
+! For this example, n = 3o/2, A_i is given by subroutine calls (below)
 ! and mu_i is xi_* y_*^T A_i x_* + b_* for given x_*, y_*, xi_* and b_i*
    USE GALAHAD_SLLS_double         ! double precision version
    USE GALAHAD_RAND_double
@@ -18,18 +18,19 @@
    TYPE ( SLLS_inform_type ) :: inform_x, inform_y
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat, Y_stat
-   INTEGER :: i, j, ne, pass
+   INTEGER :: i, ne, pass
    TYPE ( RAND_seed ) :: seed
    INTEGER, PARAMETER :: eg = 2
    REAL ( KIND = wp ) :: val, f, xi, b, a_11, a_12, a_22, r_1, r_2
-   INTEGER, PARAMETER :: m = 20, n = 3 * m / 2
+   INTEGER, PARAMETER :: o = 20, n = 3 * o / 2
    INTEGER, PARAMETER :: obs = 100
    INTEGER, PARAMETER :: pass_max = 3
    INTEGER, PARAMETER :: sol = 2
 !  LOGICAL, PARAMETER :: pertub_observations = .TRUE.
    LOGICAL, PARAMETER :: pertub_observations = .FALSE.
-   REAL ( KIND = wp ) :: X( n ), Y( m ), Aix( m ), ATiy( n ), MU( obs )
-   REAL ( KIND = wp ) :: AX( obs, n ), AY( obs, m )
+   REAL ( KIND = wp ) :: X( n ), Y( o ), Aix( o ), MU( obs )
+!  REAL ( KIND = wp ) :: ATiy( n ), AY( obs, o )
+!  REAL ( KIND = wp ) :: AX( obs, n )
 
 ! start problem data
 
@@ -42,36 +43,36 @@
      X( : n / 2 ) = 0.0_wp
      X( n / 2 + 1 : ) = 1.0_wp / REAL( n / 2, KIND = wp )
 !  solution is at y = 2/m for i=1:m/2 and 0 for i=m/2+1:m
-     Y( : m / 2 ) = 1.0_wp / REAL( m / 2, KIND = wp )
-     Y( m / 2 + 1 : ) = 0.0_wp
+     Y( : o / 2 ) = 1.0_wp / REAL( o / 2, KIND = wp )
+     Y( o / 2 + 1 : ) = 0.0_wp
 ! random dense solution
    CASE( 2 )
 !  random x and y in (0,) scaled to satisfy e^T x = 1 = e^T y
      CALL RAND_initialize( seed )
      CALL RAND_random_real( seed, .TRUE., X( : n ) )
      val = SUM( X( : n ) ) ; X( : n ) = X( : n ) / val
-     CALL RAND_random_real( seed, .TRUE., Y( : m ) )
-     val = SUM( Y( : m ) ) ; Y( : m ) = Y( : m ) / val
+     CALL RAND_random_real( seed, .TRUE., Y( : o ) )
+     val = SUM( Y( : o ) ) ; Y( : o ) = Y( : o ) / val
    END SELECT
    xi = 1.0_wp ; b = 0.0_wp
 
 !  set up storage for the x problem
 
-   CALL SMT_put( p_x%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_x%A%val(obs * n ), p_x%B( obs ), p_x%X( n ), X_stat( n ) )
-   p_x%m = obs ; p_x%n = n ; p_x%A%m = p_x%m ; p_x%A%n = p_x%n
+   CALL SMT_put( p_x%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_x%Ao%val(obs * n ), p_x%B( obs ), p_x%X( n ), X_stat( n ) )
+   p_x%o = obs ; p_x%n = n ; p_x%Ao%m = p_x%o ; p_x%Ao%n = p_x%n
 
 !  set up storage for the y problem
 
-   CALL SMT_put( p_y%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_y%A%val( obs * m ), p_y%B( obs ), p_y%X( m ), Y_stat( m ) )
-   p_y%m = obs ; p_y%n = m ; p_y%A%m = p_y%m ; p_y%A%n = p_y%n
+   CALL SMT_put( p_y%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_y%Ao%val( obs * o ), p_y%B( obs ), p_y%X( o ), Y_stat( o ) )
+   p_y%o = obs ; p_y%n = o ; p_y%Ao%m = p_y%o ; p_y%Ao%n = p_y%n
 
 !  generate a set of observations, mu_i
 
    DO i = 1, obs
-     CALL FORM_Aix( m, n, i, xi, X, Aix )
-!    CALL FORM_ATiy( m, n, i, xi, Y, ATiy )
+     CALL FORM_Aix( o, n, i, xi, X, Aix )
+!    CALL FORM_ATiy( o, n, i, xi, Y, ATiy )
 !write(6,"( ' X', /, ( 5ES12.4 ) )" ) X
 !write(6,"( ' Aix', /, ( 5ES12.4 ) )" ) Aix
 !write(6,"( ' Y', /, ( 5ES12.4 ) )" ) Y
@@ -88,7 +89,7 @@
 write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 
 !  starting point
-   X = 1.0_wp / REAL( n, KIND = wp ) ; Y = 1.0_wp / REAL( m, KIND = wp )
+   X = 1.0_wp / REAL( n, KIND = wp ) ; Y = 1.0_wp / REAL( o, KIND = wp )
    xi = 2.0_wp ; b = 1.0_wp
 
 ! problem data complete. Initialze data and control parameters
@@ -114,7 +115,7 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 
    ne = 0
    DO i = 1, obs
-     CALL FORM_ATiy( m, n, i, xi, Y, p_x%A%val( ne + 1 : ne + n ) )
+     CALL FORM_ATiy( o, n, i, xi, Y, p_x%Ao%val( ne + 1 : ne + n ) )
      ne = ne + n
      p_x%B( i ) = MU( i ) - b
    END DO
@@ -142,8 +143,8 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 
    ne = 0
    DO i = 1, obs
-     CALL FORM_Aix( m, n, i, xi, X, p_y%A%val( ne + 1 : ne + m ) )
-     ne = ne + m
+     CALL FORM_Aix( o, n, i, xi, X, p_y%Ao%val( ne + 1 : ne + o ) )
+     ne = ne + o
      p_y%B( i ) = MU( i ) - b
    END DO
    p_y%X = Y
@@ -171,9 +172,9 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
    f = 0.0_wp
    ne = 0 ; a_11 = 0.0_wp ; a_12 = 0.0_wp ; r_1 = 0.0_wp
    DO i = 1, obs
-     CALL FORM_Aix( m, n, i, 1.0_wp, X, p_y%A%val( ne + 1 : ne + m ) )
-     val = DOT_PRODUCT( Y, p_y%A%val( ne + 1 : ne + m ) )
-     ne = ne + n
+     CALL FORM_Aix( o, n, i, 1.0_wp, X, p_y%Ao%val( ne + 1 : ne + o ) )
+     val = DOT_PRODUCT( Y, p_y%Ao%val( ne + 1 : ne + o ) )
+     ne = ne + o
      f = f + ( xi * val + b - MU( i ) ) ** 2
      a_11 = a_11 + val ** 2
      a_12 = a_12 + val
@@ -195,7 +196,7 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 
    val = 0.0_wp
    DO i = 1, obs
-     CALL FORM_Aix( m, n, i, xi, X, Aix )
+     CALL FORM_Aix( o, n, i, xi, X, Aix )
      val = val + ( DOT_PRODUCT( Y, Aix ) + b - MU( i ) ) ** 2
    END DO
    WRITE( 6, "( /, ' 1/2|| F(x,y) - b||^2 = ', ES12.4 )" ) 0.5_wp * val
@@ -210,23 +211,23 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 
    CALL SLLS_terminate( data_x, control_x, inform_x )  !  delete workspace
    DEALLOCATE( p_x%B, p_x%X, p_x%Z, X_stat )
-   DEALLOCATE( p_x%A%val, p_x%A%type )
+   DEALLOCATE( p_x%Ao%val, p_x%Ao%type )
    CALL SLLS_terminate( data_y, control_y, inform_y )  !  delete workspace
    DEALLOCATE( p_y%B, p_y%X, p_y%Z, Y_stat )
-   DEALLOCATE( p_y%A%val, p_y%A%type )
+   DEALLOCATE( p_y%Ao%val, p_y%Ao%type )
 
 
    CONTAINS
-     SUBROUTINE FORM_Aix( m, n, i, xi, X, Aix )
-     INTEGER :: m, n, i
+     SUBROUTINE FORM_Aix( o, n, i, xi, X, Aix )
+     INTEGER :: o, n, i
      REAL ( KIND = wp ) :: xi
      REAL ( KIND = wp ) :: X( n )
-     REAL ( KIND = wp ) :: Aix( m )
+     REAL ( KIND = wp ) :: Aix( o )
      REAL ( KIND = wp ) :: ri, partial
      ri = REAL( i , KIND = wp )
      SELECT CASE ( eg )
 
-!        <-   m   -> <-n-m->
+!        <-   o   -> <-n-m->
 ! A_i = ( 1 . 1 . 1 | i   0 )
 !       (   .       |   .   )
 !       ( 0   1   0 | 0   i ) <-n-m
@@ -234,12 +235,12 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 !       ( 0   0   1 | 1 . 1 )
 
      CASE( 1 )
-       Aix( 1 ) = SUM( X( 1 : m ) )
-       Aix( 2 : m - 1 ) = X( 2 : m - 1 )
-       Aix( m ) = X( m ) + SUM( X( m + 1 : n ) )
-       Aix( 1 : n - m ) = Aix( 1 : n - m ) + ri * X( m + 1 : n )
+       Aix( 1 ) = SUM( X( 1 : o ) )
+       Aix( 2 : o - 1 ) = X( 2 : o - 1 )
+       Aix( o ) = X( o ) + SUM( X( o + 1 : n ) )
+       Aix( 1 : n - o ) = Aix( 1 : n - o ) + ri * X( o + 1 : n )
 
-!         <-      m   ->   <-n-m->
+!         <-      o   ->   <-n-m->
 ! A_i = ( i+1 .  1   . 1  | 1   0 )
 !       (     .      . .  |   .   )
 !       (  1  . i+1  . 1  | 0   1 ) <-n-m
@@ -247,28 +248,28 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
 !       (  1  .  1    i+1 | 0 . 0 )
 
      CASE( 2 )
-       partial = SUM( X( 1 : m ) )
-       Aix( : m ) = partial + ri * X( 1 : m )
-       Aix( : n - m ) = Aix( : n - m ) + X( m + 1 : n )
+       partial = SUM( X( 1 : o ) )
+       Aix( : o ) = partial + ri * X( 1 : o )
+       Aix( : n - o ) = Aix( : n - o ) + X( o + 1 : n )
      END SELECT
-     Aix( : m ) = Aix( : m ) * xi
+     Aix( : o ) = Aix( : o ) * xi
      END SUBROUTINE FORM_Aix
-     SUBROUTINE FORM_ATiy( m, n, i, xi, Y, ATiy )
-     INTEGER :: m, n, i
+     SUBROUTINE FORM_ATiy( o, n, i, xi, Y, ATiy )
+     INTEGER :: o, n, i
      REAL ( KIND = wp ) :: xi
-     REAL ( KIND = wp ) :: Y( m )
+     REAL ( KIND = wp ) :: Y( o )
      REAL ( KIND = wp ) :: ATiy( n )
      REAL ( KIND = wp ) :: ri, partial
      ri = REAL( i , KIND = wp )
      SELECT CASE ( eg )
      CASE( 1 )
        ATiy( 1 ) = Y( 1 )
-       ATiy( 2 : m ) = Y( 1 ) + Y( 2 : m )
-       ATiy( m + 1 : n ) = Y( m ) + ri * Y( 1 : n - m )
+       ATiy( 2 : o ) = Y( 1 ) + Y( 2 : o )
+       ATiy( o + 1 : n ) = Y( o ) + ri * Y( 1 : n - o )
      CASE( 2 )
-       partial = SUM( Y( : m ) )
-       ATiy( 1 : m ) = partial + ri * Y( 1 : m )
-       ATiy( m + 1 : n ) = Y( 1 : n - m )
+       partial = SUM( Y( : o ) )
+       ATiy( 1 : o ) = partial + ri * Y( 1 : o )
+       ATiy( o + 1 : n ) = Y( 1 : n - o )
      END SELECT
      ATiy( : n ) = ATiy( : n ) * xi
      END SUBROUTINE FORM_ATiy

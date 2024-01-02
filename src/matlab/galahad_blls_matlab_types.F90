@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 3.3 - 12/12/2020 AT 16:15 GMT.
+!  THIS VERSION: GALAHAD 4.3 - 2023-12-30 AT 15:45 GMT.
 
 !-*-*-*-  G A L A H A D _ B L L S _ M A T L A B _ T Y P E S   M O D U L E  -*-*-
 

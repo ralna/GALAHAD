@@ -42,13 +42,14 @@ Full advantage is taken of any zero coefficients in the matrix $\bmA_o$.
 {\tt GALAHAD\_LSP},
 {\tt GALAHAD\_\-QPD},
 {\tt GALAHAD\_\-CQP},
+{\tt GALAHAD\_\-CLLS},
 {\tt GALAHAD\_\-FIT},
 {\tt GALAHAD\_\-ROOTS},
 {\tt GALAHAD\_\-NORMS},
 {\tt GALAHAD\_\-SLS},
 {\tt GALAHAD\_\-CRO},
 {\tt GALAHAD\_FDC}.
-\galdate October 2023.
+\galdate December 2023.
 \galorigin N. I. M. Gould.
 \gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 \galparallelism Some options may use OpenMP and its runtime library.
@@ -95,7 +96,7 @@ must be renamed on one of the {\tt USE} statements.
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmatrix
-An $m$ by $n$ matrix $A$ (in our case $\bmA_o$)
+An $m$ by $n$ matrix $\bmA$ (in our case $\bmA_o$)
 may be stored in a variety of input formats.
 
 \subsubsection{Dense row-wise storage format}\label{dense}
@@ -1396,6 +1397,8 @@ variables and Lagrange multipliers.
 {\tt GALAHAD\_QPT},
 {\tt GALAHAD\_LSP},
 {\tt GALAHAD\_QPD},
+{\tt GALAHAD\_\-CQP},
+{\tt GALAHAD\_\-CLLS},
 {\tt GALAHAD\_FIT},
 {\tt GALAHAD\_ROOTS},
 {\tt GALAHAD\_NORMS},

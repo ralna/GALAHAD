@@ -320,7 +320,7 @@ approximation.
                   ytrans that will be used as the $k$-th most
                   favoured. order need not be set if the natural
                   order, $k, k = 1,...,$ m, is desired, and this case
-                  order should be NULL.
+                  order should be C_NULL.
 
 .. index:: pair: function; sha_information
 .. _doxid-galahad__sha_8h_information:

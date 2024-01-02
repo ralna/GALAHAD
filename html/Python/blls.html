@@ -44,7 +44,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'blls';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="CLLS" href="clls.html" />
+    <link rel="next" title="BLLSB" href="bllsb.html" />
     <link rel="prev" title="Least-Squares" href="ls.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -367,8 +367,10 @@
     <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">BLLS - bound-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
 </ul>
 
   </div>
@@ -406,21 +408,20 @@
 <h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">blls</span></code> package uses a <strong>preconditioned project-gradient method</strong> to solve
 a given <strong>bound-constrained linear least-squares problem</strong>.
-The aim is to minimize the regularized linear least-squares objective function
+The aim is to minimize the (regularized) least-squares objective function
 <div class="math notranslate nohighlight">
-\[r(x) = q(x) + \frac{1}{2} \sigma \|x\|_2^2, \;\; \mbox{where} \;\;
-q(x) =  \frac{1}{2} \| A x - b\|_W^2,\]</div>
+\[q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2\]</div>
 
 subject to the simple bounds
 <div class="math notranslate nohighlight">
 \[x_l \leq x \leq x_u,\]</div>
 
-where the <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span>, the vectors
-<span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(x_l\)</span>, <span class="math notranslate nohighlight">\(x_u\)</span> and the non-negative weights <span class="math notranslate nohighlight">\(w\)</span> and
-<span class="math notranslate nohighlight">\(\sigma\)</span> are given, and where the Euclidean and weighted-Euclidean norms
-are given by <span class="math notranslate nohighlight">\(\|v\|_2^2 = v^T v\)</span> and <span class="math notranslate nohighlight">\(\|v\|_W^2 = v^T W v\)</span>,
-respectively, with <span class="math notranslate nohighlight">\(W = \mbox{diag}(w)\)</span>. Any of the components of
-the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
+where the norms <span class="math notranslate nohighlight">\(\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}\)</span>
+and <span class="math notranslate nohighlight">\(\|x\| = \sqrt{\sum_{i=1}^n x_i^2}\)</span>,
+<span class="math notranslate nohighlight">\(A_o\)</span> is a given  <span class="math notranslate nohighlight">\(o\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix,
+<span class="math notranslate nohighlight">\(b\)</span>, and <span class="math notranslate nohighlight">\(w\)</span> are vectors, <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span> is a scalar,
+and any of the components
+of the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
 The method offers the choice of direct and iterative solution of the key
 regularization subproblems, and is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
@@ -435,7 +436,7 @@ the <strong>primal optimality conditions</strong>
 
 the <strong>dual optimality conditions</strong>
 <div class="math notranslate nohighlight">
-\[A^T( A x - b) + \sigma x = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
+\[A_o^T W( A_o x - b) + \sigma x = z, \;\; z = z_l + z_u, z_l \geq 0 \;\;\mbox{and}\;\; z_u \leq 0,\]</div>
 
 and the <strong>complementary slackness conditions</strong>
 <div class="math notranslate nohighlight">
@@ -448,7 +449,7 @@ and where the vector inequalities hold component-wise.</p>
 <h2>method<a class="headerlink" href="#method" title="Permalink to this heading">#</a></h2>
 <p>Projected-gradient methods iterate towards a point that satisfies
 these optimality conditions by ultimately aiming to satisfy
-<span class="math notranslate nohighlight">\(A^T( A x - b) + \sigma x = z\)</span>, while ensuring that the remaining
+<span class="math notranslate nohighlight">\(A_o^T W ( A_o x - b) + \sigma x = z\)</span>, while ensuring that the remaining
 conditions are satisfied at each stage.
 Appropriate norms of the amounts by which the optimality conditions
 fail to be satisfied are known as the primal and dual infeasibility,
@@ -474,7 +475,7 @@ thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set
 of increasing breakpoints at which it changes direction, or inexactly,
 by evaluating a sequence of different <span class="math notranslate nohighlight">\(\alpha\)</span>  on the arc.
-All computation is designed to exploit sparsity in <span class="math notranslate nohighlight">\(A\)</span>.</p>
+All computation is designed to exploit sparsity in <span class="math notranslate nohighlight">\(A_o\)</span>.</p>
 </section>
 <section id="reference">
 <h2>reference<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
@@ -488,56 +489,56 @@ Internal Report 2023-1 (2023).</p>
 </section>
 <section id="matrix-storage">
 <h2>matrix storage<a class="headerlink" href="#matrix-storage" title="Permalink to this heading">#</a></h2>
-<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(m\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A\)</span> may be presented
-and stored in a variety of convenient input formats.</p>
+<p>The <strong>unsymmetric</strong> <span class="math notranslate nohighlight">\(o\)</span> by <span class="math notranslate nohighlight">\(n\)</span> matrix <span class="math notranslate nohighlight">\(A_o\)</span>
+may be presented and stored in a variety of convenient input formats.</p>
 <p><em>Dense</em> storage format:
-The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by rows, that is,
+The matrix <span class="math notranslate nohighlight">\(A_o\)</span> is stored as a compact dense matrix by rows, that is,
 the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
-In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array A_val
-will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
-The string A_type = ‘dense’ should be specified.</p>
+In this case, component <span class="math notranslate nohighlight">\(n \ast i + j\)</span>  of the storage array Ao_val
+will hold the value <span class="math notranslate nohighlight">\(A_{o\,ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq o-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string Ao_type = ‘dense’ should be specified.</p>
 <p><em>Dense by columns</em> storage format:
-The matrix <span class="math notranslate nohighlight">\(A\)</span> is stored as a compact dense matrix by columns, that is,
+The matrix <span class="math notranslate nohighlight">\(A_o\)</span> is stored as a compact dense matrix by columns, that is,
 the values of the entries of each column in turn are
 stored in order within an appropriate real one-dimensional array.
-In this case, component <span class="math notranslate nohighlight">\(m \ast j + i\)</span>  of the storage array A_val
-will hold the value <span class="math notranslate nohighlight">\(A_{ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
-The string A_type = ‘dense_by_columns’ should be specified.</p>
+In this case, component <span class="math notranslate nohighlight">\(o \ast j + i\)</span>  of the storage array Ao_val
+will hold the value <span class="math notranslate nohighlight">\(A_{o\,ij}\)</span> for <span class="math notranslate nohighlight">\(0 \leq i \leq o-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>.
+The string Ao_type = ‘dense_by_columns’ should be specified.</p>
 <p><em>Sparse co-ordinate</em> storage format:
 Only the nonzero entries of the matrices are stored.
-For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A\)</span>,
-its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{ij}\)</span>,
-<span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,  <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
-components of the integer arrays A_row and A_col and real array A_val,
-respectively, while the number of nonzeros is recorded as A_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
-The string A_type = ‘coordinate’should be specified.</p>
+For the <span class="math notranslate nohighlight">\(l\)</span>-th entry, <span class="math notranslate nohighlight">\(0 \leq l \leq ne-1\)</span>, of <span class="math notranslate nohighlight">\(A_o\)</span>,
+its row index i, column index j and value <span class="math notranslate nohighlight">\(A_{o\,ij}\)</span>,
+<span class="math notranslate nohighlight">\(0 \leq i \leq o-1\)</span>, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,  are stored as the <span class="math notranslate nohighlight">\(l\)</span>-th
+components of the integer arrays Ao_row and Ao_col and real array Ao_val,
+respectively, while the number of nonzeros is recorded as Ao_ne = <span class="math notranslate nohighlight">\(ne\)</span>.
+The string Ao_type = ‘coordinate’should be specified.</p>
 <p><em>Sparse row-wise storage</em> format:
 Again only the nonzero entries are stored, but this time
 they are ordered so that those in row i appear directly before those
-in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A\)</span> the i-th component of the
-integer array A_ptr holds the position of the first entry in this row,
-while A_ptr(m) holds the total number of entries.
+in row i+1. For the i-th row of <span class="math notranslate nohighlight">\(A_o\)</span> the i-th component of the
+integer array Ao_ptr holds the position of the first entry in this row,
+while A_ptr(o) holds the total number of entries.
 The column indices j, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>, and values
-<span class="math notranslate nohighlight">\(A_{ij}\)</span> of the  nonzero entries in the i-th row are stored in components
-l = A_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(i+1)-1,  <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>,
-of the integer array A_col, and real array A_val, respectively.
+<span class="math notranslate nohighlight">\(A_{o\,ij}\)</span> of the  nonzero entries in the i-th row are stored in components
+l = Ao_ptr(i), <span class="math notranslate nohighlight">\(\ldots\)</span>, Ao_ptr(i+1)-1, <span class="math notranslate nohighlight">\(0 \leq i \leq o-1,\)</span>
+of the integer array Ao_col, and real array Ao_val, respectively.
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
-The string A_type = ‘sparse_by_rows’ should be specified.</p>
+The string Ao_type = ‘sparse_by_rows’ should be specified.</p>
 <p><em>Sparse column-wise</em> storage format:
 Once again only the nonzero entries are stored, but this time
 they are ordered so that those in column j appear directly before those
-in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A\)</span> the j-th component of the
-integer array A_ptr holds the position of the first entry in this column,
-while A_ptr(n) holds the total number of entries.
-The row indices i, <span class="math notranslate nohighlight">\(0 \leq i \leq m-1\)</span>, and values <span class="math notranslate nohighlight">\(A_{ij}\)</span>
+in column j+1. For the j-th column of <span class="math notranslate nohighlight">\(A_o\)</span> the j-th component of the
+integer array Ao_ptr holds the position of the first entry in this column,
+while Ao_ptr(n) holds the total number of entries.
+The row indices i, <span class="math notranslate nohighlight">\(0 \leq i \leq o-1\)</span>, and values <span class="math notranslate nohighlight">\(A_{o\,ij}\)</span>
 of the  nonzero entries in the j-th columns are stored in components
-l = A_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, A_ptr(j+1)-1, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,
-of the integer array A_row, and real array A_val, respectively.
+l = Ao_ptr(j), <span class="math notranslate nohighlight">\(\ldots\)</span>, Ao_ptr(j+1)-1, <span class="math notranslate nohighlight">\(0 \leq j \leq n-1\)</span>,
+of the integer array Ao_row, and real array Ao_val, respectively.
 As before, for sparse matrices, this scheme almost always requires less
 storage than the co-ordinate format.
-The string A_type = ‘sparse_by_columns’ should be specified.</p>
+The string Ao_type = ‘sparse_by_columns’ should be specified.</p>
 </section>
 <section id="functions">
 <h2>functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h2>
@@ -694,34 +695,42 @@ will result in the prefix word.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="galahad.blls.blls.load">
-<span class="sig-prename descclassname"><span class="pre">blls.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.blls.blls.load" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">blls.</span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_ptr_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_ptr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.blls.blls.load" title="Permalink to this definition">#</a></dt>
 <dd><p>Import problem data into internal storage prior to solution.</p>
 <p><strong>Parameters:</strong></p>
 <dl class="simple">
 <dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
 </dd>
-<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of constraints.</p>
+<dt>o<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
 </dd>
-<dt>A_type<span class="classifier">string</span></dt><dd><p>specifies the unsymmetric storage scheme used for the constraints
-Jacobian <span class="math notranslate nohighlight">\(A\)</span>.
-It should be one of ‘coordinate’, ‘sparse_by_rows’ or ‘dense’;
+<dt>Ao_type<span class="classifier">string</span></dt><dd><p>specifies the unsymmetric storage scheme used for the objective
+design matrix <span class="math notranslate nohighlight">\(A_o\)</span>. It should be one of ‘coordinate’,
+‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense’ or ‘dense_by_columns’;
 lower or upper case variants are allowed.</p>
 </dd>
-<dt>A_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage
-scheme. It need not be set for any of the other two schemes.</p>
+<dt>Ao_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate
+storage scheme. It need not be set for any of the other schemes.</p>
 </dd>
-<dt>A_row<span class="classifier">ndarray(A_ne)</span></dt><dd><p>holds the row indices of <span class="math notranslate nohighlight">\(A\)</span>
-in the sparse co-ordinate storage scheme. It need not be set for
-any of the other two schemes, and in this case can be None.</p>
+<dt>Ao_row<span class="classifier">ndarray(Ao_ne)</span></dt><dd><p>holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and
+and sparse column-wise storage schemes. It need not be set for
+any of the other schemes, and in this case can be None.</p>
 </dd>
-<dt>A_col<span class="classifier">ndarray(A_ne)</span></dt><dd><p>holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate,
-or the sparse row-wise storage scheme. It need not be set when the
-dense storage scheme is used, and in this case can be None.</p>
+<dt>Ao_col<span class="classifier">ndarray(Ao_ne)</span></dt><dd><p>holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in either the sparse co-ordinate,
+or the sparse row-wise storage scheme. It need not be set for
+any of the other schemes, and in this case can be None.</p>
 </dd>
-<dt>A_ptr<span class="classifier">ndarray(m+1)</span></dt><dd><p>holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the
-total number of entries, in the sparse row-wise storage
-scheme. It need not be set when the other schemes are used, and in
-this case can be None.</p>
+<dt>Ao_ptr_ne<span class="classifier">int</span></dt><dd><p>holds the length of the pointer array if sparse row or column
+storage scheme is used for <span class="math notranslate nohighlight">\(A_o\)</span>. For the sparse row scheme,
+Ao_ptr_ne should be at least o+1, while for the sparse column scheme,
+it should be at least n+1, It need not be set when the other schemes
+are used.</p>
+</dd>
+<dt>Ao_ptr<span class="classifier">ndarray(Ao_ptr_ne)</span></dt><dd><p>holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the
+total number of entries, in the sparse row-wise storage scheme.
+By contrast, it holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>,
+as well as the total number of entries, in the sparse column-wise
+storage scheme. It need not be set when the other schemes are used,
+and in this case can be None.</p>
 </dd>
 <dt>options<span class="classifier">dict, optional</span></dt><dd><p>dictionary of control options (see <code class="docutils literal notranslate"><span class="pre">blls.initialize</span></code>).</p>
 </dd>
@@ -730,24 +739,25 @@ this case can be None.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="galahad.blls.blls.solve_ls">
-<span class="sig-prename descclassname"><span class="pre">blls.</span></span><span class="sig-name descname"><span class="pre">solve_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.blls.blls.solve_ls" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">blls.</span></span><span class="sig-name descname"><span class="pre">solve_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ao_ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ao_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#galahad.blls.blls.solve_ls" title="Permalink to this definition">#</a></dt>
 <dd><p>Find a solution to the bound-constraind regularized linear least-squares
 problem involving the least-squares objective function <span class="math notranslate nohighlight">\(q(x)\)</span>.</p>
 <p><strong>Parameters:</strong></p>
 <dl class="simple">
 <dt>n<span class="classifier">int</span></dt><dd><p>holds the number of variables.</p>
 </dd>
-<dt>m<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
+<dt>o<span class="classifier">int</span></dt><dd><p>holds the number of residuals.</p>
 </dd>
-<dt>w<span class="classifier">ndarray(m)</span></dt><dd><p>holds the weights <span class="math notranslate nohighlight">\(w\)</span> in the objective function.</p>
+<dt>w<span class="classifier">ndarray(o)</span></dt><dd><p>holds the weights <span class="math notranslate nohighlight">\(w\)</span> in the objective function.</p>
 </dd>
-<dt>a_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the constraint Jacobian <span class="math notranslate nohighlight">\(A\)</span>.</p>
+<dt>ao_ne<span class="classifier">int</span></dt><dd><p>holds the number of entries in the constraint Jacobian <span class="math notranslate nohighlight">\(A_o\)</span>.</p>
 </dd>
-<dt>A_val<span class="classifier">ndarray(a_ne)</span></dt><dd><p>holds the values of the nonzeros in the constraint Jacobian
-<span class="math notranslate nohighlight">\(A\)</span> in the same order as specified in the sparsity pattern in
+<dt>Ao_val<span class="classifier">ndarray(ao_ne)</span></dt><dd><p>holds the values of the nonzeros in the constraint Jacobian
+<span class="math notranslate nohighlight">\(A_o\)</span> in the same order as specified in the sparsity pattern in
 <code class="docutils literal notranslate"><span class="pre">blls.load</span></code>.</p>
 </dd>
-<dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of vector <span class="math notranslate nohighlight">\(b\)</span> in the objective function.</p>
+<dt>b<span class="classifier">ndarray(o)</span></dt><dd><p>holds the values of the observation vector <span class="math notranslate nohighlight">\(b\)</span> in the
+objective function.</p>
 </dd>
 <dt>x_l<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the lower bounds <span class="math notranslate nohighlight">\(x_l\)</span> on the variables.
 The lower bound on any component of <span class="math notranslate nohighlight">\(x\)</span> that is unbounded from
@@ -772,10 +782,12 @@ value, such as <span class="math notranslate nohighlight">\(z=0\)</span>, suffic
 <dt>x<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the approximate minimizer <span class="math notranslate nohighlight">\(x\)</span> after
 a successful call.</p>
 </dd>
-<dt>c<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the residuals <span class="math notranslate nohighlight">\(c(x) = Ax\)</span>.</p>
-</dd>
 <dt>z<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the dual variables associated with the
 simple bound constraints.</p>
+</dd>
+<dt>r<span class="classifier">ndarray(o)</span></dt><dd><p>holds the values of the residuals <span class="math notranslate nohighlight">\(r(x) = A_o x - b\)</span> at <span class="math notranslate nohighlight">\(x\)</span>.</p>
+</dd>
+<dt>g<span class="classifier">ndarray(n)</span></dt><dd><p>holds the values of the gradient <span class="math notranslate nohighlight">\(g(x) = A_o^T W r(x)\)</span> at <span class="math notranslate nohighlight">\(x\)</span>.</p>
 </dd>
 <dt>x_stat<span class="classifier">ndarray(n)</span></dt><dd><p>holds the return status for each variable. The i-th component will be
 negative if the <span class="math notranslate nohighlight">\(i\)</span>-th variable lies on its lower bound,
@@ -813,7 +825,7 @@ the name of the offending array are held in
 inform[‘alloc_status’] and inform[‘bad_alloc’] respectively.</p>
 </li>
 <li><p><strong>-3</strong></p>
-<p>The restriction n &gt; 0 or m &gt; 0 or requirement that type contains
+<p>The restriction n &gt; 0 or o &gt; 0 or requirement that type contains
 its relevant string ‘dense’, ‘coordinate’ or ‘sparse_by_rows’
 has been violated.</p>
 </li>
@@ -904,34 +916,34 @@ to factorization.</p>
 
 <span class="c1"># set parameters</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">o</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">infinity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
 
 <span class="c1">#  describe A = (  I  ) and b = ( i * e )</span>
 <span class="c1">#               ( e^T )         ( n + 1 )</span>
 
-<span class="n">A_type</span> <span class="o">=</span> <span class="s1">&#39;coordinate&#39;</span>
-<span class="n">A_ne</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span>
-<span class="n">A_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">A_ne</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="n">A_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">A_ne</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-<span class="n">A_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">A_ne</span><span class="p">)</span>
-<span class="n">A_ptr</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="n">b</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span>
+<span class="n">Ao_type</span> <span class="o">=</span> <span class="s1">&#39;coordinate&#39;</span>
+<span class="n">Ao_ne</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span>
+<span class="n">Ao_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">Ao_ne</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="n">Ao_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">Ao_ne</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+<span class="n">Ao_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">Ao_ne</span><span class="p">)</span>
+<span class="n">Ao_ptr</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+<span class="n">b</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-  <span class="n">A_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
-  <span class="n">A_row</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span>
-  <span class="n">A_col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
-  <span class="n">A_col</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
-  <span class="n">A_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-  <span class="n">A_val</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+  <span class="n">Ao_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="n">Ao_row</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="n">Ao_col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="n">Ao_col</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+  <span class="n">Ao_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+  <span class="n">Ao_val</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
   <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
 
 <span class="c1">#  set the weights</span>
 
-<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">o</span><span class="p">):</span>
   <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1">#  specify the bounds on the variables</span>
@@ -954,7 +966,7 @@ to factorization.</p>
 <span class="c1">#print(&quot;options:&quot;, options)</span>
 
 <span class="c1"># load data (and optionally non-default options)</span>
-<span class="n">blls</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">A_type</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_row</span><span class="p">,</span> <span class="n">A_col</span><span class="p">,</span> <span class="n">A_ptr</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="n">blls</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">Ao_type</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_row</span><span class="p">,</span> <span class="n">Ao_col</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Ao_ptr</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
 
 <span class="c1">#  provide starting values (not crucial)</span>
 
@@ -966,10 +978,10 @@ to factorization.</p>
 
 <span class="c1"># find minimizer</span>
 <span class="c1">#print(&quot;\n solve blls&quot;)</span>
-<span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_stat</span> \
-  <span class="o">=</span> <span class="n">blls</span><span class="o">.</span><span class="n">solve_ls</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">A_ne</span><span class="p">,</span> <span class="n">A_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_stat</span> \
+  <span class="o">=</span> <span class="n">blls</span><span class="o">.</span><span class="n">solve_ls</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x:&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; c:&quot;</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; r:&quot;</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; z:&quot;</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; g:&quot;</span><span class="p">,</span><span class="n">g</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; x_stat:&quot;</span><span class="p">,</span><span class="n">x_stat</span><span class="p">)</span>
@@ -1003,10 +1015,10 @@ to factorization.</p>
           <p class="prev-next-title">Least-Squares</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="clls.html" title="next page">
+  <a class='right-next' id="next-link" href="bllsb.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">CLLS</p>
+      <p class="prev-next-title">BLLSB</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

@@ -118,38 +118,42 @@ end
 
 export blls_import_s
 
-function blls_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function blls_import_s(control, data, status, n, o, 
+                       Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
   @ccall libgalahad_single.blls_import_s(control::Ref{blls_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
-                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
-                                         A_row::Ptr{Cint}, A_col::Ptr{Cint},
-                                         A_ptr::Ptr{Cint})::Cvoid
+                                         o::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
+                                         Ao_row::Ptr{Cint}, Ao_col::Ptr{Cint},
+                                         Ao_ptr_ne::Cint, 
+                                         Ao_ptr::Ptr{Cint})::Cvoid
 end
 
 export blls_import
 
-function blls_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function blls_import(control, data, status, n, o, 
+                     Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
   @ccall libgalahad_double.blls_import(control::Ref{blls_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
-                                       m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
-                                       A_row::Ptr{Cint}, A_col::Ptr{Cint},
-                                       A_ptr::Ptr{Cint})::Cvoid
+                                       o::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
+                                       Ao_row::Ptr{Cint}, Ao_col::Ptr{Cint},
+                                       Ao_ptr_ne::Cint, 
+                                       Ao_ptr::Ptr{Cint})::Cvoid
 end
 
 export blls_import_without_a_s
 
-function blls_import_without_a_s(control, data, status, n, m)
+function blls_import_without_a_s(control, data, status, n, o)
   @ccall libgalahad_single.blls_import_without_a_s(control::Ref{blls_control_type{Float32}},
                                                    data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                   n::Cint, m::Cint)::Cvoid
+                                                   n::Cint, o::Cint)::Cvoid
 end
 
 export blls_import_without_a
 
-function blls_import_without_a(control, data, status, n, m)
+function blls_import_without_a(control, data, status, n, o)
   @ccall libgalahad_double.blls_import_without_a(control::Ref{blls_control_type{Float64}},
                                                  data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                                 n::Cint, m::Cint)::Cvoid
+                                                 n::Cint, o::Cint)::Cvoid
 end
 
 export blls_reset_control_s
@@ -170,14 +174,14 @@ end
 
 export blls_solve_given_a_s
 
-function blls_solve_given_a_s(data, userdata, status, n, m, A_ne, A_val, b, x_l, x_u, x, z, c,
+function blls_solve_given_a_s(data, userdata, status, n, o, Ao_ne, Ao_val, b, x_l, x_u, x, z, r,
                             g, x_stat, w, eval_prec)
   @ccall libgalahad_single.blls_solve_given_a_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
-                                                status::Ptr{Cint}, n::Cint, m::Cint,
-                                                A_ne::Cint, A_val::Ptr{Float32},
+                                                status::Ptr{Cint}, n::Cint, o::Cint,
+                                                Ao_ne::Cint, Ao_val::Ptr{Float32},
                                                 b::Ptr{Float32}, x_l::Ptr{Float32},
                                                 x_u::Ptr{Float32}, x::Ptr{Float32},
-                                                z::Ptr{Float32}, c::Ptr{Float32},
+                                                z::Ptr{Float32}, r::Ptr{Float32},
                                                 g::Ptr{Float32}, x_stat::Ptr{Cint},
                                                 w::Ptr{Float32},
                                                 eval_prec::Ptr{Cvoid})::Cvoid
@@ -185,14 +189,14 @@ end
 
 export blls_solve_given_a
 
-function blls_solve_given_a(data, userdata, status, n, m, A_ne, A_val, b, x_l, x_u, x, z, c,
+function blls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x_l, x_u, x, z, r,
                           g, x_stat, w, eval_prec)
   @ccall libgalahad_double.blls_solve_given_a(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
-                                              status::Ptr{Cint}, n::Cint, m::Cint,
-                                              A_ne::Cint, A_val::Ptr{Float64},
+                                              status::Ptr{Cint}, n::Cint, o::Cint,
+                                              Ao_ne::Cint, Ao_val::Ptr{Float64},
                                               b::Ptr{Float64}, x_l::Ptr{Float64},
                                               x_u::Ptr{Float64}, x::Ptr{Float64},
-                                              z::Ptr{Float64}, c::Ptr{Float64},
+                                              z::Ptr{Float64}, r::Ptr{Float64},
                                               g::Ptr{Float64}, x_stat::Ptr{Cint},
                                               w::Ptr{Float64},
                                               eval_prec::Ptr{Cvoid})::Cvoid
@@ -200,16 +204,16 @@ end
 
 export blls_solve_reverse_a_prod_s
 
-function blls_solve_reverse_a_prod_s(data, status, eval_status, n, m, b, x_l, x_u, x, z, c, g,
+function blls_solve_reverse_a_prod_s(data, status, eval_status, n, o, b, x_l, x_u, x, z, r, g,
                                    x_stat, v, p, nz_v, nz_v_start, nz_v_end, nz_p, nz_p_end,
                                    w)
   @ccall libgalahad_single.blls_solve_reverse_a_prod_s(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Cint},
                                                        eval_status::Ptr{Cint}, n::Cint,
-                                                       m::Cint, b::Ptr{Float32},
+                                                       o::Cint, b::Ptr{Float32},
                                                        x_l::Ptr{Float32},
                                                        x_u::Ptr{Float32}, x::Ptr{Float32},
-                                                       z::Ptr{Float32}, c::Ptr{Float32},
+                                                       z::Ptr{Float32}, r::Ptr{Float32},
                                                        g::Ptr{Float32}, x_stat::Ptr{Cint},
                                                        v::Ptr{Float32}, p::Ptr{Float32},
                                                        nz_v::Ptr{Cint},
@@ -221,16 +225,16 @@ end
 
 export blls_solve_reverse_a_prod
 
-function blls_solve_reverse_a_prod(data, status, eval_status, n, m, b, x_l, x_u, x, z, c, g,
+function blls_solve_reverse_a_prod(data, status, eval_status, n, o, b, x_l, x_u, x, z, r, g,
                                  x_stat, v, p, nz_v, nz_v_start, nz_v_end, nz_p, nz_p_end,
                                  w)
   @ccall libgalahad_double.blls_solve_reverse_a_prod(data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Cint},
                                                      eval_status::Ptr{Cint}, n::Cint,
-                                                     m::Cint, b::Ptr{Float64},
+                                                     o::Cint, b::Ptr{Float64},
                                                      x_l::Ptr{Float64},
                                                      x_u::Ptr{Float64}, x::Ptr{Float64},
-                                                     z::Ptr{Float64}, c::Ptr{Float64},
+                                                     z::Ptr{Float64}, r::Ptr{Float64},
                                                      g::Ptr{Float64}, x_stat::Ptr{Cint},
                                                      v::Ptr{Float64}, p::Ptr{Float64},
                                                      nz_v::Ptr{Cint},

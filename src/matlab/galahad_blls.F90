@@ -8,18 +8,18 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given an m by n matrix A, an m-vector b, and a constant sigma >= 0, find
+!  Given an o by n matrix Ao, an o-vector b, and a constant sigma >= 0, find
 !  a local mimimizer of the BOUND_CONSTRAINED LINER LEAST-SQUARES problem
-!    minimize 0.5 || A x - b ||^2 + 0.5 sigma ||x||^2
+!    minimize 0.5 || Ao x - b ||^2 + 0.5 sigma ||x||^2
 !    subject to x_l <= x <= x_u
 !  using a projection method.
-!  Advantage is taken of sparse A.
+!  Advantage is taken of sparse Ao.
 !
 !  Simple usage -
 !
 !  to solve the bound-constrained quadratic program
 !   [ x, inform, aux ]
-!     = galahad_blls( A, b,  x_l, x_u, control )
+!     = galahad_blls( Ao, b, x_l, x_u, control )
 !
 !  Sophisticated usage -
 !
@@ -29,14 +29,14 @@
 !
 !  to solve the bound-constrained QP using existing data structures
 !   [ x, inform, aux ]
-!     = galahad_blls( 'existing', A, b, x_l, x_u, control )
+!     = galahad_blls( 'existing', Ao, b, x_l, x_u, control )
 !
 !  to remove data structures after solution
 !   galahad_blls( 'final' )
 !
 !  Usual Input -
-!    A: the m by n matrix A
-!    b: the m-vector b
+!    Ao: the o by n matrix Ao
+!    b: the o-vector b
 !    x_l: the n-vector x_l. The value -inf should be used for infinite bounds
 !    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 !
@@ -240,22 +240,22 @@
         a_in = prhs( a_arg )
         IF ( mxIsNumeric( a_in ) == 0 )                                        &
           CALL mexErrMsgTxt( ' There must be a matrix A ' )
-        CALL MATLAB_transfer_matrix( a_in, p%A, col_ptr, .FALSE. )
-        p%n = p%A%n ; p%m = p%A%m
+        CALL MATLAB_transfer_matrix( a_in, p%Ao, col_ptr, .FALSE. )
+        p%n = p%Ao%n ; p%o = p%Ao%m
 
         IF ( ALLOCATED( col_ptr ) ) DEALLOCATE( col_ptr, STAT = info )
 
 !  Allocate space for input vectors
 
-        ALLOCATE( p%B( p%m ), p%X_l( p%n ), p%X_u( p%n ), STAT = info )
+        ALLOCATE( p%B( p%o ), p%X_l( p%n ), p%X_u( p%n ), STAT = info )
 
 !  Input b
 
         b_in = prhs( b_arg )
         IF ( mxIsNumeric( b_in ) == 0 )                                        &
-           CALL mexErrMsgTxt( ' There must be a vector g ' )
+           CALL mexErrMsgTxt( ' There must be a vector b ' )
         b_pr = mxGetPr( b_in )
-        CALL MATLAB_copy_from_ptr( b_pr, p%B, p%m )
+        CALL MATLAB_copy_from_ptr( b_pr, p%B, p%o )
 
 !  Input x_l
 
@@ -345,12 +345,12 @@
 !  all components now set
 
       IF ( TRIM( mode ) == 'final' .OR. TRIM( mode ) == 'all' ) THEN
-        IF ( ALLOCATED( p%A%row ) ) DEALLOCATE( p%A%row, STAT = info )
-        IF ( ALLOCATED( p%A%col ) ) DEALLOCATE( p%A%col, STAT = info )
-        IF ( ALLOCATED( p%A%val ) ) DEALLOCATE( p%A%val, STAT = info )
+        IF ( ALLOCATED( p%Ao%row ) ) DEALLOCATE( p%Ao%row, STAT = info )
+        IF ( ALLOCATED( p%Ao%col ) ) DEALLOCATE( p%Ao%col, STAT = info )
+        IF ( ALLOCATED( p%Ao%val ) ) DEALLOCATE( p%Ao%val, STAT = info )
         IF ( ALLOCATED( p%B ) ) DEALLOCATE( p%B, STAT = info )
         IF ( ALLOCATED( p%G ) ) DEALLOCATE( p%G, STAT = info )
-        IF ( ALLOCATED( p%C ) ) DEALLOCATE( p%C, STAT = info )
+        IF ( ALLOCATED( p%R ) ) DEALLOCATE( p%R, STAT = info )
         IF ( ALLOCATED( p%X_l ) ) DEALLOCATE( p%X_l, STAT = info )
         IF ( ALLOCATED( p%X_u ) ) DEALLOCATE( p%X_u, STAT = info )
         IF ( ALLOCATED( p%X ) ) DEALLOCATE( p%X, STAT = info )

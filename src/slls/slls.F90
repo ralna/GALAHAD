@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 11:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -19,7 +19,7 @@
 !        |                                                                  |
 !        | Solve the simplex-constrained linear-least-squares problem       |
 !        |                                                                  |
-!        |    minimize   1/2 || A x - b ||_W^2 + weight / 2 || x ||^2       |
+!        |    minimize   1/2 || A_o x - b ||_W^2 + weight / 2 || x ||^2     |
 !        |    subject to      e^T x = 1, x >= 0                             |
 !        |                                                                  |
 !        | where ||v|| and ||r||_W^2 are the Euclidean & weighted Euclidean |
@@ -396,7 +396,7 @@
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
-       TYPE ( SMT_type ) :: A, H_sbls, AT_sbls, C_sbls
+       TYPE ( SMT_type ) :: Ao, H_sbls, AT_sbls, C_sbls
        TYPE ( SLLS_subproblem_data_type ) :: subproblem_data
        TYPE ( SLLS_search_data_type ) :: search_data
        TYPE ( SBLS_data_type ) :: SBLS_data
@@ -784,12 +784,12 @@
 !
 !  Solve the linear least-squares problem
 !
-!     minimize     q(x) = 1/2 || A x - b ||_2^2 + weight / 2 || x ||^2
+!     minimize     q(x) = 1/2 || Ao x - b ||_2^2 + weight / 2 || x ||^2
 !
 !     subject to    e^T x = 1, x >= 0
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), b is an m-vector,
-!  and A is an m by n matrix, using a preconditioned projected CG method.
+!  and Ao is an o by n matrix, using a preconditioned projected CG method.
 !
 !  The subroutine is particularly appropriate when A is sparse, or if it
 !  not availble explicitly (but its action may be found by subroutine call
@@ -806,48 +806,48 @@
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
 !
-!   %m is an INTEGER variable, which must be set by the user to the
-!    number of residuals, m. RESTRICTION: %m >= 1
+!   %o is an INTEGER variable, which must be set by the user to the
+!    number of residuals, o. RESTRICTION: %o >= 1
 !
-!   %A is a structure of type SMT_type used to hold A if available).
+!   %Ao is a structure of type SMT_type used to hold Ao if available).
 !    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 10 ) = TRANSFER( 'COORDINATE', A%type )
-!       A%val( : )   the values of the components of A
-!       A%row( : )   the row indices of the components of A
-!       A%col( : )   the column indices of the components of A
-!       A%ne         the number of nonzeros used to store A
+!       Ao%type( 1 : 10 ) = TRANSFER( 'COORDINATE', Ao%type )
+!       Ao%val( : )   the values of the components of A
+!       Ao%row( : )   the row indices of the components of A
+!       Ao%col( : )   the column indices of the components of A
+!       Ao%ne         the number of nonzeros used to store A
 !
 !    ii) sparse, by rows
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', A%type )
-!       A%val( : )   the values of the components of A, stored row by row
-!       A%col( : )   the column indices of the components of A
-!       A%ptr( : )   pointers to the start of each row, and past the end of
+!       Ao%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', Ao%type )
+!       Ao%val( : )   the values of the components of A, stored row by row
+!       Ao%col( : )   the column indices of the components of A
+!       Ao%ptr( : )   pointers to the start of each row, and past the end of
 !                    the last row
 !
 !    iii) sparse, by columns
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', A%type )
-!       A%val( : )   the values of the components of A, stored column by column
-!       A%row( : )   the row indices of the components of A
-!       A%ptr( : )   pointers to the start of each column, and past the end of
+!       Ao%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', Ao%type )
+!       Ao%val( : )   the values of the components of A, stored column by column
+!       Ao%row( : )   the row indices of the components of A
+!       Ao%ptr( : )   pointers to the start of each column, and past the end of
 !                    the last column
 !
 !    iv) dense, by rows
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', A%type )
-!       A%val( : )   the values of the components of A, stored row by row,
+!       Ao%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', Ao%type )
+!       Ao%val( : )   the values of the components of A, stored row by row,
 !                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
@@ -855,8 +855,8 @@
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', A%type )
-!       A%val( : )   the values of the components of A, stored column by column,
+!       Ao%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', Ao%type )
+!       Ao%val( : )   the values of the components of A, stored column by column,
 !                    with each the entries in each column in order of
 !                    increasing row indicies.
 !
@@ -867,7 +867,7 @@
 !
 !   %B is a REAL array of length %m, which must be set by the user to the
 !    value of b, the linear term of the residuals, in the least-squares
-!    objective function. The i-th component of B, i = 1, ...., m,
+!    objective function. The i-th component of B, i = 1, ...., o,
 !    should contain the value of b_i.
 !
 !   %X is a REAL array of length %n, which must be set by the user
@@ -876,12 +876,12 @@
 !
 !   %C is a REAL array of length %m, which need not be set on input. On
 !    successful exit, it will contain the residual vector c(x) = A x - b. The
-!    i-th component of C, i = 1, ...., m, will contain the value of c_i(x).
+!    i-th component of C, i = 1, ...., o, will contain the value of c_i(x).
 !
 !   %Z is a REAL array of length %n, which need not be set on input. On
 !    successful exit, it will contain estimates of the values of the dual
 !    variables, i.e., Lagrange multipliers corresponding to the simple bound
-!    constraints x_l <= x <= x_u.
+!    constraints x >= 0.
 !
 !  X_stat is a INTEGER array of length n, which may be set by the user
 !   on entry to SLLS_solve to indicate which of the simple bound constraints
@@ -973,8 +973,8 @@
 !
 !   - 3 one of the restrictions
 !        prob%n     >=  1
-!        prob%m     >=  0
-!        prob%A%type in { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
+!        prob%o     >=  0
+!        prob%Ao%type in { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !                         'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' }
 !       (if prob%A is provided) has been violated.
 !
@@ -1043,7 +1043,7 @@
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
 !  W is an optional rank-one array of type default real that if present
-!   must be of length prob%m and filled with the weights w_i > 0. If W is
+!   must be of length prob%o and filled with the weights w_i > 0. If W is
 !   absent, weights of one will be used.
 !
 !  reverse is an OPTIONAL structure of type SLLS_reverse_type which is used to
@@ -1231,7 +1231,7 @@
      data%use_aprod = PRESENT( eval_APROD ) .AND. PRESENT( eval_ASPROD ) .AND. &
                       PRESENT( eval_AFPROD )
      data%reverse = PRESENT( reverse )
-     data%explicit_a = ALLOCATED( prob%A%type )
+     data%explicit_a = ALLOCATED( prob%Ao%type )
      data%reverse_prod = .NOT. ( data%explicit_a .OR. data%use_aprod )
      IF ( data%reverse_prod .AND. .NOT. data%reverse ) THEN
        inform%status = GALAHAD_error_optional ; GO TO 910
@@ -1348,11 +1348,11 @@
 
 !  ensure that input parameters are within allowed ranges
 
-     IF ( prob%n <= 0 .OR. prob%m <= 0 ) THEN
+     IF ( prob%n <= 0 .OR. prob%o <= 0 ) THEN
        inform%status = GALAHAD_error_restrictions
        GO TO 910
      ELSE IF ( data%explicit_a ) THEN
-       IF ( .NOT. QPT_keyword_A( prob%A%type ) ) THEN
+       IF ( .NOT. QPT_keyword_A( prob%Ao%type ) ) THEN
          inform%status = GALAHAD_error_restrictions
          GO TO 910
        END IF
@@ -1362,13 +1362,13 @@
 
        data%w_eq_identity = .NOT. PRESENT( W )
        IF ( .NOT. data%w_eq_identity ) THEN
-         IF ( COUNT( W( : prob%m ) <= zero ) > 0 ) THEN
+         IF ( COUNT( W( : prob%o ) <= zero ) > 0 ) THEN
            IF ( control%error > 0 ) WRITE( control%error,                      &
              "( A, ' error: input entries of W must be strictly positive' )" ) &
              prefix
            inform%status = GALAHAD_error_restrictions
            GO TO 910
-         ELSE IF ( COUNT( W( : prob%m ) == one ) == prob%m ) THEN
+         ELSE IF ( COUNT( W( : prob%o ) == one ) == prob%o ) THEN
            data%w_eq_identity = .TRUE.
          END IF
        END IF
@@ -1376,36 +1376,37 @@
 !  if required, write out problem
 
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
-       WRITE( control%out, "( ' m, n = ', I0, 1X, I0 )" ) prob%m, prob%n
-       WRITE( control%out, "( ' B = ', /, ( 5ES12.4 ) )" ) prob%B( : prob%m )
+       WRITE( control%out, "( ' o, n = ', I0, 1X, I0 )" ) prob%o, prob%n
+       WRITE( control%out, "( ' B = ', /, ( 5ES12.4 ) )" ) prob%B( : prob%o )
        IF ( data%w_eq_identity ) THEN
          WRITE( control%out, "( ' W = identity' )" )
        ELSE
-         WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" ) W( : prob%m )
+         WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" ) W( : prob%o )
        END IF
        IF ( data%explicit_a ) THEN
-         SELECT CASE ( SMT_get( prob%A%type ) )
+         SELECT CASE ( SMT_get( prob%Ao%type ) )
          CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS'  )
            WRITE( control%out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )         &
-             prob%A%val( : prob%m * prob%n )
+             prob%Ao%val( : prob%o * prob%n )
          CASE ( 'SPARSE_BY_ROWS' )
            WRITE( control%out, "( ' A (row-wise) = ' )" )
-           DO i = 1, prob%m
+           DO i = 1, prob%o
              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                  &
-               ( i, prob%A%col( j ), prob%A%val( j ),                          &
-                 j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
+               ( i, prob%Ao%col( j ), prob%Ao%val( j ),                        &
+                 j = prob%Ao%ptr( i ), prob%Ao%ptr( i + 1 ) - 1 )
            END DO
          CASE ( 'SPARSE_BY_COLUMNS' )
            WRITE( control%out, "( ' A (column-wise) = ' )" )
            DO j = 1, prob%n
              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                  &
-               ( prob%A%row( i ), j, prob%A%val( i ),                          &
-                 i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1 )
+               ( prob%Ao%row( i ), j, prob%Ao%val( i ),                        &
+                 i = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1 )
            END DO
          CASE ( 'COORDINATE' )
            WRITE( control%out, "( ' A (co-ordinate) = ' )" )
            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                    &
-         ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne )
+               ( prob%Ao%row( i ), prob%Ao%col( i ), prob%Ao%val( i ),         &
+                 i = 1, prob%Ao%ne )
          END SELECT
        ELSE
          WRITE( control%out, "( ' A available via function reverse call' )" )
@@ -1445,8 +1446,8 @@
 
 !  allocate workspace arrays
 
-     array_name = 'slls: prob%C'
-     CALL SPACE_resize_array( prob%m, prob%C, inform%status,                   &
+     array_name = 'slls: prob%R'
+     CALL SPACE_resize_array( prob%o, prob%R, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1470,7 +1471,7 @@
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      array_name = 'slls: data%R'
-     CALL SPACE_resize_array( prob%m, data%R, inform%status,                   &
+     CALL SPACE_resize_array( prob%o, data%R, inform%status,                   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1494,7 +1495,7 @@
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      array_name = 'slls: data%AD'
-     CALL SPACE_resize_array( prob%m, data%AD, inform%status,                  &
+     CALL SPACE_resize_array( prob%o, data%AD, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1502,7 +1503,7 @@
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      array_name = 'slls: data%AE'
-     CALL SPACE_resize_array( prob%m, data%AE, inform%status,                  &
+     CALL SPACE_resize_array( prob%o, data%AE, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1553,7 +1554,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: reverse%NZ_out'
-       CALL SPACE_resize_array( prob%m, reverse%NZ_out, inform%status,         &
+       CALL SPACE_resize_array( prob%o, reverse%NZ_out, inform%status,         &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1561,7 +1562,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: reverse%V'
-       CALL SPACE_resize_array( MAX( prob%m, prob%n ), reverse%V,              &
+       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%V,              &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1569,7 +1570,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: reverse%P'
-       CALL SPACE_resize_array( MAX( prob%m, prob%n ), reverse%P,              &
+       CALL SPACE_resize_array( MAX( prob%o, prob%n ), reverse%P,              &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1580,7 +1581,7 @@
      IF ( control%exact_arc_search .AND. PRESENT( eval_ASPROD ) .AND.          &
           .NOT. ( data%explicit_a .OR. data%reverse ) ) THEN
        array_name = 'slls: data%search_data%NZ_out'
-       CALL SPACE_resize_array( prob%m, data%search_data%NZ_out, inform%status,&
+       CALL SPACE_resize_array( prob%o, data%search_data%NZ_out, inform%status,&
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1596,7 +1597,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: data%search_data%P'
-       CALL SPACE_resize_array( prob%m, data%search_data%P,                    &
+       CALL SPACE_resize_array( prob%o, data%search_data%P,                    &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1607,15 +1608,16 @@
 !  build a copy of A stored by columns
 
      IF ( data%explicit_a ) THEN
-       CALL CONVERT_to_sparse_column_format( prob%A, data%A,                   &
-                                control%CONVERT_control, inform%CONVERT_inform )
+       CALL CONVERT_to_sparse_column_format( prob%Ao, data%Ao,                 &
+                                             control%CONVERT_control,          &
+                                             inform%CONVERT_inform )
 
 !  weight by W if required
 
        IF ( .NOT. data%w_eq_identity ) THEN
          DO j = 1, prob%n
-           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-             data%A%val( k ) = data%A%val( k ) * SQRT( W( data%A%row( k ) ) )
+           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+             data%Ao%val( k ) = data%Ao%val( k ) * SQRT( W( data%Ao%row( k ) ) )
            END DO
          END DO
        END IF
@@ -1624,23 +1626,23 @@
 !  set A e if needed later
 
      IF ( control%exact_arc_search ) THEN
-       data%AE( : prob%m ) = zero
+       data%AE( : prob%o ) = zero
        IF (  data%explicit_a ) THEN
          DO j = 1, prob%n
-           DO l = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-             i = data%A%row( l )
-             data%AE( i ) = data%AE( i ) + data%A%val( l )
+           DO l = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+             i = data%Ao%row( l )
+             data%AE( i ) = data%AE( i ) + data%Ao%val( l )
            END DO
          END DO
        ELSE IF ( data%use_aprod ) THEN
          data%D( : prob%n ) = one
-         data%AE( : prob%m ) = zero
+         data%AE( : prob%o ) = zero
          CALL eval_APROD( data%eval_status, userdata, .FALSE., data%D, data%AE )
          IF ( data%eval_status /= GALAHAD_ok ) THEN
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-!        reverse%P( : prob%m ) = zero
+!        reverse%P( : prob%o ) = zero
          reverse%V( : prob%n ) = one
          reverse%transpose = .FALSE.
          data%branch = 110 ; inform%status = 2 ; RETURN
@@ -1651,7 +1653,7 @@
 
  110   CONTINUE
        IF ( control%exact_arc_search .AND. data%reverse_prod )                 &
-         data%AE( : prob%m ) = reverse%P( : prob%m )
+         data%AE( : prob%o ) = reverse%P( : prob%o )
 
 !  compute the diagonal preconditioner if required
 
@@ -1659,8 +1661,8 @@
        IF ( data%explicit_a ) THEN
          DO j = 1, prob%n
            val = zero
-           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-             val = val + data%A%val( k ) ** 2
+           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+             val = val + data%Ao%val( k ) ** 2
            END DO
            IF ( val > zero ) THEN
              data%DIAG( j ) = val
@@ -1691,7 +1693,7 @@
          inform%status = GALAHAD_error_allocate
          GO TO 910
        END IF
-       data%H_sbls%m = prob%m ; data%H_sbls%n = prob%m
+       data%H_sbls%m = prob%o ; data%H_sbls%n = prob%o
 
 !  the 2,1 block
 
@@ -1700,10 +1702,10 @@
          inform%status = GALAHAD_error_allocate
          GO TO 910
        END IF
-       data%AT_sbls%n = prob%m
+       data%AT_sbls%n = prob%o
 
        array_name = 'slls: data%AT_sbls%val'
-       CALL SPACE_resize_array( data%A%ne, data%AT_sbls%val, inform%status,    &
+       CALL SPACE_resize_array( data%Ao%ne, data%AT_sbls%val, inform%status,   &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1711,7 +1713,7 @@
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'slls: data%AT_sbls%col'
-       CALL SPACE_resize_array( data%A%ne, data%AT_sbls%col, inform%status,    &
+       CALL SPACE_resize_array( data%Ao%ne, data%AT_sbls%col, inform%status,   &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1763,7 +1765,7 @@
 !  solution vector (used as workspace elsewhere)
 
      array_name = 'slls: data%SBLS_sol'
-     CALL SPACE_resize_array( prob%n + prob%m, data%SBLS_sol, inform%status,   &
+     CALL SPACE_resize_array( prob%n + prob%o, data%SBLS_sol, inform%status,   &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1801,23 +1803,23 @@
 !  compute the residual
 
        IF ( data%explicit_a ) THEN
-         prob%C( : prob%m ) = - prob%B( : prob%m )
+         prob%R( : prob%o ) = - prob%B( : prob%o )
          DO j = 1, prob%n
            x_j = prob%X( j )
-           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-             prob%C( data%A%row( k ) )                                         &
-               = prob%C( data%A%row( k ) ) + data%A%val( k ) * x_j
+           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+             prob%R( data%Ao%row( k ) )                                        &
+               = prob%R( data%Ao%row( k ) ) + data%Ao%val( k ) * x_j
            END DO
          END DO
        ELSE IF ( data%use_aprod ) THEN
-         prob%C( : prob%m ) = - prob%B( : prob%m )
-         CALL eval_APROD( data%eval_status, userdata, .FALSE., prob%X, prob%C )
+         prob%R( : prob%o ) = - prob%B( : prob%o )
+         CALL eval_APROD( data%eval_status, userdata, .FALSE., prob%X, prob%R )
          IF ( data%eval_status /= GALAHAD_ok ) THEN
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-!        reverse%P( : prob%m ) = - prob%B
-!        reverse%P( : prob%m ) = zero
+!        reverse%P( : prob%o ) = - prob%B
+!        reverse%P( : prob%o ) = zero
          reverse%V( : prob%n ) = prob%X
 !write(6,"(' v', /, ( 5ES12.4 ) )" ) reverse%V( : prob%n )
          reverse%transpose = .FALSE.
@@ -1834,22 +1836,22 @@
          prob%G( : prob%n ) = zero
          DO j = 1, prob%n
            g_j = zero
-           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-             g_j = g_j + data%A%val( k ) * prob%C( data%A%row( k ) )
+           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+             g_j = g_j + data%Ao%val( k ) * prob%R( data%Ao%row( k ) )
            END DO
            prob%G( j ) = g_j
          END DO
        ELSE IF ( data%use_aprod ) THEN
          prob%G( : prob%n ) = zero
-         CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%C, prob%G )
+         CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%R, prob%G )
          IF ( data%eval_status /= GALAHAD_ok ) THEN
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-         prob%C( : prob%m ) = reverse%P( : prob%m ) - prob%B( : prob%m )
-!        prob%C( : prob%m ) = reverse%P( : prob%m )
+         prob%R( : prob%o ) = reverse%P( : prob%o ) - prob%B( : prob%o )
+!        prob%C( : prob%o ) = reverse%P( : prob%o )
 !        reverse%P( : prob%n ) = zero
-         reverse%V( : prob%m ) = prob%C( : prob%m )
+         reverse%V( : prob%o ) = prob%R( : prob%o )
          reverse%transpose = .TRUE.
          data%branch = 220 ; inform%status = 3 ; RETURN
        END IF
@@ -1862,7 +1864,7 @@
 
 !  compute the objective function
 
-       inform%obj = half * DOT_PRODUCT( prob%C( : prob%m ), prob%C( : prob%m ) )
+       inform%obj = half * DOT_PRODUCT( prob%R( : prob%o ), prob%R( : prob%o ) )
 
 !  adjust the value and gradient to account for any regularization term
 
@@ -1966,7 +1968,7 @@
 
          minloc_g = MINLOC( prob%G( : prob%n ) )
          i = minloc_g( 1 )
-!write(6,"('c', /, ( 5ES12.4) )" ) prob%C( : prob%m )
+!write(6,"('c', /, ( 5ES12.4) )" ) prob%R( : prob%o )
 !write(6,"('g', /, ( 5ES12.4) )" ) prob%G( : prob%n )
 !write(6,*) ' minloc g ', minloc_g( 1 )
          data%D( : prob%n ) = - prob%X( : prob%n )
@@ -1979,13 +1981,13 @@
 !  compute the search direction d by minimizing the objective over
 !  the free subspace by solving the related augmented systems
 
-!    (    I        A_F   ) (  p  ) = (   b - A x  )  (a)
-!    ( A_F^T  - weight I ) ( q_F )   ( weight x_F )
+!    (    I        Ao_F   ) (  p  ) = (   b - A x  )  (a)
+!    ( Ao_F^T  - weight I ) ( q_F )   ( weight x_F )
 
 !  and
 
-!    (    I        A_F   ) (  u  ) = (  0  )         (b)
-!    ( A_F^T  - weight I ) ( v_F )   ( e_F )
+!    (    I        Ao_F   ) (  u  ) = (  0  )         (b)
+!    ( Ao_F^T  - weight I ) ( v_F )   ( e_F )
 
 !  and then forming
 
@@ -2001,15 +2003,15 @@
          DO i = 1, data%n_free
            j = data%FREE( i )
            data%AT_sbls%ptr( i ) = nap + 1
-           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
+           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
              nap = nap + 1
-             data%AT_sbls%col( nap ) = data%A%row( k )
-             data%AT_sbls%val( nap ) = data%A%val( k )
+             data%AT_sbls%col( nap ) = data%Ao%row( k )
+             data%AT_sbls%val( nap ) = data%Ao%val( k )
            END DO
 
 !  include components of the right-hand side vector for system (a)
 
-           data%SBLS_sol( prob%m + i ) = data%stabilisation_weight * prob%X( j )
+           data%SBLS_sol( prob%o + i ) = data%stabilisation_weight * prob%X( j )
          END DO
          data%AT_sbls%ptr( data%n_free + 1 ) = nap + 1
          data%AT_sbls%m = data%n_free
@@ -2020,11 +2022,11 @@
 
 !  complete the right-hand side vector for system (a)
 
-         data%SBLS_sol( : prob%m ) = - prob%C( : prob%m )
+         data%SBLS_sol( : prob%o ) = - prob%R( : prob%o )
 
 !  form and factorize the augmented matrix
 
-         CALL SBLS_form_and_factorize( prob%m, data%n_free,                    &
+         CALL SBLS_form_and_factorize( prob%o, data%n_free,                    &
                  data%H_sbls, data%AT_sbls, data%C_sbls, data%SBLS_data,       &
                  control%SBLS_control, inform%SBLS_inform )
 
@@ -2041,14 +2043,14 @@
 
 !  solve system (a)
 
-         CALL SBLS_solve( prob%m, data%n_free, data%AT_sbls, data%C_sbls,      &
+         CALL SBLS_solve( prob%o, data%n_free, data%AT_sbls, data%C_sbls,      &
                  data%SBLS_data, control%SBLS_control, inform%SBLS_inform,     &
                  data%SBLS_sol )
 
 !  record the components q_F in data%S
 
          data%S( : data%n_free )                                               &
-           = data%SBLS_sol( prob%m + 1 : prob%m + data%n_free )
+           = data%SBLS_sol( prob%o + 1 : prob%o + data%n_free )
 
 !  compute q_F^T e_F
 
@@ -2056,26 +2058,26 @@
 
 !  set up the right-hand side vector for system (b)
 
-         data%SBLS_sol( : prob%m ) = zero
-         data%SBLS_sol( prob%m + 1 : prob%m + data%n_free ) = one
+         data%SBLS_sol( : prob%o ) = zero
+         data%SBLS_sol( prob%o + 1 : prob%o + data%n_free ) = one
 
 !  solve system (b)
 
-         CALL SBLS_solve( prob%m, data%n_free, data%AT_sbls, data%C_sbls,      &
+         CALL SBLS_solve( prob%o, data%n_free, data%AT_sbls, data%C_sbls,      &
                  data%SBLS_data, control%SBLS_control, inform%SBLS_inform,     &
                  data%SBLS_sol )
 
 !  compute q_F^T e_F / v_F^T e_f
 
          lambda                                                                &
-           = lambda / SUM( data%SBLS_sol( prob%m + 1 : prob%m + data%n_free ) )
+           = lambda / SUM( data%SBLS_sol( prob%o + 1 : prob%o + data%n_free ) )
 
 !  extract the search direction d_f from (c)
 
          data%D( : prob%n ) = zero
          DO i = 1, data%n_free
            j = data%FREE( i )
-           data%D( j ) =  data%S( i ) - lambda * data%SBLS_sol( prob%m + i )
+           data%D( j ) =  data%S( i ) - lambda * data%SBLS_sol( prob%o + i )
          END DO
 !write(6,*) ' ----------- nfree ', data%n_free
          IF ( data%printm ) WRITE( data%out, "( ' dtg, dtd = ', 2ES12.4 )" )   &
@@ -2098,7 +2100,7 @@
 !  and prepare for minimization
 
        data%X_new( : prob%n ) = prob%X( : prob%n )
-       data%R( : prob%m ) = prob%C( : prob%m )
+       data%R( : prob%o ) = prob%R( : prob%o )
        data%cgls_status = 1
 
 !  if reverse communication is to be used, store the list of free variables
@@ -2123,7 +2125,7 @@
 
          IF (  data%explicit_a ) THEN
            IF ( data%preconditioner == 0 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+             CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,         &
                              data%out, data%printm, data%printd, prefix,       &
 !                            data%out, .TRUE., .FALSE., prefix,                &
                              data%f_new, data%X_new, data%R,                   &
@@ -2131,10 +2133,10 @@
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, A_ptr = data%A%ptr,             &
-                             A_row = data%A%row, A_val = data%A%val )
+                             inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
+                             Ao_row = data%Ao%row, Ao_val = data%Ao%val )
            ELSE IF ( data%preconditioner == 1 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+             CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,         &
                              data%out, data%printm, data%printd, prefix,       &
 !                            data%out, .TRUE., .FALSE., prefix,                &
                              data%f_new, data%X_new, data%R,                   &
@@ -2142,20 +2144,20 @@
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, A_ptr = data%A%ptr,             &
-                             A_row = data%A%row, A_val = data%A%val,           &
+                             inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
+                             Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
                              preconditioned = .TRUE.,                          &
                              DPREC = data%DIAG )
            ELSE
-             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+             CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,         &
                              data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
                              data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, A_ptr = data%A%ptr,             &
-                             A_row = data%A%row, A_val = data%A%val,           &
+                             inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
+                             Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
                              reverse = reverse, preconditioned = .TRUE.,       &
                              eval_PREC = eval_PREC )
            END IF
@@ -2164,7 +2166,7 @@
 
          ELSE
            IF ( data%preconditioner == 0 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+             CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,         &
                              data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
                              data%FREE, control%stop_cg_relative,              &
@@ -2174,7 +2176,7 @@
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse )
            ELSE IF ( data%preconditioner == 1 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+             CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,         &
                              data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
                              data%FREE, control%stop_cg_relative,              &
@@ -2185,7 +2187,7 @@
                              reverse = reverse, preconditioned = .TRUE.,       &
                              DPREC = data%DIAG )
            ELSE
-             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+             CALL SLLS_cgls( prob%o, prob%n, data%n_free, data%weight,         &
                              data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
                              data%FREE, control%stop_cg_relative,              &
@@ -2253,7 +2255,7 @@
        data%X_new( : prob%n ) = prob%X( : prob%n )
 !write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) prob%X( : prob%n )
 !write(6,"( ' d = ', /, ( 5ES12.4 ) )" ) data%D( : prob%n )
-       data%R( : prob%m ) = prob%C( : prob%m )
+       data%R( : prob%o ) = prob%R( : prob%o )
 
 !  perform an exact arc search
 
@@ -2262,23 +2264,23 @@
 
 !  set A d and A e
 
-       data%AD( : prob%m ) = zero
+       data%AD( : prob%o ) = zero
        IF (  data%explicit_a ) THEN
          DO j = 1, prob%n
            d_j = data%D( j )
-           DO l = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-             i = data%A%row( l )
-             data%AD( i ) = data%AD( i ) + data%A%val( l ) * d_j
+           DO l = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+             i = data%Ao%row( l )
+             data%AD( i ) = data%AD( i ) + data%Ao%val( l ) * d_j
            END DO
          END DO
        ELSE IF ( data%use_aprod ) THEN
-         data%AD( : prob%m ) = zero
+         data%AD( : prob%o ) = zero
          CALL eval_APROD( data%eval_status, userdata, .FALSE., data%D, data%AD )
          IF ( data%eval_status /= GALAHAD_ok ) THEN
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-!        reverse%P( : prob%m ) = zero
+!        reverse%P( : prob%o ) = zero
          reverse%V( : prob%n ) = data%D( : prob%n )
          reverse%transpose = .FALSE.
          data%branch = 400 ; inform%status = 2 ; RETURN
@@ -2287,8 +2289,8 @@
 !  re-entry point after the A d product
 
  400   CONTINUE
-       IF ( data%reverse_prod ) data%AD( : prob%m ) = reverse%P( : prob%m )
-       data%SBLS_sol( : prob%m ) = data%AE( : prob%m ) ! used as surrogate AE
+       IF ( data%reverse_prod ) data%AD( : prob%o ) = reverse%P( : prob%o )
+       data%SBLS_sol( : prob%o ) = data%AE( : prob%o ) ! used as surrogate AE
 
  410   CONTINUE ! mock arc search loop
 
@@ -2296,7 +2298,7 @@
 !  Jacobian ...
 
          IF (  data%explicit_a ) THEN
-           CALL SLLS_exact_arc_search( prob%n, prob%m, data%weight, data%out,  &
+           CALL SLLS_exact_arc_search( prob%n, prob%o, data%weight, data%out,  &
                                        data%printm, data%printd, prefix,       &
 !                                        .TRUE., .FALSE., prefix, &
                                        data%arc_search_status, data%X_new,     &
@@ -2304,14 +2306,14 @@
                                        data%segment, data%n_free, data%FREE,   &
                                        data%search_data, userdata,             &
                                        data%f_new, data%alpha_new,             &
-                                       A_ptr = data%A%ptr,                     &
-                                       A_row = data%A%row,                     &
-                                       A_val = data%A%val )
+                                       Ao_ptr = data%Ao%ptr,                     &
+                                       Ao_row = data%Ao%row,                     &
+                                       Ao_val = data%Ao%val )
 
 !  ... or products via the user's subroutine or reverse communication ...
 
          ELSE
-           CALL SLLS_exact_arc_search( prob%n, prob%m, data%weight, data%out,  &
+           CALL SLLS_exact_arc_search( prob%n, prob%o, data%weight, data%out,  &
                                        data%printm, data%printd, prefix,       &
                                        data%arc_search_status, data%X_new,     &
                                        data%R, data%D, data%AD, data%sbls_sol, &
@@ -2364,11 +2366,11 @@
  450   CONTINUE ! mock arc search loop
 
          IF (  data%explicit_a ) THEN
-           CALL SLLS_inexact_arc_search( prob%n, prob%m, data%weight, data%out,&
+           CALL SLLS_inexact_arc_search( prob%n, prob%o, data%weight, data%out,&
                                          data%printm, data%printd, prefix,     &
 !                                        .TRUE., .FALSE., prefix, &
                                          data%arc_search_status, data%X_new,   &
-                                         prob%C, data%D, data%sbls_sol,        &
+                                         prob%R, data%D, data%sbls_sol,        &
                                          data%R, control%alpha_initial,        &
                                          control%alpha_reduction,              &
                                          control%arcsearch_acceptance_tol,     &
@@ -2378,17 +2380,17 @@
                                          data%n_free, data%FREE,               &
                                          data%search_data, userdata,           &
                                          data%f_new, data%alpha_new,           &
-                                         A_ptr = data%A%ptr,                   &
-                                         A_row = data%A%row,                   &
-                                         A_val = data%A%val )
+                                         Ao_ptr = data%Ao%ptr,                   &
+                                         Ao_row = data%Ao%row,                   &
+                                         Ao_val = data%Ao%val )
 
 !  ... or products via the user's subroutine or reverse communication
 
          ELSE
-           CALL SLLS_inexact_arc_search( prob%n, prob%m, data%weight, data%out,&
+           CALL SLLS_inexact_arc_search( prob%n, prob%o, data%weight, data%out,&
                                          data%printm, data%printd, prefix,     &
                                          data%arc_search_status, data%X_new,   &
-                                         prob%C, data%D, data%sbls_sol,        &
+                                         prob%R, data%D, data%sbls_sol,        &
                                          data%R, control%alpha_initial,        &
                                          control%alpha_reduction,              &
                                          control%arcsearch_acceptance_tol,     &
@@ -2569,22 +2571,22 @@
 
 !  Deallocate all remaining allocated arrays
 
-     array_name = 'slls: data%A%ptr'
-     CALL SPACE_dealloc_array( data%A%ptr,                                     &
+     array_name = 'slls: data%Ao%ptr'
+     CALL SPACE_dealloc_array( data%Ao%ptr,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%A%col'
-     CALL SPACE_dealloc_array( data%A%col,                                     &
+     array_name = 'slls: data%Ao%col'
+     CALL SPACE_dealloc_array( data%Ao%col,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%A%val'
-     CALL SPACE_dealloc_array( data%A%val,                                     &
+     array_name = 'slls: data%Ao%val'
+     CALL SPACE_dealloc_array( data%Ao%val,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -2779,8 +2781,8 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'slls: data%prob%C'
-     CALL SPACE_dealloc_array( data%prob%C,                                    &
+     array_name = 'slls: data%prob%R'
+     CALL SPACE_dealloc_array( data%prob%R,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2791,32 +2793,32 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'slls: data%prob%A%ptr'
-     CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
+     array_name = 'slls: data%prob%Ao%ptr'
+     CALL SPACE_dealloc_array( data%prob%Ao%ptr,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'slls: data%prob%A%row'
-     CALL SPACE_dealloc_array( data%prob%A%row,                                &
+     array_name = 'slls: data%prob%Ao%row'
+     CALL SPACE_dealloc_array( data%prob%Ao%row,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'slls: data%prob%A%col'
-     CALL SPACE_dealloc_array( data%prob%A%col,                                &
+     array_name = 'slls: data%prob%Ao%col'
+     CALL SPACE_dealloc_array( data%prob%Ao%col,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'slls: data%prob%A%val'
-     CALL SPACE_dealloc_array( data%prob%A%val,                                &
+     array_name = 'slls: data%prob%Ao%val'
+     CALL SPACE_dealloc_array( data%prob%Ao%val,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'slls: data%prob%A%type'
-     CALL SPACE_dealloc_array( data%prob%A%type,                               &
+     array_name = 'slls: data%prob%Ao%type'
+     CALL SPACE_dealloc_array( data%prob%Ao%type,                              &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -3221,10 +3223,10 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 ! -*-*-*- S L L S _ E X A C T _ A R C _ S E A R C H  S U B R O U T I N E -*-*-*-
 
-      SUBROUTINE SLLS_exact_arc_search( n, m, weight, out, summary, debug,     &
+      SUBROUTINE SLLS_exact_arc_search( n, o, weight, out, summary, debug,     &
                                         prefix, status, X, R, D, AD, AE,       &
                                         segment, n_free, FREE, data, userdata, &
-                                        f_opt, t_opt, A_val, A_row, A_ptr,     &
+                                        f_opt, t_opt, Ao_val, Ao_row, Ao_ptr,  &
                                         reverse, eval_ASPROD )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
@@ -3238,7 +3240,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  INPUT arguments that are not altered by the subroutine
 !
 !  n        (INTEGER) the number of variables
-!  m        (INTEGER) the number of observations
+!  o        (INTEGER) the number of observations
 !  weight   (REAL) the regularization weight
 !  out      (INTEGER) the output unit for printing
 !  summary  (LOGICAL) one line of output per segment if true
@@ -3258,14 +3260,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !                of the column should be provided in reverse%NZ_out(:nz) and
 !                reverse%P(:nz), where nz is stored in reverse%nz_out_end;
 !                these arrays should be allocated before use, and lengths of
-!                at most m suffice. This value of status will only occur if
-!                A_val, A_row and A_ptr are absent
+!                at most o suffice. This value of status will only occur if
+!                Ao_val, Ao_row and Ao_ptr are absent
 !  X        (REAL array of length at least n) the initial point x
-!  R        (REAL array of length at least m) the residual A x - b
+!  R        (REAL array of length at least o) the residual A x - b
 !  D        (REAL array of length at least n) the direction d
-!  AD       (REAL array of length at least m) the vectror A d, but
+!  AD       (REAL array of length at least o) the vectror A d, but
 !           subsequently used as workspace
-!  AE       (REAL array of length at least m) the vector A e where e is the
+!  AE       (REAL array of length at least o) the vector A e where e is the
 !           vector of ones, but subsequently used as workspace
 !  segment  (INTEGER) the number of segments searched
 !  n_free   (INTEGER) the number of free variables (i.e., variables not at zero)
@@ -3283,14 +3285,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !
 !  OPTIONAL ARGUMENTS
 !
-!  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
+!  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
 !          nonzeros of A, stored by consecutive columns. N.B. If present,
-!          A_row and A_ptr must also be present
-!  A_row   (INTEGER array of length A_ptr( n + 1 ) - 1) the row indices
+!          Ao_row and Ao_ptr must also be present
+!  Ao_row   (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
 !          of the nonzeros of A, stored by consecutive columns
-!  A_ptr   (INTEGER array of length n + 1) the starting positions in
-!           A_val and A_row of the i-th column of A, for i = 1,...,n,
-!           with A_ptr(n+1) pointin to the storage location 1 beyond
+!  Ao_ptr   (INTEGER array of length n + 1) the starting positions in
+!           Ao_val and Ao_row of the i-th column of A, for i = 1,...,n,
+!           with Ao_ptr(n+1) pointin to the storage location 1 beyond
 !           the last entry in A
 !  reverse (structure of type slls_reverse_type) data that is provided by the
 !           user when prompted by status > 0
@@ -3300,7 +3302,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  dummy arguments
 
-      INTEGER ( KIND = ip_ ), INTENT( IN ):: n, m, out
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n, o, out
       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status, segment, n_free
       REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       LOGICAL, INTENT( IN ):: summary, debug
@@ -3308,13 +3310,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: FREE
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, D
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: R, AD, AE
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R, AD, AE
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
-                                        DIMENSION( n + 1 ) :: A_ptr
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+                                        DIMENSION( n + 1 ) :: Ao_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       OPTIONAL :: eval_ASPROD
 
@@ -3344,7 +3346,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       REAL ( KIND = rp_ ) :: a, f_1, f_2, t
       REAL ( KIND = rp_ ) :: t_max = ten ** 20
 !     REAL ( KIND = rp_ ), DIMENSION( n ) :: V, PROJ
-!     REAL ( KIND = rp_ ), DIMENSION( m ) :: AE_tmp, AD_tmp
+!     REAL ( KIND = rp_ ), DIMENSION( o ) :: AE_tmp, AD_tmp
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
@@ -3352,7 +3354,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  check to see if A has been provided
 
-      IF ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) .AND. PRESENT( A_val ) ) THEN
+      IF ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND.                     &
+           PRESENT( Ao_val ) ) THEN
         data%present_a = .TRUE. ; data%reverse = .FALSE.
       ELSE
         data%present_a = .FALSE.
@@ -3448,8 +3451,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !         DO i_fixed = 1, n_free
 !           j = FREE( i_fixed )
 !           s_j = D( j )
-!           DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
-!             i = A_row( l ) ; a = A_val( l )
+!           DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+!             i = Ao_row( l ) ; a = Ao_val( l )
 !             AE_tmp( i ) = AE_tmp( i ) + a
 !             AD_tmp( i ) = AD_tmp( i ) + a * s_j
 !           END DO
@@ -3589,8 +3592,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  update r, Ae and Ad
 
         IF ( data%present_a ) THEN
-          DO l = A_ptr( now_fixed ), A_ptr( now_fixed + 1 ) - 1
-            i = A_row( l ) ; a = A_val( l )
+          DO l = Ao_ptr( now_fixed ), Ao_ptr( now_fixed + 1 ) - 1
+            i = Ao_row( l ) ; a = Ao_val( l )
             AE( i ) = AE( i ) - a
             AD( i ) = AD( i ) - data%s_fixed * a
           END DO
@@ -3654,12 +3657,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 ! -*-*- S L L S _ I N E X A C T _ A R C _ S E A R C H  S U B R O U T I N E -*-*-
 
-      SUBROUTINE SLLS_inexact_arc_search( n, m, weight, out, summary, debug,   &
+      SUBROUTINE SLLS_inexact_arc_search( n, o, weight, out, summary, debug,   &
                                           prefix, status, X, R, D, S, R_t,     &
                                           t_0, beta, eta, max_steps,           &
 !                                         t_max, advance,                      &
                                           n_free, FREE, data, userdata,        &
-                                          f_opt, t_opt, A_val, A_row, A_ptr,   &
+                                          f_opt, t_opt, Ao_val, Ao_row, Ao_ptr,&
                                           reverse , eval_APROD )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
@@ -3668,7 +3671,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  t_0 > 0, to find an approximate local minimizer of the regularized 
 !  least-squares objective
 !
-!    f(x) = 1/2 || A x - b ||^2 + 1/2 weight || x ||^2 for x = P(x(t))
+!    f(x) = 1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2 for x = P(x(t))
 !
 !  The approximation to the arc minimizer we seek is a point x(t_i) for
 !  which the Armijo condition
@@ -3702,9 +3705,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  INPUT arguments that are not altered by the subroutine
 !
 !  n         (INTEGER) the number of variables
-!  m         (INTEGER) the number of observations
+!  o         (INTEGER) the number of observations
 !  weight    (REAL) the regularization weight
-!  R         (REAL array of length at least m) the residual A x - b
+!  R         (REAL array of length at least o) the residual A x - b
 !  D         (REAL array of length at least n) the direction d
 !  out       (INTEGER) the output unit for printing
 !  summary   (LOGICAL) one line of output per segment if true
@@ -3723,11 +3726,11 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !                 the vectors p and v will be provided in reverse%p(:m)
 !                 and reverse%v(:n), and the result should overwrite
 !                 reverse%p(:m). These arrays should be allocated before use.
-!                 This value of status will only occur if A_val, A_row and
-!                 A_ptr are absent
+!                 This value of status will only occur if Ao_val, Ao_row and
+!                 Ao_ptr are absent
 !  X         (REAL array of length at least n) the initial point x
-!  S         (REAL array of length at least m) the direction p(x+td)-x
-!  R_t       (REAL array of length at least m) the residual A p(x+td) - b
+!  S         (REAL array of length at least o) the direction p(x+td)-x
+!  R_t       (REAL array of length at least o) the residual A p(x+td) - b
 !  t_0       (REAL) initial arc length
 !  beta      (REAL) arc length reduction factor in (0,1)
 !  eta       (REAL) decrease tolerance in (0,1/2)
@@ -3751,14 +3754,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !
 !  OPTIONAL ARGUMENTS
 !
-!  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
+!  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
 !          nonzeros of A, stored by consecutive columns. N.B. If present,
-!          A_row and A_ptr must also be present
-!  A_row   (INTEGER array of length A_ptr( n + 1 ) - 1) the row indices
+!          Ao_row and Ao_ptr must also be present
+!  Ao_row   (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
 !          of the nonzeros of A, stored by consecutive columns
-!  A_ptr   (INTEGER array of length n + 1) the starting positions in
-!           A_val and A_row of the i-th column of A, for i = 1,...,n,
-!           with A_ptr(n+1) pointin to the storage location 1 beyond
+!  Ao_ptr   (INTEGER array of length n + 1) the starting positions in
+!           Ao_val and Ao_row of the i-th column of A, for i = 1,...,n,
+!           with Ao_ptr(n+1) pointin to the storage location 1 beyond
 !           the last entry in A
 !  reverse (structure of type slls_reverse_type) data that is provided by the
 !           user when prompted by status > 0
@@ -3768,7 +3771,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  dummy arguments
 
-      INTEGER ( KIND = ip_ ), INTENT( IN ):: n, m, out, max_steps
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n, o, out, max_steps
       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status, n_free
       REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       LOGICAL, INTENT( IN ):: summary, debug
@@ -3779,15 +3782,15 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: FREE
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: R
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( o ) :: R
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, S
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: R_t
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R_t
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
-                                        DIMENSION( n + 1 ) :: A_ptr
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+                                        DIMENSION( n + 1 ) :: Ao_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       OPTIONAL :: eval_APROD
 
@@ -3815,7 +3818,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  check to see if A has been provided
 
-      IF ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) .AND. PRESENT( A_val ) ) THEN
+      IF ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND. PRESENT( Ao_val ) ) THEN
         data%present_a = .TRUE. ; data%reverse = .FALSE.
       ELSE
         data%present_a = .FALSE.
@@ -3885,16 +3888,16 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
           R_t = R
           DO j = 1, n
             s_j = S( j )
-            DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
-              i = A_row( l )
-              R_t( i ) = R_t( i ) + A_val( l ) * s_j
+            DO l = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+              i = Ao_row( l )
+              R_t( i ) = R_t( i ) + Ao_val( l ) * s_j
             END DO
           END DO
 
 !  if A is only availble by reverse communication, obtain the sum in that way
 
         ELSE IF ( data%reverse ) THEN
-!         reverse%P( : m ) = R
+!         reverse%P( : o ) = R
           reverse%V( : n ) = S
           status = 2
           RETURN
@@ -3912,7 +3915,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  re-enter with the required sum
 
   200   CONTINUE
-        IF ( data%reverse ) R_t = R + reverse%P( : m )
+        IF ( data%reverse ) R_t = R + reverse%P( : o )
         IF ( debug ) WRITE( out, "( ' R_t =', / ( 5ES12.4 ) )" ) R
 
 !  compute f_t = 1/2 || r_t ||^2 + 1/2 weight || x_t ||^2
@@ -3982,16 +3985,16 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 ! -*-*-*-*-*-*-*-*-  S L L S _ C G L S   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
-      SUBROUTINE SLLS_cgls( m, n, n_free, weight, out, summary, debug, prefix, &
+      SUBROUTINE SLLS_cgls( o, n, n_free, weight, out, summary, debug, prefix, &
                             f, X, R, FREE, stop_cg_relative, stop_cg_absolute, &
                             iter, maxit, data, userdata, status, alloc_status, &
-                            bad_alloc, A_ptr, A_row, A_val, eval_AFPROD,       &
+                            bad_alloc, Ao_ptr, Ao_row, Ao_val, eval_AFPROD,    &
                             eval_PREC, DPREC, reverse, preconditioned, B )
 
 !  Find the minimizer of the constrained (regularized) least-squares
 !  objective function
 
-!    f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight * ||x||_2^2
+!    f(x) =  1/2 || A_o x - b ||_2^2 + 1/2 weight * ||x||_2^2
 
 !  for which certain components of x are fixed at zero, and the remainder
 !  sum to zero
@@ -4000,7 +4003,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !
 !  INPUT arguments that are not altered by the subroutine
 !
-!  m       (INTEGER) the number of rows of A = number of observations
+!  o       (INTEGER) the number of rows of A = number of observations
 !  n       (INTEGER) the number of columns of A = number of variables
 !  n_free  (INTEGER) the number of components of x that are not fixed at zero
 !  weight  (REAL) the positive regularization weight (<= zero is zero)
@@ -4031,7 +4034,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  X       (REAL array of length at least n) the minimizer. On input, X should
 !           be set to an estimate of the minimizer, on output it will
 !           contain an improved estimate
-!  R       (REAL array of length at least m) the residual A x - b. On input,
+!  R       (REAL array of length at least o) the residual A x - b. On input,
 !           R should be set to the residual at the input X, on output it will
 !           contain the residual at the improved estimate X
 !  status  (INTEGER) that should be set to 1 on initial input, and
@@ -4068,13 +4071,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !
 !  OPTIONAL ARGUMENTS
 !
-!  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
+!  Ao_val   (REAL array of length Ao_ptr( n + 1 ) - 1) the values of the
 !          nonzeros of A, stored by consecutive columns
-!  A_row   (INTEGER array of length A_ptr( n + 1 ) - 1) the row indices
+!  Ao_row   (INTEGER array of length Ao_ptr( n + 1 ) - 1) the row indices
 !          of the nonzeros of A, stored by consecutive columns
-!  A_ptr   (INTEGER array of length n + 1) the starting positions in
-!          A_val and A_row of the i-th column of A, for i = 1,...,n,
-!          with A_ptr(n+1) pointin to the storage location 1 beyond
+!  Ao_ptr   (INTEGER array of length n + 1) the starting positions in
+!          Ao_val and Ao_row of the i-th column of A, for i = 1,...,n,
+!          with Ao_ptr(n+1) pointin to the storage location 1 beyond
 !          the last entry in A
 !  weight  (REAL) the positive regularization weight (absent = zero)
 !  eval_AFPROD subroutine that performs products with A, see the argument
@@ -4091,7 +4094,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  dummy arguments
 
-      INTEGER ( KIND = ip_ ), INTENT( IN ):: m, n, n_free, maxit, out
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: o, n, n_free, maxit, out
       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iter, status
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: alloc_status
       LOGICAL, INTENT( IN ) :: summary, debug
@@ -4102,17 +4105,17 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
       INTEGER ( KIND = ip_ ), DIMENSION( n_free ), INTENT( IN ) :: FREE
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: R
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( o ) :: R
       TYPE ( SLLS_subproblem_data_type ), INTENT( INOUT ) :: data
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
-                                        DIMENSION( n + 1 ) :: A_ptr
-      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+                                        DIMENSION( n + 1 ) :: Ao_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_AFPROD, eval_PREC
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
-      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: B
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
       LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
       TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
@@ -4179,8 +4182,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  check that it is possible to access A in some way
 
-      data%present_a = PRESENT( A_ptr ) .AND. PRESENT( A_row ) .AND.           &
-                       PRESENT( A_val )
+      data%present_a = PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND.           &
+                       PRESENT( Ao_val )
       data%present_afprod = PRESENT( eval_AFPROD )
       data%reverse_afprod = .NOT. ( data%present_a .OR. data%present_afprod )
       IF ( data%reverse_afprod .AND. .NOT. PRESENT( reverse ) ) THEN
@@ -4218,7 +4221,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'slls_cgls: data%Q'
-      CALL SPACE_resize_array( m, data%Q, status, alloc_status,                &
+      CALL SPACE_resize_array( o, data%Q, status, alloc_status,                &
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -4262,9 +4265,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         DO k = 1, n_free
           j = FREE( k )
           data%G( j ) = zero
-          DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
-            i = A_row( l )
-            data%G( j ) = data%G( j ) + A_val( l ) * R( i )
+          DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+            i = Ao_row( l )
+            data%G( j ) = data%G( j ) + Ao_val( l ) * R( i )
           END DO
         END DO
 
@@ -4280,7 +4283,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  c) evaluation via reverse communication
 
       ELSE
-        reverse%V( : m ) = R( : m )
+        reverse%V( : o ) = R( : o )
         data%branch = 20 ; status = 3
         RETURN
       END IF
@@ -4558,12 +4561,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !write(6,"( ' p ', /, ( 5ES12.4 ) )" ) data%P( : n )
         IF ( data%present_a ) THEN
-          data%Q( : m ) = zero
+          data%Q( : o ) = zero
           DO k = 1, n_free
             j = FREE( k ) ; val = data%P( j )
-            DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
-              i = A_row( l )
-              data%Q( i ) = data%Q( i ) + A_val( l ) * val
+            DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+              i = Ao_row( l )
+              data%Q( i ) = data%Q( i ) + Ao_val( l ) * val
             END DO
           END DO
 
@@ -4591,12 +4594,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          data%Q( : m ) = reverse%P( : m )
+          data%Q( : o ) = reverse%P( : o )
         END IF
 
 !  compute the step length to the minimizer along the line x + alpha p
 
-        curv = TWO_NORM( data%Q( : m ) ) ** 2
+        curv = TWO_NORM( data%Q( : o ) ) ** 2
         IF ( data%regularization ) THEN
           IF ( n_free < n ) THEN
             curv = curv + weight *                                             &
@@ -4616,8 +4619,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         ELSE
           X = X + alpha * data%P( : n )
         END IF
-        R = R + alpha * data%Q( : m )
-!write(6,"( ' q ', /, ( 5ES12.4 ) )" ) data%Q( : m )
+        R = R + alpha * data%Q( : o )
+!write(6,"( ' q ', /, ( 5ES12.4 ) )" ) data%Q( : o )
 
 !  update the value of the objective function
 
@@ -4628,14 +4631,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  a) evaluation directly via A
 
-!write(6,"( ' r ', /, ( 5ES12.4 ) )" ) R( : m )
+!write(6,"( ' r ', /, ( 5ES12.4 ) )" ) R( : o )
         IF ( data%present_a ) THEN
           DO k = 1, n_free
             j = FREE( k )
             data%G( j ) = zero
-            DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
-              i = A_row( l )
-              data%G( j ) = data%G( j ) + A_val( l ) * R( i )
+            DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+              i = Ao_row( l )
+              data%G( j ) = data%G( j ) + Ao_val( l ) * R( i )
             END DO
           END DO
 
@@ -4652,7 +4655,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
         ELSE
           reverse%P( : n ) = zero
-          reverse%V( : m ) = R
+          reverse%V( : o ) = R
           data%branch = 120 ; status = 3
           RETURN
         END IF
@@ -4887,7 +4890,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !- G A L A H A D -  S L L S _ i m p o r t _ w i t h o u t _ a  S U B R O U TINE
 
-     SUBROUTINE SLLS_import_without_a( control, data, status, n, m )
+     SUBROUTINE SLLS_import_without_a( control, data, status, n, o )
 
 !  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
@@ -4912,11 +4915,11 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0 has been violated.
 !
-!  n is a scalar variable of type default integer ( KIND = ip_ ), that holds the number of
-!   variables (columns of A)
+!  n is a scalar variable of type default integer, that holds the number of 
+!   variables (columns of Ao)
 !
-!  m is a scalar variable of type default integer ( KIND = ip_ ), that holds the number of
-!   residuals (rows of A)
+!  o is a scalar variable of type default integer, that holds the number of
+!   residuals (rows of Ao)
 !
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -4924,7 +4927,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      TYPE ( SLLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, o
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 !  local variables
 
@@ -4966,7 +4969,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
      IF ( data%slls_inform%status /= 0 ) GO TO 900
 
      array_name = 'slls: data%prob%B'
-     CALL SPACE_resize_array( m, data%prob%B,                                  &
+     CALL SPACE_resize_array( o, data%prob%B,                                  &
             data%slls_inform%status, data%slls_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
@@ -4974,8 +4977,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
             bad_alloc = data%slls_inform%bad_alloc, out = error )
      IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-     array_name = 'slls: data%prob%C'
-     CALL SPACE_resize_array( m, data%prob%C,                                  &
+     array_name = 'slls: data%prob%R'
+     CALL SPACE_resize_array( o, data%prob%R,                                  &
             data%slls_inform%status, data%slls_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
@@ -4994,7 +4997,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  put data into the required components of the qpt storage type
 
-     data%prob%n = n ; data%prob%m = m
+     data%prob%n = n ; data%prob%o = o
 
      status = GALAHAD_ready_to_solve
      RETURN
@@ -5011,8 +5014,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !-*-*-*-  G A L A H A D -  S L L S _ i m p o r t _ S U B R O U T I N E -*-*-*-
 
-     SUBROUTINE SLLS_import( control, data, status, n, m,                      &
-                             A_type, A_ne, A_row, A_col, A_ptr )
+     SUBROUTINE SLLS_import( control, data, status, n, o,                      &
+                             Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr )
 
 !  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
@@ -5035,38 +5038,38 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0, m >= 0 or requirement that A_type contains
+!   -3. The restriction n > 0, o >= 0 or requirement that Ao_type contains
 !       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !       'COORDINATE', 'SPARSE_BY_ROWS', or 'SPARSE_BY_COLUMNS'
 !       has been violated.
 !
 !  n is a scalar variable of type default integer, that holds the number of
-!   variables (columns of A)
+!   variables (columns of Ao)
 !
-!  m is a scalar variable of type default integer, that holds the number of
-!   residuals (rows of A)
+!  o is a scalar variable of type default integer, that holds the number of
+!   residuals (rows of Ao)
 !
-!  A_type is a character string that specifies the Jacobian storage scheme
-!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!  Ao_type is a character string that specifies the design matrix storage 
+!   scheme used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
 !   or 'absent', the latter if m = 0; lower or upper case variants are allowed
 !
-!  A_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  Ao_ne is a scalar variable of type default integer, that holds the number of
+!   entries in Ao in the sparse co-ordinate storage scheme. It need not be set
 !  for any of the other schemes.
 !
-!  A_row is a rank-one array of type default integer, that holds the row
-!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!  Ao_row is a rank-one array of type default integer, that holds the row
+!   indices Ao in the sparse co-ordinate storage scheme. It need not be set
 !   for any of the other schemes, and in this case can be of length 0
 !
-!  A_col is a rank-one array of type default integer, that holds the column
-!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!  Ao_col is a rank-one array of type default integer, that holds the column
+!   indices of Ao in either the sparse co-ordinate, or the sparse row-wise
 !   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
-!  A_ptr is a rank-one array of dimension max(m+1,n+1) and type default integer,
-!   that holds the starting position of each row of J, as well as the total
-!   number of entries plus one, in the sparse row-wise storage scheme, or
-!   the starting position of each column of J, as well as the total
+!  Ao_ptr is a rank-one array of dimension max(o+1,n+1) and type default 
+!   integer, that holds the starting position of each row of J, as well as the
+!   total number of entries plus one, in the sparse row-wise storage scheme, 
+!   or the starting position of each column of Ao, as well as the total
 !   number of entries plus one, in the sparse column-wise storage scheme.
 !   It need not be set when the other schemes are used, and in this case
 !   can be of length 0
@@ -5077,12 +5080,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      TYPE ( SLLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, o, Ao_ne
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: Ao_type
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: Ao_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: Ao_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: Ao_ptr
 
 !  local variables
 
@@ -5094,7 +5097,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  assign space for vector data
 
-     CALL SLLS_import_without_a( control, data, status, n, m )
+     CALL SLLS_import_without_a( control, data, status, n, o )
      IF ( status /= GALAHAD_ready_to_solve ) GO TO 900
 
      error = data%slls_control%error
@@ -5107,19 +5110,19 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  set A appropriately in the qpt storage type
 
-     SELECT CASE ( A_type )
+     SELECT CASE ( Ao_type )
      CASE ( 'coordinate', 'COORDINATE' )
-       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+       IF ( .NOT. ( PRESENT( Ao_row ) .AND. PRESENT( Ao_col ) ) ) THEN
          data%slls_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%prob%A%type, 'COORDINATE',                           &
+       CALL SMT_put( data%prob%Ao%type, 'COORDINATE',                          &
                      data%slls_inform%alloc_status )
-       data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ne
+       data%prob%Ao%n = n ; data%prob%Ao%m = o
+       data%prob%Ao%ne = Ao_ne
 
-       array_name = 'slls: data%prob%A%row'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+       array_name = 'slls: data%prob%Ao%row'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%row,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5127,8 +5130,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'slls: data%prob%A%col'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+       array_name = 'slls: data%prob%Ao%col'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%col,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5136,8 +5139,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'slls: data%prob%A%val'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+       array_name = 'slls: data%prob%Ao%val'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%val,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5146,29 +5149,29 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+         data%prob%Ao%row( : data%prob%Ao%ne ) = Ao_row( : data%prob%Ao%ne )
+         data%prob%Ao%col( : data%prob%Ao%ne ) = Ao_col( : data%prob%Ao%ne )
        ELSE
-         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
-         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+         data%prob%Ao%row( : data%prob%Ao%ne ) = Ao_row( : data%prob%Ao%ne ) + 1
+         data%prob%Ao%col( : data%prob%Ao%ne ) = Ao_col( : data%prob%Ao%ne ) + 1
        END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
-       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+       IF ( .NOT. ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_col ) ) ) THEN
          data%slls_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
+       CALL SMT_put( data%prob%Ao%type, 'SPARSE_BY_ROWS',                      &
                      data%slls_inform%alloc_status )
-       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%Ao%n = n ; data%prob%Ao%m = o
        IF ( data%f_indexing ) THEN
-         data%prob%A%ne = A_ptr( m + 1 ) - 1
+         data%prob%Ao%ne = Ao_ptr( o + 1 ) - 1
        ELSE
-         data%prob%A%ne = A_ptr( m + 1 )
+         data%prob%Ao%ne = Ao_ptr( o + 1 )
        END IF
 
-       array_name = 'slls: data%prob%A%ptr'
-       CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
+       array_name = 'slls: data%prob%Ao%ptr'
+       CALL SPACE_resize_array( o + 1, data%prob%Ao%ptr,                       &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5176,8 +5179,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'slls: data%prob%A%col'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+       array_name = 'slls: data%prob%Ao%col'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%col,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5185,8 +5188,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'slls: data%prob%A%val'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+       array_name = 'slls: data%prob%Ao%val'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%val,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5195,28 +5198,28 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+         data%prob%Ao%ptr( : o + 1 ) = Ao_ptr( : o + 1 )
+         data%prob%Ao%col( : data%prob%Ao%ne ) = Ao_col( : data%prob%Ao%ne )
        ELSE
-         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
-         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+         data%prob%Ao%ptr( : o + 1 ) = Ao_ptr( : o + 1 ) + 1
+         data%prob%Ao%col( : data%prob%Ao%ne ) = Ao_col( : data%prob%Ao%ne ) + 1
        END IF
 
      CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
-       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) ) ) THEN
+       IF ( .NOT. ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) ) ) THEN
          data%slls_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_COLUMNS',                    &
+       CALL SMT_put( data%prob%Ao%type, 'SPARSE_BY_COLUMNS',                   &
                      data%slls_inform%alloc_status )
-       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%Ao%n = n ; data%prob%Ao%m = o
        IF ( data%f_indexing ) THEN
-         data%prob%A%ne = A_ptr( n + 1 ) - 1
+         data%prob%Ao%ne = Ao_ptr( n + 1 ) - 1
        ELSE
-         data%prob%A%ne = A_ptr( n + 1 )
+         data%prob%Ao%ne = Ao_ptr( n + 1 )
        END IF
-       array_name = 'slls: data%prob%A%ptr'
-       CALL SPACE_resize_array( n + 1, data%prob%A%ptr,                        &
+       array_name = 'slls: data%prob%Ao%ptr'
+       CALL SPACE_resize_array( n + 1, data%prob%Ao%ptr,                       &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5224,8 +5227,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'slls: data%prob%A%row'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+       array_name = 'slls: data%prob%Ao%row'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%row,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5233,8 +5236,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       array_name = 'slls: data%prob%A%val'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+       array_name = 'slls: data%prob%Ao%val'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%val,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5243,21 +5246,21 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
-         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%Ao%ptr( : n + 1 ) = Ao_ptr( : n + 1 )
+         data%prob%Ao%row( : data%prob%Ao%ne ) = Ao_row( : data%prob%Ao%ne )
        ELSE
-         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 ) + 1
-         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%Ao%ptr( : n + 1 ) = Ao_ptr( : n + 1 ) + 1
+         data%prob%Ao%row( : data%prob%Ao%ne ) = Ao_row( : data%prob%Ao%ne ) + 1
        END IF
 
      CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
-       CALL SMT_put( data%prob%A%type, 'DENSE_BY_ROWS',                        &
+       CALL SMT_put( data%prob%Ao%type, 'DENSE_BY_ROWS',                       &
                      data%slls_inform%alloc_status )
-       data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = m * n
+       data%prob%Ao%n = n ; data%prob%Ao%m = o
+       data%prob%Ao%ne = o * n
 
-       array_name = 'slls: data%prob%A%val'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+       array_name = 'slls: data%prob%Ao%val'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%val,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5266,13 +5269,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
      CASE ( 'dense_by_columns', 'DENSE_BY_COLUMNS' )
-       CALL SMT_put( data%prob%A%type, 'DENSE_BY_COLUMNS',                     &
+       CALL SMT_put( data%prob%Ao%type, 'DENSE_BY_COLUMNS',                    &
                      data%slls_inform%alloc_status )
-       data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = m * n
+       data%prob%Ao%n = n ; data%prob%Ao%m = o
+       data%prob%Ao%ne = o * n
 
-       array_name = 'slls: data%prob%A%val'
-       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+       array_name = 'slls: data%prob%Ao%val'
+       CALL SPACE_resize_array( data%prob%Ao%ne, data%prob%Ao%val,             &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               deallocate_error_fatal = deallocate_error_fatal,                 &
@@ -5328,8 +5331,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !-  G A L A H A D -  S L L S _ s o l v e _ g i v e n _ a  S U B R O U T I N E  -
 
-     SUBROUTINE SLLS_solve_given_a( data, userdata, status, A_val, B,          &
-                                    X, Z, C, G, X_stat, eval_PREC )
+     SUBROUTINE SLLS_solve_given_a( data, userdata, status, Ao_val, B,         &
+                                    X, Z, R, G, X_stat, eval_PREC )
 
 !  solve the bound-constrained linear least-squares problem whose structure
 !  was previously imported. See SLLS_solve for a description of the required
@@ -5360,12 +5363,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !   success or otherwise of the import. If status = 0, the solve was succesful.
 !   For other values see, slls_solve above.
 !
-!  A_val is a rank-one array of type default real, that holds the values of
+!  Ao_val is a rank-one array of type default real, that holds the values of
 !   the constraint Jacobian A in the storage scheme specified in slls_import.
 !
-!  B is a rank-one array of dimension m and type default
+!  B is a rank-one array of dimension o and type default
 !   real, that holds the vector of observations, b.
-!   The i-th component of B, i = 1, ... , m, contains (b)_i.
+!   The i-th component of B, i = 1, ... , o, contains (b)_i.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -5375,9 +5378,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  C is a rank-one array of dimension m and type default
-!   real, that holds the vector of residuals, c = A x - b on exit.
-!   The i-th component of C, i = 1, ... , m, contains (c)_i.
+!  R is a rank-one array of dimension o and type default
+!   real, that holds the vector of residuals, r = A x - b on exit.
+!   The i-th component of R, i = 1, ... , o, contains (r)_i.
 !
 !  G is a rank-one array of dimension n and type default
 !   real, that holds the gradient, g = A^T c on exit.
@@ -5408,10 +5411,10 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: Ao_val
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C, G
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, G
      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
      OPTIONAL :: eval_PREC
 
@@ -5429,7 +5432,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: n, m
+     INTEGER ( KIND = ip_ ) :: n, o
 
 !  check that space for the constraint Jacobian has been provided
 
@@ -5437,11 +5440,11 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  recover the dimensions
 
-     n = data%prob%n ; m = data%prob%m
+     n = data%prob%n ; o = data%prob%o
 
 !  save the observations
 
-     data%prob%B( : m ) = B( : m )
+     data%prob%B( : o ) = B( : o )
 
 !  save the initial primal and dual variables
 
@@ -5450,8 +5453,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  save the Jacobian entries
 
-     IF ( data%prob%A%ne > 0 )                                                 &
-       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+     IF ( data%prob%Ao%ne > 0 )                                                &
+       data%prob%Ao%val( : data%prob%Ao%ne ) = Ao_val( : data%prob%Ao%ne )
 
 !  call the solver
 
@@ -5466,7 +5469,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  recover the residual value and gradient
 
-     C( : m ) = data%prob%C( : m )
+     R( : o ) = data%prob%R( : o )
      G( : n ) = data%prob%G( : n )
 
      RETURN
@@ -5484,7 +5487,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !- G A L A H A D -  S L L S _ s o l v e _ r e v e r s e _ a _ p r o d SUBROUTINE
 
      SUBROUTINE SLLS_solve_reverse_a_prod( data, status, eval_status,          &
-                                           B, X, Z, C, G, X_stat,              &
+                                           B, X, Z, R, G, X_stat,              &
                                            V, P, NZ_in, nz_in_start,           &
                                            nz_in_end, NZ_out, nz_out_end )
 
@@ -5570,9 +5573,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !   be set to 0 if the opertation was successful, and to a nonzero value
 !   if the operation failed for any reason.
 !
-!  B is a rank-one array of dimension m and type default
+!  B is a rank-one array of dimension o and type default
 !   real, that holds the vector of observations, b.
-!   The i-th component of B, i = 1, ... , m, contains (b)_i.
+!   The i-th component of B, i = 1, ... , o, contains (b)_i.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -5582,9 +5585,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  C is a rank-one array of dimension m and type default
-!   real, that holds the vector of residuals, c = A x - b on exit.
-!   The i-th component of C, i = 1, ... , m, contains (c)_i.
+!  R is a rank-one array of dimension o and type default
+!   real, that holds the vector of residuals, r = A x - b on exit.
+!   The i-th component of R, i = 1, ... , o, contains (r)_i.
 !
 !  G is a rank-one array of dimension n and type default
 !   real, that holds the gradient, g = A^T c on exit.
@@ -5611,7 +5614,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C, G
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: R, G
      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nz_out_end
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nz_in_start, nz_in_end
@@ -5622,13 +5625,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  local variables
 
-     INTEGER ( KIND = ip_ ) :: n, m, error
+     INTEGER ( KIND = ip_ ) :: n, o, error
      CHARACTER ( LEN = 80 ) :: array_name
      LOGICAL :: deallocate_error_fatal, space_critical
 
 !  recover the dimensions
 
-     n = data%prob%n ; m = data%prob%m
+     n = data%prob%n ; o = data%prob%o
 
      SELECT CASE ( status )
 
@@ -5638,7 +5641,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  save the observations
 
-       data%prob%B( : m ) = B( : m )
+       data%prob%B( : o ) = B( : o )
 
 !  save the initial primal and dual variables
 
@@ -5687,10 +5690,10 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-!  make sure that A%type is not allocated
+!  make sure that Ao%type is not allocated
 
-       array_name = 'slls: data%prob%A%type'
-       CALL SPACE_dealloc_array( data%prob%A%type,                             &
+       array_name = 'slls: data%prob%Ao%type'
+       CALL SPACE_dealloc_array( data%prob%Ao%type,                            &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
               array_name = array_name,                                         &
               bad_alloc = data%slls_inform%bad_alloc, out = error )
@@ -5700,7 +5703,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      CASE( 2, 4 )
        data%reverse%eval_status = eval_status
-       data%reverse%P( : m ) = P( : m )
+       data%reverse%P( : o ) = P( : o )
      CASE( 3, 7 )
        data%reverse%eval_status = eval_status
        data%reverse%P( : n ) = P( : n )
@@ -5722,7 +5725,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  call the solver
 
      CALL SLLS_solve( data%prob, X_stat, data%slls_data, data%slls_control,    &
-                     data%slls_inform, data%userdata, reverse = data%reverse )
+                      data%slls_inform, data%userdata, reverse = data%reverse )
      status = data%slls_inform%status
 
 !  recover the optimal primal and dual variables
@@ -5732,7 +5735,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  recover the residual value and gradient
 
-     C( : m ) = data%prob%C( : m )
+     R( : o ) = data%prob%R( : o )
      G( : n ) = data%prob%G( : n )
 
 !  record Jacobian-vector product information for reverse communication
@@ -5741,7 +5744,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
      CASE( 2, 7 )
        V( : n ) = data%reverse%V( : n )
      CASE( 3 )
-       V( : m ) = data%reverse%V( : m )
+       V( : o ) = data%reverse%V( : o )
      CASE( 4, 5 )
        nz_in_start = data%reverse%nz_in_start
        nz_in_end = data%reverse%nz_in_end
@@ -5754,7 +5757,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        nz_in_end = data%reverse%nz_in_end
        NZ_in( nz_in_start : nz_in_end )                                        &
          = data%reverse%NZ_in( nz_in_start : nz_in_end )
-       V( : m ) = data%reverse%V( : m )
+       V( : o ) = data%reverse%V( : o )
      END SELECT
 
      RETURN

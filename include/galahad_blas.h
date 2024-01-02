@@ -1,0 +1,26 @@
+#ifdef GALAHAD_64BIT_INTEGER
+#define SNRM2 SNRM2_64
+#define DNRM2 DNRM2_64
+#define ISAMAX ISAMAX_64
+#define IDAMAX IDAMAX_64
+#define SROTG SROTG_64
+#define DROTG DROTG_64
+#define SROT SROT_64
+#define DROT DROT_64
+#define SSWAP SSWAP_64
+#define DSWAP DSWAP_64
+#define SSCAL SSCAL_64
+#define DSCAL DSCAL_64
+#define STRSV STRSV_64
+#define DTRSV DTRSV_64
+#define STRSM STRSM_64
+#define DTRSM DTRSM_64
+#define STBSV STBSV_64
+#define DTBSV DTBSV_64
+#define SGEMV SGEMV_64
+#define DGEMV DGEMV_64
+#define SGEMM SGEMM_64
+#define DGEMM DGEMM_64
+#define SGER SGER_64
+#define DGER DGER_64
+#endif

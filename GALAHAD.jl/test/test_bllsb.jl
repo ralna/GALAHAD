@@ -51,8 +51,8 @@ for d = 1:3
     bllsb_import( control, data, status, n, o, 
                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, Cint[] )
 
-    bllsb_solve_bllsb( data, status, n, o, m, Ao_ne, Ao_val, b, sigma,
-                       x_l, x_u, x, z, x_stat, w )
+    bllsb_solve_blls( data, status, n, o, m, Ao_ne, Ao_val, b, sigma,
+                      x_l, x_u, x, z, x_stat, w )
   end
 
   # sparse by rows
@@ -63,8 +63,8 @@ for d = 1:3
                  "sparse_by_rows", Ao_ne, Cint[], Ao_col, Ao_ptr_ne, Ao_ptr )
 
 
-    bllsb_solve_bllsb( data, status, n, o, Ao_ne, Ao_val, b, sigma,
-                       x_l, x_u, x, z, x_stat, w )
+    bllsb_solve_blls( data, status, n, o, Ao_ne, Ao_val, b, sigma,
+                      x_l, x_u, x, z, x_stat, w )
   end
 
   # dense
@@ -78,8 +78,8 @@ for d = 1:3
     bllsb_import( control, data, status, n, o, 
                   "dense", Ao_ne, Cint[], Cint[], 0, Cint[] )
 
-    bllsb_solve_bllsb( data, status, n, o, Ao_dense_ne, Ao_dense, b, sigma,
-                       x_l, x_u, x, z, x_stat, w )
+    bllsb_solve_blls( data, status, n, o, Ao_dense_ne, Ao_dense, b, sigma,
+                      x_l, x_u, x, z, x_stat, w )
   end
 
   bllsb_information( data, inform, status )

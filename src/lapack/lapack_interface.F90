@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-09 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-02 AT 14:10 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_lapack.h"
 
 !-*-*-*-  G A L A H A D _ L A P A C K _ i n t e r f a c e   M O D U L E  -*-*-*-
 
@@ -26,14 +29,16 @@
       INTERFACE GETRF
 
         SUBROUTINE SGETRF( m, n, A, lda, IPIV, info )
-        INTEGER :: info, lda, m, n
-        INTEGER :: IPIV( * )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, m, n
+        INTEGER ( KIND = ip_ ) :: IPIV( * )
         REAL :: A( lda, n )
         END SUBROUTINE SGETRF
 
         SUBROUTINE DGETRF( m, n, A, lda, IPIV, info )
-        INTEGER :: info, lda, m, n
-        INTEGER :: IPIV( * )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, m, n
+        INTEGER ( KIND = ip_ ) :: IPIV( * )
         DOUBLE PRECISION :: A( lda, n )
         END SUBROUTINE DGETRF
 
@@ -44,16 +49,18 @@
       INTERFACE GETRS
 
         SUBROUTINE SGETRS( trans, n, nrhs, A, lda, IPIV, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: trans
-        INTEGER :: info, lda, ldb, n, nrhs
-        INTEGER :: IPIV( * )
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, n, nrhs
+        INTEGER ( KIND = ip_ ) :: IPIV( * )
         REAL :: A( lda, n ), B( ldb, nrhs )
         END SUBROUTINE SGETRS
 
         SUBROUTINE DGETRS( trans, n, nrhs, A, lda, IPIV, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: trans
-        INTEGER :: info, lda, ldb, n, nrhs
-        INTEGER :: IPIV( * )
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, n, nrhs
+        INTEGER ( KIND = ip_ ) :: IPIV( * )
         DOUBLE PRECISION :: A( lda, n ), B( ldb, nrhs )
         END SUBROUTINE DGETRS
 
@@ -64,14 +71,16 @@
       INTERFACE GELS
 
         SUBROUTINE SGELS( trans, m, n, nrhs, A, lda, B, ldb, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: trans
-        INTEGER :: m, n, nrhs, lda, ldb, lwork, info
+        INTEGER ( KIND = ip_ ) :: m, n, nrhs, lda, ldb, lwork, info
         REAL :: A( lda, n ), B( ldb, nrhs ), WORK( lwork )
         END SUBROUTINE SGELS
 
         SUBROUTINE DGELS( trans, m, n, nrhs, A, lda, B, ldb, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: trans
-        INTEGER :: m, n, nrhs, lda, ldb, lwork, info 
+        INTEGER ( KIND = ip_ ) :: m, n, nrhs, lda, ldb, lwork, info 
         DOUBLE PRECISION :: A( lda, n ), B( ldb, nrhs ), WORK( lwork )
         END SUBROUTINE DGELS
 
@@ -83,17 +92,19 @@
 
         SUBROUTINE SGELSY( m, n, nrhs, A, lda, B, ldb, JPVT, rcond, rank,      &
                            WORK, lwork, info )
-        INTEGER :: info, lda, ldb, lwork, m, n, nrhs, rank
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, lwork, m, n, nrhs, rank
         REAL :: rcond
-        INTEGER :: JPVT( n )
+        INTEGER ( KIND = ip_ ) :: JPVT( n )
         REAL :: A( lda, n ), B( ldb, nrhs ), WORK( * )
         END SUBROUTINE SGELSY
 
         SUBROUTINE DGELSY( m, n, nrhs, A, lda, B, ldb, JPVT, rcond, rank,      &
                            WORK, lwork, info )
-        INTEGER :: info, lda, ldb, lwork, m, n, nrhs, rank
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, lwork, m, n, nrhs, rank
         DOUBLE PRECISION :: rcond
-        INTEGER :: JPVT( n )
+        INTEGER ( KIND = ip_ ) :: JPVT( n )
         DOUBLE PRECISION :: A( lda, n ), B( ldb, nrhs ), WORK( * )
         END SUBROUTINE DGELSY
 
@@ -105,14 +116,16 @@
 
         SUBROUTINE SGELSS( m, n, nrhs, A, lda, B, ldb, S, rcond, rank,         &
                            WORK, lwork, info )
-        INTEGER :: info, lda, ldb, lwork, m, n, nrhs, rank
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, lwork, m, n, nrhs, rank
         REAL :: rcond
         REAL :: A( lda, n ), B( ldb, nrhs ), S( * ), WORK( * )
         END SUBROUTINE SGELSS
 
         SUBROUTINE DGELSS( m, n, nrhs, A, lda, B, ldb, S, rcond, rank,         &
                            WORK, lwork, info )
-        INTEGER :: info, lda, ldb, lwork, m, n, nrhs, rank
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, lwork, m, n, nrhs, rank
         DOUBLE PRECISION :: rcond
         DOUBLE PRECISION :: A( lda, n ), B( ldb, nrhs ), S( * ), WORK( * )
         END SUBROUTINE DGELSS
@@ -126,17 +139,19 @@
 
         SUBROUTINE SGELSD( m, n, nrhs, A, lda, B, ldb, S, rcond,               &
                            rank, WORK, lwork, IWORK, info )
-        INTEGER :: info, lda, ldb, lwork, m, n, nrhs, rank
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, lwork, m, n, nrhs, rank
         REAL :: rcond
-        INTEGER :: IWORK( * )
+        INTEGER ( KIND = ip_ ) :: IWORK( * )
         REAL :: A( lda, n ), B( LDB, nrhs ), S( * ), WORK( * )
         END SUBROUTINE SGELSD
 
         SUBROUTINE DGELSD( m, n, nrhs, A, lda, B, ldb, S, rcond,               &
                            rank, WORK, lwork, IWORK, info )
-        INTEGER :: info, lda, ldb, lwork, m, n, nrhs, rank
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ) :: info, lda, ldb, lwork, m, n, nrhs, rank
         DOUBLE PRECISION :: rcond
-        INTEGER :: IWORK( * )
+        INTEGER ( KIND = ip_ ) :: IWORK( * )
         DOUBLE PRECISION :: A( lda, n ), B( LDB, nrhs ), S( * ), WORK( * )
         END SUBROUTINE DGELSD
 
@@ -148,16 +163,18 @@
 
         SUBROUTINE SGESVD( jobu, jobvt, m, n, A, lda, S, U, ldu, VT, ldvt,     &
                            WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: jobu, jobvt
-        INTEGER :: m, n, lda, ldu, ldvt, lwork, info
+        INTEGER ( KIND = ip_ ) :: m, n, lda, ldu, ldvt, lwork, info
         REAL :: A( lda, * ), S( * ), U( ldu, * )
         REAL :: VT( ldvt, * ), WORK( lwork )
         END SUBROUTINE SGESVD
 
         SUBROUTINE DGESVD( jobu, jobvt, m, n, A, lda, S, U, ldu, VT, ldvt,     &
                            WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: jobu, jobvt
-        INTEGER :: m, n, lda, ldu, ldvt, lwork, info
+        INTEGER ( KIND = ip_ ) :: m, n, lda, ldu, ldvt, lwork, info
         DOUBLE PRECISION :: A( lda, * ), S( * ), U( ldu, * )
         DOUBLE PRECISION :: VT( ldvt, * ), WORK( lwork )
         END SUBROUTINE DGESVD
@@ -169,14 +186,16 @@
       INTERFACE PTTRF
 
         SUBROUTINE SPTTRF( n, D, E, info )
-        INTEGER, INTENT( IN ) :: n
-        INTEGER, INTENT( OUT ) :: info
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( INOUT ) :: D( n ), E( n - 1 )
         END SUBROUTINE SPTTRF
 
         SUBROUTINE DPTTRF( n, D, E, info )
-        INTEGER, INTENT( IN ) :: n
-        INTEGER, INTENT( OUT ) :: info
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( INOUT ) :: D( n ), E( n - 1 )
         END SUBROUTINE DPTTRF
 
@@ -187,16 +206,18 @@
       INTERFACE POTRF
 
         SUBROUTINE SPOTRF( uplo, n, A, lda, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, lda
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( INOUT ), DIMENSION( lda, * ) :: A
         END SUBROUTINE SPOTRF
 
         SUBROUTINE DPOTRF( uplo, n, A, lda, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, lda
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         END SUBROUTINE DPOTRF
 
@@ -207,17 +228,19 @@
       INTERFACE POTRS
 
         SUBROUTINE SPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
         REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
         END SUBROUTINE SPOTRS
 
         SUBROUTINE DPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
         END SUBROUTINE DPOTRS
@@ -229,19 +252,21 @@
       INTERFACE SYTRF
 
         SUBROUTINE SSYTRF( uplo, n, A, lda, IPIV, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, lda, lwork
-        INTEGER, INTENT( OUT ) :: info
-        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IPIV
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda, lwork
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IPIV
         REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
         END SUBROUTINE SSYTRF
 
         SUBROUTINE DSYTRF( uplo, n, A, lda, IPIV, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, lda, lwork
-        INTEGER, INTENT( OUT ) :: info
-        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IPIV
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda, lwork
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IPIV
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
 
@@ -254,19 +279,21 @@
       INTERFACE SYTRS
 
         SUBROUTINE SSYTRS( uplo, n, nrhs, A, lda, IPIV, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
-        INTEGER, INTENT( IN ), DIMENSION( n ) :: IPIV
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: IPIV
         REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
         REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
         END SUBROUTINE SSYTRS
 
         SUBROUTINE DSYTRS( uplo, n, nrhs, A, lda, IPIV, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
-        INTEGER, INTENT( IN ), DIMENSION( n ) :: IPIV
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: IPIV
         DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
         END SUBROUTINE DSYTRS
@@ -278,16 +305,18 @@
       INTERFACE PBTRF
 
         SUBROUTINE SPBTRF( uplo, n, semi_bandwidth, A, lda, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         END SUBROUTINE SPBTRF
 
         SUBROUTINE DPBTRF( uplo, n, semi_bandwidth, A, lda, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         END SUBROUTINE DPBTRF
 
@@ -298,17 +327,19 @@
       INTERFACE PBTRS
 
         SUBROUTINE SPBTRS( uplo, n, semi_bandwidth, nrhs, A, lda, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
         REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
         END SUBROUTINE SPBTRS
 
         SUBROUTINE DPBTRS( uplo, n, semi_bandwidth, nrhs, A, lda, B, ldb, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
         END SUBROUTINE DPBTRS
@@ -320,18 +351,20 @@
       INTERFACE SYEV
 
         SUBROUTINE SSYEV( jobz, uplo, n,  A, lda, D, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-        INTEGER, INTENT( IN ) :: n, lda, lwork
-        INTEGER, INTENT( out ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda, lwork
+        INTEGER ( KIND = ip_ ), INTENT( out ) :: info
         REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         REAL, INTENT( OUT ), DIMENSION( n ) :: D
         REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
         END SUBROUTINE SSYEV
 
         SUBROUTINE DSYEV( jobz, uplo, n,  A, lda, D, WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-        INTEGER, INTENT( IN ) :: n, lda, lwork
-        INTEGER, INTENT( out ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda, lwork
+        INTEGER ( KIND = ip_ ), INTENT( out ) :: info
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( OUT ), DIMENSION( n ) :: D
         DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
@@ -345,9 +378,10 @@
 
         SUBROUTINE SSYGV( itype, jobz, uplo, n,  A, lda, B, ldb, D,            &
                           WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-        INTEGER, INTENT( IN ) :: itype, n, lda, ldb, lwork
-        INTEGER, INTENT( out ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: itype, n, lda, ldb, lwork
+        INTEGER ( KIND = ip_ ), INTENT( out ) :: info
         REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         REAL, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
         REAL, INTENT( OUT ), DIMENSION( n ) :: D
@@ -356,9 +390,10 @@
 
         SUBROUTINE DSYGV( itype, jobz, uplo, n,  A, lda, B, ldb, D,            &
                           WORK, lwork, info )
+        USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-        INTEGER, INTENT( IN ) :: itype, n, lda, ldb, lwork
-        INTEGER, INTENT( out ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: itype, n, lda, ldb, lwork
+        INTEGER ( KIND = ip_ ), INTENT( out ) :: info
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
         DOUBLE PRECISION, INTENT( OUT ), DIMENSION( n ) :: D
@@ -373,8 +408,9 @@
 
         SUBROUTINE SHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,   &
                            WORK, lwork, info )
-        INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
-        INTEGER, INTENT( OUT ) :: info
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
         REAL, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
         REAL, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
@@ -382,8 +418,9 @@
 
         SUBROUTINE DHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,   &
                            WORK, lwork, info )
-        INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
-        INTEGER, INTENT( OUT ) :: info
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
         DOUBLE PRECISION, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
         DOUBLE PRECISION, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
@@ -396,14 +433,16 @@
       INTERFACE STERF
 
         SUBROUTINE SSTERF( n, D, E, info )
-        INTEGER, INTENT( IN ) :: n
-        INTEGER, INTENT( OUT ) :: info
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( INOUT ) :: D( n ), E( n - 1 )
         END SUBROUTINE SSTERF
 
         SUBROUTINE DSTERF( n, D, E, info )
-        INTEGER, INTENT( IN ) :: n
-        INTEGER, INTENT( OUT ) :: info
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( INOUT ) :: D( n ), E( n - 1 )
         END SUBROUTINE DSTERF
 
@@ -414,11 +453,13 @@
       INTERFACE LAEV2
 
         SUBROUTINE SLAEV2( a, b, c, rt1, rt2, cs1, sn1 )
+        USE GALAHAD_KINDS_precision
         REAL, INTENT( IN ) :: a, b, c
         REAL, INTENT( OUT ) :: cs1, rt1, rt2, sn1
         END SUBROUTINE SLAEV2
 
         SUBROUTINE DLAEV2( a, b, c, rt1, rt2, cs1, sn1 )
+        USE GALAHAD_KINDS_precision
         DOUBLE PRECISION, INTENT( IN ) :: a, b, c
         DOUBLE PRECISION, INTENT( OUT ) :: cs1, rt1, rt2, sn1
         END SUBROUTINE DLAEV2

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-14 AT 09:00 GMT
+! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 11:00 GMT
    PROGRAM GALAHAD_SLLS_EXAMPLE5
 
 ! use slls to solve a bilinear fitting problem
@@ -16,8 +16,7 @@
    TYPE ( SLLS_control_type ) :: control_r
    TYPE ( SLLS_inform_type ) :: inform_r
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   INTEGER :: i, j, ne, pass
-   TYPE ( RAND_seed ) :: seed
+   INTEGER :: i, ne, pass
    REAL ( KIND = wp ) :: val, f, xi, b, a_max
    REAL ( KIND = wp ) :: a_11, a_12, a_22, r_1, r_2, alpha, beta
    REAL :: time, time_start, time_total
@@ -27,16 +26,23 @@
    INTEGER, PARAMETER :: pass_max = 30
    INTEGER, DIMENSION( n ) :: R_stat
    REAL ( KIND = wp ) :: R( n ), AT( n, obs ), MU( obs ), SIGMA( obs )
+   LOGICAL :: fileex
 
 !  set up storage for the r problem
 
-   CALL SMT_put( p_r%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_r%A%val(obs * n ), p_r%B( obs ), p_r%X( n ) )
-   p_r%m = obs ; p_r%n = n ; p_r%A%m = p_r%m ; p_r%A%n = p_r%n
+   CALL SMT_put( p_r%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_r%Ao%val(obs * n ), p_r%B( obs ), p_r%X( n ) )
+   p_r%o = obs ; p_r%n = n ; p_r%Ao%m = p_r%o ; p_r%Ao%n = p_r%n
 
 ! read problem data. Store rows of A as columns of AT
 
-   OPEN( unit = 21, file = "G.txt" )
+   INQUIRE( file = "G.txt", exist = fileex )
+   IF ( fileex ) THEN
+     OPEN( unit = 21, file = "G.txt" )
+   ELSE
+     WRITE( 6, "( ' input file G.txt does not exist. Stopping' )" )
+     STOP
+   END IF
    DO i = 1, obs
      READ( 21, * ) AT( 1 : n, i )
    END DO
@@ -119,7 +125,7 @@
    ne = 0
    DO i = 1, obs
      p_r%B( i ) = MU( i ) - b / SIGMA( i )
-     p_r%A%val( ne + 1 : ne + n ) = xi * AT( 1 : n, i )
+     p_r%Ao%val( ne + 1 : ne + n ) = xi * AT( 1 : n, i )
      ne = ne + n
    END DO
    p_r%X = R
@@ -171,6 +177,6 @@
 
    CALL SLLS_terminate( data_r, control_r, inform_r )  !  delete workspace
    DEALLOCATE( p_r%B, p_r%X, p_r%Z )
-   DEALLOCATE( p_r%A%val, p_r%A%type )
+   DEALLOCATE( p_r%Ao%val, p_r%Ao%type )
 
    END PROGRAM GALAHAD_SLLS_EXAMPLE5

@@ -46,7 +46,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'blls_functions';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="GALAHAD CLLS package" href="clls.html" />
+    <link rel="next" title="GALAHAD BLLSB package" href="bllsb.html" />
     <link rel="prev" title="GALAHAD BLLS package" href="blls.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -372,12 +372,20 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="bllsb_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="clls_functions.html">callable functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="slls_functions.html">callable functions</a></li>
 </ul>
 </li>
 </ul>
@@ -426,7 +434,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -460,15 +468,15 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1afacd84f0b7592f4532cf7b77d278282f"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"></span>
-<span class="w">                         </span><span class="n">A_type</span><span class="p">,</span><span class="w"> </span><span class="n">A_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_row</span><span class="p">,</span><span class="w"> </span><span class="n">A_col</span><span class="p">,</span><span class="w"> </span><span class="n">A_ptr</span><span class="p">)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1afacd84f0b7592f4532cf7b77d278282f"><span id="index-2"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_import</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"></span>
+<span class="w">                         </span><span class="n">Ao_type</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_ne</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_row</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_col</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_ptr_ne</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_ptr</span><span class="p">)</span></pre>
 <p>Import problem data into internal storage prior to solution.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
@@ -478,7 +486,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -513,7 +521,7 @@ respectively.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0, m &gt; 0 or requirement that
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0, o &gt; 0 or requirement that
 type contains its relevant string ‘coordinate’,
 ‘sparse_by_rows’, ‘sparse_by_columns’,
 ‘dense_by_rows’, or ‘dense_by_columns’; has been
@@ -527,28 +535,32 @@ violated.</p>
 <tr class="row-even"><td><p>n</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
 </tr>
-<tr class="row-odd"><td><p>m</p></td>
+<tr class="row-odd"><td><p>o</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of residuals.</p></td>
 </tr>
-<tr class="row-even"><td><p>A_type</p></td>
-<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="wcp.html#details-a-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the Jacobian <span class="math notranslate nohighlight">\(A\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense_by_rows’, or ‘dense_by_columns’; lower or upper case variants are allowed.</p></td>
+<tr class="row-even"><td><p>Ao_type</p></td>
+<td><p>is a one-dimensional array of type Vararg{Cchar} that specifies the <a class="reference internal" href="wcp.html#details-a-storage-unsym"><span class="std std-ref">unsymmetric storage scheme</span></a> used for the Jacobian <span class="math notranslate nohighlight">\(A_o\)</span>. It should be one of ‘coordinate’, ‘sparse_by_rows’, ‘sparse_by_columns’, ‘dense_by_rows’, or ‘dense_by_columns’; lower or upper case variants are allowed.</p></td>
 </tr>
-<tr class="row-odd"><td><p>A_ne</p></td>
-<td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
+<tr class="row-odd"><td><p>Ao_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
-<tr class="row-even"><td><p>A_row</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<tr class="row-even"><td><p>Ao_row</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
-<tr class="row-odd"><td><p>A_col</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<tr class="row-odd"><td><p>Ao_col</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
-<tr class="row-even"><td><p>A_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 or m+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme, or the starting position of each column of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<tr class="row-even"><td><p>Ao_ptr_ne</p></td>
+<td><p>is a scalar variable of type Int32, that holds the length of the pointer array if sparse row or column storage scheme is used for <span class="math notranslate nohighlight">\(A_o\)</span>. For the sparse row scheme, Ao_ptr_ne should be at least o+1, while for the sparse column scheme, it should be at least n+1, It need not be set when the other schemes are used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ao_ptr</p></td>
+<td><p>is a one-dimensional array of size Ao_ptr_ne and type Int32, that holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1a419f9b0769b4389beffbbc5f7d0fd58c"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_import_without_a</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">)</span></pre>
-<p>Import problem data into internal storage prior to solution.</p>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1a419f9b0769b4389beffbbc5f7d0fd58c"><span id="index-3"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_import_without_a</span><span class="p">(</span><span class="n">control</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">)</span></pre>
+<p>Import problem data into internal storage prior to solution when <span class="math notranslate nohighlight">\(A_o\)</span> is
+not explicitly available.</p>
 <p class="rubric">Parameters:</p>
 <table class="table">
 <colgroup>
@@ -557,7 +569,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -603,7 +615,7 @@ respectively.</p>
 <tr class="row-even"><td><p>n</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of variables.</p></td>
 </tr>
-<tr class="row-odd"><td><p>m</p></td>
+<tr class="row-odd"><td><p>o</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of residuals.</p></td>
 </tr>
 </tbody>
@@ -618,7 +630,7 @@ respectively.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -637,8 +649,8 @@ for the solve phase</p>
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1acf6d292989a5ac09f7f3e507283fb5bf"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_solve_given_a</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                </span><span class="n">A_ne</span><span class="p">,</span><span class="w"> </span><span class="n">A_val</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1acf6d292989a5ac09f7f3e507283fb5bf"><span id="index-5"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_solve_given_a</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="n">Ao_ne</span><span class="p">,</span><span class="w"> </span><span class="n">Ao_val</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"></span>
 <span class="w">                                </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">eval_prec</span><span class="p">)</span></pre>
 <p>Solve the bound-constrained linear least-squares problem when the
 Jacobian <span class="math notranslate nohighlight">\(A\)</span> is available.</p>
@@ -686,7 +698,7 @@ respectively.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0, m &gt; 0 or requirement that a
+<dt><strong>-3</strong></dt><dd><p>The restrictions n &gt; 0, o &gt; 0 or requirement that a
 type contains its relevant string ‘coordinate’,
 ‘sparse_by_rows’, ‘sparse_by_columns’,
 ‘dense_by_rows’ or ‘dense_by_columns’ has been
@@ -733,17 +745,17 @@ be symptomatic of a badly scaled problem.</p>
 <tr class="row-even"><td><p>n</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
 </tr>
-<tr class="row-odd"><td><p>m</p></td>
+<tr class="row-odd"><td><p>o</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of residuals.</p></td>
 </tr>
-<tr class="row-even"><td><p>A_ne</p></td>
-<td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span>.</p></td>
+<tr class="row-even"><td><p>Ao_ne</p></td>
+<td><p>is a scalar variable of type Int32 that holds the number of entries in the design matrix <span class="math notranslate nohighlight">\(A_o\)</span>.</p></td>
 </tr>
-<tr class="row-odd"><td><p>A_val</p></td>
-<td><p>is a one-dimensional array of size A_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> in any of the available storage schemes.</p></td>
+<tr class="row-odd"><td><p>Ao_val</p></td>
+<td><p>is a one-dimensional array of size Ao_ne and type T that holds the values of the entries in the design matrix <span class="math notranslate nohighlight">\(A_o\)</span> in any of the available storage schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>b</p></td>
-<td><p>is a one-dimensional array of size m and type T that holds the constant term <span class="math notranslate nohighlight">\(b\)</span> in the residuals. The i-th component of <code class="docutils literal notranslate"><span class="pre">b</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(b_i\)</span>.</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the constant term <span class="math notranslate nohighlight">\(b\)</span> in the residuals. The i-th component of <code class="docutils literal notranslate"><span class="pre">b</span></code>, i = 1, … , o, contains <span class="math notranslate nohighlight">\(b_i\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>x_l</p></td>
 <td><p>is a one-dimensional array of size n and type T that holds the lower bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_l</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
@@ -757,21 +769,21 @@ be symptomatic of a badly scaled problem.</p>
 <tr class="row-even"><td><p>z</p></td>
 <td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">z</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
 </tr>
-<tr class="row-odd"><td><p>c</p></td>
-<td><p>is a one-dimensional array of size m and type T that holds the values of the residuals <span class="math notranslate nohighlight">\(c = A x - b\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(c_i\)</span>.</p></td>
+<tr class="row-odd"><td><p>r</p></td>
+<td><p>is a one-dimensional array of size om and type T that holds the values of the residuals <span class="math notranslate nohighlight">\(r = A_o x - b\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">r</span></code>, i = 1, … , o, contains <span class="math notranslate nohighlight">\(r_i\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>g</p></td>
-<td><p>is a one-dimensional array of size n and type T that holds the values of the gradient <span class="math notranslate nohighlight">\(g = A^T c\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values of the gradient <span class="math notranslate nohighlight">\(g = A_o^T W r\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>x_stat</p></td>
 <td><p>is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
 </tr>
 <tr class="row-even"><td><p>w</p></td>
-<td><p>is an optional one-dimensional array of size m and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.</p></td>
+<td><p>is an optional one-dimensional array of size m and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>eval_prec</p></td>
 <td><p>is an optional user-supplied function that may be
-NULL. If non-NULL, it must have the following
+C_NULL. If non-NULL, it must have the following
 signature:</p>
 <pre class="highlight literal-block"><span></span><span class="n">eval_prec</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">userdata</span><span class="p">)</span></pre>
 <p>The product <span class="math notranslate nohighlight">\(p = P^{-1} v\)</span> involving the user’s
@@ -785,8 +797,8 @@ passed into <code class="docutils literal notranslate"><span class="pre">eval_pr
 </tr>
 </tbody>
 </table>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1ac139bc1c65cf12cb532c4ab09f3af9d0"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_solve_reverse_a_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">eval_status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"></span>
-<span class="w">                                       </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-galahad-blls-8h-1ac139bc1c65cf12cb532c4ab09f3af9d0"><span id="index-6"></span><span></span><span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">blls_solve_reverse_a_prod</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">eval_status</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                       </span><span class="n">x_l</span><span class="p">,</span><span class="w"> </span><span class="n">x_u</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">,</span><span class="w"> </span><span class="n">x_stat</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"></span>
 <span class="w">                                       </span><span class="n">nz_v</span><span class="p">,</span><span class="w"> </span><span class="n">nz_v_start</span><span class="p">,</span><span class="w"> </span><span class="n">nz_v_end</span><span class="p">,</span><span class="w"> </span><span class="n">nz_p</span><span class="p">,</span><span class="w"></span>
 <span class="w">                                       </span><span class="n">nz_p_end</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span></pre>
 <p>Solve the bound-constrained linear least-squares problem when the
@@ -883,10 +895,10 @@ be symptomatic of a badly scaled problem.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>2</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(Av\)</span> of the residual Jacobian <span class="math notranslate nohighlight">\(A\)</span> with a
+<dt><strong>2</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(A_ov\)</span> of the design matrix <span class="math notranslate nohighlight">\(A_o\)</span> with a
 given output vector <span class="math notranslate nohighlight">\(v\)</span> is required from the
 user. The vector <span class="math notranslate nohighlight">\(v\)</span> will be stored in v and the
-product <span class="math notranslate nohighlight">\(Av\)</span> must be returned in p, status_eval
+product <span class="math notranslate nohighlight">\(A_ov\)</span> must be returned in p, status_eval
 should be set to 0, and blls_solve_reverse_a_prod
 re-entered with all other arguments unchanged. If
 the product cannot be formed, v need not be set, but
@@ -896,10 +908,10 @@ eval_status set to a nonzero value.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>3</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(A^Tv\)</span> of the transpose of the residual
-Jacobian <span class="math notranslate nohighlight">\(A\)</span> with a given output vector <span class="math notranslate nohighlight">\(v\)</span> is
+<dt><strong>3</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(A_o^Tv\)</span> of the transpose of the residual
+Jacobian <span class="math notranslate nohighlight">\(A_o\)</span> with a given output vector <span class="math notranslate nohighlight">\(v\)</span> is
 required from the user. The vector <span class="math notranslate nohighlight">\(v\)</span> will be
-stored in v and the product <span class="math notranslate nohighlight">\(A^Tv\)</span> must be returned
+stored in v and the product <span class="math notranslate nohighlight">\(A_o^Tv\)</span> must be returned
 in p, status_eval should be set to 0, and
 blls_solve_reverse_a_prod re-entered with all other
 arguments unchanged. If the product cannot be
@@ -910,12 +922,12 @@ eval_status set to a nonzero value.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>4</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(Av\)</span> of the residual Jacobian <span class="math notranslate nohighlight">\(A\)</span> with a
+<dt><strong>4</strong></dt><dd><p>The product <span class="math notranslate nohighlight">\(A_ov\)</span> of the design matrix <span class="math notranslate nohighlight">\(A_o\)</span> with a
 given sparse output vector <span class="math notranslate nohighlight">\(v\)</span> is required from the
 user. The nonzero components of the vector <span class="math notranslate nohighlight">\(v\)</span> will
 be stored as entries
 nz_in[nz_in_start-1:nz_in_end-1] of v and the
-product <span class="math notranslate nohighlight">\(Av\)</span> must be returned in p, status_eval
+product <span class="math notranslate nohighlight">\(A_ov\)</span> must be returned in p, status_eval
 should be set to 0, and blls_solve_reverse_a_prod
 re-entered with all other arguments unchanged; The
 remaining components of v should be ignored. If the
@@ -926,13 +938,13 @@ eval_status set to a nonzero value.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>5</strong></dt><dd><p>The nonzero components of the product <span class="math notranslate nohighlight">\(Av\)</span> of the
-residual Jacobian <span class="math notranslate nohighlight">\(A\)</span> with a given sparse output
+<dt><strong>5</strong></dt><dd><p>The nonzero components of the product <span class="math notranslate nohighlight">\(A_ov\)</span> of the
+design matrix <span class="math notranslate nohighlight">\(A_o\)</span> with a given sparse output
 vector <span class="math notranslate nohighlight">\(v\)</span> is required from the user. The nonzero
 components of the vector <span class="math notranslate nohighlight">\(v\)</span> will be stored as
 entries nz_in[nz_in_start-1:nz_in_end-1] of v; the
 remaining components of v should be ignored. The
-resulting <strong>nonzeros</strong> in the product <span class="math notranslate nohighlight">\(Av\)</span> must be
+resulting <strong>nonzeros</strong> in the product <span class="math notranslate nohighlight">\(A_ov\)</span> must be
 placed in their appropriate comnponents of p, while
 a list of indices of the nonzeros placed in nz_out[0
 : nz_out_end-1] and the number of nonzeros recorded
@@ -946,12 +958,12 @@ re-entered with eval_status set to a nonzero value.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>6</strong></dt><dd><p>A subset of the product <span class="math notranslate nohighlight">\(A^Tv\)</span> of the transpose of
-the residual Jacobian <span class="math notranslate nohighlight">\(A\)</span> with a given output vector
+<dt><strong>6</strong></dt><dd><p>A subset of the product <span class="math notranslate nohighlight">\(A_o^Tv\)</span> of the transpose of
+the design matrix <span class="math notranslate nohighlight">\(A_o\)</span> with a given output vector
 <span class="math notranslate nohighlight">\(v\)</span> is required from the user. The vector <span class="math notranslate nohighlight">\(v\)</span> will
 be stored in v and components
 nz_in[nz_in_start-1:nz_in_end-1] of the product
-<span class="math notranslate nohighlight">\(A^Tv\)</span> must be returned in the relevant components
+<span class="math notranslate nohighlight">\(A_o^Tv\)</span> must be returned in the relevant components
 of p (the remaining components should not be set),
 status_eval should be set to 0, and
 blls_solve_reverse_a_prod re-entered with all other
@@ -987,11 +999,11 @@ control.preconditioner = 2.</p>
 <tr class="row-even"><td><p>n</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of variables</p></td>
 </tr>
-<tr class="row-odd"><td><p>m</p></td>
+<tr class="row-odd"><td><p>o</p></td>
 <td><p>is a scalar variable of type Int32 that holds the number of residuals.</p></td>
 </tr>
 <tr class="row-even"><td><p>b</p></td>
-<td><p>is a one-dimensional array of size m and type T that holds the constant term <span class="math notranslate nohighlight">\(b\)</span> in the residuals. The i-th component of <code class="docutils literal notranslate"><span class="pre">b</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(b_i\)</span>.</p></td>
+<td><p>is a one-dimensional array of size m and type T that holds the constant term <span class="math notranslate nohighlight">\(b\)</span> in the residuals. The i-th component of <code class="docutils literal notranslate"><span class="pre">b</span></code>, i = 1, … , o, contains <span class="math notranslate nohighlight">\(b_i\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>x_l</p></td>
 <td><p>is a one-dimensional array of size n and type T that holds the lower bounds <span class="math notranslate nohighlight">\(x^l\)</span> on the variables <span class="math notranslate nohighlight">\(x\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">x_l</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x^l_j\)</span>.</p></td>
@@ -1002,11 +1014,11 @@ control.preconditioner = 2.</p>
 <tr class="row-odd"><td><p>x</p></td>
 <td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(x\)</span> of the optimization variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">x</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(x_j\)</span>.</p></td>
 </tr>
-<tr class="row-even"><td><p>c</p></td>
-<td><p>is a one-dimensional array of size m and type T that holds the values of the residuals <span class="math notranslate nohighlight">\(c = A x - b\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">c</span></code>, i = 1, … , m, contains <span class="math notranslate nohighlight">\(c_i\)</span>.</p></td>
+<tr class="row-even"><td><p>r</p></td>
+<td><p>is a one-dimensional array of size o and type T that holds the values of the residuals <span class="math notranslate nohighlight">\(r = A_o x - b\)</span>. The i-th component of <code class="docutils literal notranslate"><span class="pre">r</span></code>, i = 1, … , o, contains <span class="math notranslate nohighlight">\(r_i\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>g</p></td>
-<td><p>is a one-dimensional array of size n and type T that holds the values of the gradient <span class="math notranslate nohighlight">\(g = A^T c\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
+<td><p>is a one-dimensional array of size n and type T that holds the values of the gradient <span class="math notranslate nohighlight">\(g = A_o^T W r\)</span>. The j-th component of <code class="docutils literal notranslate"><span class="pre">g</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(g_j\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p>z</p></td>
 <td><p>is a one-dimensional array of size n and type T that holds the values <span class="math notranslate nohighlight">\(z\)</span> of the dual variables. The j-th component of <code class="docutils literal notranslate"><span class="pre">z</span></code>, j = 1, … , n, contains <span class="math notranslate nohighlight">\(z_j\)</span>.</p></td>
@@ -1036,7 +1048,7 @@ control.preconditioner = 2.</p>
 <td><p>is a scalar of type Int32 that is used for reverse communication (see status=4 above for details).</p></td>
 </tr>
 <tr class="row-odd"><td><p>w</p></td>
-<td><p>is an optional one-dimensional array of size m and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.</p></td>
+<td><p>is an optional one-dimensional array of size o and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1053,7 +1065,7 @@ control.preconditioner = 2.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_blls_inform_type.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="blls.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -1081,10 +1093,10 @@ control.preconditioner = 2.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_blls_control_type.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="blls.html#doxid-structblls-control-type"><span class="std std-ref">blls_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_blls_inform_type.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="blls.html#doxid-structblls-inform-type"><span class="std std-ref">blls_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1105,10 +1117,10 @@ control.preconditioner = 2.</p>
           <p class="prev-next-title">GALAHAD BLLS package</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="clls.html" title="next page">
+  <a class='right-next' id="next-link" href="bllsb.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">GALAHAD CLLS package</p>
+      <p class="prev-next-title">GALAHAD BLLSB package</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

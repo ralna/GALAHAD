@@ -1,7 +1,7 @@
 //* \file galahad_blls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-02-21 AT 12:41 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2022-12-29 AT 15:25 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -23,7 +23,7 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>bound-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 \f], 
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_2^2 \f], 
 \manonly
   \n
   minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2, 
@@ -36,7 +36,7 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$m\f$ by \f$n\f$ real matrix \f$A\f$, the vectors
+  where the \f$o\f$ by \f$n\f$ real matrix \f$A_o\f$, the vectors
   \f$b\f$, \f$x^{l}\f$, \f$x^{u}\f$ and the non-negative weight
   \f$\sigma\f$ are given.   Any of the constraint bounds \f$x_j^l\f$ and
   \f$x_j^u\f$ may be infinite.  Full advantage is taken of any zero
@@ -50,8 +50,6 @@
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
-
-  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
 
   \subsection blls_date Originally released
 
@@ -68,10 +66,10 @@
   \n
 \endmanonly
   the dual optimality conditions
-  \f[(A^T A + \sigma I ) x = A^T b + z\f]
+  \f[(A_o^T A_o + \sigma I ) x = A_o^T b + z\f]
 \manonly
   \n
-   ( A^T A + sigma I ) x = A^T b + z
+   ( A_o^T A_o + sigma I ) x = A_o^T b + z
   \n
 \endmanonly
   where
@@ -563,12 +561,13 @@ void blls_import( struct blls_control_type *control,
                  void **data,
                  int *status,
                  int n,
-                 int m,
-                 const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 int o,
+                 const char Ao_type[],
+                 int Ao_ne,
+                 const int Ao_row[],
+                 const int Ao_col[],
+                 int Ao_ptr_ne,
+                 const int Ao_ptr[] );
 
 
 /*!<
@@ -592,7 +591,7 @@ void blls_import( struct blls_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, m > 0 or requirement that type contains
+  \li -3. The restrictions n > 0, o > 0 or requirement that type contains
        its relevant string 'coordinate', 'sparse_by_rows',
        'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns';
        has been violated.
@@ -600,34 +599,40 @@ void blls_import( struct blls_control_type *control,
 @param[in] n is a scalar variable of type int, that holds the number of
     variables.
 
-@param[in] m is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in] A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink
-   used for the Jacobian \f$A\f$. It should be one of
-   'coordinate', 'sparse_by_rows', 'sparse_by_columns',
-   'dense_by_rows', or 'dense_by_columns';
-   lower or upper case variants are allowed.
+ @param[in]  Ao_type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the objective design matrix, \f$A_o\f$. It should be one of 
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+   'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
-   It need not be set for any of the other schemes.
+ @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
+   entries in \f$A_o\f$ in the sparse storage schemes.
+   It need not be set for either of the dense schemes.
 
- @param[in] A_row is a one-dimensional array of size A_ne and type int, that
-   holds the row indices of \f$A\f$ in the sparse co-ordinate
-   or sparse column-wise storage scheme. It need not be set for any of
-   the other schemes, and in this case can be NULL.
+ @param[in]  Ao_row is a one-dimensional array of size Ao_ne and type int, that
+   holds the row indices of \f$A_o\f$ in the sparse co-ordinate
+   or sparse column-wise storage schemes. It need not be set for any of the
+   other schemes, and in this case can be NULL.
 
- @param[in] A_col is a one-dimensional array of size A_ne and type int,
-   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
-   or the sparse row-wise storage scheme. It need not be set for any of
-   the other schemes, and in this case can be NULL.
+ @param[in]  Ao_col is a one-dimensional array of size Ao_ne and type int,
+   that holds the column indices of \f$A_o\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
+   dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in] A_ptr is a one-dimensional array of size n+1 or m+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the
-   total number of entries, in the sparse row-wise storage scheme, or
-   the starting position of each column of \f$A\f$, as well as the
+ @param[in]  Ao_ptr_ne is a scalar variable of type int, that holds the
+   length of the pointer array if sparse row or column storage scheme is
+   used for \f$A_o\f$. For the sparse row scheme,  Ao_ptr_ne should be at least
+   o+1, while for the sparse column scheme,  it should be at least n+1,
+   It need not be set when the other schemes are used.
+
+ @param[in]  Ao_ptr is a one-dimensional array of size o+1 and type int,
+   that holds the starting position of each row of \f$A_o\f$, as well as the
+   total number of entries, in the sparse row-wise storage scheme.
+   By contrast, it is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each column of \f$A_o\f$, as well as the
    total number of entries, in the sparse column-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
@@ -640,7 +645,7 @@ void blls_import_without_a( struct blls_control_type *control,
                             void **data,
                             int *status,
                             int n,
-                            int m );
+                            int o );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -663,12 +668,12 @@ void blls_import_without_a( struct blls_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restriction n > 0 or m > 0 has been violated.
+  \li -3. The restriction n > 0 or o > 0 has been violated.
 
 @param[in] n is a scalar variable of type int, that holds the number of
     variables.
 
-@param[in] m is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
 */
@@ -697,15 +702,15 @@ void blls_solve_given_a( void **data,
                          void *userdata,
                          int *status,
                          int n,
-                         int m,
-                         int A_ne,
-                         const real_wp_ A_val[],
+                         int o,
+                         int Ao_ne,
+                         const real_wp_ Ao_val[],
                          const real_wp_ b[],
                          const real_wp_ x_l[],
                          const real_wp_ x_u[],
                          real_wp_ x[],
                          real_wp_ z[],
-                         real_wp_ c[],
+                         real_wp_ r[],
                          real_wp_ g[],
                          int x_stat[],
                          const real_wp_ w[],
@@ -736,7 +741,7 @@ void blls_solve_given_a( void **data,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, m > 0 or requirement that a type contains
+  \li -3. The restrictions n > 0, o > 0 or requirement that a type contains
        its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns',
        'dense_by_rows' or 'dense_by_columns' has been violated.
   \li -4. The simple-bound constraints are inconsistent.
@@ -755,19 +760,19 @@ void blls_solve_given_a( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
-@param[in] m is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
-    entries in the lower triangular part of the Hessian matrix \f$H\f$.
+ @param[in] Ao_ne is a scalar variable of type int, that holds the number of
+    entries in the design matrix \f$A_o\f$.
 
- @param[in] A_val is a one-dimensional array of size A_ne and type double,
-    that holds the values of the entries of the lower triangular part of the
-    Hessian matrix \f$H\f$ in any of the available storage schemes.
+ @param[in] Ao_val is a one-dimensional array of size A_ne and type double,
+    that holds the values of the entries of the designmatrix \f$A_o\f$ 
+    in any of the available storage schemes.
 
  @param[in] b is a one-dimensional array of size m and type double, that
     holds the constant term \f$b\f$ in the residuals.
-    The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
+    The i-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
  @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
@@ -785,12 +790,12 @@ void blls_solve_given_a( void **data,
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
-    holds the values of the residuals \f$c = A x - b\f$.
-    The i-th component of c, i = 0, ... , m-1, contains \f$c_i\f$.
+ @param[out] r is a one-dimensional array of size o and type double, that
+    holds the values of the residuals \f$r = A x - b\f$.
+    The i-th component of r, i = 0, ... , o-1, contains \f$r_i\f$.
 
  @param[out] g is a one-dimensional array of size n and type double, that
-    holds the values of the gradient \f$g = A^T c\f$.
+    holds the values of the gradient \f$g = A^T W r\f$.
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j\f$.
 
  @param[in,out] x_stat is a one-dimensional array of size n and type int, that
@@ -824,13 +829,13 @@ void blls_solve_reverse_a_prod( void **data,
                                 int *status,
                                 int *eval_status,
                                 int n,
-                                int m,
+                                int o,
                                 const real_wp_ b[],
                                 const real_wp_ x_l[],
                                 const real_wp_ x_u[],
                                 real_wp_ x[],
                                 real_wp_ z[],
-                                real_wp_ c[],
+                                real_wp_ r[],
                                 real_wp_ g[],
                                 int x_stat[],
                                 real_wp_ v[],
@@ -882,41 +887,42 @@ void blls_solve_reverse_a_prod( void **data,
          a badly scaled problem.
 
  @param status (continued)
-  \li  2. The product \f$Av\f$ of the residual Jacobian \f$A\f$ with a given
+  \li  2. The product \f$A_o v\f$ of the residual Jacobian \f$A_o\f$ 
+       with a given
        output vector \f$v\f$ is required from the user. The vector \f$v\f$
-       will be  stored in v and the product \f$Av\f$ must be returned in p,
+       will be  stored in v and the product \f$A_ov\f$ must be returned in p,
        status_eval should be set to 0, and blls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but blls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  3. The product \f$A^Tv\f$ of the transpose of the residual Jacobian
-       \f$A\f$ with a given output vector \f$v\f$ is required from the user.
+  \li  3. The product \f$A_o^T v\f$ of the transpose of the residual Jacobian
+       \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and the product
-       \f$A^Tv\f$ must be returned in p,
+       \f$A_o^Tv\f$ must be returned in p,
        status_eval should be set to 0, and blls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but blls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  4. The product \f$Av\f$ of the residual Jacobian \f$A\f$ with a given
+  \li  4. The product \f$A_o v\f$ of the residual Jacobian \f$A\f$ with a given
        sparse output vector \f$v\f$ is required from the user.
        The nonzero components of the vector \f$v\f$ will be stored as entries
           nz_in[nz_in_start-1:nz_in_end-1]
-       of v and the product \f$Av\f$ must be returned in p,
+       of v and the product \f$A_o v\f$ must be returned in p,
        status_eval should be set to 0, and blls_solve_reverse_a_prod
        re-entered with all other arguments unchanged; The remaining
        components of v should be ignored. If the product cannot
        be formed, v need not be set, but blls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  5. The nonzero components of the product \f$Av\f$ of the residual
-       Jacobian \f$A\f$ with a given sparse output vector \f$v\f$ is required
+  \li  5. The nonzero components of the product \f$A_o v\f$ of the residual
+       Jacobian \f$A_o\f$ with a given sparse output vector \f$v\f$ is required
        from the user. The nonzero components of the vector \f$v\f$ will be
        stored as entries
           nz_in[nz_in_start-1:nz_in_end-1]
        of v; the remaining components of v should be ignored.
-       The resulting <b>nonzeros</b> in the product \f$Av\f$
+       The resulting <b>nonzeros</b> in the product \f$A_o v\f$
        must be placed in their appropriate comnponents of p, while a list
        of indices of the nonzeros placed in
          nz_out[0 : nz_out_end-1]
@@ -927,12 +933,12 @@ void blls_solve_reverse_a_prod( void **data,
        blls_solve_reverse_a_prod should be re-entered with eval_status set
        to a nonzero value.
 
-  \li  6. A subset of the product \f$A^Tv\f$ of the transpose of the residual
+  \li  6. A subset of the product \f$A_o^Tv\f$ of the transpose of the residual
        Jacobian
-       \f$A\f$ with a given output vector \f$v\f$ is required from the user.
+       \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and components
           nz_in[nz_in_start-1:nz_in_end-1]
-       of the product \f$A^Tv\f$ must be returned in the relevant
+       of the product \f$A_o^T v\f$ must be returned in the relevant
        components of p (the remaining components should not be set),
        status_eval should be set to 0, and blls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
@@ -956,12 +962,12 @@ void blls_solve_reverse_a_prod( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
  @param[in] b is a one-dimensional array of size m and type double, that
     holds the constant term \f$b\f$ in the residuals.
-    The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
+    The i-th component of b, i = 0, ... ,  o-1, contains  \f$b_i \f$.
 
  @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
@@ -975,9 +981,9 @@ void blls_solve_reverse_a_prod( void **data,
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
-    holds the values of the residuals \f$c = A x - b\f$.
-    The i-th component of c, i = 0, ... , m-1, contains \f$c_i\f$.
+ @param[out] r is a one-dimensional array of size m and type double, that
+    holds the values of the residuals \f$r = A x - b\f$.
+    The i-th component of r, i = 0, ... , o-1, contains \f$r_i\f$.
 
  @param[out] g is a one-dimensional array of size n and type double, that
     holds the values of the gradient \f$g = A^T c\f$.

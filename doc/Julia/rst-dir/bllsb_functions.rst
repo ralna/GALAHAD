@@ -150,12 +150,12 @@ Import problem data into internal storage prior to solution.
         *
                 - Ao_row
 
-                - is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of $A_o$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.
+                - is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of $A_o$ in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
         *
                 - Ao_col
 
-                - is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of $A_o$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.
+                - is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of $A_o$ in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
         *
                 - Ao_ptr_ne
@@ -165,7 +165,7 @@ Import problem data into internal storage prior to solution.
         *
                 - Ao_ptr
 
-                - is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+                - is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 
 .. index:: pair: function; bllsb_reset_control
@@ -357,7 +357,7 @@ Solve the linearly-constrained regularized linear least-squares problem.
         *
                 - w
 
-                - is a one-dimensional array of size o and type T that holds the values $w$ of strictly-positive observation weights. The i-th component of w, i = 0, ... , o-1, contains $w_i$. If the weights are all one, w can be set to NULL.
+                - is a one-dimensional array of size o and type T that holds the values $w$ of strictly-positive observation weights. The i-th component of w, i = 0, ... , o-1, contains $w_i$. If the weights are all one, w can be set to C_NULL.
 
 
 .. index:: pair: function; bllsb_information

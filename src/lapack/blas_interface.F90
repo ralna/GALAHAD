@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-06-13 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-02 AT 13:00 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_blas.h"
 
 !-*-*-*-  G A L A H A D _ L A P A C K _ i n t e r f a c e   M O D U L E  -*-*-*-
 
@@ -11,11 +14,11 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_BLAS_interface
+   MODULE GALAHAD_BLAS_interface
 
-      IMPLICIT NONE 
+     IMPLICIT NONE 
 
-      PUBLIC
+     PUBLIC
 
 !---------------------------------
 !   I n t e r f a c e  B l o c k s
@@ -26,14 +29,16 @@
      INTERFACE NRM2
 
        FUNCTION SNRM2( n, X, incx )
+       USE GALAHAD_KINDS_precision
        REAL :: SNRM2
-       INTEGER, INTENT( IN ) :: n, incx
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
        REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
        END FUNCTION SNRM2
 
        FUNCTION DNRM2( n, X, incx )
+       USE GALAHAD_KINDS_precision
        DOUBLE PRECISION :: DNRM2
-       INTEGER, INTENT( IN ) :: n, incx
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
        END FUNCTION DNRM2
 
@@ -44,11 +49,13 @@
      INTERFACE ROTG
 
        SUBROUTINE SROTG( a, b, c, s )
+       USE GALAHAD_KINDS_precision
        REAL, INTENT( INOUT ) :: a, b
        REAL, INTENT( OUT ) :: c, s
        END SUBROUTINE SROTG
 
        SUBROUTINE DROTG( a, b, c, s )
+       USE GALAHAD_KINDS_precision
        DOUBLE PRECISION, INTENT( INOUT ) :: a, b
        DOUBLE PRECISION, INTENT( OUT ) :: c, s
        END SUBROUTINE DROTG
@@ -60,13 +67,15 @@
      INTERFACE ROT
 
        SUBROUTINE SROT( n, X, incx, Y, incy, c, s )
-       INTEGER, INTENT( IN ) :: n, incx, incy
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
        REAL, INTENT( IN ) :: c, s
        REAL, INTENT( INOUT ) :: X( * ), Y( * )
        END SUBROUTINE SROT
 
        SUBROUTINE DROT( n, X, incx, Y, incy, c, s )
-       INTEGER, INTENT( IN ) :: n, incx, incy
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
        DOUBLE PRECISION, INTENT( IN ) :: c, s
        DOUBLE PRECISION, INTENT( INOUT ) :: X( * ), Y( * )
        END SUBROUTINE DROT
@@ -77,15 +86,17 @@
 
      INTERFACE SWAP
 
-        SUBROUTINE SSWAP( n, X, incx, Y, incy )
-        INTEGER, INTENT( IN ) :: n, incx, incy
-        REAL, INTENT( INOUT ) :: X( * ), Y( * )
-        END SUBROUTINE SSWAP
+       SUBROUTINE SSWAP( n, X, incx, Y, incy )
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
+       REAL, INTENT( INOUT ) :: X( * ), Y( * )
+       END SUBROUTINE SSWAP
 
-        SUBROUTINE DSWAP( n, X, incx, Y, incy )
-        INTEGER, INTENT( IN ) :: n, incx, incy
-        DOUBLE PRECISION, INTENT( INOUT ) :: X( * ), Y( * )
-        END SUBROUTINE DSWAP
+       SUBROUTINE DSWAP( n, X, incx, Y, incy )
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
+       DOUBLE PRECISION, INTENT( INOUT ) :: X( * ), Y( * )
+       END SUBROUTINE DSWAP
 
      END INTERFACE SWAP
 
@@ -93,33 +104,37 @@
 
      INTERFACE SCAL
 
-        SUBROUTINE SSCAL( n, sa, SX, incx )
-        INTEGER, INTENT( IN ) :: n, incx
-        REAL, INTENT( IN ) :: sa
-        REAL, INTENT( INOUT ) :: SX( * )
-        END SUBROUTINE SSCAL
+       SUBROUTINE SSCAL( n, sa, SX, incx )
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
+       REAL, INTENT( IN ) :: sa
+       REAL, INTENT( INOUT ) :: SX( * )
+       END SUBROUTINE SSCAL
 
-        SUBROUTINE DSCAL( n, sa, SX, incx )
-        INTEGER, INTENT( IN ) :: n, incx
-        DOUBLE PRECISION, INTENT( IN ) :: sa
-        DOUBLE PRECISION, INTENT( INOUT ) :: SX( * )
-        END SUBROUTINE DSCAL
+       SUBROUTINE DSCAL( n, sa, SX, incx )
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
+       DOUBLE PRECISION, INTENT( IN ) :: sa
+       DOUBLE PRECISION, INTENT( INOUT ) :: SX( * )
+       END SUBROUTINE DSCAL
 
      END INTERFACE SCAL
 
      INTERFACE IAMAX
 
-        FUNCTION ISAMAX( n, X, incx )
-        INTEGER :: ISAMAX
-        INTEGER, INTENT( IN ) :: n, incx
-        REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-        END FUNCTION ISAMAX
+       FUNCTION ISAMAX( n, X, incx )
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ) :: ISAMAX
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
+       REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
+       END FUNCTION ISAMAX
 
-        FUNCTION IDAMAX( n, X, incx )
-        INTEGER :: IDAMAX
-        INTEGER, INTENT( IN ) :: n, incx
-        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-        END FUNCTION IDAMAX
+       FUNCTION IDAMAX( n, X, incx )
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ) :: IDAMAX
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
+       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
+       END FUNCTION IDAMAX
 
      END INTERFACE IAMAX
 
@@ -128,15 +143,17 @@
      INTERFACE TRSV
 
        SUBROUTINE STRSV( uplo, trans, diag, n, A, lda, X, incx )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
-       INTEGER, INTENT( IN ) :: n, lda, incx
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda, incx
        REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
        REAL, INTENT( INOUT ), DIMENSION( ( n - 1 ) * incx + 1 ) :: X
        END SUBROUTINE STRSV
 
        SUBROUTINE DTRSV( uplo, trans, diag, n, A, lda, X, incx )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
-       INTEGER, INTENT( IN ) :: n, lda, incx
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda, incx
        DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ( n - 1 ) * incx + 1 ) :: X
        END SUBROUTINE DTRSV
@@ -148,16 +165,18 @@
      INTERFACE TRSM
 
        SUBROUTINE STRSM( side, uplo, transa, diag, m, n, alpha, A, lda, B, ldb )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: side, uplo, transa, diag
-       INTEGER, INTENT( IN ) :: m, n, lda, ldb
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, lda, ldb
        REAL, INTENT( IN ) :: alpha
        REAL, INTENT( IN ), DIMENSION( lda, * ) :: A
        REAL, INTENT( INOUT ), DIMENSION( ldb, * ) :: B
        END SUBROUTINE STRSM
 
        SUBROUTINE DTRSM( side, uplo, transa, diag, m, n, alpha, A, lda, B, ldb )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: side, uplo, transa, diag
-       INTEGER, INTENT( IN ) :: m, n, lda, ldb
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, lda, ldb
        DOUBLE PRECISION, INTENT( IN ) :: alpha
        DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, * ) :: A
        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, * ) :: B
@@ -170,23 +189,25 @@
      INTERFACE TBSV
 
        SUBROUTINE STBSV( uplo, trans, diag, n, semi_bandwidth, A, lda, X, incx )
+       USE GALAHAD_KINDS_precision
 !       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
-!       INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda, incx
+!       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda, incx
 !       REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
 !       REAL, INTENT( INOUT ), DIMENSION( ( n - 1 ) * incx + 1 ) :: X
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
-       INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda, incx
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda, incx
        REAL, INTENT( IN ) :: A( lda, * )
        REAL, INTENT( INOUT ) :: X( * )
        END SUBROUTINE STBSV
 
        SUBROUTINE DTBSV( uplo, trans, diag, n, semi_bandwidth, A, lda, X, incx )
+       USE GALAHAD_KINDS_precision
 !      CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
-!      INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda, incx
+!      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda, incx
 !      DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
 !      DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ( n - 1 ) * incx + 1 ) :: X
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
-       INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda, incx
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda, incx
        DOUBLE PRECISION, INTENT( IN ) :: A( lda, * )
        DOUBLE PRECISION, INTENT( INOUT ) :: X( * )
        END SUBROUTINE DTBSV
@@ -198,16 +219,18 @@
      INTERFACE GEMV
 
        SUBROUTINE SGEMV( trans, m, n, alpha, A, lda, X, incx, beta, Y, incy )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: trans
-       INTEGER, INTENT( IN ) :: incx, incy, lda, m, n
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: incx, incy, lda, m, n
        REAL, INTENT( IN ) :: alpha, beta
        REAL, INTENT( IN ) :: A( lda, * ), X( * )
        REAL, INTENT( INOUT ) :: Y( * )
        END SUBROUTINE SGEMV
 
        SUBROUTINE DGEMV( trans, m, n, alpha, A, lda, X, incx, beta, Y, incy )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: trans
-       INTEGER, INTENT( IN ) :: incx, incy, lda, m, n
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: incx, incy, lda, m, n
        DOUBLE PRECISION, INTENT( IN ) :: alpha, beta
        DOUBLE PRECISION, INTENT( IN ) :: A( lda, * ), X( * )
        DOUBLE PRECISION, INTENT( INOUT ) :: Y( * )
@@ -221,8 +244,9 @@
 
        SUBROUTINE SGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,       &
                          beta, C, ldc )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: transa, transb
-       INTEGER, INTENT( IN )  :: m, n, k, lda, ldb, ldc
+       INTEGER ( KIND = ip_ ), INTENT( IN )  :: m, n, k, lda, ldb, ldc
        REAL, INTENT( IN ) :: alpha, beta
        REAL, INTENT( IN ) :: A( lda, * ), B( ldb, * )
        REAL, INTENT( INOUT ) :: C( ldc, * )
@@ -230,8 +254,9 @@
 
        SUBROUTINE DGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,       &
                          beta, C, ldc )
+       USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: transa, transb
-       INTEGER, INTENT( IN )  :: m, n, k, lda, ldb, ldc
+       INTEGER ( KIND = ip_ ), INTENT( IN )  :: m, n, k, lda, ldb, ldc
        DOUBLE PRECISION, INTENT( IN ) :: alpha, beta
        DOUBLE PRECISION, INTENT( IN ) :: A( lda, * ), B( ldb, * )
        DOUBLE PRECISION, INTENT( INOUT ) :: C( ldc, * )
@@ -244,14 +269,16 @@
      INTERFACE GER
 
        SUBROUTINE SGER( m, n, alpha, X, incx, Y, incy, A, lda )
-       INTEGER, INTENT( IN ) :: incx, incy, lda, m, n
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: incx, incy, lda, m, n
        REAL, INTENT( IN ) :: alpha
        REAL, INTENT( IN ) :: X( * ), Y( * )
        REAL, INTENT( INOUT ) :: A( lda, * )
        END SUBROUTINE SGER
 
        SUBROUTINE DGER( m, n, alpha, X, incx, Y, incy, A, lda )
-       INTEGER, INTENT( IN ) :: incx, incy, lda, m, n
+       USE GALAHAD_KINDS_precision
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: incx, incy, lda, m, n
        DOUBLE PRECISION, INTENT( IN ) :: alpha
        DOUBLE PRECISION, INTENT( IN ) :: X( * ), Y( * )
        DOUBLE PRECISION, INTENT( INOUT ) :: A( lda, * )
@@ -261,4 +288,4 @@
 
 !  End of module GALAHAD_BLAS_interface
 
-    END MODULE GALAHAD_BLAS_interface
+   END MODULE GALAHAD_BLAS_interface

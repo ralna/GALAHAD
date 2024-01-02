@@ -324,7 +324,7 @@ functions
           holds the values of the nonzeros in $A_o$ in the same order as 
           specified in the sparsity pattern in ``bllsb.load``.
       b : ndarray(m)
-          holds the values of the linear term $g$ in the objective function.
+          holds the values of the linear term $b$ in the objective function.
       sigma : float
           holds the regularization weight $\sigma \geq 0$.
       x_l : ndarray(n)

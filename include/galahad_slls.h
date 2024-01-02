@@ -23,10 +23,10 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>simplex-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
+  \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
 \manonly
   \n
-  minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
+  minimize q(x) := 1/2 || A_o x - b ||^2 + sigma ||x||^2
   \n
 \endmanonly
   where \f$x\f$ is required to lie in the regular simplex
@@ -36,13 +36,13 @@
    e^T x = 1 and x_j \[>=] 0, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$m\f$ by \f$n\f$ real matrix \f$A\f$, the vector
+  where the \f$o\f$ by \f$n\f$ real matrix \f$A_o\f$, the vector
   \f$b\f$,and the non-negative weight
   \f$\sigma\f$ are given, and e is the vector of ones.
   Full advantage is taken of any zero
-  coefficients of the Jacobian matrix \f$A\f$ of the <b>residuals</b>
-  \f$c(x) = A x - b\f$;  the matrix need not be provided as there are options
-  to obtain matrix-vector products involving \f$A\f$ and its transpose either
+  coefficients of the design matrix \f$A_o\f$ of the <b>residuals</b>
+  \f$r(x) = A x - b\f$;  the matrix need not be provided as there are options
+  to obtain matrix-vector products involving \f$A_o\f$ and its transpose either
   by reverse communication or from a user-provided subroutine.
 
   \subsection slls_authors Authors
@@ -68,10 +68,10 @@
   \n
 \endmanonly
   the dual optimality conditions
-  \f[(A^T A + \sigma I ) x = A^T b + z\f]
+  \f[(A_o^T A_o + \sigma I ) x = A_o^T b + z\f]
 \manonly
   \n
-   ( A^T A + sigma I ) x = A^T b + z
+   ( A_o^T A_o + sigma I ) x = A_o^T b + z
   \n
 \endmanonly
   where the dual variables
@@ -109,7 +109,7 @@
   The arc search is performed either exactly, by passing through a set
   of increasing breakpoints at which it changes direction, or inexactly,
   by evaluating a sequence of different \f$\alpha\f$  on the arc.
-  All computation is designed to exploit sparsity in \f$A\f$.
+  All computation is designed to exploit sparsity in \f$A_o\f$.
 
   \subsection slls_references Reference
 
@@ -129,17 +129,17 @@
   - \link slls_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - set up problem data structures and fixed values by caling one of
-     - \link slls_import \endlink - in the case that \f$A\f$ is explicitly
+     - \link slls_import \endlink - in the case that \f$A_o\f$ is explicitly
         available
      - \link slls_import_without_a \endlink - in the case that only the
-        effect of applying \f$A\f$ and its transpose to a vector is possible
+        effect of applying \f$A_o\f$ and its transpose to a vector is possible
   - \link slls_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
   - solve the problem by calling one of
      - \link slls_solve_given_a \endlink - solve the problem using values
-          of \f$A\f$
+          of \f$A_o\f$
      - \link slls_solve_reverse_a_prod \endlink - solve the problem by returning
-         to the caller for products of \f$A\f$ and its transpose with specified
+         to the caller for products of \f$A_o\f$ and its transpose with specified
           vectors
   - \link slls_information \endlink (optional) - recover information about
     the solution and solution process
@@ -157,7 +157,7 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ matrix \f$A\f$ may be presented
+  The unsymmetric \f$m\f$ by \f$n\f$ matrix \f$A_o\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
@@ -172,44 +172,44 @@
 
   \subsubsection unsymmetric_matrix_dense_row Dense row storage format
 
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
+  The matrix \f$A_o\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
-  In this case, component \f$n \ast i + j\f$  of the storage array A_val
+  In this case, component \f$n \ast i + j\f$  of the storage array Ao_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_dense_column Dense column storage format
 
-  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is,
+  The matrix \f$A_o\f$ is stored as a compact  dense matrix by columns, that is,
   the values of the entries of each column in turn are
   stored in order within an appropriate real one-dimensional array.
-  In this case, component \f$m \ast j + i\f$  of the storage array A_val
+  In this case, component \f$m \ast j + i\f$  of the storage array Ao_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
 
   Only the nonzero entries of the matrices are stored.
-  For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
+  For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A_o\f$,
   its row index i, column index j
   and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
-  the \f$l\f$-th components of the integer arrays A_row and
-  A_col and real array A_val, respectively, while the number of nonzeros
-  is recorded as A_ne = \f$ne\f$.
+  the \f$l\f$-th components of the integer arrays Ao_row and
+  Ao_col and real array Ao_val, respectively, while the number of nonzeros
+  is recorded as Ao_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
 
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
-  in row i+1. For the i-th row of \f$A\f$ the i-th component of the
-  integer array A_ptr holds the position of the first entry in this row,
-  while A_ptr(m) holds the total number of entries.
+  in row i+1. For the i-th row of \f$A_o\f$ the i-th component of the
+  integer array Ao_ptr holds the position of the first entry in this row,
+  while Ao_ptr(m) holds the total number of entries.
   The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
-  l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
-  of the integer array A_col, and real array A_val, respectively.
+  l = Ao_ptr(i), \f$\ldots\f$, Ao_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
+  of the integer array Ao_col, and real array Ao_val, respectively.
   For sparse matrices, this scheme almost always requires less storage than
   its predecessors.
 
@@ -217,13 +217,13 @@
 
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in column j appear directly before those
-  in column j+1. For the j-th column of \f$A\f$ the j-th component of the
-  integer array A_ptr holds the position of the first entry in this column,
-  while A_ptr(n) holds the total number of entries.
+  in column j+1. For the j-th column of \f$A_o\f$ the j-th component of the
+  integer array Ao_ptr holds the position of the first entry in this column,
+  while Ao_ptr(n) holds the total number of entries.
   The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$
   of the  nonzero entries in the j-th column are stored in components
-  l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1,  \f$0 \leq j \leq n-1\f$,
-  of the integer array A_row, and real array A_val, respectively.
+  l = Ao_ptr(j), \f$\ldots\f$, Ao_ptr(j+1)-1,  \f$0 \leq j \leq n-1\f$,
+  of the integer array Ao_row, and real array Ao_val, respectively.
   Once again, for sparse matrices, this scheme almost always requires less
   storage than the dense of coordinate formats.
 
@@ -294,7 +294,7 @@ struct slls_control_type {
     /// \brief
     /// the preconditioner (scaling) used. Possible values are:
     /// /li 0. no preconditioner.
-    /// /li 1. a diagonal preconditioner that normalizes the rows of \f$A\f$.
+    /// /li 1. a diagonal preconditioner that normalizes the rows of \f$A_o\f$.
     /// /li anything else. a preconditioner supplied by the user either via
     ///     a subroutine call of eval_prec} or via reverse communication.
     int preconditioner;
@@ -525,11 +525,12 @@ void slls_import( struct slls_control_type *control,
                  int *status,
                  int n,
                  int m,
-                 const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 const char Ao_type[],
+                 int Ao_ne,
+                 const int Ao_row[],
+                 const int Ao_col[],
+                 int Ao_ptr_ne,
+                 const int Ao_ptr[] );
 
 
 /*!<
@@ -553,7 +554,7 @@ void slls_import( struct slls_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, m > 0 or requirement that type contains
+  \li -3. The restrictions n > 0, o > 0 or requirement that type contains
        its relevant string 'coordinate', 'sparse_by_rows',
        'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns';
        has been violated.
@@ -561,34 +562,40 @@ void slls_import( struct slls_control_type *control,
 @param[in] n is a scalar variable of type int, that holds the number of
     variables.
 
-@param[in] m is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in] A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink
-   used for the Jacobian \f$A\f$. It should be one of
-   'coordinate', 'sparse_by_rows', 'sparse_by_columns',
-   'dense_by_rows', or 'dense_by_columns';
-   lower or upper case variants are allowed.
+ @param[in]  Ao_type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the objective design matrix, \f$A_o\f$. It should be one of 
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+   'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
-   It need not be set for any of the other schemes.
+ @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
+   entries in \f$A_o\f$ in the sparse storage schemes.
+   It need not be set for either of the dense schemes.
 
- @param[in] A_row is a one-dimensional array of size A_ne and type int, that
-   holds the row indices of \f$A\f$ in the sparse co-ordinate
-   or sparse column-wise storage scheme. It need not be set for any of
-   the other schemes, and in this case can be NULL.
+ @param[in]  Ao_row is a one-dimensional array of size Ao_ne and type int, that
+   holds the row indices of \f$A_o\f$ in the sparse co-ordinate
+   or sparse column-wise storage schemes. It need not be set for any of the
+   other schemes, and in this case can be NULL.
 
- @param[in] A_col is a one-dimensional array of size A_ne and type int,
-   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
-   or the sparse row-wise storage scheme. It need not be set for any of
-   the other schemes, and in this case can be NULL.
+ @param[in]  Ao_col is a one-dimensional array of size Ao_ne and type int,
+   that holds the column indices of \f$A_o\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
+   dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in] A_ptr is a one-dimensional array of size n+1 or m+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the
-   total number of entries, in the sparse row-wise storage scheme, or
-   the starting position of each column of \f$A\f$, as well as the
+ @param[in]  Ao_ptr_ne is a scalar variable of type int, that holds the
+   length of the pointer array if sparse row or column storage scheme is
+   used for \f$A_o\f$. For the sparse row scheme,  Ao_ptr_ne should be at least
+   o+1, while for the sparse column scheme,  it should be at least n+1,
+   It need not be set when the other schemes are used.
+
+ @param[in]  Ao_ptr is a one-dimensional array of size o+1 and type int,
+   that holds the starting position of each row of \f$A_o\f$, as well as the
+   total number of entries, in the sparse row-wise storage scheme.
+   By contrast, it is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each column of \f$A_o\f$, as well as the
    total number of entries, in the sparse column-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
@@ -601,7 +608,7 @@ void slls_import_without_a( struct slls_control_type *control,
                             void **data,
                             int *status,
                             int n,
-                            int m );
+                            int o );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -624,20 +631,20 @@ void slls_import_without_a( struct slls_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restriction n > 0 or m > 0 has been violated.
+  \li -3. The restriction n > 0 or o > 0 has been violated.
 
 @param[in] n is a scalar variable of type int, that holds the number of
     variables.
 
-@param[in] m is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
 */
 // *-*-*-*-*-*-*-    B L L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
 
 void slls_reset_control( struct slls_control_type *control,
-                 void **data,
-                 int *status );
+                         void **data,
+                         int *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -658,13 +665,13 @@ void slls_solve_given_a( void **data,
                          void *userdata,
                          int *status,
                          int n,
-                         int m,
-                         int A_ne,
-                         const real_wp_ A_val[],
+                         int o,
+                         int Ao_ne,
+                         const real_wp_ Ao_val[],
                          const real_wp_ b[],
                          real_wp_ x[],
                          real_wp_ z[],
-                         real_wp_ c[],
+                         real_wp_ r[],
                          real_wp_ g[],
                          int x_stat[],
                          int (*eval_prec)(
@@ -673,7 +680,7 @@ void slls_solve_given_a( void **data,
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
- Jacobian \f$A\f$ is available.
+ Jacobian \f$A_o\f$ is available.
 
  @param[in,out] data holds private internal data
 
@@ -694,7 +701,7 @@ void slls_solve_given_a( void **data,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, m > 0 or requirement that a type contains
+  \li -3. The restrictions n > 0, o > 0 or requirement that a type contains
        its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns',
        'dense_by_rows' or 'dense_by_columns' has been violated.
   \li -4. The simple-bound constraints are inconsistent.
@@ -713,17 +720,17 @@ void slls_solve_given_a( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
-@param[in] m is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
-    entries in the lower triangular part of the Hessian matrix \f$H\f$.
+ @param[in] Ao_ne is a scalar variable of type int, that holds the number of
+    entries in the design matrix \f$A_o\f$.
 
- @param[in] A_val is a one-dimensional array of size A_ne and type double,
-    that holds the values of the entries of the lower triangular part of the
-    Hessian matrix \f$H\f$ in any of the available storage schemes.
+ @param[in] Ao_val is a one-dimensional array of size A_ne and type double,
+    that holds the values of the entries of the designmatrix \f$A_o\f$ 
+    in any of the available storage schemes.
 
- @param[in] b is a one-dimensional array of size m and type double, that
+ @param[in] b is a one-dimensional array of size o and type double, that
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
 
@@ -735,12 +742,12 @@ void slls_solve_given_a( void **data,
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
-    holds the values of the residuals \f$c = A x - b\f$.
-    The i-th component of c, i = 0, ... , m-1, contains \f$c_i\f$.
+ @param[out] r is a one-dimensional array of size o and type double, that
+    holds the values of the residuals \f$r = A x - b\f$.
+    The i-th component of r, i = 0, ... , m-1, contains \f$r_i\f$.
 
  @param[out] g is a one-dimensional array of size n and type double, that
-    holds the values of the gradient \f$g = A^T c\f$.
+    holds the values of the gradient \f$g = A_o^T r\f$.
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j\f$.
 
  @param[in,out] x_stat is a one-dimensional array of size n and type int, that
@@ -769,11 +776,11 @@ void slls_solve_reverse_a_prod( void **data,
                                 int *status,
                                 int *eval_status,
                                 int n,
-                                int m,
+                                int o,
                                 const real_wp_ b[],
                                 real_wp_ x[],
                                 real_wp_ z[],
-                                real_wp_ c[],
+                                real_wp_ r[],
                                 real_wp_ g[],
                                 int x_stat[],
                                 real_wp_ v[],
@@ -786,7 +793,7 @@ void slls_solve_reverse_a_prod( void **data,
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
- products of the Jacobian \f$A\f$ and its transpose
+ products of the Jacobian \f$A_o\f$ and its transpose
  with specified vectors may be computed by the calling program.
 
  @param[in,out] data holds private internal data
@@ -824,7 +831,7 @@ void slls_solve_reverse_a_prod( void **data,
          a badly scaled problem.
 
  @param status (continued)
-  \li  2. The product \f$Av\f$ of the residual Jacobian \f$A\f$ with a given
+  \li  2. The product \f$Av\f$ of the residual Jacobian \f$A_o\f$ with a given
        output vector \f$v\f$ is required from the user. The vector \f$v\f$
        will be  stored in v and the product \f$Av\f$ must be returned in p,
        status_eval should be set to 0, and slls_solve_reverse_a_prod
@@ -832,16 +839,16 @@ void slls_solve_reverse_a_prod( void **data,
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  3. The product \f$A^Tv\f$ of the transpose of the residual Jacobian
-       \f$A\f$ with a given output vector \f$v\f$ is required from the user.
+  \li  3. The product \f$A_o^Tv\f$ of the transpose of the residual Jacobian
+       \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and the product
-       \f$A^Tv\f$ must be returned in p,
+       \f$A_o^Tv\f$ must be returned in p,
        status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
-  \li  4. The product \f$Av\f$ of the residual Jacobian \f$A\f$ with a given
+  \li  4. The product \f$Av\f$ of the residual Jacobian \f$A_o\f$ with a given
        sparse output vector \f$v\f$ is required from the user.
        The nonzero components of the vector \f$v\f$ will be stored as entries
           nz_in[nz_in_start-1:nz_in_end-1]
@@ -853,7 +860,7 @@ void slls_solve_reverse_a_prod( void **data,
        re-entered with eval_status set to a nonzero value.
 
   \li  5. The nonzero components of the product \f$Av\f$ of the residual
-       Jacobian \f$A\f$ with a given sparse output vector \f$v\f$ is required
+       Jacobian \f$A_o\f$ with a given sparse output vector \f$v\f$ is required
        from the user. The nonzero components of the vector \f$v\f$ will be
        stored as entries
           nz_in[nz_in_start-1:nz_in_end-1]
@@ -869,12 +876,12 @@ void slls_solve_reverse_a_prod( void **data,
        slls_solve_reverse_a_prod should be re-entered with eval_status set
        to a nonzero value.
 
-  \li  6. A subset of the product \f$A^Tv\f$ of the transpose of the residual
+  \li  6. A subset of the product \f$A_o^Tv\f$ of the transpose of the residual
        Jacobian
-       \f$A\f$ with a given output vector \f$v\f$ is required from the user.
+       \f$A_o\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and components
           nz_in[nz_in_start-1:nz_in_end-1]
-       of the product \f$A^Tv\f$ must be returned in the relevant
+       of the product \f$A_o^Tv\f$ must be returned in the relevant
        components of p (the remaining components should not be set),
        status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
@@ -898,10 +905,10 @@ void slls_solve_reverse_a_prod( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] o is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in] b is a one-dimensional array of size m and type double, that
+ @param[in] b is a one-dimensional array of size o and type double, that
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
 
@@ -909,12 +916,12 @@ void slls_solve_reverse_a_prod( void **data,
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
-    holds the values of the residuals \f$c = A x - b\f$.
-    The i-th component of c, i = 0, ... , m-1, contains \f$c_i\f$.
+ @param[out] r is a one-dimensional array of size o and type double, that
+    holds the values of the residuals \f$r = A x - b\f$.
+    The i-th component of c, i = 0, ... , o-1, contains \f$c_i\f$.
 
  @param[out] g is a one-dimensional array of size n and type double, that
-    holds the values of the gradient \f$g = A^T c\f$.
+    holds the values of the gradient \f$g = A_o^T r\f$.
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j\f$.
 
  @param[in,out] z is a one-dimensional array of size n and type double, that

@@ -45,12 +45,13 @@ overview of functions provided
 		void** data,
 		int* status,
 		int n,
-		int m,
+		int o,
 		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
+		int Ao_ne,
+		const int Ao_row[],
+		const int Ao_col[],
+		int Ao_ptr_ne,
+		const int Ao_ptr[]
 	);
 
 	void :ref:`blls_import_without_a<doxid-galahad__blls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c>`(
@@ -72,15 +73,15 @@ overview of functions provided
 		void* userdata,
 		int* status,
 		int n,
-		int m,
-		int A_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		int o,
+		int Ao_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` Ao_val[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
 		int x_stat[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[],
@@ -92,13 +93,13 @@ overview of functions provided
 		int* status,
 		int* eval_status,
 		int n,
-		int m,
+		int o,
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
 		int x_stat[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
@@ -234,11 +235,12 @@ components of the control structure.
 		void** data,
 		int* status,
 		int n,
-		int m,
+		int o,
 		const char A_type[],
 		int A_ne,
 		const int A_row[],
 		const int A_col[],
+		int A_ptr_ne,
 		const int A_ptr[]
 	)
 
@@ -288,7 +290,7 @@ Import problem data into internal storage prior to solution.
                     inform.bad_alloc respectively.
 		  
 		  * ****-3**
-                    The restrictions n > 0, m > 0 or requirement that
+                    The restrictions n > 0, o > 0 or requirement that
                     type contains its relevant string 'coordinate',
                     'sparse_by_rows', 'sparse_by_columns',
                     'dense_by_rows', or 'dense_by_columns'; has been
@@ -302,34 +304,40 @@ Import problem data into internal storage prior to solution.
 		- is a scalar variable of type int, that holds the number of variables.
 
 	*
-		- m
+		- o
 
 		- is a scalar variable of type int, that holds the number of residuals.
 
-	*
-		- A_type
-
-		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the Jacobian $A$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
-		- A_ne
+		- Ao_type
 
-		- is a scalar variable of type int, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
-
-	*
-		- A_row
-
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A$ in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of type char that specifies the :ref:`symmetric storage scheme <doxid-index_1main_unsymmetric_matrices>` used for the design matrix $A_o$. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed.
 
 	*
-		- A_col
+		- Ao_ne
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a scalar variable of type int, that holds the number of entries in $A_o$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
-		- A_ptr
+		- Ao_row
 
-		- is a one-dimensional array of size n+1 or m+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme, or the starting position of each column of $A$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size Ao_ne and type int, that holds the row indices of $A_o$ in the sparse co-ordinate or sparse column-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+
+	*
+		- Ao_col
+
+		- is a one-dimensional array of size Ao_ne and type int, that holds the column indices of $A_o$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+
+	*
+		- Ao_ptr_ne
+
+		- is a scalar variable of type int, that holds the length of the pointer array if sparse row or column storage scheme is used for $A_o$. For the sparse row scheme, Ao_ptr_ne should be at least o+1, while for the sparse column scheme, it should be at least n+1, It need not be set when the other schemes are used.
+
+	*
+		- Ao_ptr
+
+		- is a one-dimensional array of size Ao_ptr_ne and type int, that holds the starting position of each row of $A_o$, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it holds the starting position of each column of $A_o$, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; blls_import_without_a
 .. _doxid-galahad__blls_8h_1a419f9b0769b4389beffbbc5f7d0fd58c:
@@ -342,7 +350,7 @@ Import problem data into internal storage prior to solution.
 		void** data,
 		int* status,
 		int n,
-		int m
+		int o
 	)
 
 Import problem data into internal storage prior to solution.
@@ -391,9 +399,7 @@ Import problem data into internal storage prior to solution.
                     inform.bad_alloc respectively.
 		  
 		  * ****-3**
-                    The restriction n > 0 or m > 0 has been violated**
-
-                  
+                    The restriction n > 0 or o > 0 has been violated**
 
 	*
 		- n
@@ -401,7 +407,7 @@ Import problem data into internal storage prior to solution.
 		- is a scalar variable of type int, that holds the number of variables.
 
 	*
-		- m
+		- o
 
 		- is a scalar variable of type int, that holds the number of residuals.
 
@@ -455,24 +461,22 @@ Reset control parameters after import if required.
 		void* userdata,
 		int* status,
 		int n,
-		int m,
-		int A_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
+		int o,
+		int Ao_ne,
+		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` Ao_val[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
 		int x_stat[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[],
 		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
 	)
 
-Solve the bound-constrained linear least-squares problem when the Jacobian $A$ is available.
-
-
+Solve the bound-constrained linear least-squares problem when the design matrix $A_o$ is available.
 
 .. rubric:: Parameters:
 
@@ -519,7 +523,7 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
                     respectively.
 		  
 		  * **-3**
-                    The restrictions n > 0, m > 0 or requirement that a
+                    The restrictions n > 0, o > 0 or requirement that a
                     type contains its relevant string 'coordinate',
                     'sparse_by_rows', 'sparse_by_columns',
                     'dense_by_rows' or 'dense_by_columns' has been
@@ -554,24 +558,24 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 		- is a scalar variable of type int, that holds the number of variables
 
 	*
-		- m
+		- o
 
 		- is a scalar variable of type int, that holds the number of residuals.
 
 	*
-		- A_ne
+		- Ao_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type int, that holds the number of entries in the design matrix $A_o$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size A_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size A_ne and type double, that holds the values of the entries in the design matrix $A_o$ in any of the available storage schemes.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size o and type double, that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , o-1, contains $b_i$.
 
 	*
 		- x_l
@@ -594,9 +598,9 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 		- is a one-dimensional array of size n and type double, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
-		- c
+		- r
 
-		- is a one-dimensional array of size m and type double, that holds the values of the residuals $c = A x - b$. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size o and type double, that holds the values of the residuals $r = A_o x - b$. The i-th component of r, i = 0, ... , o-1, contains $r_i$.
 
 	*
 		- g
@@ -611,7 +615,7 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 	*
 		- w
 
-		- is an optional one-dimensional array of size m and type double, that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+		- is an optional one-dimensional array of size o and type double, that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
 
 	*
 		- eval_prec
@@ -637,13 +641,13 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 		int* status,
 		int* eval_status,
 		int n,
-		int m,
+		int o,
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
+		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
 		int x_stat[],
 		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
@@ -656,7 +660,7 @@ Solve the bound-constrained linear least-squares problem when the Jacobian $A$ i
 		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[]
 	)
 
-Solve the bound-constrained linear least-squares problem when the products of the Jacobian $A$ and its transpose with specified vectors may be computed by the calling program.
+Solve the bound-constrained linear least-squares problem when the products of the Jacobian $A_o$ and its transpose with specified vectors may be computed by the calling program.
 
 
 
@@ -734,10 +738,10 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     be symptomatic of a badly scaled problem.
 
 		  * **2**
-                    The product $Av$ of the residual Jacobian
-                    $A$ with a given output vector $v$ is
+                    The product $A_ov$ of the design matrix
+                    $A_o$ with a given output vector $v$ is
                     required from the user. The vector $v$ will be
-                    stored in v and the product $Av$ must be
+                    stored in v and the product $A_ov$ must be
                     returned in p, status_eval should be set to 0, and
                     blls_solve_reverse_a_prod re-entered with all other
                     arguments unchanged. If the product cannot be
@@ -746,26 +750,24 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     eval_status set to a nonzero value.
 		  
 		  * **3**
-                    The product $A^Tv$ of the transpose of the
-                    residual Jacobian $A$ with a given output
+                    The product $A_o^Tv$ of the transpose of the
+                    design matrix $A_o$ with a given output
                     vector $v$ is required from the user. The
                     vector $v$ will be stored in v and the product
-                    $A^Tv$ must be returned in p, status_eval
+                    $A_o^Tv$ must be returned in p, status_eval
                     should be set to 0, and blls_solve_reverse_a_prod
                     re-entered with all other arguments unchanged. If
                     the product cannot be formed, v need not be set, but
                     blls_solve_reverse_a_prod should be re-entered with
                     eval_status set to a nonzero value.
 		  
-		  
-		  
 		  * **4**
-                    The product $Av$ of the residual Jacobian
-                    $A$ with a given sparse output vector
+                    The product $A_ov$ of the design matrix
+                    $A_o$ with a given sparse output vector
                     $v$ is required from the user. The nonzero
                     components of the vector $v$ will be stored as
                     entries nz_in[nz_in_start-1:nz_in_end-1] of v and
-                    the product $Av$ must be returned in p,
+                    the product $A_ov$ must be returned in p,
                     status_eval should be set to 0, and
                     blls_solve_reverse_a_prod re-entered with all other
                     arguments unchanged; The remaining components of v
@@ -774,17 +776,15 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     should be re-entered with eval_status set to a
                     nonzero value.
 		  
-		  
-		  
 		  * **5**
-                    The nonzero components of the product $Av$ of
-                    the residual Jacobian $A$ with a given sparse
+                    The nonzero components of the product $A_o v$ of
+                    the design matrix $A_o$ with a given sparse
                     output vector $v$ is required from the
                     user. The nonzero components of the vector $v$
                     will be stored as entries
                     nz_in[nz_in_start-1:nz_in_end-1] of v; the remaining
                     components of v should be ignored. The resulting
-                    **nonzeros** in the product $Av$ must be
+                    **nonzeros** in the product $A_ov$ must be
                     placed in their appropriate comnponents of p, while
                     a list of indices of the nonzeros placed in nz_out[0
                     : nz_out_end-1] and the number of nonzeros recorded
@@ -795,15 +795,13 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     be set, but blls_solve_reverse_a_prod should be
                     re-entered with eval_status set to a nonzero value.
 		  
-		  
-		  
 		  * **6**
-                    A subset of the product $A^Tv$ of the
-                    transpose of the residual Jacobian $A$ with a
+                    A subset of the product $A_o^T v$ of the
+                    transpose of the design matrix $A_o$ with a
                     given output vector $v$ is required from the
                     user. The vector $v$ will be stored in v and
                     components nz_in[nz_in_start-1:nz_in_end-1] of the
-                    product $A^Tv$ must be returned in the
+                    product $A_o^Tv$ must be returned in the
                     relevant components of p (the remaining components
                     should not be set), status_eval should be set to 0,
                     and blls_solve_reverse_a_prod re-entered with all
@@ -811,8 +809,6 @@ Solve the bound-constrained linear least-squares problem when the products of th
                     formed, v need not be set, but
                     blls_solve_reverse_a_prod should be re-entered with
                     eval_status set to a nonzero value.
-		  
-		  
 		  
 		  * **7**
                     The product $P^{-1}v$ of the inverse of the
@@ -839,14 +835,14 @@ Solve the bound-constrained linear least-squares problem when the products of th
 		- is a scalar variable of type int, that holds the number of variables
 
 	*
-		- m
+		- o
 
 		- is a scalar variable of type int, that holds the number of residuals.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size o and type double, that holds the constant term $b$ in the residuals. The i-th component of b, i = 0, ... , o-1, contains $b_i$.
 
 	*
 		- x_l
@@ -864,14 +860,14 @@ Solve the bound-constrained linear least-squares problem when the products of th
 		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
-		- c
+		- r
 
-		- is a one-dimensional array of size m and type double, that holds the values of the residuals $c = A x - b$. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size m and type double, that holds the values of the residuals $r = A x - b$. The i-th component of r, i = 0, ... , o-1, contains $r_i$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the values of the gradient $g = A^T c$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type double, that holds the values of the gradient $g = A^T W r$. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- z

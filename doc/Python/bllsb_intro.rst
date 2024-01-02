@@ -2,7 +2,7 @@ purpose
 -------
 
 The ``bllsb`` package uses a **primal-dual interior-point crossover method** 
-to solve a **constrained linear least-squares** problem
+to solve a **bound-constrained linear least-squares problem**,
 The aim is to minimize the (regularized) least-squares objective function
 $$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
 subject to the simple bounds
@@ -13,8 +13,7 @@ $A_o$ is a given  $o$ by $n$ matrix,
 $b$, and $w$ are vectors, $\sigma \geq 0$ is a scalar, 
 and any of the components 
 of the vectors $x_l$ or $x_u$ may be infinite.
-The method offers the choice of direct and iterative solution of the key
-regularization subproblems, and is most suitable for problems
+The method is most suitable for problems
 involving a large number of unknowns $x$.
 
 See Section 4 of $GALAHAD/doc/bllsb.pdf for additional details.

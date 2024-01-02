@@ -384,6 +384,10 @@
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="slls_functions.html">callable functions</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
@@ -529,16 +533,16 @@ been violated.</p></li>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>Ao_row</p></td>
-<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Ao_col</p></td>
-<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>Ao_ptr_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the length of the pointer array if sparse row or column storage scheme is used for <span class="math notranslate nohighlight">\(A_o\)</span>. For the sparse row scheme,  Ao_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Ao_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -677,7 +681,7 @@ be symptomatic of a badly scaled problem.</p></li>
 <td><p>is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
 </tr>
 <tr class="row-odd"><td><p>w</p></td>
-<td><p>is a one-dimensional array of size o and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of strictly-positive observation weights. The i-th component of w, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(w_i\)</span>. If the weights are all one, w can be set to NULL.</p></td>
+<td><p>is a one-dimensional array of size o and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of strictly-positive observation weights. The i-th component of w, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(w_i\)</span>. If the weights are all one, w can be set to C_NULL.</p></td>
 </tr>
 </tbody>
 </table>

@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 4.1 - 2022-07-13 AT 16:30 GMT.
+!  THIS VERSION: GALAHAD 4.3 - 2023-12-30 AT 15:30 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -8,18 +8,18 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given an m by n matrix A, an m-vector b, and a constant sigma >= 0, find
+!  Given an o by n matrix Ao, an o-vector b, and a constant sigma >= 0, find
 !  a local mimimizer of the SIMPLEX_CONSTRAINED LINER LEAST-SQUARES problem
-!    minimize 0.5 || A x - b ||^2 + 0.5 sigma ||x||^2
+!    minimize 0.5 || Ao x - b ||^2 + 0.5 sigma ||x||^2
 !    subject to sum x_i = 1, x_i >= 0
 !  using a projection method.
-!  Advantage is taken of sparse A.
+!  Advantage is taken of sparse Ao.
 !
 !  Simple usage -
 !
 !  to solve the simplex_constrained liner least-squares problem
 !   [ x, inform, aux ]
-!     = galahad_slls( A, b, control )
+!     = galahad_slls( Ao, b, control )
 !
 !  Sophisticated usage -
 !
@@ -29,14 +29,14 @@
 !
 !  to solve the problem using existing data structures
 !   [ x, inform, aux ]
-!     = galahad_slls( 'existing', A, b, control )
+!     = galahad_slls( 'existing', Ao, b, control )
 !
 !  to remove data structures after solution
 !   galahad_slls( 'final' )
 !
 !  Usual Input -
-!    A: the m by n matrix A
-!    b: the m-vector b
+!    A: the o by n matrix Ao
+!    b: the o-vector b
 !
 !  Optional Input -
 !    control, a structure containing control parameters.
@@ -235,22 +235,22 @@
         a_in = prhs( a_arg )
         IF ( mxIsNumeric( a_in ) == 0 )                                        &
           CALL mexErrMsgTxt( ' There must be a matrix A ' )
-        CALL MATLAB_transfer_matrix( a_in, p%A, col_ptr, .FALSE. )
-        p%n = p%A%n ; p%m = p%A%m
+        CALL MATLAB_transfer_matrix( a_in, p%Ao, col_ptr, .FALSE. )
+        p%n = p%Ao%n ; p%o = p%Ao%m
 
         IF ( ALLOCATED( col_ptr ) ) DEALLOCATE( col_ptr, STAT = info )
 
 !  Allocate space for input vectors
 
-        ALLOCATE( p%B( p%m ), STAT = info )
+        ALLOCATE( p%B( p%o ), STAT = info )
 
 !  Input b
 
         b_in = prhs( b_arg )
         IF ( mxIsNumeric( b_in ) == 0 )                                        &
-           CALL mexErrMsgTxt( ' There must be a vector g ' )
+           CALL mexErrMsgTxt( ' There must be a vector b ' )
         b_pr = mxGetPr( b_in )
-        CALL MATLAB_copy_from_ptr( b_pr, p%B, p%m )
+        CALL MATLAB_copy_from_ptr( b_pr, p%B, p%o )
 
 !  Allocate space for the solution
 
@@ -322,12 +322,12 @@
 !  all components now set
 
       IF ( TRIM( mode ) == 'final' .OR. TRIM( mode ) == 'all' ) THEN
-        IF ( ALLOCATED( p%A%row ) ) DEALLOCATE( p%A%row, STAT = info )
-        IF ( ALLOCATED( p%A%col ) ) DEALLOCATE( p%A%col, STAT = info )
-        IF ( ALLOCATED( p%A%val ) ) DEALLOCATE( p%A%val, STAT = info )
+        IF ( ALLOCATED( p%Ao%row ) ) DEALLOCATE( p%Ao%row, STAT = info )
+        IF ( ALLOCATED( p%Ao%col ) ) DEALLOCATE( p%Ao%col, STAT = info )
+        IF ( ALLOCATED( p%Ao%val ) ) DEALLOCATE( p%Ao%val, STAT = info )
         IF ( ALLOCATED( p%B ) ) DEALLOCATE( p%B, STAT = info )
         IF ( ALLOCATED( p%G ) ) DEALLOCATE( p%G, STAT = info )
-        IF ( ALLOCATED( p%C ) ) DEALLOCATE( p%C, STAT = info )
+        IF ( ALLOCATED( p%R ) ) DEALLOCATE( p%R, STAT = info )
         IF ( ALLOCATED( p%X ) ) DEALLOCATE( p%X, STAT = info )
         IF ( ALLOCATED( p%Z ) ) DEALLOCATE( p%Z, STAT = info )
         IF ( ALLOCATED( X_stat ) ) DEALLOCATE( X_stat, STAT = info )

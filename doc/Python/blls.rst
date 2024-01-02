@@ -159,7 +159,7 @@ functions
           convert_options : dict
              default control options for CONVERT (see ``convert.initialize``).
 
-   .. function:: blls.load(n, m, A_type, A_ne, A_row, A_col, A_ptr, options=None)
+   .. function:: blls.load(n, o, Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -167,33 +167,41 @@ functions
 
       n : int
           holds the number of variables.
-      m : int
-          holds the number of constraints.
-      A_type : string
-          specifies the unsymmetric storage scheme used for the constraints 
-          Jacobian $A$.
-          It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+      o : int
+          holds the number of residuals.
+      Ao_type : string
+          specifies the unsymmetric storage scheme used for the objective
+          design matrix $A_o$. It should be one of 'coordinate', 
+          'sparse_by_rows', 'sparse_by_columns', 'dense' or 'dense_by_columns';
           lower or upper case variants are allowed.
-      A_ne : int
-          holds the number of entries in $A$ in the sparse co-ordinate storage 
-          scheme. It need not be set for any of the other two schemes.
-      A_row : ndarray(A_ne)
-          holds the row indices of $A$
-          in the sparse co-ordinate storage scheme. It need not be set for
-          any of the other two schemes, and in this case can be None.
-      A_col : ndarray(A_ne)
-          holds the column indices of $A$ in either the sparse co-ordinate, 
-          or the sparse row-wise storage scheme. It need not be set when the 
-          dense storage scheme is used, and in this case can be None.
-      A_ptr : ndarray(m+1)
-          holds the starting position of each row of $A$, as well as the 
-          total number of entries, in the sparse row-wise storage 
-          scheme. It need not be set when the other schemes are used, and in 
-          this case can be None.
+      Ao_ne : int
+          holds the number of entries in $A_o$ in the sparse co-ordinate 
+          storage scheme. It need not be set for any of the other schemes.
+      Ao_row : ndarray(Ao_ne)
+          holds the row indices of $A_o$ in the sparse co-ordinate and
+          and sparse column-wise storage schemes. It need not be set for
+          any of the other schemes, and in this case can be None.
+      Ao_col : ndarray(Ao_ne)
+          holds the column indices of $A_o$ in either the sparse co-ordinate, 
+          or the sparse row-wise storage scheme. It need not be set for
+          any of the other schemes, and in this case can be None.
+      Ao_ptr_ne : int
+          holds the length of the pointer array if sparse row or column 
+          storage scheme is used for $A_o$. For the sparse row scheme,  
+          Ao_ptr_ne should be at least o+1, while for the sparse column scheme,
+          it should be at least n+1, It need not be set when the other schemes
+          are used.
+      Ao_ptr : ndarray(Ao_ptr_ne)
+          holds the starting position of each row of $A_o$, as well as the 
+          total number of entries, in the sparse row-wise storage scheme. 
+          By contrast, it holds the starting position of each column of $A_o$, 
+          as well as the total number of entries, in the sparse column-wise 
+          storage scheme. It need not be set when the other schemes are used, 
+          and in this case can be None.
       options : dict, optional
           dictionary of control options (see ``blls.initialize``).
 
-   .. function:: blls.solve_ls(n, m, w, a_ne, A_val, b, x_l, x_u, x, z)
+   .. function:: blls.solve_ls(n, o, w, ao_ne, Ao_val, b, x_l, x_u, x, z)
 
       Find a solution to the bound-constraind regularized linear least-squares
       problem involving the least-squares objective function $q(x)$.
@@ -202,18 +210,19 @@ functions
 
       n : int
           holds the number of variables.
-      m : int
+      o : int
           holds the number of residuals.
-      w : ndarray(m)
+      w : ndarray(o)
           holds the weights $w$ in the objective function.
-      a_ne : int
-          holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      ao_ne : int
+          holds the number of entries in the constraint Jacobian $A_o$.
+      Ao_val : ndarray(ao_ne)
           holds the values of the nonzeros in the constraint Jacobian
-          $A$ in the same order as specified in the sparsity pattern in 
+          $A_o$ in the same order as specified in the sparsity pattern in 
           ``blls.load``.
-      b : ndarray(m)
-          holds the values of vector $b$ in the objective function.
+      b : ndarray(o)
+          holds the values of the observation vector $b$ in the 
+          objective function.
       x_l : ndarray(n)
           holds the values of the lower bounds $x_l$ on the variables.
           The lower bound on any component of $x$ that is unbounded from 
@@ -237,11 +246,13 @@ functions
       x : ndarray(n)
           holds the values of the approximate minimizer $x$ after
           a successful call.
-      c : ndarray(m)
-          holds the values of the residuals $c(x) = Ax$.
       z : ndarray(n)
           holds the values of the dual variables associated with the 
           simple bound constraints.
+      r : ndarray(o)
+          holds the values of the residuals $r(x) = A_o x - b$ at $x$.
+      g : ndarray(n)
+          holds the values of the gradient $g(x) = A_o^T W r(x)$ at $x$.
       x_stat : ndarray(n)
           holds the return status for each variable. The i-th component will be
           negative if the $i$-th variable lies on its lower bound, 
@@ -281,7 +292,7 @@ functions
 
             * **-3**
 
-              The restriction n > 0 or m > 0 or requirement that type contains
+              The restriction n > 0 or o > 0 or requirement that type contains
               its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
               has been violated.
 

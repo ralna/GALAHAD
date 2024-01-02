@@ -16,45 +16,46 @@
    INTEGER ( KIND = ip_ ) :: i, j, k, l, nf, weight, mode, exact_arc_search, s
    INTEGER ( KIND = ip_ ) :: status
    REAL ( KIND = rp_ ) :: val
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
-   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr_row, FLAG
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, DIAG
-   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 4, a_ne = 5
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_ptr_row, FLAG
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val, DIAG
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, o = 4, ao_ne = 5
 ! partition userdata%integer so that it holds
-!   m n nflag  flag          a_ptr          a_row
-!  |1|2|  3  |4 to mn+3 |mn+4 to mn+n+4|mn+n+5 to mn+n+4+a_ne|, with mn=max(m,n)
+!   o n nflag  flag          ao_ptr          ao_row
+!  |1|2|  3  |4 to on+3 |on+4 to on+n+4|on+n+5 to on+n+4+a_ne|, with on=max(m,n)
 ! partition userdata%real so that it holds
-!     a_val
-!  |1 to a_ne|
-   INTEGER ( KIND = ip_ ), PARAMETER :: mn = MAX( m, n )
+!     ao_val
+!  |1 to ao_ne|
+   INTEGER ( KIND = ip_ ), PARAMETER :: on = MAX( o, n )
    INTEGER ( KIND = ip_ ), PARAMETER :: nflag = 3, st_flag = 3
-   INTEGER ( KIND = ip_ ), PARAMETER :: st_ptr = st_flag + mn
+   INTEGER ( KIND = ip_ ), PARAMETER :: st_ptr = st_flag + on
    INTEGER ( KIND = ip_ ), PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
-   INTEGER ( KIND = ip_ ), PARAMETER :: len_integer = st_row + a_ne + 1
-   INTEGER ( KIND = ip_ ), PARAMETER :: len_real = a_ne
+   INTEGER ( KIND = ip_ ), PARAMETER :: len_integer = st_row + ao_ne + 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: len_real = ao_ne
    EXTERNAL :: APROD, ASPROD, AFPROD, PREC
    EXTERNAL :: APROD_broken, ASPROD_broken, AFPROD_broken
 ! set up problem data
-   ALLOCATE( p%B( m ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
-   p%n = n ; p%m = m                          ! dimensions
+   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
+   p%n = n ; p%o = o                              ! dimensions
    p%B = (/ 0.0_rp_, 2.0_rp_, 1.0_rp_, 2.0_rp_ /) ! right-hand side
-   p%X_l = (/ - 1.0_rp_, - infinity, 0.0_rp_ /) ! variable lower bound
-   p%X_u = (/ infinity, 1.0_rp_, 2.0_rp_ /)     ! variable upper bound
+   p%X_l = (/ - 1.0_rp_, - infinity, 0.0_rp_ /)   ! variable lower bound
+   p%X_u = (/ infinity, 1.0_rp_, 2.0_rp_ /)       ! variable upper bound
    p%X = 0.0_rp_ ! start from zero
-   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ), A_ptr_row( m + 1 ) )
-   A_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) !Jacobian A by cols
-   A_row = (/ 1, 2, 2, 3, 4 /)                     ! row indices
-   A_col = (/ 1, 1, 2, 3, 3 /)                     ! column indices
-   A_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
-   A_ptr_row = (/ 1, 2, 4, 5, 6 /)                 ! pointers to row starts
+   ALLOCATE( Ao_val( ao_ne ), Ao_row( ao_ne ) )
+   ALLOCATE( Ao_ptr( n + 1 ), Ao_ptr_row( o + 1 ) )
+   Ao_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! Ao by cols
+   Ao_row = (/ 1, 2, 2, 3, 4 /)                     ! row indices
+   Ao_col = (/ 1, 1, 2, 3, 3 /)                     ! column indices
+   Ao_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
+   Ao_ptr_row = (/ 1, 2, 4, 5, 6 /)                 ! pointers to row starts
 
 ! problem data complete
 
    ALLOCATE( DIAG( n ) )
    DO j = 1, n
      val = 0.0_rp_
-     DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-       val = val + A_val( k ) ** 2
+     DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+       val = val + Ao_val( k ) ** 2
      END DO
      DIAG( j ) = val
    END DO
@@ -93,28 +94,28 @@
        p%X = 0.0_rp_ ! start from zero
        SELECT CASE ( mode ) ! matrix access 
        CASE ( 1, 2 ) ! A explicitly available (iterative and direct solves)
-         CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
-         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
-         p%A%m = m ; p%A%n = n
-         p%A%val( : a_ne ) = A_val( : a_ne )
-         p%A%row( : a_ne ) = A_row( : a_ne )
-         p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         CALL SMT_put( p%Ao%type, 'SPARSE_BY_COLUMNS', s )
+         ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%ptr( n + 1 ) )
+         p%Ao%m = o ; p%Ao%n = n
+         p%Ao%val( : ao_ne ) = Ao_val( : ao_ne )
+         p%Ao%row( : ao_ne ) = Ao_row( : ao_ne )
+         p%Ao%ptr( : n + 1 ) = Ao_ptr( : n + 1 )
          control%direct_subproblem_solve = mode == 2
          inform%status = 1
          CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
          WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
         &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
             mode, exact_arc_search, inform%status, inform%obj
-         DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
+         DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%ptr, p%Ao%type )
        CASE ( 3 ) ! A available by external subroutines
          ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
-         userdata%integer( 1 ) = m   ! load Jacobian data into userdata
+         userdata%integer( 1 ) = o   ! load Jacobian data into userdata
          userdata%integer( 2 ) = n
-         userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = A_ptr( : n + 1 )
-         userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
-         userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
+         userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = Ao_ptr( : n + 1 )
+         userdata%integer( st_row + 1 : st_row + ao_ne ) = Ao_row( : ao_ne )
+         userdata%real( st_val + 1 : st_val + ao_ne ) = Ao_val( : ao_ne )
          userdata%integer( nflag ) = 0
-         userdata%integer( st_flag + 1 : st_flag + mn ) = 0
+         userdata%integer( st_flag + 1 : st_flag + on ) = 0
          inform%status = 1
          CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
                           eval_APROD = APROD, eval_ASPROD = ASPROD,            &
@@ -125,7 +126,7 @@
             mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( userdata%integer, userdata%real )
        CASE ( 4 ) ! A available by reverse matrix-vector products
-         ALLOCATE( FLAG( MAX( m, n ) ) )
+         ALLOCATE( FLAG( MAX( o, n ) ) )
          nf = 0 ; FLAG = 0
          inform%status = 1
          DO ! Solve problem - reverse commmunication loop
@@ -138,31 +139,31 @@
                 mode, exact_arc_search, inform%status, inform%obj
              EXIT
            CASE ( 2 ) ! compute A * v
-             reverse%P( : m ) = 0.0_rp_
+             reverse%P( : o ) = 0.0_rp_
              DO j = 1, n
                val = reverse%V( j )
-               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-                 i = A_row( k )
-                 reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+               DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                 i = Ao_row( k )
+                 reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
                END DO
              END DO
            CASE ( 3 ) ! compute A^T * v
              reverse%P( : n ) = 0.0_rp_
              DO j = 1, n
                val = 0.0_rp_
-               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-                 val = val + A_val( k ) * reverse%V( A_row( k ) )
+               DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                 val = val + Ao_val( k ) * reverse%V( Ao_row( k ) )
                END DO
                reverse%P( j ) = val
              END DO
            CASE ( 4 ) ! compute A * sparse v
-             reverse%P( : m ) = 0.0_rp_
+             reverse%P( : o ) = 0.0_rp_
              DO l = reverse%nz_in_start, reverse%nz_in_end
                j = reverse%NZ_in( l )
                val = reverse%V( j )
-               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-                 i = A_row( k )
-                 reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+               DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                 i = Ao_row( k )
+                 reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
                END DO
              END DO
            CASE ( 5 ) ! compute sparse( A * sparse v )
@@ -171,15 +172,15 @@
              DO l = reverse%nz_in_start, reverse%nz_in_end
                j = reverse%NZ_in( l )
                val = reverse%V( j )
-               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-                 i = A_row( k )
+               DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                 i = Ao_row( k )
                  IF ( FLAG( i ) < nf ) THEN
                    FLAG( i ) = nf
-                   reverse%P( i ) = A_val( k ) * val
+                   reverse%P( i ) = Ao_val( k ) * val
                    reverse%nz_out_end = reverse%nz_out_end + 1
                    reverse%NZ_out( reverse%nz_out_end ) = i
                  ELSE
-                   reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+                   reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
                  END IF
                END DO
              END DO
@@ -188,8 +189,8 @@
              DO l = reverse%nz_in_start, reverse%nz_in_end
                j = reverse%NZ_in( l )
                val = 0.0_rp_
-               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-                 val = val + A_val( k ) * reverse%V( A_row( k ) )
+               DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+                 val = val + Ao_val( k ) * reverse%V( Ao_row( k ) )
                END DO
                reverse%P( j ) = val
              END DO
@@ -197,12 +198,12 @@
          END DO
          DEALLOCATE( FLAG )
        CASE ( 5 ) ! preconditioner explicitly available
-         CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
-         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
-         p%A%m = m ; p%A%n = n
-         p%A%val( : a_ne ) = A_val( : a_ne )
-         p%A%row( : a_ne ) = A_row( : a_ne )
-         p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         CALL SMT_put( p%Ao%type, 'SPARSE_BY_COLUMNS', s )
+         ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%ptr( n + 1 ) )
+         p%Ao%m = o ; p%Ao%n = n
+         p%Ao%val( : ao_ne ) = Ao_val( : ao_ne )
+         p%Ao%row( : ao_ne ) = Ao_row( : ao_ne )
+         p%Ao%ptr( : n + 1 ) = Ao_ptr( : n + 1 )
          ALLOCATE( userdata%integer( 1 ), userdata%real( n ) )
          userdata%integer( 1 ) = n   ! load preconditioner data into userdata
          userdata%real(  : n ) = DIAG( : n )
@@ -217,7 +218,7 @@
             mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( userdata%integer, userdata%real )
        CASE ( 6 ) ! preconditioner available by reverse communication
-         ALLOCATE( FLAG( MAX( m, n ) ) )
+         ALLOCATE( FLAG( MAX( o, n ) ) )
          nf = 0 ; FLAG = 0
 !        control%print_level = 1
          control%preconditioner = 2
@@ -236,7 +237,7 @@
              reverse%P( : n ) = reverse%V( : n ) / DIAG( : n )
            END SELECT
          END DO
-         DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
+         DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%ptr, p%Ao%type )
          DEALLOCATE( FLAG )
        END SELECT
        CALL BLLS_terminate( data, control, inform, reverse = reverse )
@@ -260,38 +261,38 @@
        p%X = 0.0_rp_ ! start from zero
        SELECT CASE ( mode )
        CASE ( 1 ) ! A by columns
-         CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
-         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
-         p%A%m = m ; p%A%n = n
-         p%A%val( : a_ne ) = A_val( : a_ne )
-         p%A%row( : a_ne ) = A_row( : a_ne )
-         p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         CALL SMT_put( p%Ao%type, 'SPARSE_BY_COLUMNS', s )
+         ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%ptr( n + 1 ) )
+         p%Ao%m = o ; p%Ao%n = n
+         p%Ao%val( : ao_ne ) = Ao_val( : ao_ne )
+         p%Ao%row( : ao_ne ) = Ao_row( : ao_ne )
+         p%Ao%ptr( : n + 1 ) = Ao_ptr( : n + 1 )
        CASE ( 2 ) ! A by rows
-         CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )
-         ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
-         p%A%m = m ; p%A%n = n
-         p%A%val( : a_ne ) = A_val( : a_ne )
-         p%A%col( : a_ne ) = A_col( : a_ne )
-         p%A%ptr( : m + 1 ) = A_ptr_row( : m + 1 )
+         CALL SMT_put( p%Ao%type, 'SPARSE_BY_ROWS', s )
+         ALLOCATE( p%Ao%val( ao_ne ), p%Ao%col( ao_ne ), p%Ao%ptr( o + 1 ) )
+         p%Ao%m = o ; p%Ao%n = n
+         p%Ao%val( : ao_ne ) = Ao_val( : ao_ne )
+         p%Ao%col( : ao_ne ) = Ao_col( : ao_ne )
+         p%Ao%ptr( : o + 1 ) = Ao_ptr_row( : o + 1 )
        CASE ( 3 ) ! A coordinate
-         CALL SMT_put( p%A%type, 'COORDINATE', s )
-         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-         p%A%m = m ; p%A%n = n ; p%A%ne = a_ne
-         p%A%val( : a_ne ) = A_val( : a_ne )
-         p%A%row( : a_ne ) = A_row( : a_ne )
-         p%A%col( : a_ne ) = A_col( : a_ne )
+         CALL SMT_put( p%Ao%type, 'COORDINATE', s )
+         ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%col( ao_ne ) )
+         p%Ao%m = o ; p%Ao%n = n ; p%Ao%ne = ao_ne
+         p%Ao%val( : ao_ne ) = Ao_val( : ao_ne )
+         p%Ao%row( : ao_ne ) = Ao_row( : ao_ne )
+         p%Ao%col( : ao_ne ) = Ao_col( : ao_ne )
        CASE ( 4 ) ! A dense by columns
-         CALL SMT_put( p%A%type, 'DENSE_BY_COLUMNS', s )
-         ALLOCATE( p%A%val( m * n ) )
-         p%A%m = m ; p%A%n = n
-         p%A%val( : m * n ) = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
+         CALL SMT_put( p%Ao%type, 'DENSE_BY_COLUMNS', s )
+         ALLOCATE( p%Ao%val( o * n ) )
+         p%Ao%m = o ; p%Ao%n = n
+         p%Ao%val( : o * n ) = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
                                  0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
                                  0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
        CASE ( 5 ) ! A dense by rows
-         CALL SMT_put( p%A%type, 'DENSE_BY_ROWS', s )
-         ALLOCATE( p%A%val( m * n ) )
-         p%A%m = m ; p%A%n = n
-         p%A%val( : m * n ) = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_,                    &
+         CALL SMT_put( p%Ao%type, 'DENSE_BY_ROWS', s )
+         ALLOCATE( p%Ao%val( o * n ) )
+         p%Ao%m = o ; p%Ao%n = n
+         p%Ao%val( : o * n ) = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_,                    &
                                  1.0_rp_, 1.0_rp_, 0.0_rp_,                    &
                                  0.0_rp_, 0.0_rp_, 1.0_rp_,                    &
                                  0.0_rp_, 0.0_rp_, 1.0_rp_ /)
@@ -303,19 +304,19 @@
          mode, exact_arc_search, inform%status, inform%obj
        SELECT CASE ( mode )
        CASE ( 1 ) ! A by columns
-         DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
+         DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%ptr, p%Ao%type )
        CASE ( 2 ) ! A by rows
-         DEALLOCATE( p%A%val, p%A%col, p%A%ptr, p%A%type )
+         DEALLOCATE( p%Ao%val, p%Ao%col, p%Ao%ptr, p%Ao%type )
        CASE ( 3 ) ! A coordinate
-         DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
+         DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%type )
        CASE ( 4, 5 ) ! A dense_by_rows or A dense_by_columns
-         DEALLOCATE( p%A%val, p%A%type )
+         DEALLOCATE( p%Ao%val, p%Ao%type )
        END SELECT
        CALL BLLS_terminate( data, control, inform )  !  delete workspace
      END DO
    END DO
    END DO ! end of weight loop
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%C, p%G, X_stat )
+   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%R, p%G, X_stat )
 
 !  ================
 !  error exit tests
@@ -323,17 +324,17 @@
 
    WRITE( 6, "( /, ' error exit tests ', / )" )
 
-   ALLOCATE( p%B( m ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
-   p%n = n ; p%m = m
+   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
+   p%n = n ; p%o = o
    p%B = (/ 0.0_rp_, 2.0_rp_, 1.0_rp_, 2.0_rp_ /)
    p%X_l = (/ - 1.0_rp_, - infinity, 0.0_rp_ /)
    p%X_u = (/ infinity, 1.0_rp_, 2.0_rp_ /)
-   CALL SMT_put( p%A%type, 'COORDINATE', s )
-   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   p%A%m = m ; p%A%n = n ; ; p%A%ne = a_ne
-   p%A%val( : a_ne ) = A_val( : a_ne )
-   p%A%row( : a_ne ) = A_row( : a_ne )
-   p%A%col( : a_ne ) = A_col( : a_ne )
+   CALL SMT_put( p%Ao%type, 'COORDINATE', s )
+   ALLOCATE( p%Ao%val( ao_ne ), p%Ao%row( ao_ne ), p%Ao%col( ao_ne ) )
+   p%Ao%m = o ; p%Ao%n = n ; ; p%Ao%ne = ao_ne
+   p%Ao%val( : ao_ne ) = Ao_val( : ao_ne )
+   p%Ao%row( : ao_ne ) = Ao_row( : ao_ne )
+   p%Ao%col( : ao_ne ) = Ao_col( : ao_ne )
 
 !  tests for status = - 1 ... - 24
 
@@ -363,7 +364,7 @@
             - GALAHAD_error_upper_entry )
        CYCLE
      CASE ( - GALAHAD_error_restrictions )
-       p%n = 0 ; p%m = - 1
+       p%n = 0 ; p%o = - 1
      CASE ( - GALAHAD_error_bad_bounds )
        p%X_u( 3 ) = - 2.0_rp_
      CASE ( - GALAHAD_error_max_iterations )
@@ -381,7 +382,7 @@
 
      SELECT CASE ( status )
      CASE ( - GALAHAD_error_restrictions )
-       p%n = n ; p%m = m
+       p%n = n ; p%o = o
      CASE ( - GALAHAD_error_bad_bounds )
        p%X_u( 3 ) = 2.0_rp_
      CASE ( - GALAHAD_error_max_iterations )
@@ -393,16 +394,16 @@
      END SELECT
      CALL BLLS_terminate( data, control, inform )  !  delete workspace
    END DO
-   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
+   DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%col, p%Ao%type )
 
    ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
-   userdata%integer( 1 ) = m   ! load Jacobian data into userdata
+   userdata%integer( 1 ) = o   ! load Jacobian data into userdata
    userdata%integer( 2 ) = n
-   userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = A_ptr( : n + 1 )
-   userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
-   userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
+   userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = Ao_ptr( : n + 1 )
+   userdata%integer( st_row + 1 : st_row + ao_ne ) = Ao_row( : ao_ne )
+   userdata%real( st_val + 1 : st_val + ao_ne ) = Ao_val( : ao_ne )
    userdata%integer( nflag ) = 0
-   userdata%integer( st_flag + 1 : st_flag + mn ) = 0
+   userdata%integer( st_flag + 1 : st_flag + on ) = 0
 
    p%X = 0.0_rp_
    inform%status = 1
@@ -426,8 +427,8 @@
    WRITE( 6, "( ' BLLS_solve exit status = ', I0 ) " ) inform%status
    DEALLOCATE( userdata%integer, userdata%real )
    CALL BLLS_terminate( data, control, inform )  !  delete workspace
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%C, p%G, X_stat )
-   DEALLOCATE( A_val, A_row, A_col, A_ptr, A_ptr_row, DIAG )
+   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%R, p%G, X_stat )
+   DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr, Ao_ptr_row, DIAG )
    WRITE( 6, "( /, ' tests completed' )" )
 
 !  end of test program
@@ -448,12 +449,12 @@
    INTEGER ( KIND = ip_ ) :: i, j, k
    REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER ( KIND = ip_ ) :: m, n, nflag, st_flag, st_ptr, st_row, st_val
-   m = userdata%integer( 1 )
+   INTEGER ( KIND = ip_ ) :: o, n, nflag, st_flag, st_ptr, st_row, st_val
+   o = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + MAX( m, n )
+   st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -492,17 +493,17 @@
    INTEGER ( KIND = ip_ ) :: i, j, k, l
    REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER ( KIND = ip_ ) :: m, n, nflag, st_flag, st_ptr, st_row, st_val
+   INTEGER ( KIND = ip_ ) :: o, n, nflag, st_flag, st_ptr, st_row, st_val
    IF ( PRESENT( NZ_in ) ) THEN
      IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
          status = - 1 ; RETURN
      END IF
    END IF
-   m = userdata%integer( 1 )
+   o = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + MAX( m, n )
+   st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( PRESENT( NZ_in ) ) THEN
@@ -530,7 +531,7 @@
          END DO
        END DO
      ELSE
-       P( : m ) = 0.0_rp_
+       P( : o ) = 0.0_rp_
        DO l = nz_in_start, nz_in_end
          j = NZ_in( l )
          val = V( j )
@@ -565,7 +566,7 @@
          END DO
        END DO
      ELSE
-       P( : m ) = 0.0_rp_
+       P( : o ) = 0.0_rp_
        DO j = 1, n
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
@@ -592,12 +593,12 @@
    INTEGER ( KIND = ip_ ) :: i, j, k, l
    REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER ( KIND = ip_ ) :: m, n, nflag, st_flag, st_ptr, st_row, st_val
-   m = userdata%integer( 1 )
+   INTEGER ( KIND = ip_ ) :: o, n, nflag, st_flag, st_ptr, st_row, st_val
+   o = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + MAX( m, n )
+   st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -612,7 +613,7 @@
        P( j ) = val
      END DO
    ELSE
-     P( : m ) = 0.0_rp_
+     P( : o ) = 0.0_rp_
      DO l = 1, n_free
        j = FREE( l )
        val = V( j )

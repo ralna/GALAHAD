@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-06 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2022-12-30 AT 16:20 GMT.
    PROGRAM GALAHAD_SLLS_THIRD_EXAMPLE ! subroutine evaluation interface
    USE GALAHAD_SLLS_double            ! double precision version
    IMPLICIT NONE
@@ -9,34 +9,34 @@
    TYPE ( SLLS_inform_type ) :: inform
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER, PARAMETER :: n = 3, m = 4, a_ne = 5
+   INTEGER, PARAMETER :: n = 3, o = 4, Ao_ne = 5
 ! partition userdata%integer so that it holds
-!   m n nflag  flag       a_ptr          a_row
+!   o n nflag  flag       Ao_ptr          Ao_row
 !  |1|2|  3  |4 to n+3 |n+4 to 2n+4|2n+5 to 2n+4+a_ne|
 ! partition userdata%real so that it holds
-!     a_val
-!  |1 to a_ne|
-   INTEGER, PARAMETER :: mn = MAX( m, n )
+!     Ao_val
+!  |1 to Ao_ne|
+   INTEGER, PARAMETER :: mn = MAX( o, n )
    INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + mn
    INTEGER, PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
-   INTEGER, PARAMETER :: len_integer = st_row + a_ne + 1, len_real = a_ne
+   INTEGER, PARAMETER :: len_integer = st_row + Ao_ne + 1, len_real = Ao_ne
    EXTERNAL :: APROD, ASPROD, AFPROD
 ! start problem data
-   ALLOCATE( p%B( m ), p%X( n ), X_stat( n ) )
-   p%n = n ; p%m = m                          ! dimensions
+   ALLOCATE( p%B( o ), p%X( n ), X_stat( n ) )
+   p%n = n ; p%o = o                          ! dimensions
    p%B = (/ 0.0_wp, 2.0_wp, 1.0_wp, 2.0_wp /) ! right-hand side
    p%X = 0.0_wp ! start from zero
 !  sparse co-ordinate storage format
    ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
-   userdata%integer( 1 ) = m                  ! load Jacobian data into userdata
+   userdata%integer( 1 ) = o                  ! load Jacobian data into userdata
    userdata%integer( 2 ) = n
    userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = (/ 1, 3, 4, 6 /)
-   userdata%integer( st_row + 1 : st_row + a_ne ) = (/ 1, 2, 2, 3, 4 /)
-   userdata%real( st_val + 1 : st_val + a_ne )                                 &
+   userdata%integer( st_row + 1 : st_row + Ao_ne ) = (/ 1, 2, 2, 3, 4 /)
+   userdata%real( st_val + 1 : st_val + Ao_ne )                                &
      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
 ! problem data complete
    CALL SLLS_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 1                       ! print one line/iteration
+!  control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
 !  load workspace into userdata
    userdata%integer( nflag ) = 0
@@ -69,12 +69,12 @@
    INTEGER :: i, j, k
    REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
-   m = userdata%integer( 1 )
+   INTEGER :: o, n, nflag, st_flag, st_ptr, st_row, st_val
+   o = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + MAX( m, n )
+   st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -114,17 +114,17 @@
    INTEGER :: i, j, k, l
    REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
+   INTEGER :: o, n, nflag, st_flag, st_ptr, st_row, st_val
    IF ( PRESENT( NZ_in ) ) THEN
      IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
          status = - 1 ; RETURN
      END IF
    END IF
-   m = userdata%integer( 1 )
+   o = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + MAX( m, n )
+   st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( PRESENT( NZ_in ) ) THEN
@@ -152,7 +152,7 @@
          END DO
        END DO
      ELSE
-       P( : m ) = 0.0_wp
+       P( : o ) = 0.0_wp
        DO l = nz_in_start, nz_in_end
          j = NZ_in( l )
          val = V( j )
@@ -187,7 +187,7 @@
          END DO
        END DO
      ELSE
-       P( : m ) = 0.0_wp
+       P( : o ) = 0.0_wp
        DO j = 1, n
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
@@ -215,12 +215,12 @@
    INTEGER :: i, j, k, l
    REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
-   m = userdata%integer( 1 )
+   INTEGER :: o, n, nflag, st_flag, st_ptr, st_row, st_val
+   o = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + MAX( m, n )
+   st_ptr = st_flag + MAX( o, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -235,7 +235,7 @@
        P( j ) = val
      END DO
    ELSE
-     P( : m ) = 0.0_wp
+     P( : o ) = 0.0_wp
      DO l = 1, n_free
        j = FREE( l )
        val = V( j )

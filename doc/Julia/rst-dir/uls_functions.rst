@@ -185,17 +185,17 @@ sparsity patern, and subsequently factorize the matrix
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type Int32 that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be C_NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; uls_reset_control
 .. _doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881:

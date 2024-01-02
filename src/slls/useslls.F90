@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -45,7 +45,7 @@
 !
 !  Solve the simplex-constrained linear-least squares problem
 !
-!      minimize     1/2 || A x - b ||_2^2
+!      minimize     1/2 || A_o x - b ||_2^2
 !
 !     subject to      e^T x = 1, x >= 0
 !
@@ -66,8 +66,8 @@
 
 !  Scalars
 
-      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, iores, smt_stat, cutest_status
-      INTEGER ( KIND = ip_ ) :: i, j, k, l, nfixed, ndegen, alloc_stat, nnzj
+      INTEGER ( KIND = ip_ ) :: n, o, ir, ic, iores, smt_stat, cutest_status
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, nfixed, alloc_stat, nnzj
       INTEGER ( KIND = ip_ ) :: n_s, slls_status
       INTEGER ( KIND = ip_ ) :: e_order = 0
       INTEGER ( KIND = ip_ ) :: l_order = 0
@@ -154,13 +154,13 @@
 
 !  Determine the number of variables and constraints
 
-      CALL CUTEST_cdimen_r( cutest_status, input, n, m )
+      CALL CUTEST_cdimen_r( cutest_status, input, n, o )
       IF ( cutest_status /= 0 ) GO TO 910
 
 !  allocate temporary arrays
 
-      ALLOCATE( X( n ), X_l( m ), X_u( m ), Y( m ), C_l( m ), C_u( m ),        &
-                EQUATN( m ), LINEAR( m ), STAT = alloc_stat )
+      ALLOCATE( X( n ), X_l( o ), X_u( o ), Y( o ), C_l( o ), C_u( o ),        &
+                EQUATN( o ), LINEAR( o ), STAT = alloc_stat )
 
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'X etc', alloc_stat ; STOP
@@ -170,29 +170,29 @@
 !  separable function.
 
       CALL CUTEST_csetup_r( cutest_status, input, out,                         &
-                            io_buffer, n, m, X, X_l, X_u, Y, C_l, C_u,         &
+                            io_buffer, n, o, X, X_l, X_u, Y, C_l, C_u,         &
                             EQUATN, LINEAR, e_order, l_order, v_order )
       DEALLOCATE( X_l, X_u, C_l, C_u, Y, LINEAR, STAT = alloc_stat )
 
 !  count the number of slack variables, and set problem dimensions
 
-      n_s = m - COUNT( EQUATN )
-      prob%m = m ; prob%n = n + n_s
+      n_s = o - COUNT( EQUATN )
+      prob%o = o ; prob%n = n + n_s
 
 !  Determine the names of the problem, variables and constraints.
 
-      ALLOCATE( VNAME( prob%n ), CNAME( m ), STAT = alloc_stat )
+      ALLOCATE( VNAME( prob%n ), CNAME( o ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'VNAME etc', alloc_stat ; STOP
       END IF
 
-      CALL CUTEST_cnames_r( cutest_status, n, m, pname, VNAME, CNAME )
+      CALL CUTEST_cnames_r( cutest_status, n, o, pname, VNAME, CNAME )
       IF ( cutest_status /= 0 ) GO TO 910
       WRITE( out, "( /, ' Problem: ', A )" ) pname
 
 !  allocate problem arrays
 
-      ALLOCATE( prob%X( prob%n ), prob%B( prob%n ), prob%C( prob%m ),          &
+      ALLOCATE( prob%X( prob%n ), prob%B( prob%o ), prob%C( prob%o ),          &
                 prob%Z( prob%n ), X_stat( prob%n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'prob%X etc', alloc_stat ; STOP
@@ -206,41 +206,41 @@
 
       CALL CUTEST_cdimsj_r( cutest_status, nnzj )
       IF ( cutest_status /= 0 ) GO TO 910
-      prob%A%m = prob%m ; prob%A%n = prob%n ; prob%A%ne = nnzj + n_s
-      CALL SMT_put( prob%A%type, 'COORDINATE', smt_stat )
+      prob%Ao%m = prob%o ; prob%Ao%n = prob%n ; prob%Ao%ne = nnzj + n_s
+      CALL SMT_put( prob%Ao%type, 'COORDINATE', smt_stat )
 
 !  allocate problem arrays
 
-      ALLOCATE( prob%A%val( prob%A%ne ), prob%A%row( prob%A%ne ),              &
-                prob%A%col( prob%A%ne ), STAT = alloc_stat )
-     IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, 2150 ) 'prob%A%val etc', alloc_stat ; STOP
-     END IF
+      ALLOCATE( prob%Ao%val( prob%Ao%ne ), prob%Ao%row( prob%Ao%ne ),          &
+                prob%Ao%col( prob%Ao%ne ), STAT = alloc_stat )
+      IF ( alloc_stat /= 0 ) THEN
+        WRITE( out, 2150 ) 'prob%Ao%val etc', alloc_stat ; STOP
+      END IF
 
 !  compute the values of the constraints and Jacobian
 
-      CALL CUTEST_ccfsg_r( cutest_status, n, m, X, prob%C, nnzj, prob%A%ne,    &
-                           prob%A%val, prob%A%col, prob%A%row, .TRUE. )
+      CALL CUTEST_ccfsg_r( cutest_status, n, o, X, prob%C, nnzj, prob%Ao%ne,   &
+                           prob%Ao%val, prob%Ao%col, prob%Ao%row, .TRUE. )
       prob%B = - prob%C
 
 !  deal with slack variables
 
-      prob%A%ne = nnzj
+      prob%Ao%ne = nnzj
       IF ( n_s > 0 ) THEN
         l = n
-        DO i = 1, m
+        DO i = 1, o
           IF ( .NOT. EQUATN( i ) ) THEN
             l = l + 1
             prob%X( l ) = zero
             VNAME( l ) = CNAME( i )
-            prob%A%ne = prob%A%ne + 1
-            prob%A%row( prob%A%ne ) = i
-            prob%A%col( prob%A%ne ) = l
-            prob%A%val( prob%A%ne ) = - one
+            prob%Ao%ne = prob%Ao%ne + 1
+            prob%Ao%row( prob%Ao%ne ) = i
+            prob%Ao%col( prob%Ao%ne ) = l
+            prob%Ao%val( prob%Ao%ne ) = - one
           END IF
         END DO
       END IF
-      DEALLOCATE( X, CNAME, EQUATN, STAT = alloc_stat )
+      DEALLOCATE( X, CNAME, EQUATN, prob%C, STAT = alloc_stat )
 
 !  ------------------- problem set-up complete ----------------------
 
@@ -310,12 +310,12 @@
           STOP
         END IF
 
-        n = prob%n ; k = prob%A%ne
-        WRITE( dfiledevice, "( 'm, n = ', I0, 1X, I0 )" ) m, n
-        WRITE( dfiledevice, "( ' b ', /, ( 5ES12.4 ) )" ) prob%B( : m )
-        WRITE( dfiledevice, "( ' A_row ', /, ( 10I6 ) )" ) prob%A%row( : k )
-        WRITE( dfiledevice, "( ' A_col ', /, ( 10I6 ) )" ) prob%A%col( : k )
-        WRITE( dfiledevice, "( ' A_val ', /, ( 5ES12.4 ) )" ) prob%A%val( : k )
+        n = prob%n ; k = prob%Ao%ne
+        WRITE( dfiledevice, "( 'o, n = ', I0, 1X, I0 )" ) o, n
+        WRITE( dfiledevice, "( ' b ', /, ( 5ES12.4 ) )" ) prob%B( : o )
+        WRITE( dfiledevice, "( ' Ao_row ', /, ( 10I6 ) )" ) prob%Ao%row( : k )
+        WRITE( dfiledevice, "( ' Ao_col ', /, ( 10I6 ) )" ) prob%Ao%col( : k )
+        WRITE( dfiledevice, "( ' Ao_val ', /, ( 5ES12.4 ) )" ) prob%Ao%val( : k)
 
         CLOSE( dfiledevice )
       END IF
@@ -345,8 +345,8 @@
 
       printo = out > 0 .AND. SLLS_control%print_level > 0
       printe = out > 0 .AND. SLLS_control%print_level >= 0
-      WRITE( out, "( /, ' problem dimensions:  m = ', I0, ', n = ', I0,        &
-     &  ', a_ne = ', I0 )" ) prob%m, prob%n, prob%A%ne
+      WRITE( out, "( /, ' problem dimensions:  o = ', I0, ', n = ', I0,        &
+     &  ', Ao_ne = ', I0 )" ) prob%o, prob%n, prob%Ao%ne
 
       IF ( printo ) CALL COPYRIGHT( out, '2020' )
       X_stat = 0
@@ -447,11 +447,12 @@
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
         WRITE( rfiledevice, "( A10, 2I7, I6, ES13.4, I6, 0P, F8.2 )" ) pname,  &
-           m, n, SLLS_inform%iter, SLLS_inform%obj, slls_status, timet
+           o, n, SLLS_inform%iter, SLLS_inform%obj, slls_status, timet
       END IF
 
-      DEALLOCATE( prob%X, prob%B, prob%C, X_stat,                              &
-                prob%A%val, prob%A%row, prob%A%col, VNAME, STAT = alloc_stat )
+      DEALLOCATE( prob%X, prob%B, prob%R, prob%G, X_stat,                      &
+                  prob%Ao%val, prob%Ao%row, prob%Ao%col, prob%Ao%type,         &
+                  VNAME, STAT = alloc_stat )
       IF ( is_specfile ) CLOSE( input_specfile )
 
       CALL CUTEST_cterminate_r( cutest_status )

@@ -480,7 +480,7 @@
 <li><p>0 selected automatically</p></li>
 <li><p>1 Schur-complement if <span class="math notranslate nohighlight">\(G\)</span> is diagonal and successful otherwise augmented system</p></li>
 <li><p>2 augmented system</p></li>
-<li><p>3 null-space</p></li>
+<li><p>3 C_NULL-space</p></li>
 <li><p>4 Schur-complement if <span class="math notranslate nohighlight">\(G\)</span> is diagonal and successful otherwise failure</p></li>
 <li><p>5 Schur-complement with pivoting if <span class="math notranslate nohighlight">\(G\)</span> is diagonal and successful otherwise failure</p></li>
 </ul>
@@ -519,7 +519,7 @@
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1acdcd8a05219b5c554c279137cb409a03"><span id="index-32"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">get_norm_residual</span></pre>
 <p>compute the residual when applying the preconditioner?</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1afc637bcbceea5647ce8f349e109cb979"><span id="index-33"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">check_basis</span></pre>
-<p>if an implicit or null-space preconditioner is used, assess and correct for ill conditioned basis matrices</p>
+<p>if an implicit or C_NULL-space preconditioner is used, assess and correct for ill conditioned basis matrices</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a957fc1f4f26eeef3b0951791ff972e8d"><span id="index-34"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">space_critical</span></pre>
 <p>if space is critical, ensure allocated arrays are no bigger than needed</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a58a2c67fad6e808e8365eff67700cba5"><span id="index-35"></span><span></span><span class="kt">Bool</span><span class="w"> </span><span class="n">deallocate_error_fatal</span></pre>
@@ -532,7 +532,7 @@
 <p>unsymmetric linear equation solver</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a1dc05936393ba705f516a0c275df4ffc"><span id="index-39"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">31</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">prefix</span></pre>
 <p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-40"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-40"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for SLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structsbls-control-type-1ac6782df4602dd9c04417e2554d72bb00"><span id="index-41"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="uls.html#doxid-structuls-control-type"><span class="std std-ref">uls_control_type</span></a><span></span><span class="w"> </span><span class="n">uls_control</span></pre>
 <p>control parameters for ULS</p>

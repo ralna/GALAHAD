@@ -1,17 +1,17 @@
 % GALAHAD_SLLS -
 %
-%  Given an m by n matrix A, an m-vector b, and a constant sigma >= 0, find
+%  Given an o by n matrix Ao, an o-vector b, and a constant sigma >= 0, find
 %  a local mimimizer of the SIMPLEX_CONSTRAINED LINER LEAST-SQUARES problem
-%    minimize 0.5 || A x - b ||^2 + 0.5 sigma ||x||^2
+%    minimize 0.5 || Ao x - b ||^2 + 0.5 sigma ||x||^2
 %    subject to sum x_i = 1, x_i >= 0
 %  using a projection method.
-%  Advantage is taken of sparse A.
+%  Advantage is taken of sparse Ao.
 %
 %  Simple usage -
 %
 %  to solve the simplex_constrained liner least-squares problem
 %   [ x, inform, aux ]
-%     = galahad_slls( A, b, control )
+%     = galahad_slls( Ao, b, control )
 %
 %  Sophisticated usage -
 %
@@ -21,14 +21,14 @@
 %
 %  to solve the problem using existing data structures
 %   [ x, inform, aux ]
-%     = galahad_slls( 'existing', A, b, control )
+%     = galahad_slls( 'existing', Ao, b, control )
 %
 %  to remove data structures after solution
 %   galahad_slls( 'final' )
 %
 %  Usual Input -
-%    A: the m by n matrix A
-%    b: the m-vector b
+%    A: the o by n matrix A
+%    b: the o-vector b
 %
 %  Optional Input -
 %    control, a structure containing control parameters.
@@ -59,4 +59,4 @@
 %            x_stat(i) = 0 if (x)_i > 0
 %
 % This version copyright Nick Gould for GALAHAD productions
-% 13/July/2022
+% 30/December/2023

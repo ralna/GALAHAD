@@ -406,7 +406,7 @@
 <section id="purpose">
 <h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">bllsb</span></code> package uses a <strong>primal-dual interior-point crossover method</strong>
-to solve a <strong>constrained linear least-squares</strong> problem
+to solve a <strong>bound-constrained linear least-squares problem</strong>,
 The aim is to minimize the (regularized) least-squares objective function
 <div class="math notranslate nohighlight">
 \[q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2\]</div>
@@ -421,8 +421,7 @@ and <span class="math notranslate nohighlight">\(\|x\| = \sqrt{\sum_{i=1}^n x_i^
 <span class="math notranslate nohighlight">\(b\)</span>, and <span class="math notranslate nohighlight">\(w\)</span> are vectors, <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span> is a scalar,
 and any of the components
 of the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
-The method offers the choice of direct and iterative solution of the key
-regularization subproblems, and is most suitable for problems
+The method is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
 <p>See Section 4 of $GALAHAD/doc/bllsb.pdf for additional details.</p>
 </section>
@@ -879,7 +878,7 @@ least-squares problem.</p>
 <dt>Ao_val<span class="classifier">ndarray(ao_ne)</span></dt><dd><p>holds the values of the nonzeros in <span class="math notranslate nohighlight">\(A_o\)</span> in the same order as
 specified in the sparsity pattern in <code class="docutils literal notranslate"><span class="pre">bllsb.load</span></code>.</p>
 </dd>
-<dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the linear term <span class="math notranslate nohighlight">\(g\)</span> in the objective function.</p>
+<dt>b<span class="classifier">ndarray(m)</span></dt><dd><p>holds the values of the linear term <span class="math notranslate nohighlight">\(b\)</span> in the objective function.</p>
 </dd>
 <dt>sigma<span class="classifier">float</span></dt><dd><p>holds the regularization weight <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span>.</p>
 </dd>

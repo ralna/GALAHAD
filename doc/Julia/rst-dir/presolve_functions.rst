@@ -159,17 +159,17 @@ crucial characteristics of the transformed variant
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_val
@@ -199,17 +199,17 @@ crucial characteristics of the transformed variant
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_val

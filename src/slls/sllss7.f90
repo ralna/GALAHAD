@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-28 AT 09:45 GMT
+! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 10:45 GMT
    PROGRAM GALAHAD_SLLS_EXAMPLE7
 
 ! use slls to solve a multilinear fitting problem
 !  min 1/2 sum_i ( xi sum_il sum_ir sum_it sum_ip a(il,ir,it,ip,i)
 !                  l_il r_ir theta_it y_phi + b - mu_i)^2,
-! where u, v, w and x lie in n and m regular simplexes {z : e^T z = 1, z >= 0},
+! where u, v, w and x lie in n and o regular simplexes {z : e^T z = 1, z >= 0},
 ! using alternating solves with u free and v,x,y fixed, and vice versa
 
    USE GALAHAD_SLLS_double         ! double precision version
@@ -279,27 +279,27 @@
 
 !  set up storage for the l problem
 
-   CALL SMT_put( p_l%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_l%A%val( obs * nl ), p_l%B( obs ), p_l%X( nl ) )
-   p_l%m = obs ; p_l%n = nl ; p_l%A%m = p_l%m ; p_l%A%n = p_l%n
+   CALL SMT_put( p_l%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_l%Ao%val( obs * nl ), p_l%B( obs ), p_l%X( nl ) )
+   p_l%o = obs ; p_l%n = nl ; p_l%Ao%m = p_l%o ; p_l%Ao%n = p_l%n
 
 !  set up storage for the r problem
 
-   CALL SMT_put( p_r%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_r%A%val( obs * nr ), p_r%B( obs ), p_r%X( nr ) )
-   p_r%m = obs ; p_r%n = nr ; p_r%A%m = p_r%m ; p_r%A%n = p_r%n
+   CALL SMT_put( p_r%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_r%Ao%val( obs * nr ), p_r%B( obs ), p_r%X( nr ) )
+   p_r%o = obs ; p_r%n = nr ; p_r%Ao%m = p_r%o ; p_r%Ao%n = p_r%n
 
 !  set up storage for the theta problem
 
-   CALL SMT_put( p_t%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_t%A%val( obs * nt ), p_t%B( obs ), p_t%X( nt ) )
-   p_t%m = obs ; p_t%n = nt ; p_t%A%m = p_t%m ; p_t%A%n = p_t%n
+   CALL SMT_put( p_t%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_t%Ao%val( obs * nt ), p_t%B( obs ), p_t%X( nt ) )
+   p_t%o = obs ; p_t%n = nt ; p_t%Ao%m = p_t%o ; p_t%Ao%n = p_t%n
 
 !  set up storage for the phi problem
 
-   CALL SMT_put( p_p%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_p%A%val( obs * np ), p_p%B( obs ), p_p%X( np ) )
-   p_p%m = obs ; p_p%n = np ; p_p%A%m = p_p%m ; p_p%A%n = p_p%n
+   CALL SMT_put( p_p%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_p%Ao%val( obs * np ), p_p%B( obs ), p_p%X( np ) )
+   p_p%o = obs ; p_p%n = np ; p_p%Ao%m = p_p%o ; p_p%Ao%n = p_p%n
 
 !  set up storage type for B
 
@@ -435,7 +435,7 @@
            END DO
          END DO
        END DO
-       p_l%A%val( ne + il ) = val
+       p_l%Ao%val( ne + il ) = val
      END DO
      ne = ne + nl
    END DO
@@ -446,7 +446,7 @@
    a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
    ne = 0
    DO i = 1, obs
-     alpha = DOT_PRODUCT( L, p_l%A%val( ne + 1 : ne + nl ) )
+     alpha = DOT_PRODUCT( L, p_l%Ao%val( ne + 1 : ne + nl ) )
      ne = ne + nl
      A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
@@ -473,7 +473,7 @@
      p_l%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
    f = 0.5_wp * f
-   p_l%A%val = xi * p_l%A%val
+   p_l%Ao%val = xi * p_l%Ao%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
@@ -514,7 +514,7 @@
            END DO
          END DO
        END DO
-       p_r%A%val( ne + ir ) = val
+       p_r%Ao%val( ne + ir ) = val
      END DO
      ne = ne + nr
    END DO
@@ -525,7 +525,7 @@
    a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
    ne = 0
    DO i = 1, obs
-     alpha = DOT_PRODUCT( R, p_r%A%val( ne + 1 : ne + nr ) )
+     alpha = DOT_PRODUCT( R, p_r%Ao%val( ne + 1 : ne + nr ) )
      ne = ne + nr
      A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
@@ -552,7 +552,7 @@
      p_r%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
    f = 0.5_wp * f
-   p_r%A%val = xi * p_r%A%val
+   p_r%Ao%val = xi * p_r%Ao%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
@@ -594,7 +594,7 @@
            END DO
          END DO
        END DO
-       p_t%A%val( ne + it ) = val
+       p_t%Ao%val( ne + it ) = val
      END DO
      ne = ne + nt
    END DO
@@ -605,7 +605,7 @@
    a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
    ne = 0
    DO i = 1, obs
-     alpha = DOT_PRODUCT( THETA, p_t%A%val( ne + 1 : ne + nt ) )
+     alpha = DOT_PRODUCT( THETA, p_t%Ao%val( ne + 1 : ne + nt ) )
      ne = ne + nt
      A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
@@ -632,7 +632,7 @@
      p_t%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
    f = 0.5_wp * f
-   p_t%A%val = xi * p_t%A%val
+   p_t%Ao%val = xi * p_t%Ao%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
@@ -674,7 +674,7 @@
            END DO
          END DO
        END DO
-       p_p%A%val( ne + ip ) = val
+       p_p%Ao%val( ne + ip ) = val
      END DO
      ne = ne + np
    END DO
@@ -685,7 +685,7 @@
    a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
    ne = 0
    DO i = 1, obs
-     alpha = DOT_PRODUCT( PHI, p_p%A%val( ne + 1 : ne + np ) )
+     alpha = DOT_PRODUCT( PHI, p_p%Ao%val( ne + 1 : ne + np ) )
      ne = ne + np
      A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
@@ -712,7 +712,7 @@
      p_p%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
    f = 0.5_wp * f
-   p_p%A%val = xi * p_p%A%val
+   p_p%Ao%val = xi * p_p%Ao%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
@@ -883,7 +883,7 @@
                END DO
              END DO
            END DO
-           p_l%A%val( ne + il ) = val
+           p_l%Ao%val( ne + il ) = val
          END DO
          ne = ne + nl
        END DO
@@ -910,7 +910,7 @@
                END DO
              END DO
            END DO
-           p_r%A%val( ne + ir ) = val
+           p_r%Ao%val( ne + ir ) = val
          END DO
          ne = ne + nr
        END DO
@@ -937,7 +937,7 @@
                END DO
              END DO
            END DO
-           p_t%A%val( ne + it ) = val
+           p_t%Ao%val( ne + it ) = val
          END DO
          ne = ne + nt
        END DO
@@ -964,7 +964,7 @@
                END DO
              END DO
            END DO
-           p_p%A%val( ne + ip ) = val
+           p_p%Ao%val( ne + ip ) = val
          END DO
          ne = ne + np
        END DO
@@ -1010,7 +1010,7 @@ IF ( .FALSE. ) THEN
      ne = 0 ; k = 0
      DO i = 1, obs
        G( k + 1 : k + nl ) =                                                   &
-         G( k + 1 : k + nl ) + p_l%A%val( ne + 1 : ne + nl ) * RES( i )
+         G( k + 1 : k + nl ) + p_l%Ao%val( ne + 1 : ne + nl ) * RES( i )
        ne = ne + nl
      END DO
      k = k + nl
@@ -1018,7 +1018,7 @@ IF ( .FALSE. ) THEN
      ne = 0
      DO i = 1, obs
        G( k + 1 : k + nr ) =                                                   &
-         G( k + 1 : k + nr ) + p_r%A%val( ne + 1 : ne + nr ) * RES( i )
+         G( k + 1 : k + nr ) + p_r%Ao%val( ne + 1 : ne + nr ) * RES( i )
        ne = ne + nr
      END DO
      k = k + nr
@@ -1026,7 +1026,7 @@ IF ( .FALSE. ) THEN
      ne = 0
      DO i = 1, obs
        G( k + 1 : k + nt ) =                                                   &
-         G( k + 1 : k + nt ) + p_t%A%val( ne + 1 : ne + nt ) * RES( i )
+         G( k + 1 : k + nt ) + p_t%Ao%val( ne + 1 : ne + nt ) * RES( i )
        ne = ne + nt
      END DO
      k = k + nt
@@ -1034,7 +1034,7 @@ IF ( .FALSE. ) THEN
      ne = 0
      DO i = 1, obs
        G( k + 1 : k + np ) =                                                   &
-         G( k + 1 : k + np ) + p_p%A%val( ne + 1 : ne + np ) * RES( i )
+         G( k + 1 : k + np ) + p_p%Ao%val( ne + 1 : ne + np ) * RES( i )
        ne = ne + np
      END DO
      k = k + np + 1
@@ -1067,7 +1067,7 @@ END IF
          IF ( L_stat( j ) == 0 ) THEN
            ll = ll + 1 ; MAT%ptr( ll ) = ne ; k = j
            DO i = 1, obs
-             MAT%col( ne ) = i ; MAT%val( ne ) =  p_l%A%val( k )
+             MAT%col( ne ) = i ; MAT%val( ne ) =  p_l%Ao%val( k )
              k = k + nl
              ne = ne + 1
            END DO
@@ -1080,7 +1080,7 @@ END IF
          IF ( R_stat( j ) == 0 ) THEN
            ll = ll + 1 ; MAT%ptr( ll ) = ne ; k = j
            DO i = 1, obs
-             MAT%col( ne ) = i ; MAT%val( ne ) =  p_r%A%val( k )
+             MAT%col( ne ) = i ; MAT%val( ne ) =  p_r%Ao%val( k )
              k = k + nr
              ne = ne + 1
            END DO
@@ -1093,7 +1093,7 @@ END IF
          IF ( T_stat( j ) == 0 ) THEN
            ll = ll + 1 ; MAT%ptr( ll ) = ne ; k = j
            DO i = 1, obs
-             MAT%col( ne ) = i ; MAT%val( ne ) =  p_t%A%val( k )
+             MAT%col( ne ) = i ; MAT%val( ne ) =  p_t%Ao%val( k )
              k = k + nt
              ne = ne + 1
            END DO
@@ -1106,7 +1106,7 @@ END IF
          IF ( P_stat( j ) == 0 ) THEN
            ll = ll + 1 ; MAT%ptr( ll ) = ne ; k = j
            DO i = 1, obs
-             MAT%col( ne ) = i ; MAT%val( ne ) =  p_p%A%val( k )
+             MAT%col( ne ) = i ; MAT%val( ne ) =  p_p%Ao%val( k )
              k = k + np
              ne = ne + 1
            END DO
@@ -1412,19 +1412,19 @@ END IF
 
    CALL SLLS_terminate( data_l, control_l, inform_l )  !  delete workspace
    DEALLOCATE( p_l%B, p_l%X, p_l%Z )
-   DEALLOCATE( p_l%A%val, p_l%A%type )
+   DEALLOCATE( p_l%Ao%val, p_l%Ao%type )
 
    CALL SLLS_terminate( data_r, control_r, inform_r )  !  delete workspace
    DEALLOCATE( p_r%B, p_r%X, p_r%Z )
-   DEALLOCATE( p_r%A%val, p_r%A%type )
+   DEALLOCATE( p_r%Ao%val, p_r%Ao%type )
 
    CALL SLLS_terminate( data_t, control_t, inform_t )  !  delete workspace
    DEALLOCATE( p_t%B, p_t%X, p_t%Z )
-   DEALLOCATE( p_t%A%val, p_t%A%type )
+   DEALLOCATE( p_t%Ao%val, p_t%Ao%type )
 
    CALL SLLS_terminate( data_p, control_p, inform_p )  !  delete workspace
    DEALLOCATE( p_p%B, p_p%X, p_p%Z )
-   DEALLOCATE( p_p%A%val, p_p%A%type )
+   DEALLOCATE( p_p%Ao%val, p_p%Ao%type )
 
    DEALLOCATE( MAT%val, MAT%col, MAT%ptr, MAT%type )
 

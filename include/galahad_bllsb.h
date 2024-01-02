@@ -826,7 +826,7 @@ void bllsb_import( struct bllsb_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 or o > 0r requirement that a type
+  \li -3. The restrictions n > 0 or o > 0 or the requirement that a type
        contains its relevant string 'dense', 'dense_by_column', 'coordinate',
        'sparse_by_rows' or 'sparse_by_columns' has been violated.
 

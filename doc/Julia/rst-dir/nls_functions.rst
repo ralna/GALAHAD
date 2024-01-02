@@ -149,17 +149,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- J_row
 
-		- is a one-dimensional array of size J_ne and type Int32 that holds the row indices of $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size J_ne and type Int32 that holds the row indices of $J$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- J_col
 
-		- is a one-dimensional array of size J_ne and type Int32 that holds the column indices of $J$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size J_ne and type Int32 that holds the column indices of $J$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- J_ptr
 
-		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of $J$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type Int32 that holds the starting position of each row of $J$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_type
@@ -174,17 +174,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- P_type
@@ -199,22 +199,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- P_row
 
-		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in either the sparse co-ordinate, or the sparse column-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.
+		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in either the sparse co-ordinate, or the sparse column-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be C_NULL.
 
 	*
 		- P_col
 
-		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size P_ne and type Int32 that holds the row indices of $P$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- P_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $P$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $P$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 	*
 		- w
 
-		- is a one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be NULL.
+		- is a one-dimensional array of size m and type T that holds the values $w$ of the weights on the residuals in the least-squares objective function. It need not be set if the weights are all ones, and in this case can be C_NULL.
 
 .. index:: pair: function; nls_reset_control
 .. _doxid-galahad__nls_8h_1a07f0857c9923ad0f92d51ed00833afda:
@@ -452,7 +452,7 @@ function calls.
 		- eval_hprods
 
 		- is an optional user-supplied function that may be
-		  NULL. If non-NULL, it must have the following
+		  C_NULL. If non-NULL, it must have the following
 		  signature:
 
 		  .. ref-code-block:: julia
@@ -666,7 +666,7 @@ information is available by function calls.
 		- eval_hprods
 
 		- is an optional user-supplied function that may be
-		  NULL. If non-NULL, it must have the following
+		  C_NULL. If non-NULL, it must have the following
 		  signature:
 
 		  .. ref-code-block:: julia

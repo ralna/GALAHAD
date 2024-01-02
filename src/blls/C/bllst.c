@@ -38,28 +38,30 @@ int main(void) {
 
     // Set problem data
     int n = 10; // dimension
-    int m = n + 1; // number of residuals
-    int A_ne = 2 * n; // sparse Jacobian elements
-    int A_dense_ne = m * n; // dense Jacobian elements
+    int o = n + 1; // number of residuals
+    int Ao_ne = 2 * n; // sparse Jacobian elements
+    int Ao_dense_ne = o * n; // dense Jacobian elements
     // row-wise storage
-    int A_row[A_ne]; // row indices, 
-    int A_col[A_ne]; // column indices
-    int A_ptr[m+1];  // row pointers
-    real_wp_ A_val[A_ne]; // values
-    real_wp_ A_dense[A_dense_ne]; // dense values
+    int Ao_row[Ao_ne]; // row indices, 
+    int Ao_col[Ao_ne]; // column indices
+    int Ao_ptr_ne = o+1; // number of row pointers
+    int Ao_ptr[ Ao_ptr_ne];  // row pointers
+    real_wp_ Ao_val[Ao_ne]; // values
+    real_wp_ Ao_dense[Ao_dense_ne]; // dense values
     // column-wise storage
-    int A_by_col_row[A_ne]; // row indices, 
-    int A_by_col_ptr[n+1];  // column pointers
-    real_wp_ A_by_col_val[A_ne]; // values
-    real_wp_ A_by_col_dense[A_dense_ne]; // dense values
-    real_wp_ b[m];  // linear term in the objective
+    int Ao_by_col_row[Ao_ne]; // row indices, 
+    int Ao_by_col_ptr_ne = n+1; // number of column pointers
+    int Ao_by_col_ptr[Ao_by_col_ptr_ne];  // column pointers
+    real_wp_ Ao_by_col_val[Ao_ne]; // values
+    real_wp_ Ao_by_col_dense[Ao_dense_ne]; // dense values
+    real_wp_ b[o];  // linear term in the objective
     real_wp_ x_l[n]; // variable lower bound
     real_wp_ x_u[n]; // variable upper bound
     real_wp_ x[n]; // variables
     real_wp_ z[n]; // dual variables
-    real_wp_ c[m]; // residual
+    real_wp_ r[o]; // residual
     real_wp_ g[n]; // gradient
-    real_wp_ w[m]; // weights
+    real_wp_ w[o]; // weights
 
     // Set output storage
     int x_stat[n]; // variable status
@@ -78,22 +80,23 @@ int main(void) {
     for( int i = 0; i < n; i++) b[i] = i + 1;
     b[n] = n+1;
 
-    w[0] = 2.0;
-    for( int i = 1; i < m; i++) w[i] = 1.0;
+    //w[0] = 2.0;
+    w[0] = 1.0;
+    for( int i = 1; i < o; i++) w[i] = 1.0;
 
     // A by rows
 
     for( int i = 0; i < n; i++)
     {
-      A_ptr[i] = i;
-      A_row[i] = i; A_col[i] = i; A_val[i] = 1.0;
+      Ao_ptr[i] = i;
+      Ao_row[i] = i; Ao_col[i] = i; Ao_val[i] = 1.0;
     }
-    A_ptr[n] = n;
+    Ao_ptr[n] = n;
     for( int i = 0; i < n; i++)
     {
-      A_row[n+i] = n; A_col[n+i] = i; A_val[n+i] = 1.0;
+      Ao_row[n+i] = n; Ao_col[n+i] = i; Ao_val[n+i] = 1.0;
     }
-    A_ptr[m] = A_ne;
+    Ao_ptr[o] = Ao_ne;
     l = - 1;
     for( int i = 0; i < n; i++)
     {
@@ -101,17 +104,17 @@ int main(void) {
       {
         l = l + 1;
         if ( i == j ) {
-          A_dense[l] = 1.0;
+          Ao_dense[l] = 1.0;
         }
         else {
-          A_dense[l] = 0.0;
+          Ao_dense[l] = 0.0;
         }
       }
     }
     for( int j = 0; j < n; j++)
     {
       l = l + 1;
-      A_dense[l] = 1.0;
+      Ao_dense[l] = 1.0;
     }
 
     // A by columns
@@ -119,12 +122,12 @@ int main(void) {
     l = - 1;
     for( int j = 0; j < n; j++)
     {
-      l = l + 1;  A_by_col_ptr[j] = l ;
-      A_by_col_row[l] = j ; A_by_col_val[l] = 1.0;
+      l = l + 1;  Ao_by_col_ptr[j] = l ;
+      Ao_by_col_row[l] = j ; Ao_by_col_val[l] = 1.0;
       l = l + 1;
-      A_by_col_row[l] = n ; A_by_col_val[l] = 1.0;
+      Ao_by_col_row[l] = n ; Ao_by_col_val[l] = 1.0;
     }
-    A_by_col_ptr[n] = A_ne;
+    Ao_by_col_ptr[n] = Ao_ne;
     l = - 1;
     for( int j = 0; j < n; j++)
     {
@@ -132,14 +135,14 @@ int main(void) {
       {
         l = l + 1;
         if ( i == j ) {
-          A_by_col_dense[l] = 1.0;
+          Ao_by_col_dense[l] = 1.0;
         }
         else {
-          A_by_col_dense[l] = 0.0;
+          Ao_by_col_dense[l] = 0.0;
         }
       }
       l = l + 1;
-      A_by_col_dense[l] = 1.0;
+      Ao_by_col_dense[l] = 1.0;
     }
 
     printf(" C sparse matrix indexing\n\n");
@@ -162,44 +165,47 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 strcpy( st, "CO" );
-                blls_import( &control, &data, &status, n, m,
-                            "coordinate", A_ne, A_row, A_col, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_ne, A_val, b, x_l, x_u,
-                                    x, z, c, g, x_stat, w, prec );
+                blls_import( &control, &data, &status, n, o,
+                            "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
+                blls_solve_given_a( &data, &userdata, &status, n, o, 
+                                    Ao_ne, Ao_val, b, x_l, x_u,
+                                    x, z, r, g, x_stat, w, prec );
                 break;
             case 2: // sparse by rows
                 strcpy( st, "SR" );
-                blls_import( &control, &data, &status, n, m,
-                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_ne, A_val, b, x_l, x_u, 
-                                    x, z, c, g, x_stat, w, prec );
+                blls_import( &control, &data, &status, n, o,
+                             "sparse_by_rows", Ao_ne, NULL, Ao_col, 
+                             Ao_ptr_ne, Ao_ptr );
+                blls_solve_given_a( &data, &userdata, &status, n, o, 
+                                    Ao_ne, Ao_val, b, x_l, x_u, 
+                                    x, z, r, g, x_stat, w, prec );
                 break;
             case 3: // dense by rows
                 strcpy( st, "DR" );
-                blls_import( &control, &data, &status, n, m,
-                             "dense_by_rows", A_dense_ne, NULL, NULL, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_dense_ne, A_dense, b, x_l, x_u, 
-                                    x, z, c, g, x_stat, w, prec );
+                blls_import( &control, &data, &status, n, o,
+                             "dense_by_rows", Ao_dense_ne,
+                              NULL, NULL,0,  NULL );
+                blls_solve_given_a( &data, &userdata, &status, n, o, 
+                                    Ao_dense_ne, Ao_dense, b, x_l, x_u, 
+                                    x, z, r, g, x_stat, w, prec );
                 break;
             case 4: // sparse by columns
                 strcpy( st, "SC" );
-                blls_import( &control, &data, &status, n, m,
-                             "sparse_by_columns", A_ne, A_by_col_row, 
-                             NULL, A_by_col_ptr );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_ne, A_by_col_val, b, x_l, x_u, 
-                                    x, z, c, g, x_stat, w, prec );
+                blls_import( &control, &data, &status, n, o,
+                             "sparse_by_columns", Ao_ne, Ao_by_col_row, 
+                             NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr );
+                blls_solve_given_a( &data, &userdata, &status, n, o, 
+                                    Ao_ne, Ao_by_col_val, b, x_l, x_u, 
+                                    x, z, r, g, x_stat, w, prec );
                 break;
             case 5: // dense by columns
                 strcpy( st, "DC" );
-                blls_import( &control, &data, &status, n, m,
-                             "dense_by_columns", A_dense_ne, NULL, NULL, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_dense_ne, A_by_col_dense, b, x_l, x_u, 
-                                    x, z, c, g, x_stat, w, prec );
+                blls_import( &control, &data, &status, n, o,
+                             "dense_by_columns", Ao_dense_ne, 
+                             NULL, NULL, 0, NULL);
+                blls_solve_given_a( &data, &userdata, &status, n, o, 
+                                    Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u, 
+                                    x, z, r, g, x_stat, w, prec );
                 break;
             }
         blls_information( &data, &inform, &status );
@@ -225,11 +231,11 @@ int main(void) {
     printf("\n tests reverse-communication options\n\n");
 
     // reverse-communication input/output
-    int nm;
-    nm = max( n, m );
+    int on;
+    on = max( o, n );
     int eval_status, nz_v_start, nz_v_end, nz_p_end;
-    int nz_v[nm], nz_p[m], mask[m];
-    real_wp_ v[nm], p[nm];
+    int nz_v[on], nz_p[o], mask[o];
+    real_wp_ v[on], p[on];
 
     nz_p_end = 0;
 
@@ -245,11 +251,11 @@ int main(void) {
     for( int i = 0; i < n; i++) z[i] = 0.0;
 
     strcpy( st, "RC" );
-    for( int i = 0; i < m; i++) mask[i] = 0;
-    blls_import_without_a( &control, &data, &status, n, m ) ;
+    for( int i = 0; i < o; i++) mask[i] = 0;
+    blls_import_without_a( &control, &data, &status, n, o ) ;
     while(true){ // reverse-communication loop
-        blls_solve_reverse_a_prod( &data, &status, &eval_status, n, m, b, 
-                                   x_l, x_u, x, z, c, g, x_stat, v, p,
+        blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b, 
+                                   x_l, x_u, x, z, r, g, x_stat, v, p,
                                    nz_v, &nz_v_start, &nz_v_end,
                                    nz_p, nz_p_end, w );
         if(status == 0){ // successful termination

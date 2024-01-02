@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-12 AT 10:15 GMT
+! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 10:15 GMT
    PROGRAM GALAHAD_SLLS_EXAMPLE6
 
 ! use slls to solve a multilinear fitting problem
 !  min 1/2 sum_i ( xi sum_iu sum_iv sum_ix sum_iy a(i,iu,iv,ix,iy)
 !                  u_iu v_iv x_ix y_iy + b - mu_i)^2,
-! where u, v, w and x lie in n and m regular simplexes {z : e^T z = 1, z >= 0},
+! where u, v, w and x lie in n and o regular simplexes {z : e^T z = 1, z >= 0},
 ! using alternating solves with u free and v,x,y fixed, and vice versa
 
    USE GALAHAD_SLLS_double         ! double precision version
@@ -17,10 +17,10 @@
    TYPE ( SLLS_control_type ) :: control_u, control_v, control_x, control_y
    TYPE ( SLLS_inform_type ) :: inform_u, inform_v, inform_x, inform_y
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   INTEGER :: i, iu, iv, ix, iy, j, ne, pass
+   INTEGER :: i, iu, iv, ix, iy, ne, pass
    TYPE ( RAND_seed ) :: seed
    REAL ( KIND = wp ) :: val, f, xi, b, a_11, a_12, a_22, r_1, r_2, f_best
-   REAL ( KIND = wp ) :: beta, prod, prod1, prod2, prod3, prod4
+   REAL ( KIND = wp ) :: prod, prod1, prod2, prod3, prod4
    REAL :: time, time_start, time_total
 !  INTEGER, PARAMETER :: nu = 4
    INTEGER, PARAMETER :: nu = 10
@@ -102,27 +102,27 @@
 
 !  set up storage for the u problem
 
-   CALL SMT_put( p_u%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_u%A%val(obs * nu ), p_u%B( obs ), p_u%X( nu ) )
-   p_u%m = obs ; p_u%n = nu ; p_u%A%m = p_u%m ; p_u%A%n = p_u%n
+   CALL SMT_put( p_u%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_u%Ao%val(obs * nu ), p_u%B( obs ), p_u%X( nu ) )
+   p_u%o = obs ; p_u%n = nu ; p_u%Ao%m = p_u%o ; p_u%Ao%n = p_u%n
 
 !  set up storage for the v problem
 
-   CALL SMT_put( p_v%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_v%A%val(obs * nv ), p_v%B( obs ), p_v%X( nv ) )
-   p_v%m = obs ; p_v%n = nv ; p_v%A%m = p_v%m ; p_v%A%n = p_v%n
+   CALL SMT_put( p_v%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_v%Ao%val(obs * nv ), p_v%B( obs ), p_v%X( nv ) )
+   p_v%o = obs ; p_v%n = nv ; p_v%Ao%m = p_v%o ; p_v%Ao%n = p_v%n
 
 !  set up storage for the x problem
 
-   CALL SMT_put( p_x%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_x%A%val(obs * nx ), p_x%B( obs ), p_x%X( nx ) )
-   p_x%m = obs ; p_x%n = nx ; p_x%A%m = p_x%m ; p_x%A%n = p_x%n
+   CALL SMT_put( p_x%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_x%Ao%val(obs * nx ), p_x%B( obs ), p_x%X( nx ) )
+   p_x%o = obs ; p_x%n = nx ; p_x%Ao%m = p_x%o ; p_x%Ao%n = p_x%n
 
 !  set up storage for the y problem
 
-   CALL SMT_put( p_y%A%type, 'DENSE_BY_ROWS', i )
-   ALLOCATE( p_y%A%val(obs * ny ), p_y%B( obs ), p_y%X( ny ) )
-   p_y%m = obs ; p_y%n = ny ; p_y%A%m = p_y%m ; p_y%A%n = p_y%n
+   CALL SMT_put( p_y%Ao%type, 'DENSE_BY_ROWS', i )
+   ALLOCATE( p_y%Ao%val(obs * ny ), p_y%B( obs ), p_y%X( ny ) )
+   p_y%o = obs ; p_y%n = ny ; p_y%Ao%m = p_y%o ; p_y%Ao%n = p_y%n
 
 !  starting point
    U = 1.0_wp / REAL( nu, KIND = wp ) ; V = 1.0_wp / REAL( nv, KIND = wp )
@@ -245,7 +245,7 @@
            END DO
          END DO
        END DO
-       p_u%A%val( ne + iu ) = val
+       p_u%Ao%val( ne + iu ) = val
      END DO
      ne = ne + nu
      p_u%B( i ) = MU( i ) - b
@@ -288,7 +288,7 @@
            END DO
          END DO
        END DO
-       p_v%A%val( ne + iv ) = val
+       p_v%Ao%val( ne + iv ) = val
      END DO
      ne = ne + nv
      p_v%B( i ) = MU( i ) - b
@@ -297,7 +297,7 @@
 !  solve the v problem
 
    inform_v%status = 1
-   CALL SLLS_solve( p_v, U_stat, data_v, control_v, inform_v, userdata )
+   CALL SLLS_solve( p_v, V_stat, data_v, control_v, inform_v, userdata )
    IF ( inform_v%status == 0 ) THEN           !  Successful return
      WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new v', /,                &
     &     ' Optimal objective value =', ES22.14 )" ) inform_v%iter, inform_v%obj
@@ -330,7 +330,7 @@
            END DO
          END DO
        END DO
-       p_x%A%val( ne + ix ) = val
+       p_x%Ao%val( ne + ix ) = val
      END DO
      ne = ne + nx
      p_x%B( i ) = MU( i ) - b
@@ -339,7 +339,7 @@
 !  solve the v problem
 
    inform_x%status = 1
-   CALL SLLS_solve( p_x, U_stat, data_x, control_x, inform_x, userdata )
+   CALL SLLS_solve( p_x, X_stat, data_x, control_x, inform_x, userdata )
    IF ( inform_x%status == 0 ) THEN           !  Successful return
      WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new x', /,                &
     &     ' Optimal objective value =', ES22.14 )" ) inform_x%iter, inform_x%obj
@@ -372,7 +372,7 @@
            END DO
          END DO
        END DO
-       p_y%A%val( ne + iy ) = val
+       p_y%Ao%val( ne + iy ) = val
      END DO
      ne = ne + ny
      p_y%B( i ) = MU( i ) - b
@@ -381,7 +381,7 @@
 !  solve the v problem
 
    inform_y%status = 1
-   CALL SLLS_solve( p_y, U_stat, data_y, control_y, inform_y, userdata )
+   CALL SLLS_solve( p_y, Y_stat, data_y, control_y, inform_y, userdata )
    IF ( inform_y%status == 0 ) THEN           !  Successful return
      WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new y', /,                &
     &     ' Optimal objective value =', ES22.14 )" ) inform_y%iter, inform_y%obj
@@ -486,18 +486,18 @@
 
    CALL SLLS_terminate( data_u, control_u, inform_u )  !  delete workspace
    DEALLOCATE( p_u%B, p_u%X, p_u%Z )
-   DEALLOCATE( p_u%A%val, p_u%A%type )
+   DEALLOCATE( p_u%Ao%val, p_u%Ao%type )
 
    CALL SLLS_terminate( data_v, control_v, inform_v )  !  delete workspace
    DEALLOCATE( p_v%B, p_v%X, p_v%Z )
-   DEALLOCATE( p_v%A%val, p_v%A%type )
+   DEALLOCATE( p_v%Ao%val, p_v%Ao%type )
 
    CALL SLLS_terminate( data_x, control_x, inform_x )  !  delete workspace
    DEALLOCATE( p_x%B, p_x%X, p_x%Z )
-   DEALLOCATE( p_x%A%val, p_x%A%type )
+   DEALLOCATE( p_x%Ao%val, p_x%Ao%type )
 
    CALL SLLS_terminate( data_y, control_y, inform_y )  !  delete workspace
    DEALLOCATE( p_y%B, p_y%X, p_y%Z )
-   DEALLOCATE( p_y%A%val, p_y%A%type )
+   DEALLOCATE( p_y%Ao%val, p_y%Ao%type )
 
    END PROGRAM GALAHAD_SLLS_EXAMPLE6

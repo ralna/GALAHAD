@@ -629,7 +629,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -663,7 +663,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -681,7 +681,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -738,13 +738,13 @@ A_type contains its relevant string ‘dense’,
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_row</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_col</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -758,7 +758,7 @@ A_type contains its relevant string ‘dense’,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -948,7 +948,7 @@ be symptomatic of a badly scaled problem.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -978,10 +978,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_lpb_control_type.html#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structlpb-control-type"><span class="std std-ref">lpb_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_lpb_inform_type.html#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structlpb-inform-type"><span class="std std-ref">lpb_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1328,11 +1328,11 @@ status from the package. Possible values are
 <p>checkpoints(i) records the iteration at which the criticality measures first fall below <span class="math notranslate nohighlight">\(10^{-i-1}\)</span>, i = 0, …, 15 (-1 means not achieved)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1af2d3b92abc0ea9392d412ab45438eeb9"><span id="index-102"></span><span></span><span class="n">T</span><span class="w"> </span><span class="n">checkpointsTime</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span></pre>
 <p>see checkpointsIter</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1a3f1797234f099e3102a92630951c9a4e"><span id="index-103"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_lpb_time_type.html#doxid-structlpb-time-type"><span class="std std-ref">lpb_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1a3f1797234f099e3102a92630951c9a4e"><span id="index-103"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structlpb-time-type"><span class="std std-ref">lpb_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>timings (see above)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1a966b6933e7b53fb2d71f55f267ad00f4"><span id="index-104"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_inform_type.html#doxid-structfdc-inform-type"><span class="std std-ref">fdc_inform_type</span></a><span></span><span class="w"> </span><span class="n">fdc_inform</span></pre>
 <p>inform parameters for FDC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-105"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-105"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
 <p>inform parameters for SBLS</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structlpb-inform-type-1ac6efa45e989564727014956bf3e00deb"><span id="index-106"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fit_inform_type.html#doxid-structfit-inform-type"><span class="std std-ref">fit_inform_type</span></a><span></span><span class="w"> </span><span class="n">fit_inform</span></pre>
 <p>return information from FIT</p>

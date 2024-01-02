@@ -465,7 +465,7 @@
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="presolve.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -499,7 +499,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="presolve.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -522,7 +522,7 @@ crucial characteristics of the transformed variant</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="presolve.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -586,13 +586,13 @@ been specified.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_row</p></td>
-<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_col</p></td>
-<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>H_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(H\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>H_val</p></td>
 <td><p>is a one-dimensional array of size h_ne and type T that holds the values of the entries of the lower triangular part of the Hessian matrix <span class="math notranslate nohighlight">\(H\)</span> in any of the available storage schemes.</p></td>
@@ -610,13 +610,13 @@ been specified.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_row</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_col</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_val</p></td>
 <td><p>is a one-dimensional array of size a_ne and type T that holds the values of the entries of the constraint Jacobian matrix <span class="math notranslate nohighlight">\(A\)</span> in any of the available storage schemes.</p></td>
@@ -867,7 +867,7 @@ presolve_import_problem.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_presolve_inform_type.html#doxid-structpresolve-inform-type"><span class="std std-ref">presolve_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="presolve.html#doxid-structpresolve-inform-type"><span class="std std-ref">presolve_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -897,10 +897,10 @@ status from the package. Possible values are
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_presolve_control_type.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="presolve.html#doxid-structpresolve-control-type"><span class="std std-ref">presolve_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_presolve_inform_type.html#doxid-structpresolve-inform-type"><span class="std std-ref">presolve_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="presolve.html#doxid-structpresolve-inform-type"><span class="std std-ref">presolve_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>

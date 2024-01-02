@@ -1,28 +1,28 @@
 % test galahad_slls
-% Nick Gould for GALAHAD productions 13/July/2022
+% Nick Gould for GALAHAD productions 2023-12-30
 
-clear A SA control inform
+clear Ao SAo control inform
 
-m = 10 ;
+o = 10 ;
 n = 5 ;
 b(1)= -1.0 ;
-b(2:m)= 1.0 ;
-A(1:m,1:n) = 0.0 ;
+b(2:o)= 1.0 ;
+Ao(1:o,1:n) = 0.0 ;
 for i = 1:n
- A(i,i) = i ;
- A(n+i,i) = 1 ;
- A(2*i,i) = 1 ;
+ Ao(i,i) = i ;
+ Ao(n+i,i) = 1 ;
+ Ao(2*i,i) = 1 ;
 end
 control.out = 6 ;
 %control.print_level = 1 ;
 
 fprintf('solve dense example \n')
-[ x, inform, aux ] = galahad_slls( A, b, control ) ;
+[ x, inform, aux ] = galahad_slls( Ao, b, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - slls: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
-SA = sparse(A) ;
-[ x, inform, aux ] = galahad_slls( SA, b, control ) ;
+SAo = sparse(Ao) ;
+[ x, inform, aux ] = galahad_slls( SAo, b, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - slls: optimal f =', inform.obj, '- status =', inform.status ) )

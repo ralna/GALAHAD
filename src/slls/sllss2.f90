@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-06 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2022-12-31 AT 11:00 GMT.
    PROGRAM GALAHAD_SLLS_SECOND_EXAMPLE ! reverse commmunication interface
    USE GALAHAD_SLLS_double             ! double precision version
    IMPLICIT NONE
@@ -12,22 +12,22 @@
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
    INTEGER :: i, j, k, l, nflag
    REAL ( KIND = wp ) :: val
-   INTEGER, PARAMETER :: n = 3, m = 4, a_ne = 5
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr, FLAG
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val
+   INTEGER, PARAMETER :: n = 3, o = 4, Ao_ne = 5
+   INTEGER, ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_ptr, FLAG
+   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Ao_val
 ! start problem data
-   ALLOCATE( p%B( m ), p%X( n ), X_stat( n ) )
-   p%n = n ; p%m = m                          ! dimensions
+   ALLOCATE( p%B( o ), p%X( n ), X_stat( n ) )
+   p%n = n ; p%o = o                          ! dimensions
    p%B = (/ 0.0_wp, 2.0_wp, 1.0_wp, 2.0_wp /) ! right-hand side
    p%X = 0.0_wp ! start from zero
 !  sparse column storage format
-   ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ) )
-   A_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A by columns
-   A_row = (/ 1, 2, 2, 3, 4 /)                     ! row indices
-   A_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
+   ALLOCATE( Ao_val( Ao_ne ), Ao_row( Ao_ne ), Ao_ptr( n + 1 ) )
+   Ao_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A by columns
+   Ao_row = (/ 1, 2, 2, 3, 4 /)                     ! row indices
+   Ao_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
 ! problem data complete
    CALL SLLS_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 1                       ! print one line/iteration
+!  control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
    ALLOCATE( FLAG( n ) )
    nflag = 0 ; FLAG = 0  ! Flag if index already used in current (nflag) product
@@ -42,12 +42,12 @@
       &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )              &
          inform%iter, inform%obj, p%X
      CASE ( 2 ) ! compute A * v
-       reverse%P( : m ) = 0.0_wp
+       reverse%P( : o ) = 0.0_wp
        DO j = 1, n
          val = reverse%V( j )
-         DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-           i = A_row( k )
-           reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+         DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+           i = Ao_row( k )
+           reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
          END DO
        END DO
        GO TO 10
@@ -55,20 +55,20 @@
        reverse%P( : n ) = 0.0_wp
        DO j = 1, n
          val = 0.0_wp
-         DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-           val = val + A_val( k ) * reverse%V( A_row( k ) )
+         DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+           val = val + Ao_val( k ) * reverse%V( Ao_row( k ) )
          END DO
          reverse%P( j ) = val
        END DO
        GO TO 10
      CASE ( 4 ) ! compute A * sparse v
-       reverse%P( : m ) = 0.0_wp
+       reverse%P( : o ) = 0.0_wp
        DO l = reverse%nz_in_start, reverse%nz_in_end
          j = reverse%NZ_in( l )
          val = reverse%V( j )
-         DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-           i = A_row( k )
-           reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+         DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+           i = Ao_row( k )
+           reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
          END DO
        END DO
        GO TO 10
@@ -78,15 +78,15 @@
        DO l = reverse%nz_in_start, reverse%nz_in_end
          j = reverse%NZ_in( l )
          val = reverse%V( j )
-         DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-           i = A_row( k )
+         DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+           i = Ao_row( k )
            IF ( FLAG( i ) < nflag ) THEN
              FLAG( i ) = nflag
-             reverse%P( i ) = A_val( k ) * val
+             reverse%P( i ) = Ao_val( k ) * val
              reverse%nz_out_end = reverse%nz_out_end + 1
              reverse%NZ_out( reverse%nz_out_end ) = i
            ELSE
-             reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+             reverse%P( i ) = reverse%P( i ) + Ao_val( k ) * val
            END IF
          END DO
        END DO
@@ -96,8 +96,8 @@
        DO l = reverse%nz_in_start, reverse%nz_in_end
          j = reverse%NZ_in( l )
          val = 0.0_wp
-         DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-           val = val + A_val( k ) * reverse%V( A_row( k ) )
+         DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+           val = val + Ao_val( k ) * reverse%V( Ao_row( k ) )
          END DO
          reverse%P( j ) = val
        END DO
@@ -107,5 +107,5 @@
      END SELECT
    CALL SLLS_terminate( data, control, inform )  !  delete workspace
    DEALLOCATE( p%B, p%X, p%Z, X_stat, FLAG )
-   DEALLOCATE( A_val, A_row, A_ptr )
+   DEALLOCATE( Ao_val, Ao_row, Ao_ptr )
    END PROGRAM GALAHAD_SLLS_SECOND_EXAMPLE

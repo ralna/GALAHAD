@@ -667,7 +667,7 @@ are available with T as Float32.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_llsr_control_type.html#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit
@@ -701,7 +701,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_llsr_control_type.html#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>specfile</p></td>
 <td><p>is a one-dimensional array of type Vararg{Cchar} that must give the name of the specification file</p></td>
@@ -719,7 +719,7 @@ keywords relate to the components of the control structure.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_llsr_control_type.html#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -778,13 +778,13 @@ violated.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A\)</span>, if used, in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_row</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>A_col</p></td>
-<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size A_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>A_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -799,7 +799,7 @@ violated.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_llsr_control_type.html#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -854,13 +854,13 @@ contains its relevant string ‘dense’, ‘coordinate’,
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-odd"><td><p>S_row</p></td>
-<td><p>is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size S_ne and type Int32 that holds the row indices of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>S_col</p></td>
-<td><p>is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size S_ne and type Int32 that holds the column indices of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span> in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>S_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of <span class="math notranslate nohighlight">\(S\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -874,7 +874,7 @@ contains its relevant string ‘dense’, ‘coordinate’,
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>control</p></td>
-<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="struct_llsr_control_type.html#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
+<td><p>is a structure whose members provide control parameters for the remaining procedures (see <a class="reference internal" href="#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p>data</p></td>
 <td><p>holds private internal data</p></td>
@@ -1012,7 +1012,7 @@ progress is impossible.</p>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in the scaling matrix <span class="math notranslate nohighlight">\(S\)</span> if it not the identity matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p>S_val</p></td>
-<td><p>is a one-dimensional array of size S_ne and type T that holds the values of the entries of the scaling matrix <span class="math notranslate nohighlight">\(S\)</span> in any of the available storage schemes. If S_val is NULL, <span class="math notranslate nohighlight">\(S\)</span> will be taken to be the identity matrix.</p></td>
+<td><p>is a one-dimensional array of size S_ne and type T that holds the values of the entries of the scaling matrix <span class="math notranslate nohighlight">\(S\)</span> in any of the available storage schemes. If S_val is C_NULL, <span class="math notranslate nohighlight">\(S\)</span> will be taken to be the identity matrix.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1029,7 +1029,7 @@ progress is impossible.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_llsr_inform_type.html#doxid-structllsr-inform-type"><span class="std std-ref">llsr_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structllsr-inform-type"><span class="std std-ref">llsr_inform_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>status</p></td>
 <td><p>is a scalar variable of type Int32 that gives the exit status from the package. Possible values are (currently):</p>
@@ -1057,10 +1057,10 @@ progress is impossible.</p>
 <td><p>holds private internal data</p></td>
 </tr>
 <tr class="row-even"><td><p>control</p></td>
-<td><p>is a structure containing control information (see <a class="reference internal" href="struct_llsr_control_type.html#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
+<td><p>is a structure containing control information (see <a class="reference internal" href="#doxid-structllsr-control-type"><span class="std std-ref">llsr_control_type</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>inform</p></td>
-<td><p>is a structure containing output information (see <a class="reference internal" href="struct_llsr_inform_type.html#doxid-structllsr-inform-type"><span class="std std-ref">llsr_inform_type</span></a>)</p></td>
+<td><p>is a structure containing output information (see <a class="reference internal" href="#doxid-structllsr-inform-type"><span class="std std-ref">llsr_inform_type</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1145,7 +1145,7 @@ progress is impossible.</p>
 <p>all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-26"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_control_type.html#doxid-structsbls-control-type"><span class="std std-ref">sbls_control_type</span></a><span></span><span class="w"> </span><span class="n">sbls_control</span></pre>
 <p>control parameters for the symmetric factorization and related linear solves (see sbls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-27"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-control-type-1a31b308b91955ee385daacc3de00f161b"><span id="index-27"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for the factorization of S and related linear solves (see sls_c documentation)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-control-type-1ab87f601227d3bf99916ff3caa3413404"><span id="index-28"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_control_type.html#doxid-structir-control-type"><span class="std std-ref">ir_control_type</span></a><span></span><span class="w"> </span><span class="n">ir_control</span></pre>
 <p>control parameters for iterative refinement for definite system solves (see ir_c documentation)</p>
@@ -1279,13 +1279,13 @@ progress is impossible.</p>
 <p>the multiplier corresponding to the regularization term</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a19ba64e8444ca3672abd157e4f1303a3"><span id="index-52"></span><span></span><span class="kt">NTuple</span><span class="p">{</span><span class="mi">81</span><span class="p">,</span><span class="kt">Cchar</span><span class="p">}</span><span class="w"> </span><span class="n">bad_alloc</span></pre>
 <p>name of array which provoked an allocate failure</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1ace18e9a0877156e432cc23c7d5799dd6"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_llsr_time_type.html#doxid-structllsr-time-type"><span class="std std-ref">llsr_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1ace18e9a0877156e432cc23c7d5799dd6"><span id="index-53"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structllsr-time-type"><span class="std std-ref">llsr_time_type</span></a><span></span><span class="w"> </span><span class="n">time</span></pre>
 <p>time information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a13047d24b0cf3469a41cc14c364d3587"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_llsr_history_type.html#doxid-structllsr-history-type"><span class="std std-ref">llsr_history_type</span></a><span></span><span class="w"> </span><span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a13047d24b0cf3469a41cc14c364d3587"><span id="index-54"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="#doxid-structllsr-history-type"><span class="std std-ref">llsr_history_type</span></a><span></span><span class="w"> </span><span class="n">history</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span></pre>
 <p>history information</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-55"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sbls_inform_type.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-55"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sbls.html#doxid-structsbls-inform-type"><span class="std std-ref">sbls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sbls_inform</span></pre>
 <p>information from the symmetric factorization and related linear solves (see sbls_c documentation)</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-56"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1a0a9d7a6860aca6894830ccaabe3ceac0"><span id="index-56"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>information from the factorization of S and related linear solves (see sls_c documentation)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structllsr-inform-type-1ae3db15e2ecf7454c4db293d5b30bc7f5"><span id="index-57"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_ir_inform_type.html#doxid-structir-inform-type"><span class="std std-ref">ir_inform_type</span></a><span></span><span class="w"> </span><span class="n">ir_inform</span></pre>
 <p>information from the iterative refinement for definite system solves (see ir_c documentation)</p>

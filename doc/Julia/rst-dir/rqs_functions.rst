@@ -143,17 +143,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type Int32 that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; rqs_import_m
 .. _doxid-galahad__rqs_8h_1af0351d4956431c86e229f905041c222b:
@@ -224,17 +224,17 @@ Import data for the scaling matrix M into internal storage prior to solution.
 	*
 		- M_row
 
-		- is a one-dimensional array of size M_ne and type Int32 that holds the row indices of the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size M_ne and type Int32 that holds the row indices of the lower triangular part of $M$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be C_NULL.
 
 	*
 		- M_col
 
-		- is a one-dimensional array of size M_ne and type Int32 that holds the column indices of the lower triangular part of $M$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size M_ne and type Int32 that holds the column indices of the lower triangular part of $M$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- M_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $M$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of the lower triangular part of $M$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; rqs_import_a
 .. _doxid-galahad__rqs_8h_1a3d1116ac5c18fe085e902c77ec2776b5:
@@ -304,17 +304,17 @@ Import data for the constraint matrix A into internal storage prior to solution.
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be C_NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type Int32 that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be C_NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.
 
 .. index:: pair: function; rqs_reset_control
 .. _doxid-galahad__rqs_8h_1a86e1c32d2d07facbe602222e199a075f:
@@ -474,7 +474,7 @@ Solve the regularised quadratic problem.
 	*
 		- M_val
 
-		- is a one-dimensional array of size M_ne and type T that holds the values of the entries of the scaling matrix $M$, if it is not the identity matrix, in any of the available storage schemes. If M_val is NULL, M will be taken to be the identity matrix.
+		- is a one-dimensional array of size M_ne and type T that holds the values of the entries of the scaling matrix $M$, if it is not the identity matrix, in any of the available storage schemes. If M_val is C_NULL, M will be taken to be the identity matrix.
 
 	*
 		- m
@@ -489,7 +489,7 @@ Solve the regularised quadratic problem.
 	*
 		- A_val
 
-		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$, if used, in any of the available storage schemes. If A_val is NULL, no constraints will be enforced.
+		- is a one-dimensional array of size A_ne and type T that holds the values of the entries of the constraint Jacobian matrix $A$, if used, in any of the available storage schemes. If A_val is C_NULL, no constraints will be enforced.
 
 	*
 		- y

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-12-30 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -461,8 +461,8 @@
 !  C interface to fortran slls_inport
 !  ----------------------------------
 
-  SUBROUTINE slls_import( ccontrol, cdata, status, n, m,                       &
-                          catype, ane, arow, acol, aptr ) BIND( C )
+  SUBROUTINE slls_import( ccontrol, cdata, status, n, o, caotype,              &
+                          aone, aorow, aocol, aoptrne, aoptr ) BIND( C )
   USE GALAHAD_SLLS_precision_ciface
   IMPLICIT NONE
 
@@ -471,15 +471,15 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( slls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
-  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, aone, aoptrne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aorow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aocol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( aoptrne ), OPTIONAL :: aoptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: caotype
 
 !  local variables
 
-  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( caotype ) ) :: faotype
   TYPE ( f_slls_control_type ) :: fcontrol
   TYPE ( f_slls_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
@@ -494,7 +494,7 @@
 
 !  convert C string to Fortran string
 
-   fatype = cstr_to_fchar( catype )
+   faotype = cstr_to_fchar( caotype )
 
 !  is fortran-style 1-based indexing used?
 
@@ -502,8 +502,8 @@
 
 !  import the problem data into the required SLLS structure
 
-  CALL f_slls_import( fcontrol, fdata, status, n, m,                           &
-                      fatype, ane, arow, acol, aptr )
+  CALL f_slls_import( fcontrol, fdata, status, n, o,                           &
+                      faotype, aone, aorow, aocol, aoptr )
 
 !  copy control out
 
@@ -516,7 +516,7 @@
 !  C interface to fortran slls_inport_without_a
 !  --------------------------------------------
 
-  SUBROUTINE slls_import_without_a( ccontrol, cdata, status, n, m ) BIND( C )
+  SUBROUTINE slls_import_without_a( ccontrol, cdata, status, n, o ) BIND( C )
   USE GALAHAD_SLLS_precision_ciface
   IMPLICIT NONE
 
@@ -525,7 +525,7 @@
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( slls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o
 
 !  local variables
 
@@ -545,7 +545,7 @@
 
   fdata%f_indexing = f_indexing
 
-  CALL f_slls_import_without_a( fcontrol, fdata, status, n, m )
+  CALL f_slls_import_without_a( fcontrol, fdata, status, n, o )
 
 !  copy control out
 
@@ -597,8 +597,8 @@
 !  C interface to fortran slls_solve_given_a
 !  -----------------------------------------
 
-  SUBROUTINE slls_solve_given_a( cdata, cuserdata, status, n, m, ane, aval,    &
-                                 b, x, z, c, g, xstat, ceval_prec ) BIND( C )
+  SUBROUTINE slls_solve_given_a( cdata, cuserdata, status, n, o, aone, aoval,  &
+                                 b, x, z, r, g, xstat, ceval_prec ) BIND( C )
   USE GALAHAD_SLLS_precision_ciface
   IMPLICIT NONE
 
@@ -607,11 +607,11 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, ane
-  REAL ( KIND = rpc_ ), DIMENSION( ane ), INTENT( IN ) :: aval
-  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: b
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o, aone
+  REAL ( KIND = rpc_ ), DIMENSION( aone ), INTENT( IN ) :: aoval
+  REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( IN ) :: b
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( OUT ) :: c
+  REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( OUT ) :: r
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
@@ -640,8 +640,8 @@
 
 !  solve the bound-constrained least-squares problem
 
-  CALL f_slls_solve_given_a( fdata, fuserdata, status, aval, b,                &
-                             x, z, c, g, xstat, wrap_eval_prec )
+  CALL f_slls_solve_given_a( fdata, fuserdata, status, aoval, b,               &
+                             x, z, r, g, xstat, wrap_eval_prec )
 
   RETURN
 
@@ -670,8 +670,8 @@
 !  C interface to fortran slls_solve_reverse_a_prod
 !  ------------------------------------------------
 
-  SUBROUTINE slls_solve_reverse_a_prod( cdata, status, eval_status, n, m, b,   &
-                                        x, z, c, g, xstat, v, p,               &
+  SUBROUTINE slls_solve_reverse_a_prod( cdata, status, eval_status, n, o, b,   &
+                                        x, z, r, g, xstat, v, p,               &
                                         nz_v, nz_v_start, nz_v_end,            &
                                         nz_p, nz_p_end ) BIND( C )
   USE GALAHAD_SLLS_precision_ciface
@@ -681,18 +681,18 @@
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
-  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: b
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, o
+  REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( IN ) :: b
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
-  REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( OUT ) :: c
+  REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( OUT ) :: r
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: nz_p_end
   INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
-  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m ) :: nz_p
-  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_v
-  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
-  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( o ) :: nz_p
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: nz_v
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( MAX( n, o ) ) :: p
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( MAX( n, o ) ) :: v
 
 !  local variables
 
@@ -712,12 +712,12 @@
 !if (status == 4 ) write(6,"( ' P ', /, ( 5ES12.4 ) )" ) P(:m)
   IF ( f_indexing ) THEN
     CALL f_slls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
-                                      x, z, c, g, xstat, v, p,                 &
+                                      x, z, r, g, xstat, v, p,                 &
                                       nz_v, nz_v_start, nz_v_end,              &
                                       nz_p, nz_p_end )
   ELSE
     CALL f_slls_solve_reverse_a_prod( fdata, status, eval_status, b,           &
-                                      x, z, c, g, xstat, v, p,                 &
+                                      x, z, r, g, xstat, v, p,                 &
                                       nz_v, nz_v_start, nz_v_end,              &
                                       nz_p + 1, nz_p_end )
     IF ( status == 4 .OR. status == 5 .OR. status == 6 )                       &

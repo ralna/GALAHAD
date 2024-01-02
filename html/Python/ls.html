@@ -368,6 +368,7 @@
 <li class="toctree-l1"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
 </ul>
 
   </div>
@@ -402,13 +403,14 @@
   <section id="least-squares">
 <h1>Least-Squares<a class="headerlink" href="#least-squares" title="Permalink to this heading">#</a></h1>
 <p><strong>Release:</strong> 1.0</p>
-<p><strong>Date:</strong> 29 December 2023</p>
+<p><strong>Date:</strong> 01 January 2024</p>
 <p><strong>Author:</strong> <a class="reference external" href="mailto:jaroslav&#46;fowkes&#37;&#52;&#48;stfc&#46;ac&#46;uk">Jaroslav Fowkes</a> and <a class="reference external" href="mailto:nick&#46;gould&#37;&#52;&#48;stfc&#46;ac&#46;uk">Nick Gould</a></p>
 <p>GALAHAD <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a suite of open-source routines for large-scale continuous
 optimization.  Currently there is a single package designed to find a local
 minimizer of a sum-of-squares function whose variables may take any values,
 a second pair that target linear problems with simple bounds on the variables,
-and another for which the constraints are linear (polyhedral).</p>
+another for which the feasible region is a regular simplex, and a
+final one for which the constraints are linear (polyhedral).</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
@@ -416,6 +418,7 @@ and another for which the constraints are linear (polyhedral).</p>
 <li class="toctree-l1"><a class="reference internal" href="bllsb.html">BLLSB - bound-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clls.html">CLLS - linearly-constrained linear least-squares using an interior-point method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nls.html">NLS - unconstrained local nonlinear least-squares using a regularization method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a></li>
 </ul>
 </div>
 <section id="references">

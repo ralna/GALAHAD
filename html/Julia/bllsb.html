@@ -384,6 +384,10 @@
 <li class="toctree-l2"><a class="reference internal" href="nls_functions.html">callable functions</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="slls.html">SLLS - simplex-constrained linear least-squares using a preconditioned, projected-gradient method</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="slls_functions.html">callable functions</a></li>
+</ul>
+</li>
 </ul>
 
   </div>
@@ -420,7 +424,7 @@
 <section id="purpose">
 <h2>purpose<a class="headerlink" href="#purpose" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">bllsb</span></code> package uses a <strong>primal-dual interior-point crossover method</strong>
-to solve a <strong>constrained linear least-squares</strong> problem
+to solve a <strong>bound-constrained linear least-squares problem</strong>,
 The aim is to minimize the (regularized) least-squares objective function
 <div class="math notranslate nohighlight">
 \[q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2\]</div>
@@ -435,8 +439,7 @@ and <span class="math notranslate nohighlight">\(\|x\| = \sqrt{\sum_{i=1}^n x_i^
 <span class="math notranslate nohighlight">\(b\)</span>, and <span class="math notranslate nohighlight">\(w\)</span> are vectors, <span class="math notranslate nohighlight">\(\sigma \geq 0\)</span> is a scalar,
 and any of the components
 of the vectors <span class="math notranslate nohighlight">\(x_l\)</span> or <span class="math notranslate nohighlight">\(x_u\)</span> may be infinite.
-The method offers the choice of direct and iterative solution of the key
-regularization subproblems, and is most suitable for problems
+The method is most suitable for problems
 involving a large number of unknowns <span class="math notranslate nohighlight">\(x\)</span>.</p>
 <p>See Section 4 of $GALAHAD/doc/bllsb.pdf for additional details.</p>
 </section>
@@ -719,16 +722,16 @@ been violated.</p></li>
 <td><p>is a scalar variable of type Int32 that holds the number of entries in <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</p></td>
 </tr>
 <tr class="row-even"><td><p>Ao_row</p></td>
-<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the row indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and sparse column-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Ao_col</p></td>
-<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size Ao_ne and type Int32 that holds the column indices of <span class="math notranslate nohighlight">\(A_o\)</span> in the sparse co-ordinate and the sparse row-wise storage schemes. It need not be set for any of the other schemes, and in this case can be C_NULL.</p></td>
 </tr>
 <tr class="row-even"><td><p>Ao_ptr_ne</p></td>
 <td><p>is a scalar variable of type Int32 that holds the length of the pointer array if sparse row or column storage scheme is used for <span class="math notranslate nohighlight">\(A_o\)</span>. For the sparse row scheme,  Ao_ptr_ne should be at least o+1, while for the sparse column scheme,  it should be at least n+1, It need not be set when the other schemes are used.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Ao_ptr</p></td>
-<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.</p></td>
+<td><p>is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each row of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse row-wise storage scheme. By contrast, it is a one-dimensional array of size n+1 and type Int32 that holds the starting position of each column of <span class="math notranslate nohighlight">\(A_o\)</span>, as well as the total number of entries, in the sparse column-wise storage scheme. It need not be set when the other schemes are used, and in this case can be C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -867,7 +870,7 @@ be symptomatic of a badly scaled problem.</p></li>
 <td><p>is a one-dimensional array of size n and type Int32 that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable <span class="math notranslate nohighlight">\(x_j\)</span> most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</p></td>
 </tr>
 <tr class="row-odd"><td><p>w</p></td>
-<td><p>is a one-dimensional array of size o and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of strictly-positive observation weights. The i-th component of w, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(w_i\)</span>. If the weights are all one, w can be set to NULL.</p></td>
+<td><p>is a one-dimensional array of size o and type T that holds the values <span class="math notranslate nohighlight">\(w\)</span> of strictly-positive observation weights. The i-th component of w, i = 0, … , o-1, contains <span class="math notranslate nohighlight">\(w_i\)</span>. If the weights are all one, w can be set to C_NULL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1126,9 +1129,9 @@ The values were recorded successfully</p></li>
 <p>all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. “string” or ‘string’</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-control-type-1a7bef6e4f678e16a4dcdc40677efddd80"><span id="index-62"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_control_type.html#doxid-structfdc-control-type"><span class="std std-ref">fdc_control_type</span></a><span></span><span class="w"> </span><span class="n">fdc_control</span></pre>
 <p>control parameters for FDC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-63"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-control-type-1a04ba974b3c8d21137deb070d0e8dfc3a"><span id="index-63"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_control</span></pre>
 <p>control parameters for SLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-control-type-1a04ba974b3c8d21137deb070d0e8dfc3b"><span id="index-64"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_control_type.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_pounce_control</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-control-type-1a04ba974b3c8d21137deb070d0e8dfc3b"><span id="index-64"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-control-type"><span class="std std-ref">sls_control_type</span></a><span></span><span class="w"> </span><span class="n">sls_pounce_control</span></pre>
 <p>control parameters for SLS pounce</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-control-type-1a4b2e99077c510333b6b2a6f0b59114b9"><span id="index-65"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fit_control_type.html#doxid-structfit-control-type"><span class="std std-ref">fit_control_type</span></a><span></span><span class="w"> </span><span class="n">fit_control</span></pre>
 <p>control parameters for FIT</p>
@@ -1272,9 +1275,9 @@ The values were recorded successfully</p></li>
 <p>timings (see above)</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-inform-type-1a966b6933e7b53fb2d71f55f267ad00f4"><span id="index-105"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fdc_inform_type.html#doxid-structfdc-inform-type"><span class="std std-ref">fdc_inform_type</span></a><span></span><span class="w"> </span><span class="n">fdc_inform</span></pre>
 <p>inform parameters for FDC</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-106"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf68"><span id="index-106"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_inform</span></pre>
 <p>inform parameters for SLS</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf69"><span id="index-107"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_sls_inform_type.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_pounce_inform</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-inform-type-1a7e7617645ca9908f4f75e5216bb7cf69"><span id="index-107"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="sls.html#doxid-structsls-inform-type"><span class="std std-ref">sls_inform_type</span></a><span></span><span class="w"> </span><span class="n">sls_pounce_inform</span></pre>
 <p>inform parameters for SLS pounce</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-structbllsb-inform-type-1ac6efa45e989564727014956bf3e00deb"><span id="index-108"></span><span></span><span class="n">struct</span><span class="w"> </span><a class="reference internal" href="struct_fit_inform_type.html#doxid-structfit-inform-type"><span class="std std-ref">fit_inform_type</span></a><span></span><span class="w"> </span><span class="n">fit_inform</span></pre>
 <p>return information from FIT</p>
@@ -1349,8 +1352,8 @@ are shown.</p>
     <span class="n">bllsb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span>
                   <span class="s2">&quot;coordinate&quot;</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_row</span><span class="p">,</span> <span class="n">Ao_col</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
 
-    <span class="n">bllsb_solve_bllsb</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span>
-                       <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">w</span> <span class="p">)</span>
+    <span class="n">bllsb_solve_blls</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span>
+                      <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">w</span> <span class="p">)</span>
   <span class="n">end</span>
 
   <span class="c1"># sparse by rows</span>
@@ -1361,8 +1364,8 @@ are shown.</p>
                  <span class="s2">&quot;sparse_by_rows&quot;</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Ao_col</span><span class="p">,</span> <span class="n">Ao_ptr_ne</span><span class="p">,</span> <span class="n">Ao_ptr</span> <span class="p">)</span>
 
 
-    <span class="n">bllsb_solve_bllsb</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span>
-                       <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">w</span> <span class="p">)</span>
+    <span class="n">bllsb_solve_blls</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Ao_val</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span>
+                      <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">w</span> <span class="p">)</span>
   <span class="n">end</span>
 
   <span class="c1"># dense</span>
@@ -1376,8 +1379,8 @@ are shown.</p>
     <span class="n">bllsb_import</span><span class="p">(</span> <span class="n">control</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span>
                   <span class="s2">&quot;dense&quot;</span><span class="p">,</span> <span class="n">Ao_ne</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[],</span> <span class="n">Cint</span><span class="p">[],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Cint</span><span class="p">[]</span> <span class="p">)</span>
 
-    <span class="n">bllsb_solve_bllsb</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">Ao_dense_ne</span><span class="p">,</span> <span class="n">Ao_dense</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span>
-                       <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">w</span> <span class="p">)</span>
+    <span class="n">bllsb_solve_blls</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">Ao_dense_ne</span><span class="p">,</span> <span class="n">Ao_dense</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span>
+                      <span class="n">x_l</span><span class="p">,</span> <span class="n">x_u</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">x_stat</span><span class="p">,</span> <span class="n">w</span> <span class="p">)</span>
   <span class="n">end</span>
 
   <span class="n">bllsb_information</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">inform</span><span class="p">,</span> <span class="n">status</span> <span class="p">)</span>

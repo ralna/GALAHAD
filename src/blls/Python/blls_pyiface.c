@@ -448,61 +448,56 @@ static PyObject* py_blls_initialize(PyObject *self){
 //  *-*-*-*-*-*-*-*-*-*-*-*-   BLLS_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
 static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
+    PyArrayObject *py_Ao_row, *py_Ao_col, *py_Ao_ptr;
     PyObject *py_options = NULL;
-    int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
-    const char *A_type;
-    int n, m, A_ne;
+    int *Ao_row = NULL, *Ao_col = NULL, *Ao_ptr = NULL;
+    const char *Ao_type;
+    int n, o, Ao_ne, Ao_ptr_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","m","A_type","A_ne","A_row","A_col","A_ptr",
+    static char *kwlist[] = {"n","o","Ao_type","Ao_ne","Ao_row",
+                             "Ao_col","Ao_ptr_ne","Ao_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O",
-                                    kwlist, &n, &m,
-                                    &A_type, &A_ne, &py_A_row,
-                                    &py_A_col, &py_A_ptr,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOiO|O",
+                                    kwlist, &n, &o,
+                                    &Ao_type, &Ao_ne, &py_Ao_row,
+                                    &py_Ao_col, &Ao_ptr_ne, &py_Ao_ptr,
                                     &py_options))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
 
     if(!(
-        check_array_int("A_row", py_A_row, A_ne) &&
-        check_array_int("A_col", py_A_col, A_ne) &&
-        check_array_int("A_ptr", py_A_ptr, n+1)
+        check_array_int("Ao_row", py_Ao_row, Ao_ne) &&
+        check_array_int("Ao_col", py_Ao_col, Ao_ne) &&
+        check_array_int("Ao_ptr", py_Ao_ptr, Ao_ptr_ne)
         ))
         return NULL;
 
-    // Convert 64bit integer A_row array to 32bit
-    if((PyObject *) py_A_row != Py_None){
-        A_row = malloc(A_ne * sizeof(int));
-        long int *A_row_long = (long int *) PyArray_DATA(py_A_row);
-        for(int i = 0; i < A_ne; i++) A_row[i] = (int) A_row_long[i];
+    // Convert 64bit integer Ao_row array to 32bit
+    if((PyObject *) py_Ao_row != Py_None){
+        Ao_row = malloc(Ao_ne * sizeof(int));
+        long int *Ao_row_long = (long int *) PyArray_DATA(py_Ao_row);
+        for(int i = 0; i < Ao_ne; i++) Ao_row[i] = (int) Ao_row_long[i];
     }
 
-    // Convert 64bit integer A_col array to 32bit
-    if((PyObject *) py_A_col != Py_None){
-        A_col = malloc(A_ne * sizeof(int));
-        long int *A_col_long = (long int *) PyArray_DATA(py_A_col);
-        for(int i = 0; i < A_ne; i++) A_col[i] = (int) A_col_long[i];
+    // Convert 64bit integer Ao_col array to 32bit
+    if((PyObject *) py_Ao_col != Py_None){
+        Ao_col = malloc(Ao_ne * sizeof(int));
+        long int *Ao_col_long = (long int *) PyArray_DATA(py_Ao_col);
+        for(int i = 0; i < Ao_ne; i++) Ao_col[i] = (int) Ao_col_long[i];
     }
 
-    // Convert 64bit integer A_ptr array to 32bit
-    int a_ptr_len;
-    if(!strcmp(A_type, "sparse_by_columns")){
-      a_ptr_len = m + 1;
-    } else {
-      a_ptr_len = n + 1;
-    }
-    if((PyObject *) py_A_ptr != Py_None){
-        A_ptr = malloc(a_ptr_len * sizeof(int));
-        long int *A_ptr_long = (long int *) PyArray_DATA(py_A_ptr);
-        for(int i = 0; i < a_ptr_len; i++) A_ptr[i] = (int) A_ptr_long[i];
+    // Convert 64bit integer Ao_ptr array to 32bit
+    if((PyObject *) py_Ao_ptr != Py_None){
+        Ao_ptr = malloc(Ao_ptr_ne * sizeof(int));
+        long int *Ao_ptr_long = (long int *) PyArray_DATA(py_Ao_ptr);
+        for(int i = 0; i < Ao_ptr_ne; i++) Ao_ptr[i] = (int) Ao_ptr_long[i];
     }
 
     // Reset control options
@@ -513,13 +508,13 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call blls_import
-    blls_import(&control, &data, &status, n, m,
-                A_type, A_ne, A_row, A_col, A_ptr);
+    blls_import(&control, &data, &status, n, o,
+                Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr);
 
     // Free allocated memory
-    if(A_row != NULL) free(A_row);
-    if(A_col != NULL) free(A_col);
-    if(A_ptr != NULL) free(A_ptr);
+    if(Ao_row != NULL) free(Ao_row);
+    if(Ao_col != NULL) free(Ao_col);
+    if(Ao_ptr != NULL) free(Ao_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -533,27 +528,25 @@ static PyObject* py_blls_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   BLLS_SOLVE_LS   -*-*-*-*-*-*-*-*
 
 static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
-    PyArrayObject *py_w, *py_A_val;
+    PyArrayObject *py_w, *py_Ao_val;
     PyArrayObject *py_b, *py_x_l, *py_x_u, *py_x, *py_z;
-    double *w, *A_val, *b, *x_l, *x_u, *x, *z;
-    int n, m, A_ne;
+    double *w, *Ao_val, *b, *x_l, *x_u, *x, *z;
+    int n, o, Ao_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiOiOOOOOO", &n, &m, &py_w, 
-                         &A_ne, &py_A_val, &py_b, &py_x_l, &py_x_u, 
+    if(!PyArg_ParseTuple(args, "iiOiOOOOOO", &n, &o, &py_w, 
+                         &Ao_ne, &py_Ao_val, &py_b, &py_x_l, &py_x_u, 
                          &py_x, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!check_array_double("w", py_w, m))
+    if(!check_array_double("A_val", py_Ao_val, Ao_ne))
         return NULL;
-    if(!check_array_double("A_val", py_A_val, A_ne))
-        return NULL;
-    if(!check_array_double("b", py_b, m))
+    if(!check_array_double("b", py_b, o))
         return NULL;
     if(!check_array_double("x_l", py_x_l, n))
         return NULL;
@@ -563,12 +556,11 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
         return NULL;
     if(!check_array_double("z", py_z, n))
         return NULL;
-    if(!check_array_double("w", py_w, m))
+    if(!check_array_double("w", py_w, o))
         return NULL;
 
     // Get array data pointer
-    w = (double *) PyArray_DATA(py_w);
-    A_val = (double *) PyArray_DATA(py_A_val);
+    Ao_val = (double *) PyArray_DATA(py_Ao_val);
     b = (double *) PyArray_DATA(py_b);
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
@@ -577,11 +569,11 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
     w = (double *) PyArray_DATA(py_w);
 
    // Create NumPy output arrays
-    npy_intp ndim[] = {n}; // size of x_stat
-    npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
-      (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
-    double *c = (double *) PyArray_DATA(py_c);
+    npy_intp ndim[] = {n}; // size of g and x_stat
+    npy_intp odim[] = {o}; // size of c
+    PyArrayObject *py_r = 
+      (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
+    double *r = (double *) PyArray_DATA(py_r);
     PyArrayObject *py_g = 
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
@@ -591,12 +583,12 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
 
     // Call blls_solve_direct
     status = 1; // set status to 1 on entry
-    blls_solve_given_a(&data, NULL, &status, n, m, A_ne, A_val, 
-                       b, x_l, x_u, x, z, c, g, x_stat, w, NULL);
+    blls_solve_given_a(&data, NULL, &status, n, o, Ao_ne, Ao_val, 
+                       b, x_l, x_u, x, z, r, g, x_stat, w, NULL);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
+    // for( int i = 0; i < o; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
+    // for( int i = 0; i < o; i++) printf("c_stat %i\n", c_stat[i]);
     
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -606,9 +598,9 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Return x, z, c, g and x_stat
+    // Return x, z, r, g and x_stat
     PyObject *solve_ls_return;
-    solve_ls_return = Py_BuildValue("OOOOO", py_x, py_z, py_c, py_g, 
+    solve_ls_return = Py_BuildValue("OOOOO", py_x, py_z, py_r, py_g, 
                                      py_x_stat);
     Py_INCREF(solve_ls_return);
     return solve_ls_return;
@@ -665,10 +657,10 @@ PyDoc_STRVAR(blls_module_doc,
 "solve a given bound-constrained linear least-squares problem.\n"
 "The aim is to minimize the regularized linear least-squares\n"
 "objective function\n"
-"q(x) =  1/2 || A x - b||_W^2 + sigma/2 ||x||_2^2 \n"
+"q(x) =  1/2 || A_o x - b||_W^2 + sigma/2 ||x||_2^2 \n"
 "subject to the simple bounds\n"
 "x_l <= x <= x_u,\n"
-"where the m by n matrix A, the vectors \n"
+"where the o by n matrix A_o, the vectors \n"
 "b, x_l, x_u and the non-negative weights w and \n"
 "sigma are given, and where the Euclidean and weighted-Euclidean norms\n"
 "are given by ||v||_2^2 = v^T v and ||v||_W^2 = v^T W v,\n"
