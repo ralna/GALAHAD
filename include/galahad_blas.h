@@ -1,4 +1,56 @@
 #ifdef GALAHAD_64BIT_INTEGER
+#define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
+#ifdef GALAHAD_NO_UNDERSCORE_64BIT_INTEGER
+#define SNRM2 SNRM264
+#define DNRM2 DNRM264
+#define ISAMAX ISAMAX64
+#define IDAMAX IDAMAX64
+#define SROTG SROTG64
+#define DROTG DROTG64
+#define SROT SROT64
+#define DROT DROT64
+#define SSWAP SSWAP64
+#define DSWAP DSWAP64
+#define SSCAL SSCAL64
+#define DSCAL DSCAL64
+#define STRSV STRSV64
+#define DTRSV DTRSV64
+#define STRSM STRSM64
+#define DTRSM DTRSM64
+#define STBSV STBSV64
+#define DTBSV DTBSV64
+#define SGEMV SGEMV64
+#define DGEMV DGEMV64
+#define SGEMM SGEMM64
+#define DGEMM DGEMM64
+#define SGER SGER64
+#define DGER DGER64
+#elif GALAHAD_DOUBLE_UNDERSCORE_64BIT_INTEGER
+#define SNRM2 SNRM2__64
+#define DNRM2 DNRM2__64
+#define ISAMAX ISAMAX__64
+#define IDAMAX IDAMAX__64
+#define SROTG SROTG__64
+#define DROTG DROTG__64
+#define SROT SROT__64
+#define DROT DROT__64
+#define SSWAP SSWAP__64
+#define DSWAP DSWAP__64
+#define SSCAL SSCAL__64
+#define DSCAL DSCAL__64
+#define STRSV STRSV__64
+#define DTRSV DTRSV__64
+#define STRSM STRSM__64
+#define DTRSM DTRSM__64
+#define STBSV STBSV__64
+#define DTBSV DTBSV__64
+#define SGEMV SGEMV__64
+#define DGEMV DGEMV__64
+#define SGEMM SGEMM__64
+#define DGEMM DGEMM__64
+#define SGER SGER__64
+#define DGER DGER__64
+#else
 #define SNRM2 SNRM2_64
 #define DNRM2 DNRM2_64
 #define ISAMAX ISAMAX_64
@@ -23,4 +75,5 @@
 #define DGEMM DGEMM_64
 #define SGER SGER_64
 #define DGER DGER_64
+#endif
 #endif

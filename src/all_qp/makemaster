@@ -290,6 +290,11 @@ make_blls_cutest:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_cutest_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
 
+make_bllsb_cutest:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
 make_bqp_cutest:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_cutest_addon \
@@ -397,6 +402,11 @@ make_blls_ampl:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_ampl_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
 
+make_bllsb_ampl:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
 make_bqp_ampl:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_ampl_addon \
@@ -494,6 +504,11 @@ make_blls_qplib:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_qplib_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
 
+make_bllsb_qplib:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
 make_bqp_qplib:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_qplib_addon \
@@ -590,6 +605,11 @@ make_blls_test:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_bllsb_test:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_test:
 	( cd $(GALAHAD)/src/bqp ; \
@@ -703,6 +723,11 @@ make_blls_tests:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
 
+make_bllsb_tests:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
 make_bqp_tests:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -810,6 +835,11 @@ make_blls_test_full:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
 
+make_bllsb_test_full:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
 make_bqp_test_full:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
@@ -911,6 +941,11 @@ make_blls_test_spec:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_bllsb_test_spec:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_test_spec:
 	( cd $(GALAHAD)/src/bqp ; \
@@ -1024,6 +1059,11 @@ make_ciface_blls_test:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
 
+make_ciface_bllsb_test:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+
 make_ciface_bqp_test:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
@@ -1135,6 +1175,11 @@ make_pyiface_blls_test:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_pyiface_bllsb_test:
+	( cd $(GALAHAD)/src/bllsb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
 
 make_pyiface_bqp_test:
 	( cd $(GALAHAD)/src/bqp ; \
