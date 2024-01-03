@@ -1,4 +1,4 @@
-name: standalone
+name: Meson
 on:
   push:
     branches:
@@ -55,11 +55,16 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja numpy
 
-      - name: Set the environment variables GALAHAD and DEPS
+      - name: Set the environment variables GALAHAD, DEPS and LIBDIR
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
           echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
+          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+            echo "LIBDIR=bin" >> $GITHUB_ENV
+          else
+            echo "LIBDIR=lib" >> $GITHUB_ENV
+          fi
 
       - name: Install dependencies
         shell: bash
@@ -67,14 +72,19 @@ jobs:
           cd $DEPS
           mkdir deps
           if [[ "${{matrix.int64}}" == "true" ]]; then
-            wget https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.11.tar.gz
-            tar -xzvf v3.11.tar.gz -C deps
-            cd deps/lapack-*
-            mkdir build
-            cd build
-            cmake -DCMAKE_INSTALL_LIBDIR=$DEPS/lapack -DBUILD_SHARED_LIBS=ON -DBUILD_INDEX64=ON ..
-            make -j4
-            make install
+            PLATFORM=""
+            if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
+              PLATFORM="x86_64-linux-gnu"
+            fi
+            if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+              PLATFORM=x86_64-apple-darwin""
+            fi
+            if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+              PLATFORM="x86_64-w64-mingw32"
+              choco install wget
+            fi
+            wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.25%2B0/OpenBLAS.v0.3.25.$PLATFORM-libgfortran5.tar.gz
+            tar -xzvf OpenBLAS.v0.3.25.$PLATFORM-libgfortran5.tar.gz -C deps
           fi
 
       - name: Set the environment variable LD_LIBRARY_PATH
@@ -116,9 +126,9 @@ jobs:
           if [[ "${{matrix.int64}}" == "true" ]]; then
             meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true \
                                  --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
-                                 -Dgalahad_int64=true -Dlibblas_path=$DEPS/lapack \
-                                 -Dliblapack_path=$DEPS/lapack -Dlibblas=blas64 \
-                                 -Dliblapack=lapack64
+                                 -Dgalahad_int64=true -Dlibblas_path=$DEPS/deps/$LIBDIR \
+                                 -Dliblapack_path=$DEPS/deps/$LIBDIR -Dlibblas=openblas64_ \
+                                 -Dliblapack=openblas64_
           else
             meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true \
                                  --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
