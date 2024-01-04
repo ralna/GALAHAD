@@ -50,12 +50,6 @@ endif
 # Options
 install_modules = get_option('modules')
 galahad_int64 = get_option('galahad_int64')
-
-# 64 bits integer
-if galahad_int64
-  pp_options += '-DGALAHAD_64BIT_INTEGER'
-endif
-
 build_ciface = get_option('ciface')
 build_pythoniface = get_option('pythoniface')
 build_single = get_option('single')
@@ -206,6 +200,12 @@ endif
 extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
 extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
 
+# 64 bits integer
+if galahad_int64
+  extra_args_single += '-DGALAHAD_64BIT_INTEGER'
+  extra_args_double += '-DGALAHAD_64BIT_INTEGER'
+endif
+
 # Sources
 subdir('bin')
 subdir('include')
@@ -328,10 +328,10 @@ subdir('src/zd11')
 if build_single
   gen_single = generator(fc_compiler,
                          output : 'single_@BASENAME@.f90',
-                         arguments : pp_options + ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE',
-                                     '-I', '@CURRENT_SOURCE_DIR@/include',
-                                     '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
-                                     '@INPUT@', '-o', '@OUTPUT@'])
+                         arguments : pp_options + extra_args_single +
+                                     ['-I', '@CURRENT_SOURCE_DIR@/include',
+                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                      '@INPUT@', '-o', '@OUTPUT@'])
 
   to_process_single = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src, libgalahad_mumps_single_src]
   if libcutest_single.found()
@@ -359,10 +359,10 @@ endif
 if build_double
   gen_double = generator(fc_compiler,
                          output : 'double_@BASENAME@.f90',
-                         arguments : pp_options + ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE',
-                                     '-I', '@CURRENT_SOURCE_DIR@/include',
-                                     '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
-                                     '@INPUT@', '-o', '@OUTPUT@'])
+                         arguments : pp_options + extra_args_double +
+                                     ['-I', '@CURRENT_SOURCE_DIR@/include',
+                                      '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                      '@INPUT@', '-o', '@OUTPUT@'])
 
   to_process_double = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src, libgalahad_mumps_double_src]
   if libcutest_double.found()
