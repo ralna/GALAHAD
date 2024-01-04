@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -2487,7 +2487,7 @@
 
   ! Compute data needed for subroutine cauchy_step.
 
-  data%two_norm_s_p = NRM2( n, data%s_p, 1 )
+  data%two_norm_s_p = NRM2( n, data%s_p, 1_ip_ )
 
   data%HxSp    = zero
   call mop_Ax( one, nlp%H, data%s_p, one, data%HxSp,  &
@@ -5721,7 +5721,7 @@
                    data%B%val(i) = min( max(B_lammin, abs(Hii)), B_lammax )
                 end do
              else
-                data%B%val = min( max(B_lammin, NRM2(n,nlp%G,1)), B_lammax )
+                data%B%val = min( max(B_lammin, NRM2(n,nlp%G,1_ip_)), B_lammax )
              end if
              data%L_BFGS%theta = one
              if ( print_level >= GALAHAD_debug ) then
@@ -5896,7 +5896,8 @@
 
     if ( iterate == 1 ) then
 
-       data%B%val(   : n ) = max( B_lammin, min( B_lammax, NRM2(n,nlp%G,1) ) )
+       data%B%val(   : n ) = max( B_lammin,                                    &
+                                  min( B_lammax, NRM2(n,nlp%G,1_ip_) ) )
        QPpred%H%val( : n ) = data%B%val( : n )
 
     else
@@ -5918,7 +5919,7 @@
              end do
              QPpred%H%val(1:n) = data%B%val(1:n)
           else
-             dummy_real = min( max(B_lammin, NRM2(n,nlp%G,1) ), B_lammax )
+             dummy_real = min( max(B_lammin, NRM2(n,nlp%G,1_ip_) ), B_lammax )
              data%B%val(   : n) = dummy_real
              QPpred%H%val( : n) = dummy_real
           end if
@@ -6024,7 +6025,7 @@
 
        ! Skip the update if Bs = y already.
 
-       dummy_real = tenm8 * max( one, NRM2(n, data%BFGS%d, 1) )
+       dummy_real = tenm8 * max( one, NRM2(n, data%BFGS%d, 1_ip_) )
 
        if ( NRM2( n, data%BFGS%Bs - data%BFGS%d, 1 ) <= dummy_real ) then
           if ( print_level >= GALAHAD_debug ) then
@@ -10165,7 +10166,7 @@
 
  ! Skip the update if the current implict "B" satisfies Bs = y.
 
- if ( NRM2(n,Bs-y,1) <= tenm8 * max( one, NRM2(n,y,1) ) ) then
+ if ( NRM2(n,Bs-y,1_ip_) <= tenm8 * max( one, NRM2(n,y,1_ip_) ) ) then
     if ( print_level >= GALAHAD_debug ) then
        write(out,1000)
        write(out,1010) ! footer
@@ -10190,7 +10191,7 @@
 
  ! Skip the update if stBs is small.
 
- if ( stBs <= tenm8 * NRM2(n,svec,1)  ) then
+ if ( stBs <= tenm8 * NRM2(n,svec,1_ip_)  ) then
     if ( print_level >= GALAHAD_debug ) then
        write(out,1002) stBs
        write(out,1010) ! footer

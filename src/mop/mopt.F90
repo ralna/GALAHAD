@@ -15,13 +15,13 @@
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Daniel Robinson
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
 PROGRAM test_mop
 
 ! ***************************************************************
-!                                                               ! 
+!                                                               !
 !              Test function for subroutine mop_Ax              !
 !                                                               !
 ! ***************************************************************
@@ -50,7 +50,7 @@ PROGRAM test_mop
   USE GALAHAD_MOP_precision
 
   IMPLICIT NONE
-   
+
 !  Set parameters
 
   REAL ( KIND = rp_ ), PARAMETER :: zero           = 0.0_rp_
@@ -75,7 +75,7 @@ PROGRAM test_mop
   INTERFACE IAMAX
      FUNCTION ISAMAX( n, X, incx )
       USE GALAHAD_KINDS_precision
-      INTEGER ( KIND = ip_ ) :: IDAMAX
+      INTEGER ( KIND = ip_ ) :: ISAMAX
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
     END FUNCTION ISAMAX
@@ -129,12 +129,12 @@ PROGRAM test_mop
   sqrt3 = sqrt( three )
 
 ! intialize some variables
- 
+
   max_error    = zero
   err          = one
   number_wrong = 0
   nprob        = 1
-   
+
 ! set values for optional input values to mop_Ax.
 
   print_level_mop_Ax     = 0
@@ -147,13 +147,13 @@ PROGRAM test_mop
 
 !******************************************
 !                                         !
-!          |   1   2   3   4   5   |      ! 
+!          |   1   2   3   4   5   |      !
 !          |   6   7   8   9  10   |      !
 !     A =  |  11  12  13  14  15   |      !
 !          |  16  17  18  19  20   |      !
 !          |  21  22  23  24  25   |      !
 !                                         !
-!******************************************  
+!******************************************
 
   tol = epsmch ** 0.6
   value = one
@@ -169,16 +169,16 @@ PROGRAM test_mop
 
   ALLOCATE( B%val( 1:25 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%row( 1:25 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%col( 1:25 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%ptr( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%id( 1:25 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
 
@@ -218,22 +218,22 @@ PROGRAM test_mop
   DO i = 1, 5
      B%val( i ) = A( i, i )
   END DO
-  
+
   ! the solution
-  
+
   DO i = 1, 5
      R_sol( i ) = sqrt3 * ( one + A( i, i ) )
   END DO
-  
+
   ! get solution from mop_Ax
-  
+
   CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                print_level_mop_Ax, symm, trans )
-  
-  err_loc   = IAMAX( 5, R_sol - R, 1 )
+
+  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
-  
+
   IF ( err > tol ) THEN
      number_wrong = number_wrong + 1
 
@@ -242,7 +242,7 @@ PROGRAM test_mop
      END IF
 
   ELSE
- 
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2001 ) nprob
      END IF
@@ -250,45 +250,45 @@ PROGRAM test_mop
   END IF
 
   nprob = nprob + 1
-     
+
   ! re-load R
-  
+
   R = Rfx
 
   ! Second problem.
   ! *****************
 
   ! Same matrix, just testing optional parameters.
-  
+
   CALL mop_Ax( alpha, B, X, beta, R )
-  
-  err_loc   = IAMAX( 5, R_sol - R, 1 )
+
+  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
 
   IF ( err > tol ) THEN
-     
+
      number_wrong = number_wrong + 1
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2000 ) nprob
      END IF
-     
+
   ELSE
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2001 ) nprob
      END IF
-     
+
   END IF
-  
+
   nprob = nprob + 1
-  
+
   ! re-load R
-  
+
   R = Rfx
 
-  ! Third problem ( alpha = 2, beta = 3 ) 
+  ! Third problem ( alpha = 2, beta = 3 )
   ! *************************************
 
   alpha = two
@@ -301,34 +301,34 @@ PROGRAM test_mop
   END DO
 
   ! get solution from mop_Ax
-  
+
   CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                print_level_mop_Ax, symm, trans )
-  
-  err_loc   = IAMAX( 5, R_sol - R, 1 )
+
+  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
-  
+
   IF ( err > tol ) THEN
-     
+
      number_wrong = number_wrong + 1
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2000 ) nprob
      END IF
-     
+
   ELSE
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2001 ) nprob
      END IF
-     
+
   END IF
 
   nprob = nprob +  1
-  
+
   ! re-load R
-  
+
   R = Rfx
 
   ! Fourth problem ( reset alpha = beta = one )
@@ -338,43 +338,43 @@ PROGRAM test_mop
   beta  = one
 
   ! Test with zeros, i.e. "A" = 0
-  
+
   B%val = zero
-  
+
   ! solution
-  
+
   R_sol = sqrt3
-  
-  
+
+
   ! get solution from mop_Ax
-  
+
   CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                print_level_mop_Ax, symm, trans )
 
-  err_loc   = IAMAX( 5, R_sol - R, 1 )
+  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
 
   IF ( err > tol ) THEN
-     
+
      number_wrong = number_wrong + 1
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2000 ) nprob
      END IF
-     
+
   ELSE
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 2001 ) nprob
      END IF
-     
+
   END IF
 
   nprob = nprob +  1
-  
+
   ! re-load R
-  
+
   R = Rfx
 
 ! *****************************************************************
@@ -383,15 +383,15 @@ PROGRAM test_mop
 
   alpha = one
   beta  = one
-  
+
   DO mx_type = 1, 6
-     
+
      SELECT CASE ( mx_type )
-        
+
      CASE ( 1 )
-        
+
         ! short and wide
-        
+
         m = 3
         n = 5
         symm = .FALSE.
@@ -440,7 +440,7 @@ PROGRAM test_mop
         m = 5
         n = 5
         symm = .TRUE.
-        
+
      END SELECT
 
      ! the solutions for both "A" and "A^T" cases
@@ -464,7 +464,7 @@ PROGRAM test_mop
         R_sol( 5 ) = sqrt3 + sqrt3 * hundredfifteen - sqrt3 * twentytwo
 
         R_sol_trans = R_sol
-        
+
      ELSE
 
         DO i = 1, m
@@ -501,26 +501,26 @@ PROGRAM test_mop
         CASE ( 'DENSE' )
 
            IF ( symm ) THEN
-              
+
               tally = 1
-              
+
               DO i = 1, m
                  DO j = 1, i
                     B%val( tally ) = A( i, j )
                     tally = tally + 1
                  END DO
               END DO
-              
+
            ELSE
-              
+
               DO i = 1, m
                  DO j = 1, n
                     B%val( n*(i-1) + j ) = A( i, j )
                  END DO
               END DO
-              
+
            END IF
-           
+
         CASE ( 'SPARSE_BY_ROWS' )
 
         tally = 1
@@ -528,13 +528,13 @@ PROGRAM test_mop
         IF( symm ) THEN
 
            B%ptr( 1 ) = 1
-           
+
            DO i = 1, m
-              
+
               row_tally = 0
-              
+
               DO j = 1, i
-                 
+
                  IF ( A( i, j ) /= zero ) THEN
                     B%val( tally ) = A( i, j )
                     B%col( tally ) = j
@@ -543,17 +543,17 @@ PROGRAM test_mop
                  END IF
 
               END DO
-              
+
               B%ptr( i + 1 ) = B%ptr( i ) + row_tally
-              
+
            END DO
-           
+
         ELSE
 
            B%ptr( 1 ) = 1
-           
+
            DO i = 1, m
-              
+
               row_tally = 0
 
               DO j = 1, n
@@ -565,13 +565,13 @@ PROGRAM test_mop
                     tally = tally + 1
                  END IF
               END DO
-              
+
               B%ptr( i + 1 ) = B%ptr( i ) + row_tally
-              
+
            END DO
-           
+
         END IF
-        
+
      CASE ( 'SPARSE_BY_COLUMNS' )
 
         tally = 1
@@ -579,13 +579,13 @@ PROGRAM test_mop
         IF( symm ) THEN
 
            B%ptr( 1 ) = 1
-           
+
            DO j = 1, n
-              
+
               col_tally = 0
 
               DO i = j, m
-                 
+
                  IF ( A( i, j ) /= zero ) THEN
                     B%val( tally ) = A( i, j )
                     B%row( tally ) = i
@@ -594,18 +594,18 @@ PROGRAM test_mop
                  END IF
 
               END DO
-              
+
               B%ptr( j + 1 ) = B%ptr( j ) + col_tally
-              
+
            END DO
 
-           
+
         ELSE
 
            B%ptr( 1 ) = 1
-           
+
            DO j = 1, n
-              
+
               col_tally = 0
 
               DO i = 1, m
@@ -618,11 +618,11 @@ PROGRAM test_mop
                  END IF
 
               END DO
-              
+
               B%ptr( j + 1 ) = B%ptr( j ) + col_tally
-              
+
            END DO
-           
+
         END IF
 
      CASE ( 'COORDINATE' )
@@ -641,7 +641,7 @@ PROGRAM test_mop
                  END IF
               END DO
            END DO
-           
+
         ELSE
 
            DO i = 1, m
@@ -654,7 +654,7 @@ PROGRAM test_mop
                  END IF
               END DO
            END DO
-           
+
         END IF
 
         B%ne = tally-1
@@ -671,74 +671,74 @@ PROGRAM test_mop
      !*************
 
      trans = .FALSE.
-     
+
      CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                   print_level_mop_Ax, symm, trans )
 
-     err_loc   = IAMAX( m, R_sol - R, 1 )
+     err_loc   = IAMAX( m, R_sol - R, 1_ip_ )
      err       = ABS( R_sol( err_loc ) - R( err_loc ) )
      max_error = MAX( err, max_error )
 
      IF ( err > tol ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
-     
+
      ! re-load R
-     
+
      R = Rfx
 
      ! Get ( transposed ) solution from mop_Ax: r <- r + A^T x
-     
+
      ! New problem.
      !*************
 
      trans = .TRUE.
-     
+
      CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                   print_level_mop_Ax, symm, trans )
 
-     err_loc   = IAMAX( n, R_sol_trans - R, 1 )
+     err_loc   = IAMAX( n, R_sol_trans - R, 1_ip_ )
      err       = ABS( R_sol_trans( err_loc ) - R( err_loc ) )
      max_error = MAX( err, max_error )
 
      IF ( err > tol ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
-     
+
      ! re-load R
-     
+
      R = Rfx
-     
+
   END DO
-  
+
 END DO
 
 ! *****************************************************************
@@ -752,13 +752,13 @@ beta  = one
 
 !******************************************
 !                                         !
-!          |   1   2   3   4   5   |      ! 
+!          |   1   2   3   4   5   |      !
 !          |   6   7   8   9  10   |      !
 !     A =  |  11  12  13  14  15   |      !
 !          |  16  17  18  19  20   |      !
 !          |  21  22  23  24  25   |      !
 !                                         !
-!******************************************  
+!******************************************
 
 value = one
 
@@ -770,13 +770,13 @@ DO i = 1, 5
 END DO
 
 DO mx_type = 1, 6
-     
+
    SELECT CASE ( mx_type )
-      
+
    CASE ( 1 )
-      
+
       ! short and wide
-      
+
       m = 3
       n = 5
         symm = .FALSE.
@@ -825,7 +825,7 @@ DO mx_type = 1, 6
         m = 5
         n = 5
         symm = .TRUE.
-        
+
      END SELECT
 
      ! the solutions for both "A" and "A^T" cases.  Note:
@@ -843,7 +843,7 @@ DO mx_type = 1, 6
         R_sol_trans = R_sol
 
      ELSEIF ( symm .AND. mx_type == 6 ) THEN
- 
+
         R_sol(1) = sqrt3 + three * ( sqrt3 * fiftyfive - sqrt3 * six )
         R_sol(2) = sqrt3
         R_sol(3) = sqrt3 + three * sqrt3 * ( seventyseven - twelve )
@@ -851,7 +851,7 @@ DO mx_type = 1, 6
         R_sol(5) = sqrt3 + three * sqrt3 * ( hundredfifteen - twentytwo )
 
         R_sol_trans = R_sol
-        
+
      ELSE
 
         DO i = 1, m
@@ -889,26 +889,26 @@ DO mx_type = 1, 6
         CASE ( 'DENSE' )
 
            IF ( symm ) THEN
-              
+
               tally = 1
-              
+
               DO i = 1, m
                  DO j = 1, i
                     B%val( tally ) = A( i, j )
                     tally = tally + 1
                  END DO
               END DO
-              
+
            ELSE
-              
+
               DO i = 1, m
                  DO j = 1, n
                     B%val( n*(i-1) + j ) = A( i, j )
                  END DO
               END DO
-              
+
            END IF
-           
+
         CASE ( 'SPARSE_BY_ROWS' )
 
         tally = 1
@@ -916,13 +916,13 @@ DO mx_type = 1, 6
         IF( symm ) THEN
 
            B%ptr( 1 ) = 1
-           
+
            DO i = 1, m
-              
+
               row_tally = 0
-              
+
               DO j = 1, i
-                 
+
                  IF ( A( i, j ) /= zero ) THEN
                     B%val( tally ) = A( i, j )
                     B%col( tally ) = j
@@ -931,17 +931,17 @@ DO mx_type = 1, 6
                  END IF
 
               END DO
-              
+
               B%ptr( i + 1 ) = B%ptr( i ) + row_tally
-              
+
            END DO
-           
+
         ELSE
 
            B%ptr( 1 ) = 1
-           
+
            DO i = 1, m
-              
+
               row_tally = 0
 
               DO j = 1, n
@@ -953,13 +953,13 @@ DO mx_type = 1, 6
                     tally = tally + 1
                  END IF
               END DO
-              
+
               B%ptr( i + 1 ) = B%ptr( i ) + row_tally
-              
+
            END DO
-           
+
         END IF
-        
+
      CASE ( 'SPARSE_BY_COLUMNS' )
 
         tally = 1
@@ -967,13 +967,13 @@ DO mx_type = 1, 6
         IF( symm ) THEN
 
            B%ptr( 1 ) = 1
-           
+
            DO j = 1, n
-              
+
               col_tally = 0
 
               DO i = j, m
-                 
+
                  IF ( A( i, j ) /= zero ) THEN
                     B%val( tally ) = A( i, j )
                     B%row( tally ) = i
@@ -982,18 +982,18 @@ DO mx_type = 1, 6
                  END IF
 
               END DO
-              
+
               B%ptr( j + 1 ) = B%ptr( j ) + col_tally
-              
+
            END DO
 
-           
+
         ELSE
 
            B%ptr( 1 ) = 1
-           
+
            DO j = 1, n
-              
+
               col_tally = 0
 
               DO i = 1, m
@@ -1006,11 +1006,11 @@ DO mx_type = 1, 6
                  END IF
 
               END DO
-              
+
               B%ptr( j + 1 ) = B%ptr( j ) + col_tally
-              
+
            END DO
-           
+
         END IF
 
      CASE ( 'COORDINATE' )
@@ -1029,7 +1029,7 @@ DO mx_type = 1, 6
                  END IF
               END DO
            END DO
-           
+
         ELSE
 
            DO i = 1, m
@@ -1042,7 +1042,7 @@ DO mx_type = 1, 6
                  END IF
               END DO
            END DO
-           
+
         END IF
 
         B%ne = tally-1
@@ -1059,70 +1059,70 @@ DO mx_type = 1, 6
      !*************
 
      trans = .FALSE.
-     
+
      CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                   print_level_mop_Ax, symm, trans )
 
-     err_loc   = IAMAX( m, R_sol - R, 1 )
+     err_loc   = IAMAX( m, R_sol - R, 1_ip_ )
      err       = ABS( R_sol( err_loc ) - R( err_loc ) )
      max_error = MAX( err, max_error )
 
      IF ( err > tol ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
-     
+
      ! re-load R
-     
+
      R = Rfx
 
      ! Get ( transposed ) solution from mop_Ax: r <- r + A^T x
-     
+
      ! New problem.
      !*************
 
      trans = .TRUE.
-     
+
      CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
                   print_level_mop_Ax, symm, trans )
 
-     err_loc   = IAMAX( n, R_sol_trans - R, 1 )
+     err_loc   = IAMAX( n, R_sol_trans - R, 1_ip_ )
      err       = ABS( R_sol_trans( err_loc ) - R( err_loc ) )
      max_error = MAX( err, max_error )
 
      IF ( err > tol ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
-     
+
      ! re-load R
-     
+
      R = Rfx
 
   END DO
@@ -1151,7 +1151,7 @@ symm = .TRUE.
 tally = 1
 
 IF( symm ) THEN
-   
+
    DO i = 1, m
       DO j = 1, i
          IF ( A( i, j ) /= zero ) THEN
@@ -1162,9 +1162,9 @@ IF( symm ) THEN
          END IF
       END DO
    END DO
-   
+
 ELSE
-   
+
    DO i = 1, m
       DO j = 1, n
          IF ( A( i, j ) /= zero ) THEN
@@ -1175,7 +1175,7 @@ ELSE
          END IF
       END DO
    END DO
-   
+
 END IF
 
 B%ne = tally-1
@@ -1197,24 +1197,24 @@ CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
 
 ! compute error
 
-err_loc   = IAMAX( n, R_sol - R, 1 )
+err_loc   = IAMAX( n, R_sol - R, 1_ip_ )
 err       = ABS( R_sol( err_loc ) - R( err_loc ) )
 max_error = MAX( err, max_error )
 
 IF ( err > tol ) THEN
-   
+
    number_wrong = number_wrong + 1
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2000 ) nprob
    END IF
-   
+
 ELSE
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2001 ) nprob
    END IF
-   
+
 END IF
 
 nprob = nprob + 1
@@ -1240,24 +1240,24 @@ CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
 
 ! compute error
 
-err_loc   = IAMAX( n, R_sol - R, 1 )
+err_loc   = IAMAX( n, R_sol - R, 1_ip_ )
 err       = ABS( R_sol( err_loc ) - R( err_loc ) )
 max_error = MAX( err, max_error )
 
 IF ( err > tol ) THEN
-   
+
    number_wrong = number_wrong + 1
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2000 ) nprob
    END IF
-   
+
 ELSE
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2001 ) nprob
    END IF
-   
+
 END IF
 
 nprob = nprob + 1
@@ -1283,24 +1283,24 @@ CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
 
 ! compute error
 
-err_loc   = IAMAX( n, R_sol - R, 1 )
+err_loc   = IAMAX( n, R_sol - R, 1_ip_ )
 err       = ABS( R_sol( err_loc ) - R( err_loc ) )
 max_error = MAX( err, max_error )
 
 IF ( err > tol ) THEN
-   
+
    number_wrong = number_wrong + 1
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2000 ) nprob
    END IF
-   
+
 ELSE
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2001 ) nprob
    END IF
-   
+
 END IF
 
 nprob = nprob + 1
@@ -1326,24 +1326,24 @@ CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
 
 ! compute error
 
-err_loc   = IAMAX( n, R_sol - R, 1 )
+err_loc   = IAMAX( n, R_sol - R, 1_ip_ )
 err       = ABS( R_sol( err_loc ) - R( err_loc ) )
 max_error = MAX( err, max_error )
 
 IF ( err > tol ) THEN
-   
+
    number_wrong = number_wrong + 1
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2000 ) nprob
    END IF
-   
+
 ELSE
-   
+
    IF ( print_level >= 2 ) THEN
       WRITE( out, 2001 ) nprob
    END IF
-   
+
 END IF
 
 nprob = nprob + 1
@@ -1358,7 +1358,7 @@ R = Rfx
 
      WRITE( out, 3002 ) ! header
      WRITE( out, 3000 ) nprob-1, number_wrong
-     
+
      IF ( print_level >= 2 ) THEN
         WRITE( out, 3001 ) tol, max_error
      END IF
@@ -1376,7 +1376,7 @@ R = Rfx
 !*************************************************************
 
   ! Reset some values
-  
+
   nprob        = 1
   number_wrong = 0
 
@@ -1389,7 +1389,7 @@ R = Rfx
   ! The test matrix
 
   !******************!
-  !                  !      
+  !                  !
   !  A =  | 0  1  |  !
   !       | 2  3  |  !
   !                  !
@@ -1480,88 +1480,88 @@ R = Rfx
         END IF
 
      END IF
-     
+
      nprob = nprob + 1
 
      ! A2(1,2)
      !********
 
      CALL mop_getval( B, 1, 2, value, symm, out, error, print_level_mop_getval)
-     
+
      IF ( value /= one ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >=2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
 
      ! A2(2,1)
      !********
 
      CALL mop_getval( B, 2, 1, value, symm, out, error, print_level_mop_getval)
-     
+
      IF ( value /= two ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >=2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
 
      ! A2(2,2)
      !********
 
      CALL mop_getval( B, 2, 2, value, symm, out, error, print_level_mop_getval)
-     
+
      IF ( value /= three ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >=2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
 
   END DO
-  
+
   !*******************
   ! Test symmetric
   !*******************
 
  ! The test matrix
 
-  !******************!     
-  !                  !    
+  !******************!
+  !                  !
   !  A =  | 0  1  |  !
   !       | 1  2  |  !
   !                  !
@@ -1645,76 +1645,76 @@ R = Rfx
         END IF
 
      END IF
-     
+
      nprob = nprob + 1
 
      ! A2(1,2)
      !********
 
      CALL mop_getval( B, 1, 2, value, symm, out, error, print_level_mop_getval)
-     
+
      IF ( value /= one ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >=2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
 
      ! A2(2,1)
      !********
 
      CALL mop_getval( B, 2, 1, value, symm, out, error, print_level_mop_getval)
-     
+
      IF ( value /= one ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >=2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
 
      ! A2(2,2)
      !********
 
      CALL mop_getval( B, 2, 2, value, symm, out, error, print_level_mop_getval)
-     
+
      IF ( value /= two ) THEN
-        
+
         number_wrong = number_wrong + 1
-        
+
         IF ( print_level >=2 ) THEN
            WRITE( out, 2000 ) nprob
         END IF
-        
+
      ELSE
-        
+
         IF ( print_level >= 2 ) THEN
            WRITE( out, 2001 ) nprob
         END IF
-        
+
      END IF
-     
+
      nprob = nprob + 1
 
   END DO
@@ -1722,7 +1722,7 @@ R = Rfx
   ! Print summary, if required.
 
   IF ( print_level >= 1 ) THEN
-     
+
      WRITE( out, 3004 ) ! header
      WRITE( out, 3000 ) nprob-1, number_wrong
      WRITE( out, 3005 ) ! footer
@@ -1733,19 +1733,19 @@ R = Rfx
 
   DEALLOCATE( B%val, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%row, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%col, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%ptr, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( B%id, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
@@ -1761,7 +1761,7 @@ R = Rfx
   number_wrong = 0
 
   ! Allocate and define matrices.
-  
+
   ALLOCATE( B%val( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
 
@@ -1776,13 +1776,13 @@ R = Rfx
 
   ALLOCATE( B2%val( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%row( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( uB%row( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( Bv%row( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
 
@@ -1806,13 +1806,13 @@ R = Rfx
 
   ALLOCATE( B2%col( 1:6 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%ptr( 1:4 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
 
   ALLOCATE( B2%ptr( 1:3 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
-  
+
   ALLOCATE( B%id( 1:25 ), STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1000)
 
@@ -1839,7 +1839,7 @@ R = Rfx
   v(1) = 2
   v(2) = 4
   v(3) = 6
-  
+
   ! First just scale by u on left.
 
   CALL SMT_put( uB%type, 'COORDINATE', stat )
@@ -1849,7 +1849,7 @@ R = Rfx
   uB%n = 3
 
   uB%row(1) = 1
-  uB%col(1) = 1 
+  uB%col(1) = 1
   uB%val(1) = 2
 
   uB%row(2) = 1
@@ -1881,7 +1881,7 @@ R = Rfx
   Bv%n = 3
 
   Bv%row(1) = 1
-  Bv%col(1) = 1 
+  Bv%col(1) = 1
   Bv%val(1) = 2
 
   Bv%row(2) = 1
@@ -1907,13 +1907,13 @@ R = Rfx
   ! Finally scale by both u and v.
 
   CALL SMT_put( uBv%type, 'COORDINATE', stat )
-  
+
   uBv%ne = 6
   uBv%m = 2
   uBv%n = 3
 
   uBv%row(1) = 1
-  uBv%col(1) = 1 
+  uBv%col(1) = 1
   uBv%val(1) = 4
 
   uBv%row(2) = 1
@@ -1950,31 +1950,31 @@ R = Rfx
         CALL SMT_put( B%type, 'COORDINATE', stat )
 
         B%ne = 6
-  
+
         B%row(1) = 1
-        B%col(1) = 1 
+        B%col(1) = 1
         B%val(1) = 1
-        
+
         B%row(2) = 1
         B%col(2) = 2
         B%val(2) = 3
-        
+
         B%row(3) = 1
         B%col(3) = 3
         B%val(3) = 4
-        
+
         B%row(4) = 2
         B%col(4) = 1
         B%val(4) = 2
-        
+
         B%row(5) = 2
         B%col(5) = 2
         B%val(5) = 5
-        
+
         B%row(6) = 2
         B%col(6) = 3
-        B%val(6) = 6 
-        
+        B%val(6) = 6
+
      elseif ( storage_number == 2 ) then
 
         CALL SMT_put( B%type, 'SPARSE_BY_ROWS', stat )
@@ -2003,7 +2003,7 @@ R = Rfx
 
      elseif ( storage_number == 3 ) then
 
-        CALL SMT_put( B%type, 'DENSE', stat ) 
+        CALL SMT_put( B%type, 'DENSE', stat )
 
         B%val(1) = 1
         B%val(2) = 3
@@ -2104,17 +2104,17 @@ R = Rfx
 
   u(1) = 5
   u(2) = -1
- 
+
   ! Perform the scaling of rows and columns by u.
 
   CALL SMT_put( uBv%type, 'COORDINATE', stat )
-  
+
   uBv%ne = 3
   uBv%m  = 2
   uBv%n  = 2
 
   uBv%row(1) = 1
-  uBv%col(1) = 1 
+  uBv%col(1) = 1
   uBv%val(1) = 50
 
   uBv%row(2) = 2
@@ -2139,19 +2139,19 @@ R = Rfx
         CALL SMT_put( B%type, 'COORDINATE', stat )
 
         B%ne = 3
-  
+
         B%row(1) = 1
-        B%col(1) = 1 
+        B%col(1) = 1
         B%val(1) = 2
-        
+
         B%row(2) = 2
         B%col(2) = 1
         B%val(2) = 3
-        
+
         B%row(3) = 2
         B%col(3) = 2
         B%val(3) = -4
-        
+
      elseif ( storage_number == 2 ) then
 
         CALL SMT_put( B%type, 'SPARSE_BY_ROWS', stat )
@@ -2171,19 +2171,19 @@ R = Rfx
 
      elseif ( storage_number == 3 ) then
 
-        CALL SMT_put( B%type, 'DENSE', stat ) 
+        CALL SMT_put( B%type, 'DENSE', stat )
 
         B%val(1) = 2
         B%val(2) = 3
         B%val(3) = -4
 
-     elseif ( storage_number == 4 ) then 
+     elseif ( storage_number == 4 ) then
 
         CALL SMT_put( B%type, 'SPARSE_BY_COLUMNS', stat )
-        
+
         B%row(1) = 1
         B%val(1) = 2
-        
+
         B%row(2) = 2
         B%val(2) = 3
 
@@ -2197,7 +2197,7 @@ R = Rfx
      end if
 
      ! Compute and check solution from mop_scaleA.
-     
+
      call mop_scaleA( B, u(1:2), symmetric=.true. )
 
      do i = 1, 2
@@ -2211,7 +2211,7 @@ R = Rfx
            end if
         end do
      end do
- 
+
   end do
 
   ! Finally, test a simple diagonal case.
@@ -2220,21 +2220,21 @@ R = Rfx
   ! Define the solution for the following problem:
   ! B = | 2   0 |  with scalings u = | 5 |
   !     | 0  -4 |                    |-1 |
-  
-  CALL SMT_put( B%type, 'DIAGONAL', stat ) 
+
+  CALL SMT_put( B%type, 'DIAGONAL', stat )
 
   B%m = 2
-  B%n = 2 
-  
+  B%n = 2
+
   B%val(1) = 2
   B%val(2) = -4
-    
+
   u(1) = 5
   u(2) = -1
 
   uBv%row(1) = 1
   uBv%row(2) = 2
-  
+
   uBv%col(1) = 1
   uBv%col(2) = 2
 
@@ -2242,7 +2242,7 @@ R = Rfx
   uBv%val(2) = -4
 
   ! Compute and check solution from mop_scaleA.
-     
+
   call mop_scaleA( B, u(1:2), symmetric=.true. )
 
   do i = 1, 2
@@ -2261,88 +2261,88 @@ R = Rfx
 
   DEALLOCATE( B%val, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%row, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%col, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%ptr, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( B%id, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( B2%val, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B2%row, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B2%col, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B2%ptr, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( B2%id, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( B2%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( uB%val, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uB%row, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uB%col, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uB%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( Bv%val, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( Bv%row, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( Bv%col, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( Bv%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uBv%val, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uBv%row, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uBv%col, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( uBv%type, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
 
   DEALLOCATE( u, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   DEALLOCATE( v, STAT=stat )
   IF ( stat /= 0 ) WRITE( error, 1001)
-  
+
   IF ( print_level >= 1 ) THEN
-     
+
      WRITE( out, 3006 ) ! header
      WRITE( out, 3000 ) nprob-1, number_wrong
      WRITE( out, 3005 ) ! footer
-     
+
   END IF
 
 !*************************************************************
@@ -2368,7 +2368,7 @@ R = Rfx
               2X,'TEST RESULTS FOR SUBROUTINE : mop_getval')
 3005 FORMAT(2X,  '*******************************************************' )
 3006 FORMAT(/,2X,'*******************************************************',/  &
-              2X,'TEST RESULTS FOR SUBROUTINE : mop_scaleA') 
+              2X,'TEST RESULTS FOR SUBROUTINE : mop_scaleA')
 
 END PROGRAM test_mop
 

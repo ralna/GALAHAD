@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LMS_precision
-            
+
 !    ----------------------------------------------------------------------
 !   |                                                                      |
 !   | Construct and apply limited-memory secant Hessian approximations     |
@@ -326,7 +326,8 @@
       SELECT CASE( control%method )
       CASE ( 2 )
         method = 'SR1   '
-        nb = ILAENV( 1, 'DSYTRF', 'L', data%len_c, - 1, - 1, - 1 )
+        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                         &
+                     - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = data%len_c * nb
         len2_qp = 1 ; len2_qp_perm = 1
       CASE ( 3 )
@@ -334,7 +335,8 @@
       CASE ( 4 )
         method = 'ISBFGS'
         data%len_c = 2 * data%m ; len2_qp_perm = 1
-        nb = ILAENV( 1, 'DSYTRF', 'L', data%len_c, - 1, - 1, - 1 )
+        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                         &
+                     - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = data%len_c * nb
       CASE DEFAULT
         method = 'BFGS  '
@@ -345,7 +347,8 @@
       IF ( data%any_method ) THEN
         method = 'ANY   '
         data%len_c = 2 * data%m
-        nb = ILAENV( 1, 'DSYTRF', 'L', data%len_c, - 1, - 1, - 1 )
+        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                         &
+                     - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = MAX( data%len_c * nb, data%lwork )
       END IF
 
@@ -1307,9 +1310,9 @@
 !  as the two columns of the matrix QP
 
           CALL GEMV( 'T', data%n, data%length, data%gamma, data%Y, data%n,     &
-                      V, 1, zero, data%QP( : , 1 ), 1 )
+                      V, 1_ip_, zero, data%QP( : , 1 ), 1_ip_ )
           CALL GEMV( 'T', data%n, data%length, one, data%S, data%n,            &
-                      V, 1, zero, data%QP( : , 2 ), 1 )
+                      V, 1_ip_, zero, data%QP( : , 2 ), 1_ip_ )
 
 !  permute p and q
 
@@ -1322,18 +1325,18 @@
 !  solve R p <- p
 
           CALL TRSV( 'U', 'N', 'N',data%length, data%R, data%m,                &
-                     data%QP_perm( : , 2 ), 1 )
+                     data%QP_perm( : , 2 ), 1_ip_ )
 
 !  form q <- q - C p
 
           CALL GEMV( 'N', data%length, data%length, - one, data%C,             &
-                     data%len_c, data%QP_perm( : , 2 ), 1, one,                &
-                     data%QP_perm( : , 1 ), 1 )
+                     data%len_c, data%QP_perm( : , 2 ), 1_ip_, one,            &
+                     data%QP_perm( : , 1 ), 1_ip_ )
 
 !  solve R^T q <- q
 
           CALL TRSV( 'U', 'T', 'N',data%length, data%R, data%m,                &
-                     data%QP_perm( : , 1 ), 1 )
+                     data%QP_perm( : , 1 ), 1_ip_ )
 
 !  unpermute p and q
 
@@ -1347,10 +1350,10 @@
 
           U = V
           CALL GEMV( 'N', data%n, data%length, - one, data%Y, data%n,          &
-                     data%QP( : , 2 ), 1, one, U, 1 )
+                     data%QP( : , 2 ), 1_ip_, one, U, 1_ip_ )
           U = data%gamma * U
           CALL GEMV( 'N', data%n, data%length, - one, data%S, data%n,          &
-                     data%QP( : , 1 ), 1, one, U, 1 )
+                     data%QP( : , 1 ), 1_ip_, one, U, 1_ip_ )
 
 !  ----------------------------------------------------------------------------
 !  apply the inverse shifted limited-memory BFGS (IL-BFGS) secant approximation
@@ -1378,9 +1381,9 @@
 !  stored as the two columns of the matrix QP
 
           CALL GEMV( 'T', data%n, data%length, data%one_over_dpl,              &
-                      data%Y, data%n, V, 1, zero, data%QP( : , 1 ), 1 )
+                      data%Y, data%n, V, 1_ip_, zero, data%QP( : , 1 ), 1_ip_ )
           CALL GEMV( 'T', data%n, data%length,  data%d_over_dpl,               &
-                      data%S, data%n, V, 1, zero, data%QP( : , 2 ), 1 )
+                      data%S, data%n, V, 1_ip_, zero, data%QP( : , 2 ), 1_ip_ )
 
 !  permute p and q
 
@@ -1415,9 +1418,9 @@
 
           U = V
           CALL GEMV( 'N', data%n, data%length, - one, data%Y, data%n,          &
-                     data%QP( : , 1 ), 1, one, U, 1 )
+                     data%QP( : , 1 ), 1_ip_, one, U, 1_ip_ )
           CALL GEMV( 'N', data%n, data%length, - data%delta, data%S, data%n,   &
-                     data%QP( : , 2 ), 1, one, U, 1 )
+                     data%QP( : , 2 ), 1_ip_, one, U, 1_ip_ )
           U = data%one_over_dpl * U
 
 !  ----------------------------------------------------------------------------
@@ -1435,9 +1438,9 @@
 !  column of the matrix QP
 
           CALL GEMV( 'T', data%n, data%length, one, data%Y, data%n,            &
-                      V, 1, zero, data%QP( : , 1 ), 1 )
+                      V, 1_ip_, zero, data%QP( : , 1 ), 1_ip_ )
           CALL GEMV( 'T', data%n, data%length, - data%delta, data%S, data%n,   &
-                      V, 1, one, data%QP( : , 1 ), 1 )
+                      V, 1_ip_, one, data%QP( : , 1 ), 1_ip_ )
 
 !  permute q
 
@@ -1475,10 +1478,10 @@
 
           U = V
           CALL GEMV( 'N', data%n, data%length, - one, data%S, data%n,          &
-                     data%QP( : , 1 ), 1, one, U, 1 )
+                     data%QP( : , 1 ), 1_ip_, one, U, 1_ip_ )
           U = data%delta * U
           CALL GEMV( 'N', data%n, data%length, one, data%Y, data%n,            &
-                     data%QP( : , 1 ), 1, one, U, 1 )
+                     data%QP( : , 1 ), 1_ip_, one, U, 1_ip_ )
 
 !  include any non-zero shift
 
@@ -1595,9 +1598,9 @@
 
       IF ( B%restricted == 0 ) THEN
         CALL GEMV( 'T', B%n, B%length, B%delta, B%S, B%n,                      &
-                    V, 1, zero, B%QP( : , 1 ), 1 )
+                    V, 1_ip_, zero, B%QP( : , 1 ), 1_ip_ )
         CALL GEMV( 'T', B%n, B%length, one, B%Y, B%n,                          &
-                    V, 1, zero, B%QP( : , 2 ), 1 )
+                    V, 1_ip_, zero, B%QP( : , 2 ), 1_ip_ )
 
 !  restricted case (L-BFGS-5): [ p ] = [     Y^T R^T v   ]
 !                              [ q ]   [ delta S^T R^T v ]
@@ -1610,9 +1613,9 @@
         END DO
 !       B%WORK( B%RESTRICTION( : B%n_restriction ) ) = V
         CALL GEMV( 'T', B%n, B%length, B%delta, B%S, B%n,                      &
-                    B%WORK, 1, zero, B%QP( : , 1 ), 1 )
+                    B%WORK, 1_ip_, zero, B%QP( : , 1 ), 1_ip_ )
         CALL GEMV( 'T', B%n, B%length, one, B%Y, B%n,                          &
-                    B%WORK, 1, zero, B%QP( : , 2 ), 1 )
+                    B%WORK, 1_ip_, zero, B%QP( : , 2 ), 1_ip_ )
       END IF
 
 !  permute p and q
@@ -1639,7 +1642,7 @@
 
 !  apply (L-BFGS-3) q -> C^{-1} q (using the Cholesky factors of C)
 
-      CALL POTRS( 'L', B%length, 1, B%C, B%len_c, B%QP_PERM, B%m, status )
+      CALL POTRS( 'L', B%length, 1_ip_, B%C, B%len_c, B%QP_PERM, B%m, status )
       IF ( status /= GALAHAD_ok ) RETURN
 
 !  apply (L-BFGS-2) p -> D^{-1/2} ( - p + D^{-1/2} L^T q )
@@ -1674,37 +1677,37 @@
         IF ( PRESENT( ADD_TO_RESULT ) ) THEN
           ADD_TO_RESULT = ADD_TO_RESULT + B%delta * V
           CALL GEMV( 'N', B%n, B%length, - one, B%Y, B%n,                      &
-                     B%QP( : , 2 ), 1, one, ADD_TO_RESULT, 1 )
+                     B%QP( : , 2 ), 1_ip_, one, ADD_TO_RESULT, 1_ip_ )
           CALL GEMV( 'N', B%n, B%length, - B%delta, B%S, B%n,                  &
-                     B%QP( : , 1 ), 1, one, ADD_TO_RESULT, 1 )
+                     B%QP( : , 1 ), 1_ip_, one, ADD_TO_RESULT, 1_ip_ )
 
 !  r <- r - delta v + Y p + delta S q
 
         ELSE IF ( PRESENT( SUBTRACT_FROM_RESULT ) ) THEN
           SUBTRACT_FROM_RESULT = SUBTRACT_FROM_RESULT - B%delta * V
           CALL GEMV( 'N', B%n, B%length, one, B%Y, B%n,                        &
-                     B%QP( : , 2 ), 1, one, SUBTRACT_FROM_RESULT, 1 )
+                     B%QP( : , 2 ), 1_ip_, one, SUBTRACT_FROM_RESULT, 1_ip_ )
           CALL GEMV( 'N', B%n, B%length, B%delta, B%S, B%n,                    &
-                     B%QP( : , 1 ), 1, one, SUBTRACT_FROM_RESULT, 1 )
+                     B%QP( : , 1 ), 1_ip_, one, SUBTRACT_FROM_RESULT, 1_ip_ )
 
 !  r = delta ( v - S q ) - Y p
 
         ELSE IF ( PRESENT( RESULT ) ) THEN
           RESULT = V
           CALL GEMV( 'N', B%n, B%length, - one, B%S, B%n,                      &
-                     B%QP( : , 1 ), 1, one, RESULT, 1 )
+                     B%QP( : , 1 ), 1_ip_, one, RESULT, 1_ip_ )
           RESULT = B%delta * RESULT
           CALL GEMV( 'N', B%n, B%length, - one, B%Y, B%n,                      &
-                     B%QP( : , 2 ), 1, one, RESULT, 1 )
+                     B%QP( : , 2 ), 1_ip_, one, RESULT, 1_ip_ )
 
 !  v <- delta ( v - S q ) - Y p
 
         ELSE
           CALL GEMV( 'N', B%n, B%length, - one, B%S, B%n,                      &
-                     B%QP( : , 1 ), 1, one, V, 1 )
+                     B%QP( : , 1 ), 1_ip_, one, V, 1_ip_ )
           V = B%delta * V
           CALL GEMV( 'N', B%n, B%length, - one, B%Y, B%n,                      &
-                     B%QP( : , 2 ), 1, one, V, 1 )
+                     B%QP( : , 2 ), 1_ip_, one, V, 1_ip_ )
         END IF
 
 !  restricted case: apply (L-BFGS-1)
@@ -1714,9 +1717,9 @@
 !  compute Y p + delta S q
 
         CALL GEMV( 'N', B%n, B%length, B%delta, B%S, B%n,                      &
-                   B%QP( : , 1 ), 1, zero, B%WORK( : B%n ), 1 )
+                   B%QP( : , 1 ), 1_ip_, zero, B%WORK( : B%n ), 1_ip_ )
         CALL GEMV( 'N', B%n, B%length, one, B%Y, B%n,                          &
-                   B%QP( : , 2 ), 1, one, B%WORK( : B%n ), 1 )
+                   B%QP( : , 2 ), 1_ip_, one, B%WORK( : B%n ), 1_ip_ )
 
 !  r <- r + delta v - R ( Y p + delta S q )
 
@@ -1896,13 +1899,13 @@
 !  1 x 1 diagonal block: interchange rows k and IPIV(K)
 
             kp = IPIV( k )
-            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
+            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1_ip_, B( kp, : ), 1_ip_)
 
 !  multiply by inv(U(K)), where U(K) is the transformation stored in
 !  column k of A
 
-            CALL GER( k - 1, nrhs, - one, A( : , k ), 1, B( k, : ), 1,         &
-                      B, ldb )
+            CALL GER( k - 1_ip_, nrhs, - one, A( : , k ), 1_ip_,               &
+                      B( k, : ), 1_ip_, B, ldb )
 
 !  multiply by the inverse of the diagonal block
 
@@ -1918,16 +1921,16 @@
 
           ELSE
             kp = - IPIV( k )
-            IF ( kp /= k - 1 ) CALL SWAP( nrhs, B( k - 1, : ), 1,              &
-                                          B( kp, : ), 1 )
+            IF ( kp /= k - 1 ) CALL SWAP( nrhs, B( k - 1, : ), 1_ip_,          &
+                                          B( kp, : ), 1_ip_ )
 
 !  multiply by inv(U(K)), where U(K) is the transformation stored in
 !  columns k - 1 and k of A
 
-            CALL GER( k - 2, nrhs, - one, A( : , k ), 1, B( k, : ), 1,         &
-                      B, ldb )
-            CALL GER( k - 2, nrhs, - one, A( : , k - 1 ), 1, B( k - 1, : ),    &
-                      1, B, ldb )
+            CALL GER( k - 2_ip_, nrhs, - one, A( : , k ), 1_ip_,               &
+                      B( k, : ), 1_ip_, B, ldb )
+            CALL GER( k - 2_ip_, nrhs, - one, A( : , k - 1 ), 1_ip_,           &
+                      B( k - 1, : ), 1_ip_, B, ldb )
 
 !  multiply by the inverse of the diagonal block
 
@@ -1959,28 +1962,28 @@
 !  1 x 1 diagonal block: multiply by inv(U**T(K)), where U(K) is the
 !  transformation stored in column k of A
 
-            CALL GEMV( 'T', k - 1, nrhs, - one, B, ldb, A( :, k ),             &
-                       1, one, B( k, : ), 1 )
+            CALL GEMV( 'T', k - 1_ip_, nrhs, - one, B, ldb, A( :, k ),         &
+                       1_ip_, one, B( k, : ), 1_ip_ )
 
 !  interchange rows k and IPIV(K)
 
             kp = IPIV( k )
-            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
+            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1_ip_, B( kp, : ), 1_ip_)
             k = k + 1
 
 !   2 x 2 diagonal block: multiply by inv(U**T(k + 1)), where U(k + 1) is the
 !   transformation stored in columns k and k + 1 of A
 
           ELSE
-            CALL GEMV( 'T', k - 1, nrhs, - one, B, ldb, A( : , k ),            &
-                       1, one, B( k, : ), 1 )
-            CALL GEMV( 'T', k - 1, nrhs, - one, B, ldb,                        &
-                       A( :, k + 1 ), 1, one, B( k + 1, : ), 1 )
+            CALL GEMV( 'T', k - 1_ip_, nrhs, - one, B, ldb, A( : , k ),        &
+                       1_ip_, one, B( k, : ), 1_ip_ )
+            CALL GEMV( 'T', k - 1_ip_, nrhs, - one, B, ldb,                    &
+                       A( :, k + 1 ), 1_ip_, one, B( k + 1, : ), 1_ip_ )
 
 !   interchange rows k and - IPIV(K)
 
             kp = - IPIV( k )
-            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
+            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1_ip_, B( kp, : ), 1_ip_)
             k = k + 2
           END IF
         END DO
@@ -2002,13 +2005,13 @@
 !   1 x 1 diagonal block: interchange rows k and IPIV(K)
 
             kp = IPIV( k )
-            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
+            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1_ip_, B( kp, : ), 1_ip_)
 
 !   multiply by inv(L(K)), where L(K) is the transformation stored in
 !   column k of A
 
-            IF ( k < n ) CALL GER( n - k, nrhs, - one, A( k + 1 : , k ), 1,    &
-                                   B( k : , 1 ), 1, B( k + 1 : , : ), n - k )
+            IF ( k < n ) CALL GER( n - k, nrhs, - one, A( k + 1 : , k ), 1_ip_,&
+                                   B( k : , 1 ), 1_ip_, B( k + 1 : , : ), n - k)
 
 !   Multiply by the inverse of the diagonal block
 
@@ -2024,17 +2027,18 @@
 
           ELSE
             kp = - IPIV( k )
-            IF ( kp /= k + 1 ) CALL SWAP( nrhs, B( k + 1, : ), 1,              &
-                                          B( kp, : ), 1 )
+            IF ( kp /= k + 1 ) CALL SWAP( nrhs, B( k + 1, : ), 1_ip_,          &
+                                          B( kp, : ), 1_ip_ )
 
 !   multiply by inv(L(K)), where L(K) is the transformation stored in columns
 !   k and k + 1 of A
 
             IF ( k < n - 1 ) THEN
-              CALL GER( n - k - 1, nrhs, - one, A( k + 2 : , k ), 1,           &
-                        B( k : , 1 ), 1, B( k + 2 : , : ), n - k - 1 )
-              CALL GER( n - k - 1, nrhs, - one, A( k + 2 : , k + 1 ), 1,       &
-                        B( k + 1 : , 1 ), 1, B( k + 2 : , : ), n - k - 1 )
+              CALL GER( n - k - 1_ip_, nrhs, - one, A( k + 2 : , k ), 1_ip_,   &
+                        B( k : , 1 ), 1_ip_, B( k + 2 : , : ), n - k - 1_ip_ )
+              CALL GER( n - k - 1_ip_, nrhs, - one,                            &
+                        A( k + 2 : , k + 1 ), 1_ip_, B( k + 1 : , 1 ), 1_ip_,  &
+                        B( k + 2 : , : ), n - k - 1_ip_ )
             END IF
 
 !   multiply by the inverse of the diagonal block
@@ -2068,13 +2072,13 @@
 !  transformation stored in column k of A
 
             IF ( k < n ) CALL GEMV( 'T', n - k, nrhs, - one,                   &
-               B( k + 1 : , : ), n - k, A( k + 1 : , k ), 1, one,              &
-               B( k, : ), 1 )
+               B( k + 1 : , : ), n - k, A( k + 1 : , k ), 1_ip_, one,          &
+               B( k, : ), 1_ip_ )
 
 !  interchange rows k and IPIV(K)
 
             kp = IPIV( k )
-            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
+            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1_ip_, B( kp, : ), 1_ip_)
             k = k - 1
 
 !  2 x 2 diagonal block: multiply by inv(L**T(k - 1)), where L(k - 1) is the
@@ -2083,15 +2087,15 @@
           ELSE
             IF ( k < n ) THEN
               CALL GEMV( 'T', n - k, nrhs, - one, B( k + 1 : , : ),            &
-                         n - k, A( k + 1 : , k ), 1, one, B( k, : ), 1 )
+                         n - k, A( k + 1 : , k ), 1, one, B( k, : ), 1_ip_ )
               CALL GEMV( 'T', n - k, nrhs, - one, B( k + 1 : , : ), n - k,     &
-                         A( k + 1 : , k - 1 ), 1, one, B( k - 1, : ), 1 )
+                         A( k + 1 : , k - 1 ), 1_ip_, one, B( k - 1, : ), 1_ip_)
             END IF
 
 !  interchange rows k and - IPIV(K)
 
             kp = - IPIV( k )
-            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
+            IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1_ip_, B( kp, : ), 1_ip_)
             k = k - 2
           END IF
         END DO

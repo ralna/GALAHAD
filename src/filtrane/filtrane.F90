@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -2530,61 +2530,6 @@
       CHARACTER( LEN =  1 ) mult
       CHARACTER( LEN =  6 ) rstring
 
-!    Interface blocks for the single and double precision BLAS routines
-!    giving the two-norm, the inner product and swapping two vectors.
-
-!     INTERFACE TWO_NORM
-!
-!        FUNCTION SNRM2( n, x, incx )
-!          REAL  :: SNRM2
-!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
-!          REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!        END FUNCTION SNRM2
-!
-!        FUNCTION DNRM2( n, x, incx )
-!          DOUBLE PRECISION  :: DNRM2
-!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
-!          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!        END FUNCTION DNRM2
-!
-!     END INTERFACE
-
-!     INTERFACE INNER_PRODUCT
-!
-!        FUNCTION SDOT( n, x, incx, y, incy )
-!          REAL :: SDOT
-!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
-!          REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!          REAL, INTENT( IN ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
-!        END FUNCTION SDOT
-!
-!        FUNCTION DDOT( n, x, incx, y, incy )
-!          DOUBLE PRECISION :: DDOT
-!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
-!          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
-!        END FUNCTION DDOT
-!
-!     END INTERFACE
-
-!     INTERFACE SWAP
-
-!       SUBROUTINE SSWAP( n, x, incx, y, incy )
-!         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
-!         REAL, INTENT( INOUT ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!         REAL, INTENT( INOUT ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
-!       END SUBROUTINE SSWAP
-
-!       SUBROUTINE DSWAP( n, x, incx, y, incy )
-!         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
-!         DOUBLE PRECISION, INTENT( INOUT ),                                   &
-!                           DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!         DOUBLE PRECISION, INTENT( INOUT ),                                   &
-!                           DIMENSION( incy * ( n - 1 ) + 1 ) :: y
-!       END SUBROUTINE DSWAP
-
-!    END INTERFACE
-
 !==============================================================================
 
 !*******************************************************************************
@@ -3419,8 +3364,8 @@
          inform%status = GET_JTC_0
          RETURN
       END SELECT
-      s%g_norm2     = NRM2( problem%n, problem%g, 1 )
-      s%g_norminf_u = MAXVAL( ABS( problem%g( 1:problem%n ) ) )
+      s%g_norm2 = NRM2( problem%n, problem%g, 1_ip_ )
+      s%g_norminf_u = MAXVAL( ABS( problem%g( 1 :problem%n ) ) )
 
 !     Compute the maximum value that is acceptable for the objective function.
 
@@ -3715,7 +3660,7 @@
 
 !  Compute the norm of the current iterate.
 
-     s%x_norm = NRM2( problem%n, problem%x, 1 )
+     s%x_norm = NRM2( problem%n, problem%x, 1_ip_ )
 
 !  Unrestrict the first step and indicate that no previous trust-region
 !  step has been taken.
@@ -3974,7 +3919,7 @@
                  ELSE
                     s%it_status( 3:3 ) = 'E'
                  END IF
-                 s%s_norm2 = NRM2( problem%n, s%step, 1 )
+                 s%s_norm2 = NRM2( problem%n, s%step, 1_ip_ )
                  s%r( 1: problem%n ) = s%w( 1:problem%n )
 
                  GO TO 4001
@@ -4367,7 +4312,7 @@
 
            IF ( s%level >= ACTION ) THEN
               WRITE( s%out, 1156 ) s%GLTR_info%iter,                           &
-                                   NRM2( problem%n, s%u, 1 )
+                                   NRM2( problem%n, s%u, 1_ip_ )
               IF ( control%prec_used == NONE ) THEN
                  WRITE( s%out, 1126 ) s%s_norm
               ELSE
@@ -4531,7 +4476,7 @@
 
               IF ( .NOT. s%goth ) CALL FILTRANE_compute_Hmult( s%w )
 
-              CALL SWAP( problem%n, problem%x, 1, s%v, 1 )
+              CALL SWAP( problem%n, problem%x, 1_ip_, s%v, 1_ip_ )
               s%RC_v    => s%step( 1:problem%n )
               s%RC_Mv   => s%r( 1:problem%n )
               s%RC_newx = .NOT. s%goth
@@ -4557,7 +4502,7 @@
               END IF
               inform%status  = OK
               NULLIFY( s%RC_v, s%RC_Mv )
-              CALL SWAP( problem%n, problem%x, 1, s%v, 1 )
+              CALL SWAP( problem%n, problem%x, 1_ip_, s%v, 1_ip_ )
               s%goth      = .TRUE.
               !delta_model = HALF * INNER_PRODUCT( problem%n, s%step, 1, s%r, 1)
               delta_model = HALF * DOT_PRODUCT( s%step( : problem%n ),         &
@@ -4670,7 +4615,7 @@
 !       in which case the gradient is requested from the user.
 
         IF ( s%acceptable ) THEN
-           s%x_norm = NRM2( problem%n, problem%x, 1 )
+           s%x_norm = NRM2( problem%n, problem%x, 1_ip_ )
            s%goth   = .FALSE.
            IF ( problem%m > 0 .AND. .NOT. control%external_J_products ) THEN
               inform%status = GET_J_A
@@ -4713,7 +4658,7 @@
               inform%status = GET_JTC_A
               RETURN
            END SELECT
-           s%g_norm2     = NRM2( problem%n, problem%g, 1 )
+           s%g_norm2     = NRM2( problem%n, problem%g, 1_ip_ )
            s%g_norminf_u = MAXVAL( ABS( problem%g( 1:problem%n ) ) )
         END IF
 
@@ -6810,7 +6755,7 @@
 
 !     Compute the norm of the current theta.
 
-      normtheta = NRM2( s%p, s%theta, 1 )
+      normtheta = NRM2( s%p, s%theta, 1_ip_ )
 
 !     Determine the active filter.
 
@@ -7107,7 +7052,7 @@
 !     The general case
 !     Compute the margin, when it only depends on the current theta.
 
-      cnorm = NRM2( s%p, s%theta( 1:s%p ), 1 )
+      cnorm = NRM2( s%p, s%theta( 1:s%p ), 1_ip_ )
       s%r( 1:s%p ) = ABS( s%theta( 1:s%p ) )
       IF ( control%margin_type /= FIXED ) THEN
          marginc = control%gamma_f * cnorm

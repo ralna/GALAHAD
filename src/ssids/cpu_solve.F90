@@ -67,7 +67,7 @@ contains
        nd = nodes(node)%ndelay
        blkn = sptr(node+1) - sptr(node) + nd
        blkm = int(rptr(node+1) - rptr(node)) + nd
-      
+
        if (nrhs .eq. 1) then
           call solve_bwd_one(pos_def, job, rlist(rptr(node)), invp, x, &
                blkm, blkn, nelim, nd, &
@@ -133,7 +133,7 @@ contains
           nd = nodes(node)%ndelay
           blkn = sptr(node+1) - sptr(node) + nd
           blkm = int(rptr(node+1) - rptr(node)) + nd
-         
+
           if (nrhs .eq. 1) then
              call solve_fwd_one(pos_def, rlist(rptr(node)), invp, x, &
                   blkm, blkn, nelim, nd, &
@@ -162,7 +162,7 @@ contains
           nd = nodes(node)%ndelay
           blkn = sptr(node+1) - sptr(node) + nd
           blkm = int(rptr(node+1) - rptr(node)) + nd
-         
+
           if (nrhs .eq. 1) then
              call solve_diag_one(invp, x, nelim, &
                   nodes(node)%rsmptr%rmem(nodes(node)%rsmsa+blkm*blkn), & ! node%d
@@ -200,7 +200,7 @@ contains
     integer(ip_) :: i, j, k
     integer(ip_) :: rp1
     real(rp_) :: ri, ri2
-   
+
     do i = 1, blkn
        map(i) = invp( lperm(i) )
     end do
@@ -209,7 +209,7 @@ contains
        map(i) = invp( rlist(k) )
        k = k + 1
     end do
-   
+
     ! Copy eliminated variables into xlocal
     do i = 1, nelim
        rp1 = map(i)
@@ -221,14 +221,14 @@ contains
        ! Work with xlocal
 
        if (pos_def) then
-          call trsv('L','N','N', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','N','N', nelim, lcol, blkm, xlocal, 1_ip_)
        else
-          call trsv('L','N','U', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','N','U', nelim, lcol, blkm, xlocal, 1_ip_)
        end if
 
        if (blkm-nelim .gt. 0) then
           call gemv('N', blkm-nelim, nelim, -one, lcol(nelim+1), blkm, &
-               xlocal, 1, zero, xlocal(nelim+1), 1)
+               xlocal, 1_ip_, zero, xlocal(nelim+1), 1_ip_)
           ! Add contribution into x
           ! Delays first
           do i = nelim+1, blkm
@@ -302,7 +302,7 @@ contains
     integer(ip_) :: i, j, k, r
     integer(ip_) :: rp1
     real(rp_) :: ri
-   
+
     do i = 1, blkn
        map(i) = invp( lperm(i) )
     end do
@@ -311,7 +311,7 @@ contains
        map(i) = invp( rlist(k) )
        k = k + 1
     end do
-   
+
     ! Copy eliminated variables into xlocal
     do r = 1, nrhs
        do i = 1, nelim
@@ -384,7 +384,7 @@ contains
        nd, lcol, d, lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
-    integer(ip_), intent(in) :: job  ! used to indicate whether diag. sol. 
+    integer(ip_), intent(in) :: job  ! used to indicate whether diag. sol.
       ! required
       ! job = 3 : backsubs only ((PL)^Tx = b)
       ! job = 0 or 4 : diag and backsubs (D(PL)^Tx = b)
@@ -460,13 +460,13 @@ contains
        end do
        if ((blkm-nelim) .gt. 0) then
           call gemv('T', blkm-nelim, nelim, -one, lcol(nelim+1), blkm, &
-               xlocal(nelim+1), 1, one, xlocal, 1)
+               xlocal(nelim+1), 1_ip_, one, xlocal, 1_ip_)
        end if
 
        if (pos_def) then
-          call trsv('L','T','N', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','T','N', nelim, lcol, blkm, xlocal, 1_ip_)
        else
-          call trsv('L','T','U', nelim, lcol, blkm, xlocal, 1)
+          call trsv('L','T','U', nelim, lcol, blkm, xlocal, 1,ip_)
        end if
 
        ! Copy solution back from xlocal
@@ -514,7 +514,7 @@ contains
        blkn, nelim, nd, lcol, d, lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
-    integer(ip_), intent(in) :: job  ! used to indicate whether diag. sol. 
+    integer(ip_), intent(in) :: job  ! used to indicate whether diag. sol.
       ! required
       ! job = 3 : backsubs only ((PL)^Tx = b)
       ! job = 0 or 4 : diag and backsubs (D(PL)^Tx = b)
@@ -546,7 +546,7 @@ contains
        k = k + 1
     end do
 
-    if ((job .eq. SSIDS_SOLVE_JOB_BWD) .or. pos_def) then 
+    if ((job .eq. SSIDS_SOLVE_JOB_BWD) .or. pos_def) then
        ! no diagonal solve. Copy eliminated variables into xlocal
        do r = 1, nrhs
           do i = 1, nelim

@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 10:30 GMT.
 
 #include "galahad_modules.h"
-#undef METIS_DBG_INFO  
+#undef METIS_DBG_INFO
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -4166,7 +4166,8 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          data%sytr_lwork =                                                     &
-           data%n * ILAENV( 1, 'DSYTRF', 'L', data%n, - 1, - 1, - 1 )
+           data%n * ILAENV( 1_ip_, 'DSYTRF', 'L', data%n,                      &
+                            - 1_ip_, - 1_ip_, - 1_ip_ )
          CALL SPACE_resize_array( data%sytr_lwork, data%WORK,                  &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -6634,18 +6635,18 @@
 !  = POTR =
 
        CASE ( 'potr' )
-         CALL POTRS( 'L', data%n, 1, data%matrix_dense, data%n, data%X2,       &
+         CALL POTRS( 'L', data%n, 1_ip_, data%matrix_dense, data%n, data%X2,   &
                      data%n, inform%lapack_error )
 
 !  = SYTR =
 
        CASE ( 'sytr' )
          IF ( inform%rank == data%n ) THEN
-           CALL SYTRS( 'L', data%n, 1, data%matrix_dense, data%n,              &
+           CALL SYTRS( 'L', data%n, 1_ip_, data%matrix_dense, data%n,          &
                        data%PIVOTS, data%X2, data%n, inform%lapack_error )
          ELSE
            tiny = 100.0_rp_ * control%absolute_pivot_tolerance
-           CALL SLS_sytr_singular_solve( data%n, 1, data%matrix_dense,         &
+           CALL SLS_sytr_singular_solve( data%n, 1_ip_, data%matrix_dense,     &
                                          data%n, data%PIVOTS, data%X2,         &
                                          data%n, tiny, inform%lapack_error )
            END IF
@@ -6653,9 +6654,9 @@
 !  = PBTR =
 
        CASE ( 'pbtr' )
-         CALL PBTRS( 'L', data%n, inform%semi_bandwidth, 1, data%matrix_dense, &
-                      inform%semi_bandwidth + 1, data%X2, data%n,              &
-                      inform%lapack_error )
+         CALL PBTRS( 'L', data%n, inform%semi_bandwidth, 1_ip_,                &
+                      data%matrix_dense, inform%semi_bandwidth + 1_ip_,        &
+                      data%X2, data%n, inform%lapack_error )
        END SELECT
 
        SELECT CASE( inform%lapack_error )
@@ -8545,10 +8546,10 @@
          data%B( data%ORDER( : data%n ) ) = X( : data%n )
          IF ( part == 'L' .OR. part == 'S') THEN
            CALL TRSV ( 'L', 'N', 'N', data%n, data%matrix_dense, data%n,       &
-                       data%B, 1 )
+                       data%B, 1_ip_ )
          ELSE IF ( part == 'U' ) THEN
            CALL TRSV ( 'L', 'T', 'N', data%n, data%matrix_dense, data%n,       &
-                       data%B, 1 )
+                       data%B, 1_ip_ )
          ELSE ! if part = 'D'
            GO TO 900
          END IF
@@ -8556,9 +8557,11 @@
          X( : data%n ) = data%B( data%ORDER( : data%n ) )
       ELSE
          IF ( part == 'L' .OR. part == 'S') THEN
-           CALL TRSV ( 'L', 'N', 'N', data%n, data%matrix_dense, data%n, X, 1 )
+           CALL TRSV ( 'L', 'N', 'N', data%n, data%matrix_dense, data%n,       &
+                        X, 1_ip_ )
          ELSE IF ( part == 'U' ) THEN
-           CALL TRSV ( 'L', 'T', 'N', data%n, data%matrix_dense, data%n, X, 1 )
+           CALL TRSV ( 'L', 'T', 'N', data%n, data%matrix_dense, data%n,       &
+                        X, 1_ip_ )
          ELSE ! if part = 'D'
            GO TO 900
          END IF
@@ -8601,10 +8604,12 @@
          data%B( data%ORDER( : data%n ) ) = X( : data%n )
          IF ( part == 'L' .OR. part == 'S') THEN
            CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,            &
-                      data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
+                      data%matrix_dense, inform%semi_bandwidth + 1_ip_,        &
+                      data%B, 1_ip_ )
          ELSE IF ( part == 'U' ) THEN
            CALL TBSV( 'L', 'T', 'N', data%n, inform%semi_bandwidth,            &
-                      data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
+                      data%matrix_dense, inform%semi_bandwidth + 1_ip_,        &
+                      data%B, 1_ip_ )
          ELSE ! if part = 'D'
            GO TO 900
          END IF
@@ -8613,10 +8618,12 @@
        ELSE
          IF ( part == 'L' .OR. part == 'S') THEN
            CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,            &
-                      data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
+                      data%matrix_dense, inform%semi_bandwidth + 1_ip_,        &
+                      X, 1_ip_ )
          ELSE IF ( part == 'U' ) THEN
            CALL TBSV( 'L', 'T', 'N', data%n, inform%semi_bandwidth,            &
-                      data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
+                      data%matrix_dense, inform%semi_bandwidth + 1_ip_,        &
+                      X, 1_ip_ )
          ELSE ! if part = 'D'
            GO TO 900
          END IF
@@ -9145,11 +9152,12 @@
 !        data%B( : data%n ) = X( data%ORDER( : data%n ) )
          data%B( data%ORDER( : data%n ) ) = X( : data%n )
          CALL TRSV ( 'L', 'N', 'N', data%n, data%matrix_dense, data%n,         &
-                     data%B, 1 )
+                     data%B, 1_ip_ )
 !        X( data%ORDER( : data%n ) ) = data%B( : data%n )
          X( : data%n ) = data%B( data%ORDER( : data%n ) )
        ELSE
-         CALL TRSV ( 'L', 'N', 'N', data%n, data%matrix_dense, data%n, X, 1 )
+         CALL TRSV ( 'L', 'N', 'N', data%n, data%matrix_dense, data%n,         &
+                     X, 1_ip_ )
        END IF
 
 !  = SYTR =
@@ -9188,12 +9196,14 @@
 !        data%B( : data%n ) = X( data%ORDER( : data%n ) )
          data%B( data%ORDER( : data%n ) ) = X( : data%n )
          CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,              &
-                    data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
+                    data%matrix_dense, inform%semi_bandwidth + 1_ip_,          &
+                    data%B, 1_ip_ )
 !        X( data%ORDER( : data%n ) ) = data%B( : data%n )
          X( : data%n ) = data%B( data%ORDER( : data%n ) )
        ELSE
          CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,              &
-                    data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
+                    data%matrix_dense, inform%semi_bandwidth + 1_ip_,          &
+                    X, 1_ip_ )
        END IF
 
 !  = unavailable with other solvers =
@@ -9300,7 +9310,7 @@
        inform%alternative = .FALSE.
        IF ( matrix%val( 1 ) /= 0.0_rp_ ) THEN
           X( : matrix%n ) = X( : matrix%n ) / matrix%val( 1 )
-       ELSE     
+       ELSE
          DO i = 1, matrix%n
            IF ( X( i ) /= 0.0_rp_ ) THEN
              inform%alternative = .TRUE.
@@ -9750,7 +9760,8 @@
 !  multiply by inv(L(k)), where L(k) is the transformation stored in column
 !  k of A
 
-         IF ( k < n ) CALL GER( n - k, nrhs, - 1.0_rp_,  A( k + 1 : , k ), 1,  &
+         IF ( k < n ) CALL GER( n - k, nrhs, - 1.0_rp_,                        &
+                                A( k + 1 : , k ), 1_ip_,                       &
                                 B( k, : ), ldb, B( k + 1 : , : ), ldb )
 
 !  multiply by the inverse of the diagonal block if the diagonal is sufficiently
@@ -9777,10 +9788,10 @@
 !  k and k + 1 of A
 
          IF ( k < n - 1 ) THEN
-           CALL GER( n - k - 1, nrhs, - 1.0_rp_,  A( k + 2 : , k ), 1,         &
+           CALL GER( n - k - 1_ip_, nrhs, - 1.0_rp_,  A( k + 2 : , k ), 1_ip_, &
                      B( k, : ), ldb, B( k + 2 : , : ), ldb )
-           CALL GER( n - k - 1, nrhs, - 1.0_rp_,  A( k + 2 : , k + 1 ), 1,     &
-                     B( k + 1, : ), ldb, B( k + 2 : , : ), ldb )
+           CALL GER( n - k - 1_ip_, nrhs, - 1.0_rp_,  A( k + 2 : , k + 1 ),    &
+                     1_ip_, B( k + 1, : ), ldb, B( k + 2 : , : ), ldb )
          END IF
 
 !  multiply by the inverse of the diagonal block if its scaled determinant
@@ -9824,8 +9835,8 @@
 
        IF ( PIVOTS( k ) > 0 ) THEN
          IF ( k < n ) CALL GEMV( 'T', n - k, nrhs, - 1.0_rp_,                  &
-                                 B( k + 1 : , : ), ldb, A( k + 1 : , k ), 1,   &
-                                 1.0_rp_,  B( k, : ), ldb )
+                                 B( k + 1 : , : ), ldb, A( k + 1 : , k ),      &
+                                 1_ip_, 1.0_rp_,  B( k, : ), ldb )
 
 !  interchange rows k and PIVOTS(k)
 
@@ -9839,9 +9850,10 @@
        ELSE
          IF ( k < n ) THEN
            CALL GEMV( 'T', n - k, nrhs, - 1.0_rp_,  B( k + 1 : , : ), ldb,     &
-                       A( k + 1 : , k ), 1, 1.0_rp_,  B( k, : ), ldb )
+                       A( k + 1 : , k ), 1_ip_, 1.0_rp_,  B( k, : ), ldb )
            CALL GEMV( 'T', n - k, nrhs, - 1.0_rp_,  B( k + 1 : , : ), ldb,     &
-                       A( k + 1 : , k - 1 ), 1, 1.0_rp_,  B( k - 1, : ), ldb )
+                       A( k + 1 : , k - 1 ), 1_ip_, 1.0_rp_,                   &
+                       B( k - 1, : ), ldb )
          END IF
 
 !  interchange rows k and - PIVOTS(k)

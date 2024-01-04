@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_ROOTS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !     --------------------------------------------------------------------
@@ -813,7 +813,8 @@
         H( 1, 1 ) = zero ; H( 2, 1 ) = one ; H( 3, 1 ) = zero
         H( 1, 2 ) = zero ; H( 2, 2 ) = zero ; H( 3, 2 ) = one
         H( 1, 3 ) = - a0 / a3 ; H( 2, 3 ) = - a1 / a3 ; H( 3, 3 ) = - a2 / a3
-        CALL HSEQR( 'E', 'N', 3, 1, 3, H, 3, ER, EI, ZZ, 1, WORK, 33, info )
+        CALL HSEQR( 'E', 'N', 3_ip_, 1_ip_, 3_ip_, H, 3_ip_, ER, EI, ZZ,       &
+                    1_ip_, WORK, 33_ip_, info )
         IF ( info /= 0 ) THEN
           IF ( debug ) WRITE( out,                                             &
          &   "( ' ** error return ', I0, ' from HSEQR in ROOTS_cubic' )" ) info
@@ -1093,7 +1094,8 @@
         H( 1, 3 ) = zero ; H( 2, 3 ) = zero ; H( 3, 3 ) = zero ; H( 4, 3 ) = one
         H( 1, 4 ) = - a0 / a4 ; H( 2, 4 ) = - a1 / a4
         H( 3, 4 ) = - a2 / a4 ; H( 4, 4 ) = - a3 / a4
-        CALL HSEQR( 'E', 'N', 4, 1, 4, H, 4, ER, EI, ZZ, 1, WORK, 44, info )
+        CALL HSEQR( 'E', 'N', 4_ip_, 1_ip_, 4_ip_, H, 4_ip_, ER, EI, ZZ, 1,    &
+                     WORK, 44_ip_, info )
         IF ( info /= 0 ) THEN
           IF ( debug ) WRITE( out,                                             &
          &   "( ' ** error return ', I0, ' from HSEQR in ROOTS_cubic' )" ) info
@@ -1111,14 +1113,14 @@
               root2 = ER( 2 )
             ELSE IF ( ABS( EI( 3 ) ) <= epsmch ) THEN
               root2 = ER( 3 )
-            ELSE 
+            ELSE
               root2 = ER( 4 )
             END IF
           ELSE IF ( ABS( EI( 2 ) ) <= epsmch ) THEN
             root1 = ER( 2 )
             IF ( ABS( EI( 3 ) ) <= epsmch ) THEN
               root2 = ER( 3 )
-            ELSE 
+            ELSE
               root2 = ER( 4 )
             END IF
           ELSE
@@ -1329,7 +1331,7 @@
 
 !  When (n-nn) roots are found, D(0), ..., D(nn) will hold the coefficients of
 !   the deflated polynomial (backwards), ROOT(nn + 1),..,ROOT(n) will hold the
-!   roots found, A(0),...,A(nn - 1) will hold the coefficients of the 
+!   roots found, A(0),...,A(nn - 1) will hold the coefficients of the
 !   derivative of the deflated polynomial, and ROOT(1), ... ,ROOT(nn),
 !   A(nn), ..., A(n) hold the coefficients of the original polynomial (forwards)
 !  div2 .TRUE. if the search with step-lengths dz,dz/2,...is in use and .FALSE.
@@ -2230,7 +2232,7 @@
             END DO
             data%RHS( : ip1, 1 ) =  data%P( i : 0 : - 1, i )
 
-            CALL GELS( 'N',  ip1, ip1, 1, data%A_mat( : np1, : ip1 ), np1,     &
+            CALL GELS( 'N',  ip1, ip1, 1_ip_, data%A_mat( : np1, : ip1 ), np1, &
                        data%RHS, np1, data%WORK, lwork, j )
 
             data%P( im2 : 0 : - 1, im2 ) =  data%RHS( 3 : ip1, 1 )

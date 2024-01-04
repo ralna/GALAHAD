@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-31 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -2375,7 +2375,7 @@
                                 data%DG_past, nlp%n, data%total_diffs,         &
                                 data%VAL_est, data%SHA_data,                   &
                                 data%control%SHA_control, inform%SHA_inform,   &
-                                ORDER = data%PAST ) 
+                                ORDER = data%PAST )
 
              IF ( inform%SHA_inform%status == 0 ) THEN
                data%hmax_error =                                               &
@@ -3543,8 +3543,8 @@
            ELSE
              IF ( data%reverse_hprod ) THEN
                data%V( : nlp%n ) = data%S( : nlp%n )
-               CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1,                          &
-                          data%X_current( : nlp%n ), 1 ) ! evaluate at current x
+               CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1_ip_,                      &
+                          data%X_current( : nlp%n ), 1_ip_ ) ! at current x
                data%branch = 440 ; inform%status = 5 ; RETURN
              ELSE
                CALL eval_HPROD( data%eval_status, data%X_current( : nlp%n ),   &
@@ -3585,8 +3585,8 @@
          IF ( ABS( data%ratio - one ) <= rho_quad .AND.                        &
               data%control%model == second_order_model .AND.                   &
              .NOT. data%control%hessian_available .AND.                        &
-             data%reverse_hprod ) CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1,       &
-                                             data%X_current( : nlp%n ), 1 )
+             data%reverse_hprod ) CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1_ip_,   &
+                                             data%X_current( : nlp%n ), 1_ip_ )
          data%poor_model = .FALSE.
          data%accept = 'a'
          inform%obj = data%f_trial

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_ULS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !     ---------------------------------------
@@ -1454,15 +1454,15 @@
          trans_true = .FALSE.
        END IF
        IF ( trans_true ) THEN
-         CALL GETRS( 'T', data%n, 1, data%matrix_dense, data%m, data%ROWS,     &
+         CALL GETRS( 'T', data%n, 1_ip_, data%matrix_dense, data%m, data%ROWS, &
                      data%RHS, data%n, inform%lapack_error )
        ELSE
-         CALL GETRS( 'N', data%n, 1, data%matrix_dense, data%m, data%ROWS,     &
+         CALL GETRS( 'N', data%n, 1_ip_, data%matrix_dense, data%m, data%ROWS, &
                      data%RHS, data%n, inform%lapack_error )
        END IF
        IF ( inform%lapack_error < 0 ) THEN
          inform%status = GALAHAD_error_restrictions ; RETURN
-       ELSE 
+       ELSE
          inform%status = GALAHAD_ok
        END IF
        X( : data%n ) = data%RHS( : data%n, 1 )

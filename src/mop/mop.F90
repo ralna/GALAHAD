@@ -19,7 +19,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_MOP_precision
-            
+
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !                                                                             !
 !  Feb. 1, 2008 : This module contains subroutines that perform a variety of  !
@@ -333,9 +333,9 @@
         END IF
      ELSE
         IF ( trans ) THEN
-           CALL SCAL( n, beta, R, 1 )  ! R <- beta * R
+           CALL SCAL( n, beta, R, 1_ip_ )  ! R <- beta * R
         ELSE
-           CALL SCAL( m, beta, R, 1 )  ! R <- beta * R
+           CALL SCAL( m, beta, R, 1_ip_ )  ! R <- beta * R
         END IF
      END IF
 

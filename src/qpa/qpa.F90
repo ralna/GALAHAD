@@ -6518,7 +6518,7 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, l, nbreak, inheap, iter, ibreakp 
+      INTEGER ( KIND = ip_ ) :: i, l, nbreak, inheap, iter, ibreakp
       INTEGER ( KIND = ip_ ) :: nbreak_total, active_ok
       INTEGER ( KIND = ip_ ) :: cluster_start, cluster_end, cluster_best
       REAL ( KIND = rp_ ) :: as, res, val, slope, curv, slope_old, eval, eslope
@@ -9246,7 +9246,7 @@ main: DO
 
 !  Compute the 2-norm of the search direction
 
-      norm_p = NRM2( n, P, 1 ) !TWO_NORM( n, P, 1 )
+      norm_p = TWO_NORM( P( : n ) ) !TWO_NORM( n, P, 1 )
 
 !  Test for convergence
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -2217,9 +2217,9 @@
 
         IF ( data%h_ne == 0 .OR. convex_diagonal_qp ) THEN
           prob%gradient_kind = 2
-          IF ( NRM2( prob%n, prob%G, 1 ) <= epsmch ) THEN
+          IF ( TWO_NORM( prob%G( : prob%n ) ) <= epsmch ) THEN
             prob%gradient_kind = 0
-          ELSE IF ( NRM2( prob%n, prob%G - one, 1 ) <= epsmch ) THEN
+          ELSE IF ( TWO_NORM( prob%G( : prob%n ) - one ) <= epsmch ) THEN
             prob%gradient_kind = 1
           END IF
         ELSE

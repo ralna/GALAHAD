@@ -1285,7 +1285,7 @@
           liwork = min_mn
         ELSE IF ( data%dense_linear_solver == 2 ) THEN
           m_used = m_needed
-          CALL GELSY( m_used, n, 1, data%A, data%la1, data%B, data%lb1,        &
+          CALL GELSY( m_used, n, 1_ip_, data%A, data%la1, data%B, data%lb1,    &
                       data%solve_system_data%IWORK, eps_singular, rank,        &
                       data%WORK_1, - 1, status )
           lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
@@ -1311,14 +1311,14 @@
 !         m_used = m_needed
           m_used = m_max
           IF ( data%dense_linear_solver == 4 ) THEN
-            CALL GELSD( m_used, n_max, 1, data%A, data%la1, data%B, data%lb1,  &
-                        data%solve_system_data%S, eps_singular, rank,          &
-                        data%WORK_1, - 1, data%IWORK_1, status )
+            CALL GELSD( m_used, n_max, 1_ip_, data%A, data%la1, data%B,        &
+                        data%lb1, data%solve_system_data%S, eps_singular,      &
+                        rank, data%WORK_1, - 1_ip_, data%IWORK_1, status )
             lwork = INT( data%WORK_1( 1 ) ) ; liwork = INT( data%IWORK_1( 1 ) )
           ELSE
-            CALL GELSS( m_used, n_max, 1, data%A, data%la1, data%B, data%lb1,  &
-                        data%solve_system_data%S, eps_singular, rank,          &
-                        data%WORK_1, - 1, status )
+            CALL GELSS( m_used, n_max, 1_ip_, data%A, data%la1, data%B,        &
+                        data%lb1, data%solve_system_data%S, eps_singular,      &
+                        rank, data%WORK_1, - 1_ip_, status )
             lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
           END IF
         END IF
@@ -1391,7 +1391,7 @@
         END IF
         DO ii = ii_start, ii_end, ii_stride
           i = data%PERM_inv( ii )
-          stri = data%STR( i ) ; strip1 = data%STR( i + 1 ) 
+          stri = data%STR( i ) ; strip1 = data%STR( i + 1 )
 
 !  there are nu unknowns for this pass
 
@@ -1872,7 +1872,7 @@
         IF ( m == n ) THEN
           CALL GETRF( m, n, A, la1, data%IWORK, status )
           IF ( status == 0 ) THEN
-            CALL GETRS( 'N', n, 1, A, la1, data%IWORK, B, lb1, status )
+            CALL GETRS( 'N', n, 1_ip_, A, la1, data%IWORK, B, lb1, status )
             IF ( status == 0 ) RETURN
           END IF
         END IF
@@ -1880,8 +1880,8 @@
 !  solve A x = b using a QR factorization; A is copied to A_save as a precaution
 
       ELSE IF ( dense_linear_solver == 2 ) THEN
-        CALL GELSY( m, n, 1, A, la1, B, lb1, data%IWORK, eps_singular, rank,   &
-                    data%WORK, data%lwork, status )
+        CALL GELSY( m, n, 1_ip_, A, la1, B, lb1, data%IWORK, eps_singular,     &
+                    rank, data%WORK, data%lwork, status )
         IF ( status == 0 ) RETURN
 
 !  solve A x = b using a singular-value decomposition
@@ -1889,10 +1889,10 @@
       ELSE
         IF ( printi ) A_save( : m, : n ) = A( : m, : n )
         IF ( dense_linear_solver == 4 ) THEN
-          CALL GELSD( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
+          CALL GELSD( m, n, 1_ip_, A, la1, B, lb1, data%S, eps_singular, rank, &
                       data%WORK, data%lwork, data%IWORK, status )
         ELSE ! dense_linear_solver == 3
-          CALL GELSS( m, n, 1, A, la1, B, lb1, data%S, eps_singular, rank,     &
+          CALL GELSS( m, n, 1_ip_, A, la1, B, lb1, data%S, eps_singular, rank, &
                       data%WORK, data%lwork, status )
         END IF
 

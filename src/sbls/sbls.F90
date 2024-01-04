@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,7 +16,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_SBLS_precision
-            
+
 !      ---------------------------------------------------------------
 !     |                                                               |
 !     | Given matrices A and (symmetric) H and C, provide and apply   |
@@ -2095,7 +2095,7 @@
 !  Local variables
 
       INTEGER ( KIND = ip_ ) :: i, ii, ip, j, jp, k, kk, l, g_ne, kzero, kminus
-      INTEGER ( KIND = ip_ ) :: nb, out, c_ne, new_pos, a_ne, h_ne, oi, oj, lw 
+      INTEGER ( KIND = ip_ ) :: nb, out, c_ne, new_pos, a_ne, h_ne, oi, oj, lw
       INTEGER ( KIND = ip_ ) :: nnz_col_j, nnz_aat_old, nnz_aat, max_len, lrw
       INTEGER ( KIND = ip_ ) :: new_h, new_a, new_c, k_c, k_ne, np1, npm
       REAL :: time_start, time, time_now
@@ -4415,7 +4415,8 @@
 !  set up space for the Bunch-Kaufman factorization of S
 
         np1 = H_lm%n_restriction + 1 ; npm = n + m
-        nb = ILAENV( 1, 'DSYTRF', 'L', efactors%len_s_max, - 1, - 1, - 1 )
+        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', efactors%len_s_max,                 &
+                     - 1_ip_, - 1_ip_, - 1_ip_ )
 
         array_name = 'sbls: efactors%IPIV'
         CALL SPACE_resize_array( efactors%len_s_max, efactors%IPIV,            &
@@ -5753,8 +5754,9 @@
 
 !  solve to obtain z <- S^{-1} z
 
-        CALL SYTRS( 'L', efactors%len_s, 1, efactors%S, efactors%len_s_max,    &
-                    efactors%IPIV, efactors%Z, efactors%len_s_max, i )
+        CALL SYTRS( 'L', efactors%len_s, 1_ip_, efactors%S,                    &
+                    efactors%len_s_max, efactors%IPIV, efactors%Z,             &
+                    efactors%len_s_max, i )
 
         IF ( i < 0 ) THEN
           IF ( control%out > 0 .AND. control%print_level > 0 )                 &
@@ -6006,9 +6008,9 @@
 
           IF ( H_lm%restricted == 0 ) THEN
             CALL GEMV( 'T', H_lm%n, H_lm%length, H_lm%delta, H_lm%S, H_lm%n,   &
-                        SOL, 1, zero, H_lm%QP( : , 1 ), 1 )
+                        SOL, 1_ip_, zero, H_lm%QP( : , 1 ), 1_ip_ )
             CALL GEMV( 'T', H_lm%n, H_lm%length, one, H_lm%Y, H_lm%n,          &
-                        SOL, 1, zero, H_lm%QP( : , 2 ), 1 )
+                        SOL, 1_ip_, zero, H_lm%QP( : , 2 ), 1_ip_ )
 
 !  restricted case (L-BFGS-5): [ p ] = [     Y^T R^T x   ]
 !                              [ q ]   [ delta S^T R^T x ]
@@ -6022,9 +6024,9 @@
 !           efactors%W( H_lm%RESTRICTION( : H_lm%n_restriction ) )             &
 !             = SOL( : H_lm%n_restriction )
             CALL GEMV( 'T', H_lm%n, H_lm%length, H_lm%delta, H_lm%S, H_lm%n,   &
-                        efactors%W, 1, zero, H_lm%QP( : , 1 ), 1 )
+                        efactors%W, 1_ip_, zero, H_lm%QP( : , 1 ), 1_ip_ )
             CALL GEMV( 'T', H_lm%n, H_lm%length, one, H_lm%Y, H_lm%n,          &
-                        efactors%W, 1, zero, H_lm%QP( : , 2 ), 1 )
+                        efactors%W, 1_ip_, zero, H_lm%QP( : , 2 ), 1_ip_ )
           END IF
 
 !  permute q and p
@@ -6052,8 +6054,8 @@
 !  apply (L-BFGS-3) q -> C^{-1} q (using the Cholesky factors of C)
 
           i = 0
-          CALL POTRS( 'L', H_lm%length, 1, H_lm%C, H_lm%len_c, H_lm%QP_PERM,   &
-                      H_lm%m, i )
+          CALL POTRS( 'L', H_lm%length, 1_ip_, H_lm%C, H_lm%len_c,             &
+                      H_lm%QP_PERM, H_lm%m, i_ip_ )
           IF ( i /= 0 ) THEN
             IF ( control%error > 0 .AND. control%print_level > 0 )             &
               WRITE( control%error, "( A, ' Cholesky solve error ', I0 )" )    &
@@ -6089,17 +6091,21 @@
 
           IF ( H_lm%restricted == 0 ) THEN
             CALL GEMV( 'N', H_lm%n, H_lm%length, H_lm%delta, H_lm%S, H_lm%n,   &
-                       H_lm%QP( : , 1 ), 1, one, efactors%RHS_w( : n ), 1 )
+                       H_lm%QP( : , 1 ), 1_ip_, one,                           &
+                       efactors%RHS_w( : n ), 1_ip_ )
             CALL GEMV( 'N', H_lm%n, H_lm%length, one, H_lm%Y, H_lm%n,          &
-                       H_lm%QP( : , 2 ), 1, one, efactors%RHS_w( : n ), 1 )
+                       H_lm%QP( : , 2 ), 1_ip_, one,                           &
+                       efactors%RHS_w( : n ), 1_ip_ )
 
 !  restricted case: apply (L-BFGS-1) r_1 <- r_1 + R( delta S q + Y p )
 
           ELSE
             CALL GEMV( 'N', H_lm%n, H_lm%length, H_lm%delta, H_lm%S, H_lm%n,   &
-                       H_lm%QP( : , 1 ), 1, zero, efactors%W( : H_lm%n ), 1 )
+                       H_lm%QP( : , 1 ), 1_ip_, zero,                          &
+                       efactors%W( : H_lm%n ), 1_ip_ )
             CALL GEMV( 'N', H_lm%n, H_lm%length, one, H_lm%Y, H_lm%n,          &
-                       H_lm%QP( : , 2 ), 1, one, efactors%W( : H_lm%n ), 1 )
+                       H_lm%QP( : , 2 ), 1_ip_, one,                           &
+                       efactors%W( : H_lm%n ), 1_ip_ )
             DO i = 1, H_lm%n_restriction
               j = H_lm%RESTRICTION( i )
               IF ( j <= H_lm%n )                                               &
@@ -8023,9 +8029,9 @@
 
         nfactors%SOL_perm( start_2 : end_2, 1 ) =                              &
           nfactors%RHS( start_2 : end_2 )
-        CALL POTRS( 'L', nfactors%n_r, 1, nfactors%R_factors, nfactors%n_r,    &
-                    nfactors%SOL_perm( start_2 : end_2, : ), nfactors%n_r,     &
-                    potrs_info )
+        CALL POTRS( 'L', nfactors%n_r, 1_ip_, nfactors%R_factors,              &
+                    nfactors%n_r, nfactors%SOL_perm( start_2 : end_2, : ),     &
+                    nfactors%n_r, potrs_info )
 
 !  5. Solve A_1 x_1 = r_3 - A^2 x_2
 

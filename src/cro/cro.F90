@@ -4817,7 +4817,7 @@
 !  j and m+1 of Q
 
 !  NB: ROT replaced by do loop to prevent mkl bug ... sigh
-!       CALL ROT( mpp, Q( : mpp, j ), 1, Q( : mpp, mpp ), 1, c, s )
+!       CALL ROT( mpp, Q( : mpp, j ), 1_ip_, Q( : mpp, mpp ), 1_ip_, c, s )
         DO k = 1, mp1
           y = c * Q( k, j ) + s * Q( k, mp1 )
           Q( k, mp1 ) = c * Q( k, mp1 ) - s * Q( k, j )

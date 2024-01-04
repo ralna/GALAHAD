@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -2578,7 +2578,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      ! compute needed data for subroutine get_cauchy_step
 
-     data%two_norm_s_p = NRM2( nlp%n, data%s_p, 1 )
+     data%two_norm_s_p = NRM2( nlp%n, data%s_p, 1_ip_ )
      data%gts_pred = DOT_PRODUCT( data%s_p, nlp%G )
 
      data%Sp_H_Sp = zero
@@ -3105,7 +3105,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         call eval_FC( inform%status, nlp%X + data%s_f, userdata,               &
                       data%F_new, data%C_new )
-                      
+
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
 
         inform%num_f_eval = inform%num_f_eval + 1
@@ -3158,7 +3158,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         call eval_FC( inform%status, nlp%X + data%s_c, userdata,               &
                       data%F_new, data%C_new )
-                      
+
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
 
         inform%num_f_eval = inform%num_f_eval + 1

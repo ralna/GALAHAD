@@ -1,7 +1,7 @@
-!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! File lsqrModule.f90
 #include "galahad_modules.h"
 
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+! File lsqrModule.f90
 !
 !     LSQR     d2norm
 !
@@ -195,7 +195,7 @@ contains
     !                    of damp in the range 0 to sqrt(eps)*norm(A)
     !                    will probably have a negligible effect.
     !                    Larger values of damp will tend to decrease
-    !                    the norm of x and reduce the number of 
+    !                    the norm of x and reduce the number of
     !                    iterations required by LSQR.
     !
     !                    The work per iteration and the storage needed
@@ -321,7 +321,7 @@ contains
     !
     ! xnorm   output     An estimate of norm(x) for the final solution x.
     !
-    ! Subroutines and functions used              
+    ! Subroutines and functions used
     ! ------------------------------
     ! BLAS               dscal, dnrm2
     ! USER               Aprod1, Aprod2
@@ -407,7 +407,7 @@ contains
     intrinsic :: abs, sqrt
 
     ! Local arrays and variables
-    real(dp)  :: u(m), v(n), w(n)         
+    real(dp)  :: u(m), v(n), w(n)
     logical   :: damped, prnt
     integer   :: i, maxdx, nconv, nstop
     real(dp)  :: alfopt,                                    &
@@ -469,16 +469,16 @@ contains
     end if
 
     alpha  = zero
-    beta   = dnrm2 (m, u, 1)
+    beta   = dnrm2 (m, u, 1_ip_)
 
     if (beta > zero) then
-       call dscal (m, (one/beta), u, 1)
+       call dscal (m, (one/beta), u, 1_ip_)
        call Aprod2(m, n, v, u)          ! v = A'*u
-       alpha = dnrm2 (n, v, 1)
+       alpha = dnrm2 (n, v, 1_ip_)
     end if
 
     if (alpha > zero) then
-       call dscal (n, (one/alpha), v, 1)
+       call dscal (n, (one/alpha), v, 1_ip_)
        w = v
     end if
 
@@ -506,16 +506,16 @@ contains
     !===================================================================
     do
        itn = itn + 1
-	  
+
        !----------------------------------------------------------------
        ! Perform the next step of the bidiagonalization to obtain the
        ! next beta, u, alpha, v.  These satisfy
        !     beta*u = A*v  - alpha*u,
        !    alpha*v = A'*u -  beta*v.
        !----------------------------------------------------------------
-       call dscal (m,(- alpha), u, 1)
+       call dscal (m,(- alpha), u, 1_ip_)
        call Aprod1(m, n, v, u)             ! u = A*v
-       beta   = dnrm2 (m, u, 1)
+       beta   = dnrm2 (m, u, 1_ip_)
 
        ! Accumulate Anorm = ||Bk|| = norm([alpha beta damp]).
 
@@ -524,12 +524,12 @@ contains
        Anorm  = d2norm(Anorm, temp)
 
        if (beta > zero) then
-          call dscal (m, (one/beta), u, 1)
-          call dscal (n, (- beta), v, 1)
+          call dscal (m, (one/beta), u, 1_ip_)
+          call dscal (n, (- beta), v, 1_ip_)
           call Aprod2(m, n, v, u)          ! v = A'*u
-          alpha  = dnrm2 (n, v, 1)
+          alpha  = dnrm2 (n, v, 1_ip_)
           if (alpha > zero) then
-             call dscal (n, (one/alpha), v, 1)
+             call dscal (n, (one/alpha), v, 1_ip_)
           end if
        end if
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -395,28 +395,6 @@
 
         TYPE ( FDC_inform_type ) :: FDC_inform
       END TYPE
-
-!-------------------------------
-!   I n t e r f a c e  B l o c k
-!-------------------------------
-
-!      INTERFACE TWO_NORM
-!
-!        FUNCTION SNRM2( n, X, incx )
-!        REAL :: SNRM2
-!        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
-!        REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!!       REAL, INTENT( IN ), DIMENSION( : ) :: X
-!        END FUNCTION SNRM2
-!
-!        FUNCTION DNRM2( n, X, incx )
-!        DOUBLE PRECISION :: DNRM2
-!        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
-!        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!!       DOUBLE PRECISION, INTENT( IN ), DIMENSION( : ) :: X
-!        END FUNCTION DNRM2
-!
-!      END INTERFACE
 
    CONTAINS
 
@@ -1919,9 +1897,9 @@
 !       cqp = control%convex
         IF ( data%h_ne == 0 .OR. convex_diagonal_qp .OR. cqp ) THEN
           prob%gradient_kind = 2
-          IF ( NRM2( prob%n, prob%G, 1 ) <= epsmch ) THEN
+          IF ( TWO_NORM( prob%G( : prob%n ) ) <= epsmch ) THEN
             prob%gradient_kind = 0
-          ELSE IF ( NRM2( prob%n, prob%G - one, 1 ) <= epsmch ) THEN
+          ELSE IF ( TWO_NORM( prob%G( : prob%n ) - one ) <= epsmch ) THEN
             prob%gradient_kind = 1
           END IF
         ELSE

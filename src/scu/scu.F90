@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_SCU_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE GALAHAD_SYMBOLS
 
@@ -1552,8 +1552,8 @@
 
 !  Apply the rotation to the remaining entries in columns j and m
 
-          CALL ROT( mm1, data%Q( 1 : mm1, matrix%m ), 1,                       &
-                    data%Q( 1 : mm1, j ), 1, c, s )
+          CALL ROT( mm1, data%Q( 1 : mm1, matrix%m ), 1_ip_,                   &
+                    data%Q( 1 : mm1, j ), 1_ip_, c, s )
 
 !  Apply the rotation to the entries in rows j and m of R
 
@@ -1759,7 +1759,7 @@
 
 !  NB: ROT replaced by do loop to prevent mkl bug ... sigh
 !         IF ( PRESENT( Q ) )                                                  &
-!           CALL ROT( mnew, Q( : mnew, j ), 1, Q( : mnew, mnew ), 1, c, s )
+!           CALL ROT( mnew, Q( : mnew, j ), 1_ip_, Q( : mnew, mnew ),1_ip_,c,s )
           IF ( PRESENT( Q ) ) THEN
             DO k = 1, mnew
               y = c * Q( k, j ) + s * Q( k, mnew )

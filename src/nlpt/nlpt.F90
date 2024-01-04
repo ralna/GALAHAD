@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-10-16 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -1025,8 +1025,8 @@
          END IF
       END IF
    ELSE
-      WRITE( out, 102 ) NRM2( problem%n, problem%x, 1 )
-      WRITE( out, 101 ) problem%f, NRM2( problem%n, problem%g, 1 )
+      WRITE( out, 102 ) TWO_NORM( problem%x( : problem%n ) )
+      WRITE( out, 101 ) problem%f, TWO_NORM( problem%g( : problem%n ) )
       max_violation = ZERO
       IF ( ALLOCATED( problem%x_l ) .AND. ALLOCATED( problem%x_u ) ) THEN
          DO j = 1, problem%n

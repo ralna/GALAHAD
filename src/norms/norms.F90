@@ -75,7 +75,7 @@
        n = SIZE( X )
 
        IF ( n > 0 ) THEN
-         TWO_NORM = NRM2( n, X, 1 )
+         TWO_NORM = NRM2( n, X, 1_ip_ )
        ELSE
          TWO_NORM = zero
        END IF
