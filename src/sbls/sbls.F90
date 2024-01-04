@@ -6053,7 +6053,7 @@
 
 !  apply (L-BFGS-3) q -> C^{-1} q (using the Cholesky factors of C)
 
-          i = 0
+          i = 0_ip_
           CALL POTRS( 'L', H_lm%length, 1_ip_, H_lm%C, H_lm%len_c,             &
                       H_lm%QP_PERM, H_lm%m, i )
           IF ( i /= 0 ) THEN
