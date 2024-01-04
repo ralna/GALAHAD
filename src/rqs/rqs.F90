@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 17:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -1050,7 +1050,7 @@
 !  find the generalised spectral decomposition H Q = M Q D, where Q^T M Q = I
 
             CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-            CALL SYGV( 1, 'V','L', n, data%Q_dense( : n, : n ), n,             &
+            CALL SYGV( 1_ip_, 'V','L', n, data%Q_dense( : n, : n ), n,         &
                        data%M_dense( : n, : n ), n, data%H_dense%val,          &
                        data%WORK( : lwork ), lwork, sy_status )
 
@@ -1186,7 +1186,7 @@
 
   920 CONTINUE
       IF ( control%out > 0 .AND. control%print_level > 1 ) WRITE( control%out, &
-       "( A, ' error return from SYSV/SYGV: status = ', I0 )") prefix, sy_status
+       "( A, ' error return from SYEV/SYGV: status = ', I0 )") prefix, sy_status
       inform%status = GALAHAD_error_factorization
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
@@ -1196,7 +1196,7 @@
 
 ! Non-executable statements
 
- 2010 FORMAT( A, ' time( SYSV/SYGV factorization ) = ', F0.2 )
+ 2010 FORMAT( A, ' time( SYEV/SYGV factorization ) = ', F0.2 )
 
 !  End of subroutine RQS_solve
 

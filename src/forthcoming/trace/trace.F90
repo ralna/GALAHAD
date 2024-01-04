@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1912,8 +1912,8 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          CALL GESVD( 'N', 'N', nlp%n, data%max_diffs, data%DX_svd,             &
-                      nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,        &
-                      data%WORK_svd, - 1, info_svd )
+                      nlp%n, data%S_svd, data%U_svd, 1_ip_,                    &
+                      data%VT_svd, 1_ip_, data%WORK_svd, - 1_ip_, info_svd )
          data%lwork_svd = INT( data%WORK_svd( 1 ) )
 
          array_name = 'trace: data%WORK_svd'
@@ -2267,8 +2267,8 @@
                data%DX_past( : nlp%n, : data%total_diffs )
 
              CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,       &
-                         nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,     &
-                         data%WORK_svd, data%lwork_svd, info_svd )
+                         nlp%n, data%S_svd, data%U_svd, 1_ip_, data%VT_svd,    &
+                         1_ip_, data%WORK_svd, data%lwork_svd, info_svd )
 
 !            write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" )   &
 !              info_svd, data%S_svd( : data%total_diffs )

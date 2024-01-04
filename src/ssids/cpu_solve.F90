@@ -466,7 +466,7 @@ contains
        if (pos_def) then
           call trsv('L','T','N', nelim, lcol, blkm, xlocal, 1_ip_)
        else
-          call trsv('L','T','U', nelim, lcol, blkm, xlocal, 1,ip_)
+          call trsv('L','T','U', nelim, lcol, blkm, xlocal, 1_ip_)
        end if
 
        ! Copy solution back from xlocal

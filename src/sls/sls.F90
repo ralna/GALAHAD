@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO

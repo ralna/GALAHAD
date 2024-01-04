@@ -1,3 +1,8 @@
+#ifdef GALAHAD_64BIT_INTEGER
+#define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
+#define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
+#endif
+
 #ifdef GALAHAD_SINGLE
 #define CUTEst_interface_precision CUTEST_interface_single
 #define CUTEST_interface_precision CUTEST_interface_single
