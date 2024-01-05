@@ -1,9 +1,9 @@
-! THIS VERSION: 2022-11-23 AT 12:30:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 5 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma57_single_ciface
-  use iso_c_binding
+  use GALAHAD_KINDS_single
   use hsl_zd11_single, only: zd11_type
   use hsl_ma57_single, only:                                     &
        f_ma57_factors => ma57_factors,                           &
@@ -25,107 +25,104 @@ module hsl_ma57_single_ciface
        f_ma57_get_factors => ma57_get_factors,                   &
        f_ma57_get_n__ => ma57_get_n__
 
-  integer, parameter :: wp = C_FLOAT ! pkg type
-  integer, parameter :: rp = C_FLOAT ! real type
-
   type, bind(C) :: ma57_control
-     integer(C_INT) :: f_arrays
-     real(rp)       :: multiplier
-     real(rp)       :: reduce
-     real(rp)       :: u
-     real(rp)       :: static_tolerance
-     real(rp)       :: static_level
-     real(rp)       :: tolerance
-     real(rp)       :: convergence
-     real(rp)       :: consist
-     integer(C_INT) :: lp
-     integer(C_INT) :: wp
-     integer(C_INT) :: mp
-     integer(C_INT) :: sp
-     integer(C_INT) :: ldiag
-     integer(C_INT) :: nemin
-     integer(C_INT) :: factorblocking
-     integer(C_INT) :: solveblocking
-     integer(C_INT) :: la
-     integer(C_INT) :: liw
-     integer(C_INT) :: maxla
-     integer(C_INT) :: maxliw
-     integer(C_INT) :: pivoting
-     integer(C_INT) :: thresh
-     integer(C_INT) :: ordering
-     integer(C_INT) :: scaling
-     integer(C_INT) :: rank_deficient
+     integer(ipc_) :: f_arrays
+     real(spc_)       :: multiplier
+     real(spc_)       :: reduce
+     real(spc_)       :: u
+     real(spc_)       :: static_tolerance
+     real(spc_)       :: static_level
+     real(spc_)       :: tolerance
+     real(spc_)       :: convergence
+     real(spc_)       :: consist
+     integer(ipc_) :: lp
+     integer(ipc_) :: wp
+     integer(ipc_) :: mp
+     integer(ipc_) :: sp
+     integer(ipc_) :: ldiag
+     integer(ipc_) :: nemin
+     integer(ipc_) :: factorblocking
+     integer(ipc_) :: solveblocking
+     integer(ipc_) :: la
+     integer(ipc_) :: liw
+     integer(ipc_) :: maxla
+     integer(ipc_) :: maxliw
+     integer(ipc_) :: pivoting
+     integer(ipc_) :: thresh
+     integer(ipc_) :: ordering
+     integer(ipc_) :: scaling
+     integer(ipc_) :: rank_deficient
 
-     integer(C_INT) :: ispare(5)
-     real(rp) :: rspare(10)
+     integer(ipc_) :: ispare(5)
+     real(spc_) :: rspare(10)
   end type ma57_control
 
   type, bind(C) :: ma57_ainfo
-     real(rp)       :: opsa
-     real(rp)       :: opse
-     integer(C_INT) :: flag
-     integer(C_INT) :: more
-     integer(C_INT) :: nsteps
-     integer(C_INT) :: nrltot
-     integer(C_INT) :: nirtot
-     integer(C_INT) :: nrlnec
-     integer(C_INT) :: nirnec
-     integer(C_INT) :: nrladu
-     integer(C_INT) :: niradu
-     integer(C_INT) :: ncmpa
-     integer(C_INT) :: ordering
-     integer(C_INT) :: oor
-     integer(C_INT) :: dup
-     integer(C_INT) :: maxfrt
-     integer(C_INT) :: stat
+     real(spc_)       :: opsa
+     real(spc_)       :: opse
+     integer(ipc_) :: flag
+     integer(ipc_) :: more
+     integer(ipc_) :: nsteps
+     integer(ipc_) :: nrltot
+     integer(ipc_) :: nirtot
+     integer(ipc_) :: nrlnec
+     integer(ipc_) :: nirnec
+     integer(ipc_) :: nrladu
+     integer(ipc_) :: niradu
+     integer(ipc_) :: ncmpa
+     integer(ipc_) :: ordering
+     integer(ipc_) :: oor
+     integer(ipc_) :: dup
+     integer(ipc_) :: maxfrt
+     integer(ipc_) :: stat
 
-     integer(C_INT) :: ispare(5)
-     real(rp) :: rspare(10)
+     integer(ipc_) :: ispare(5)
+     real(spc_) :: rspare(10)
   end type ma57_ainfo
 
   type, bind(C) :: ma57_finfo
-     real(rp)       :: opsa
-     real(rp)       :: opse
-     real(rp)       :: opsb
-     real(rp)       :: maxchange
-     real(rp)       :: smin
-     real(rp)       :: smax
-     integer(C_INT) :: flag
-     integer(C_INT) :: more
-     integer(C_INT) :: maxfrt
-     integer(C_INT) :: nebdu
-     integer(C_INT) :: nrlbdu
-     integer(C_INT) :: nirbdu
-     integer(C_INT) :: nrltot
-     integer(C_INT) :: nirtot
-     integer(C_INT) :: nrlnec
-     integer(C_INT) :: nirnec
-     integer(C_INT) :: ncmpbr
-     integer(C_INT) :: ncmpbi
-     integer(C_INT) :: ntwo
-     integer(C_INT) :: neig
-     integer(C_INT) :: delay
-     integer(C_INT) :: signc
-     integer(C_INT) :: static_
-     integer(C_INT) :: modstep
-     integer(C_INT) :: rank
-     integer(C_INT) :: stat
+     real(spc_)       :: opsa
+     real(spc_)       :: opse
+     real(spc_)       :: opsb
+     real(spc_)       :: maxchange
+     real(spc_)       :: smin
+     real(spc_)       :: smax
+     integer(ipc_) :: flag
+     integer(ipc_) :: more
+     integer(ipc_) :: maxfrt
+     integer(ipc_) :: nebdu
+     integer(ipc_) :: nrlbdu
+     integer(ipc_) :: nirbdu
+     integer(ipc_) :: nrltot
+     integer(ipc_) :: nirtot
+     integer(ipc_) :: nrlnec
+     integer(ipc_) :: nirnec
+     integer(ipc_) :: ncmpbr
+     integer(ipc_) :: ncmpbi
+     integer(ipc_) :: ntwo
+     integer(ipc_) :: neig
+     integer(ipc_) :: delay
+     integer(ipc_) :: signc
+     integer(ipc_) :: static_
+     integer(ipc_) :: modstep
+     integer(ipc_) :: rank
+     integer(ipc_) :: stat
 
-     integer(C_INT) :: ispare(5)
-     real(rp) :: rspare(10)
+     integer(ipc_) :: ispare(5)
+     real(spc_) :: rspare(10)
   end type ma57_finfo
 
   type, bind(C) :: ma57_sinfo
-     real(rp)       :: cond
-     real(rp)       :: cond2
-     real(rp)       :: berr
-     real(rp)       :: berr2
-     real(rp)       :: error
-     integer(C_INT) :: flag
-     integer(C_INT) :: stat
+     real(spc_)       :: cond
+     real(spc_)       :: cond2
+     real(spc_)       :: berr
+     real(spc_)       :: berr2
+     real(spc_)       :: error
+     integer(ipc_) :: flag
+     integer(ipc_) :: stat
 
-     integer(C_INT) :: ispare(5)
-     real(rp) :: rspare(10)
+     integer(ipc_) :: ispare(5)
+     real(spc_) :: rspare(10)
   end type ma57_sinfo
 
 contains

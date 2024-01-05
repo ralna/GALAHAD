@@ -1,39 +1,46 @@
-! THIS VERSION: 29/12/2021 AT 15:45:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc68_integer_ciface
-   use iso_c_binding
+   use ISO_C_BINDING
    use hsl_mc68_integer, only: &
       f_mc68_control       => mc68_control,     &
       f_mc68_info          => mc68_info,        &
       f_mc68_order         => mc68_order
    implicit none
 
+#ifdef GALAHAD_64BIT_INTEGER
+    integer, parameter :: ipc_ = C_INT64_T
+#else
+    integer, parameter :: ipc_ = C_INT32_T
+#endif
+    integer, parameter :: longc_ = C_INT64_T
+
    type, bind(C) :: mc68_control
-      integer(C_INT) :: f_array_in ! 0 is false, otherwise true
-      integer(C_INT) :: f_array_out! 0 is false, otherwise true
-      integer(C_INT) :: min_l_workspace
-      integer(C_INT) :: lp
-      integer(C_INT) :: wp
-      integer(C_INT) :: mp
-      integer(C_INT) :: nemin
-      integer(C_INT) :: print_level
-      integer(C_INT) :: row_full_thresh
-      integer(C_INT) :: row_search
+      integer(ipc_) :: f_array_in ! 0 is false, otherwise true
+      integer(ipc_) :: f_array_out! 0 is false, otherwise true
+      integer(ipc_) :: min_l_workspace
+      integer(ipc_) :: lp
+      integer(ipc_) :: wp
+      integer(ipc_) :: mp
+      integer(ipc_) :: nemin
+      integer(ipc_) :: print_level
+      integer(ipc_) :: row_full_thresh
+      integer(ipc_) :: row_search
    end type mc68_control
 
    type, bind(C) :: mc68_info
-     integer(C_INT) :: flag
-     integer(C_INT) :: iostat
-     integer(C_INT) :: stat
-     integer(C_INT) :: out_range
-     integer(C_INT) :: duplicate
-     integer(C_INT) :: n_compressions
-     integer(C_INT) :: n_zero_eigs
-     integer(C_LONG) :: l_workspace
-     integer(C_INT) :: zb01_info
-     integer(C_INT) :: n_dense_rows
+     integer(ipc_) :: flag
+     integer(ipc_) :: iostat
+     integer(ipc_) :: stat
+     integer(ipc_) :: out_range
+     integer(ipc_) :: duplicate
+     integer(ipc_) :: n_compressions
+     integer(ipc_) :: n_zero_eigs
+     integer(longc_) :: l_workspace
+     integer(ipc_) :: zb01_info
+     integer(ipc_) :: n_dense_rows
    end type mc68_info
 contains
    subroutine copy_control_in(ccontrol, fcontrol, f_array_in, f_array_out, &

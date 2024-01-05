@@ -1,10 +1,10 @@
-! THIS VERSION: 29/12/2021 AT 15:35:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 7 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma77_double_ciface
-   use iso_c_binding
-   USE GALAHAD_common_ciface
+   use GALAHAD_KINDS_double
+   use GALAHAD_common_ciface
    use hsl_ma77_double, only :                     &
       f_ma77_keep          => ma77_keep,           &
       f_ma77_control       => ma77_control,        &
@@ -30,93 +30,93 @@ module hsl_ma77_double_ciface
    ! Data type for user controls
    type, bind(C) :: ma77_control
       ! C/Fortran interface related controls
-      integer(C_INT) :: f_arrays ! 0 is false, otherwise is true
+      integer(ipc_) :: f_arrays ! 0 is false, otherwise is true
 
       ! Printing controls
-      integer(C_INT)  :: print_level
-      integer(C_INT)  :: unit_diagnostics
-      integer(C_INT)  :: unit_error
-      integer(C_INT)  :: unit_warning
+      integer(ipc_)  :: print_level
+      integer(ipc_)  :: unit_diagnostics
+      integer(ipc_)  :: unit_error
+      integer(ipc_)  :: unit_warning
 
       ! Controls used by MA77_open
-      integer(C_INT)  :: bits
-      integer(C_INT)  :: buffer_lpage(2)
-      integer(C_INT)  :: buffer_npage(2)
-      integer(C_LONG) :: file_size
-      integer(C_LONG) :: maxstore
-      integer(C_LONG) :: storage(3)
+      integer(ipc_)  :: bits
+      integer(ipc_)  :: buffer_lpage(2)
+      integer(ipc_)  :: buffer_npage(2)
+      integer(longc_) :: file_size
+      integer(longc_) :: maxstore
+      integer(longc_) :: storage(3)
 
       ! Controls used by MA77_analyse
-      integer(C_INT)  :: nemin
+      integer(ipc_)  :: nemin
 
       ! Controls used by MA77_scale
-      integer(C_INT)  :: maxit
-      integer(C_INT)  :: infnorm
-      real(C_DOUBLE)  :: thresh
+      integer(ipc_)  :: maxit
+      integer(ipc_)  :: infnorm
+      real(dpc_)  :: thresh
 
       ! Controls used by MA77_factor with posdef true
-      integer(C_INT)  :: nb54
+      integer(ipc_)  :: nb54
 
       ! Controls used by MA77_factor with posdef false
-      integer(C_INT)  :: action ! 0 is false, otherwise is true
-      real(C_DOUBLE)  :: multiplier
-      integer(C_INT)  :: nb64
-      integer(C_INT)  :: nbi
-      real(C_DOUBLE)  :: small
-      real(C_DOUBLE)  :: static
-      integer(C_LONG) :: storage_indef
-      real(C_DOUBLE)  :: u
-      real(C_DOUBLE)  :: umin
+      integer(ipc_)  :: action ! 0 is false, otherwise is true
+      real(dpc_)  :: multiplier
+      integer(ipc_)  :: nb64
+      integer(ipc_)  :: nbi
+      real(dpc_)  :: small
+      real(dpc_)  :: static
+      integer(longc_) :: storage_indef
+      real(dpc_)  :: u
+      real(dpc_)  :: umin
 
       ! Controls used by ma77_solve_fredholm
-      real(C_DOUBLE) :: consist_tol
+      real(dpc_) :: consist_tol
       
       ! Padding for future growth
-      integer(C_INT) :: ispare(5)
-      integer(C_LONG) :: lspare(5)
-      real(C_DOUBLE) :: rspare(5)
+      integer(ipc_) :: ispare(5)
+      integer(longc_) :: lspare(5)
+      real(dpc_) :: rspare(5)
    end type ma77_control
 
    !*************************************************
 
    ! data type for returning information to user.
    type, bind(C) :: ma77_info
-      real(C_DOUBLE)  :: detlog
-      integer(C_INT)  :: detsign
-      integer(C_INT)  :: flag
-      integer(C_INT)  :: iostat
-      integer(C_INT)  :: matrix_dup
-      integer(C_INT)  :: matrix_rank
-      integer(C_INT)  :: matrix_outrange
-      integer(C_INT)  :: maxdepth
-      integer(C_INT)  :: maxfront
-      integer(C_LONG) :: minstore
-      integer(C_INT)  :: ndelay
-      integer(C_LONG) :: nfactor
-      integer(C_LONG) :: nflops
-      integer(C_INT)  :: niter
-      integer(C_INT)  :: nsup
-      integer(C_INT)  :: num_neg
-      integer(C_INT)  :: num_nothresh
-      integer(C_INT)  :: num_perturbed
-      integer(C_INT)  :: ntwo
-      integer(C_INT)  :: stat
-      integer(C_INT)  :: index(4)
-      integer(C_LONG) :: nio_read(2)
-      integer(C_LONG) :: nio_write(2)
-      integer(C_LONG) :: nwd_read(2)
-      integer(C_LONG) :: nwd_write(2)
-      integer(C_INT)  :: num_file(4)
-      integer(C_LONG) :: storage(4)
-      integer(C_INT)  :: tree_nodes
-      integer(C_INT)  :: unit_restart
-      integer(C_INT)  :: unused
-      real(C_DOUBLE)  :: usmall
+      real(dpc_)  :: detlog
+      integer(ipc_)  :: detsign
+      integer(ipc_)  :: flag
+      integer(ipc_)  :: iostat
+      integer(ipc_)  :: matrix_dup
+      integer(ipc_)  :: matrix_rank
+      integer(ipc_)  :: matrix_outrange
+      integer(ipc_)  :: maxdepth
+      integer(ipc_)  :: maxfront
+      integer(longc_) :: minstore
+      integer(ipc_)  :: ndelay
+      integer(longc_) :: nfactor
+      integer(longc_) :: nflops
+      integer(ipc_)  :: niter
+      integer(ipc_)  :: nsup
+      integer(ipc_)  :: num_neg
+      integer(ipc_)  :: num_nothresh
+      integer(ipc_)  :: num_perturbed
+      integer(ipc_)  :: ntwo
+      integer(ipc_)  :: stat
+      integer(ipc_)  :: index(4)
+      integer(longc_) :: nio_read(2)
+      integer(longc_) :: nio_write(2)
+      integer(longc_) :: nwd_read(2)
+      integer(longc_) :: nwd_write(2)
+      integer(ipc_)  :: num_file(4)
+      integer(longc_) :: storage(4)
+      integer(ipc_)  :: tree_nodes
+      integer(ipc_)  :: unit_restart
+      integer(ipc_)  :: unused
+      real(dpc_)  :: usmall
       
       ! Padding for future growth
-      integer(C_INT) :: ispare(5)
-      integer(C_LONG) :: lspare(5)
-      real(C_DOUBLE) :: rspare(5)
+      integer(ipc_) :: ispare(5)
+      integer(longc_) :: lspare(5)
+      real(dpc_) :: rspare(5)
    end type ma77_info
 
 contains
@@ -194,7 +194,7 @@ contains
    subroutine ma77_open_main(n, cfname1, cfname2, cfname3, cfname4, ckeep, &
          ccontrol, cinfo, nelt)
 
-      integer(C_INT), intent(in) :: n
+      integer(ipc_), intent(in) :: n
       type(C_PTR), intent(in) :: cfname1
       type(C_PTR), intent(in) :: cfname2
       type(C_PTR), intent(in) :: cfname3
@@ -202,7 +202,7 @@ contains
       type(C_PTR), intent(out) :: ckeep
       type(ma77_control), intent(in) :: ccontrol
       type(ma77_info), intent(inout) :: cinfo
-      integer(C_INT), optional, intent(in) :: nelt
+      integer(ipc_), optional, intent(in) :: nelt
 
       type(f_ma77_keep), pointer :: fkeep
       type(f_ma77_control) :: fcontrol

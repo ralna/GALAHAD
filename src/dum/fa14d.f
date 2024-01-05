@@ -1,7 +1,15 @@
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:30 GMT.
+
+#ifdef GALAHAD_64BIT_INTEGER
+  INTEGER, PARAMETER :: ip_ = INT64
+#else
+  INTEGER, PARAMETER :: ip_ = INT32
+#endif
+
       DOUBLE PRECISION FUNCTION FA14AD( ix, i )
-      INTEGER :: ix, i
+      INTEGER ( KIND = ip_ ) :: ix, i
       END FUNCTION FA14AD
 
       SUBROUTINE FA14ID( ix )
-      INTEGER :: ix
+      INTEGER  ( KIND = ip_ ) :: ix
       END SUBROUTINE FA14ID

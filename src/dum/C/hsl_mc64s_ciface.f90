@@ -1,9 +1,9 @@
-! THIS VERSION: 29/12/2021 AT 15:40:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 4 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc64_single_ciface
-   use iso_c_binding
+   use GALAHAD_KINDS_single
    use hsl_mc64_single, only:                &
       f_mc64_control       => mc64_control,  &
       f_mc64_info          => mc64_info,     &
@@ -11,19 +11,19 @@ module hsl_mc64_single_ciface
    implicit none
 
    type, bind(C) :: mc64_control
-      integer(C_INT) :: f_arrays
-      integer(C_INT) :: lp
-      integer(C_INT) :: wp
-      integer(C_INT) :: sp
-      integer(C_INT) :: ldiag
-      integer(C_INT) :: checking
+      integer(ipc_) :: f_arrays
+      integer(ipc_) :: lp
+      integer(ipc_) :: wp
+      integer(ipc_) :: sp
+      integer(ipc_) :: ldiag
+      integer(ipc_) :: checking
    end type mc64_control
 
    type, bind(C) :: mc64_info
-      integer(C_INT) :: flag
-      integer(C_INT) :: more
-      integer(C_INT) :: strucrank
-      integer(C_INT) :: stat
+      integer(ipc_) :: flag
+      integer(ipc_) :: more
+      integer(ipc_) :: strucrank
+      integer(ipc_) :: stat
    end type mc64_info
 
 contains

@@ -1,9 +1,9 @@
-! THIS VERSION: 29/12/2021 AT 15:30:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 4 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma48_single_ciface
-   use iso_c_binding
+   use GALAHAD_KINDS_single
    use hsl_ma48_single, only:                                           &
       f_ma48_factors                => ma48_factors,                    &
       f_ma48_control                => ma48_control,                    &
@@ -21,67 +21,65 @@ module hsl_ma48_single_ciface
    use hsl_zd11_single
    implicit none
 
-   integer, parameter :: wp = C_FLOAT
-
    type, bind(C) :: ma48_control
-      integer(C_INT) :: f_arrays
-      real(wp) :: multiplier
-      real(wp) :: u
-      real(wp) :: switch
-      real(wp) :: drop
-      real(wp) :: tolerance
-      real(wp) :: cgce
-      integer(C_INT) :: lp
-      integer(C_INT) :: wp
-      integer(C_INT) :: mp
-      integer(C_INT) :: ldiag
-      integer(C_INT) :: btf
-      integer(C_INT) :: struct
-      integer(C_INT) :: maxit
-      integer(C_INT) :: factor_blocking
-      integer(C_INT) :: solve_blas
-      integer(C_INT) :: pivoting
-      integer(C_INT) :: diagonal_pivoting
-      integer(C_INT) :: fill_in
-      integer(C_INT) :: switch_mode
+      integer(ipc_) :: f_arrays
+      real(spc_) :: multiplier
+      real(spc_) :: u
+      real(spc_) :: switch
+      real(spc_) :: drop
+      real(spc_) :: tolerance
+      real(spc_) :: cgce
+      integer(ipc_) :: lp
+      integer(ipc_) :: wp
+      integer(ipc_) :: mp
+      integer(ipc_) :: ldiag
+      integer(ipc_) :: btf
+      integer(ipc_) :: struct
+      integer(ipc_) :: maxit
+      integer(ipc_) :: factor_blocking
+      integer(ipc_) :: solve_blas
+      integer(ipc_) :: pivoting
+      integer(ipc_) :: diagonal_pivoting
+      integer(ipc_) :: fill_in
+      integer(ipc_) :: switch_mode
    end type ma48_control
 
    type, bind(C) :: ma48_ainfo
-      real(wp) :: ops
-      integer(C_INT) :: flag
-      integer(C_INT) :: more
-      integer(C_LONG) :: lena_analyse
-      integer(C_LONG) :: lenj_analyse
-      integer(C_LONG) :: lena_factorize
-      integer(C_LONG) :: leni_factorize
-      integer(C_INT) :: ncmpa
-      integer(C_INT) :: rank
-      integer(C_LONG) :: drop
-      integer(C_INT) :: struc_rank
-      integer(C_LONG) :: oor
-      integer(C_LONG) :: dup
-      integer(C_INT) :: stat
-      integer(C_INT) :: lblock
-      integer(C_INT) :: sblock
-      integer(C_LONG) :: tblock
+      real(spc_) :: ops
+      integer(ipc_) :: flag
+      integer(ipc_) :: more
+      integer(longc_) :: lena_analyse
+      integer(longc_) :: lenj_analyse
+      integer(longc_) :: lena_factorize
+      integer(longc_) :: leni_factorize
+      integer(ipc_) :: ncmpa
+      integer(ipc_) :: rank
+      integer(longc_) :: drop
+      integer(ipc_) :: struc_rank
+      integer(longc_) :: oor
+      integer(longc_) :: dup
+      integer(ipc_) :: stat
+      integer(ipc_) :: lblock
+      integer(ipc_) :: sblock
+      integer(longc_) :: tblock
    end type ma48_ainfo
 
    type, bind(C) :: ma48_finfo
-      real(wp) :: ops
-      integer(C_INT) :: flag
-      integer(C_INT) :: more
-      integer(C_LONG) :: size_factor
-      integer(C_LONG) :: lena_factorize
-      integer(C_LONG) :: leni_factorize
-      integer(C_LONG) :: drop
-      integer(C_INT) :: rank
-      integer(C_INT) :: stat
+      real(spc_) :: ops
+      integer(ipc_) :: flag
+      integer(ipc_) :: more
+      integer(longc_) :: size_factor
+      integer(longc_) :: lena_factorize
+      integer(longc_) :: leni_factorize
+      integer(longc_) :: drop
+      integer(ipc_) :: rank
+      integer(ipc_) :: stat
    end type ma48_finfo
 
    type, bind(C) :: ma48_sinfo
-      integer(C_INT) :: flag
-      integer(C_INT) :: more
-      integer(C_INT) :: stat
+      integer(ipc_) :: flag
+      integer(ipc_) :: more
+      integer(ipc_) :: stat
    end type ma48_sinfo
 contains
    subroutine copy_control_in(ccontrol, fcontrol, f_arrays)

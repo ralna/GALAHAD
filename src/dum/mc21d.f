@@ -1,8 +1,20 @@
-! dummy routine
-      subroutine mc21ad( )
-      end
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:50 GMT.
 
-      SUBROUTINE MC21BD(N,ICN,LICN,IP,LENR,IPERM,NUMNZ,PR,ARP,CV,OUT)
-      INTEGER LICN,N,NUMNZ
-      INTEGER ARP(N),CV(N),ICN(LICN),IP(N),IPERM(N),LENR(N),OUT(N),PR(N)
+#ifdef GALAHAD_64BIT_INTEGER
+  INTEGER, PARAMETER :: ip_ = INT64
+#else
+  INTEGER, PARAMETER :: ip_ = INT32
+#endif
+
+! dummy routine
+
+      SUBROUTINE MC21AD( )
+      END
+
+      SUBROUTINE MC21BD( n, ICN, licn, IP, LENR, IPERM, numnz, 
+     *                   PR, ARP, CV, OUT )
+      INTEGER ( KIND = ip_ ) :: licn, n, numnz
+      INTEGER ( KIND = ip_ ) :: ARP( n ), CV( n )
+      INTEGER ( KIND = ip_ ) :: ICN( licn ), IP( n ), IPERM( n )
+      INTEGER ( KIND = ip_ ) :: LENR( n ), OUT( n ), PR( n )
       END

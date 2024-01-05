@@ -1,9 +1,9 @@
-! THIS VERSION: 29/12/2021 AT 15:35:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 8 6 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma86_double_ciface
-   use iso_c_binding
+   use GALAHAD_KINDS_double
    use hsl_ma86_double, only :                     &
       f_ma86_keep          => ma86_keep,           &
       f_ma86_control       => ma86_control,        &
@@ -19,46 +19,46 @@ module hsl_ma86_double_ciface
    ! Data type for user controls
    type, bind(C) :: ma86_control
       ! C/Fortran interface related controls
-      integer(C_INT) :: f_arrays ! 0 is false, otherwise is true
+      integer(ipc_) :: f_arrays ! 0 is false, otherwise is true
       ! Printing controls
-      integer(C_INT) :: diagnostics_level
-      integer(C_INT) :: unit_diagnostics
-      integer(C_INT) :: unit_error
-      integer(C_INT) :: unit_warning
+      integer(ipc_) :: diagnostics_level
+      integer(ipc_) :: unit_diagnostics
+      integer(ipc_) :: unit_error
+      integer(ipc_) :: unit_warning
       ! Controls used by ma86_analyse
-      integer(C_INT) :: nemin
-      integer(C_INT) :: nb
+      integer(ipc_) :: nemin
+      integer(ipc_) :: nb
       ! Controls used by ma86_factor and ma86_factor_solve
-      integer(C_INT) :: action ! 0 is false, otherwise is true
-      integer(C_INT) :: nbi
-      integer(C_INT) :: pool_size
-      real(C_DOUBLE) :: small
-      real(C_DOUBLE) :: static
-      real(C_DOUBLE) :: u
-      real(C_DOUBLE) :: umin
-      integer(C_INT) :: scaling
+      integer(ipc_) :: action ! 0 is false, otherwise is true
+      integer(ipc_) :: nbi
+      integer(ipc_) :: pool_size
+      real(dpc_) :: small
+      real(dpc_) :: static
+      real(dpc_) :: u
+      real(dpc_) :: umin
+      integer(ipc_) :: scaling
    end type ma86_control
 
    !*************************************************
 
    ! data type for returning information to user.
    type, bind(C) :: ma86_info 
-      real(C_DOUBLE)  :: detlog
-      integer(C_INT)  :: detsign
-      integer(C_INT)  :: flag
-      integer(C_INT)  :: matrix_rank
-      integer(C_INT)  :: maxdepth
-      integer(C_INT)  :: num_delay
-      integer(C_LONG) :: num_factor
-      integer(C_LONG) :: num_flops
-      integer(C_INT)  :: num_neg
-      integer(C_INT)  :: num_nodes
-      integer(C_INT)  :: num_nothresh
-      integer(C_INT)  :: num_perturbed
-      integer(C_INT)  :: num_two
-      integer(C_INT)  :: pool_size
-      integer(C_INT)  :: stat
-      real(C_DOUBLE)  :: usmall
+      real(dpc_)  :: detlog
+      integer(ipc_)  :: detsign
+      integer(ipc_)  :: flag
+      integer(ipc_)  :: matrix_rank
+      integer(ipc_)  :: maxdepth
+      integer(ipc_)  :: num_delay
+      integer(longc_) :: num_factor
+      integer(longc_) :: num_flops
+      integer(ipc_)  :: num_neg
+      integer(ipc_)  :: num_nodes
+      integer(ipc_)  :: num_nothresh
+      integer(ipc_)  :: num_perturbed
+      integer(ipc_)  :: num_two
+      integer(ipc_)  :: pool_size
+      integer(ipc_)  :: stat
+      real(dpc_)  :: usmall
    end type ma86_info
 contains
    subroutine copy_control_in(ccontrol, fcontrol, f_arrays)

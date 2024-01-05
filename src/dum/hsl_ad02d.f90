@@ -1,5 +1,4 @@
-! THIS VERSION: 25/06/2002 AT 14:00:00 PM.
-! Updated 25/06/2002: additional warning information added
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 13:10 GMT.
 
 !-*-*-*-*-*  L A N C E L O T  -B-  DUMMY AD02_FORWARD  M O D U L E S *-*-*-*
 
@@ -8,33 +7,32 @@
 !  June 28th 1996
 
 MODULE HSL_AD02_FORWARD_DOUBLE
-
+      USE GALAHAD_KINDS_double
       IMPLICIT NONE
       PRIVATE
-      INTEGER, PARAMETER :: WP = KIND(1D0)
       PUBLIC :: AD02_INITIALIZE
     
 !  Dummy HSL_AD02_FORWARD_DOUBLE module
 
       TYPE, PUBLIC :: AD02_REAL
         PRIVATE
-        INTEGER :: P
+        INTEGER ( KIND = ip_ ) :: p
       END TYPE AD02_REAL
 
       TYPE, PUBLIC :: AD02_DATA
         PRIVATE
-        INTEGER :: LEVEL
+        INTEGER ( KIND = ip_ ) :: level
       END TYPE AD02_DATA
 
 CONTAINS
 
       SUBROUTINE AD02_INITIALIZE(DEGREE,A,VALUE,DATA,FULL_THRESHOLD)
-        INTEGER, INTENT (IN) :: DEGREE
+        INTEGER ( KIND = ip_ ), INTENT (IN) :: DEGREE
 !       TYPE (AD02_REAL), INTENT (OUT) :: A
         TYPE (AD02_REAL) :: A
-        INTEGER, OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
         TYPE (AD02_DATA), POINTER :: DATA
-        REAL (WP), INTENT (IN) :: VALUE
+        REAL ( KIND = dp_ ), INTENT (IN) :: VALUE
     
 !  Dummy subroutine available with LANCELOT
 
@@ -57,8 +55,6 @@ CONTAINS
 
 END MODULE HSL_AD02_FORWARD_DOUBLE
 
-!  THIS VERSION: 28/06/1996 AT 09:00:00 AM
-
 !-*-*-*-*-*  L A N C E L O T  -B-  DUMMY AD02_BACKWARD  M O D U L E S *-*-*-*
 
 !  Nick Gould, for GALAHAD productions
@@ -66,33 +62,32 @@ END MODULE HSL_AD02_FORWARD_DOUBLE
 !  June 28th 1996
 
 MODULE HSL_AD02_BACKWARD_DOUBLE
-
+      USE GALAHAD_KINDS_double
       IMPLICIT NONE
       PRIVATE
-      INTEGER, PARAMETER :: WP = KIND(1D0)
       PUBLIC :: AD02_INITIALIZE
     
 !  Dummy HSL_AD02_BACKWARD_DOUBLE module
 
       TYPE, PUBLIC :: AD02_REAL
         PRIVATE
-        INTEGER :: P
+        INTEGER ( KIND = ip_ ) :: p
       END TYPE AD02_REAL
 
       TYPE, PUBLIC :: AD02_DATA
         PRIVATE
-        INTEGER :: LEVEL
+        INTEGER ( KIND = ip_ ) :: level
       END TYPE AD02_DATA
 
 CONTAINS
 
       SUBROUTINE AD02_INITIALIZE(DEGREE,A,VALUE,DATA,FULL_THRESHOLD)
-        INTEGER, INTENT (IN) :: DEGREE
+        INTEGER ( KIND = IP_ ), INTENT (IN) :: DEGREE
 !       TYPE (AD02_REAL), INTENT (OUT) :: A
         TYPE (AD02_REAL) :: A
-        INTEGER, OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
         TYPE (AD02_DATA), POINTER :: DATA
-        REAL (WP), INTENT (IN) :: VALUE
+        REAL ( KIND = dp_ ), INTENT (IN) :: VALUE
     
 !  Dummy subroutine available with LANCELOT
 

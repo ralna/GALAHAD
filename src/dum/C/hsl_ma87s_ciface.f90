@@ -1,9 +1,9 @@
-! THIS VERSION: 29/12/2021 AT 15:40:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 8 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma87_single_ciface
-   use iso_c_binding
+   use GALAHAD_KINDS_single
    use hsl_ma87_single, only :                           &
       f_ma87_keep             => ma87_keep,              &
       f_ma87_control          => ma87_control,           &
@@ -20,19 +20,19 @@ module hsl_ma87_single_ciface
    ! Data type for user controls
    type, bind(C) :: ma87_control
       ! C/Fortran interface related controls
-      integer(C_INT) :: f_arrays ! 0 is false, otherwise is true
+      integer(ipc_) :: f_arrays ! 0 is false, otherwise is true
       ! Printing controls
-      integer(C_INT) :: diagnostics_level
-      integer(C_INT) :: unit_diagnostics
-      integer(C_INT) :: unit_error
-      integer(C_INT) :: unit_warning
+      integer(ipc_) :: diagnostics_level
+      integer(ipc_) :: unit_diagnostics
+      integer(ipc_) :: unit_error
+      integer(ipc_) :: unit_warning
       ! Controls used by ma87_analyse
-      integer(C_INT) :: nemin
-      integer(C_INT) :: nb
+      integer(ipc_) :: nemin
+      integer(ipc_) :: nb
       ! Controls used by ma87_factor and ma87_factor_solve
-      integer(C_INT) :: pool_size
-      real(C_FLOAT) :: diag_zero_minus
-      real(C_FLOAT) :: diag_zero_plus
+      integer(ipc_) :: pool_size
+      real(spc_) :: diag_zero_minus
+      real(spc_) :: diag_zero_plus
       character(C_CHAR), dimension(40) :: unused
    end type ma87_control
 
@@ -40,15 +40,15 @@ module hsl_ma87_single_ciface
 
    ! data type for returning information to user.
    type, bind(C) :: ma87_info 
-      real(C_FLOAT)  :: detlog
-      integer(C_INT)  :: flag
-      integer(C_INT)  :: maxdepth
-      integer(C_LONG) :: num_factor
-      integer(C_LONG) :: num_flops
-      integer(C_INT)  :: num_nodes
-      integer(C_INT)  :: pool_size
-      integer(C_INT)  :: stat
-      integer(C_INT)  :: num_zero
+      real(spc_)  :: detlog
+      integer(ipc_)  :: flag
+      integer(ipc_)  :: maxdepth
+      integer(longc_) :: num_factor
+      integer(longc_) :: num_flops
+      integer(ipc_)  :: num_nodes
+      integer(ipc_)  :: pool_size
+      integer(ipc_)  :: stat
+      integer(ipc_)  :: num_zero
       character(C_CHAR), dimension(40) :: unused
    end type ma87_info
 contains

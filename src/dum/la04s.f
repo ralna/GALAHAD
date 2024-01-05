@@ -1,4 +1,4 @@
-! THIS VERSION: 06/12/2018 AT 09:25:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:30 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D  -  L A 0 4  S U B R O U T I N E S *-*-*-*-
 
@@ -9,28 +9,31 @@
       SUBROUTINE LA04A( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job,
      &           CNTL, IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
 
+      USE GALAHAD_KINDS_double
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: la, m, n, kb, lb, lws, liws
-      INTEGER, INTENT( INOUT ) :: job
-      INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
-      INTEGER, INTENT( INOUT ), DIMENSION( la ) :: IRN
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: IX
-      INTEGER, INTENT( INOUT ), DIMENSION( kb ) :: JX
-      INTEGER, INTENT( INOUT ), DIMENSION( liws ) :: IWS
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( la ) :: A
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( m ) :: B
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ),
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: la, m, n, kb, lb
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lws, liws
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: job
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IP
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: IRN
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: IX
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( kb ) :: JX
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liws ) :: IWS
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( m ) :: B
+      REAL ( KIND = sp_ ), INTENT( INOUT ),
      &                         DIMENSION( 2, kb ) :: BND
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( n ) :: C
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( n + m ) :: X
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( n ) :: Z
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( n ) :: G
-      REAL ( KIND( 1.0E+0 ) ), INTENT( INOUT ), DIMENSION( lws ) :: WS
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: C
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: X
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: G
+      REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( lws ) :: WS
 
 !  Dummy subroutine available with GALAHAD
 

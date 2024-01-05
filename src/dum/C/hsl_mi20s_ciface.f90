@@ -1,9 +1,9 @@
-! THIS VERSION: 29/12/2021 AT 12:00:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M I 2 0 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mi20_single_ciface
-   use iso_c_binding
+   use GALAHAD_KINDS_single
    use hsl_mi20_single, only:                    &
       f_mi20_data          => mi20_data,         &
       f_mi20_keep          => mi20_keep,         &
@@ -22,54 +22,52 @@ module hsl_mi20_single_ciface
       f_zd11_put           => zd11_put
    implicit none
 
-   integer, parameter :: wp = C_FLOAT
-
    type, bind(C) :: mi20_control
-      integer(C_INT) :: f_arrays ! true (!=0) or false (==0)
-      integer(C_INT) :: aggressive
-      integer(C_INT) :: c_fail
-      integer(C_INT) :: max_levels
-      integer(C_INT) :: max_points
-      real(wp) :: reduction
-      integer(C_INT) :: st_method
-      real(wp) :: st_parameter
-      integer(C_INT) :: testing
-      real(wp) :: trunc_parameter
-      integer(C_INT) :: coarse_solver
-      integer(C_INT) :: coarse_solver_its
-      real(wp) :: damping
-      real(wp) :: err_tol
-      integer(C_INT) :: levels
-      integer(C_INT) :: pre_smoothing
-      integer(C_INT) :: smoother
-      integer(C_INT) :: post_smoothing
-      integer(C_INT) :: v_iterations
-      integer(C_INT) :: print_level
-      integer(C_INT) :: print
-      integer(C_INT) :: error
-      integer(C_INT) :: one_pass_coarsen
+      integer(ipc_) :: f_arrays ! true (!=0) or false (==0)
+      integer(ipc_) :: aggressive
+      integer(ipc_) :: c_fail
+      integer(ipc_) :: max_levels
+      integer(ipc_) :: max_points
+      real(spc_) :: reduction
+      integer(ipc_) :: st_method
+      real(spc_) :: st_parameter
+      integer(ipc_) :: testing
+      real(spc_) :: trunc_parameter
+      integer(ipc_) :: coarse_solver
+      integer(ipc_) :: coarse_solver_its
+      real(spc_) :: damping
+      real(spc_) :: err_tol
+      integer(ipc_) :: levels
+      integer(ipc_) :: pre_smoothing
+      integer(ipc_) :: smoother
+      integer(ipc_) :: post_smoothing
+      integer(ipc_) :: v_iterations
+      integer(ipc_) :: print_level
+      integer(ipc_) :: print
+      integer(ipc_) :: error
+      integer(ipc_) :: one_pass_coarsen
    end type mi20_control
 
    type, bind(C) :: mi20_solve_control
-      real(wp) ::  abs_tol
-      real(wp) ::  breakdown_tol  
-      integer(C_INT) :: gmres_restart 
+      real(spc_) ::  abs_tol
+      real(spc_) ::  breakdown_tol  
+      integer(ipc_) :: gmres_restart 
       logical(C_BOOL) :: init_guess  
-      integer(C_INT) :: krylov_solver  
-      integer(C_INT) :: max_its  
-      integer(C_INT) :: preconditioner_side  
-      real(wp) ::  rel_tol  
+      integer(ipc_) :: krylov_solver  
+      integer(ipc_) :: max_its  
+      integer(ipc_) :: preconditioner_side  
+      real(spc_) ::  rel_tol  
    end type mi20_solve_control
 
    type, bind(C) :: mi20_info
-      integer(C_INT) :: flag
-      integer(C_INT) :: clevels
-      integer(C_INT) :: cpoints
-      integer(C_INT) :: cnnz
-      integer(C_INT) :: stat
-      integer(C_INT) :: getrf_info
-      integer(C_INT) :: iterations
-      real(wp) :: residual
+      integer(ipc_) :: flag
+      integer(ipc_) :: clevels
+      integer(ipc_) :: cpoints
+      integer(ipc_) :: cnnz
+      integer(ipc_) :: stat
+      integer(ipc_) :: getrf_info
+      integer(ipc_) :: iterations
+      real(spc_) :: residual
    end type mi20_info
 
    type ciface_keep_type

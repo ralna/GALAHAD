@@ -1,9 +1,9 @@
-! THIS VERSION: 29/12/2021 AT 15:40:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 9 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma97_double_ciface
-   use iso_c_binding
+   use GALAHAD_KINDS_double
    use hsl_ma97_double, only:                            &
       f_ma97_akeep            => ma97_akeep,             &
       f_ma97_control          => ma97_control,           &
@@ -24,51 +24,48 @@ module hsl_ma97_double_ciface
       f_ma97_get_n__          => ma97_get_n__,           &
       f_ma97_get_nz__         => ma97_get_nz__
 
-   integer, parameter :: wp = C_DOUBLE ! pkg type
-   integer, parameter :: rp = C_DOUBLE ! real type
-
    type, bind(C) :: ma97_control
-      integer(C_INT) :: f_arrays ! true(!=0) or false(==0)
-      integer(C_INT) :: action ! true(!=0) or false(==0)
-      integer(C_INT) :: nemin
-      real(rp) :: multiplier
-      integer(C_INT) :: ordering
-      integer(C_INT) :: print_level
-      integer(C_INT) :: scaling
-      real(rp) :: small
-      real(rp) :: u
-      integer(C_INT) :: unit_diagnostics
-      integer(C_INT) :: unit_error
-      integer(C_INT) :: unit_warning
-      integer(C_LONG) :: factor_min
-      integer(C_INT) :: solve_blas3
-      integer(C_LONG) :: solve_min
-      integer(C_INT) :: solve_mf
-      real(rp) :: consist_tol
-      integer(C_INT) :: ispare(5)
-      real(rp) :: rspare(10)
+      integer(ipc_) :: f_arrays ! true(!=0) or false(==0)
+      integer(ipc_) :: action ! true(!=0) or false(==0)
+      integer(ipc_) :: nemin
+      real(dpc_) :: multiplier
+      integer(ipc_) :: ordering
+      integer(ipc_) :: print_level
+      integer(ipc_) :: scaling
+      real(dpc_) :: small
+      real(dpc_) :: u
+      integer(ipc_) :: unit_diagnostics
+      integer(ipc_) :: unit_error
+      integer(ipc_) :: unit_warning
+      integer(longc_) :: factor_min
+      integer(ipc_) :: solve_blas3
+      integer(longc_) :: solve_min
+      integer(ipc_) :: solve_mf
+      real(dpc_) :: consist_tol
+      integer(ipc_) :: ispare(5)
+      real(dpc_) :: rspare(10)
    end type ma97_control
 
    type, bind(C) :: ma97_info
-      integer(C_INT) :: flag
-      integer(C_INT) :: flag68
-      integer(C_INT) :: flag77
-      integer(C_INT) :: matrix_dup
-      integer(C_INT) :: matrix_rank
-      integer(C_INT) :: matrix_outrange
-      integer(C_INT) :: matrix_missing_diag
-      integer(C_INT) :: maxdepth
-      integer(C_INT) :: maxfront
-      integer(C_INT) :: num_delay
-      integer(C_LONG) :: num_factor
-      integer(C_LONG) :: num_flops
-      integer(C_INT) :: num_neg
-      integer(C_INT) :: num_sup
-      integer(C_INT) :: num_two
-      integer(C_INT) :: ordering
-      integer(C_INT) :: stat
-      integer(C_INT) :: ispare(5)
-      real(rp) :: rspare(10)
+      integer(ipc_) :: flag
+      integer(ipc_) :: flag68
+      integer(ipc_) :: flag77
+      integer(ipc_) :: matrix_dup
+      integer(ipc_) :: matrix_rank
+      integer(ipc_) :: matrix_outrange
+      integer(ipc_) :: matrix_missing_diag
+      integer(ipc_) :: maxdepth
+      integer(ipc_) :: maxfront
+      integer(ipc_) :: num_delay
+      integer(longc_) :: num_factor
+      integer(longc_) :: num_flops
+      integer(ipc_) :: num_neg
+      integer(ipc_) :: num_sup
+      integer(ipc_) :: num_two
+      integer(ipc_) :: ordering
+      integer(ipc_) :: stat
+      integer(ipc_) :: ispare(5)
+      real(dpc_) :: rspare(10)
    end type ma97_info
 contains
    subroutine copy_control_in(ccontrol, fcontrol, f_arrays)
