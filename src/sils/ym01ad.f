@@ -51,16 +51,15 @@ C
       DOUBLE PRECISION FA04AD
       EXTERNAL FA04AD
       EXTERNAL FA04BD,YM01BD
-      INTRINSIC IABS,MAX0,MIN0
       YESA = ITYPE .GE. 0
-      ITYP = IABS(ITYPE)
+      ITYP = ABS(ITYPE)
       IF (ITYP.EQ.0 .OR. ITYP.GT.2) ITYP = 1
       IF (M.NE.N) ITYP = 1
       SYM = ITYP .EQ. 2
       UNSYM = ITYP .EQ. 1
-      MINMN = MIN0(M,N)
+      MINMN = MIN(M,N)
       IF (MINMN.LE.0) GO TO 170
-      MAXMN = MAX0(M,N)
+      MAXMN = MAX(M,N)
       BAND = IBW .LT. MAXMN .AND. IBW .GE. 0
       IF (BAND) THEN
         IRECT = MAXMN - MINMN
@@ -110,8 +109,8 @@ C
    40   CALL FA04BD(N,J)
         IF (BAND) THEN
           IF (J.GT.M+IBW) GO TO 40
-          IF (.NOT.SYM) JLEN = MIN0(J+IBW,M) - MAX0(1,J-IBW) + 1
-          IF (SYM) JLEN = MIN0(J+IBW,M) - J + 1
+          IF (.NOT.SYM) JLEN = MIN(J+IBW,M) - MAX(1,J-IBW) + 1
+          IF (SYM) JLEN = MIN(J+IBW,M) - J + 1
           JL = JLEN
           IF (NONSIN .AND. J.LE.M) JL = JL - 1
         ELSE
@@ -147,7 +146,7 @@ C
       K = 0
       KOL = 0
       DO 100 J = 1,N
-        LENCOL = IABS(IW(J)+0)
+        LENCOL = ABS(IW(J))
         JBEG = K + 1
         ISW = 0
         IF (NONSIN) THEN
@@ -175,10 +174,10 @@ C
         END IF
         IF (LENCOL.EQ.0) GO TO 100
         IL = 1
-        IF (BAND) IL = MAX0(J-IBW,1)
+        IF (BAND) IL = MAX(J-IBW,1)
         IF (SYM) IL = J
         IU = M
-        IF (BAND) IU = MIN0(J+IBW,M)
+        IF (BAND) IU = MIN(J+IBW,M)
         NCOL = IU - IL + 1
         DO 90 III = 1,LENCOL
    80     CALL FA04BD(NCOL,II)
@@ -197,17 +196,17 @@ C
   100 CONTINUE
       JCOLST(1) = 1
       DO 110 J = 1,N
-        JCOLST(J+1) = JCOLST(J) + IABS(IW(J)+0)
+        JCOLST(J+1) = JCOLST(J) + ABS(IW(J))
   110 CONTINUE
       GO TO 150
   120 K = 1
       DO 140 J = 1,N
         JCOLST(J) = K
         IL = 1
-        IF (BAND) IL = MAX0(1,J-IBW)
+        IF (BAND) IL = MAX(1,J-IBW)
         IF (SYM) IL = J
         IU = M
-        IF (BAND) IU = MIN0(M,J+IBW)
+        IF (BAND) IU = MIN(M,J+IBW)
         DO 130 I = IL,IU
           IRN(K) = I
           K = K + 1

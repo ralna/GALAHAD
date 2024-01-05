@@ -6055,7 +6055,7 @@
 
           i = 0
           CALL POTRS( 'L', H_lm%length, 1_ip_, H_lm%C, H_lm%len_c,             &
-                      H_lm%QP_PERM, H_lm%m, i_ip_ )
+                      H_lm%QP_PERM, H_lm%m, i )
           IF ( i /= 0 ) THEN
             IF ( control%error > 0 .AND. control%print_level > 0 )             &
               WRITE( control%error, "( A, ' Cholesky solve error ', I0 )" )    &

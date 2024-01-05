@@ -2405,7 +2405,6 @@
        INTEGER ( KIND = ip_ ) :: ipos, ix, ist, j, j1, j2, jj, jj1, jj2, jpiv, jpos, k
        INTEGER ( KIND = ip_ ) :: liell, loop, npiv
        REAL ( KIND = rp_ ) :: x1, x2 
-       INTRINSIC IABS, MIN0 
        INTEGER ( KIND = ip_ ) ( KIND = ip_ ), PARAMETER :: ifrlvl = 5
        
        apos = latop + 1 
@@ -2428,7 +2427,7 @@
          END IF
          jpos = ipos + npiv 
          j2 = ipos + liell 
-         ilvl = MIN0( 10, npiv ) + 10 
+         ilvl = MIN( 10, npiv ) + 10 
          IF ( liell < ICNTL( ifrlvl + ilvl ) ) GO TO 10 
 
 ! Perform operations using direct addressing
@@ -2439,7 +2438,7 @@
 
          ifr = 0 
          DO jj = j1, j2 
-           j = IABS( IW( jj + 1 ) + 0 ) 
+           j = AB( IW( jj + 1 ) ) 
            ifr = ifr + 1 
            W( ifr ) = X( j ) 
          END DO
@@ -2497,7 +2496,7 @@
 
          ifr = 0 
          DO jj = j1, j2 
-           j = IABS( IW( jj + 1 ) + 0 ) 
+           j = ABS( IW( jj + 1 ) ) 
            ifr = ifr + 1 
            X( j ) = W( ifr ) 
          END DO
@@ -2523,7 +2522,7 @@
              jj1 = apos + 2 
              jj2 = apos2 + 1 
              DO j = j1, j2 
-               ix = IABS( IW( j + 1 ) + 0 ) 
+               ix = ABS( IW( j + 1 ) ) 
                x1 = x1 + X( ix ) * A( jj1 ) 
                x2 = x2 + X( ix ) * A( jj2 ) 
                jj1 = jj1 + 1 
@@ -2545,7 +2544,7 @@
          j1 = jpos + 1 
          k = apos + 1 
          DO j = j1, j2 
-           ix = IABS( IW( j + 1 ) + 0 ) 
+           ix = ABS( IW( j + 1 ) ) 
            x1 = x1 + A( k ) * X( ix ) 
            k = k + 1 
          END DO

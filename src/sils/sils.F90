@@ -1069,7 +1069,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER n, nz, la, liw, nsteps, maxfrt, modstep
+       INTEGER ( KIND = ip_ ) n, nz, la, liw, nsteps, maxfrt, modstep
        REAL ( KIND = rp_ ) :: maxchange
        INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
        INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
@@ -1700,7 +1700,8 @@
 
 !  Compress IW.
 
-           CALL SILS_compress( A, IW, istk, istk2, iinput, 2, ncmpbr, ncmpbi )
+           CALL SILS_compress( A, IW, istk, istk2, iinput, 2_ip_,              &
+                               ncmpbr, ncmpbi )
            IF ( newel + nfront >= istk ) THEN
              INFO( 2 ) = liw + 1 + newel + nfront - istk
              INFO( 1 ) = - 3
@@ -1734,7 +1735,8 @@
 
 !  Compress A.
 
-         CALL SILS_compress( A, IW, astk, astk2, ainput, 1, ncmpbr, ncmpbi )
+         CALL SILS_compress( A, IW, astk, astk2, ainput, 1_ip_,                &
+                             ncmpbr, ncmpbi )
 
 !  Error returns
 
@@ -2034,9 +2036,9 @@
         END IF
         liell = nfront - npiv
         IF ( liell /= 0 .AND. iass /= nsteps ) THEN
-
           IF ( iwpos + liell >= istk )                                         &
-            CALL SILS_compress( A, IW, istk, istk2, iinput, 2, ncmpbr, ncmpbi )
+            CALL SILS_compress( A, IW, istk, istk2, iinput, 2_ip_,             &
+                                ncmpbr, ncmpbi )
           istk = istk - liell - 1
           IW( istk ) = liell
           j1 = istk ; kk = iwpos - liell - 1
@@ -2712,7 +2714,7 @@
      size_factors_iw =  SIZE( FACTORS%iw )
      IF ( part=='L') THEN
        CALL MA27Q( FACTORS%n, FACTORS%val, size_factors_val,                   &
-                   FACTORS%iw( 2 : ), size_factors_iw - 1,                     &
+                   FACTORS%iw( 2 : ), size_factors_iw - 1_ip_,                 &
                    FACTORS%w, FACTORS%maxfrt, X, FACTORS%iw1,                  &
                    ABS( FACTORS%iw( 1 ) ), FACTORS%latop, ICNTL )
 
@@ -2819,7 +2821,6 @@
        INTEGER ( KIND = ip_ ) :: ipos, ix, ist, j, j1, j2, jj, jj1, jj2, jpiv
        INTEGER ( KIND = ip_ ) :: liell, loop, npiv, ilvl, ipiv, jpos, k
        REAL ( KIND = rp_ ) :: x1, x2
-       INTRINSIC IABS, MIN0
        INTEGER ( KIND = ip_ ), PARAMETER :: ifrlvl = 5
 
        apos = latop + 1
@@ -2842,7 +2843,7 @@
          END IF
          jpos = ipos + npiv
          j2 = ipos + liell
-         ilvl = MIN0( 10, npiv ) + 10
+         ilvl = MIN( 10, npiv ) + 10
          IF ( liell < ICNTL( ifrlvl + ilvl ) ) GO TO 10
 
 ! Perform operations using direct addressing
@@ -2853,7 +2854,7 @@
 
          ifr = 0
          DO jj = j1, j2
-           j = IABS( IW( jj + 1 ) + 0 )
+           j = ABS( IW( jj + 1 ) )
            ifr = ifr + 1
            W( ifr ) = X( j )
          END DO
@@ -2911,7 +2912,7 @@
 
          ifr = 0
          DO jj = j1, j2
-           j = IABS( IW( jj + 1 ) + 0 )
+           j = ABS( IW( jj + 1 ) )
            ifr = ifr + 1
            X( j ) = W( ifr )
          END DO
@@ -2937,7 +2938,7 @@
              jj1 = apos + 2
              jj2 = apos2 + 1
              DO j = j1, j2
-               ix = IABS( IW( j + 1 ) + 0 )
+               ix = ABS( IW( j + 1 ) )
                x1 = x1 + X( ix ) * A( jj1 )
                x2 = x2 + X( ix ) * A( jj2 )
                jj1 = jj1 + 1
@@ -2959,7 +2960,7 @@
          j1 = jpos + 1
          k = apos + 1
          DO j = j1, j2
-           ix = IABS( IW( j + 1 ) + 0 )
+           ix = ABS( IW( j + 1 ) )
            x1 = x1 + A( k ) * X( ix )
            k = k + 1
          END DO

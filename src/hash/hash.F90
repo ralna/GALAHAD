@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 08:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -444,7 +444,7 @@
 
    20   CONTINUE
         IF ( data%TABLE( position ) /= 0 ) THEN
-          position = IABS( data%TABLE( position ) )
+          position = ABS( data%TABLE( position ) )
           GO TO 10
         END IF
 
@@ -540,7 +540,7 @@
           IF ( data%TABLE( position ) == 0 ) THEN
             position = 0 ; GO TO 100
           END IF
-          position = IABS( data%TABLE( position ) )
+          position = ABS( data%TABLE( position ) )
           GO TO 10
         END IF
       END DO

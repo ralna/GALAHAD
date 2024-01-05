@@ -7107,7 +7107,7 @@
 
          CASE ( 'pbtr' )
            CALL PBTRS( 'L', data%n, inform%semi_bandwidth, nrhs,               &
-                       data%matrix_dense, inform%semi_bandwidth + 1,           &
+                       data%matrix_dense, inform%semi_bandwidth + 1_ip_,       &
                        data%X2, data%n, inform%lapack_error )
          END SELECT
          IF ( inform%lapack_error == 0 )                                       &
@@ -7142,7 +7142,7 @@
 
          CASE ( 'pbtr' )
            CALL PBTRS( 'L', data%n, inform%semi_bandwidth, nrhs,               &
-                       data%matrix_dense, inform%semi_bandwidth + 1,           &
+                       data%matrix_dense, inform%semi_bandwidth + 1_ip_,       &
                        X, data%n, inform%lapack_error )
          END SELECT
        END IF

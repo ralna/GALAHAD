@@ -5090,7 +5090,7 @@
 !  Print details of the solution
 
          IF ( S%printi ) THEN
-           inform%iter = MIN0( control%maxit, inform%iter )
+           inform%iter = MIN( control%maxit, inform%iter )
            IF ( inform%iter == 0 ) THEN
              WRITE( S%out, 2570 ) inform%iter, inform%aug * S%findmx,          &
                inform%ngeval, inform%pjgnrm, inform%itercg, inform%iskip
