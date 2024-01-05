@@ -7,8 +7,8 @@ if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
   const libgalahad_double = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double.$dlext")
   const GALAHAD_INSTALLATION = "CUSTOM"
 else
-  # using GALAHAD_jll
-  # const GALAHAD_INSTALLATION = "YGGDRASIL"
+  using GALAHAD_jll
+  const GALAHAD_INSTALLATION = "YGGDRASIL"
 end
 
 # packages without dependencies.
