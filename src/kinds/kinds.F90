@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 09:40 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-*-  G A L A H A D _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, GALAHAD productions
