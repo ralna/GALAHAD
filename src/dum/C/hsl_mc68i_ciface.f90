@@ -3,19 +3,12 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc68_integer_ciface
-   use ISO_C_BINDING
+   USE GALAHAD_KINDS
    use hsl_mc68_integer, only: &
       f_mc68_control       => mc68_control,     &
       f_mc68_info          => mc68_info,        &
       f_mc68_order         => mc68_order
    implicit none
-
-#ifdef GALAHAD_64BIT_INTEGER
-    integer, parameter :: ipc_ = C_INT64_T
-#else
-    integer, parameter :: ipc_ = C_INT32_T
-#endif
-    integer, parameter :: longc_ = C_INT64_T
 
    type, bind(C) :: mc68_control
       integer(ipc_) :: f_array_in ! 0 is false, otherwise true
