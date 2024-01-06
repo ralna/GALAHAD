@@ -1,12 +1,7 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:30 GMT.
-
-#ifdef GALAHAD_64BIT_INTEGER
-  INTEGER, PARAMETER :: ip_ = INT64
-#else
-  INTEGER, PARAMETER :: ip_ = INT32
-#endif
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:30 GMT.
 
       SUBROUTINE LA15I( ICNTL, CNTL, KEEP )
+      USE GALAHAD_KINDS_single
       REAL :: CNTL( 3 )
       INTEGER ( KIND = ip_ ) :: ICNTL( 3 )
       INTEGER ( KIND = ip_ ) :: KEEP( 7 )
@@ -14,6 +9,7 @@
 
       SUBROUTINE LA15A( A, IND, nzero, ia, n, IP, IW, W, g, u,
      &                  ICNTL, CNTL, KEEP )
+      USE GALAHAD_KINDS_single
       REAL :: g, U
       INTEGER ( KIND = ip_ ) :: ia, n, nzero
       REAL :: A( ia ),W( n )
@@ -25,6 +21,7 @@
 
       SUBROUTINE LA15B( A, IND, ia, n, IP, IW, W, g, B,
      &                  trans, ICNTL, KEEP )
+      USE GALAHAD_KINDS_single
       REAL :: g
       INTEGER ( KIND = ip_ ) :: ia, n
       LOGICAL ( KIND = ip_ ) :: trans
@@ -36,6 +33,7 @@
 
       SUBROUTINE LA15C( A, IND, ia, n, IP, IW, W, g, u, mm,
      &                  ICNTL, CNTL, KEEP )
+      USE GALAHAD_KINDS_single
       REAL :: g, u
       INTEGER ( KIND = ip_ ) :: ia, mm, n
       REAL :: A( ia ),W( n )

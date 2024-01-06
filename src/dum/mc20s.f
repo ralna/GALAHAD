@@ -1,20 +1,15 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:40 GMT.
-
-#ifdef GALAHAD_64BIT_INTEGER
-  INTEGER, PARAMETER :: ip_ = INT64
-#else
-  INTEGER, PARAMETER :: ip_ = INT32
-#endif
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:40 GMT.
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 2 0   S U B R O U T I N E *-*-*-
 
       SUBROUTINE MC20A( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
 
+      USE GALAHAD_KINDS_single
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND( 1.0E+0 )
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nc, maxa, jdisp
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: INUM
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: JNUM

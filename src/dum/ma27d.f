@@ -1,7 +1,4 @@
-! THIS VERSION: 2022-10-17 AT 08:45 GMT.
-! Updated 14/05/2002: arguments for MA27 subroutines updated
-! Updated 25/06/2002: additional warning information added
-! Updated 14/03/2003: Warning removed from MA27ID
+! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 07:50 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D  -  MA27  S U B R O U T I N E S *-*-*-*-
 
@@ -12,22 +9,23 @@
       SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, 
      *                   nsteps, iflag, ICNTL, CNTL, INFO, ops )
 
+      USE GALAHAD_KINDS_double
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz, liw
-      INTEGER, INTENT( INOUT ) :: iflag
-      INTEGER, INTENT( OUT ) :: nsteps
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ) :: ops
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-      INTEGER, INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
-      INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
-      INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-      INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
-     *                                DIMENSION( 5 ) :: CNTL
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: ops
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n,3 ) :: IKEEP
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
 
 !  Dummy subroutine available with GALAHAD
 
@@ -57,22 +55,22 @@
       SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, 
      *                   nsteps, maxfrt, IW1, ICNTL, CNTL, INFO )
 
+      USE GALAHAD_KINDS_double
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz, la, liw, nsteps
-      INTEGER, INTENT( OUT ) :: maxfrt
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-      INTEGER, INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
-      INTEGER, INTENT( OUT ), DIMENSION( n ) :: IW1
-      INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-      INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
-     *                                DIMENSION( 5 ) :: CNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ), 
-     *                                DIMENSION( la ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
 
 !  Dummy subroutine available with GALAHAD
 
@@ -102,21 +100,20 @@
       SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, 
      *                   nsteps, ICNTL, INFO )
 
+      USE GALAHAD_KINDS_double
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, la, liw, maxfrt, nsteps
-      INTEGER, INTENT( IN ), DIMENSION( liw ) :: IW
-      INTEGER, INTENT( OUT ), DIMENSION( nsteps ) :: IW1
-      INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-      INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
-     *                                DIMENSION( la ) :: A
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
-     *                                DIMENSION( maxfrt ) :: W
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ), 
-     *                                DIMENSION( n ) :: RHS
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( la ) :: A
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( maxfrt ) :: W
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
 
 !  Dummy subroutine available with GALAHAD
 
@@ -144,13 +141,14 @@
 
       SUBROUTINE MA27ID( ICNTL, CNTL )
 
+      USE GALAHAD_KINDS_double
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( OUT ), DIMENSION( 30 ) :: ICNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
-     *                                DIMENSION( 5 ) :: CNTL
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 30 ) :: ICNTL
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
 
 !  Dummy subroutine available with GALAHAD
 
@@ -176,20 +174,23 @@
 
       END SUBROUTINE MA27ID
 
-
       SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2, 
      *                   nblk, latop, ICNTL )
-      INTEGER, INTENT( IN ) :: n, la, liw, maxfnt, nblk
-      INTEGER, INTENT( OUT ) :: latop
-      INTEGER, INTENT( IN ), DIMENSION( nblk ) :: IW2
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-      INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
-     *                                DIMENSION( la ) :: A
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ), 
-     *                                DIMENSION( n ) :: RHS
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
-     *                                DIMENSION( maxfnt ) :: W
+
+      USE GALAHAD_KINDS_double
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfnt, nblk
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: latop
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nblk ) :: IW2
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( la ) :: A
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( maxfnt ) :: W
 
 !  Dummy subroutine available with GALAHAD
 

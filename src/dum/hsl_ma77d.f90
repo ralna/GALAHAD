@@ -1,27 +1,26 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 7 7   M O D U L E  -*-*-*-
 
 module hsl_MA77_double
 
+   use GALAHAD_KINDS_double
 !  use hsl_ma54_double
 !  use hsl_ma64_double
    use hsl_of01_double, of01_rdata => of01_data
-   use hsl_of01_integer, of01_idata => of01_data
+   use hsl_of01_integer,  of01_idata => of01_data
 
   implicit none
 
-  integer, parameter, private  :: wp = kind(0.0d0)
-  integer, parameter, private  :: long = selected_int_kind(18)
-  integer, parameter, private  :: short = kind(0)
-  real (wp), parameter, private :: one = 1.0_wp
-  real (wp), parameter, private :: zero = 0.0_wp
-  real (wp), parameter, private :: half = 0.5_wp
-  integer(short), parameter, private :: nemin_default = 8
-  integer(short), parameter, private :: lup1 = huge(0_short)/8
-  integer(short), parameter, private :: nb54_default = 150
-  integer(short), parameter, private :: nb64_default = 120
-  integer(short), parameter, private :: nbi_default = 40
+  integer(ip_),  parameter, private  :: wp = kind(0.0d0)
+  real (rp_), parameter, private :: one = 1.0_rp_
+  real (rp_), parameter, private :: zero = 0.0_rp_
+  real (rp_), parameter, private :: half = 0.5_rp_
+  integer(ip_), parameter, private :: nemin_default = 8
+  integer(ip_), parameter, private :: lup1 = huge(0_ip_)/8
+  integer(ip_), parameter, private :: nb54_default = 150
+  integer(ip_), parameter, private :: nb64_default = 120
+  integer(ip_), parameter, private :: nbi_default = 40
 
   interface MA77_open
       module procedure MA77_open_double
@@ -90,142 +89,142 @@ module hsl_MA77_double
   type MA77_control
 
     logical :: action = .true.
-    integer(short) :: bits = 32
-    integer(short) :: buffer_lpage(2) = 2**12 
-    integer(short) :: buffer_npage(2) = 1600
-    real(wp) :: consist_tol = epsilon(one) 
-    integer(long) :: file_size = 2**21
-    integer(short) :: infnorm = 0
-    integer(short) :: maxit = 1
-    integer(long) :: maxstore = 0_long
-    real(wp) :: multiplier = 1.1
-    integer(short) :: nb54 = 150
-    integer(short) :: nb64 = 120
-    integer(short) :: nbi = 40
-    integer(short) :: nemin = nemin_default
-    integer(short) :: p = 4
-    integer(short) :: print_level = 0
-    real(wp) :: small = tiny(one)
-    real (wp) :: static = zero
-    integer(long) :: storage(3) = 0_long
-    integer(long) :: storage_indef = 0
-    real(wp) :: thresh = 0.5
-    integer(short) :: unit_diagnostics = 6
-    integer(short) :: unit_error = 6
-    integer(short) :: unit_warning = 6
-    real (wp) :: u = 0.01
-    real (wp) :: umin = 0.01
+    integer(ip_) :: bits = 32
+    integer(ip_) :: buffer_lpage(2) = 2**12 
+    integer(ip_) :: buffer_npage(2) = 1600
+    real(rp_) :: consist_tol = epsilon(one) 
+    integer(long_) :: file_size = 2**21
+    integer(ip_) :: infnorm = 0
+    integer(ip_) :: maxit = 1
+    integer(long_) :: maxstore = 0_long_
+    real(rp_) :: multiplier = 1.1
+    integer(ip_) :: nb54 = 150
+    integer(ip_) :: nb64 = 120
+    integer(ip_) :: nbi = 40
+    integer(ip_) :: nemin = nemin_default
+    integer(ip_) :: p = 4
+    integer(ip_) :: print_level = 0
+    real(rp_) :: small = tiny(one)
+    real (rp_) :: static = zero
+    integer(long_) :: storage(3) = 0_long_
+    integer(long_) :: storage_indef = 0
+    real(rp_) :: thresh = 0.5
+    integer(ip_) :: unit_diagnostics = 6
+    integer(ip_) :: unit_error = 6
+    integer(ip_) :: unit_warning = 6
+    real (rp_) :: u = 0.01
+    real (rp_) :: umin = 0.01
   end type MA77_control
 
   type MA77_info
-    real (wp) :: detlog = 0.0
-    integer(short) :: detsign = 1 
-    integer(short) :: flag = 0    
-    integer(short) :: iostat = 0
-    integer(short) :: matrix_dup = 0
-    integer(short) :: matrix_rank = 0
-    integer(short) :: matrix_outrange = 0
-    integer(short) :: maxdepth = 0
-    integer(short) :: maxfront = 0
-    integer(long)  :: minstore = 0_long
-    integer(short) :: ndelay = 0
-    integer(long) :: nfactor = 0
-    integer(long) :: nflops = 0
-    integer(short)  :: niter = 0
-    integer(short) :: nsup = 0
-    integer(short) :: num_neg = 0
-    integer(short) :: num_nothresh = 0
-    integer(short) :: num_perturbed = 0
-    integer(short) :: ntwo = 0
-    integer(short) :: stat = 0
-    integer(short) :: index(1:4) = -1
-    integer(long) :: nio_read(1:2) = 0
-    integer(long) :: nio_write(1:2) = 0
-    integer(long) :: nwd_read(1:2) = 0
-    integer(long) :: nwd_write(1:2) = 0
-    integer(short) :: num_file(1:4) = 0
+    real (rp_) :: detlog = 0.0
+    integer(ip_) :: detsign = 1 
+    integer(ip_) :: flag = 0    
+    integer(ip_) :: iostat = 0
+    integer(ip_) :: matrix_dup = 0
+    integer(ip_) :: matrix_rank = 0
+    integer(ip_) :: matrix_outrange = 0
+    integer(ip_) :: maxdepth = 0
+    integer(ip_) :: maxfront = 0
+    integer(long_)  :: minstore = 0_long_
+    integer(ip_) :: ndelay = 0
+    integer(long_) :: nfactor = 0
+    integer(long_) :: nflops = 0
+    integer(ip_)  :: niter = 0
+    integer(ip_) :: nsup = 0
+    integer(ip_) :: num_neg = 0
+    integer(ip_) :: num_nothresh = 0
+    integer(ip_) :: num_perturbed = 0
+    integer(ip_) :: ntwo = 0
+    integer(ip_) :: stat = 0
+    integer(ip_) :: index(1:4) = -1
+    integer(long_) :: nio_read(1:2) = 0
+    integer(long_) :: nio_write(1:2) = 0
+    integer(long_) :: nwd_read(1:2) = 0
+    integer(long_) :: nwd_write(1:2) = 0
+    integer(ip_) :: num_file(1:4) = 0
 
-    integer(long) :: storage(1:4) = 0_long
-    integer(short) :: tree_nodes = 0
-    integer(short) :: unit_restart = -1
-    integer(short) :: unused = 0
-    real(wp) :: u = zero
+    integer(long_) :: storage(1:4) = 0_long_
+    integer(ip_) :: tree_nodes = 0
+    integer(ip_) :: unit_restart = -1
+    integer(ip_) :: unused = 0
+    real(rp_) :: u = zero
   end type MA77_info
 
   type MA77_node
-    integer(short), allocatable :: child(:)
-    integer(short) :: nelim
+    integer(ip_), allocatable :: child(:)
+    integer(ip_) :: nelim
   end type MA77_node
 
   type MA77_keep
-    integer(long) :: dfree
+    integer(long_) :: dfree
     logical :: element_input
-    integer(long) :: file_size
-    integer(short) :: flag = 0
-    integer(long) :: ifree
-    integer(short) :: index(1:4) = -1
-    integer(short) :: inelrs
-    integer(short) :: inelrn
-    integer(short) :: lpage(2)
-    integer(short) :: ltree
-    integer(long)  :: lup
-    integer(short) :: l1,l2
-    integer(short) :: matrix_dup
-    integer(short) :: matrix_outrange
-    integer(short) :: maxelim
-    integer(short) :: maxelim_actual
-    integer(long)  :: maxfa
-    integer(short) :: maxfront
-    integer(short) :: maxdepth
-    integer(short) :: maxfrontb
-    integer(short) :: maxlen  
-    integer(long) :: maxstore
-    integer(short) :: mvar
-    integer(short) :: mmvar
-    integer(long)  :: mx_ifree
-    integer(short) :: n
+    integer(long_) :: file_size
+    integer(ip_) :: flag = 0
+    integer(long_) :: ifree
+    integer(ip_) :: index(1:4) = -1
+    integer(ip_) :: inelrs
+    integer(ip_) :: inelrn
+    integer(ip_) :: lpage(2)
+    integer(ip_) :: ltree
+    integer(long_)  :: lup
+    integer(ip_) :: l1,l2
+    integer(ip_) :: matrix_dup
+    integer(ip_) :: matrix_outrange
+    integer(ip_) :: maxelim
+    integer(ip_) :: maxelim_actual
+    integer(long_)  :: maxfa
+    integer(ip_) :: maxfront
+    integer(ip_) :: maxdepth
+    integer(ip_) :: maxfrontb
+    integer(ip_) :: maxlen  
+    integer(long_) :: maxstore
+    integer(ip_) :: mvar
+    integer(ip_) :: mmvar
+    integer(long_)  :: mx_ifree
+    integer(ip_) :: n
     character(50)  :: name
-    integer(short) :: nb
-    integer(short) :: nbi
-    integer(short) :: nelt
-    integer(short) :: npage(2)
-    integer(short) :: nsup
-    integer(short) :: ntwo
-    integer(short) :: null
+    integer(ip_) :: nb
+    integer(ip_) :: nbi
+    integer(ip_) :: nelt
+    integer(ip_) :: npage(2)
+    integer(ip_) :: nsup
+    integer(ip_) :: ntwo
+    integer(ip_) :: null
     logical :: pos_def
-    integer(long)  :: posfac
-    integer(long)  :: posint
-    integer(long)  :: rfree
-    integer(long)  :: rtopmx 
-    integer(long)  :: rtopdmx
-    integer(short) :: scale = 0
-    integer(short) :: status = 0
-    integer(long) :: used
-    integer(short) :: tnode
+    integer(long_)  :: posfac
+    integer(long_)  :: posint
+    integer(long_)  :: rfree
+    integer(long_)  :: rtopmx 
+    integer(long_)  :: rtopdmx
+    integer(ip_) :: scale = 0
+    integer(ip_) :: status = 0
+    integer(long_) :: used
+    integer(ip_) :: tnode
 
-    real(wp), allocatable :: aelt(:)
-    real(wp), allocatable :: arow(:)
-    integer(short), allocatable :: clist(:)
-    integer(long), allocatable :: ifile(:)
-    integer(short), allocatable :: iptr(:)
-    integer(short), allocatable :: map(:)
-    integer(short), allocatable :: new(:)
-    integer(long), allocatable :: rfile(:)
-    integer(short), allocatable :: roots(:)
-    integer(short), allocatable :: size(:)
-    integer(short), allocatable  :: size_ind(:)
-    integer(short), allocatable :: splitp(:)
-    integer(short), allocatable :: svar(:)
-    integer(short), allocatable :: vars(:)
-    integer(short), allocatable :: varflag(:)
-    integer(long) :: size_imain
-    integer(long) :: size_rmain
-    integer(long) :: size_rwork
-    integer(long) :: size_rwdelay
-    integer(short),allocatable :: imain(:)
-    real(wp),allocatable :: rmain(:)
-    real(wp),allocatable :: rwork(:)
-    real(wp),allocatable :: rwdelay(:)
+    real(rp_), allocatable :: aelt(:)
+    real(rp_), allocatable :: arow(:)
+    integer(ip_), allocatable :: clist(:)
+    integer(long_), allocatable :: ifile(:)
+    integer(ip_), allocatable :: iptr(:)
+    integer(ip_), allocatable :: map(:)
+    integer(ip_), allocatable :: new(:)
+    integer(long_), allocatable :: rfile(:)
+    integer(ip_), allocatable :: roots(:)
+    integer(ip_), allocatable :: size(:)
+    integer(ip_), allocatable  :: size_ind(:)
+    integer(ip_), allocatable :: splitp(:)
+    integer(ip_), allocatable :: svar(:)
+    integer(ip_), allocatable :: vars(:)
+    integer(ip_), allocatable :: varflag(:)
+    integer(long_) :: size_imain
+    integer(long_) :: size_rmain
+    integer(long_) :: size_rwork
+    integer(long_) :: size_rwdelay
+    integer(ip_),allocatable :: imain(:)
+    real(rp_),allocatable :: rmain(:)
+    real(rp_),allocatable :: rwork(:)
+    real(rp_),allocatable :: rwdelay(:)
     character,allocatable :: file1(:)
     character,allocatable :: file2(:)
     character,allocatable :: file3(:)
@@ -240,22 +239,22 @@ contains
 
   subroutine MA77_open_double(n,filename,keep,control,info,nelt,path)
     USE GALAHAD_SYMBOLS
-    integer(short), intent (in) :: n
+    integer(ip_), intent (in) :: n
     character (len=*), intent (in) :: filename(4)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info) :: info
-    integer(short), optional, intent (in) :: nelt
+    integer(ip_), optional, intent (in) :: nelt
     character (len=*), optional, intent (in) :: path(:)
     call MA77_unavailable( info, control, 'ma77_open' )
   end subroutine MA77_open_double
 
   subroutine MA77_input_vars_double(index,nvar,list,keep,control,info)
     USE GALAHAD_SYMBOLS
-    integer(short), intent (in) :: index
-    integer(short), intent (in) :: nvar
+    integer(ip_), intent (in) :: index
+    integer(ip_), intent (in) :: nvar
 !            in the incoming element/row. Must be >= 0.
-    integer(short), intent (in) :: list(nvar)
+    integer(ip_), intent (in) :: list(nvar)
 !            incoming element/row.
     type (MA77_keep), intent (inout) :: keep   
     type (MA77_control), intent (in) :: control
@@ -266,7 +265,7 @@ contains
   subroutine MA77_analyse_double(order,keep,control,info)
     USE GALAHAD_SYMBOLS
     type (MA77_keep), intent (inout) :: keep
-    integer(short), intent (inout), dimension(keep%n) :: order
+    integer(ip_), intent (inout), dimension(keep%n) :: order
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
     call MA77_unavailable( info, control, 'ma77_analyse' )
@@ -276,9 +275,9 @@ contains
 
   subroutine MA77_input_reals_double(index,length,reals,keep,control,info)
     USE GALAHAD_SYMBOLS
-    integer(short), intent (in) :: index
-    integer(short), intent (in) :: length
-    real (wp), intent (in) :: reals(length)
+    integer(ip_), intent (in) :: index
+    integer(ip_), intent (in) :: length
+    real (rp_), intent (in) :: reals(length)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
@@ -291,76 +290,76 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp), intent(in), optional :: scale(:)
+    real(rp_), intent(in), optional :: scale(:)
     call MA77_unavailable( info, control, 'ma77_factor' )
   end subroutine MA77_factor_double
 
   subroutine MA77_factor_solve_double(pos_def,keep,control,info,nrhs, &
      lx,x,scale)
     USE GALAHAD_SYMBOLS
-    integer(short), parameter :: nb_default = 150
+    integer(ip_), parameter :: nb_default = 150
     logical, intent (in) :: pos_def
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp), intent(in), optional :: scale(:) 
-    integer(short) :: lx
-    integer(short) :: nrhs
-    real (wp), intent(inout) :: x(lx,nrhs)
+    real(rp_), intent(in), optional :: scale(:) 
+    integer(ip_) :: lx
+    integer(ip_) :: nrhs
+    real (rp_), intent(inout) :: x(lx,nrhs)
     call MA77_unavailable( info, control, 'ma77_factor_solve' )
   end subroutine MA77_factor_solve_double
 
    subroutine MA77_resid_double(nrhs,lx,x,lresid,resid,keep,control,info,anorm)
     USE GALAHAD_SYMBOLS
-    integer(short) :: nrhs
-    integer(short) :: lx
-    integer(short) :: lresid
-    real(wp), intent(in) :: x(lx,nrhs)
-    real(wp), intent(inout) :: resid(lresid,nrhs)
+    integer(ip_) :: nrhs
+    integer(ip_) :: lx
+    integer(ip_) :: lresid
+    real(rp_), intent(in) :: x(lx,nrhs)
+    real(rp_), intent(inout) :: resid(lresid,nrhs)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp),optional :: anorm
+    real(rp_),optional :: anorm
     call MA77_unavailable( info, control, 'ma77_resid' )
   end subroutine MA77_resid_double
 
   subroutine MA77_solve_double(nrhs,lx,x,keep,control,info,scale,job)
     USE GALAHAD_SYMBOLS
-    integer(short), intent (in) :: nrhs
-    integer(short), intent (in) :: lx
-    real (wp), intent (inout) :: x(lx,nrhs)
+    integer(ip_), intent (in) :: nrhs
+    integer(ip_), intent (in) :: lx
+    real (rp_), intent (inout) :: x(lx,nrhs)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp), intent(in), optional :: scale(:)
-    integer(short), optional, intent (in) :: job 
+    real(rp_), intent(in), optional :: scale(:)
+    integer(ip_), optional, intent (in) :: job 
     call MA77_unavailable( info, control, 'ma77_solve' )
   end subroutine MA77_solve_double
 
   subroutine MA77_solve_fredholm_double( nrhs, flag_out, lx, x,                &
                                          keep, control, info, scale )
    USE GALAHAD_SYMBOLS
-    integer(short), intent (in) :: nrhs
+    integer(ip_), intent (in) :: nrhs
     logical, intent(out) :: flag_out(nrhs) 
-    integer(short), intent (in) :: lx
-    real (wp), intent (inout) :: x(lx,2*nrhs)
+    integer(ip_), intent (in) :: lx
+    real (rp_), intent (inout) :: x(lx,2*nrhs)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp), intent(in), optional :: scale(:)
+    real(rp_), intent(in), optional :: scale(:)
     call MA77_unavailable( info, control, 'ma77_solve_fredholm' )
   end subroutine MA77_solve_fredholm_double
 
   subroutine MA77_lmultiply_double(trans,k,lx,x,ly,y,keep,control,info,scale)
     logical, intent (in) :: trans
-    integer(short), intent (in) :: k
-    integer(short), intent (in) :: lx, ly
-    real (wp), intent (inout) :: x(lx,k) ! On entry, x must
-    real (wp), intent (out) :: y(ly,k) ! On exit,
+    integer(ip_), intent (in) :: k
+    integer(ip_), intent (in) :: lx, ly
+    real (rp_), intent (inout) :: x(lx,k) ! On entry, x must
+    real (rp_), intent (out) :: y(ly,k) ! On exit,
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp), intent(in), optional :: scale(:)
+    real(rp_), intent(in), optional :: scale(:)
     call MA77_unavailable( info, control, 'ma77_lmultiply' )
   end subroutine MA77_lmultiply_double
 
@@ -369,17 +368,17 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp) :: d(:)
+    real(rp_) :: d(:)
     call MA77_unavailable( info, control, 'ma77_enquire_posdef' )
   end subroutine ma77_enquire_posdef_double
 
   subroutine MA77_enquire_indef_double(piv_order,d,keep,control,info)
     USE GALAHAD_SYMBOLS
-    real(wp) :: d(:,:)
+    real(rp_) :: d(:,:)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
-    integer(short) :: piv_order(:)
+    integer(ip_) :: piv_order(:)
     call MA77_unavailable( info, control, 'ma77_enquire_indef' )
   end subroutine ma77_enquire_indef_double
 
@@ -388,7 +387,7 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp), intent (inout) :: d(:,:)
+    real(rp_), intent (inout) :: d(:,:)
     call MA77_unavailable( info, control, 'ma77_alter' )
   end subroutine ma77_alter_double
 
@@ -397,28 +396,28 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(wp),optional :: anorm
-    real (wp) :: scale(:)
+    real(rp_),optional :: anorm
+    real (rp_) :: scale(:)
     call MA77_unavailable( info, control, 'ma77_scale' )
   end subroutine MA77_scale_double
 
   subroutine MA77_print_iflag(keep,nout,iflag,ie,st,ios)
-    integer(short), intent (in) :: iflag, nout
-    integer(short), intent (in), optional :: ie, st, ios
+    integer(ip_), intent (in) :: iflag, nout
+    integer(ip_), intent (in), optional :: ie, st, ios
     type (MA77_keep), intent (in) :: keep
   end subroutine MA77_print_iflag
 
   subroutine MA77_read_integer(ifile,keep_array,loc,length,read_array, &
              flag,data,lp)
     USE GALAHAD_SYMBOLS
-   integer(short), intent(in) :: ifile
-   integer(short), allocatable :: keep_array(:)
-   integer(long), intent(in) :: loc
-   integer(short), intent(in) :: length
-   integer(short), dimension(:) :: read_array
-   integer(short) :: flag
+   integer(ip_), intent(in) :: ifile
+   integer(ip_), allocatable :: keep_array(:)
+   integer(long_), intent(in) :: loc
+   integer(ip_), intent(in) :: length
+   integer(ip_), dimension(:) :: read_array
+   integer(ip_) :: flag
    type (of01_idata), intent(inout) :: data
-   integer(short), intent(in) :: lp
+   integer(ip_), intent(in) :: lp
    flag = GALAHAD_unavailable_option
   end subroutine MA77_read_integer
 
@@ -427,65 +426,65 @@ contains
   subroutine MA77_read_real(rfile,keep_array,loc,length,read_array, &
              flag,data,lp,map)
     USE GALAHAD_SYMBOLS
-   integer(short), intent(in) :: rfile
-   real(wp), allocatable :: keep_array(:)
-   integer(long), intent(in) :: loc
-   integer(short), intent(in) :: length
-   real(wp), dimension(:), intent(inout) :: read_array
-   integer(short) :: flag
+   integer(ip_), intent(in) :: rfile
+   real(rp_), allocatable :: keep_array(:)
+   integer(long_), intent(in) :: loc
+   integer(ip_), intent(in) :: length
+   real(rp_), dimension(:), intent(inout) :: read_array
+   integer(ip_) :: flag
    type (of01_rdata), intent(inout) :: data
-   integer(short), intent(in) :: lp
-   integer(short), optional, intent (in) :: map(length)
+   integer(ip_), intent(in) :: lp
+   integer(ip_), optional, intent (in) :: map(length)
    flag = GALAHAD_unavailable_option
   end subroutine MA77_read_real
 
   subroutine MA77_read_discard_real(rfile,keep_array,loc,length,read_array, &
              flag,data,lp,map)
     USE GALAHAD_SYMBOLS
-   integer(short), intent(in) :: rfile
-   real(wp), allocatable :: keep_array(:)
-   integer(long), intent(in) :: loc
-   integer(short), intent(in) :: length
-   real(wp), dimension(:), intent(inout) :: read_array
-   integer(short) :: flag
+   integer(ip_), intent(in) :: rfile
+   real(rp_), allocatable :: keep_array(:)
+   integer(long_), intent(in) :: loc
+   integer(ip_), intent(in) :: length
+   real(rp_), dimension(:), intent(inout) :: read_array
+   integer(ip_) :: flag
    type (of01_rdata), intent(inout) :: data
-   integer(short), intent(in) :: lp
-   integer(short), optional, intent (in) :: map(length)
+   integer(ip_), intent(in) :: lp
+   integer(ip_), optional, intent (in) :: map(length)
    flag = GALAHAD_unavailable_option
   end subroutine MA77_read_discard_real
 
   subroutine MA77_write_real(rfile,size_array,keep_array,loc,length, &
              write_array,flag,data,lp,maxstore,used,inactive)
     USE GALAHAD_SYMBOLS
-   integer(short), intent(inout) :: rfile
-   real(wp), allocatable :: keep_array(:)
-   integer(long), intent(inout) :: size_array
-   integer(long), intent(in) :: loc    
-   integer(short), intent(in) :: length
-   real(wp), intent(in) :: write_array(:)
-   integer(short) :: flag   
+   integer(ip_), intent(inout) :: rfile
+   real(rp_), allocatable :: keep_array(:)
+   integer(long_), intent(inout) :: size_array
+   integer(long_), intent(in) :: loc    
+   integer(ip_), intent(in) :: length
+   real(rp_), intent(in) :: write_array(:)
+   integer(ip_) :: flag   
    type (of01_rdata), intent(inout) :: data
-   integer(short), intent(in) :: lp      
-   integer(long), intent(in) :: maxstore
-   integer(long), intent(inout) :: used 
-   integer(long), optional, intent(in) :: inactive 
+   integer(ip_), intent(in) :: lp      
+   integer(long_), intent(in) :: maxstore
+   integer(long_), intent(inout) :: used 
+   integer(long_), optional, intent(in) :: inactive 
    flag = GALAHAD_unavailable_option
   end subroutine MA77_write_real
 
   subroutine MA77_write_integer(ifile,size_array,keep_array,loc,length, &
              write_array,flag,data,lp,maxstore,used)
     USE GALAHAD_SYMBOLS
-   integer(short), intent(inout) :: ifile
-   integer(short), allocatable :: keep_array(:)
-   integer(long), intent(inout) :: size_array
-   integer(long), intent(in) :: loc
-   integer(short), intent(in) :: length  
-   integer(short), intent(in) :: write_array(:)
-   integer(short) :: flag   
+   integer(ip_), intent(inout) :: ifile
+   integer(ip_), allocatable :: keep_array(:)
+   integer(long_), intent(inout) :: size_array
+   integer(long_), intent(in) :: loc
+   integer(ip_), intent(in) :: length  
+   integer(ip_), intent(in) :: write_array(:)
+   integer(ip_) :: flag   
    type (of01_idata), intent(inout) :: data
-   integer(short), intent(in) :: lp      
-   integer(long), intent(in) :: maxstore 
-   integer(long), intent(inout) :: used  
+   integer(ip_), intent(in) :: lp      
+   integer(long_), intent(in) :: maxstore 
+   integer(long_), intent(inout) :: used  
    flag = GALAHAD_unavailable_option
   end subroutine MA77_write_integer
 
@@ -531,7 +530,7 @@ contains
     info%matrix_outrange = 0
     info%maxdepth = 0
     info%maxfront = 0
-    info%minstore = 0_long
+    info%minstore = 0_long_
     info%ndelay = 0
     info%nfactor = 0
     info%nflops = 0
@@ -548,7 +547,7 @@ contains
     info%nwd_read(1:2) = 0
     info%nwd_write(1:2) = 0
     info%num_file(1:4) = 0
-    info%storage(1:4) = 0_long
+    info%storage(1:4) = 0_long_
     info%tree_nodes = 0
     info%unit_restart = -1
     info%unused = 0

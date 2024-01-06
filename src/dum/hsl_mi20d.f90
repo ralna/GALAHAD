@@ -1,9 +1,10 @@
-! THIS VERSION: 2022-12-29 AT 10:00:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M I 2 0   M O D U L E  -*-*-*-
 
    module hsl_mi20_double
 
+     USE GALAHAD_KINDS_double
      USE GALAHAD_SYMBOLS
      use hsl_zd11_double
      use hsl_mc65_double
@@ -11,45 +12,43 @@
 
      implicit none
 
-     integer, parameter, private :: myreal = kind(1.0d0)
-
      type mi20_control
-       integer :: aggressive = 1
-       integer :: c_fail = 1
-       integer :: max_levels = 100
-       integer :: max_points = 1
-       real (kind=myreal) :: reduction = 0.8
-       integer :: st_method = 2
-       real(kind=myreal) :: st_parameter = 0.25
-       integer :: testing = 1
-       real (kind=myreal) :: trunc_parameter = 0.0
-       integer :: coarse_solver = 3
-       integer :: coarse_solver_its = 10
-       real(kind=myreal) :: damping = 0.8
-       real(kind=myreal) :: err_tol = 1.0e10
-       integer :: levels = -1
-       integer :: ma48 = 0
-       integer :: pre_smoothing = 2
-       integer :: smoother = 2
-       integer :: post_smoothing = 2
-       integer :: v_iterations = 1
-       integer :: print_level = 1
-       integer :: print = 6
-       integer :: error = 6
+       integer(ip_) :: aggressive = 1
+       integer(ip_) :: c_fail = 1
+       integer(ip_) :: max_levels = 100
+       integer(ip_) :: max_points = 1
+       real (kind=rp_) :: reduction = 0.8
+       integer(ip_) :: st_method = 2
+       real(kind=rp_) :: st_parameter = 0.25
+       integer(ip_) :: testing = 1
+       real (kind=rp_) :: trunc_parameter = 0.0
+       integer(ip_) :: coarse_solver = 3
+       integer(ip_) :: coarse_solver_its = 10
+       real(kind=rp_) :: damping = 0.8
+       real(kind=rp_) :: err_tol = 1.0e10
+       integer(ip_) :: levels = -1
+       integer(ip_) :: ma48 = 0
+       integer(ip_) :: pre_smoothing = 2
+       integer(ip_) :: smoother = 2
+       integer(ip_) :: post_smoothing = 2
+       integer(ip_) :: v_iterations = 1
+       integer(ip_) :: print_level = 1
+       integer(ip_) :: print = 6
+       integer(ip_) :: error = 6
        logical :: one_pass_coarsen = .false.
-!      real(kind=myreal) ::  tol = -one
+!      real(kind=rp_) ::  tol = -one
 !      logical ::  tol_relative = .true.
      end type mi20_control
 
      type mi20_info
-       integer :: flag = 0
-       integer :: clevels = 0
-       integer :: cpoints = 0
-       integer :: cnnz = 0
-       integer :: stat
-       integer :: getrf_info
-       integer :: iterations
-       real(kind=myreal) :: residual
+       integer(ip_) :: flag = 0
+       integer(ip_) :: clevels = 0
+       integer(ip_) :: cpoints = 0
+       integer(ip_) :: cnnz = 0
+       integer(ip_) :: stat
+       integer(ip_) :: getrf_info
+       integer(ip_) :: iterations
+       real(kind=rp_) :: residual
        type(ma48_ainfo):: ma48_ainfo
        type(ma48_finfo):: ma48_finfo
        type(ma48_sinfo):: ma48_sinfo
@@ -57,18 +56,18 @@
 
      type mi20_keep
        logical :: new_preconditioner = .true.
-       integer :: clevels = 0
-       real(kind=myreal), dimension(:,:), allocatable :: lapack_factors
-       integer, dimension(:), allocatable :: lapack_pivots
-       integer :: st_method
+       integer(ip_) :: clevels = 0
+       real(kind=rp_), dimension(:,:), allocatable :: lapack_factors
+       integer(ip_),  dimension(:), allocatable :: lapack_pivots
+       integer(ip_) :: st_method
        logical :: lapack_data = .false.
-       integer :: ma48_data = 0
+       integer(ip_) :: ma48_data = 0
        type(ma48_factors) :: ma48_factors
        type(ma48_control) :: ma48_cntrl
        type(zd11_type) :: ma48_matrix
        logical :: ma48_matrix_exists = .false.
-       integer :: dsolve_level = -1
-       integer :: max_its = 0 
+       integer(ip_) :: dsolve_level = -1
+       integer(ip_) :: max_its = 0 
        logical :: zd11_internal_conversion = .false.
        type( zd11_type ) :: A
      end type mi20_keep

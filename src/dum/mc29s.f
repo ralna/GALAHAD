@@ -1,12 +1,7 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:50 GMT.
-
-#ifdef GALAHAD_64BIT_INTEGER
-  INTEGER, PARAMETER :: ip_ = INT64
-#else
-  INTEGER, PARAMETER :: ip_ = INT32
-#endif
+! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:50 GMT.
 
       SUBROUTINE MC29A( m, n, ne, A, IRN, ICN, R, C, W, lp, ifail )
+      USE GALAHAD_KINDS_single
       INTEGER ( KIND = ip_ ) :: m, n, ne
       REAL :: A( ne )
       INTEGER ( KIND = ip_ ) :: IRN( ne ), ICN( ne )
