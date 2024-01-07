@@ -173,10 +173,10 @@ all_pyiface_double: all_ciface_double
 #  everything with julia interfaces (not yet fully functional!)
 #  ------------------------------------------------------------
 
-all_jliface: all_jliface_$(PRECIS)
+all_juiface: all_juiface_$(PRECIS)
 
-all_jliface_single: all_ciface_single create_one_shared
-all_jliface_double: all_ciface_double create_one_shared
+all_juiface_single: all_ciface_single build_julia_shared
+all_juiface_double: all_ciface_double build_julia_shared
 
 #  ---------------------------
 #  everything for distribution
@@ -1784,6 +1784,15 @@ build_one_shared:
 	cd $(OBJ); CC=$(CC) FORTRAN=$(FORTRAN) OPTIMIZATION=$(OPTIMIZATION) \
                    SHARED=$(SHARED) DLEXT=$(DLEXT) AR=$(AR) \
                    $(BINSHELL) $(GALAHAD)/bin/build_one_shared
+
+build_julia_shared: 
+	cd $(OBJ); $(FORTRAN) $(OPTIMIZATION) $(SHARED) \
+          -o shared/libgalahad_julia.$(DLEXT) \
+          $(LOADALL) libgalahad_c.a $(LOADNONE) -L$(OBJ) \
+          -lgalahad -lgalahad_hsl_c $(HSL) $(SPRAL) \
+          $(MKL_PARDISO) $(PARDISO) $(WSMP)  $(METIS) $(PASTIX) \
+          $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS) $(MOMP) \
+          $(NOUNDEFINED)
 
 #  book keeping
 

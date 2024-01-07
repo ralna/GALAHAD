@@ -1,9 +1,10 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-07 AT 14:20 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 8 6 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma86_single_ciface
-   use GALAHAD_KINDS_single
+!  use GALAHAD_KINDS_single ! replace by the following lines marked ! ***
+   use GALAHAD_KINDS_single, ONLY: ipc_, spc_, C_LONG               ! ***
    use hsl_ma86_single, only :                     &
       f_ma86_keep          => ma86_keep,           &
       f_ma86_control       => ma86_control,        &
@@ -15,6 +16,8 @@ module hsl_ma86_single_ciface
       f_ma86_finalise      => ma86_finalise,       &
       f_ma86_get_n__       => ma86_get_n__
    implicit none
+
+   integer, parameter :: longc_ = C_LONG                            ! *** 
 
    ! Data type for user controls
    type, bind(C) :: ma86_control

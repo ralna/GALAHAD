@@ -16,7 +16,7 @@ module hsl_MA97_double
   integer(ip_), parameter, private :: nemin_default = 8
 
   interface MA97_analyse
-      module procedure MA97_analyse_double
+      module procedure analyse_double
   end interface
 
   interface MA97_analyse_coord
@@ -33,7 +33,7 @@ module hsl_MA97_double
   end interface
 
   interface MA97_solve
-      module procedure MA97_solve_double
+      module procedure MA97_solve_mult_double
       module procedure MA97_solve_one_double
   end interface
 
@@ -45,6 +45,10 @@ module hsl_MA97_double
       module procedure free_akeep_double
       module procedure free_fkeep_double
    end interface ma97_free
+
+   interface ma97_finalise
+      module procedure finalise_both_double
+   end interface ma97_finalise
 
   interface MA97_enquire_posdef
     module procedure MA97_enquire_posdef_double
@@ -66,10 +70,6 @@ module hsl_MA97_double
   interface ma97_sparse_fwd_solve
       module procedure ma97_sparse_fwd_solve_double
    end interface ma97_sparse_fwd_solve
-
-  interface MA97_finalise
-      module procedure MA97_finalise_double
-  end interface
 
   interface ma97_get_n__
      module procedure ma97_get_n_double
@@ -153,6 +153,30 @@ contains
    info%flag = GALAHAD_unavailable_option
 
   end subroutine MA97_analyse_double
+
+  subroutine analyse_double(check, n, ptr, row, akeep,                         &
+                                 control, info, order, val)
+   logical, intent(in) :: check
+   integer(ip_),  intent(in) :: n
+   integer(ip_),  intent(in) :: row(:), ptr(:)
+   type (MA97_akeep), intent (out) :: akeep
+   type (MA97_control), intent (in) :: control
+   type (MA97_info), intent (out) :: info
+   integer(ip_), OPTIONAL, intent (inout) :: order(:)
+   real(rp_), optional, intent(in) :: val(:)
+
+   IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
+     WRITE( control%unit_error,                                                &
+         "( ' We regret that the solution options that you have ', /,          &
+  &         ' chosen are not all freely available with GALAHAD.', /,           &
+  &         ' If you have HSL (formerly the Harwell Subroutine', /,            &
+  &         ' Library), this option may be enabled by replacing the ', /,      &
+  &         ' dummy subroutine MA97_analyse with its HSL namesake ', /,        &
+  &         ' and dependencies. See ', /,                                      &
+  &         '   $GALAHAD/src/makedefs/packages for details.' )" )
+   info%flag = GALAHAD_unavailable_option
+
+  end subroutine analyse_double
 
   subroutine MA97_analyse_coord_double( n, ne, row, col, akeep,                &
                                         control, info, order)
@@ -276,6 +300,17 @@ contains
    info%flag = GALAHAD_unavailable_option
 
   end subroutine MA97_solve_double
+
+  subroutine ma97_solve_mult_double(nrhs,x,ldx,akeep,fkeep,control,info,job)
+   integer(ip_), intent(in) :: nrhs
+   integer(ip_), intent(in) :: ldx
+   real(rp_), dimension(ldx,nrhs), intent(inout) :: x
+   type(ma97_akeep), intent(in) :: akeep
+   type(ma97_fkeep), intent(in) :: fkeep
+   type(ma97_control), intent(in) :: control
+   type(ma97_info), intent(out) :: info
+   integer(ip_), optional, intent(in) :: job
+  end subroutine ma97_solve_mult_double
 
   subroutine MA97_solve_one_double(x,akeep,fkeep,control,info,scale,job)
    real(rp_), intent (inout) :: x(:)
@@ -430,6 +465,11 @@ contains
 
   end subroutine MA97_alter_double
 
+  subroutine finalise_both_double(akeep, fkeep)
+     type(ma97_akeep), intent(inout) :: akeep
+     type(ma97_fkeep), intent(inout) :: fkeep
+  end subroutine finalise_both_double
+
   subroutine ma97_sparse_fwd_solve_double(nbi, bindex, b, order, lflag,        &
       nxi, xindex, x, akeep, fkeep, control, info)
    integer(ip_),  intent(in) :: nbi
@@ -469,6 +509,11 @@ contains
     type (MA97_akeep), intent (inout) :: akeep
     type (MA97_fkeep), intent (inout) :: fkeep
   end subroutine MA97_finalise_double
+
+  subroutine MA97_finalise_both_double(akeep,fkeep)
+    type (MA97_akeep), intent (inout) :: akeep
+    type (MA97_fkeep), intent (inout) :: fkeep
+  end subroutine MA97_finalise_both_double
 
 pure integer function ma97_get_n_double(akeep)
    type(ma97_akeep), intent(in) :: akeep

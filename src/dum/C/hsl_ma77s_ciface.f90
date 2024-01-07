@@ -1,10 +1,11 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-07 AT 14:20 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 7 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma77_single_ciface
-   use GALAHAD_KINDS_single
-   use GALAHAD_common_ciface
+!  use GALAHAD_KINDS_single ! replace by the following lines marked          !**
+   use GALAHAD_KINDS_single, ONLY: ipc_, spc_, C_LONG, C_PTR, C_CHAR, C_LOC  !**
+   use GALAHAD_common_ciface, ONLY: cstr_to_fchar, strlen
    use hsl_ma77_single, only :                     &
       f_ma77_keep          => ma77_keep,           &
       f_ma77_control       => ma77_control,        &
@@ -26,6 +27,8 @@ module hsl_ma77_single_ciface
       f_ma77_solve_fredholm=> ma77_solve_fredholm, &
       f_ma77_lmultiply     => ma77_lmultiply
    implicit none
+
+   integer, parameter :: longc_ = C_LONG                                     !**
 
    ! Data type for user controls
    type, bind(C) :: ma77_control

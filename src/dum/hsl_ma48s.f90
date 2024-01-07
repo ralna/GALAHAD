@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-07 AT 09:45 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 4 8   M O D U L E  -*-*-*-
 
@@ -7,6 +7,44 @@ module hsl_ma48_single
    use hsl_zd11_single
    USE GALAHAD_SYMBOLS
    implicit none
+
+   private
+   public :: ma48_factors,ma48_control,ma48_ainfo,ma48_finfo,ma48_sinfo,       &
+             ma48_initialize,ma48_analyse,ma48_factorize,ma48_solve,           &
+             ma48_finalize, ma48_get_perm,ma48_special_rows_and_cols,          &
+             ma48_determinant
+
+   interface ma48_initialize
+      module procedure ma48_initialize_single
+   end interface
+
+   interface ma48_analyse
+      module procedure ma48_analyse_single
+   end interface
+
+   interface ma48_factorize
+      module procedure ma48_factorize_single
+   end interface
+
+   interface ma48_solve
+      module procedure ma48_solve_single
+   end interface
+
+   interface  ma48_finalize
+      module procedure  ma48_finalize_single
+   end interface
+
+   interface ma48_get_perm
+      module procedure ma48_get_perm_single
+   end interface
+
+   interface ma48_special_rows_and_cols
+      module procedure ma48_special_rows_and_cols_single
+   end interface
+
+   interface ma48_determinant
+      module procedure ma48_determinant_single
+   end interface
 
    type ma48_factors
      private
@@ -91,7 +129,7 @@ module hsl_ma48_single
 
 contains
 
-   subroutine ma48_initialize(factors,control)
+   subroutine ma48_initialize_single(factors,control)
       USE GALAHAD_SYMBOLS
       type(ma48_factors), optional :: factors
       type(ma48_control), optional :: control
@@ -99,9 +137,10 @@ contains
 !  Dummy subroutine available with GALAHAD
 
       IF ( present( control ) ) control%lp=-1
-    end subroutine ma48_initialize
+    end subroutine ma48_initialize_single
 
-   subroutine ma48_analyse(matrix,factors,control,ainfo,finfo,perm,lastcol)
+   subroutine ma48_analyse_single(matrix,factors,control,ainfo,finfo,          &
+                                  perm,lastcol)
       USE GALAHAD_SYMBOLS
       type(zd11_type), Intent(in) :: matrix
       type(ma48_factors), intent(inout) :: factors
@@ -126,9 +165,9 @@ contains
 
       ainfo%flag = GALAHAD_unavailable_option
 
-   end subroutine ma48_analyse
+   end subroutine ma48_analyse_single
 
-   subroutine ma48_factorize(matrix,factors,control,finfo,fast,partial)
+   subroutine ma48_factorize_single(matrix,factors,control,finfo,fast,partial)
       USE GALAHAD_SYMBOLS
       type(zd11_type), intent(in) :: matrix
       type(ma48_factors), intent(inout) :: factors
@@ -147,9 +186,9 @@ contains
 
       finfo%flag = GALAHAD_unavailable_option
 
-   end subroutine ma48_factorize
+   end subroutine ma48_factorize_single
 
-   subroutine ma48_solve(matrix,factors,rhs,x,control,sinfo,trans, &
+   subroutine ma48_solve_single(matrix,factors,rhs,x,control,sinfo,trans, &
                          resid,error)
       USE GALAHAD_SYMBOLS
       type(zd11_type), intent(in) :: matrix
@@ -176,35 +215,36 @@ contains
 
       sinfo%flag = GALAHAD_unavailable_option
 
-   end subroutine ma48_solve
+   end subroutine ma48_solve_single
 
-   subroutine ma48_finalize(factors,control,info)
+   subroutine ma48_finalize_single(factors,control,info)
       USE GALAHAD_SYMBOLS
       type(ma48_factors), intent(inout) :: factors
       type(ma48_control), intent(in) :: control
       integer(ip_) :: info
       info = GALAHAD_unavailable_option
-    end subroutine ma48_finalize
+    end subroutine ma48_finalize_single
 
-  subroutine ma48_special_rows_and_cols(factors,rank,rows,cols,control,info)
+  subroutine ma48_special_rows_and_cols_single(factors,rank,rows,cols,         &
+                                               control,info)
       type(ma48_factors), intent(in) :: factors
       integer:: rank,info
       integer(ip_), dimension(factors%m) :: rows
       integer(ip_), dimension(factors%n) :: cols
       type(ma48_control), intent(in) :: control
-  end subroutine ma48_special_rows_and_cols
+  end subroutine ma48_special_rows_and_cols_single
 
-  subroutine ma48_get_perm(factors,perm)
+  subroutine ma48_get_perm_single(factors,perm)
       type(ma48_factors), intent(in), optional :: factors
       integer(ip_),  intent(out) :: perm(:)
-  end subroutine ma48_get_perm
+  end subroutine ma48_get_perm_single
 
-  subroutine ma48_determinant(factors,sgndet,logdet,control,info)
+  subroutine ma48_determinant_single(factors,sgndet,logdet,control,info)
       type(ma48_factors), intent(in) :: factors
       integer(ip_), intent(out) :: sgndet,info
       real(rp_),intent(out) :: logdet
       type(ma48_control), intent(in) :: control
-  end subroutine ma48_determinant
+  end subroutine ma48_determinant_single
 
 end module hsl_ma48_single
 

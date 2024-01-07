@@ -50,8 +50,8 @@ do
 #-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
 #    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #$NOUNDEFINED $LOADALL lib$name.a $LOADNONE
-    echo "$FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-$LOADALL lib$name.a $LOADNONE"
+#    echo "$FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+#$LOADALL lib$name.a $LOADNONE"
     $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 $LOADALL lib$name.a $LOADNONE
   else
