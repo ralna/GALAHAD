@@ -3,7 +3,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M I 2 0 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mi20_double_ciface
-   use GALAHAD_KINDS_double
+   use GALAHAD_KINDS
    use hsl_mi20_double, only:                    &
       f_mi20_data          => mi20_data,         &
       f_mi20_keep          => mi20_keep,         &

@@ -3,7 +3,7 @@
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 4 8   M O D U L E  -*-*-*-
 
 module hsl_ma48_double
-   USE GALAHAD_KINDS_double
+   USE GALAHAD_KINDS
    use hsl_zd11_double
    USE GALAHAD_SYMBOLS
    implicit none
@@ -51,7 +51,7 @@ module hsl_ma48_double
       integer(ip_),  allocatable :: keep(:)
       integer(ip_),  allocatable :: irn(:)
       integer(ip_),  allocatable :: jcn(:)
-      real(rp_), allocatable :: val(:)
+      real(dp_), allocatable :: val(:)
       integer(ip_) :: m       ! Number of rows in matrix
       integer(ip_) :: n       ! Number of columns in matrix
       integer(ip_) :: lareq   ! Size for further factorization
@@ -63,13 +63,13 @@ module hsl_ma48_double
    end type ma48_factors
 
    type ma48_control
-      real(rp_) :: multiplier ! Factor by which arrays sizes are to be
+      real(dp_) :: multiplier ! Factor by which arrays sizes are to be
                         ! increased if they are too small
-      real(rp_) :: u     ! Pivot threshold
-      real(rp_) :: switch ! Density for switch to full code
-      real(rp_) :: drop   ! Drop tolerance
-      real(rp_) :: tolerance ! anything less than this is considered zero
-      real(rp_) :: cgce  ! Ratio for required reduction using IR
+      real(dp_) :: u     ! Pivot threshold
+      real(dp_) :: switch ! Density for switch to full code
+      real(dp_) :: drop   ! Drop tolerance
+      real(dp_) :: tolerance ! anything less than this is considered zero
+      real(dp_) :: cgce  ! Ratio for required reduction using IR
       integer(ip_) :: lp     ! Unit for error messages
       integer(ip_) :: wp     ! Unit for warning messages
       integer(ip_) :: mp     ! Unit for monitor output
@@ -88,7 +88,7 @@ module hsl_ma48_double
    end type ma48_control
 
    type ma48_ainfo
-      real(rp_) :: ops = 0.0   ! Number of operations in elimination
+      real(dp_) :: ops = 0.0   ! Number of operations in elimination
       integer(ip_) :: flag =  GALAHAD_unavailable_option ! Flags success/failure
       integer(ip_) :: more = 0   ! More information on failure
       integer(long_) :: lena_analyse  = 0! Size for analysis (main arrays)
@@ -109,7 +109,7 @@ module hsl_ma48_double
    end type ma48_ainfo
 
    type ma48_finfo
-      real(rp_) :: ops  = 0.0  ! Number of operations in elimination
+      real(dp_) :: ops  = 0.0  ! Number of operations in elimination
       integer(ip_) :: flag =  GALAHAD_unavailable_option ! Flags success/failure
       integer(ip_) :: more   = 0  ! More information on failure
       integer(long_) :: size_factor   = 0! Number of words to hold factors
@@ -152,7 +152,7 @@ contains
 
       integer(ip_),  allocatable :: iwork(:)
       integer(ip_) :: i,job,k,la,lkeep,m,n,ne,stat,icntl(20),info(20)
-      real(rp_):: rinfo(10),cntl(10)
+      real(dp_):: rinfo(10),cntl(10)
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
            "( ' We regret that the solution options that you have ', /,        &
@@ -193,15 +193,15 @@ contains
       USE GALAHAD_SYMBOLS
       type(zd11_type), intent(in) :: matrix
       type(ma48_factors), intent(in) :: factors
-      real(rp_), intent(in) :: rhs(:)
-      real(rp_) :: x(:)
+      real(dp_), intent(in) :: rhs(:)
+      real(dp_) :: x(:)
       type(ma48_control), intent(in) :: control
       type(ma48_sinfo) :: sinfo
       integer(ip_),  optional, intent(in) :: trans
-      real(rp_), optional :: resid(2)
-      real(rp_), optional :: error
+      real(dp_), optional :: resid(2)
+      real(dp_), optional :: error
       integer icntl(20),info(20),job,m,n,stat
-      real(rp_) cntl(10),err(3)
+      real(dp_) cntl(10),err(3)
       logical trans48
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
@@ -242,7 +242,7 @@ contains
   subroutine ma48_determinant_double(factors,sgndet,logdet,control,info)
       type(ma48_factors), intent(in) :: factors
       integer(ip_), intent(out) :: sgndet,info
-      real(rp_),intent(out) :: logdet
+      real(dp_),intent(out) :: logdet
       type(ma48_control), intent(in) :: control
   end subroutine ma48_determinant_double
 

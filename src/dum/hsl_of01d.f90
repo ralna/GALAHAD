@@ -1,5 +1,5 @@
     module hsl_of01_double
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
       private
       public of01_data
       type of01_data

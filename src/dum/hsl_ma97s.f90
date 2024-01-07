@@ -4,15 +4,15 @@
 
 module hsl_MA97_single
     
-   USE GALAHAD_KINDS_single
+   USE GALAHAD_KINDS
    USE GALAHAD_SYMBOLS
 
    implicit none
    public :: ma97_get_n__, ma97_get_nz__
 
 ! Parameters (all private)
-  real(rp_), parameter, private :: one = 1.0_rp_
-  real(rp_), parameter, private :: zero = 0.0_rp_
+  real(sp_), parameter, private :: one = 1.0_sp_
+  real(sp_), parameter, private :: zero = 0.0_sp_
   integer(ip_), parameter, private :: nemin_default = 8
 
   interface MA97_analyse
@@ -81,18 +81,18 @@ module hsl_MA97_single
 
   type MA97_control ! The scalar control of this type controls the action
     logical :: action = .true. ! pos_def = .false. only.
-    real(rp_) :: consist_tol = epsilon(one) 
+    real(sp_) :: consist_tol = epsilon(one) 
     integer(long_) :: factor_min = 20000000
     integer(ip_) :: nemin = nemin_default
-    real(rp_) :: multiplier = 1.1 
+    real(sp_) :: multiplier = 1.1 
     integer(ip_) :: ordering = 5 ! controls choice of ordering
     integer(ip_) :: print_level = 0 ! Controls diagnostic printing
     integer(ip_) :: scaling = 0 ! controls use of scaling. 
-    real(rp_) :: small = tiny(one) ! Minimum pivot size
+    real(sp_) :: small = tiny(one) ! Minimum pivot size
     logical :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
     integer(long_) :: solve_min = 100000 ! Minimum value of info%num_factor
     logical :: solve_mf = .false. ! Do we use s/n (false) or m/f (true) solve?
-    real(rp_) :: u = 0.01 ! Initial relative pivot threshold
+    real(sp_) :: u = 0.01 ! Initial relative pivot threshold
     integer(ip_) :: unit_diagnostics = 6 ! unit for diagnostic printing.
     integer(ip_) :: unit_error = 6 ! unit number for error messages
     integer(ip_) :: unit_warning = 6 ! unit number for warning messages
@@ -163,7 +163,7 @@ contains
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (out) :: info
    integer(ip_), OPTIONAL, intent (inout) :: order(:)
-   real(rp_), optional, intent(in) :: val(:)
+   real(sp_), optional, intent(in) :: val(:)
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
      WRITE( control%unit_error,                                                &
@@ -203,12 +203,12 @@ contains
   subroutine MA97_factor_single(matrix_type,val,akeep,fkeep,control,info,      &
                                 scale,ptr,row)
    integer(ip_),  intent(in) :: matrix_type 
-   real(rp_), intent(in) :: val(*)
+   real(sp_), intent(in) :: val(*)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (out) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(rp_), intent(inout), optional :: scale(:)
+   real(sp_), intent(inout), optional :: scale(:)
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
 
@@ -228,14 +228,14 @@ contains
   subroutine MA97_factor_solve_single(matrix_type,val,nrhs,x,lx,akeep,fkeep,   &
                                       control,info,scale,ptr,row)
    integer(ip_),  intent(in) :: matrix_type 
-   real(rp_), intent(in) :: val(*)
+   real(sp_), intent(in) :: val(*)
    integer(ip_) :: lx, nrhs
-   real(rp_), intent(inout) :: x(lx,nrhs)
+   real(sp_), intent(inout) :: x(lx,nrhs)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (out) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(rp_), intent(inout), optional :: scale(:) 
+   real(sp_), intent(inout), optional :: scale(:) 
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
 
@@ -255,13 +255,13 @@ contains
   subroutine MA97_factor_solve_one_single(matrix_type,val,x1,akeep,fkeep,      &
                                           control,info,scale,ptr,row)
    integer(ip_),  intent(in) :: matrix_type 
-   real(rp_), intent(in) :: val(*)
-   real(rp_), intent(inout) :: x1(:) 
+   real(sp_), intent(in) :: val(*)
+   real(sp_), intent(inout) :: x1(:) 
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent(out) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(rp_), intent(inout), optional :: scale(:)
+   real(sp_), intent(inout), optional :: scale(:)
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
 
@@ -280,12 +280,12 @@ contains
 
   subroutine MA97_solve_single(nrhs,x,lx,akeep,fkeep,control,info,scale,job)
    integer(ip_), intent (in) :: nrhs, lx
-   real(rp_), intent (inout) :: x(lx,nrhs)
+   real(sp_), intent (inout) :: x(lx,nrhs)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (in) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(rp_), intent(in), optional :: scale(:)
+   real(sp_), intent(in), optional :: scale(:)
    integer(ip_), optional, intent (in) :: job
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
@@ -304,7 +304,7 @@ contains
   subroutine ma97_solve_mult_single(nrhs,x,ldx,akeep,fkeep,control,info,job)
    integer(ip_), intent(in) :: nrhs
    integer(ip_), intent(in) :: ldx
-   real(rp_), dimension(ldx,nrhs), intent(inout) :: x
+   real(sp_), dimension(ldx,nrhs), intent(inout) :: x
    type(ma97_akeep), intent(in) :: akeep
    type(ma97_fkeep), intent(in) :: fkeep
    type(ma97_control), intent(in) :: control
@@ -313,12 +313,12 @@ contains
   end subroutine ma97_solve_mult_single
 
   subroutine MA97_solve_one_single(x,akeep,fkeep,control,info,scale,job)
-   real(rp_), intent (inout) :: x(:)
+   real(sp_), intent (inout) :: x(:)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (in) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(rp_), intent(in), optional :: scale(:)
+   real(sp_), intent(in), optional :: scale(:)
    integer(ip_), optional, intent (in) :: job
 
    IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
@@ -339,7 +339,7 @@ contains
    integer(ip_),  intent(in) :: nrhs
    logical, intent(out) :: flag_out(nrhs)
    integer(ip_),  intent(in) :: ldx
-   real(rp_), dimension(ldx,2*nrhs), intent(inout) :: x
+   real(sp_), dimension(ldx,2*nrhs), intent(inout) :: x
    type(ma97_akeep), intent(in) :: akeep
    type(ma97_fkeep), intent(in) :: fkeep
    type(ma97_control), intent(in) :: control
@@ -360,8 +360,8 @@ contains
   subroutine ma97_lmultiply_one_single(trans, x1, y1, akeep, fkeep,            &
                                        control, info)
      logical, intent(in) :: trans
-     real(rp_), dimension(:), intent(in) :: x1
-     real(rp_), dimension(:), intent(out) :: y1
+     real(sp_), dimension(:), intent(in) :: x1
+     real(sp_), dimension(:), intent(out) :: y1
      type(ma97_akeep), intent(in) :: akeep
      type(ma97_fkeep), intent(in) :: fkeep
      type(ma97_control), intent(in) :: control
@@ -384,9 +384,9 @@ contains
      logical, intent(in) :: trans
      integer(ip_),  intent(in) :: k
      integer(ip_),  intent(in) :: ldx
-     real(rp_), dimension(ldx,k), intent(in) :: x
+     real(sp_), dimension(ldx,k), intent(in) :: x
      integer(ip_),  intent(in) :: ldy
-     real(rp_), dimension(ldy,k), intent(out) :: y
+     real(sp_), dimension(ldy,k), intent(out) :: y
      type(ma97_akeep), intent(in) :: akeep
      type(ma97_fkeep), intent(in) :: fkeep
      type(ma97_control), intent(in) :: control
@@ -405,7 +405,7 @@ contains
   end subroutine ma97_lmultiply_mult_single
 
   subroutine MA97_enquire_posdef_single(akeep,fkeep,control,info,d)
-    real(rp_), dimension( : ), intent(out) :: d
+    real(sp_), dimension( : ), intent(out) :: d
     type (MA97_akeep), intent (in) :: akeep
     type (MA97_fkeep), intent(in) :: fkeep
     type (MA97_control), intent (inout) :: control
@@ -426,7 +426,7 @@ contains
 
   subroutine MA97_enquire_indef_single(akeep,fkeep,control,info,piv_order,d)
     integer(ip_), optional, intent(out) :: piv_order(:)
-    real(rp_), optional, intent(out) :: d(:,:)
+    real(sp_), optional, intent(out) :: d(:,:)
     type (MA97_akeep), intent (in) :: akeep
     type (MA97_fkeep), intent (in) :: fkeep
     type (MA97_control), intent (inout) :: control
@@ -446,7 +446,7 @@ contains
   end subroutine MA97_enquire_indef_single
 
   subroutine MA97_alter_single(d,akeep,fkeep,control,info)
-    real(rp_), intent (in) :: d(:,:)
+    real(sp_), intent (in) :: d(:,:)
     type (MA97_akeep), intent (in) :: akeep
     type (MA97_fkeep), intent (in) :: fkeep
     type (MA97_control), intent (inout) :: control
@@ -474,12 +474,12 @@ contains
       nxi, xindex, x, akeep, fkeep, control, info)
    integer(ip_),  intent(in) :: nbi
    integer(ip_),  intent(in) :: bindex(:)
-   real(rp_), intent(in) :: b(:)
+   real(sp_), intent(in) :: b(:)
    integer(ip_),  intent(in) :: order(:)
    logical, intent(inout), dimension(:) :: lflag
    integer(ip_),  intent(out) :: nxi
    integer(ip_),  intent(out) :: xindex(:)
-   real(rp_), intent(inout) :: x(:)
+   real(sp_), intent(inout) :: x(:)
    type(ma97_akeep), intent(in) :: akeep
    type(ma97_fkeep), intent(in) :: fkeep
    type(ma97_control), intent(in) :: control

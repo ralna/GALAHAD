@@ -4,7 +4,7 @@
 
 MODULE hsl_mc64_single
 
-   USE GALAHAD_KINDS_single
+   USE GALAHAD_KINDS
    USE hsl_zd11_single
 
    IMPLICIT NONE
@@ -13,7 +13,7 @@ MODULE hsl_mc64_single
    public :: mc64_control, mc64_info, mc64_initialize, mc64_matching
 
    TYPE mc64_control
-!     real(rp_) :: relax = 0.0_rp_   ! Relaxes matching
+!     real(sp_) :: relax = 0.0_sp_   ! Relaxes matching
       integer(ip_) :: lp = 6    ! Unit for error messages
       integer(ip_) :: wp = 6    ! Unit for warning messages
       integer(ip_) :: sp = -1    ! Unit for statistical output
@@ -55,7 +55,7 @@ CONTAINS
       type(mc64_control), intent(in) :: control
       type(mc64_info), intent(out) :: info
       integer(ip_),  intent(out) :: perm(matrix%m + matrix%n)
-      real(rp_), optional, intent(out) :: scale(matrix%m + matrix%n)
+      real(sp_), optional, intent(out) :: scale(matrix%m + matrix%n)
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
       "( ' We regret that the solution options that you have ', /,             &
   &     ' chosen are not all freely available with GALAHAD.', /,               &
@@ -75,11 +75,11 @@ CONTAINS
       integer(ip_), intent(in) :: n
       integer(ip_), dimension(n+1), intent(in) :: ptr
       integer(ip_), dimension(*), intent(in) :: row
-      real(rp_), dimension(*), intent(in) :: val
+      real(sp_), dimension(*), intent(in) :: val
       type(mc64_control), intent(in) :: control
       type(mc64_info), intent(out) :: info
       integer(ip_), intent(out) :: perm(m + n)
-      real(rp_), optional, intent(out) :: scale(m + n)
+      real(sp_), optional, intent(out) :: scale(m + n)
    END SUBROUTINE mc64_matching_hslstd_single
 
 END MODULE hsl_mc64_single

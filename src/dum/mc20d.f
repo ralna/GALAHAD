@@ -4,7 +4,7 @@
 
       SUBROUTINE MC20AD( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
 
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -14,7 +14,7 @@
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: INUM
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( maxa ) :: JNUM
       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nc ) :: JPTR
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( maxa ) :: A
+      REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( maxa ) :: A
 
 !  Dummy subroutine available with GALAHAD
 

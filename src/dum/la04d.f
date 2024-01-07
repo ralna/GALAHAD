@@ -9,7 +9,7 @@
       SUBROUTINE LA04AD( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job,
      &           CNTL, IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
 
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -25,8 +25,7 @@
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liws ) :: IWS
       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( m ) :: B
-      REAL ( KIND = dp_ ), INTENT( INOUT ),
-     &                         DIMENSION( 2, kb ) :: BND
+      REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 2, kb ) :: BND
       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: C
       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 40 ) :: RINFO

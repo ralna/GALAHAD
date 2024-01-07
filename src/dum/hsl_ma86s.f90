@@ -4,7 +4,7 @@
 
 module hsl_MA86_single
 !$ use omp_lib
-   use GALAHAD_KINDS_single
+   use GALAHAD_KINDS
    use hsl_mc78_integer
    use hsl_mc34_single
    use hsl_zd11_single
@@ -13,8 +13,8 @@ module hsl_MA86_single
    public :: ma86_get_n__
 
    ! Numerical constants
-   real(rp_), parameter, private :: one  = 1.0_rp_
-   real(rp_), parameter, private :: zero = 0.0_rp_
+   real(sp_), parameter, private :: one  = 1.0_sp_
+   real(sp_), parameter, private :: zero = 0.0_sp_
 
    ! Default values
    integer(ip_),  parameter, private :: nemin_default = 32 
@@ -159,11 +159,11 @@ module hsl_MA86_single
       integer(ip_) :: num_perturbed = 0 ! number of perturbed pivots
       integer(ip_) :: num_two       = 0 ! number of 2x2 pivots
       integer(ip_) :: num_zero_pivots  = 0 ! number of zero pivots
-      real (rp_) :: usmall      = -one ! Set to zero if num_perturbed > 0.
+      real (sp_) :: usmall      = -one ! Set to zero if num_perturbed > 0.
          ! Otherwise, if q < p, it holds the value of cntl%umin that 
          ! would have led to a greater value of q and if q = p, it holds 
          ! the smallest relative pivot value of the chosen pivots.
-      real(rp_) :: detlog       = zero ! logarithm of abs value of det A
+      real(sp_) :: detlog       = zero ! logarithm of abs value of det A
       integer(ip_) :: detsign       = 1 ! in the real or complex Hermitian case,
                                    ! holds sign of determinant or 0 if A is
                                    ! singular
@@ -187,11 +187,11 @@ module hsl_MA86_single
          ! factorize (will include delays)
 !$    integer(omp_lock_kind) :: lock   ! lock so only one thread at a time
          ! can alter the block column
-      real(rp_), dimension(:), allocatable :: lcol ! holds block column
-      real(rp_), dimension(:), allocatable :: lcol_new ! holds block column
+      real(sp_), dimension(:), allocatable :: lcol ! holds block column
+      real(sp_), dimension(:), allocatable :: lcol_new ! holds block column
          ! after delayed cols have been added (only used if
          ! there are delays to accommodate in current block col)
-      real(rp_) , dimension(:), allocatable :: d ! holds block of D.
+      real(sp_) , dimension(:), allocatable :: d ! holds block of D.
    end type lfactor
 
    type slv_count_type
@@ -217,11 +217,11 @@ module hsl_MA86_single
          ! Node amalgamation parameter. A child node is merged with its parent 
          ! if they both involve fewer than nemin eliminations.
       integer(ip_) :: pool_size       = pool_default ! Size of task pool arrays
-      real(rp_) :: small          = 1e-20 ! Pivots less than small are
+      real(sp_) :: small          = 1e-20 ! Pivots less than small are
          ! treated as zero
-      real(rp_) :: static         = zero ! Control static pivoting
-      real(rp_) :: u              = 0.01 ! Pivot tolerance
-      real(rp_) :: umin           = one  ! Minimum pivot tolerance
+      real(sp_) :: static         = zero ! Control static pivoting
+      real(sp_) :: u              = 0.01 ! Pivot tolerance
+      real(sp_) :: umin           = one  ! Minimum pivot tolerance
       integer(ip_) :: unit_diagnostics = 6    ! unit for diagnostic messages
          ! Printing is suppressed if unit_diagnostics  <  0.
       integer(ip_) :: unit_error       = 6    ! unit for error messages
@@ -240,7 +240,7 @@ module hsl_MA86_single
    end type MA86_control
 
    type MA86_info 
-      real(rp_) :: detlog = zero         ! Holds logarithm of abs det A (or 0)
+      real(sp_) :: detlog = zero         ! Holds logarithm of abs det A (or 0)
       integer(ip_) :: detsign = 0            ! Holds sign of determinant +/-1,0
       integer(ip_) :: flag = 0               ! Error return flag (0 on success)
       integer(ip_) :: matrix_rank = 0        ! Rank of matrix
@@ -256,7 +256,7 @@ module hsl_MA86_single
       integer(ip_) :: num_perturbed = 0      ! Number of perturbed pivots
       integer(ip_) :: pool_size = pool_default  ! Maximum size of task pool used
       integer(ip_) :: stat = 0               ! STAT value on error return -1.
-      real(rp_) :: usmall = zero         ! smallest threshold parameter used
+      real(sp_) :: usmall = zero         ! smallest threshold parameter used
    end type MA86_info
 
    type ma86_keep
@@ -373,7 +373,7 @@ subroutine MA86_factor_single(n, ptr, row, val, order, keep, control, info)
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
-   real(rp_), intent(in) :: val(:) ! matrix values
+   real(sp_), intent(in) :: val(:) ! matrix values
    integer(ip_),  intent(in) :: order(:) ! holds pivot order (must be unchanged
       ! since the analyse phase)
    type(MA86_keep), intent(inout) :: keep ! see description of derived type
@@ -404,13 +404,13 @@ subroutine MA86_factor_solve_one_single(n, ptr, row, val, order, keep, control,&
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
-   real(rp_), intent(in) :: val(:) ! matrix values
+   real(sp_), intent(in) :: val(:) ! matrix values
    integer(ip_),  intent(in) :: order(:) ! holds pivot order (must be unchanged
       ! since the analyse phase)
    type(MA86_keep), intent(inout) :: keep ! see description of derived type
    type(MA86_control), intent(in) :: control ! see description of derived type
    type(MA86_info) :: info ! see description of derived type
-   real(rp_), intent(inout) :: x(keep%n) ! On entry, x must
+   real(sp_), intent(inout) :: x(keep%n) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the right-hand side.
       ! On exit, if i has been used to index a variable,
@@ -439,7 +439,7 @@ subroutine MA86_factor_solve_mult_single(n, ptr, row, val, order, keep, &
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
-   real(rp_), intent(in) :: val(:) ! matrix values
+   real(sp_), intent(in) :: val(:) ! matrix values
    integer(ip_),  intent(in) :: order(:) ! holds pivot order (must be unchanged
       ! since the analyse phase)
    type(MA86_keep), intent(inout) :: keep ! see description of derived type
@@ -447,7 +447,7 @@ subroutine MA86_factor_solve_mult_single(n, ptr, row, val, order, keep, &
    type(MA86_info) :: info ! see description of derived type
    integer(ip_),  intent(in) :: nrhs ! number of right-hand sides to solver for
    integer(ip_),  intent(in) :: lx ! first dimension of x
-   real(rp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
+   real(sp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i,j) is the corresponding component of the
       ! right-hand side for the jth system (j = 1,2,..., nrhs).
@@ -474,7 +474,7 @@ end subroutine MA86_factor_solve_mult_single
 subroutine MA86_solve_one_single(x,order,keep,control,info,job)
    USE GALAHAD_SYMBOLS
    type(MA86_keep), intent(inout) :: keep
-   real(rp_), intent(inout) :: x(keep%n) ! On entry, x must
+   real(sp_), intent(inout) :: x(keep%n) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the right-hand side.
       ! On exit, if i has been used to index a variable,
@@ -510,7 +510,7 @@ subroutine MA86_solve_mult_single(nrhs,lx,x,order,keep, control,info,job)
    USE GALAHAD_SYMBOLS
    integer(ip_),  intent(in) :: nrhs ! number of right-hand sides to solver for
    integer(ip_),  intent(in) :: lx ! first dimension of x
-   real(rp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
+   real(sp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i,j) is the corresponding component of the
       ! right-hand side for the jth system (j = 1,2,..., nrhs).
@@ -569,7 +569,7 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    type(MA86_info), intent(inout) :: info ! see description of derived type
    integer(ip_),  intent(in) :: nrhs  ! number of right-hand sides (maybe = 0)
    integer(ip_),  intent(in) :: ldr  ! leading extent of rhs
-   real(rp_), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data. 
+   real(sp_), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data. 
       ! Overwritten by partial solution (forward substitution performed).
    
    ! local derived types
@@ -577,12 +577,12 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    type(taskstack) :: stack ! see description of derived type
    
    ! local arrays
-   real(rp_), dimension(:), allocatable :: detlog ! per thread sum of log pivot
+   real(sp_), dimension(:), allocatable :: detlog ! per thread sum of log pivot
    integer(ip_),  dimension(:), allocatable ::  invp ! holds inverse ordering
    integer(ip_),  dimension(:), allocatable ::  map ! allocated to have size n
      ! used in copying entries of user's matrix a into factor storage 
      ! (keep%fact).
-   real(rp_), dimension(:,:), allocatable ::  rhs_local ! Local right-hand 
+   real(sp_), dimension(:,:), allocatable ::  rhs_local ! Local right-hand 
      ! side arrays. allocated to have size (nrhs*ldr,0:total_threads)
 
 end subroutine factorize_posdef

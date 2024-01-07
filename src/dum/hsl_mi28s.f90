@@ -4,18 +4,18 @@
 
  module hsl_mi28_single
    USE GALAHAD_SYMBOLS
-   USE GALAHAD_KINDS_single
+   USE GALAHAD_KINDS
    implicit none
 
    private
    public :: mi28_keep, mi28_control, mi28_info
    public :: mi28_factorize, mi28_finalise, mi28_precondition, mi28_solve
 
-  real(rp_), parameter :: zero = 0.0_rp_
-  real(rp_), parameter :: one = 1.0_rp_
-  real(rp_), parameter :: sfact = 2.0_rp_
-  real(rp_), parameter :: sfact2 = 4.0_rp_
-  real(rp_), parameter :: alpham = 0.001_rp_
+  real(sp_), parameter :: zero = 0.0_sp_
+  real(sp_), parameter :: one = 1.0_sp_
+  real(sp_), parameter :: sfact = 2.0_sp_
+  real(sp_), parameter :: sfact2 = 4.0_sp_
+  real(sp_), parameter :: alpham = 0.001_sp_
 
   interface mi28_factorize
       module procedure mi28_factorize_single
@@ -36,26 +36,26 @@
   type mi28_keep
     integer(long_), allocatable ::  fact_ptr(:)
     integer(ip_),  allocatable ::  fact_row(:) 
-    real(rp_), allocatable ::  fact_val(:) 
-    real(rp_), allocatable :: scale(:) 
+    real(sp_), allocatable ::  fact_val(:) 
+    real(sp_), allocatable :: scale(:) 
     integer(ip_),  allocatable :: invp(:)
     integer(ip_),  allocatable :: perm(:)
-    real(rp_), allocatable :: w(:)
+    real(sp_), allocatable :: w(:)
   end type mi28_keep
 
   type mi28_control
-    real(rp_) :: alpha = zero
+    real(sp_) :: alpha = zero
     logical :: check = .true.
     integer(ip_) :: iorder = 6
     integer(ip_) :: iscale = 1
-    real(rp_) :: lowalpha = alpham
+    real(sp_) :: lowalpha = alpham
     integer(ip_) :: maxshift = 3
     logical :: rrt = .false.
-    real(rp_) :: shift_factor = sfact
-    real(rp_) :: shift_factor2 = sfact2
-    real(rp_) :: small = 10.0_rp_**(-20)
-    real(rp_) :: tau1 = 0.001_rp_
-    real(rp_) :: tau2 = 0.0001_rp_
+    real(sp_) :: shift_factor = sfact
+    real(sp_) :: shift_factor2 = sfact2
+    real(sp_) :: small = 10.0_sp_**(-20)
+    real(sp_) :: tau1 = 0.001_sp_
+    real(sp_) :: tau2 = 0.0001_sp_
     integer(ip_) :: unit_error = 6
     integer(ip_) :: unit_warning = 6
   end type mi28_control
@@ -72,11 +72,11 @@
     integer(ip_) :: nrestart = 0 
     integer(ip_) :: nshift = 0 
     integer(ip_) :: oor = 0 
-    real(rp_) :: profile_before = 0 
-    real(rp_) :: profile_after = 0 
+    real(sp_) :: profile_before = 0 
+    real(sp_) :: profile_after = 0 
     integer(long_) :: size_r = 0_long_ 
     integer(ip_) :: stat = 0 
-    real(rp_) :: alpha = zero 
+    real(sp_) :: alpha = zero 
   end type mi28_info
 
  contains
@@ -86,13 +86,13 @@
     integer(ip_),  intent(in) :: n  
     integer(ip_),  intent(inout) ::  ptr(n+1) 
     integer(ip_),  intent(inout) ::  row(:) 
-    real(rp_), intent(inout) ::  val(:) 
+    real(sp_), intent(inout) ::  val(:) 
     integer(ip_),  intent(in) :: lsize 
     integer(ip_),  intent(in) :: rsize 
     type(mi28_keep), intent(out) :: keep 
     type(mi28_control), intent(in) :: control 
     type(mi28_info), intent(out) :: info      
-    real(rp_), intent(in), optional :: scale(n) 
+    real(sp_), intent(in), optional :: scale(n) 
     integer(ip_),  intent(in), optional :: invp(n) 
     IF ( control%unit_error >= 0 ) WRITE( control%unit_error,                  &
            "( ' We regret that the solution options that you have ', /,        &
@@ -108,8 +108,8 @@
   subroutine mi28_precondition_single(n, keep, z, y, info)
     integer(ip_),  intent(in) :: n
     type(mi28_keep), intent(inout) :: keep
-    real(rp_), intent(in) :: z(n)
-    real(rp_), intent(out) :: y(n)
+    real(sp_), intent(in) :: z(n)
+    real(sp_), intent(out) :: y(n)
     type(mi28_info), intent(inout) :: info
     info%flag = GALAHAD_unavailable_option
   end subroutine mi28_precondition_single
@@ -118,8 +118,8 @@
     logical, intent(in) :: trans 
     integer(ip_),  intent(in) :: n
     type(mi28_keep), intent(inout) :: keep
-    real(rp_), intent(in) :: z(n)
-    real(rp_), intent(out) :: y(n)
+    real(sp_), intent(in) :: z(n)
+    real(sp_), intent(out) :: y(n)
     type(mi28_info), intent(inout) :: info
     info%flag = GALAHAD_unavailable_option
 

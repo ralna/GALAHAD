@@ -3,8 +3,8 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M A 4 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma48_double_ciface
-!  use GALAHAD_KINDS_double ! replace by the following lines marked ! ***
-   use GALAHAD_KINDS_double, ONLY: ipc_, dpc_, C_LONG               ! ***
+!  use GALAHAD_KINDS ! replace by the following lines marked ! ***
+   use GALAHAD_KINDS, ONLY: ipc_, dpc_, C_LONG               ! ***
    use hsl_ma48_double, only:                                           &
       f_ma48_factors                => ma48_factors,                    &
       f_ma48_control                => ma48_control,                    &
@@ -21,7 +21,7 @@ module hsl_ma48_double_ciface
       f_ma48_determinant            => ma48_determinant
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                            ! *** 
+   integer, parameter :: longc_ = C_LONG                     ! *** 
 
    type, bind(C) :: ma48_control
       integer(ipc_) :: f_arrays

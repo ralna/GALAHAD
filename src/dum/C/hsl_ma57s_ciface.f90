@@ -3,8 +3,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M A 5 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma57_single_ciface
-  use GALAHAD_KINDS_single
-  use hsl_zd11_single, only: zd11_type
+  use GALAHAD_KINDS
   use hsl_ma57_single, only:                                     &
        f_ma57_factors => ma57_factors,                           &
        f_ma57_control => ma57_control,                           &

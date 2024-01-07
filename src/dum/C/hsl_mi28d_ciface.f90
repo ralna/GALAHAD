@@ -12,7 +12,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
  MODULE HSL_MI28_double_ciface
-   USE GALAHAD_KINDS_double
+   USE GALAHAD_KINDS
    USE HSL_MI28_double, ONLY:                                                  &
       f_mi28_control => mi28_control,                                          &
       f_mi28_info    => mi28_info

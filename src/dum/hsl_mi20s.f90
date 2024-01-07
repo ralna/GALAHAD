@@ -4,7 +4,7 @@
 
    module hsl_mi20_single
 
-     USE GALAHAD_KINDS_single
+     USE GALAHAD_KINDS
      USE GALAHAD_SYMBOLS
      use hsl_zd11_single
      use hsl_mc65_single
@@ -17,15 +17,15 @@
        integer(ip_) :: c_fail = 1
        integer(ip_) :: max_levels = 100
        integer(ip_) :: max_points = 1
-       real (kind=rp_) :: reduction = 0.8
+       real (kind=sp_) :: reduction = 0.8
        integer(ip_) :: st_method = 2
-       real(kind=rp_) :: st_parameter = 0.25
+       real(kind=sp_) :: st_parameter = 0.25
        integer(ip_) :: testing = 1
-       real (kind=rp_) :: trunc_parameter = 0.0
+       real (kind=sp_) :: trunc_parameter = 0.0
        integer(ip_) :: coarse_solver = 3
        integer(ip_) :: coarse_solver_its = 10
-       real(kind=rp_) :: damping = 0.8
-       real(kind=rp_) :: err_tol = 1.0e10
+       real(kind=sp_) :: damping = 0.8
+       real(kind=sp_) :: err_tol = 1.0e10
        integer(ip_) :: levels = -1
        integer(ip_) :: ma48 = 0
        integer(ip_) :: pre_smoothing = 2
@@ -36,7 +36,7 @@
        integer(ip_) :: print = 6
        integer(ip_) :: error = 6
        logical :: one_pass_coarsen = .false.
-!      real(kind=rp_) ::  tol = -one
+!      real(kind=sp_) ::  tol = -one
 !      logical ::  tol_relative = .true.
      end type mi20_control
 
@@ -48,7 +48,7 @@
        integer(ip_) :: stat
        integer(ip_) :: getrf_info
        integer(ip_) :: iterations
-       real(kind=rp_) :: residual
+       real(kind=sp_) :: residual
        type(ma48_ainfo):: ma48_ainfo
        type(ma48_finfo):: ma48_finfo
        type(ma48_sinfo):: ma48_sinfo
@@ -57,7 +57,7 @@
      type mi20_keep
        logical :: new_preconditioner = .true.
        integer(ip_) :: clevels = 0
-       real(kind=rp_), dimension(:,:), allocatable :: lapack_factors
+       real(kind=sp_), dimension(:,:), allocatable :: lapack_factors
        integer(ip_),  dimension(:), allocatable :: lapack_pivots
        integer(ip_) :: st_method
        logical :: lapack_data = .false.

@@ -4,7 +4,7 @@
 
 module hsl_MA77_single
 
-   use GALAHAD_KINDS_single
+   use GALAHAD_KINDS
 !  use hsl_ma54_single
 !  use hsl_ma64_single
    use hsl_of01_single, of01_rdata => of01_data
@@ -13,9 +13,9 @@ module hsl_MA77_single
   implicit none
 
   integer(ip_),  parameter, private  :: wp = kind(0.0d0)
-  real (rp_), parameter, private :: one = 1.0_rp_
-  real (rp_), parameter, private :: zero = 0.0_rp_
-  real (rp_), parameter, private :: half = 0.5_rp_
+  real (sp_), parameter, private :: one = 1.0_sp_
+  real (sp_), parameter, private :: zero = 0.0_sp_
+  real (sp_), parameter, private :: half = 0.5_sp_
   integer(ip_), parameter, private :: nemin_default = 8
   integer(ip_), parameter, private :: lup1 = huge(0_ip_)/8
   integer(ip_), parameter, private :: nb54_default = 150
@@ -92,32 +92,32 @@ module hsl_MA77_single
     integer(ip_) :: bits = 32
     integer(ip_) :: buffer_lpage(2) = 2**12 
     integer(ip_) :: buffer_npage(2) = 1600
-    real(rp_) :: consist_tol = epsilon(one) 
+    real(sp_) :: consist_tol = epsilon(one) 
     integer(long_) :: file_size = 2**21
     integer(ip_) :: infnorm = 0
     integer(ip_) :: maxit = 1
     integer(long_) :: maxstore = 0_long_
-    real(rp_) :: multiplier = 1.1
+    real(sp_) :: multiplier = 1.1
     integer(ip_) :: nb54 = 150
     integer(ip_) :: nb64 = 120
     integer(ip_) :: nbi = 40
     integer(ip_) :: nemin = nemin_default
     integer(ip_) :: p = 4
     integer(ip_) :: print_level = 0
-    real(rp_) :: small = tiny(one)
-    real (rp_) :: static = zero
+    real(sp_) :: small = tiny(one)
+    real (sp_) :: static = zero
     integer(long_) :: storage(3) = 0_long_
     integer(long_) :: storage_indef = 0
-    real(rp_) :: thresh = 0.5
+    real(sp_) :: thresh = 0.5
     integer(ip_) :: unit_diagnostics = 6
     integer(ip_) :: unit_error = 6
     integer(ip_) :: unit_warning = 6
-    real (rp_) :: u = 0.01
-    real (rp_) :: umin = 0.01
+    real (sp_) :: u = 0.01
+    real (sp_) :: umin = 0.01
   end type MA77_control
 
   type MA77_info
-    real (rp_) :: detlog = 0.0
+    real (sp_) :: detlog = 0.0
     integer(ip_) :: detsign = 1 
     integer(ip_) :: flag = 0    
     integer(ip_) :: iostat = 0
@@ -148,7 +148,7 @@ module hsl_MA77_single
     integer(ip_) :: tree_nodes = 0
     integer(ip_) :: unit_restart = -1
     integer(ip_) :: unused = 0
-    real(rp_) :: u = zero
+    real(sp_) :: u = zero
   end type MA77_info
 
   type MA77_node
@@ -202,8 +202,8 @@ module hsl_MA77_single
     integer(long_) :: used
     integer(ip_) :: tnode
 
-    real(rp_), allocatable :: aelt(:)
-    real(rp_), allocatable :: arow(:)
+    real(sp_), allocatable :: aelt(:)
+    real(sp_), allocatable :: arow(:)
     integer(ip_), allocatable :: clist(:)
     integer(long_), allocatable :: ifile(:)
     integer(ip_), allocatable :: iptr(:)
@@ -222,9 +222,9 @@ module hsl_MA77_single
     integer(long_) :: size_rwork
     integer(long_) :: size_rwdelay
     integer(ip_),allocatable :: imain(:)
-    real(rp_),allocatable :: rmain(:)
-    real(rp_),allocatable :: rwork(:)
-    real(rp_),allocatable :: rwdelay(:)
+    real(sp_),allocatable :: rmain(:)
+    real(sp_),allocatable :: rwork(:)
+    real(sp_),allocatable :: rwdelay(:)
     character,allocatable :: file1(:)
     character,allocatable :: file2(:)
     character,allocatable :: file3(:)
@@ -277,7 +277,7 @@ contains
     USE GALAHAD_SYMBOLS
     integer(ip_), intent (in) :: index
     integer(ip_), intent (in) :: length
-    real (rp_), intent (in) :: reals(length)
+    real (sp_), intent (in) :: reals(length)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
@@ -290,7 +290,7 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_), intent(in), optional :: scale(:)
+    real(sp_), intent(in), optional :: scale(:)
     call MA77_unavailable( info, control, 'ma77_factor' )
   end subroutine MA77_factor_single
 
@@ -302,10 +302,10 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_), intent(in), optional :: scale(:) 
+    real(sp_), intent(in), optional :: scale(:) 
     integer(ip_) :: lx
     integer(ip_) :: nrhs
-    real (rp_), intent(inout) :: x(lx,nrhs)
+    real (sp_), intent(inout) :: x(lx,nrhs)
     call MA77_unavailable( info, control, 'ma77_factor_solve' )
   end subroutine MA77_factor_solve_single
 
@@ -314,12 +314,12 @@ contains
     integer(ip_) :: nrhs
     integer(ip_) :: lx
     integer(ip_) :: lresid
-    real(rp_), intent(in) :: x(lx,nrhs)
-    real(rp_), intent(inout) :: resid(lresid,nrhs)
+    real(sp_), intent(in) :: x(lx,nrhs)
+    real(sp_), intent(inout) :: resid(lresid,nrhs)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_),optional :: anorm
+    real(sp_),optional :: anorm
     call MA77_unavailable( info, control, 'ma77_resid' )
   end subroutine MA77_resid_single
 
@@ -327,11 +327,11 @@ contains
     USE GALAHAD_SYMBOLS
     integer(ip_), intent (in) :: nrhs
     integer(ip_), intent (in) :: lx
-    real (rp_), intent (inout) :: x(lx,nrhs)
+    real (sp_), intent (inout) :: x(lx,nrhs)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_), intent(in), optional :: scale(:)
+    real(sp_), intent(in), optional :: scale(:)
     integer(ip_), optional, intent (in) :: job 
     call MA77_unavailable( info, control, 'ma77_solve' )
   end subroutine MA77_solve_single
@@ -342,11 +342,11 @@ contains
     integer(ip_), intent (in) :: nrhs
     logical, intent(out) :: flag_out(nrhs) 
     integer(ip_), intent (in) :: lx
-    real (rp_), intent (inout) :: x(lx,2*nrhs)
+    real (sp_), intent (inout) :: x(lx,2*nrhs)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_), intent(in), optional :: scale(:)
+    real(sp_), intent(in), optional :: scale(:)
     call MA77_unavailable( info, control, 'ma77_solve_fredholm' )
   end subroutine MA77_solve_fredholm_single
 
@@ -354,12 +354,12 @@ contains
     logical, intent (in) :: trans
     integer(ip_), intent (in) :: k
     integer(ip_), intent (in) :: lx, ly
-    real (rp_), intent (inout) :: x(lx,k) ! On entry, x must
-    real (rp_), intent (out) :: y(ly,k) ! On exit,
+    real (sp_), intent (inout) :: x(lx,k) ! On entry, x must
+    real (sp_), intent (out) :: y(ly,k) ! On exit,
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_), intent(in), optional :: scale(:)
+    real(sp_), intent(in), optional :: scale(:)
     call MA77_unavailable( info, control, 'ma77_lmultiply' )
   end subroutine MA77_lmultiply_single
 
@@ -368,13 +368,13 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_) :: d(:)
+    real(sp_) :: d(:)
     call MA77_unavailable( info, control, 'ma77_enquire_posdef' )
   end subroutine ma77_enquire_posdef_single
 
   subroutine MA77_enquire_indef_single(piv_order,d,keep,control,info)
     USE GALAHAD_SYMBOLS
-    real(rp_) :: d(:,:)
+    real(sp_) :: d(:,:)
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
@@ -387,7 +387,7 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_), intent (inout) :: d(:,:)
+    real(sp_), intent (inout) :: d(:,:)
     call MA77_unavailable( info, control, 'ma77_alter' )
   end subroutine ma77_alter_single
 
@@ -396,8 +396,8 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(rp_),optional :: anorm
-    real (rp_) :: scale(:)
+    real(sp_),optional :: anorm
+    real (sp_) :: scale(:)
     call MA77_unavailable( info, control, 'ma77_scale' )
   end subroutine MA77_scale_single
 
@@ -427,10 +427,10 @@ contains
              flag,data,lp,map)
     USE GALAHAD_SYMBOLS
    integer(ip_), intent(in) :: rfile
-   real(rp_), allocatable :: keep_array(:)
+   real(sp_), allocatable :: keep_array(:)
    integer(long_), intent(in) :: loc
    integer(ip_), intent(in) :: length
-   real(rp_), dimension(:), intent(inout) :: read_array
+   real(sp_), dimension(:), intent(inout) :: read_array
    integer(ip_) :: flag
    type (of01_rdata), intent(inout) :: data
    integer(ip_), intent(in) :: lp
@@ -442,10 +442,10 @@ contains
              flag,data,lp,map)
     USE GALAHAD_SYMBOLS
    integer(ip_), intent(in) :: rfile
-   real(rp_), allocatable :: keep_array(:)
+   real(sp_), allocatable :: keep_array(:)
    integer(long_), intent(in) :: loc
    integer(ip_), intent(in) :: length
-   real(rp_), dimension(:), intent(inout) :: read_array
+   real(sp_), dimension(:), intent(inout) :: read_array
    integer(ip_) :: flag
    type (of01_rdata), intent(inout) :: data
    integer(ip_), intent(in) :: lp
@@ -457,11 +457,11 @@ contains
              write_array,flag,data,lp,maxstore,used,inactive)
     USE GALAHAD_SYMBOLS
    integer(ip_), intent(inout) :: rfile
-   real(rp_), allocatable :: keep_array(:)
+   real(sp_), allocatable :: keep_array(:)
    integer(long_), intent(inout) :: size_array
    integer(long_), intent(in) :: loc    
    integer(ip_), intent(in) :: length
-   real(rp_), intent(in) :: write_array(:)
+   real(sp_), intent(in) :: write_array(:)
    integer(ip_) :: flag   
    type (of01_rdata), intent(inout) :: data
    integer(ip_), intent(in) :: lp      

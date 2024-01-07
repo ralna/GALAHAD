@@ -8,7 +8,7 @@
 
       SUBROUTINE KB07AI( COUNT, n, INDEX )
 
-      USE GALAHAD_KINDS_single
+      USE GALAHAD_KINDS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s

@@ -1,5 +1,5 @@
     module hsl_of01_single
-      use galahad_kinds_single
+      use GALAHAD_KINDS
       private
       public of01_data
       type of01_data

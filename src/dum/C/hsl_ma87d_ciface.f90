@@ -3,8 +3,8 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M A 8 7 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma87_double_ciface
-!  use GALAHAD_KINDS_double ! replace by the following lines marked   ! ***
-   use GALAHAD_KINDS_double, ONLY: ipc_, dpc_, C_LONG, C_PTR, C_CHAR  ! ***
+!  use GALAHAD_KINDS ! replace by the following lines marked   ! ***
+   use GALAHAD_KINDS, ONLY: ipc_, dpc_, C_LONG, C_PTR, C_CHAR  ! ***
    use hsl_ma87_double, only :                           &
       f_ma87_keep             => ma87_keep,              &
       f_ma87_control          => ma87_control,           &
@@ -18,7 +18,7 @@ module hsl_ma87_double_ciface
       f_ma87_get_n__          => ma87_get_n__
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                              ! *** 
+   integer, parameter :: longc_ = C_LONG                       ! *** 
 
    ! Data type for user controls
    type, bind(C) :: ma87_control

@@ -4,7 +4,7 @@
 
 module hsl_ma57_single
    use hsl_zd11_single
-   use GALAHAD_KINDS_single
+   use GALAHAD_KINDS
    USE GALAHAD_SYMBOLS
    implicit none
 
@@ -12,7 +12,7 @@ module hsl_ma57_single
      private
       integer(ip_),  allocatable :: keep(:)
       integer(ip_),  allocatable :: iw(:)
-      real(rp_), allocatable :: val(:)
+      real(sp_), allocatable :: val(:)
       integer(ip_) :: n        ! Matrix order
       integer(ip_) :: nrltot   ! Size for val without compression
       integer(ip_) :: nirtot   ! Size for iw without compression
@@ -27,18 +27,18 @@ module hsl_ma57_single
    end type ma57_factors
 
    type ma57_control
-      real(rp_) :: multiplier ! Factor by which arrays sizes are to be
+      real(sp_) :: multiplier ! Factor by which arrays sizes are to be
                         ! increased if they are too small
-      real(rp_) :: reduce ! if previously allocated internal workspace arrays
+      real(sp_) :: reduce ! if previously allocated internal workspace arrays
                         !  are greater than reduce times the currently
                         !  required sizes, they are reset to current requirments
-      real(rp_) :: u     ! Pivot threshold
-      real(rp_) :: static_tolerance ! used for setting static pivot level
-      real(rp_) :: static_level ! used for switch to static
-      real(rp_) :: tolerance ! anything less than this is considered zero
-      real(rp_) :: convergence ! used to monitor convergence in iterative
+      real(sp_) :: u     ! Pivot threshold
+      real(sp_) :: static_tolerance ! used for setting static pivot level
+      real(sp_) :: static_level ! used for switch to static
+      real(sp_) :: tolerance ! anything less than this is considered zero
+      real(sp_) :: convergence ! used to monitor convergence in iterative
                               ! refinement
-      real(rp_) :: consist ! used in test for consistency when using
+      real(sp_) :: consist ! used in test for consistency when using
                           ! fredholm alternative
       integer(ip_) :: lp     ! Unit for error messages
       integer(ip_) :: wp     ! Unit for warning messages
@@ -84,8 +84,8 @@ module hsl_ma57_single
    end type ma57_control
 
    type ma57_ainfo
-      real(rp_) :: opsa = -1.0_rp_ ! Anticipated # operations in assembly
-      real(rp_) :: opse = -1.0_rp_ ! Anticipated # operations in elimination
+      real(sp_) :: opsa = -1.0_sp_ ! Anticipated # operations in assembly
+      real(sp_) :: opse = -1.0_sp_ ! Anticipated # operations in elimination
       integer(ip_) :: flag = 0      ! Flags success or failure case
       integer(ip_) :: more = 0      ! More information on failure
       integer(ip_) :: nsteps = -1   ! Number of elimination steps
@@ -104,12 +104,12 @@ module hsl_ma57_single
    end type ma57_ainfo
 
    type ma57_finfo
-      real(rp_) :: opsa = -1.0_rp_   ! Number of operations in assembly
-      real(rp_) :: opse = -1.0_rp_  ! Number of operations in elimination
-      real(rp_) :: opsb = -1.0_rp_  ! Additional number of operations for BLAS
-      real(rp_) :: maxchange = -1.0_rp_  ! Largest pivot mod when pivoting=4
-      real(rp_) :: smin = -1.0_rp_   ! Minimum scaling factor
-      real(rp_) :: smax = -1.0_rp_   ! Maximum scaling factor
+      real(sp_) :: opsa = -1.0_sp_   ! Number of operations in assembly
+      real(sp_) :: opse = -1.0_sp_  ! Number of operations in elimination
+      real(sp_) :: opsb = -1.0_sp_  ! Additional number of operations for BLAS
+      real(sp_) :: maxchange = -1.0_sp_  ! Largest pivot mod when pivoting=4
+      real(sp_) :: smin = -1.0_sp_   ! Minimum scaling factor
+      real(sp_) :: smax = -1.0_sp_   ! Maximum scaling factor
       integer(ip_) :: flag = 0     ! Flags success or failure case
       integer(ip_) :: more = 0     ! More information on failure
       integer(ip_) :: maxfrt = -1  ! Largest front size
@@ -133,11 +133,11 @@ module hsl_ma57_single
    end type ma57_finfo
 
    type ma57_sinfo
-      real(rp_) :: cond = -1.0_rp_  ! Condition # of matrix (category 1 equations)
-      real(rp_) :: cond2 = -1.0_rp_ ! Condition # of matrix (category 2 equations)
-      real(rp_) :: berr = -1.0_rp_  ! Condition # of matrix (category 1 equations)
-      real(rp_) :: berr2 = -1.0_rp_ ! Condition # of matrix (category 2 equations)
-      real(rp_) :: error = -1.0_rp_ ! Estimate of forward error using above data
+      real(sp_) :: cond = -1.0_sp_  ! Condition # of matrix (category 1 equations)
+      real(sp_) :: cond2 = -1.0_sp_ ! Condition # of matrix (category 2 equations)
+      real(sp_) :: berr = -1.0_sp_  ! Condition # of matrix (category 1 equations)
+      real(sp_) :: berr2 = -1.0_sp_ ! Condition # of matrix (category 2 equations)
+      real(sp_) :: error = -1.0_sp_ ! Estimate of forward error using above data
       integer(ip_) :: flag = 0  ! Flags success or failure case
       integer(ip_) :: stat = 0  ! STAT value after allocate failure
    end type ma57_sinfo
@@ -161,7 +161,7 @@ contains
       type(ma57_factors), intent(out), optional :: factors
       type(ma57_control), intent(out), optional :: control
       integer icntl(20),stat
-      real(rp_) cntl(5)
+      real(sp_) cntl(5)
 
 !  Dummy subroutine available with GALAHAD
 
@@ -185,8 +185,8 @@ contains
      &     ' and dependencies. See ', /,                                       &
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       ainfo%flag = GALAHAD_unavailable_option
-      ainfo%opsa = -1.0_rp_
-      ainfo%opse = -1.0_rp_
+      ainfo%opsa = -1.0_sp_
+      ainfo%opse = -1.0_sp_
       ainfo%more = 0
       ainfo%nsteps = -1
       ainfo%nrltot = -1
@@ -217,12 +217,12 @@ contains
      &     ' and dependencies. See ', /,                                       &
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       finfo%flag = GALAHAD_unavailable_option
-      finfo%opsa = -1.0_rp_
-      finfo%opse = -1.0_rp_
-      finfo%opsb = -1.0_rp_
-      finfo%maxchange = -1.0_rp_
-      finfo%smin = -1.0_rp_
-      finfo%smax = -1.0_rp_
+      finfo%opsa = -1.0_sp_
+      finfo%opse = -1.0_sp_
+      finfo%opsb = -1.0_sp_
+      finfo%maxchange = -1.0_sp_
+      finfo%smin = -1.0_sp_
+      finfo%smax = -1.0_sp_
       finfo%more = 0
       finfo%maxfrt = -1
       finfo%nebdu = -1
@@ -248,10 +248,10 @@ contains
    subroutine ma57_solve2(matrix,factors,x,control,sinfo,rhs,iter,cond)
       type(zd11_type), intent(in) :: matrix
       type(ma57_factors), intent(in) :: factors
-      real(rp_), intent(inout) :: x(:,:)
+      real(sp_), intent(inout) :: x(:,:)
       type(ma57_control), intent(in) :: control
       type(ma57_sinfo), intent(out) :: sinfo
-      real(rp_), optional, intent(in) :: rhs(:,:)
+      real(sp_), optional, intent(in) :: rhs(:,:)
       integer(ip_),  optional, intent(in) :: iter
       integer(ip_),  optional, intent(in) :: cond
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
@@ -264,20 +264,20 @@ contains
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       sinfo%flag = GALAHAD_unavailable_option
       sinfo%stat = 0
-      sinfo%cond = -1.0_rp_
-      sinfo%cond2 = -1.0_rp_
-      sinfo%berr = -1.0_rp_
-      sinfo%berr2 = -1.0_rp_
-      sinfo%error = -1.0_rp_
+      sinfo%cond = -1.0_sp_
+      sinfo%cond2 = -1.0_sp_
+      sinfo%berr = -1.0_sp_
+      sinfo%berr2 = -1.0_sp_
+      sinfo%error = -1.0_sp_
    end subroutine ma57_solve2
 
    subroutine ma57_solve1(matrix,factors,x,control,sinfo,rhs,iter,cond)
       type(zd11_type), intent(in) :: matrix
       type(ma57_factors), intent(in) :: factors
-      real(rp_), intent(inout) :: x(:)
+      real(sp_), intent(inout) :: x(:)
       type(ma57_control), intent(in) :: control
       type(ma57_sinfo), intent(out) :: sinfo
-      real(rp_), optional, intent(in) :: rhs(:)
+      real(sp_), optional, intent(in) :: rhs(:)
       integer(ip_),  optional, intent(in) :: iter
       integer(ip_),  optional, intent(in) :: cond
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
@@ -290,18 +290,18 @@ contains
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       sinfo%flag = GALAHAD_unavailable_option
       sinfo%stat = 0
-      sinfo%cond = -1.0_rp_
-      sinfo%cond2 = -1.0_rp_
-      sinfo%berr = -1.0_rp_
-      sinfo%berr2 = -1.0_rp_
-      sinfo%error = -1.0_rp_
+      sinfo%cond = -1.0_sp_
+      sinfo%cond2 = -1.0_sp_
+      sinfo%berr = -1.0_sp_
+      sinfo%berr2 = -1.0_sp_
+      sinfo%error = -1.0_sp_
    end subroutine ma57_solve1
 
    subroutine ma57_fredholm_alternative(factors,control,x,fredx,sinfo)
       type(ma57_factors), intent(in) :: factors
       type(ma57_control), intent(in) :: control
-      real(rp_), intent(inout) :: x(factors%n)
-      real(rp_), intent(out) :: fredx(factors%n)
+      real(sp_), intent(inout) :: x(factors%n)
+      real(sp_), intent(out) :: fredx(factors%n)
       type(ma57_sinfo), intent(out) :: sinfo
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
@@ -325,14 +325,14 @@ contains
    subroutine ma57_enquire(factors,perm,pivots,d,perturbation,scaling)
       type(ma57_factors), intent(in) :: factors
       integer(ip_),  intent(out), optional :: perm(factors%n),pivots(factors%n)
-      real(rp_), intent(out), optional :: d(2,factors%n)
-      real(rp_), intent(out), optional :: perturbation(factors%n)
-      real(rp_), intent(out), optional :: scaling(factors%n)
+      real(sp_), intent(out), optional :: d(2,factors%n)
+      real(sp_), intent(out), optional :: perturbation(factors%n)
+      real(sp_), intent(out), optional :: scaling(factors%n)
    end subroutine ma57_enquire
 
    subroutine ma57_alter_d(factors,d,info)
       type(ma57_factors), intent(inout) :: factors
-      real(rp_), intent(in) :: d(2,factors%n)
+      real(sp_), intent(in) :: d(2,factors%n)
       integer(ip_),  intent(out) :: info
       info = GALAHAD_unavailable_option
    end subroutine ma57_alter_d
@@ -341,7 +341,7 @@ contains
       type(ma57_factors), intent(in) :: factors
       type(ma57_control), intent(in) :: control
       character, intent(in) :: part
-      real(rp_), intent(inout) :: x(:,:)
+      real(sp_), intent(inout) :: x(:,:)
       integer(ip_),  intent(out) :: info
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
         "( ' We regret that the solution options that you have ', /,           &
@@ -358,7 +358,7 @@ contains
       type(ma57_factors), intent(in) :: factors
       type(ma57_control), intent(in) :: control
       character, intent(in) :: part
-      real(rp_), intent(inout) :: x(:)
+      real(sp_), intent(inout) :: x(:)
       integer(ip_),  intent(out) :: info
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
         "( ' We regret that the solution options that you have ', /,           &
@@ -378,7 +378,7 @@ contains
       integer(ip_),  intent(in) :: nzrhs
       integer(ip_),  intent(in) :: irhs(nzrhs)
       integer(ip_),  intent(out) :: nzsoln,isoln(*)
-      real(rp_), intent(inout) :: rhs(factors%n)
+      real(sp_), intent(inout) :: rhs(factors%n)
       type(ma57_sinfo), intent(out) :: sinfo
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
         "( ' We regret that the solution options that you have ', /,           &
@@ -395,8 +395,8 @@ contains
       type(ma57_factors), intent(in) :: factors
       type(ma57_control), intent(in) :: control
       character, intent(in) :: trans
-      real(rp_), intent(in) :: x(:)
-      real(rp_), intent(out) :: y(:)
+      real(sp_), intent(in) :: x(:)
+      real(sp_), intent(out) :: y(:)
       type(ma57_sinfo), intent(out) :: sinfo
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
         "( ' We regret that the solution options that you have ', /,           &
@@ -413,7 +413,7 @@ contains
                                nzd,iptrd,drows,dvals,perm,invperm,scale,sinfo)
       type(ma57_factors), intent(in) :: factors
       type(ma57_control), intent(in) :: control
-      real(rp_), intent(out) :: lvals(factors%nebdu),dvals(2*factors%n),        &
+      real(sp_), intent(out) :: lvals(factors%nebdu),dvals(2*factors%n),        &
                                scale(factors%n)
       integer(ip_),  intent(out) :: nzl,nzd,iptrl(factors%n+1),lrows(factors%nebdu), &
                               iptrd(factors%n+1),drows(2*factors%n),           &

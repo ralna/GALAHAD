@@ -11,7 +11,7 @@
      *                   NEXTC, IPTR, IPC, u, iflag, ICNTL, CNTL, INFO,
      *                   RINFO )
 
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -19,7 +19,7 @@
 
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, licn, lirn
       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iflag
-      REAL ( KIND = rp_ ), INTENT( INOUT ) :: u
+      REAL ( KIND = dp_ ), INTENT( INOUT ) :: u
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( licn ) :: ICN
       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: LENR
       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: LENRL
@@ -36,9 +36,9 @@
       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: NEXTC
       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: INFO
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 10 ) :: ICNTL
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( licn ) :: A
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 5 ) :: RINFO
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
+      REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( licn ) :: A
+      REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( 5 ) :: RINFO
+      REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
 
 !  Dummy subroutine available with GALAHAD
 
@@ -67,7 +67,7 @@
       SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,
      *                   IP, IQ, X, W, mtype, RINFO )
 
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -80,10 +80,10 @@
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: LENOFF
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 2 ) :: IDISP
        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: IP, IQ
-       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( licn ) :: A
-       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: W
-       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
-       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 5 ) :: RINFO
+       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( licn ) :: A
+       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( n ) :: W
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( 5 ) :: RINFO
 
 !  Dummy subroutine available with GALAHAD
 
@@ -109,7 +109,7 @@
 
       SUBROUTINE MA33ID( ICNTL, CNTL )
 
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s

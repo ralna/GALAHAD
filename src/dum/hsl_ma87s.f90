@@ -3,7 +3,7 @@
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 7    M O D U L E  -*-*-*-
 module hsl_MA87_single
 !$ use omp_lib
-   use GALAHAD_KINDS_single
+   use GALAHAD_KINDS
    use hsl_mc78_integer
    use hsl_mc34_single
    use hsl_zd11_single
@@ -18,8 +18,8 @@ module hsl_MA87_single
    integer(ip_),  parameter, private :: short = kind(0)
 
    ! Numerical constants
-   real(rp_), parameter, private :: one  = 1.0_rp_
-   real(rp_), parameter, private :: zero = 0.0_rp_
+   real(sp_), parameter, private :: one  = 1.0_sp_
+   real(sp_), parameter, private :: zero = 0.0_sp_
 
    ! Default values
    integer(ip_),  parameter, private :: nemin_default = 32
@@ -153,7 +153,7 @@ module hsl_MA87_single
    end type node_type
 
    type lfactor
-      real(rp_), dimension(:), allocatable :: lcol ! holds block column
+      real(sp_), dimension(:), allocatable :: lcol ! holds block column
    end type lfactor
 
    type lmap_type
@@ -193,8 +193,8 @@ module hsl_MA87_single
       integer(ip_) :: cache_cores     = 2      ! Number of cores per cache
       integer(ip_) :: min_width_blas  = 8      ! Minimum width of source block
          ! before we use an indirect update_between
-      real(rp_) :: diag_zero_plus = 0.0
-      real(rp_) :: diag_zero_minus = 0.0
+      real(sp_) :: diag_zero_plus = 0.0
+      real(sp_) :: diag_zero_minus = 0.0
      ! There are three cases for diagonal entries d_ii:
       ! diag_zero_plus  < d_ii                                  +ive eigenvalue
       ! diag_zero_minus < d_ii <= diag_zero_plus                zero eigenvalue
@@ -204,7 +204,7 @@ module hsl_MA87_single
    end type MA87_control
 
    type MA87_info
-      real(rp_) :: detlog = 0            ! Holds logarithm of abs det A (or 0)
+      real(sp_) :: detlog = 0            ! Holds logarithm of abs det A (or 0)
       integer(ip_) :: flag = 0               ! Error return flag (0 on success)
       integer(ip_) :: maxdepth = 0           ! Maximum depth of the tree.
       integer(long_) :: num_factor = 0_long ! Number of entries in the factor.
@@ -338,7 +338,7 @@ subroutine MA87_factor_single(n, ptr, row, val, order, keep, control, info)
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
-   real(rp_), intent(in) :: val(:) ! matrix values
+   real(sp_), intent(in) :: val(:) ! matrix values
    integer(ip_),  intent(in) :: order(:) ! holds pivot order (must be unchanged
       ! since the analyse phase)
    type(MA87_keep), intent(inout) :: keep ! see description of derived type
@@ -369,13 +369,13 @@ subroutine MA87_factor_solve_one_single(n, ptr, row, val, order, keep, control,&
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
-   real(rp_), intent(in) :: val(:) ! matrix values
+   real(sp_), intent(in) :: val(:) ! matrix values
    integer(ip_),  intent(in) :: order(:) ! holds pivot order (must be unchanged
       ! since the analyse phase)
    type(MA87_keep), intent(inout) :: keep ! see description of derived type
    type(MA87_control), intent(in) :: control ! see description of derived type
    type(MA87_info) :: info ! see description of derived type
-   real(rp_), intent(inout) :: x(keep%n) ! On entry, x must
+   real(sp_), intent(inout) :: x(keep%n) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the right-hand side.
       ! On exit, if i has been used to index a variable,
@@ -404,7 +404,7 @@ subroutine MA87_factor_solve_mult_single(n, ptr, row, val, order, keep, &
    integer(ip_),  intent(in) :: n ! order of A
    integer(ip_),  intent(in) :: row(:) ! row indices of lower triangular part
    integer(ip_),  intent(in) :: ptr(:) ! col pointers for lower triangular part
-   real(rp_), intent(in) :: val(:) ! matrix values
+   real(sp_), intent(in) :: val(:) ! matrix values
    integer(ip_),  intent(in) :: order(:) ! holds pivot order (must be unchanged
       ! since the analyse phase)
    type(MA87_keep), intent(inout) :: keep ! see description of derived type
@@ -412,7 +412,7 @@ subroutine MA87_factor_solve_mult_single(n, ptr, row, val, order, keep, &
    type(MA87_info) :: info ! see description of derived type
    integer(ip_),  intent(in) :: nrhs ! number of right-hand sides to solver for
    integer(ip_),  intent(in) :: lx ! first dimension of x
-   real(rp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
+   real(sp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i,j) is the corresponding component of the
       ! right-hand side for the jth system (j = 1,2,..., nrhs).
@@ -439,7 +439,7 @@ end subroutine MA87_factor_solve_mult_single
 subroutine MA87_solve_one_single(x,order,keep,control,info,job)
    USE GALAHAD_SYMBOLS
    type(MA87_keep), intent(inout) :: keep
-   real(rp_), intent(inout) :: x(keep%n) ! On entry, x must
+   real(sp_), intent(inout) :: x(keep%n) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the right-hand side.
       ! On exit, if i has been used to index a variable,
@@ -475,7 +475,7 @@ subroutine MA87_solve_mult_single(nrhs,lx,x,order,keep, control,info,job)
    USE GALAHAD_SYMBOLS
    integer(ip_),  intent(in) :: nrhs ! number of right-hand sides to solver for
    integer(ip_),  intent(in) :: lx ! first dimension of x
-   real(rp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
+   real(sp_), intent(inout) :: x(lx,nrhs) ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i,j) is the corresponding component of the
       ! right-hand side for the jth system (j = 1,2,..., nrhs).
@@ -515,7 +515,7 @@ subroutine MA87_sparse_fwd_solve_single(nbi,bindex,b,order,invp,               &
    integer(ip_),  intent(in) :: nbi ! # nonzero entries in the right-hand side
    integer(ip_),  intent(in) :: bindex(:) ! First nbi entries must hold
       !  indices of  nonzero entries in the right-hand side.
-   real(rp_), intent(in) :: b(:) ! If bindex(i)=k, b(k) must hold the k-th
+   real(sp_), intent(in) :: b(:) ! If bindex(i)=k, b(k) must hold the k-th
       ! nonzero component of right-hand side; other entries of b not accessed.
    integer(ip_),  intent(in) :: order(:) ! pivot order. must be unchanged
    integer(ip_),  intent(in) :: invp(:) ! must hold inverse pivot order so that
@@ -523,10 +523,10 @@ subroutine MA87_sparse_fwd_solve_single(nbi,bindex,b,order,invp,               &
    integer(ip_),  intent(out) :: nxi ! number of nonzero entries in the solution
    integer(ip_),  intent(out) :: index(:) ! First nxi entries holds indices of
       ! nonzero entries in solution.
-   real(rp_), intent(inout) :: x(:) ! If index(i)=k, x(k) holds the k-th
+   real(sp_), intent(inout) :: x(:) ! If index(i)=k, x(k) holds the k-th
       ! nonzero component of solution; all other entries of x are set to zero.
    ! For details of keep, control, info : see derived type description
-   real(rp_), intent(out) :: w(:) ! work array of size n at least n.
+   real(sp_), intent(out) :: w(:) ! work array of size n at least n.
    type(MA87_keep), intent(inout) :: keep
    type(MA87_control), intent(in) :: control
    type(MA87_info), intent(out) :: info
@@ -572,7 +572,7 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    type(MA87_info), intent(inout) :: info ! see description of derived type
    integer(ip_),  intent(in) :: nrhs  ! number of right-hand sides (maybe = 0)
    integer(ip_),  intent(in) :: ldr  ! leading extent of rhs
-   real(rp_), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data.
+   real(sp_), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data.
       ! Overwritten by partial solution (forward substitution performed).
 
    ! local derived types
@@ -580,12 +580,12 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    type(taskstack) :: stack ! see description of derived type
 
    ! local arrays
-   real(rp_), dimension(:), allocatable :: detlog ! per thread sum of log pivot
+   real(sp_), dimension(:), allocatable :: detlog ! per thread sum of log pivot
    integer(ip_),  dimension(:), allocatable ::  invp ! holds inverse ordering
    integer(ip_),  dimension(:), allocatable ::  map ! allocated to have size n.
      ! used in copying entries of user's matrix a into factor storage
      ! (keep%fact).
-   real(rp_), dimension(:,:), allocatable ::  rhs_local ! Local right-hand
+   real(sp_), dimension(:,:), allocatable ::  rhs_local ! Local right-hand
      ! side arrays. allocated to have size (nrhs*ldr,0:total_threads)
 
 end subroutine factorize_posdef

@@ -3,7 +3,7 @@
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 7 8    M O D U L E  -*-*-*-
 
 module hsl_mc78_integer
-   USE GALAHAD_KINDS_double
+   USE GALAHAD_KINDS
    implicit none
 
    private

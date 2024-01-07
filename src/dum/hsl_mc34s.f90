@@ -3,7 +3,7 @@
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 3 4    M O D U L E  -*-*-*-
 
    module hsl_mc34_single
-     use GALAHAD_KINDS_single
+     use GALAHAD_KINDS
      implicit none
      private
      public mc34_expand
@@ -16,7 +16,7 @@
      integer(ip_),  intent(inout) :: row(*)
      integer(ip_),  intent(inout) ::ptr(n+1)
      integer(ip_) :: iw(n) ! workspace
-     real(rp_), optional, intent(inout) :: a(*) 
+     real(sp_), optional, intent(inout) :: a(*) 
      integer(ip_),  optional, intent(in) :: sym_type 
      end subroutine mc34_expand_single
    end module hsl_mc34_single
