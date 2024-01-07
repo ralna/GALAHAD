@@ -320,8 +320,8 @@
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_single_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface_64
 #define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single_64
-#define mumps_struc smumps_struc_64
-#define MUMPS_STRUC SMUMPS_STRUC_64
+#define mumps_struc smumps_struc
+#define MUMPS_STRUC SMUMPS_STRUC
 #define MUMPS_precision SMUMPS_64
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64
@@ -1145,9 +1145,9 @@
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_double_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface_64
 #define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double_64
-#define MUMPS_STRUC DMUMPS_STRUC_64
+#define MUMPS_STRUC DMUMPS_STRUC
+#define mumps_struc dmumps_struc
 #define MUMPS_precision DMUMPS_64
-#define mumps_struc dmumps_struc_64
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface_64
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_double_64
