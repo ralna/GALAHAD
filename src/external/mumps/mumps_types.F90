@@ -12,7 +12,7 @@
 
    MODULE GALAHAD_MUMPS_TYPES_precision
 
-     USE GALAHAD_KINDS, ONLY : ip_
+     USE GALAHAD_KINDS, ONLY : ip_, long_
      IMPLICIT NONE
      PUBLIC
      INTEGER ( KIND = ip_ ), PARAMETER :: MPI_COMM_WORLD = 0
