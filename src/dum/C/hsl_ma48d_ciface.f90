@@ -19,7 +19,6 @@ module hsl_ma48_double_ciface
       f_ma48_finalize               => ma48_finalize,                   &
       f_ma48_special_rows_and_cols  => ma48_special_rows_and_cols,      &
       f_ma48_determinant            => ma48_determinant
-!  use hsl_zd11_double
    implicit none
 
    integer, parameter :: longc_ = C_LONG                            ! *** 
