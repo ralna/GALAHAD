@@ -1,18 +1,28 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-05-18
+#  This version: 2024-01-08
 
 #  makefile shell
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single"
- DPREC = -DGALAHAD_SINGLE
- HSL_PRECIS = s
+ ifeq "$(INTEGER)" "64bit"
+   DPREC = -DGALAHAD_SINGLE -DGALAHAD_64BIT_INTEGER
+   HSL_PRECIS = s
+ else
+   DPREC = -DGALAHAD_SINGLE
+   HSL_PRECIS = s
+ endif
 else
- DPREC = -DGALAHAD_DOUBLE
- HSL_PRECIS = d
+ ifeq "$(INTEGER)" "64bit"
+   DPREC = -DGALAHAD_DOUBLE -DGALAHAD_64BIT_INTEGER
+   HSL_PRECIS = d
+ else
+   DPREC = -DGALAHAD_DOUBLE
+   HSL_PRECIS = d
+  endif
 endif
 
 ifeq "$(LINEARSOLVER)" "ma57"
@@ -57,90 +67,134 @@ RUNFFLAGSOMP = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
 LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
+LGS64 = $(OBJS64)/libgalahad.a
+LGD64 = $(OBJD64)/libgalahad.a
 
 BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
+BLGS64 = $(OBJS64)/libgalahad_blas.a
+BLGD64 = $(OBJD64)/libgalahad_blas.a
 
 CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
+CLGS64 = $(OBJS64)/libgalahad_c.a
+CLGD64 = $(OBJD64)/libgalahad_c.a
 
 CULG  = $(OBJ)/libgalahad_cutest.a
 CULGS = $(OBJS)/libgalahad_cutest.a
 CULGD = $(OBJD)/libgalahad_cutest.a
+CULGS64 = $(OBJS64)/libgalahad_cutest.a
+CULGD64 = $(OBJD64)/libgalahad_cutest.a
 
 CDLG  = $(OBJ)/libgalahad_cutest_dummy.a
 CDLGS = $(OBJS)/libgalahad_cutest_dummy.a
 CDLGD = $(OBJD)/libgalahad_cutest_dummy.a
+CDLGS64 = $(OBJS64)/libgalahad_cutest_dummy.a
+CDLGD64 = $(OBJD64)/libgalahad_cutest_dummy.a
 
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
 DLGD = $(OBJD)/libgalahad_dummy.a
+DLGS64 = $(OBJS64)/libgalahad_dummy.a
+DLGD64 = $(OBJD64)/libgalahad_dummy.a
 
 HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
 HLGD = $(OBJD)/libgalahad_hsl.a
+HLGS64 = $(OBJS64)/libgalahad_hsl.a
+HLGD64 = $(OBJD64)/libgalahad_hsl.a
 
 HCLG  = $(OBJ)/libgalahad_hsl_c.a
 HCLGS = $(OBJS)/libgalahad_hsl_c.a
 HCLGD = $(OBJD)/libgalahad_hsl_c.a
+HCLGS64 = $(OBJS64)/libgalahad_hsl_c.a
+HCLGD64 = $(OBJD64)/libgalahad_hsl_c.a
 
 LLG  = $(OBJ)/libgalahad_lapack.a
 LLGS = $(OBJS)/libgalahad_lapack.a
 LLGD = $(OBJD)/libgalahad_lapack.a
+LLGS64 = $(OBJS64)/libgalahad_lapack.a
+LLGD64 = $(OBJD64)/libgalahad_lapack.a
 
 M4LG  = $(OBJ)/libgalahad_metis4.a
 M4LGS = $(OBJS)/libgalahad_metis4.a
 M4LGD = $(OBJD)/libgalahad_metis4.a
+M4LGS64 = $(OBJS64)/libgalahad_metis4.a
+M4LGD64 = $(OBJD64)/libgalahad_metis4.a
 
 M5LG  = $(OBJ)/libgalahad_metis5.a
 M5LGS = $(OBJS)/libgalahad_metis5.a
 M5LGD = $(OBJD)/libgalahad_metis5.a
+M5LGS64 = $(OBJS64)/libgalahad_metis5.a
+M5LGD64 = $(OBJD64)/libgalahad_metis5.a
 
 MDLG  = $(OBJ)/libgalahad_metis_dummy.a
 MDLGS = $(OBJS)/libgalahad_metis_dummy.a
 MDLGD = $(OBJD)/libgalahad_metis_dummy.a
+MDLGS64 = $(OBJS64)/libgalahad_metis_dummy.a
+MDLGD64 = $(OBJD64)/libgalahad_metis_dummy.a
 
 MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
 MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
 MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
+MPLGS64 = $(OBJS64)/libgalahad_mkl_pardiso.a
+MPLGD64 = $(OBJD64)/libgalahad_mkl_pardiso.a
 
 MPILG  = $(OBJ)/libgalahad_mpi.a
 MPILGS = $(OBJS)/libgalahad_mpi.a
 MPILGD = $(OBJD)/libgalahad_mpi.a
+MPILGS64 = $(OBJS64)/libgalahad_mpi.a
+MPILGD64 = $(OBJD64)/libgalahad_mpi.a
 
 MULG  = $(OBJ)/libgalahad_mumps.a
 MULGS = $(OBJS)/libgalahad_mumps.a
 MULGD = $(OBJD)/libgalahad_mumps.a
+MULGS64 = $(OBJS64)/libgalahad_mumps.a
+MULGD64 = $(OBJD64)/libgalahad_mumps.a
 
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
+PLGS64 = $(OBJS64)/libgalahad_pardiso.a
+PLGD64 = $(OBJD64)/libgalahad_pardiso.a
 
 PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
 PRLGD = $(OBJD)/libgalahad_problem.a
+PRLGS64 = $(OBJS64)/libgalahad_problem.a
+PRLGD64 = $(OBJD64)/libgalahad_problem.a
 
 PXLG  = $(OBJ)/libgalahad_pastix.a
 PXLGS = $(OBJS)/libgalahad_pastix.a
 PXLGD = $(OBJD)/libgalahad_pastix.a
+PXLGS64 = $(OBJS64)/libgalahad_pastix.a
+PXLGD64 = $(OBJD64)/libgalahad_pastix.a
 
 PYLG  = $(OBJ)/libgalahad_py.a
 PYLGS = $(OBJS)/libgalahad_py.a
 PYLGD = $(OBJD)/libgalahad_py.a
+PYLGS64 = $(OBJS64)/libgalahad_py.a
+PYLGD64 = $(OBJD64)/libgalahad_py.a
 
 RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
 RLGD = $(OBJD)/libgalahad_spral.a
+RLGS64 = $(OBJS64)/libgalahad_spral.a
+RLGD64 = $(OBJD64)/libgalahad_spral.a
 
 ULG  = $(OBJ)/libgalahad_umfpack.a
 ULGS = $(OBJS)/libgalahad_umfpack.a
 ULGD = $(OBJD)/libgalahad_umfpack.a
+ULGS64 = $(OBJS64)/libgalahad_umfpack.a
+ULGD64 = $(OBJD64)/libgalahad_umfpack.a
 
 WLG  = $(OBJ)/libgalahad_wsmp.a
 WLGS = $(OBJS)/libgalahad_wsmp.a
 WLGD = $(OBJD)/libgalahad_wsmp.a
+WLGS64 = $(OBJS64)/libgalahad_wsmp.a
+WLGD64 = $(OBJD64)/libgalahad_wsmp.a
 
 #  archive manipulation strings
 

@@ -463,7 +463,7 @@ echo "$MACHINE ($OPSYS) $COMPUSED" > $GALAHAD/versions/$VERSION
 
 if [[ ! -e $OBJDIR ]]; then
     $MKDIR $OBJDIR
-    $MKDIR $OBJDIR/double $OBJDIR/single
+    $MKDIR $OBJDIR/double $OBJDIR/single $OBJDIR/double_64 $OBJDIR/single_64
 else
     if [[ ! -e $OBJDIR/double ]]; then
     $MKDIR $OBJDIR/double
@@ -471,17 +471,29 @@ else
     if [[ ! -e $OBJDIR/single ]]; then
     $MKDIR $OBJDIR/single
     fi
+    if [[ ! -e $OBJDIR/double_64 ]]; then
+    $MKDIR $OBJDIR/double_64
+    fi
+    if [[ ! -e $OBJDIR/single_64 ]]; then
+    $MKDIR $OBJDIR/single_64
+    fi
 fi
 
 if [[ ! -e $MODDIR ]]; then
     $MKDIR $MODDIR
-    $MKDIR $MODDIR/double $MODDIR/single
+    $MKDIR $MODDIR/double $MODDIR/single $OBJDIR/double_64 $OBJDIR/single_64
 else
     if [[ ! -e $MODDIR/double ]]; then
     $MKDIR $MODDIR/double
     fi
     if [[ ! -e $MODDIR/single ]]; then
     $MKDIR $MODDIR/single
+    fi
+    if [[ ! -e $OBJDIR/double_64 ]]; then
+    $MKDIR $OBJDIR/double_64
+    fi
+    if [[ ! -e $OBJDIR/single_64 ]]; then
+    $MKDIR $OBJDIR/single_64
     fi
 fi
 
@@ -606,6 +618,8 @@ echo 'PRECIS = double'                                             >> $MAKEFILE
 echo 'OBJ = $(GALAHAD)/objects/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
 echo 'OBJS = $(GALAHAD)/objects/$(VERSION)/single'                 >> $MAKEFILE
 echo 'OBJD = $(GALAHAD)/objects/$(VERSION)/double'                 >> $MAKEFILE
+echo 'OBJS64 = $(GALAHAD)/objects/$(VERSION)/single_64'            >> $MAKEFILE
+echo 'OBJD64 = $(GALAHAD)/objects/$(VERSION)/double_64'            >> $MAKEFILE
 echo 'MOD = $(GALAHAD)/modules/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
 if (( $CUTEST_REQUIRED )) ; then
   echo 'CUTESTMOD = $(CUTEST)/modules/$(CUTESTVERSION)/$(PRECIS)'  >> $MAKEFILE
@@ -644,6 +658,7 @@ echo 'F77SUFFIX = '$F77SUFFIX                                      >> $MAKEFILE
 echo 'F95SUFFIX  = '$F95SUFFIX                                     >> $MAKEFILE
 echo 'TIMER = '$TIMER                                              >> $MAKEFILE
 echo 'NOT64 = '$NOT64                                              >> $MAKEFILE
+echo 'INTEGER = '$INTEGER                                          >> $MAKEFILE
 echo 'PLPLOTUSED = '$PLPLOTUSED                                    >> $MAKEFILE
 echo 'IEEECK = '$IEEECK                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
