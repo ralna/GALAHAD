@@ -15,15 +15,15 @@
         INTEGER ( KIND = ip_ ) :: NZ
         INTEGER ( KIND = ip_ ) :: NRHS
         INTEGER ( KIND = ip_ ) :: LRHS
-        INTEGER(( KIND = long_ ) :: NNZ
+        INTEGER ( KIND = long_ ) :: NNZ
         DOUBLE PRECISION, DIMENSION( : ), POINTER :: A
-        INTEGER,( KIND = ip_ )  DIMENSION( : ), POINTER :: IRN, JCN
+        INTEGER ( KIND = ip_ ),  DIMENSION( : ), POINTER :: IRN, JCN
         DOUBLE PRECISION, DIMENSION( : ), POINTER :: RHS
-        INTEGER,( KIND = ip_ )  DIMENSION( : ), POINTER :: PERM_IN
+        INTEGER ( KIND = ip_ ), DIMENSION( : ), POINTER :: PERM_IN
         DOUBLE PRECISION, DIMENSION( : ), POINTER :: COLSCA, ROWSCA
-        INTEGER,( KIND = ip_ )  DIMENSION( : ), POINTER :: SYM_PERM, UNS_PERM
-        INTEGER,( KIND = ip_ )  DIMENSION( 60 ) ::  ICNTL
+        INTEGER ( KIND = ip_ ),  DIMENSION( : ), POINTER :: SYM_PERM, UNS_PERM
+        INTEGER ( KIND = ip_ ),  DIMENSION( 60 ) ::  ICNTL
         DOUBLE PRECISION, DIMENSION( 15 ) :: CNTL
-        INTEGER,( KIND = ip_ )  DIMENSION( 80 ) :: INFOG
+        INTEGER ( KIND = ip_ ),  DIMENSION( 80 ) :: INFOG
         DOUBLE PRECISION, DIMENSION( 40 ) ::  RINFOG
       END TYPE DMUMPS_STRUC
