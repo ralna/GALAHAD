@@ -43,23 +43,22 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
   format_file(path, YASStyle())
   rewrite!(path, name, optimized)
 
-  # Generate a Julia folder with symbolic links
+  # Generate a symbolic link for the Julia wrappers
   if (name ≠ "hsl") && (name ≠ "ssids")
     current_folder = pwd()
     cd("../../src/$name")
     !isdir("Julia") && mkdir("Julia")
     cd("Julia")
     rm("$name.jl", force=true)
-    rm("test_$name.jl", force=true)
     symlink("../../../GALAHAD.jl/src/wrappers/$name.jl", "$name.jl")
-    symlink("../../../GALAHAD.jl/test/test_$name.jl", "test_$name.jl")
     cd(current_folder)
   end
 
   return nothing
 end
 
-function main(name::String="all"; optimized::Bool=false)
+function main(name::String="all"; optimized::Bool=true)
+  haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH") || error("The environment variable JULIA_GALAHAD_LIBRARY_PATH is not defined.")
   galahad = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
 
   (name == "all" || name == "arc")      && wrapper("arc", ["$galahad/galahad_arc.h"], optimized)
