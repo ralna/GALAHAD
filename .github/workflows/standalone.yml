@@ -55,10 +55,11 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja numpy
 
-      - name: Set the environment variables GALAHAD, DEPS and LIBDIR
+      - name: Set the environment variables GALAHAD, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
           echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
           if [[ "${{matrix.os}}" == "windows-latest" ]]; then
             echo "LIBDIR=bin" >> $GITHUB_ENV

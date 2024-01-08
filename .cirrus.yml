@@ -16,6 +16,7 @@ task:
       pip3 install numpy
     fi
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
+    echo "JULIA_GALAHAD_LIBRARY_PATH=/usr/local/lib" >> $CIRRUS_ENV
     echo "OMP_CANCELLATION=TRUE" >> $CIRRUS_ENV
     echo "OMP_PROC_BIND=TRUE" >> $CIRRUS_ENV
   configure_script: |
