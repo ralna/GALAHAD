@@ -49,12 +49,13 @@ Currently supported options with their default value:
 * `-Dlibmkl_pardiso_path=[]`: additional directories to search for the Intel MKL library;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
-* `-Dlibmetis_version=5`: version of the METIS library.
+* `-Dlibmetis_version=5`: version of the METIS library;
+* `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and `FC` shell variables.
 For instance,
 ```
-CC=icc CXX=icpc FC=ifort meson setup builddir [options...]
+CC=icx CXX=icpx FC=ifort meson setup builddir [options...]
 CC=icx CXX=icpx FC=ifx meson setup builddir [options...]
 ```
 See https://mesonbuild.com/Reference-tables.html for supported compilers and linkers.
@@ -76,6 +77,9 @@ It is also possible (and equivalent) to build directly with Ninja:
 ```
 ninja -C builddir
 ```
+
+If ninja fails, run "ninja reconfigure" or "meson --reconfigure" to force Meson to regenerate.
+If build failures persist, run "meson setup --wipe builddir [options...]" to rebuild from scratch.
 
 ## Run Tests
 
@@ -104,15 +108,62 @@ meson test -C builddir --suite C
 ```
 
 Currently supported suites:
-* `package`;
+* `package_name`;
 * `fortran`;
 * `C`;
 * `Python`;
 * `single`;
 * `double`.
 
-## Info
+# Meson build tips for developers
 
-If ninja fails, run "ninja reconfigure" or "meson --reconfigure" to force Meson to regenerate.
+## Add a new package in GALAHAD
 
-If build failures persist, run "meson setup --wipe builddir [options...]" to rebuild from scratch.
+To update the Meson build system for a new package `abcd`, the procedure is composed of three steps.
+
+The first one is to update the main `meson.build` at the root of GALAHAD. You need to add the line `subdir("src/abcd")`.
+
+The second step is to add a file `meson.build` in the subfolder `src/abcd` of GALAHAD.
+Depending on whether the new package `abcd` has C and Python interfaces, as well as multiple examples and tests in different languages,
+the content of the file `meson.build` will look like this:
+
+```
+libgalahad_src += files('abcd.F90')
+
+libgalahad_c_src += files('C/abcd_ciface.F90')
+
+libgalahad_python_src += [['abcd', files('Python/abcd_pyiface.c',
+                                         '../efgh/Python/efgh_pyiface.c','../ijkl/Python/ijkl_pyiface.c',
+                                         '../mnop/Python/mnop_pyiface.c','../qrst/Python/qrst_pyiface.c')]]
+
+libgalahad_cutest_src += files('useabcd.F90')
+
+galahad_cutest_binaries += [['runabcd_sif', files('runabcd_sif.F90')]]
+
+galahad_tests += [['abcd', 'abcdt', files('abcdt.F90')], ['abcd', 'abcdti', files('abcdti.F90')]]
+
+galahad_c_tests += [['abcd', 'abcdt_c', files('C/abcdt.c')], ['abcd', 'abcdtf_c', files('C/abcdtf.c')]]
+
+galahad_python_tests += [['abcd', 'abcd_py', files('Python/test_abcd.py')]]
+
+galahad_examples += [['abcds', files('abcds.f90')], ['abcds2', files('abcds2.f90')]]
+
+galahad_c_examples += [['abcds_c', files('C/abcds.c')], ['abcds2_c', files('C/abcds2.c')]]
+```
+
+For `galahad_tests`, `galahad_c_tests` and `galahad_python_tests`, the first value 'abcd' specifies the name of the package.
+Thanks to that, we can run all tests of `abcd` with `meson test -C builddir --suite abcd`.
+The second value of `galahad_tests`, `galahad_c_tests` and `galahad_python_tests` specifies the name of the test.
+If a binary is generated for the test, the binary has the same name as the test.
+A specific test can be run with Meson thanks to the command `meson test -C builddir abcdt`.
+Note that the binary has the suffix `.exe` on Windows.
+The third value of `galahad_tests`, `galahad_c_tests` and `galahad_python_tests` is the file that contains the test.
+
+Similarly, the first value of `galahad_examples` and `galahad_c_examples` is the name of the binary (without the suffix `.exe` on Windows) based on the example file specified by the second value.
+
+The last step is to update the file `meson.build` in the subfolder `include` of GALAHAD if the new package has a C interface.
+You need to add a line `'galahad_abcd.h'` so that this new header can be installed.
+
+## Create a new release of GALAHAD
+
+When we do a new release of GALAHAD, we should update the `version` (line 4) of the main `meson.build`.
