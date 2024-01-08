@@ -300,13 +300,13 @@
 
      INTERFACE MA27I
        SUBROUTINE MA27I( ICNTL, CNTL )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
        REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27I
 
        SUBROUTINE MA27ID( ICNTL, CNTL )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
        REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27ID
@@ -315,7 +315,7 @@
      INTERFACE MA27A
        SUBROUTINE MA27A( n, nz, IRN, ICN, IW, liw, IKEEP, IW2, nsteps,         &
                          iflag, ICNTL, CNTL, INFO, ops )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
@@ -331,7 +331,7 @@
 
        SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW2, nsteps,        &
                           iflag, ICNTL, CNTL, INFO, ops )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
@@ -349,7 +349,7 @@
      INTERFACE MA27B
        SUBROUTINE MA27B( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,       &
                          maxfrt, IW1, ICNTL, CNTL, INFO )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
@@ -364,7 +364,7 @@
 
        SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,      &
                           maxfrt, IW1, ICNTL, CNTL, INFO )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
@@ -381,7 +381,7 @@
      INTERFACE MA27C
        SUBROUTINE MA27C( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,       &
                          ICNTL, INFO )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
@@ -394,7 +394,7 @@
 
        SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,      &
                           ICNTL, INFO )
-       USE GALAHAD_KINDS_precision
+       USE GALAHAD_KINDS
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
@@ -409,8 +409,8 @@
      INTERFACE MA27Q
        SUBROUTINE MA27Q( n, A, la, IW, liw, W, maxfnt, RHS, IW2, nblk,         &
                          latop, ICNTL )
-       USE GALAHAD_KINDS_precision
-       INTEGER :: n, la, liw, maxfnt, nblk, latop
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfnt, nblk, latop
        REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( la ) :: A
        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
        REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( maxfnt ) :: W
@@ -421,8 +421,8 @@
 
        SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2, nblk,        &
                           latop, ICNTL )
-       USE GALAHAD_KINDS_precision
-       INTEGER :: n, la, liw, maxfnt, nblk, latop
+       USE GALAHAD_KINDS
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfnt, nblk, latop
        REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( la ) :: A
        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
        REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( maxfnt ) :: W
