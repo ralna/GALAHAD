@@ -1,7 +1,7 @@
 project(
   'GALAHAD',
   'c', 'cpp', 'fortran',
-  version: '4.1.1',
+  version: '4.2.0',
   license: 'BSD-3',
   meson_version: '>= 0.63.0',
   default_options: [

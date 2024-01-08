@@ -197,4 +197,4 @@ option('libmetis_version',
 option('galahad_int64',
        type : 'boolean',
        value : false,
-       description : 'option to use 64 bits integer')
+       description : 'Compile GALAHAD with 64-bit integer')
