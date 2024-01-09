@@ -1259,7 +1259,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER n, nz, nz1, la, liw
+       INTEGER ( KIND = ip_ ) n, nz, nz1, la, liw
        REAL ( KIND = rp_ ) addon
        INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
        INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
@@ -1489,7 +1489,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER n, nz, la, liw, nsteps, maxfrt, iphase, modstep
+       INTEGER ( KIND = ip_ ) n, nz, la, liw, nsteps, maxfrt, iphase, modstep
        REAL ( KIND = rp_ ) addon, maxchange
        INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
        INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
@@ -2120,7 +2120,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER j1, j2, itop, ireal, ncmpbr, ncmpbi
+       INTEGER ( KIND = ip_ ) j1, j2, itop, ireal, ncmpbr, ncmpbi
        INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IW
        REAL ( KIND = rp_ ), DIMENSION( * ) :: A
 

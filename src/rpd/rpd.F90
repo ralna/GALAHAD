@@ -2013,7 +2013,7 @@
            END DO
          END IF
        ELSE
-         char_l = STRING_trim_integer_16( 0 )
+         char_l = STRING_trim_integer_16( 0_ip_ )
          WRITE( qplib, "( /, A16, 8X, ' # non default names for constraints:', &
         &   ' index,name' )" ) char_l
        END IF

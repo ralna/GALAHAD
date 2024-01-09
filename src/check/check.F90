@@ -492,7 +492,8 @@
  LOGICAL :: checkG, checkJ, checkH, deallocate_error_fatal
  INTEGER :: f_availability, c_availability
  INTEGER :: g_availability, J_availability, H_availability
- INTEGER :: out, error, m, n, i, j, nFeas, print_level, verify_level
+ INTEGER ( KIND = ip_ ) :: out, error, m, n, i, j, nFeas
+ INTEGER ( KIND = ip_ ) :: print_level, verify_level
  CHARACTER ( LEN = 3 ) :: str
 !-------------------------------------------------------------------------------
 
@@ -744,7 +745,7 @@
 
     data%tol    = tenm6
     data%fd_len = sqrteps
-    data%normx  = NRM2( n, nlp%X, 1 )
+    data%normx  = NRM2( n, nlp%X, 1_ip_ )
     data%alpha  = data%fd_len * ( one + data%normx )
 
    ! Defind a step.
@@ -2324,12 +2325,12 @@
 ! Dummy arguments.
 !-------------------------------------------------------------------------------
  TYPE ( CHECK_control_type ), INTENT( INOUT ) :: control
- INTEGER, INTENT( IN ) :: device
+ INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
  CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname_CHECK
 !-------------------------------------------------------------------------------
 ! Local variables.
 !-------------------------------------------------------------------------------
- INTEGER, PARAMETER :: lspec = 20
+ INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 20
  CHARACTER( LEN = 16 ), PARAMETER :: specname_CHECK = 'CHECK           '
  TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 !-------------------------------------------------------------------------------
@@ -2420,8 +2421,8 @@
 !-------------------------------------------------------------------------------
 ! Dummy variables
 !-------------------------------------------------------------------------------
- INTEGER, INTENT( IN ) :: n
- INTEGER, INTENT( OUT ) :: nFeas
+ INTEGER( KIND = ip_ ), INTENT( IN ) :: n
+ INTEGER( KIND = ip_ ), INTENT( OUT ) :: nFeas
  REAL( KIND = rp_ ), INTENT( IN ) :: alpha
  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: xl, xu, x
  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: s

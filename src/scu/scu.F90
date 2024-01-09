@@ -544,7 +544,7 @@
 
 !  Reduce the new row to zero by applying plane-rotation matrices
 
-          CALL SCU_triangular( msofar, 1, data%R, data%W, status,              &
+          CALL SCU_triangular( msofar, 1_ip_, data%R, data%W, status,          &
                                Q = data%Q )
           IF ( status < 0 ) THEN
             RETURN
@@ -1120,7 +1120,7 @@
 
 !  Reduce the new row of S to zero by applying plane-rotation matrices
 
-        CALL SCU_triangular( matrix%m, 1, data%R, data%W, status,              &
+        CALL SCU_triangular( matrix%m, 1_ip_, data%R, data%W, status,          &
                              Q = data%Q )
         IF ( status < 0 ) THEN
           inform%inertia( 2 ) = inform%inertia( 2 ) + 1

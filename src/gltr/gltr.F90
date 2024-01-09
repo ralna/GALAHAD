@@ -786,7 +786,7 @@
 !  Allocate space for the Lanczos tridiagonal
 
         array_name = 'gltr: D'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%D,                    &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%D,                &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -822,7 +822,7 @@
 !  Allocate space for the factors of the Lanczos tridiagonal
 
         array_name = 'gltr: D_fact'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%D_fact,               &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%D_fact,           &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -840,7 +840,7 @@
 !  Allocate space for the RHS and solution for the Lanczos subproblem
 
         array_name = 'gltr: C_sub'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%C_sub,                &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%C_sub,            &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -849,7 +849,7 @@
         data%C_sub( 0 ) = one ; data%C_sub( 1 : data%itmax + 1 ) = zero
 
         array_name = 'gltr: X_sub'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%X_sub,                &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%X_sub,            &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -857,7 +857,7 @@
         IF ( inform%status /= 0 ) GO TO 960
 
         array_name = 'gltr: U_sub'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%U_sub,                &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%U_sub,            &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -867,7 +867,7 @@
 !  Allocate space for the history of Lagrange multipliers
 
         array_name = 'gltr: LAMBDA'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%LAMBDA,               &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%LAMBDA,           &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -878,7 +878,7 @@
 !  Allocate space for workspace associated with the Lanczos subproblem
 
         array_name = 'gltr: U'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%U,                    &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%U,                &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -886,7 +886,7 @@
         IF ( inform%status /= 0 ) GO TO 960
 
         array_name = 'gltr: V'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%V,                    &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%V,                &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -894,7 +894,7 @@
         IF ( inform%status /= 0 ) GO TO 960
 
         array_name = 'gltr: W'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%W,                    &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%W,                &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -923,7 +923,7 @@
 !  Allocate workspace for the sequence of smallest function values
 
         array_name = 'gltr: MIN_f'
-        CALL SPACE_resize_array( 0, data%itmax + 1, data%MIN_f,                &
+        CALL SPACE_resize_array( 0_ip_, data%itmax + 1, data%MIN_f,            &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &

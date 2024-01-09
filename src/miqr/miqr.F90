@@ -1456,7 +1456,7 @@
 
         IF ( control%sort ) THEN
           array_name = 'miqr: workspace%PTR'
-          CALL SPACE_resize_array( 0, n, workspace%PTR,                        &
+          CALL SPACE_resize_array( 0_ip_, n, workspace%PTR,                    &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &

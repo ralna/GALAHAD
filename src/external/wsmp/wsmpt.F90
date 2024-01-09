@@ -15,7 +15,7 @@ PROGRAM TEST_WSMP
   INTEGER ( KIND = ip_ ), PARAMETER :: nrhs = 1
   INTEGER ( KIND = ip_ ), PARAMETER :: naux = 0
   INTEGER ( KIND = ip_ ), PARAMETER :: num_threads = 4
-  INTEGER:: nz, error
+  INTEGER ( KIND = ip_ ) :: nz, error
   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION ( : ) :: IA, JA, PERM, INVP
   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION ( : ) :: IPARM, MRP
   REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION ( : ) :: A, DIAG, AUX, DPARM

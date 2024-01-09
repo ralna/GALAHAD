@@ -1372,7 +1372,7 @@
        IF ( inform%status /= 0 ) GO TO 980
 
        array_name = 'lancelot: data%BND'
-       CALL SPACE_resize_array( prob%n, 2, data%BND,                           &
+       CALL SPACE_resize_array( prob%n, 2_ip_, data%BND,                       &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1390,7 +1390,7 @@
 
        IF ( data%S%xactcp ) THEN
          array_name = 'lancelot: data%GRAD'
-         CALL SPACE_resize_array( 0, data%GRAD,                                &
+         CALL SPACE_resize_array( 0_ip_, data%GRAD,                            &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1409,7 +1409,7 @@
        data%S%nbnd = prob%n
        IF ( data%S%mortor .AND. .NOT. data%S%twonrm ) THEN
          array_name = 'lancelot: data%BND_radius'
-         CALL SPACE_resize_array( data%S%nbnd, 2, data%BND_radius,             &
+         CALL SPACE_resize_array( data%S%nbnd, 2_ip_, data%BND_radius,         &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1417,7 +1417,7 @@
          IF ( inform%status /= 0 ) GO TO 980
        ELSE IF ( data%S%strctr ) THEN
          array_name = 'lancelot: data%BND_radius'
-         CALL SPACE_resize_array( data%S%nbnd, 1, data%BND_radius,             &
+         CALL SPACE_resize_array( data%S%nbnd, 1_ip_, data%BND_radius,         &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1426,7 +1426,7 @@
        ELSE
          data%S%nbnd = 0
          array_name = 'lancelot: data%BND_radius'
-         CALL SPACE_resize_array( data%S%nbnd, 2, data%BND_radius,             &
+         CALL SPACE_resize_array( data%S%nbnd, 2_ip_, data%BND_radius,         &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1461,7 +1461,7 @@
          IF ( inform%status /= 0 ) GO TO 980
        ELSE
          array_name = 'lancelot: data%RADII'
-         CALL SPACE_resize_array( 0, data%RADII,                               &
+         CALL SPACE_resize_array( 0_ip_, data%RADII,                           &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1469,7 +1469,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'lancelot: data%GV_old'
-         CALL SPACE_resize_array( 0, data%GV_old,                              &
+         CALL SPACE_resize_array( 0_ip_, data%GV_old,                          &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1558,7 +1558,7 @@
          IF ( inform%status /= 0 ) GO TO 980
        ELSE
          array_name = 'lancelot: data%FUVALS_temp'
-         CALL SPACE_resize_array( 0, data%FUVALS_temp,                         &
+         CALL SPACE_resize_array( 0_ip_, data%FUVALS_temp,                     &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1574,7 +1574,7 @@
        data%SCU_matrix%class = 4
      
        array_name = 'lancelot: data%SCU_matrix%BD_col_start'
-       CALL SPACE_resize_array( data%SCU_matrix%m_max + 1,                     &
+       CALL SPACE_resize_array( data%SCU_matrix%m_max + 1_ip_,                 &
               data%SCU_matrix%BD_col_start,                                    &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -5864,12 +5864,13 @@
                           ISTAEV, IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, nel, &
                           nel + 1, ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1,    &
                           nel + 1, nel, lfuval, n, ISTEPA( nel + 1 ) - 1, nel, &
-                          1, ELDERS, i )
+                          1_ip_, ELDERS, i )
            ELSE
              CALL ELFUN ( FUVALS, XT, EPVALU, inform%ncalcf, ITYPEE,           &
                           ISTAEV, IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, nel, &
                           nel + 1, ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1,    &
-                          nel + 1, nel, lfuval, n, ISTEPA( nel + 1 ) - 1, 1, i )
+                          nel + 1, nel, lfuval, n, ISTEPA( nel + 1 ) - 1,      &
+                          1_ip_, i )
            END IF
            IF ( i /= 0 ) THEN 
              IF ( inform%status == - 1 ) THEN

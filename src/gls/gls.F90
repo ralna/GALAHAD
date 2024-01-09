@@ -860,7 +860,7 @@
 !write(6,*) ' icn ', FACTORS%IRN( 1 : MATRIX%ne )
 !write(6,*) FACTORS%n, SIZE( FACTORS%ICN )
        CALL MC20A( FACTORS%n, MATRIX%ne, FACTORS%A, FACTORS%ICN,               &
-                   FACTORS%IPC, FACTORS%IRN, 0 )
+                   FACTORS%IPC, FACTORS%IRN, 0_ip_ )
        IF ( FACTORS%IPC( 1 ) == - 1 ) THEN
          AINFO%flag = GALAHAD_unavailable_option ; RETURN
        END IF

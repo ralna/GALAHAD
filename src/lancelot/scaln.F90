@@ -555,12 +555,12 @@
      CALL ELFUN ( FUVALS, X, EPVALU, ncalc, ITYPEE, ISTAEV, IELVAR, INTVAR,    &
                   ISTADH, ISTEPA, ICALC, nel, nel + 1, ISTAEV( nel + 1 ) - 1,  &
                   nel + 1, nel + 1, nel + 1, nel, lfuval, n,                   &
-                  ISTEPA( nel + 1 ) - 1, 1, i )
+                  ISTEPA( nel + 1 ) - 1, 1_ip_, i )
      IF ( .NOT. fdgrad )                                                       &
        CALL ELFUN ( FUVALS, X, EPVALU, ncalc, ITYPEE, ISTAEV, IELVAR, INTVAR,  &
                     ISTADH, ISTEPA, ICALC, nel, nel + 1, ISTAEV( nel + 1 ) - 1,&
                     nel + 1, nel + 1, nel + 1, nel, lfuval, n,                 &
-                    ISTEPA( nel + 1 ) - 1, 2, i )
+                    ISTEPA( nel + 1 ) - 1, 2_ip_, i )
 
  110 CONTINUE
 
