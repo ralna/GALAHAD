@@ -12157,10 +12157,10 @@ rlit:    DO it = 1, prob%m
 
 !===============================================================================
 
-      INTEGER ( KIND = ip_ ) :: ko, ke, k, i, io, ie, ii, icase, ic, last, jo, ns,  &
-                           nfills, je, l, nbr_canceled, pjo, xsj, itmp
-      LOGICAL           :: split_equality
-      REAL( KIND = rp_ ) :: cie, pivot, gj, ao, r, rg, yle, yue, a, maxgie, &
+      INTEGER ( KIND = ip_ ) :: ko, ke, k, i, io, ie, ii, icase, ic, last, jo, &
+                                ns, nfills, je, l, nbr_canceled, pjo, xsj, itmp
+      LOGICAL :: split_equality
+      REAL( KIND = rp_ ) :: cie, pivot, gj, ao, r, rg, yle, yue, a, maxgie,    &
                            maxaie, nclio, ncuio, nylio, nyuio
       REAL( KIND = rp_ ), DIMENSION( 6 ) :: txdata
 

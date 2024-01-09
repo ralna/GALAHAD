@@ -567,7 +567,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'SHA: data%FIRST'
-      CALL SPACE_resize_array( 0_ip_, max_row, data%FIRST,                         &
+      CALL SPACE_resize_array( 0_ip_, max_row, data%FIRST,                     &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -575,7 +575,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'SHA: data%LAST'
-      CALL SPACE_resize_array( 0_ip_, MAX( max_row, control%max_sparse_degree ),   &
+      CALL SPACE_resize_array( 0_ip_, MAX( max_row, control%max_sparse_degree),&
              data%LAST,                                                        &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -1236,7 +1236,7 @@
         data%lb1 = MAX( m_max, n_max )
 !write(6,*) ' lb1 ', data%lb1
         array_name = 'SHA: data%B'
-        CALL SPACE_resize_array( data%lb1, 1_ip_, data%B,                          &
+        CALL SPACE_resize_array( data%lb1, 1_ip_, data%B,                      &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -1270,7 +1270,7 @@
         IF ( data%lb_save < m_needed ) THEN
           data%lb_save = m_max
           array_name = 'SHA: data%B_save'
-          CALL SPACE_resize_array( data%lb_save, 1_ip_,                            &
+          CALL SPACE_resize_array( data%lb_save, 1_ip_,                        &
                  data%B_save, inform%status, inform%alloc_status,              &
                  array_name = array_name,                                      &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
