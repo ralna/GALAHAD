@@ -758,7 +758,7 @@
         IF ( inform%status /= 0 ) GO TO 960
 
         array_name = 'gltr: G'
-        CALL SPACE_resize_array( 0, data%itmax, data%G,                        &
+        CALL SPACE_resize_array( 0_ip_, data%itmax, data%G,                        &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &

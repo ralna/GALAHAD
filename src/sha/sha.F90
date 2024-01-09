@@ -567,7 +567,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'SHA: data%FIRST'
-      CALL SPACE_resize_array( 0, max_row, data%FIRST,                         &
+      CALL SPACE_resize_array( 0_ip_, max_row, data%FIRST,                         &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -575,7 +575,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'SHA: data%LAST'
-      CALL SPACE_resize_array( 0, MAX( max_row, control%max_sparse_degree ),   &
+      CALL SPACE_resize_array( 0_ip_, MAX( max_row, control%max_sparse_degree ),   &
              data%LAST,                                                        &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -1236,7 +1236,7 @@
         data%lb1 = MAX( m_max, n_max )
 !write(6,*) ' lb1 ', data%lb1
         array_name = 'SHA: data%B'
-        CALL SPACE_resize_array( data%lb1, 1, data%B,                          &
+        CALL SPACE_resize_array( data%lb1, 1_ip_, data%B,                          &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -1270,7 +1270,7 @@
         IF ( data%lb_save < m_needed ) THEN
           data%lb_save = m_max
           array_name = 'SHA: data%B_save'
-          CALL SPACE_resize_array( data%lb_save, 1,                            &
+          CALL SPACE_resize_array( data%lb_save, 1_ip_,                            &
                  data%B_save, inform%status, inform%alloc_status,              &
                  array_name = array_name,                                      &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
@@ -1287,7 +1287,7 @@
           m_used = m_needed
           CALL GELSY( m_used, n, 1_ip_, data%A, data%la1, data%B, data%lb1,    &
                       data%solve_system_data%IWORK, eps_singular, rank,        &
-                      data%WORK_1, - 1, status )
+                      data%WORK_1, -1_ip_, status )
           lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
 
 !  allocate space to hold the singular values if needed

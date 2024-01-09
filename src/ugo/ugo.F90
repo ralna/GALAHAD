@@ -478,7 +478,7 @@ INTEGER ( KIND = ip_ ), PARAMETER :: small_g = small_g_for_newton + 1
 INTEGER ( KIND = ip_ ), PARAMETER :: obj_sufficient = small_g + 1
 INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = obj_sufficient + 1
 INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
-INTEGER ( KIND = ip_ ), PARAMETER :: second_derivative_available =
+INTEGER ( KIND = ip_ ), PARAMETER :: second_derivative_available =             &
                                      clock_time_limit + 1
 INTEGER ( KIND = ip_ ), PARAMETER :: space_critical =                          &
                                      second_derivative_available + 1

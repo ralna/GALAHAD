@@ -11931,7 +11931,7 @@ rlit:    DO it = 1, prob%m
 !           If the i-th constraint cannot be removed, transform it to
 !           reflect the neglected bound(s) on x(j) by splitting the equality.
 
-            CALL PRESOLVE_transfer_x_bounds( i, j, kij, 0, txdata, yi )
+            CALL PRESOLVE_transfer_x_bounds( i, j, kij, 0_ip_, txdata, yi )
             IF ( PRESOLVE_is_too_big( MAXVAL( ABS( txdata ) ) ) ) THEN
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
                   '    elimination of linear singleton column prevented by',   &
@@ -11945,7 +11945,7 @@ rlit:    DO it = 1, prob%m
                     'A(',i,',',j,') =', aij
             END IF
 
-            CALL PRESOLVE_transfer_x_bounds( i, j, kij, 1, txdata, yi )
+            CALL PRESOLVE_transfer_x_bounds( i, j, kij, 1_ip_, txdata, yi )
 
          ELSE
 
@@ -12280,7 +12280,7 @@ rlit:    DO it = 1, prob%m
                   IF ( inform%status /= OK ) RETURN
                ELSE IF ( split_ok                                    .AND. &
                          .NOT. BTEST( s%a_perm( ie ), ROW_SPARSIFICATION ) )THEN
-                  CALL PRESOLVE_transfer_x_bounds( ie, j, ke, 0, txdata )
+                  CALL PRESOLVE_transfer_x_bounds( ie, j, ke, 0_ip_, txdata )
                   IF ( PRESOLVE_is_too_big( MAXVAL( ABS( txdata ) ) ) ) THEN
                       IF (  s%level >= DEBUG ) WRITE( s%out, * )               &
                          '    elimination of linear doubleton column',         &
@@ -12700,7 +12700,7 @@ rlit:    DO it = 1, prob%m
 
                IF ( split_equality ) THEN
 
-                  CALL PRESOLVE_transfer_x_bounds( ie, j, ke, 1, txdata )
+                  CALL PRESOLVE_transfer_x_bounds( ie, j, ke, 1_ip_, txdata )
 
 !              No split: deactivate row ie.
 
@@ -14185,7 +14185,7 @@ lic:  DO
       IF ( s%level >= DEBUG ) WRITE( s%out,* ) '    saving transformations',   &
          s%ts + 1, 'to', s%ts + s%tm, 'to file ', control%transf_file_name
 
-      CALL PRESOLVE_save_h( s%ts, 1, s%tm, control%transf_file_name )
+      CALL PRESOLVE_save_h( s%ts, 1_ip_, s%tm, control%transf_file_name )
 
 !     Reset the number of transformations currently in memory and compute
 !     how many can still fit, given the upper bound on their total number.
