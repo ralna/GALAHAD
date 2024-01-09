@@ -1,6 +1,6 @@
 using Test, GALAHAD
 
-@info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION )")
+@info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION)")
 
 packages = ("arc", "bgo", "blls", "bqp", "bqpb", "bsc", "ccqp", "convert",
             "cqp", "cro", "dgo", "dps", "dqp", "eqp", "fdc", "fit", "glrt",
