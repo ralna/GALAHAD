@@ -218,8 +218,10 @@ $(PACKAGE)CSS464 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs4_single.o
 $(PACKAGE)CSS564 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs5_single.o
 $(PACKAGE)CSS664 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs6_single.o
 $(PACKAGE)CSS764 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs7_single.o
-$(PACKAGE)CSTI64 = $(S$(PACKAGE)C64) $(TESTDEPS) $(OBJS64)/$(package)cti_single.o
-$(PACKAGE)CSTF64 = $(S$(PACKAGE)C64) $(TESTDEPS) $(OBJS64)/$(package)ctf_single.o
+$(PACKAGE)CSTI64 = $(S$(PACKAGE)C64) $(TESTDEPS) \
+                   $(OBJS64)/$(package)cti_single.o
+$(PACKAGE)CSTF64 = $(S$(PACKAGE)C64) $(TESTDEPS) \
+                   $(OBJS64)/$(package)ctf_single.o
 
 $(PACKAGE)CDS64 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs_double.o
 $(PACKAGE)CDT64 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)ct_double.o
@@ -229,8 +231,10 @@ $(PACKAGE)CDS464 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs4_double.o
 $(PACKAGE)CDS564 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs5_double.o
 $(PACKAGE)CDS664 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs6_double.o
 $(PACKAGE)CDS764 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs7_double.o
-$(PACKAGE)CDT264 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)ct2_double.o
-$(PACKAGE)CDT364 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)ct3_double.o
+$(PACKAGE)CDT264 = $(D$(PACKAGE)C64) $(TESTDEPS) \
+                   $(OBJD64)/$(package)ct2_double.o
+$(PACKAGE)CDT364 = $(D$(PACKAGE)C64) $(TESTDEPS) \
+                   $(OBJD64)/$(package)ct3_double.o
 $(PACKAGE)CDTI64 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)cti_double.o
 $(PACKAGE)CDTF64 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)ctf_double.o
 
@@ -366,16 +370,16 @@ $(package)_ciface_silent_double_64: $($(PACKAGE)OBJECTSCD64)
 
 #  process python interface to package
 
-$(package)py: $(package)py_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
-$(package)py_single: $($(PACKAGE)OBJECTSPYS)
-	$(RANLIB) $(LGS)
-	$(RANLIB) $(CLGS)
-	$(RANLIB) $(PYLGS)
-$(package)py_double: $($(PACKAGE)OBJECTSPYD)
-	$(RANLIB) $(LGD)
-	$(RANLIB) $(CLGD)
-	$(RANLIB) $(PYLGD)
+#$(package)py: $(package)py_$(PRECIS)
+#	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
+#$(package)py_single: $($(PACKAGE)OBJECTSPYS)
+#	$(RANLIB) $(LGS)
+#	$(RANLIB) $(CLGS)
+#	$(RANLIB) $(PYLGS)
+#$(package)py_double: $($(PACKAGE)OBJECTSPYD)
+#	$(RANLIB) $(LGD)
+#	$(RANLIB) $(CLGD)
+#	$(RANLIB) $(PYLGD)
 
 $(package)_pyiface: $(package)_ciface_$(PRECIS) $(package)_pyiface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
@@ -387,16 +391,26 @@ $(package)_pyiface_double: $($(PACKAGE)OBJECTSPYD)
 	$(RANLIB) $(LGD)
 	$(RANLIB) $(CLGD)
 	$(RANLIB) $(PYLGD)
+$(package)_pyiface_single_64: $($(PACKAGE)OBJECTSPYS64)
+	$(RANLIB) $(LGS64)
+	$(RANLIB) $(CLGS64)
+	$(RANLIB) $(PYLGS64)
+$(package)_pyiface_double_64: $($(PACKAGE)OBJECTSPYD64)
+	$(RANLIB) $(LGD64)
+	$(RANLIB) $(CLGD64)
+	$(RANLIB) $(PYLGD64)
 
 #  process python interface to package silently
 
-$(package)py_silent: $(package)py_silent_$(PRECIS)
-$(package)py_silent_single: $($(PACKAGE)OBJECTSPYS)
-$(package)py_silent_double: $($(PACKAGE)OBJECTSPYD)
+#$(package)py_silent: $(package)py_silent_$(PRECIS)
+#$(package)py_silent_single: $($(PACKAGE)OBJECTSPYS)
+#$(package)py_silent_double: $($(PACKAGE)OBJECTSPYD)
 
 $(package)_pyiface_silent: $(package)_pyiface_silent_$(PRECIS)
 $(package)_pyiface_silent_single: $($(PACKAGE)OBJECTSPYS)
 $(package)_pyiface_silent_double: $($(PACKAGE)OBJECTSPYD)
+$(package)_pyiface_silent_single_64: $($(PACKAGE)OBJECTSPYS64)
+$(package)_pyiface_silent_double_64: $($(PACKAGE)OBJECTSPYD64)
 
 # process package for CUTEst
 
@@ -406,12 +420,18 @@ $(package)_cutest_single: $($(PACKAGE)OBJECTSS_CUTEST)
 	$(RANLIB) $(LGS)
 $(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
 	$(RANLIB) $(LGD)
+$(package)_cutest_single_64: $($(PACKAGE)OBJECTSS_CUTEST64)
+	$(RANLIB) $(LGS64)
+$(package)_cutest_double_64: $($(PACKAGE)OBJECTSD_CUTEST64)
+	$(RANLIB) $(LGD64)
 
 #  process package for CUTEst silently
 
 $(package)_cutest_silent: $(package)_cutest_silent_$(PRECIS)
 $(package)_cutest_silent_single: $($(PACKAGE)OBJECTSS_CUTEST)
 $(package)_cutest_silent_double: $($(PACKAGE)OBJECTSD_CUTEST)
+$(package)_cutest_silent_single_64: $($(PACKAGE)OBJECTSS_CUTEST64)
+$(package)_cutest_silent_double_64: $($(PACKAGE)OBJECTSD_CUTEST64)
 
 #  process package add-ons for CUTEst
 
@@ -420,12 +440,18 @@ $(package)_cutest_addon_single: $(CULGS)(use$(package)_single.o) \
                                 $(OBJS)/run$(package)_sif_single.o
 $(package)_cutest_addon_double: $(CULGD)(use$(package)_double.o) \
                                 $(OBJD)/run$(package)_sif_double.o
+$(package)_cutest_addon_single_64: $(CULGS64)(use$(package)_single.o) \
+                                $(OBJS64)/run$(package)_sif_single.o
+$(package)_cutest_addon_double_64: $(CULGD64)(use$(package)_double.o) \
+                                $(OBJD64)/run$(package)_sif_double.o
 
 #  process package add-ons for AMPL
 
 $(package)_ampl_addon: $(package)_ampl_addon_$(PRECIS)
 $(package)_ampl_addon_single: $(CULGS)(use$(package)_single.o)
 $(package)_ampl_addon_double: $(CULGD)(use$(package)_double.o)
+$(package)_ampl_addon_single_64: $(CULGS64)(use$(package)_single.o)
+$(package)_ampl_addon_double_64: $(CULGD64)(use$(package)_double.o)
 
 #  process package for QPLIB
 
@@ -435,18 +461,26 @@ $(package)_qplib_single: $($(PACKAGE)OBJECTSS_QPLIB)
 	$(RANLIB) $(LGS)
 $(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
 	$(RANLIB) $(LGD)
+$(package)_qplib_single_64: $($(PACKAGE)OBJECTSS_QPLIB64)
+	$(RANLIB) $(LGS64)
+$(package)_qplib_double_64: $($(PACKAGE)OBJECTSD_QPLIB64)
+	$(RANLIB) $(LGD64)
 
 #  process package for QPLIB silently
 
 $(package)_qplib_silent: $(package)_qplib_silent_$(PRECIS)
 $(package)_qplib_silent_single: $($(PACKAGE)OBJECTSS_QPLIB)
 $(package)_qplib_silent_double: $($(PACKAGE)OBJECTSD_QPLIB)
+$(package)_qplib_silent_single_64: $($(PACKAGE)OBJECTSS_QPLIB64)
+$(package)_qplib_silent_double_64: $($(PACKAGE)OBJECTSD_QPLIB64)
 
 #  process package add-ons for QPLIB
 
 $(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
 $(package)_qplib_addon_single: $(OBJS)/in$(package)_single.o
 $(package)_qplib_addon_double: $(OBJD)/in$(package)_double.o
+$(package)_qplib_addon_single_64: $(OBJS64)/in$(package)_single.o
+$(package)_qplib_addon_double_64: $(OBJD64)/in$(package)_double.o
 
 #  process package for RB
 
@@ -454,36 +488,52 @@ $(package)_rb: $(package)_rb_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_RB)"
 $(package)_rb_single: $($(PACKAGE)OBJECTSS_RB)
 $(package)_rb_double: $($(PACKAGE)OBJECTSD_RB)
+$(package)_rb_single_64: $($(PACKAGE)OBJECTSS_RB64)
+$(package)_rb_double_64: $($(PACKAGE)OBJECTSD_RB64)
 
 #  process package for RB silently
 
 $(package)_rb_silent: $(package)_rb_silent_$(PRECIS)
 $(package)_rb_silent_single: $($(PACKAGE)OBJECTSS_RB)
 $(package)_rb_silent_double: $($(PACKAGE)OBJECTSD_RB)
+$(package)_rb_silent_single_64: $($(PACKAGE)OBJECTSS_RB64)
+$(package)_rb_silent_double_64: $($(PACKAGE)OBJECTSD_RB64)
 
 #  process package add-ons for RB
 
 $(package)_rb_addon: $(package)_rb_addon_$(PRECIS)
 $(package)_rb_addon_single: $(OBJS)/in$(package)_single.o
 $(package)_rb_addon_double: $(OBJD)/in$(package)_double.o
+$(package)_rb_addon_single_64: $(OBJS64)/in$(package)_single.o
+$(package)_rb_addon_double_64: $(OBJD64)/in$(package)_double.o
 
 #  run independent package tests
 
+$(package)runall: $(package)drunall $(package)srunall
 $(package)srunall: $(package)ss $(package)ss2 $(package)ss3 $(package)st
 $(package)drunall: $(package)ds $(package)ds2 $(package)ds3 $(package)dt
-$(package)runall: $(package)drunall $(package)srunall
+
+$(package)runall_64: $(package)drunall_64 $(package)srunall_64
+$(package)srunall_64: $(package)ss_64 $(package)ss2_64 \
+                      $(package)ss3_64 $(package)st_64
+$(package)drunall_64: $(package)ds_64 $(package)ds2_64 \
+                      $(package)ds3_64 $(package)dt_64
 
 #  run qp data format package
 
 in$(package): in$(package)_$(PRECIS)
 in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package)_single.o
 in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package)_double.o
+in$(package)_single_64: $($(PACKAGE)OBJECTSS64) $(OBJS64)/in$(package)_single.o
+in$(package)_double_64: $($(PACKAGE)OBJECTSD64) $(OBJD64)/in$(package)_double.o
 
 #  exhaustive test package without CUTEst
 
 test_$(package): test_$(package)_$(PRECIS)
 test_$(package)_single: $(package)st
 test_$(package)_double: $(package)dt
+test_$(package)_single_64: $(package)st_64
+test_$(package)_double_64: $(package)dt_64
 
 #  test package both exhaustively and with CUTEst
 
@@ -494,12 +544,20 @@ test_$(package)_full_single: $(package)st test_$(package)_cutest_single
 test_$(package)_full_double: $(package)dt test_$(package)_cutest_double
 	echo ""
 	echo " Tests for $(package) complete"
+test_$(package)_full_single_64: $(package)st_64 test_$(package)_cutest_single_64
+	echo ""
+	echo " Tests for $(package) complete"
+test_$(package)_full_double_64: $(package)dt_64 test_$(package)_cutest_double_64
+	echo ""
+	echo " Tests for $(package) complete"
 
 #  package example for specification document
 
 test_$(package)_spec: test_$(package)_spec_$(PRECIS)
 test_$(package)_spec_single: $(package)ss
 test_$(package)_spec_double: $(package)ds
+test_$(package)_spec_single_64: $(package)ss_64
+test_$(package)_spec_double_64: $(package)ds_64
 
 #  test package with CUTEst
 
@@ -514,6 +572,16 @@ test_$(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
 	echo " Testing CUTEst interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           sdgal $(VERSION) $(package) $(CUTEST_EXAMPLE)
+test_$(package)_cutest_single_64: $($(PACKAGE)OBJECTSS_CUTEST64)
+	echo ""
+	echo " Testing CUTEst interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          sdgal $(VERSION) $(package) -s64 $(CUTEST_EXAMPLE)
+test_$(package)_cutest_double_64: $($(PACKAGE)OBJECTSD_CUTEST64)
+	echo ""
+	echo " Testing CUTEst interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          sdgal $(VERSION) $(package) -64 $(CUTEST_EXAMPLE)
 
 #  test package with QPLIB
 
@@ -529,6 +597,17 @@ test_$(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
 	echo " Testing QPLIB interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           dgal $(VERSION) $(package) $(QPLIB_EXAMPLE)
+test_$(package)_qplib_single_64: $($(PACKAGE)OBJECTSS_QPLIB)
+	echo ""
+	echo " Testing QPLIB interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          dgal $(VERSION) $(package) -s64 $(QPLIB_EXAMPLE)
+
+test_$(package)_qplib_double_64: $($(PACKAGE)OBJECTSD_QPLIB)
+	echo ""
+	echo " Testing QPLIB interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          dgal $(VERSION) $(package) -64 $(QPLIB_EXAMPLE)
 
 #  test package with Rutherford-Boeing
 
@@ -558,7 +637,7 @@ test_$(package)_cifaces_double: $(package)cdt $(package)cdtf
 #  test Python interface to package
 
 test_$(package)_pyiface: test_pyiface
-test_pyiface: $(package)py
+test_pyiface: $(package)_pyiface
 	python Python/test_$(package).py
 
 #  run specification document example tests
