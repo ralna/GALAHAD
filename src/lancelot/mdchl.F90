@@ -50,7 +50,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER n, nz, la, liw, nsteps, maxfrt
+     INTEGER ( KIND = ip_ ) n, nz, la, liw, nsteps, maxfrt
      INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
      INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
      INTEGER ( KIND = ip_ ), DIMENSION( n, 3 ) :: IKEEP
@@ -237,7 +237,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER n, nz, nz1, la, liw
+     INTEGER ( KIND = ip_ ) n, nz, nz1, la, liw
      REAL ( KIND = rp_ ) addon
      INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
      INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
@@ -463,7 +463,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER n, nz, la, liw, nsteps, maxfrt, iphase
+     INTEGER ( KIND = ip_ ) n, nz, la, liw, nsteps, maxfrt, iphase
      REAL ( KIND = rp_ ) addon
      INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
@@ -682,7 +682,7 @@
 
 !  Compress IW.
 
-               CALL MDCHL_compress( A, IW, istk, istk2, iinput, 2,             &
+               CALL MDCHL_compress( A, IW, istk, istk2, iinput, 2_ip_,         &
                                     ncmpbr, ncmpbi )
                IF ( newel + nfront >= istk ) THEN
                   INFO( 2 ) = liw + 1 + newel + nfront - istk
@@ -717,7 +717,8 @@
 
 !  Compress A.
 
-            CALL MDCHL_compress( A, IW, astk, astk2, ainput, 1, ncmpbr, ncmpbi )
+            CALL MDCHL_compress( A, IW, astk, astk2, ainput, 1_ip_, ncmpbr,    &
+                                 ncmpbi )
 
 ! Error returns
 
@@ -1061,7 +1062,7 @@
             IF ( liell /= 0 .AND. iass /= nsteps ) THEN
 
                IF( iwpos + liell >= istk )                                     &
-                    CALL MDCHL_compress( A, IW, istk, istk2, iinput, 2,        &
+                    CALL MDCHL_compress( A, IW, istk, istk2, iinput, 2_ip_,    &
                                          ncmpbr, ncmpbi )
                istk = istk - liell - 1
                IW( istk ) = liell
@@ -1147,7 +1148,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER j1, j2, itop, ireal, ncmpbr, ncmpbi
+     INTEGER ( KIND = ip_ ) j1, j2, itop, ireal, ncmpbr, ncmpbi
      INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IW
      REAL ( KIND = rp_ ), DIMENSION( * ) :: A
 

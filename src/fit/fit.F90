@@ -636,7 +636,7 @@
 !  allocate space for the coefficients
 
        array_name = 'fit: data%A'
-       CALL SPACE_resize_array( 0, n_a, n_a, data%A, inform%status,            &
+       CALL SPACE_resize_array( 0_ip_, n_a, n_a, data%A, inform%status,        &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -644,7 +644,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'fit: data%B'
-       CALL SPACE_resize_array( 0, n_b, n_b, data%B, inform%status,            &
+       CALL SPACE_resize_array( 0_ip_, n_b, n_b, data%B, inform%status,        &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &

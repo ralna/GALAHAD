@@ -354,17 +354,17 @@
      CALL ELFUN ( FUVALS, X     , EPVALU, ncalcf, ITYPEE, ISTAEV,              &
                   IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, nel, nel + 1,        &
                   ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1, nel + 1, nel,       &
-                  lfuval, n, ISTEPA( nel + 1 ) - 1, 1, ifstat )
+                  lfuval, n, ISTEPA( nel + 1 ) - 1, 1_ip_, ifstat )
      IF ( second ) THEN
        CALL ELFUN ( FUVALS, X     , EPVALU, ncalcf, ITYPEE, ISTAEV,            &
                     IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, nel, nel + 1,      &
                     ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1, nel + 1, nel,     &
-                    lfuval, n, ISTEPA( nel + 1 ) - 1, 3, ifstat )
+                    lfuval, n, ISTEPA( nel + 1 ) - 1, 3_ip_, ifstat )
      ELSE
        CALL ELFUN ( FUVALS, X     , EPVALU, ncalcf, ITYPEE, ISTAEV,            &
                     IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, nel, nel + 1,      &
                     ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1, nel + 1, nel,     &
-                    lfuval, n, ISTEPA( nel + 1 ) - 1, 2, ifstat )
+                    lfuval, n, ISTEPA( nel + 1 ) - 1, 2_ip_, ifstat )
      END IF
 
 !  Copy FUVALS into FTUVAL
@@ -451,7 +451,7 @@
      CALL ELFUN ( FUVALS, X_temp, EPVALU, ncalcf, ITYPEE, ISTAEV,              &
                   IELVAR_temp, INTVAR, ISTADH, ISTEPA, ICALCF, nel, nel + 1,   &
                   ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1, nel + 1, nel,       &
-                  lfuval, nelmax, ISTEPA( nel + 1 ) - 1, 1, ifstat )
+                  lfuval, nelmax, ISTEPA( nel + 1 ) - 1, 1_ip_, ifstat )
 
 !  Estimate the K-th component of the gradient and test it w.r.t. its
 !  analytical value
@@ -490,7 +490,7 @@
         CALL ELFUN ( FUVALS, X_temp, EPVALU, ncalcf, ITYPEE, ISTAEV,           &
                      IELVAR_temp, INTVAR, ISTADH, ISTEPA, ICALCF, nel, nel + 1,&
                      ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1, nel + 1, nel,    &
-                     lfuval, nelmax, ISTEPA( nel + 1 ) - 1, 2, ifstat )
+                     lfuval, nelmax, ISTEPA( nel + 1 ) - 1, 2_ip_, ifstat )
      END IF
 
  250 CONTINUE

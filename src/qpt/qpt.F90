@@ -1957,13 +1957,14 @@
 
 !     Local variables
 
-      INTEGER :: iostat, nactx, nactc, nactr, side, imx, i, j, k,              &
-                 s_unique, b_unique, c_unique, r_unique, imy( 1 ),             &
-                 nval1, ival1( NVALUES ), cval1( NVALUES ),                    &
-                 nval2, ival2( NVALUES ), cval2( NVALUES ),                    &
-                 nval3, ival3( NVALUES ), cval3( NVALUES )
-      LOGICAL            :: all_x_active, notfound, c_details, r_details,      &
-                            s_details, l_details, u_details, g_details, written
+      INTEGER ( KIND = ip_ ) :: iostat, nactx, nactc, nactr, side, imx, i, j,  &
+                                k, s_unique, b_unique, c_unique, r_unique,     &
+                                imy( 1 ), nval1, ival1( NVALUES ),             &
+                                cval1( NVALUES ), nval2, ival2( NVALUES ),     &
+                                cval2( NVALUES ), nval3, ival3( NVALUES ),     &
+                                cval3( NVALUES )
+      LOGICAL :: all_x_active, notfound, c_details, r_details,                 &
+                 s_details, l_details, u_details, g_details, written
       CHARACTER( 1 ) :: cobj, ccon
       CHARACTER( 2 ) :: f1
       CHARACTER( 8 ) :: date
@@ -2471,7 +2472,7 @@
 !         Write a dummy coefficient if the constraint is empty.
 
           IF ( .NOT. written ) THEN
-            CALL QPT_write_field( 'X', 1, f3 )
+            CALL QPT_write_field( 'X', 1_ip_, f3 )
             CALL QPT_trim_real( ZERO, f4 )
             WRITE( out, 1000)  f1, f2, f3, f4
           END IF

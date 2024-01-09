@@ -988,7 +988,7 @@
 
       INTEGER ( KIND = ip_ ) :: ios, break, endvalue, lenline, nline, ikey
       INTEGER ( KIND = ip_ ) :: len_trim_spec
-      LOGICAL               :: applicable, found, opened
+      LOGICAL                :: applicable, found, opened
       CHARACTER ( LEN = 30 ) :: value
       CHARACTER ( LEN = 50 ) :: keyword
       CHARACTER ( LEN = 80 ) :: line

@@ -1120,7 +1120,7 @@
 
      IF ( data%m_b > 0 ) THEN
        array_name = 'lpqp: data%BOTH'
-       CALL SPACE_resize_array( 2, data%m_b, data%BOTH,                        &
+       CALL SPACE_resize_array( 2_ip_, data%m_b, data%BOTH,                    &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &

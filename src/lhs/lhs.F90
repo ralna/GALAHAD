@@ -436,7 +436,7 @@
 
 !  pick the first point
 
-      CALL i4vec_uniform_ab( n_dimen, 1, n_points, seed,                       &
+      CALL i4vec_uniform_ab( n_dimen, 1_ip_, n_points, seed,                   &
                              X( 1 : n_dimen, n_points ), inform%status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
@@ -464,7 +464,7 @@
           END DO
 
           DO k = count * duplication, 1, - 1
-            CALL i4_uniform_ab( 1, k, seed, point_index, inform%status )
+            CALL i4_uniform_ab( 1_ip_, k, seed, point_index, inform%status )
             IF ( inform%status /= GALAHAD_ok ) RETURN
             data%POINT( i, k ) = data%LIST( point_index )
             data%LIST( point_index ) = data%LIST( k )

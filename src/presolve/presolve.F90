@@ -5099,11 +5099,11 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 
 !     Local variables
 
-      INTEGER            :: i, k, j, iu, il, iu_k, il_k, l, ic, xfx, xst, kk
-      REAL ( KIND = rp_ ) :: v, xlj, xuj, cli, cui, imp_low, imp_up,            &
-                            cili, ciui, aij, nlj, nuj, nlil, nuil,             &
-                            nliu, nuiu
-      LOGICAL            :: lower_active, upper_active
+      INTEGER ( KIND = ip_ ) :: i, k, j, iu, il, iu_k, il_k, l, ic, xfx, xst,  &
+                                kk
+      REAL ( KIND = rp_ ) :: v, xlj, xuj, cli, cui, imp_low, imp_up, cili, &
+                             ciui, aij, nlj, nuj, nlil, nuil, nliu, nuiu
+      LOGICAL :: lower_active, upper_active
 
 !     Check to see if there is any primal constraint left
 
@@ -6045,11 +6045,11 @@ lic:           DO
 
 !     Local variables
 
-      INTEGER            :: k, i, ii, j, a_il, a_iu, h_il, h_iu,               &
-                            h_il_k, h_iu_k, a_il_k, a_iu_k, hsj, csj
-      LOGICAL            :: uf, lf
-      REAL ( KIND = rp_ ) :: gj, imp_low, imp_up, xlj, xuj,   v, hij,           &
-                            aij, yli, yui, nli, nui, xui, xli, zlj, zuj
+      INTEGER ( KIND = ip_ ) :: k, i, ii, j, a_il, a_iu, h_il, h_iu,           &
+                                h_il_k, h_iu_k, a_il_k, a_iu_k, hsj, csj
+      LOGICAL                :: uf, lf
+      REAL ( KIND = rp_ )    :: gj, imp_low, imp_up, xlj, xuj, v, hij,         &
+                                aij, yli, yui, nli, nui, xui, xli, zlj, zuj
 
 !     Loop on all active columns.
 
@@ -18334,7 +18334,7 @@ lic:   DO
 
 !     Local variables
 
-      INTEGER           :: i, k, ii, ic, kk, i2, p
+      INTEGER ( KIND = ip_ ) :: i, k, ii, ic, kk, i2, p
       REAL( KIND = rp_ ) :: dyi, aij, aip, czp, czj, alpha, beta
 
 !     If there are no linear constraints, then the fact that z(j) is zero
@@ -18622,7 +18622,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i, ii, jo, k, kk
+      INTEGER ( KIND = ip_ ) :: i, ii, jo, k, kk
       REAL ( KIND = rp_ ) :: tmp, val, yi
 
 !     Initialize with the gradient component.

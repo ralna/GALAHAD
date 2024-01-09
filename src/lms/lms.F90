@@ -1396,7 +1396,7 @@
 !  solve C [ q ] <- [ q ] (using the Bunch-Kaufman factors of C)
 !          [ p ]    [ p ]
 
-          CALL SYTRS( 'L', 2 * data%length, 1, data%C, data%len_c,             &
+          CALL SYTRS( 'L', 2 * data%length, 1_ip_, data%C, data%len_c,         &
                       data%PIVOTS, data%QP_PERM,  data%len_c, i )
           IF ( i /= 0 ) THEN
             IF ( control%error > 0 .AND. control%print_level > 0 )             &
@@ -1453,10 +1453,10 @@
 
 !         IF ( .TRUE. ) THEN
           IF ( data%sr1_singular ) THEN
-            CALL SYTRS_singular( 'L', data%length, 1, data%C, data%len_c,      &
+            CALL SYTRS_singular( 'L', data%length, 1_ip_, data%C, data%len_c,  &
                                  data%PIVOTS, data%QP_PERM, data%m, i )
           ELSE
-            CALL SYTRS( 'L', data%length, 1, data%C, data%len_c,               &
+            CALL SYTRS( 'L', data%length, 1_ip_, data%C, data%len_c,           &
                        data%PIVOTS, data%QP_PERM, data%m, i )
           END IF
           IF ( i /= 0 ) THEN
@@ -2087,7 +2087,7 @@
           ELSE
             IF ( k < n ) THEN
               CALL GEMV( 'T', n - k, nrhs, - one, B( k + 1 : , : ),            &
-                         n - k, A( k + 1 : , k ), 1, one, B( k, : ), 1_ip_ )
+                         n - k, A( k + 1 : , k ), 1_ip_, one, B( k, : ), 1_ip_ )
               CALL GEMV( 'T', n - k, nrhs, - one, B( k + 1 : , : ), n - k,     &
                          A( k + 1 : , k - 1 ), 1_ip_, one, B( k - 1, : ), 1_ip_)
             END IF

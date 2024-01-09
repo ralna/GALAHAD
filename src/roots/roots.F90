@@ -1094,7 +1094,7 @@
         H( 1, 3 ) = zero ; H( 2, 3 ) = zero ; H( 3, 3 ) = zero ; H( 4, 3 ) = one
         H( 1, 4 ) = - a0 / a4 ; H( 2, 4 ) = - a1 / a4
         H( 3, 4 ) = - a2 / a4 ; H( 4, 4 ) = - a3 / a4
-        CALL HSEQR( 'E', 'N', 4_ip_, 1_ip_, 4_ip_, H, 4_ip_, ER, EI, ZZ, 1,    &
+        CALL HSEQR( 'E', 'N', 4_ip_, 1_ip_, 4_ip_, H, 4_ip_, ER, EI, ZZ, 1_ip_,&
                      WORK, 44_ip_, info )
         IF ( info /= 0 ) THEN
           IF ( debug ) WRITE( out,                                             &
@@ -2002,7 +2002,7 @@
           IF ( inform%status /= GALAHAD_ok ) RETURN
 
           array_name = 'roots: data%RHS'
-          CALL SPACE_resize_array( np1, 1, data%RHS,                           &
+          CALL SPACE_resize_array( np1, 1_ip_, data%RHS,                       &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2019,7 +2019,7 @@
           IF ( inform%status /= GALAHAD_ok ) RETURN
 
           array_name = 'roots: data%S'
-          CALL SPACE_resize_array( 0, n, data%S,                               &
+          CALL SPACE_resize_array( 0_ip_, n, data%S,                           &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2027,7 +2027,7 @@
           IF ( inform%status /= GALAHAD_ok ) RETURN
 
           array_name = 'roots: data%P'
-          CALL SPACE_resize_array( 0, n, 0, n, data%P,                         &
+          CALL SPACE_resize_array( 0_ip_, n, 0_ip_, n, data%P,                 &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
