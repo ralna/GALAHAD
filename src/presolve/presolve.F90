@@ -4088,7 +4088,7 @@
 
 !     Local variables
 
-      INTEGER            :: l_current, maxloop, i, j, itmp, loop,              &
+      INTEGER ( KIND = ip_ ) :: l_current, maxloop, i, j, itmp, loop,          &
                             ttbef, npass_1, n_current, m_current,              &
                             a_ne_current, h_ne_current, heuristic
       LOGICAL            :: tupletons
@@ -6846,7 +6846,7 @@ vars: DO j = 1, prob%n
 
 !     Local variables
 
-      INTEGER            :: j, sj, k, i, ii, l, neq, nin
+      INTEGER ( KIND = ip_ ) :: j, sj, k, i, ii, l, neq, nin
       REAL ( KIND = rp_ ) :: cli, cui, xlj, xuj, aij
 
 !     Loop on all active columns
@@ -7029,7 +7029,7 @@ vars: DO j = 1, prob%n
 
 !     Local variables
 
-      INTEGER            :: i, j, imin, k, ii, jmin, Acolj, kj, inz,          &
+      INTEGER ( KIND = ip_ ) :: i, j, imin, k, ii, jmin, Acolj, kj, inz,       &
                             Asmin, ic, Hcolj, ij, jc, kmin
       LOGICAL            :: aset
       REAL ( KIND = rp_ ) :: alpha
@@ -7311,12 +7311,12 @@ ljc:     DO jc = 1, prob%n
 
 !     Local variables
 
-      INTEGER            :: i, e, col, next, ie, iej, iek, ek, ej, ii, inew,   &
-                            it, nze, j, l, k, rsie, rse, ic, kpiv, npsp,       &
-                            nbr_canceled
-      REAL ( KIND = rp_ ) :: alpha, piv, ae, aie, bound, ylie, yuie, yle, yue,  &
-                            clie, cuie, maxaie, maxae, tmp, nclie, ncuie,      &
-                            nyle, nyue
+      INTEGER ( KIND = ip_ ) :: i, e, col, next, ie, iej, iek, ek, ej, ii,     &
+                                inew, it, nze, j, l, k, rsie, rse, ic, kpiv,   &
+                                npsp, nbr_canceled
+      REAL ( KIND = rp_ ) :: alpha, piv, ae, aie, bound, ylie, yuie, yle, yue, &
+                             clie, cuie, maxaie, maxae, tmp, nclie, ncuie,     &
+                             nyle, nyue
 
 !     At the first presolving pass, find the indices of the equality type active
 !     rows with at least two nonzeros and store then in a_perm, while storing
@@ -7784,7 +7784,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i, j
+      INTEGER ( KIND = ip_ ) :: i, j
       REAL ( KIND = rp_ ) :: xl, xu, cl, cu, zl, zu, yl, yu
 
 !     Loop on all active variables.
@@ -8100,7 +8100,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: kk, ii, ik, kj
+      INTEGER ( KIND = ip_ ) :: kk, ii, ik, kj
       REAL ( KIND = rp_ ) :: ratio
 
 !     Loop over column k, checking it is a multiple of column j in A
@@ -8199,7 +8199,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: kk, ii, ik, kj
+      INTEGER ( KIND = ip_ ) :: kk, ii, ik, kj
       REAL ( KIND = rp_ ) :: ratio
 
 !     Loop on column k of H to verify that it is a multiple of column j
@@ -8343,13 +8343,13 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i, j, k, hjj
-      INTEGER            :: isfree, nonneg, lowerb, inrange, upperb, nonpos
-      INTEGER            :: h_free, h_nonneg, h_lowerb, h_inrange, h_upperb
-      INTEGER            :: h_nonpos, d_free, o_free, d_nonneg, o_nonneg
-      INTEGER            :: d_lowerb, o_lowerb, d_inrange, o_inrange
-      INTEGER            :: d_upperb, o_upperb, d_nonpos, o_nonpos
-      INTEGER            :: ignored, d_ignored, inact, d_inactive
+      INTEGER ( KIND = ip_ ) :: i, j, k, hjj
+      INTEGER ( KIND = ip_ ) :: isfree, nonneg, lowerb, inrange, upperb, nonpos
+      INTEGER ( KIND = ip_ ) :: h_free, h_nonneg, h_lowerb, h_inrange, h_upperb
+      INTEGER ( KIND = ip_ ) :: h_nonpos, d_free, o_free, d_nonneg, o_nonneg
+      INTEGER ( KIND = ip_ ) :: d_lowerb, o_lowerb, d_inrange, o_inrange
+      INTEGER ( KIND = ip_ ) :: d_upperb, o_upperb, d_nonpos, o_nonpos
+      INTEGER ( KIND = ip_ ) :: ignored, d_ignored, inact, d_inactive
       REAL ( KIND = rp_ ) :: xl, xu
 
 !     Mark the variables whose diagonal element in H is nonzero by
@@ -8695,9 +8695,9 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: free, lower, range, upper, equality, ignored
-      INTEGER            :: a_equality, a_lower, a_range, a_upper, a_free
-      INTEGER            :: a_ignored, i, a_inactive, inact
+      INTEGER ( KIND = ip_ ) :: free, lower, range, upper, equality, ignored
+      INTEGER ( KIND = ip_ ) :: a_equality, a_lower, a_range, a_upper, a_free
+      INTEGER ( KIND = ip_ ) :: a_ignored, i, a_inactive, inact
       REAL ( KIND = rp_ ) :: cl, cu
 
 !     Run through the constraint bounds to see how many fall into each of the
@@ -9387,7 +9387,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: k, i, ii, hj, hsj
+      INTEGER ( KIND = ip_ ) :: k, i, ii, hj, hsj
       REAL ( KIND = rp_ ) :: ccorr, f_add, aval, hval
 
 !     Fix the variable.
@@ -10187,7 +10187,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: b, xlj, xuj
 
 !     Exit if the bound exceeds the maximum value acceptable in the
@@ -10409,7 +10409,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: b, xlj, xuj
 
 !     Exit if the bound exceeds the maximum value acceptable in the
@@ -10645,7 +10645,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: b, xlj, xuj
 
 !     Exit if the bound exceeds the maximum value acceptable in the
@@ -10880,7 +10880,7 @@ rlit:    DO it = 1, prob%m
 
 !    Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: b, yli, yui, cbnd
 
 !     Exit if the bound exceeds the maximum value acceptable in the
@@ -11061,7 +11061,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: b, zlj, zuj, xbnd
 
 !     Exit if the bound exceeds the maximum value acceptable in the
@@ -11254,7 +11254,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       LOGICAL            :: equality
       REAL ( KIND = rp_ ) :: b, cli, cui
 
@@ -11602,7 +11602,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: a
 
 !     Remove the (i,j)-th entry.
@@ -11780,7 +11780,7 @@ rlit:    DO it = 1, prob%m
 
 !===============================================================================
 
-      INTEGER           :: kij, i, ii, l, k, jj, ic, itmp
+      INTEGER ( KIND = ip_ ) :: kij, i, ii, l, k, jj, ic, itmp
       LOGICAL           :: split_equality
       REAL( KIND = rp_ ) :: aij, cli, cui, yi, nf, a_val
       REAL( KIND = rp_ ), DIMENSION ( 6 ) :: txdata
@@ -12157,7 +12157,7 @@ rlit:    DO it = 1, prob%m
 
 !===============================================================================
 
-      INTEGER           :: ko, ke, k, i, io, ie, ii, icase, ic, last, jo, ns,  &
+      INTEGER ( KIND = ip_ ) :: ko, ke, k, i, io, ie, ii, icase, ic, last, jo, ns,  &
                            nfills, je, l, nbr_canceled, pjo, xsj, itmp
       LOGICAL           :: split_equality
       REAL( KIND = rp_ ) :: cie, pivot, gj, ao, r, rg, yle, yue, a, maxgie, &
@@ -12796,7 +12796,7 @@ rlit:    DO it = 1, prob%m
 
 !==============================================================================
 
-      INTEGER            :: hsj, hsj2, k, jk, khpj, p, i, khjj, ii, khpp, l
+      INTEGER ( KIND = ip_ ) :: hsj, hsj2, k, jk, khpj, p, i, khjj, ii, khpp, l
       LOGICAL            :: helim
       REAL ( KIND = rp_ ) :: gj, xlj, xuj, hjj, b, flow, fup, hpj, hpp, r,     &
                             newh, newf, newg
@@ -13119,7 +13119,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: nxl, nxu, nzl, nzu, xlj, xlk, xuj, xuk,            &
                             zlj, zuj, zlk, zuk
 
@@ -13528,7 +13528,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: k, jj, ic, l, kik
+      INTEGER ( KIND = ip_ ) :: k, jj, ic, l, kik
       LOGICAL            :: lower_active, upper_active
       REAL ( KIND = rp_ ) :: aij, aik, xlj, xuj, cli, xlk, xuk,                 &
                             nxlk, nxuk, zlk, zuk, yli, yui, nyli, nyui
@@ -13908,7 +13908,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER            :: l
+      INTEGER ( KIND = ip_ ) :: l
       REAL ( KIND = rp_ ) :: xuj, xlj, zlj, zuj, aij, ci
 
 !     Get the value of the pivotal element.
@@ -14378,7 +14378,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER            :: i, k, j, nnzr, ic
+      INTEGER ( KIND = ip_ ) :: i, k, j, nnzr, ic
       REAL ( KIND = rp_ ) :: a
 
 !     Initialize the column sizes.
@@ -14438,7 +14438,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER                :: i, k, j, ii, is, ie
+      INTEGER ( KIND = ip_ ) :: i, k, j, ii, is, ie
       LOGICAL                :: diagonal
 
 !     Initialize the row structure indicators (to empty)
@@ -14636,7 +14636,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER            :: i, k, j, is, ie
+      INTEGER ( KIND = ip_ ) :: i, k, j, is, ie
       REAL ( KIND = rp_ ) :: tmp
 
 !     Initialize the pointers to the first row entries and to the next
@@ -15196,11 +15196,12 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER ( KIND = ip_ ) :: l, ii, jj, k1, k2, i, j, k, kk, ic, io, ie, ko, jo, je, ke,   &
-                 col, next, lfirst, llast, ll, e, iostat, khpj, khpp, smt_stat
+      INTEGER ( KIND = ip_ ) :: l, ii, jj, k1, k2, i, j, k, kk, ic, io, ie,    &
+                                ko, jo, je, ke, col, next, lfirst, llast, ll,  &
+                                e, iostat, khpj, khpp, smt_stat
       LOGICAL :: get( 10 ), primal_feasible, dual_feasible
-      REAL ( KIND = rp_ ) :: rr, xval, aval, ccorr, alpha, aij, r, gp, yval,    &
-                 rg, a, zj, cval, cl, cu, zval, err, hpj, hjj
+      REAL ( KIND = rp_ ) :: rr, xval, aval, ccorr, alpha, aij, r, gp, yval,   &
+                             rg, a, zj, cval, cl, cu, zval, err, hpj, hjj
 
 !-------------------------------------------------------------------------------
 
@@ -17944,7 +17945,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER            :: ie, ic, kk, jj
+      INTEGER ( KIND = ip_ ) :: ie, ic, kk, jj
       REAL ( KIND = rp_ ) :: aij, aik, rr
 
       IF ( .NOT. ( get_y .OR. get_z ) ) RETURN
@@ -18049,7 +18050,7 @@ lic:   DO
 
 !     Local variables
 
-      INTEGER            :: k, kk, j, jj, ns
+      INTEGER ( KIND = ip_ ) :: k, kk, j, jj, ns
       REAL ( KIND = rp_ ) :: zj, aij, yi
 
 !     Initialize the multiplier y(i).
@@ -18205,7 +18206,7 @@ lic:   DO
 
 !     Local variables
 
-      INTEGER           :: k, j, ic
+      INTEGER ( KIND = ip_ ) :: k, j, ic
       REAL( KIND = rp_ ) :: aval
 
       ic = i
@@ -18708,7 +18709,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i, j, k
+      INTEGER ( KIND = ip_ ) :: i, j, k
       REAL ( KIND = rp_ ) :: val, yi
 
 !     Initialize z to the gradient.
@@ -18804,7 +18805,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: k, hj, ii, i
+      INTEGER ( KIND = ip_ ) :: k, hj, ii, i
       REAL ( KIND = rp_ ) :: ccorr, aval, f_add
 
       IF ( getx ) prob%X( jj ) = xval
@@ -18915,7 +18916,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER           :: jo, ko, zo, i, j
+      INTEGER ( KIND = ip_ ) :: jo, ko, zo, i, j
       REAL( KIND = rp_ ) :: mxinf, mxslc, mxzinf, xval, rr, zj, cval, ccorr
 
       jo = 0
@@ -19546,7 +19547,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i
+      INTEGER ( KIND = ip_ ) :: i
       REAL ( KIND = rp_ ) :: cl, cu, yl, yu
 
 !     Loop on all active rows
@@ -21691,7 +21692,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i
+      INTEGER ( KIND = ip_ ) :: i
       REAL ( KIND = rp_ ) :: tmp
 
       DO i = 1, n
@@ -21724,7 +21725,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i, j, k
+      INTEGER ( KIND = ip_ ) :: i, j, k
       REAL ( KIND = rp_ ) :: xi
 
       prob%q = prob%f
@@ -21779,7 +21780,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER            :: i, j, k, ic
+      INTEGER ( KIND = ip_ ) :: i, j, k, ic
       REAL ( KIND = rp_ ) :: a, ci
 
 !     Loop on the constraints.
@@ -21843,8 +21844,8 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER           :: iostat, ic1, ic2, ic3
-      LOGICAL           :: opened
+      INTEGER ( KIND = ip_ ) :: iostat, ic1, ic2, ic3
+      LOGICAL :: opened
       REAL( KIND = rp_ ) :: rc
 
 

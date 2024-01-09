@@ -394,7 +394,7 @@
 
 !  local variables
 
-  INTEGER :: alloc_stat
+  INTEGER ( KIND = ipc_ ) :: alloc_stat
   TYPE ( f_eqp_full_data_type ), POINTER :: fdata
   TYPE ( f_eqp_control_type ) :: fcontrol
   TYPE ( f_eqp_inform_type ) :: finform
@@ -733,7 +733,7 @@
 
 !  local variables
 
-  INTEGER :: alloc_stat
+  INTEGER ( KIND = ipc_ ) :: alloc_stat
   TYPE ( f_eqp_full_data_type ), pointer :: fdata
   TYPE ( f_eqp_control_type ) :: fcontrol
   TYPE ( f_eqp_inform_type ) :: finform

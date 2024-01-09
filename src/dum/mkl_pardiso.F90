@@ -203,18 +203,18 @@
   USE GALAHAD_KINDS, ONLY: sp_, ip_, long_
   USE GALAHAD_SYMBOLS
   TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MAXFCT
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MNUM
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MTYPE
-  INTEGER( KIND = long_ ), INTENT(IN)    :: PHASE
-  INTEGER( KIND = long_ ), INTENT(IN)    :: N
-  INTEGER( KIND = long_ ), INTENT(IN)    :: IA(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: JA(*)
-  INTEGER( KIND = long_ ), INTENT(INOUT) :: PERM(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: NRHS
-  INTEGER( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MSGLVL
-  INTEGER( KIND = long_ ), INTENT(OUT)   :: ERROR
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = long_ ), INTENT(OUT)   :: ERROR
   REAL ( KIND = sp_ ), INTENT(IN)    :: A(*)
   REAL ( KIND = sp_ ), INTENT(INOUT) :: B(*)
   REAL ( KIND = sp_ ), INTENT(OUT)   :: X(*)
@@ -227,18 +227,18 @@
   USE GALAHAD_KINDS, ONLY: dp_, ip_, long_
   USE GALAHAD_SYMBOLS
   TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MAXFCT
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MNUM
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MTYPE
-  INTEGER( KIND = long_ ), INTENT(IN)    :: PHASE
-  INTEGER( KIND = long_ ), INTENT(IN)    :: N
-  INTEGER( KIND = long_ ), INTENT(IN)    :: IA(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: JA(*)
-  INTEGER( KIND = long_ ), INTENT(INOUT) :: PERM(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: NRHS
-  INTEGER( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
-  INTEGER( KIND = long_ ), INTENT(IN)    :: MSGLVL
-  INTEGER( KIND = long_ ), INTENT(OUT)   :: ERROR
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MAXFCT
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MNUM
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MTYPE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: PHASE
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: N
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: IA(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: JA(*)
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: PERM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: NRHS
+  INTEGER ( KIND = long_ ), INTENT(INOUT) :: IPARM(*)
+  INTEGER ( KIND = long_ ), INTENT(IN)    :: MSGLVL
+  INTEGER ( KIND = long_ ), INTENT(OUT)   :: ERROR
   REAL ( KIND = dp_ ), INTENT(IN)    :: A(*)
   REAL ( KIND = dp_ ), INTENT(INOUT) :: B(*)
   REAL ( KIND = dp_ ), INTENT(OUT)   :: X(*)
@@ -551,7 +551,7 @@
   FUNCTION PARDISO_SETENV_F(PT, OptName, StrVal)
   USE MKL_PARDISO_PRIVATE
   USE GALAHAD_KINDS, ONLY: ip_
-  INTEGER PARDISO_SETENV_F
+  INTEGER ( KIND = ip_ ) :: PARDISO_SETENV_F
   TYPE (MKL_PARDISO_HANDLE), INTENT(INOUT) :: PT(*)
   INTEGER ( KIND = ip_ ), INTENT(IN)    :: OptName
   CHARACTER (*), INTENT(IN)    :: StrVal

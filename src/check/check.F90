@@ -490,8 +490,8 @@
 !------------------------------------------------------------------------------
  REAL ( KIND = rp_ ) :: gts, diff, err, temp, Jij, Hij
  LOGICAL :: checkG, checkJ, checkH, deallocate_error_fatal
- INTEGER :: f_availability, c_availability
- INTEGER :: g_availability, J_availability, H_availability
+ INTEGER ( KIND = ip_ ) :: f_availability, c_availability
+ INTEGER ( KIND = ip_ ) :: g_availability, J_availability, H_availability
  INTEGER ( KIND = ip_ ) :: out, error, m, n, i, j, nFeas
  INTEGER ( KIND = ip_ ) :: print_level, verify_level
  CHARACTER ( LEN = 3 ) :: str
@@ -2156,7 +2156,7 @@
 ! Local variables.
 !-------------------------------------------------------------------------------
  CHARACTER ( LEN = 80 ) :: array_name
- INTEGER :: error
+ INTEGER ( KIND = ip_ ) :: error
 !-------------------------------------------------------------------------------
 
 ! For convenience
@@ -2421,15 +2421,15 @@
 !-------------------------------------------------------------------------------
 ! Dummy variables
 !-------------------------------------------------------------------------------
- INTEGER( KIND = ip_ ), INTENT( IN ) :: n
- INTEGER( KIND = ip_ ), INTENT( OUT ) :: nFeas
+ INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+ INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nFeas
  REAL( KIND = rp_ ), INTENT( IN ) :: alpha
  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: xl, xu, x
  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: s
 !-------------------------------------------------------------------------------
 ! local variables
 !-------------------------------------------------------------------------------
- integer :: j
+ integer ( KIND = ip_ ) :: j
  real( KIND = rp_ ) :: lo, hi, xj, xnew, sj
 !-------------------------------------------------------------------------------
 

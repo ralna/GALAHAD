@@ -45,7 +45,7 @@
 
     PURE FUNCTION opt_strlen( cstr ) RESULT( len )
     TYPE ( C_PTR ), INTENT( IN ), VALUE :: cstr
-    INTEGER( KIND = C_SIZE_T ) :: len    
+    INTEGER ( KIND = C_SIZE_T ) :: len
 
     IF ( C_ASSOCIATED( cstr ) ) THEN
       len = strlen( cstr )

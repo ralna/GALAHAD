@@ -27,7 +27,7 @@
      IMPLICIT NONE
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm_in
      TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm_out
-     INTEGER( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
+     INTEGER ( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
    END SUBROUTINE spmCheckAndCorrect_f08
 
    SUBROUTINE spmGetArray_f08( spm, colptr, rowptr, zvalues, cvalues,          &

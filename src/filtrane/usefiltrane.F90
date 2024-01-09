@@ -101,7 +101,7 @@
 
 ! Local variable
 
-  INTEGER              :: nnzj, J_ne_plus_n, cutest_status
+  INTEGER ( KIND = ip_ ) :: nnzj, J_ne_plus_n, cutest_status
   REAL ( KIND = rp_ ), DIMENSION( 7 ) :: CUTEst_calls
   REAL ( KIND = rp_ ), DIMENSION( 2 ) :: CUTEst_time
 

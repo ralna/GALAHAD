@@ -80,7 +80,7 @@
 
 !  other algorithm constants
 
-     INTEGER :: storage_increment_min = 1000
+     INTEGER ( KIND = ip_ ) :: storage_increment_min = 1000
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -94,41 +94,41 @@
 
 !   error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
 !    for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-       INTEGER :: start_print = - 1
+       INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-       INTEGER :: stop_print = - 1
+       INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   the number of iterations between printing
 
-       INTEGER :: print_gap = 1
+       INTEGER ( KIND = ip_ ) :: print_gap = 1
 
 !   the maximum number of iterations allowed
 
-       INTEGER :: maxit = 100
+       INTEGER ( KIND = ip_ ) :: maxit = 100
 
 !   the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
 
-       INTEGER :: initial_points = 2
+       INTEGER ( KIND = ip_ ) :: initial_points = 2
 
 !   increments of storage allocated (less that 1000 will be reset to 1000)
 
-       INTEGER :: storage_increment = 1000
+       INTEGER ( KIND = ip_ ) :: storage_increment = 1000
 
 !  unit for any out-of-core writing when expanding arrays
 
@@ -441,9 +441,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( UGO_control_type ), INTENT( INOUT ) :: control
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
-     CHARACTER( LEN = * ), OPTIONAL :: alt_specname
+TYPE ( UGO_control_type ), INTENT( INOUT ) :: control
+INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
+CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
@@ -451,37 +451,44 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: start_print = print_level + 1
-     INTEGER, PARAMETER :: stop_print = start_print + 1
-     INTEGER, PARAMETER :: print_gap = stop_print + 1
-     INTEGER, PARAMETER :: maxit = print_gap + 1
-     INTEGER, PARAMETER :: initial_points = maxit + 1
-     INTEGER, PARAMETER :: storage_increment = initial_points + 1
-     INTEGER, PARAMETER :: buffer = storage_increment + 1
-     INTEGER, PARAMETER :: lipschitz_estimate_used = buffer + 1
-     INTEGER, PARAMETER :: next_interval_selection = lipschitz_estimate_used + 1
-     INTEGER, PARAMETER :: refine_with_newton = next_interval_selection + 1
-     INTEGER, PARAMETER :: alive_unit = refine_with_newton + 1
-     INTEGER, PARAMETER :: global_lipschitz_constant = alive_unit + 1
-     INTEGER, PARAMETER :: reliability_parameter = global_lipschitz_constant + 1
-     INTEGER, PARAMETER :: lipschitz_lower_bound = reliability_parameter + 1
-     INTEGER, PARAMETER :: stop_length = lipschitz_lower_bound + 1
-     INTEGER, PARAMETER :: small_g_for_newton = stop_length + 1
-     INTEGER, PARAMETER :: small_g = small_g_for_newton + 1
-     INTEGER, PARAMETER :: obj_sufficient = small_g + 1
-     INTEGER, PARAMETER :: cpu_time_limit = obj_sufficient + 1
-     INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-     INTEGER, PARAMETER :: second_derivative_available = clock_time_limit + 1
-     INTEGER, PARAMETER :: space_critical = second_derivative_available + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: alive_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: prefix = alive_file + 1
-     INTEGER, PARAMETER :: lspec = prefix
-     CHARACTER( LEN = 4 ), PARAMETER :: specname = 'UGO '
-     TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
+INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: initial_points = maxit + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: storage_increment = initial_points + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: buffer = storage_increment + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: lipschitz_estimate_used = buffer + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: next_interval_selection =                 &
+                                     lipschitz_estimate_used + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: refine_with_newton =                      &
+                                     next_interval_selection + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = refine_with_newton + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: global_lipschitz_constant = alive_unit + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: reliability_parameter =                   &
+                                     global_lipschitz_constant + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: lipschitz_lower_bound =                   &
+                                     reliability_parameter + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: stop_length = lipschitz_lower_bound + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: small_g_for_newton = stop_length + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: small_g = small_g_for_newton + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: obj_sufficient = small_g + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = obj_sufficient + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: second_derivative_available =
+                                     clock_time_limit + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: space_critical =                          &
+                                     second_derivative_available + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal =                  &
+                                     space_critical + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: alive_file = deallocate_error_fatal + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
+INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
+CHARACTER( LEN = 4 ), PARAMETER :: specname = 'UGO '
+TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
 

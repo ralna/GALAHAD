@@ -38,7 +38,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -58,7 +58,7 @@
 
 !  Problem input characteristics
 
-     INTEGER  ( KIND = ip_ ) :: iores, i, status
+     INTEGER ( KIND = ip_ ) :: iores, i, status
      LOGICAL :: filexx, is_specfile
 !    REAL :: timeo, timet
 !    REAL ( KIND = rp_ ) :: clocko, clockt
@@ -71,8 +71,8 @@
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNUGO'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNUGO.SPC'

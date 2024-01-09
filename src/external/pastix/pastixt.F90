@@ -24,7 +24,7 @@ PROGRAM test_pastix
   INTEGER ( kind = pastix_int_t ), target :: iparm( iparm_size )
   REAL ( kind = c_precision ), target :: dparm( dparm_size )
   INTEGER ( KIND = ip_ ) :: nrhs, store
-  INTEGER( c_int ) :: info
+  INTEGER ( c_int ) :: info
   INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
 

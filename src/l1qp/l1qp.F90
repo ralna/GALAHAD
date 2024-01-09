@@ -357,11 +357,11 @@
 
 !  the total integer workspace required for the factorization
 
-        INTEGER  ( KIND = long_ ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER  ( KIND = long_ ) :: factorization_real = - 1
+        INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
 !  the number of threads used
 
