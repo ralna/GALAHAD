@@ -291,7 +291,7 @@
 
 !     Local variables
 
-      INTEGER  ( KIND = ip_ ) :: k, i, ii
+      INTEGER ( KIND = ip_ ) :: k, i, ii
 
       IF ( problem%m <= 0 ) RETURN
 
@@ -359,7 +359,7 @@
 
 !     Local variables
 
-      INTEGER  ( KIND = ip_ ) :: k, i, ii
+      INTEGER ( KIND = ip_ ) :: k, i, ii
 
 !     Count the number of nonzero in each column in ptr.
 
@@ -425,8 +425,8 @@
 
 !  Local variables
 
-   INTEGER n_free, n_lower, n_upper, n_range, n_fixed, m_lower, m_upper,       &
-           m_range, m_equal, m_linear, i, j
+   INTEGER ( KIND = ip_ ) n_free, n_lower, n_upper, n_range, n_fixed, m_lower, &
+                          m_upper, m_range, m_equal, m_linear, i, j
 
    WRITE( out, 1000 ) problem%pname
 

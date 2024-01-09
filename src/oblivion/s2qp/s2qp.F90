@@ -758,7 +758,7 @@
  !-----------------------------------------------------------------------------
 
  TYPE ( S2QP_control_type ), INTENT( INOUT ) :: control
- INTEGER, INTENT( IN ) :: device
+ INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
  CHARACTER( LEN = 18 ), OPTIONAL :: alt_specname_S2QP
  CHARACTER( LEN = 18 ), OPTIONAL :: alt_specname_QPfeas
  CHARACTER( LEN = 18 ), OPTIONAL :: alt_specname_QPpred
@@ -770,14 +770,14 @@
  ! L o c a l   V a r i a b l e s
  !-----------------------------------------------------------------------------
 
- INTEGER, PARAMETER :: lspec = 60
+ INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 60
  CHARACTER( LEN = 18 ), PARAMETER :: specname_S2QP    = 'S2QP              '
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPfeas  = 'feasibility-QPC   '
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPpred  = 'predictor-QPC     '
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPsiqp  = 'accelerator(I)-QPC'
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPseqp  = 'accelerator(E)-EQP'
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPsteer = 'steering-QPC      '
- INTEGER :: error
+ INTEGER ( KINDS = ip_) :: error
  REAL( kind=rp_ ) :: infinity
  TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -4224,7 +4224,7 @@
  ! D u m m y   A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_control_type ), intent( inout ) :: control
  type( NLPT_problem_type ), intent( in ) :: nlp
  type( QPT_problem_type ), intent( inout ) :: QPfeas
@@ -4359,7 +4359,7 @@
  ! D u m m y   A r g u m e n t s                                               |
  !------------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_control_type ), intent( inout ) :: control
  type( S2QP_data_type ), intent( inout ) :: data
  type( NLPT_problem_type ), intent( in ) :: nlp
@@ -4604,7 +4604,7 @@
  ! D u m m y   A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_data_type ), intent( inout ) :: data
  type( NLPT_problem_type ), intent( in ) :: nlp
  type( QPT_problem_type ), intent( inout ) :: QPpred
@@ -5099,7 +5099,7 @@
  ! D u m m y   A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_control_type ), intent( inout ) :: control
  type( NLPT_problem_type ), intent( in ) :: nlp
  type( QPT_problem_type ), intent( out ) :: QPsiqp
@@ -5308,7 +5308,7 @@
  ! D u m m y   A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_data_type ), intent( inout ) :: data
  type( NLPT_problem_type ), intent( in ) :: nlp
  type( QPT_problem_type ), intent( out ) :: QPseqp
@@ -5629,7 +5629,7 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_data_type ), intent( inout )    :: data
  type( NLPT_problem_type ), intent( inout ) :: nlp
  type( QPT_problem_type ), intent( inout )  :: QPpred
@@ -6155,7 +6155,7 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_data_type ), intent( in ) :: data
  type( NLPT_problem_type ), intent( inout ) :: nlp
  type( QPT_problem_type ), intent( inout ) :: QPsiqp
@@ -6422,7 +6422,7 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  type( S2QP_data_type ), intent( inout )    :: data
  type( NLPT_problem_type ), intent( inout ) :: nlp
  type( QPT_problem_type ), intent( inout )  :: QPseqp
@@ -6434,7 +6434,7 @@
  real ( kind = rp_ ) :: tol
  integer :: n, m, m_a, row_j
  integer :: nfx, nwA, nwA_comp, nwJ, nwJ_comp, i, j, tally, out, nvl!, nfr
- integer, dimension( max(max(nlp%m, nlp%n), nlp%m_a ) ) :: vl
+ INTEGER ( KIND = ip_ ), dimension( max(max(nlp%m, nlp%n), nlp%m_a ) ) :: vl
 
  !------------------------------------------------------------------------------
 
@@ -6766,7 +6766,7 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- integer, intent( out ) :: status, alloc_status
+ INTEGER ( KIND = ip_ ), intent( out ) :: status, alloc_status
  type( S2QP_control_type ), intent( inout ) :: control
  type( QPT_problem_type ), intent( inout )  :: QPpred
 
@@ -7555,7 +7555,7 @@
  real( kind = rp_ ), intent( out ), optional :: primal_vl, dual_vl, comp_vl
  character( len = 2 ), dimension( : ), intent( in ), optional :: C_type, A_type
  character( len = 2 ), dimension( : ), intent( in ), optional :: X_type
- integer, intent( in ), optional  :: i_dev, e_dev
+ INTEGER ( KIND = ip_ ), intent( in ), optional  :: i_dev, e_dev
  logical, intent( out ), optional :: optimal
  logical, intent( in ) :: test_opt
 
@@ -8214,12 +8214,12 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- INTEGER, INTENT( IN ) :: m, out, lbreak
- INTEGER, INTENT( OUT ) :: inform
+ INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, out, lbreak
+ INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
  LOGICAL, INTENT( IN ) :: print_1line, print_debug
  REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, s_norm, rho, t_end
  REAL ( KIND = rp_ ), INTENT( OUT ) :: t_min
- INTEGER, INTENT( INOUT ), DIMENSION( lbreak ) :: IBREAK
+ INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( lbreak ) :: IBREAK
  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) ::  RES_l, RES_u, A_norms, AS
  REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lbreak ) :: BREAKP
  CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: A_type
@@ -8228,7 +8228,7 @@
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
- INTEGER :: i, j, nbreak, inheap, iter, ibreakp
+ INTEGER ( KINDS = ip_) :: i, j, nbreak, inheap, iter, ibreakp
 !INTEGER :: nbreak_total
  REAL ( KIND = rp_ ) :: Asi, too_small, res, P_min, PatX, cosine, tiny_cosine
  REAL ( KIND = rp_ ) :: breakp_max, t_break, t_star, t_old, dt
@@ -9050,7 +9050,7 @@
  !------------------------------------------------------------------------------
 
  REAL ( KIND = rp_ ) cauchy_val
- INTEGER, INTENT( IN ) :: m
+ INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
  REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho, t, too_small
  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: As, RES_l, RES_u
  CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: A_type
@@ -9059,7 +9059,7 @@
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
- INTEGER :: i
+ INTEGER ( KINDS = ip_) :: i
  REAL ( KIND = rp_ ) :: Asi, infeas
 
  !------------------------------------------------------------------------------
@@ -9160,7 +9160,7 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- INTEGER, INTENT( IN ) :: m
+ INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
  CHARACTER ( Len = 2 ), DIMENSION( m ), INTENT( IN ) :: A_type
  REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho, t, too_small
  REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
@@ -9170,7 +9170,7 @@
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
- INTEGER :: i
+ INTEGER ( KINDS = ip_) :: i
  REAL ( KIND = rp_ ) :: Asi, infeas, dum_real
 
  !------------------------------------------------------------------------------
@@ -9325,13 +9325,13 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- integer, intent( in ) :: lv, error
+ INTEGER ( KIND = ip_ ), intent( in ) :: lv, error
  real( kind = rp_ ), intent( out ) :: viol
  real( kind = rp_ ), intent( in ), dimension( : ) :: res_vl, res_vu
  character ( len = 2 ), intent( in ), dimension( : ) :: v_type
  real( kind = rp_ ), intent( in ), optional :: tiny
- integer, intent( inout ), dimension( : ), optional :: sat, vl_l, vl_u
- integer, intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
+ INTEGER ( KIND = ip_ ), intent( inout ), dimension( : ), optional :: sat, vl_l, vl_u
+ INTEGER ( KIND = ip_ ), intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
 
  !------------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s
@@ -9882,7 +9882,7 @@
  !------------------------------------------------------------------------------
 
  character( len = 2 ), intent( in ), dimension(:) :: v_type
- integer, intent( in ) :: n
+ INTEGER ( KIND = ip_ ), intent( in ) :: n
  real( kind = rp_ ), intent( in ), dimension(:) :: vl, v, vu
  real( kind = rp_ ), intent( inout ), dimension(:) :: res_vl, res_vu
 
@@ -9950,11 +9950,11 @@
  !------------------------------------------------------------------------------
 
  character( len = 2 ), intent( in ), dimension(:) :: x_type
- integer, intent( in ) :: out
+ INTEGER ( KIND = ip_ ), intent( in ) :: out
  real( kind = rp_ ), intent( in ) :: tol
  real( kind = rp_ ), intent( in ), dimension(:) :: xl, xu, res_xl, res_xu
- integer, intent( out ), dimension(:) :: fx, fr, vl
- integer, intent( out ) :: nfx, nfr, nvl
+ INTEGER ( KIND = ip_ ), intent( out ), dimension(:) :: fx, fr, vl
+ INTEGER ( KIND = ip_ ), intent( out ) :: nfx, nfr, nvl
 
  !------------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s
@@ -10089,8 +10089,8 @@
  ! D u m m y   A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- integer, intent( in ) :: L, error, out, n, print_level, num_update
- integer, intent( out ) :: status
+ INTEGER ( KIND = ip_ ), intent( in ) :: L, error, out, n, print_level, num_update
+ INTEGER ( KIND = ip_ ), intent( out ) :: status
  real( kind = rp_ ), intent( out ) :: theta
  real( kind = rp_ ), intent( in ) :: damp_factor
  real( kind = rp_ ), intent( in ), dimension(:) :: svec, gradLx_new, gradLx
@@ -10498,7 +10498,7 @@
  !-----------------------------------------------------------------------------
 
  type( S2QP_data_type ), intent( in ) :: data
- integer, intent( in ) :: out
+ INTEGER ( KIND = ip_ ), intent( in ) :: out
 
  !-----------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s
@@ -10617,7 +10617,7 @@
  !------------------------------------------------------------------------------
 
  type( S2QP_data_type ), intent( in ) :: data
- integer, intent( in ) :: out
+ INTEGER ( KIND = ip_ ), intent( in ) :: out
 
  !------------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s

@@ -376,8 +376,8 @@ END SUBROUTINE GFT_compute_c
 SUBROUTINE GFT_compute_J( x, J_val, J_row, J_col )
 REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT(  IN ) :: x
 REAL( KIND = rp_ ), DIMENSION( 4 ), INTENT( OUT ) :: J_val
-INTEGER          , DIMENSION( 4 ), INTENT( OUT ) :: J_row
-INTEGER          , DIMENSION( 4 ), INTENT( OUT ) :: J_col
+INTEGER ( KIND = ip_ ), DIMENSION( 4 ), INTENT( OUT ) :: J_row
+INTEGER ( KIND = ip_ ), DIMENSION( 4 ), INTENT( OUT ) :: J_col
 J_val( 1 ) = 60.0D0 * x( 1 )  + problem%x( 2 )
 J_val( 2 ) = 1.0D0
 J_val( 3 ) = 6.0D0 * problem%x( 2 ) ** 2 + problem%x( 1 )

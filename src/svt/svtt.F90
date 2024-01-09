@@ -5,7 +5,7 @@
    PROGRAM SVT_test_deck
    USE GALAHAD_SVT_precision
    TYPE ( SVT_type ) :: V
-   INTEGER :: status
+   INTEGER ( KIND = ip_ ) :: status
    V%ne = 1
 
    ALLOCATE( V%ind( V%ne ), V%val( V%ne ), stat = status )

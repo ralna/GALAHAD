@@ -27,7 +27,7 @@
 !  ======================================
 
      TYPE, PUBLIC :: GALAHAD_userdata_type
-       INTEGER  ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: integer
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: integer
        REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: real
        COMPLEX ( KIND = cp_ ), ALLOCATABLE, DIMENSION( : ) :: complex
        CHARACTER, ALLOCATABLE, DIMENSION( : ) :: character

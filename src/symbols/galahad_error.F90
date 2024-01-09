@@ -12,9 +12,9 @@
 
    PROGRAM GALAHAD_error
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: in = 5
-   INTEGER, PARAMETER :: out = 6
-   INTEGER :: status
+   INTEGER ( KIND = ip_ ), PARAMETER :: in = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
+   INTEGER ( KIND = ip_ ) :: status
    READ( in, * ) status
    WRITE( out, "( ' GALAHAD status value ', I0, ' means:' )" )    &
      status

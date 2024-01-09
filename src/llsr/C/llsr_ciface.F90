@@ -132,7 +132,7 @@
     TYPE ( llsr_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_llsr_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
+    INTEGER ( KIND = ipc_ ) :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -182,7 +182,7 @@
     TYPE ( f_llsr_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( llsr_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
+    INTEGER ( KIND = ipc_ ) :: i, l
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -303,7 +303,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( llsr_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_llsr_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ipc_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -337,7 +337,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_llsr_inform_type ), INTENT( IN ) :: finform
     TYPE ( llsr_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ipc_ ) :: i, l
 
     ! Integers
     cinform%status = finform%status

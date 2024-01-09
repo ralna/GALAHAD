@@ -199,7 +199,7 @@
 !---------------------------------
 
         TYPE ( AMD_control_type ), INTENT( INOUT ) :: control
-        INTEGER  ( KIND = ip_ ), INTENT( IN ) :: device
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
         CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -208,13 +208,13 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-        INTEGER  ( KIND = ip_ ), PARAMETER :: error = 1
-        INTEGER  ( KIND = ip_ ), PARAMETER :: out = error + 1
-        INTEGER  ( KIND = ip_ ), PARAMETER :: print_level = out + 1
-        INTEGER  ( KIND = ip_ ), PARAMETER :: expansion = print_level + 1
-        INTEGER  ( KIND = ip_ ), PARAMETER :: aggressive = expansion + 1
-        INTEGER  ( KIND = ip_ ), PARAMETER :: prefix = aggressive + 1
-        INTEGER  ( KIND = ip_ ), PARAMETER :: lspec = prefix
+        INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: expansion = print_level + 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: aggressive = expansion + 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: prefix = aggressive + 1
+        INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
         CHARACTER( LEN = 4 ), PARAMETER :: specname = 'AMD '
         TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -324,7 +324,7 @@
         INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: PTR
         INTEGER ( KIND = ip_ ), DIMENSION( ptr( n + 1 ) - 1 ),                 &
                                    INTENT( IN ) :: ROW
-        INTEGER  ( KIND = ip_ ), DIMENSION( n ), INTENT( OUT ) :: PERM
+        INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( OUT ) :: PERM
         TYPE ( AMD_data_type ), INTENT( INOUT ) :: data
         TYPE ( AMD_control_type ), INTENT( IN ) :: control
         TYPE ( AMD_inform_type ), INTENT( OUT ) :: inform

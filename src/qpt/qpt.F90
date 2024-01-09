@@ -3378,7 +3378,7 @@
 
 !     Local variables
 
-      INTEGER  :: k, i, ii, nnz, iostat
+      INTEGER ( KIND = ip_ ) :: k, i, ii, nnz, iostat
 
       IF ( prob%m <= 0 ) RETURN
 
@@ -3836,7 +3836,7 @@
 
 !     Local variables
 
-      INTEGER  :: k, i, j, ii, nnz, iostat
+      INTEGER ( KIND = ip_ ) :: k, i, j, ii, nnz, iostat
 
       IF ( prob%n <= 0 ) RETURN
 

@@ -11,7 +11,7 @@
    TYPE ( MA48_FINFO ) :: FINFO
    TYPE ( MA48_SINFO ) :: SINFO
    TYPE ( MA48_FACTORS ) :: FACTORS
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROWS, COLS
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROWS, COLS
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X
 
 !  Read matrix order and number of entries

@@ -6518,7 +6518,7 @@ end do
     type( TRIMSQP_data_type ), intent( in )       :: data
     type( NLPT_problem_type ), intent( inout )    :: nlp
     type( QPT_problem_type ), intent( inout )     :: QPsiqp
-    !integer, intent( in ) :: correction_type
+    !INTEGER ( KIND = ip_ ), intent( in ) :: correction_type
 
 
 !-------------------------------------------------------------------------
