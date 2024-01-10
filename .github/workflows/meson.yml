@@ -17,7 +17,7 @@ jobs:
           - compiler: gcc
             int64: false
           - os: ubuntu-latest
-            compiler: gnu
+            compiler: gcc
             version: 13
             int64: true
             allow_failure: true
