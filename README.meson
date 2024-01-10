@@ -60,6 +60,7 @@ Non-default compilers can be selected by setting the `CC`, `CXX` and
 ```
 CC=icx CXX=icpx FC=ifort meson setup builddir [options...]
 CC=icx CXX=icpx FC=ifx meson setup builddir [options...]
+CC=nvc CXX=nvc++ FC=nvfortran meson setup builddir -Dc_std=none -Dcpp_std=none [options...]
 ```
 See https://mesonbuild.com/Reference-tables.html for supported compilers
 and linkers.

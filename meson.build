@@ -45,6 +45,8 @@ elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'in
   pp_options += ['-fpp', '-P']
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
+elif fc.get_id() == 'nvidia_hpc'
+  pp_options += ['-F', '-E']
 endif
 
 # Options
