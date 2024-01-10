@@ -1,5 +1,5 @@
 # GALAHAD
-A library of modern Fortran modules, with C and Matlab interfaces, for nonlinear optimization
+A library of modern Fortran modules, with C, Python, Julia and Matlab interfaces, for nonlinear optimization
 
 Website: https://www.galahad.rl.ac.uk, see the [wiki](https://github.com/ralna/GALAHAD/wiki) for download and installation instructions
 
