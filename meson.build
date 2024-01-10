@@ -48,7 +48,7 @@ if fc.get_id() == 'gcc'
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm'
   pp_options += ['-fpp', '-P']
 elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
-  pp_options += ['/P']
+  pp_options += ['/fpp', '/P']
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
 elif fc.get_id() == 'nvidia_hpc'

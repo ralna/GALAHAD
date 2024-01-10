@@ -105,6 +105,11 @@ jobs:
         shell: bash
         run: echo "FC=ifort" >> $GITHUB_ENV
 
+      # Uncomment this section to obtain ssh access to VM
+      - name: Setup tmate session
+        if: matrix.os == 'windows-latest'
+        uses: mxschmitt/action-tmate@v3
+
       - name: Setup GALAHAD
         shell: bash
         run: |
@@ -143,11 +148,6 @@ jobs:
         with:
           name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.version }}_install-log.txt
           path: builddir/meson-logs/install-log.txt
-
-      # Uncomment this section to obtain ssh access to VM
-      # - name: Setup tmate session
-      #   if: matrix.os == 'windows-latest'
-      #   uses: mxschmitt/action-tmate@v3
 
       - name: Test GALAHAD
         shell: bash
