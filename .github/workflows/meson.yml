@@ -95,7 +95,7 @@ jobs:
           echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
       - name: Install compilers
-        uses: fortran-lang/setup-fortran@v1
+        uses: fortran-lang/setup-fortran@main
         with:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
