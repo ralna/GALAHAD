@@ -93,11 +93,6 @@ option('libpastix',
        value : 'pastix',
        description : 'PASTIX library against which to link')
 
-option('libmkl_pardiso',
-       type : 'string',
-       value : 'mkl_rt',
-       description : 'Intel MKL PARDISO library against which to link')
-
 option('libampl',
        type : 'string',
        value : 'ampl',
@@ -162,11 +157,6 @@ option('libmumps_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the MUMPS libraries')
-
-option('libmkl_pardiso_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the Intel MKL library')
 
 option('libampl_path',
        type : 'array',

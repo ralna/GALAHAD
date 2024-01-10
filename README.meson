@@ -34,7 +34,6 @@ Currently supported options with their default value:
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;
 * `-Dlibspmf=spmf`: SPMF library against which to link;
 * `-Dlibpastix=pastix`: PASTIX library against which to link;
-* `-Dlibmkl_pardiso=mkl_pardiso`: Intel MKL PARDISO library against which to link;
 * `-Dlibampl=ampl`: AMPL library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
@@ -47,11 +46,14 @@ Currently supported options with their default value:
 * `-Dlibspmf_path=[]`: additional directories to search for the SPMF library;
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
-* `-Dlibmkl_pardiso_path=[]`: additional directories to search for the Intel MKL library;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
 * `-Dlibmetis_version=5`: version of the METIS library;
 * `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer.
+
+Note that the MKL Pardiso linear solver is only available when GALAHAD
+is compiled with Intel MKL.
+This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
