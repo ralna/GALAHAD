@@ -64,7 +64,7 @@ if not libdmumps.found()
   galahad_headers += files('include/dmumps_struc.h')
 endif
 
-if not (libblas == 'mkl_rt' or liblapack == 'mkl_rt')
+if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
   libgalahad_src += files('mkl_pardiso.F90')
 endif
 
