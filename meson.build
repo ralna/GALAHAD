@@ -67,7 +67,6 @@ libumfpack_name = get_option('libumfpack')
 libpardiso_name = get_option('libpardiso')
 libspmf_name = get_option('libspmf')
 libpastix_name = get_option('libpastix')
-libmkl_pardiso_name = get_option('libmkl_pardiso')
 libampl_name = get_option('libampl')
 libcutest_single_name = get_option('libcutest_single')
 libcutest_double_name = get_option('libcutest_double')
@@ -82,7 +81,6 @@ libumfpack_path = get_option('libumfpack_path')
 libpardiso_path = get_option('libpardiso_path')
 libspmf_path = get_option('libspmf_path')
 libpastix_path = get_option('libpastix_path')
-libmkl_pardiso_path = get_option('libmkl_pardiso_path')
 libampl_path = get_option('libampl_path')
 libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
@@ -107,7 +105,6 @@ libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
 libpastix = fc.find_library(libpastix_name, dirs : libpastix_path, required : false)
 libsmumps = fc.find_library('smumps', dirs : libmumps_path, required : false)
 libdmumps = fc.find_library('dmumps', dirs : libmumps_path, required : false)
-libmkl_pardiso = fc.find_library(libmkl_pardiso_name, dirs : libmkl_pardiso_path, required : false)
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 lm = cc.find_library('m', required : false)
 
@@ -140,7 +137,7 @@ libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]
 libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libwsmp,
                    libumfpack, libpardiso, libspmf, libpastix,
-                   libmkl_pardiso, libampl, libmpi, libhwloc]
+                   libampl, libmpi, libhwloc]
 
 libgalahad_single_src = []
 libgalahad_double_src = []
