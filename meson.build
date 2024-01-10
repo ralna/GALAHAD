@@ -41,12 +41,14 @@ endif
 pp_options = []
 if fc.get_id() == 'gcc'
   pp_options += ['-cpp', '-E']
-elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm' or fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
+elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm'
   pp_options += ['-fpp', '-P']
+elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
+  pp_options += ['/fpp', '/P']
 elif fc.get_id() == 'nagfor'
   pp_options += ['-fpp', '-F']
 elif fc.get_id() == 'nvidia_hpc'
-  pp_options += ['-F', '-E']
+  pp_options += ['-Mcpp', '-F']
 endif
 
 # Options
@@ -111,7 +113,10 @@ libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 lm = cc.find_library('m', required : false)
 
 # OpenMP
-if fc.get_id() == 'nagfor'
+if fc.get_id() == 'nvidia_hpc'
+  add_global_arguments('-mp', language : 'fortran')
+  add_global_link_arguments('-mp', language : 'fortran')
+elif fc.get_id() == 'nagfor'
   add_global_arguments('-openmp', language : 'fortran')
   add_global_link_arguments('-openmp', language : 'fortran')
 elif fc.get_id() == 'gcc'
@@ -124,7 +129,9 @@ elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'fortran')
 endif
 
-if cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
+if cxx.get_id() == 'nvidia_hpc'
+  add_global_arguments('-mp', language : 'cpp')
+elif cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
   add_global_arguments('-fopenmp', language : 'cpp')
 elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
   add_global_arguments('-qopenmp', language : 'cpp')
