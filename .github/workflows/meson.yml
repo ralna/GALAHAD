@@ -12,23 +12,28 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        version: [12]
+        version: ['12']
         include:
           - compiler: gcc
             int64: false
           - os: ubuntu-latest
             compiler: gcc
-            version: 13
+            version: '13'
             int64: true
+            allow_failure: true
+          - os: windows-latest
+            compiler: intel
+            version: '2023.2'
+            int64: false
             allow_failure: true
           - os: ubuntu-latest
             compiler: intel
-            version: 2023.2
+            version: '2023.2'
             int64: false
             allow_failure: true
           - os: ubuntu-latest
             compiler: nvidia-hpc
-            version: 23.11
+            version: '23.11'
             int64: false
             allow_failure: true
     runs-on: ${{ matrix.os }}
@@ -94,6 +99,11 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
+
+      - name: Update Intel compilers
+        if: matrix.compiler == 'intel'
+        shell: bash
+        run: echo "FC=ifort" >> $GITHUB_ENV
 
       - name: Setup GALAHAD
         shell: bash
