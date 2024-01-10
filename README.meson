@@ -51,7 +51,7 @@ Currently supported options with their default value:
 * `-Dlibmetis_version=5`: version of the METIS library;
 * `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer.
 
-Note that the MKL Pardiso linear solver is only available when GALAHAD
+Note that the Intel MKL Pardiso linear solver is only available when GALAHAD
 is compiled with Intel MKL.
 This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
 
