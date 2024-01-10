@@ -54,3 +54,10 @@ export JULIA_GALAHAD_LIBRARY_PATH=/home/alexis/Applications/GALAHAD/lib
 The `JULIA_GALAHAD_LIBRARY_PATH` environment variable may be set
 permanently in the shell's startup file, or in
 `$HOME/.julia/config/startup.jl`.
+
+## Documentation
+
+Documentation is available online from 
+
+     https://ralna.github.io/galahad_docs/html/Julia
+

@@ -51,14 +51,12 @@
     
    for the package (package)
 
-4. Documentation is available via
+4. Documentation is available online via
 
-     $GALAHAD/html/Python/index.html
-
-   (best viewed in a browser with the suffix file:/// )
+     https://ralna.github.io/galahad_docs/html/Python
 
 -----------------------------
 
 Nick Gould
 For GALAHAD productions
-This version 14th May 2023
+This version 10th January 2024

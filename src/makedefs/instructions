@@ -1,7 +1,7 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-08
+#  This version: 2024-01-09
 
 #  compilation agenda for package
 
@@ -38,10 +38,10 @@ SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGS)(use$(package)_single.o) \
                  $(OBJS)/run$(package)_sif_single.o
 DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package)_double.o) \
                  $(OBJD)/run$(package)_sif_double.o
-SRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS)
+SRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
                    $(CULGS64)(use$(package)_single.o) \
                    $(OBJS64)/run$(package)_sif_single.o
-DRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS)
+DRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
                    $(CULGD64)(use$(package)_double.o) \
                    $(OBJD64)/run$(package)_sif_double.o
 
@@ -96,11 +96,6 @@ $(PACKAGE)OBJECTSD_RB = $(D$(PACKAGE)) $(DRB$(PACKAGE))
 $(PACKAGE)OBJECTSS_RB64 = $(S$(PACKAGE)64) $(SRB$(PACKAGE)64)
 $(PACKAGE)OBJECTSD_RB64 = $(D$(PACKAGE)64) $(DRB$(PACKAGE)64)
 
-OBJECTSS_CUTEST = $($(PACKAGE)OBJECTSS_CUTEST)
-OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
-OBJECTSS_CUTEST64 = $($(PACKAGE)OBJECTSS_CUTEST64)
-OBJECTSD_CUTEST64 = $($(PACKAGE)OBJECTSD_CUTEST64)
-
 #  test agenda
 
 $(PACKAGE)DE = $(D$(PACKAGE)) $(OBJD)/$(package)e_double.o
@@ -114,7 +109,6 @@ $(PACKAGE)DS6 = $(D$(PACKAGE)) $(OBJD)/$(package)s6_double.o
 $(PACKAGE)DS7 = $(D$(PACKAGE)) $(OBJD)/$(package)s7_double.o
 $(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2_double.o
 $(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti_double.o
-
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s_single.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t_single.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2_single.o
@@ -134,7 +128,6 @@ $(PACKAGE)DS664 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s6_double.o
 $(PACKAGE)DS764 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s7_double.o
 $(PACKAGE)DT264 = $(D$(PACKAGE)64) $(TESTDEPS64) $(OBJD)/$(package)t2_double.o
 $(PACKAGE)DTI64 = $(D$(PACKAGE)64) $(TESTDEPS64) $(OBJD)/$(package)ti_double.o
-
 $(PACKAGE)SS64 = $(S$(PACKAGE)64) $(OBJS64)/$(package)s_single.o
 $(PACKAGE)ST64 = $(S$(PACKAGE)64) $(TESTDEPS64) $(OBJS)/$(package)t_single.o
 $(PACKAGE)SS264 = $(S$(PACKAGE)64) $(OBJS64)/$(package)s2_single.o
@@ -154,7 +147,6 @@ R$(PACKAGE)DS6 = $(OBJD)/$(package)s6_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS7 = $(OBJD)/$(package)s7_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT2 = $(OBJD)/$(package)t2_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DTI = $(OBJD)/$(package)ti_double.o -L$(OBJD) $(LIBS)
-
 R$(PACKAGE)SS = $(OBJS)/$(package)s_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2_single.o -L$(OBJS) $(LIBS)
@@ -162,7 +154,6 @@ R$(PACKAGE)SS3 = $(OBJS)/$(package)s3_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS4 = $(OBJS)/$(package)s4_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST2 = $(OBJS)/$(package)t2_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)STI = $(OBJS)/$(package)ti_single.o -L$(OBJS) $(LIBS)
-
 
 R$(PACKAGE)DE64 = $(OBJD64)/$(package)e_double.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DS64 = $(OBJD64)/$(package)s_double.o -L$(OBJD64) $(LIBS)
@@ -175,7 +166,6 @@ R$(PACKAGE)DS664 = $(OBJD64)/$(package)s6_double.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DS764 = $(OBJD64)/$(package)s7_double.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DT264 = $(OBJD64)/$(package)t2_double.o -L$(OBJD64) $(LIBS)
 R$(PACKAGE)DTI64 = $(OBJD64)/$(package)ti_double.o -L$(OBJD64) $(LIBS)
-
 R$(PACKAGE)SS64 = $(OBJS64)/$(package)s_single.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)ST64 = $(OBJS64)/$(package)t_single.o -L$(OBJS64) $(LIBS)
 R$(PACKAGE)SS264 = $(OBJS64)/$(package)s2_single.o -L$(OBJS64) $(LIBS)
@@ -591,19 +581,17 @@ test_$(package)_qplib_single: $($(PACKAGE)OBJECTSS_QPLIB)
 	echo " Testing QPLIB interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           dgal $(VERSION) $(package) -s $(QPLIB_EXAMPLE)
-
 test_$(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
 	echo ""
 	echo " Testing QPLIB interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           dgal $(VERSION) $(package) $(QPLIB_EXAMPLE)
-test_$(package)_qplib_single_64: $($(PACKAGE)OBJECTSS_QPLIB)
+test_$(package)_qplib_single_64: $($(PACKAGE)OBJECTSS_QPLIB64)
 	echo ""
 	echo " Testing QPLIB interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           dgal $(VERSION) $(package) -s64 $(QPLIB_EXAMPLE)
-
-test_$(package)_qplib_double_64: $($(PACKAGE)OBJECTSD_QPLIB)
+test_$(package)_qplib_double_64: $($(PACKAGE)OBJECTSD_QPLIB64)
 	echo ""
 	echo " Testing QPLIB interface to $(package)"
 	cd $(GALAHAD)/examples ; \
@@ -617,22 +605,35 @@ test_$(package)_rb_single: $($(PACKAGE)OBJECTSS_RB)
 	echo " Testing RB interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           dgal $(VERSION) $(package) -s $(RB_EXAMPLE)
-
 test_$(package)_rb_double: $($(PACKAGE)OBJECTSD_RB)
 	echo ""
 	echo " Testing Rutherford-Boeing interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           rbgal $(VERSION) $(package) $(RB_EXAMPLE)
+test_$(package)_rb_single_64: $($(PACKAGE)OBJECTSS_RB64)
+	echo ""
+	echo " Testing RB interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          dgal $(VERSION) $(package) -s64 $(RB_EXAMPLE)
+test_$(package)_rb_double_64: $($(PACKAGE)OBJECTSD_RB64)
+	echo ""
+	echo " Testing Rutherford-Boeing interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          rbgal $(VERSION) $(package) -64 $(RB_EXAMPLE)
 
 #  test C interface to package
 
 test_$(package)_ciface: test_$(package)_ciface_$(PRECIS)
 test_$(package)_ciface_single: $(package)cst
 test_$(package)_ciface_double: $(package)cdt
+test_$(package)_ciface_single_64: $(package)cst_64
+test_$(package)_ciface_double_64: $(package)cdt_64
 
 test_$(package)_cifaces: test_$(package)_cifaces_$(PRECIS)
 test_$(package)_cifaces_single: $(package)cst $(package)cstf
 test_$(package)_cifaces_double: $(package)cdt $(package)cdtf
+test_$(package)_cifaces_single_64: $(package)cst_64 $(package)cstf_64
+test_$(package)_cifaces_double_64: $(package)cdt_64 $(package)cdtf_64
 
 #  test Python interface to package
 
@@ -645,6 +646,13 @@ test_pyiface: $(package)_pyiface
 $(package)de: $($(PACKAGE)DE)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DE)
+	$(RMOOC)
+	- ./run_$(package)
+	rm ./run_$(package)
+
+$(package)de_64: $($(PACKAGE)DE64)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DE64)
 	$(RMOOC)
 	- ./run_$(package)
 	rm ./run_$(package)
@@ -770,6 +778,127 @@ $(package)ds7: $($(PACKAGE)DS7)
 #	cat $(package)ds7.output
 	rm ./run_$(package)
 
+$(package)ss_64: $($(PACKAGE)SS64)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s64.output 2>&1
+	cat $(package)s64.output
+	rm ./run_$(package)
+
+$(package)ss2_64: $($(PACKAGE)SS264)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS264)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s264.output 2>&1
+	cat $(package)s264.output
+	rm ./run_$(package)
+
+$(package)ss3_64: $($(PACKAGE)SS364)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS364)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s364.output 2>&1
+	cat $(package)s364.output
+	rm ./run_$(package)
+
+$(package)ss4_64: $($(PACKAGE)SS464)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)SS464)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s464.output 2>&1
+	cat $(package)s464.output
+	rm ./run_$(package)
+
+$(package)ds_64: $($(PACKAGE)DS64)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS64)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds64.output 2>&1
+	cat $(package)ds64.output
+	rm ./run_$(package)
+
+$(package)ds_64_valgrind: $($(PACKAGE)DS64)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS64)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)ds64_valgrind.output 2>&1
+	cat $(package)ds64_valgrind.output
+	rm ./run_$(package)
+
+$(package)ds2_64: $($(PACKAGE)DS264)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS264)
+	$(RMOOC)
+	- ./run_$(package) > $(package)ds264.output 2>&1
+	cat $(package)ds264.output
+	rm ./run_$(package)
+
+$(package)ds2_64_valgrind: $($(PACKAGE)DS264)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS264)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)ds264_valgrind.output 2>&1
+	cat $(package)ds264_valgrind.output
+	rm ./run_$(package)
+
+$(package)ds3_64: $($(PACKAGE)DS364)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS364)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds364.output 2>&1
+	cat $(package)ds364.output
+	rm ./run_$(package)
+
+$(package)ds3_64_valgrind: $($(PACKAGE)DS364)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS364)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)ds364_valgrind.output 2>&1
+	cat $(package)ds364_valgrind.output
+	rm ./run_$(package)
+
+$(package)ds4_64: $($(PACKAGE)DS464)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS464)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds464.output 2>&1
+	cat $(package)ds464.output
+	rm ./run_$(package)
+
+$(package)ds5_64: $($(PACKAGE)DS564)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS564)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds564.output 2>&1
+	cat $(package)ds564.output
+	rm ./run_$(package)
+
+$(package)ds6_64: $($(PACKAGE)DS664)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS664)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds664.output 2>&1
+	cat $(package)ds664.output
+	rm ./run_$(package)
+
+$(package)ds7_64: $($(PACKAGE)DS764)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DS764)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds764.output 2>&1
+	cat $(package)ds764.output
+	rm ./run_$(package)
+
 #  run C specification document example tests
 
 $(package)css: $($(PACKAGE)CSS)
@@ -884,6 +1013,118 @@ $(package)cds7: $($(PACKAGE)CDS7)
 	cat $(package)cds7.output
 	rm ./run_$(package)
 
+$(package)css64: $($(PACKAGE)CSS64)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs64.output 2>&1
+	cat $(package)cs64.output
+	rm ./run_$(package)
+
+$(package)css264: $($(PACKAGE)CSS264)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS264)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs264.output 2>&1
+	cat $(package)cs264.output
+	rm ./run_$(package)
+
+$(package)css364: $($(PACKAGE)CSS364)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS364)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs364.output 2>&1
+	cat $(package)cs364.output
+	rm ./run_$(package)
+
+$(package)css464: $($(PACKAGE)CSS464)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS464)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs464.output 2>&1
+	cat $(package)cs464.output
+	rm ./run_$(package)
+
+$(package)css564: $($(PACKAGE)CSS564)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS564)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs564.output 2>&1
+	cat $(package)cs564.output
+	rm ./run_$(package)
+
+$(package)css664: $($(PACKAGE)CSS664)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS664)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs664.output 2>&1
+	cat $(package)cs664.output
+	rm ./run_$(package)
+
+$(package)css764: $($(PACKAGE)CSS764)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSS764)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs764.output 2>&1
+	cat $(package)cs764.output
+	rm ./run_$(package)
+
+$(package)cds64: $($(PACKAGE)CDS64)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds64.output 2>&1
+	cat $(package)cds64.output
+	rm ./run_$(package)
+
+$(package)cds264: $($(PACKAGE)CDS264)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS264)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds264.output 2>&1
+	cat $(package)cds264.output
+	rm ./run_$(package)
+
+$(package)cds364: $($(PACKAGE)CDS364)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS364)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds364.output 2>&1
+	cat $(package)cds364.output
+	rm ./run_$(package)
+
+$(package)cds464: $($(PACKAGE)CDS464)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS464)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds464.output 2>&1
+	cat $(package)cds464.output
+	rm ./run_$(package)
+
+$(package)cds564: $($(PACKAGE)CDS564)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS564)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds564.output 2>&1
+	cat $(package)cds564.output
+	rm ./run_$(package)
+
+$(package)cds664: $($(PACKAGE)CDS664)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS664)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds664.output 2>&1
+	cat $(package)cds664.output
+	rm ./run_$(package)
+
+$(package)cds764: $($(PACKAGE)CDS764)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDS764)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds764.output 2>&1
+	cat $(package)cds764.output
+	rm ./run_$(package)
+
 #  run full (comprehensive) example tests
 
 $(package)st: $($(PACKAGE)ST)
@@ -892,9 +1133,9 @@ $(package)st: $($(PACKAGE)ST)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)ST)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)st.output 2>&1
-#	cat $(package)st.output
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)st.output 2>&1
+	cat $(package)st.output
 	rm ./run_$(package)
 
 $(package)st2: $($(PACKAGE)ST2)
@@ -963,9 +1204,9 @@ $(package)dt: $($(PACKAGE)DT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DT)
 	$(RMOOC)
-	- ./run_$(package) 2>/dev/null
-#	- ./run_$(package) > $(package)dt.output 2>&1
-#	cat $(package)dt.output
+#	- ./run_$(package) 2>/dev/null
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)dt2: $($(PACKAGE)DT2)
@@ -974,9 +1215,9 @@ $(package)dt2: $($(PACKAGE)DT2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DT2)
 	$(RMOOC)
-	- ./run_$(package) 2>/dev/null
-#	- ./run_$(package) > $(package)dt2.output 2>&1
-#	cat $(package)dt2.output
+#	- ./run_$(package) 2>/dev/null
+	- ./run_$(package) > $(package)dt2.output 2>&1
+	cat $(package)dt2.output
 	rm ./run_$(package)
 
 $(package)dt_valgrind: $($(PACKAGE)DT)
@@ -1025,6 +1266,149 @@ $(package)dti_gdb: $($(PACKAGE)DTI)
 	echo " Exhaustive gdb test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)DTI)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)st_64: $($(PACKAGE)ST64)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST64)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)st64.output 2>&1
+	cat $(package)st64.output
+	rm ./run_$(package)
+
+$(package)st2_64: $($(PACKAGE)ST264)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST264)
+	$(RMOOC)
+	- ./run_$(package) > $(package)st264.output 2>&1
+	cat $(package)st264.output
+	rm ./run_$(package)
+
+$(package)st_64_valgrind: $($(PACKAGE)ST64)
+	echo ""
+	echo " Exhaustive valgrind test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST64)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)st_64_valgrind.output 2>&1
+	cat $(package)st_64_valgrind.output
+	rm ./run_$(package)
+
+$(package)st_64_gdb: $($(PACKAGE)ST64)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)ST64)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)sti_64: $($(PACKAGE)STI64)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)STI64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)sti64.output 2>&1
+	cat $(package)sti64.output
+	rm ./run_$(package)
+
+$(package)sti_64_valgrind: $($(PACKAGE)STI64)
+	echo ""
+	echo " Exhaustive valgrind test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)STI64)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)sts_64__valgrind.output 2>&1
+	cat $(package)sts_64_valgrind.output
+	rm ./run_$(package)
+
+$(package)sti_64_gdb: $($(PACKAGE)STI64)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)STI64)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)dt_64: $($(PACKAGE)DT64)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT64)
+	$(RMOOC)
+#	- ./run_$(package) 2>/dev/null
+	- ./run_$(package) > $(package)dt64.output 2>&1
+	cat $(package)dt64.output
+	rm ./run_$(package)
+
+$(package)dt2_64: $($(PACKAGE)DT264)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT264)
+	$(RMOOC)
+#	- ./run_$(package) 2>/dev/null
+	- ./run_$(package) > $(package)dt264.output 2>&1
+	cat $(package)dt264.output
+	rm ./run_$(package)
+
+$(package)dt_64_valgrind: $($(PACKAGE)DT64)
+	echo ""
+	echo " Exhaustive valgrind test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT64)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dt_64_valgrind.output 2>&1
+	cat $(package)dt_64_valgrind.output
+	rm ./run_$(package)
+
+$(package)dt_64_gdb: $($(PACKAGE)DT64)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DT64)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)dti_64: $($(PACKAGE)DTI64)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DTI64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dti64.output 2>&1
+	cat $(package)dti64.output
+	rm ./run_$(package)
+
+$(package)dti_64_valgrind: $($(PACKAGE)DTI64)
+	echo ""
+	echo " Exhaustive valgrind test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DTI64)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dti_64_valgrind.output 2>&1
+	cat $(package)dti_64_valgrind.output
+	rm ./run_$(package)
+
+$(package)dti_64_gdb: $($(PACKAGE)DTI64)
+	echo ""
+	echo " Exhaustive gdb test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_$(package) $(R$(PACKAGE)DTI64)
 	$(RMOOC)
 	- gdb $(GDB) ./run_$(package)
 	rm ./run_$(package)
@@ -1147,6 +1531,126 @@ $(package)cdt_gdb: $($(PACKAGE)CDT)
 	echo " Exhaustive gdb test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)cst_64: $($(PACKAGE)CST64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CST64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)st64.output 2>&1
+	cat $(package)st64.output
+	rm ./run_$(package)
+
+$(package)csti_64: $($(PACKAGE)CSTI64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSTI64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)sti64.output 2>&1
+	cat $(package)sti64.output
+	rm ./run_$(package)
+
+$(package)cstf_64: $($(PACKAGE)CSTF64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CSTF64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)stf64.output 2>&1
+	cat $(package)stf64.output
+	rm ./run_$(package)
+
+$(package)cst_64_valgrind: $($(PACKAGE)CST64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CST64)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)st_64_valgrind.output 2>&1
+	cat $(package)st_64_valgrind.output
+	rm ./run_$(package)
+
+$(package)cst_64_gdb: $($(PACKAGE)CST64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CST64)
+	$(RMOOC)
+	- gdb $(GDB) ./run_$(package)
+	rm ./run_$(package)
+
+$(package)cdt_64: $($(PACKAGE)CDT64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt64.output 2>&1
+	cat $(package)dt64.output
+	rm ./run_$(package)
+
+$(package)cdt2_64: $($(PACKAGE)CDT264)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT264)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt64.output 2>&1
+	cat $(package)dt64.output
+	rm ./run_$(package)
+
+$(package)cdt3_64: $($(PACKAGE)CDT364)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT364)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt64.output 2>&1
+	cat $(package)dt64.output
+	rm ./run_$(package)
+
+$(package)cdti_64: $($(PACKAGE)CDTI64)
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTI64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dti64.output 2>&1
+	cat $(package)dti64.output
+	rm ./run_$(package)
+
+$(package)cdtf_64: $($(PACKAGE)CDTF64)
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDTF64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dtf64.output 2>&1
+	cat $(package)dtf64.output
+	rm ./run_$(package)
+
+$(package)cdt_64_valgrind: $($(PACKAGE)CDT64)
+	echo ""
+	echo " Exhaustive valgrind test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT64)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt64.output 2>&1
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dt_64_valgrind.output 2>&1
+	cat $(package)dt_64_valgrind.output
+	rm ./run_$(package)
+
+$(package)cdt_64_gdb: $($(PACKAGE)CDT64)
+	echo ""
+	echo " Exhaustive gdb test of C function interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_$(package) $(R$(PACKAGE)CDT64)
 	$(RMOOC)
 	- gdb $(GDB) ./run_$(package)
 	rm ./run_$(package)

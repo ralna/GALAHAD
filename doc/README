@@ -461,13 +461,15 @@ In order to get GALAHAD working, here is what you need to do.
 22. Documentation for package "pack" is available as follows:
 
      - Fortran. PDF documentation is in $GALAHAD/doc/"pack".pdf
-     - C. HTML documenation is in $GALAHAD/html/C/"pack".html,
-          with a general introduction in $GALAHAD/html/C/index.html.
+     - C. HTML documenation is available online from
+          https://ralna.github.io/galahad_docs/html/C .
           There is also inferior PDF documentation in $GALAHAD/doc/"pack"_c.pdf
           and a man page in $GALAHAD/man/man3/"pack"_c.3, with a
           an introductory man page in $GALAHAD/man/man3/galahad_c.3
-     - Python. HTML documenation is in $GALAHAD/html/Python/"pack".html,
-          with a general introduction in $GALAHAD/html/Python/index.html.
+     - Python. HTML documenation is online as
+          https://ralna.github.io/galahad_docs/html/Python .
+     - Julia. HTML documenation is online as
+          https://ralna.github.io/galahad_docs/html/Julia .
      - Matlab. help is provided using hslp galahad_"pack" within Matlab
      - general. An introductory paper is in $GALAHAD/doc/galahad.pdf
 
@@ -505,9 +507,9 @@ Best of luck
 For GALAHAD productions
 25 April 2002
 
-This version (4.1), additionally with
+This version (4.2), additionally with
 
  Jari Fowkes
  Alexis Montoison
 
-22 June 2023
+10 January 2024

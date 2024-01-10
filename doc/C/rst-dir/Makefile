@@ -6,7 +6,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
-BUILDDIR      = ../../../html/C/
+BUILDDIR      = ../../../../galahad_docs/html/C/
 
 # Put it first so that "make" without argument is like "make help".
 help:

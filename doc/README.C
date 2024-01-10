@@ -98,9 +98,10 @@ compile and have been run successfully with
 
   gfortran (version 8.0 and above)
   ifort (2022 version)
+  ifx (2024 version)
   nagfor (version 7102 and above
 
-and we expect other compilers (such as ifx) to catch up soon.
+and we expect other compilers to catch up soon.
 
 Linking and running
 -------------------
@@ -127,6 +128,13 @@ To link with other applications, you should use
 but remember to replace any of the later libraries with vendor-specific
 ones to improve performance.
 
+Documentation
+-------------
+
+Documentation is available online from 
+
+     https://ralna.github.io/galahad_docs/html/C
+
 The future
 ----------
 
@@ -140,4 +148,4 @@ Jari Fowkes (jaroslav.fowkes@stfc.ac.uk)
 
 For GALAHAD productions
 7 December 2021
-This version: 18 May 2023
+This version: 10 January 2024
