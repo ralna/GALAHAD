@@ -43,9 +43,9 @@ endif
 
 # Preprocessing
 if fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
-  output_generator = '/Fi'
+  output_generator = '/Fi:@OUTPUT@'
 else
-  output_generator = '-o'
+  output_generator = ['-o', '@OUTPUT@']
 endif
 
 pp_options = []
@@ -347,7 +347,7 @@ if build_single
                          arguments : pp_options + extra_args_single +
                                      ['-I', '@CURRENT_SOURCE_DIR@/include',
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
-                                      '@INPUT@', output_generator, '@OUTPUT@'])
+                                      '@INPUT@'] + output_generator)
 
   to_process_single = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src, libgalahad_mumps_single_src]
   if libcutest_single.found()
@@ -378,7 +378,7 @@ if build_double
                          arguments : pp_options + extra_args_double +
                                      ['-I', '@CURRENT_SOURCE_DIR@/include',
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
-                                      '@INPUT@', output_generator, '@OUTPUT@'])
+                                      '@INPUT@'] + output_generator)
 
   to_process_double = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src, libgalahad_mumps_double_src]
   if libcutest_double.found()
