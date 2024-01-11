@@ -38,9 +38,9 @@ if not libwsmp.found()
   libgalahad_src += files('wsmp.F90')
 endif
 
-if not libumfpack.found()
-  libgalahad_src += files('umfpack.F90')
-endif
+# if not libumfpack.found()
+#   libgalahad_src += files('umfpack.F90')
+# endif
 
 if not libpardiso.found()
   libgalahad_src += files('pardiso.F90')

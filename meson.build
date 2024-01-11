@@ -73,7 +73,6 @@ liblapack_name = get_option('liblapack')
 libmetis_name = get_option('libmetis')
 libhsl_name = get_option('libhsl')
 libwsmp_name = get_option('libwsmp')
-libumfpack_name = get_option('libumfpack')
 libpardiso_name = get_option('libpardiso')
 libspmf_name = get_option('libspmf')
 libpastix_name = get_option('libpastix')
@@ -87,7 +86,6 @@ liblapack_path = get_option('liblapack_path')
 libmetis_path = get_option('libmetis_path')
 libhsl_path = get_option('libhsl_path')
 libwsmp_path = get_option('libwsmp_path')
-libumfpack_path = get_option('libumfpack_path')
 libpardiso_path = get_option('libpardiso_path')
 libspmf_path = get_option('libspmf_path')
 libpastix_path = get_option('libpastix_path')
@@ -109,7 +107,6 @@ libhsl = fc.find_library(libhsl_name, dirs : libhsl_path, required : false)
 libcutest_single = fc.find_library(libcutest_single_name, dirs : libcutest_single_path, required : false)
 libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_double_path, required : false)
 libwsmp = fc.find_library(libwsmp_name, dirs : libwsmp_path, required : false)
-libumfpack = fc.find_library(libumfpack_name, dirs : libumfpack_path, required : false)
 libpardiso = fc.find_library(libpardiso_name, dirs : libpardiso_path, required : false)
 libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
 libpastix = fc.find_library(libpastix_name, dirs : libpastix_path, required : false)
@@ -150,8 +147,8 @@ libhwloc = dependency('hwloc', required : false)
 
 libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]
-libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libwsmp,
-                   libumfpack, libpardiso, libspmf, libpastix,
+libgalahad_deps = [libblas, liblapack, libmetis, libhsl,
+                   libwsmp, libpardiso, libspmf, libpastix,
                    libampl, libmpi, libhwloc]
 
 libgalahad_single_src = []
