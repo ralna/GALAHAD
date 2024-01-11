@@ -50,6 +50,31 @@
 #define DGEMM DGEMM__64
 #define SGER SGER__64
 #define DGER DGER__64
+#elif GALAHAD_NO_SYMBOL_64BIT_INTEGER
+#define SNRM2 SNRM2
+#define DNRM2 DNRM2
+#define ISAMAX ISAMAX
+#define IDAMAX IDAMAX
+#define SROTG SROTG
+#define DROTG DROTG
+#define SROT SROT
+#define DROT DROT
+#define SSWAP SSWAP
+#define DSWAP DSWAP
+#define SSCAL SSCAL
+#define DSCAL DSCAL
+#define STRSV STRSV
+#define DTRSV DTRSV
+#define STRSM STRSM
+#define DTRSM DTRSM
+#define STBSV STBSV
+#define DTBSV DTBSV
+#define SGEMV SGEMV
+#define DGEMV DGEMV
+#define SGEMM SGEMM
+#define DGEMM DGEMM
+#define SGER SGER
+#define DGER DGER
 #else
 #define SNRM2 SNRM2_64
 #define DNRM2 DNRM2_64
