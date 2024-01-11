@@ -7,41 +7,35 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD/${{ matrix.os }}/${{ matrix.fc_cmd }}/${{ matrix.compiler_version }}
+    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.version }}
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        compiler_version: [12]
+        version: ['12']
         include:
-          - compiler: gnu
-            cc_cmd: gcc
-            fc_cmd: gfortran
-            cxx_cmd: g++
+          - compiler: gcc
             int64: false
           - os: ubuntu-latest
-            compiler: gnu
-            compiler_version: 13
-            cc_cmd: gcc
-            fc_cmd: gfortran
-            cxx_cmd: g++
+            compiler: gcc
+            version: '13'
             int64: true
             allow_failure: true
-          - os: ubuntu-latest
-            compiler: intel-llvm
-            compiler_version: 2023.2.0
-            cc_cmd: icx
-            fc_cmd: ifort
-            cxx_cmd: icpx
+          - os: windows-latest
+            compiler: intel
+            version: '2023.2'
             int64: false
             allow_failure: true
-          # - os: ubuntu-latest
-          #   compiler: intel-llvm
-          #   compiler_version: 2023.2
-          #   cc_cmd: icx
-          #   fc_cmd: ifx
-          #   cxx_cmd: icpx
-          #   allow_failure: true
+          - os: ubuntu-latest
+            compiler: intel
+            version: '2023.2'
+            int64: false
+            allow_failure: true
+          - os: ubuntu-latest
+            compiler: nvidia-hpc
+            version: '23.11'
+            int64: false
+            allow_failure: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -100,26 +94,21 @@ jobs:
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
           echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
-      - name: Install GNU compilers
-        if: matrix.compiler == 'gnu'
-        uses: awvwgk/setup-fortran@main
+      - name: Install compilers
+        uses: fortran-lang/setup-fortran@main
         with:
-          compiler: gcc
-          version: ${{ matrix.compiler_version }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
 
-      - name: Install classic Intel compilers
+      - name: Update Intel compilers
         if: matrix.compiler == 'intel'
-        uses: awvwgk/setup-fortran@main
-        with:
-          compiler: intel-classic
-          version: ${{ matrix.compiler_version }}
+        shell: bash
+        run: echo "FC=ifort" >> $GITHUB_ENV
 
-      - name: Install nextgen Intel compilers
-        if: matrix.compiler == 'intel-llvm'
-        uses: awvwgk/setup-fortran@main
-        with:
-          compiler: intel
-          version: ${{ matrix.compiler_version }}
+      # Uncomment this section to obtain ssh access to VM
+      # - name: Setup tmate session
+      #   if: matrix.os == 'windows-latest'
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: Setup GALAHAD
         shell: bash
@@ -130,15 +119,15 @@ jobs:
                                  -Dgalahad_int64=true -Dlibblas_path=$DEPS/deps/$LIBDIR \
                                  -Dliblapack_path=$DEPS/deps/$LIBDIR -Dlibblas=openblas64_ \
                                  -Dliblapack=openblas64_
+          elif [[ "${{matrix.compiler}}" == "nvidia-hpc" ]]; then
+            meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true \
+                                 --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
+                                 -Dc_std=none -Dcpp_std=none -Dgalahad_int64=false
           else
             meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true \
                                  --prefix=$GITHUB_WORKSPACE/galahad -Dpythoniface=true \
                                  -Dgalahad_int64=false
           fi
-        env:
-          CC: ${{ matrix.cc_cmd }}
-          FC: ${{ matrix.fc_cmd }}
-          CXX: ${{ matrix.cxx_cmd }}
 
       - name: Build GALAHAD
         shell: bash
@@ -147,7 +136,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_meson-log.txt
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.version }}_meson-log.txt
           path: builddir/meson-logs/meson-log.txt
 
       - name: Install GALAHAD
@@ -157,13 +146,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_install-log.txt
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.version }}_install-log.txt
           path: builddir/meson-logs/install-log.txt
-
-      # Uncomment this section to obtain ssh access to VM
-      # - name: Setup tmate session
-      #   if: matrix.os == 'windows-latest'
-      #   uses: mxschmitt/action-tmate@v3
 
       - name: Test GALAHAD
         shell: bash
@@ -172,5 +156,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: ${{ matrix.os }}_${{ matrix.fc_cmd }}_${{ matrix.compiler_version }}_testlog.txt
+          name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.version }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
