@@ -23,10 +23,6 @@ py = import('python').find_installation()
 host_system = host_machine.system()
 
 # Remove messages about deprecated Intel compilers
-if fc.get_id() == 'intel' or fc.get_id() == 'intel-cl'
-  add_global_arguments('-diag-disable=10448', language : 'fortran')
-  add_global_link_arguments('-diag-disable=10448', language : 'fortran')
-endif
 if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
   add_global_arguments('-diag-disable=10441', language : 'c')
   add_global_link_arguments('-diag-disable=10441', language : 'c')
