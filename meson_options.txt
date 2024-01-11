@@ -73,11 +73,6 @@ option('libwsmp',
        value : 'wsmp',
        description : 'WSMP library against which to link')
 
-option('libumfpack',
-       type : 'string',
-       value : 'umfpack',
-       description : 'UMFPACK library against which to link')
-
 option('libpardiso',
        type : 'string',
        value : 'pardiso',
@@ -132,11 +127,6 @@ option('libwsmp_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the WSMP library')
-
-option('libumfpack_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the UMFPACK library')
 
 option('libpardiso_path',
        type : 'array',
