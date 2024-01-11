@@ -22,13 +22,13 @@ else
 endif
 
 ifeq "$(HWLOC)" "un"
- DHWLOC = -DSPRAL_NO_HWLOC 
+ DHWLOC = -DSPRAL_NO_HWLOC
 else
  DHWLOC = -DSPRAL_HAVE_HWLOC
 endif
 
 ifeq "$(GETCPU)" "un"
- DGETCPU = -DSPRAL_NO_SCHED_GETCPU 
+ DGETCPU = -DSPRAL_NO_SCHED_GETCPU
 else
  DGETCPU = -DSPRAL_HAVE_SCHED_GETCPU
 endif
@@ -217,7 +217,7 @@ SSIDSS = extend basics $(SPRALRBS) $(CUDASUSE) \
          $(RLGS)(cpu_iface_single.o) $(RLGS)(cpu_subtree_single.o) \
          $(RLGS)(profile_iface.o) $(GPUSUSE) \
          $(RLGS)(anal_single.o) $(RLGS)(fkeep_single.o) \
-         $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o) 
+         $(RLGS)(contrib_free_single.o) $(RLGS)(ssids_single.o)
 SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD)(compat.o) $(RLGD)(guess_topology.o) \
          $(RLGD)(omp.o) $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) \
@@ -236,7 +236,7 @@ SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD)(cpu_iface_double.o) $(RLGD)(cpu_subtree_double.o) \
          $(RLGD)(profile_iface.o) $(GPUDUSE) \
          $(RLGD)(anal_double.o) $(RLGD)(fkeep_double.o) \
-         $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o) 
+         $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
 SSIDSS64 = extend basics $(SPRALRBS) $(CUDASUSE) \
          $(RLGS64)(compat.o) $(RLGS64)(guess_topology.o) \
          $(RLGS64)(omp.o) $(RLGS64)(profile.o) $(RLGS64)(SymbolicSubtree.o) \
@@ -255,7 +255,7 @@ SSIDSS64 = extend basics $(SPRALRBS) $(CUDASUSE) \
          $(RLGS64)(cpu_iface_single.o) $(RLGS64)(cpu_subtree_single.o) \
          $(RLGS64)(profile_iface.o) $(GPUSUSE) \
          $(RLGS64)(anal_single.o) $(RLGS64)(fkeep_single.o) \
-         $(RLGS64)(contrib_free_single.o) $(RLGS64)(ssids_single.o) 
+         $(RLGS64)(contrib_free_single.o) $(RLGS64)(ssids_single.o)
 SSIDSD64 = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD64)(compat.o) $(RLGD64)(guess_topology.o) \
          $(RLGD64)(omp.o) $(RLGD64)(profile.o) $(RLGD64)(SymbolicSubtree.o) \
@@ -274,7 +274,7 @@ SSIDSD64 = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD64)(cpu_iface_double.o) $(RLGD64)(cpu_subtree_double.o) \
          $(RLGD64)(profile_iface.o) $(GPUDUSE) \
          $(RLGD64)(anal_double.o) $(RLGD64)(fkeep_double.o) \
-         $(RLGD64)(contrib_free_double.o) $(RLGD64)(ssids_double.o) 
+         $(RLGD64)(contrib_free_double.o) $(RLGD64)(ssids_double.o)
 
 SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface_single.o)
 SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface_double.o)
@@ -514,10 +514,12 @@ ssidsdt_64_cuda_valgrind: $(SSIDSDT64)
 
 extend:
 	( cd ../extend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            extend_silent PRECIS=$(PRECIS) PWD=$(PWD)/../extend )
+            extend_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../extend )
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../general )
 
 #  individual compilations
 
@@ -702,7 +704,7 @@ $(RLG)(cholesky_$(PRECIS).o): ../ssids/cholesky.cxx
                     $(CXX) -I. -o cholesky_$(PRECIS).o $(CXXFLAGSNOMP) \
                       cholesky.cxx )
 	cd $(OBJ) ; $(RARR) cholesky_$(PRECIS).o ; \
-                       $(RM) cholesky.cxx cholesky_$(PRECIS).o 
+                       $(RM) cholesky.cxx cholesky_$(PRECIS).o
 	@printf '[ OK ]\n'
 
 ldlt_app.o: $(RLG)(ldlt_app_$(PRECIS).o)
@@ -730,7 +732,7 @@ $(RLG)(ldlt_nopiv_$(PRECIS).o): ../ssids/ldlt_nopiv.cxx
                     $(CXX) -I. -o ldlt_nopiv_$(PRECIS).o $(CXXFLAGSNOMP) \
                       ldlt_nopiv.cxx )
 	cd $(OBJ) ; $(RARR) ldlt_nopiv_$(PRECIS).o ; \
-                      $(RM) ldlt_nopiv.cxx ldlt_nopiv_$(PRECIS).o 
+                      $(RM) ldlt_nopiv.cxx ldlt_nopiv_$(PRECIS).o
 	@printf '[ OK ]\n'
 
 ldlt_tpp.o: $(RLG)(ldlt_tpp_$(PRECIS).o)

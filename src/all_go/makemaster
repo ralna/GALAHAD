@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for all the GALAHAD GO packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-05-29
+#  This version: 2024-01-11
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -104,14 +104,20 @@ test_pyiface: all_pyiface $(TEST_PYIFACE)
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $(DEPENDENCIES)
 $(package)_silent_double: $(DEPENDENCIES)
+$(package)_silent_single_64: $(DEPENDENCIES)
+$(package)_silent_double_64: $(DEPENDENCIES)
 
 $(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
 $(package)_ciface_silent_single: $(CDEPENDENCIES)
 $(package)_ciface_silent_double: $(CDEPENDENCIES)
+$(package)_ciface_silent_single_64: $(CDEPENDENCIES)
+$(package)_ciface_silent_double_64: $(CDEPENDENCIES)
 
 $(package)_pyiface_silent: $(package)_pyiface_silent_$(PRECIS)
 $(package)_pyiface_silent_single: $(PYDEPENDENCIES)
 $(package)_pyiface_silent_double: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_single_64: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_double_64: $(PYDEPENDENCIES)
 
 #  packages
 
@@ -121,6 +127,10 @@ $(package)_single: $(DEPENDENCIES)
 	$(RANLIB) $(LGS)
 $(package)_double: $(DEPENDENCIES)
 	$(RANLIB) $(LGD)
+$(package)_single_64: $(DEPENDENCIES)
+	$(RANLIB) $(LGS64)
+$(package)_double_64: $(DEPENDENCIES)
+	$(RANLIB) $(LGD64)
 
 $(package)_ciface: $(package)_ciface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
@@ -128,6 +138,10 @@ $(package)_ciface_single: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGS)
 $(package)_ciface_double: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGD)
+$(package)_ciface_single_64: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGS64)
+$(package)_ciface_double_64: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGD64)
 
 $(package)_pyiface: $(package)_pyiface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
@@ -141,6 +155,8 @@ $(package)_pyiface_double: $(PYDEPENDENCIES)
 $(package)_cutest_silent: $(package)_silent_$(PRECIS)
 $(package)_cutest_silent_single: $(DEPENDENCIES) $(CUTESTDEPS)
 $(package)_cutest_silent_double: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_single_64: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_double_64: $(DEPENDENCIES) $(CUTESTDEPS)
 
 #  CUTEst packages
 
@@ -150,6 +166,10 @@ $(package)_cutest_single: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGS)
 $(package)_cutest_double: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGD)
+$(package)_cutest_single_64: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGS64)
+$(package)_cutest_double_64: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGD64)
 
 #  book keeping
 
@@ -173,116 +193,116 @@ include $(GALAHAD)/src/makedefs/intermediaries
 make_ugo_cutest:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )
 
 make_bgo_cutest:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_dgo_cutest:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dgo_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 #  comprehensive tests
 
 make_bgo_test:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_dgo_test:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 make_ugo_test:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )
 
 #  comprehensive and CUTEst tests
 
 make_bgo_tests:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_dgo_tests:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 make_ugo_tests:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )
 
 #  all tests except CUTEst ones
 
 make_bgo_test_full:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_dgo_test_full:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 make_ugo_test_full:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )
 
 #  specification documentation tests
 
 make_bgo_test_spec:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_dgo_test_spec:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 make_ugo_test_spec:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )
 
 #  comprehensive C interface tests
 
 make_ciface_bgo_test:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_ciface_dgo_test:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 make_ciface_ugo_test:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )
 
 #  comprehensive python interface tests
 
 make_pyiface_bgo_test:
 	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bgo )
 
 make_pyiface_dgo_test:
 	( cd $(GALAHAD)/src/dgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dgo )
 
 make_pyiface_ugo_test:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/ugo )

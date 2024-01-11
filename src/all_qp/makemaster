@@ -1,7 +1,7 @@
 # Main body of the installation makefile for all the GALAHAD QP packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-12-21
+#  This version: 2024-01-11
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -151,7 +151,7 @@ TEST_PYIFACE = make_pyiface_lpa_test make_pyiface_lpb_test \
                make_pyiface_bqpb_test make_pyiface_cqp_test \
                make_pyiface_dqp_test make_pyiface_rpd_test \
                make_pyiface_cro_test make_pyiface_presolve_test \
-               make_pyiface_slls_test make_pyiface_clls_test 
+               make_pyiface_slls_test make_pyiface_clls_test
 
 #  all packages in the QP section
 
@@ -189,14 +189,20 @@ test_pyiface: all_pyiface $(TEST_PYIFACE)
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $(DEPENDENCIES)
 $(package)_silent_double: $(DEPENDENCIES)
+$(package)_silent_single_64: $(DEPENDENCIES)
+$(package)_silent_double_64: $(DEPENDENCIES)
 
 $(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
 $(package)_ciface_silent_single: $(CDEPENDENCIES)
 $(package)_ciface_silent_double: $(CDEPENDENCIES)
+$(package)_ciface_silent_single_64: $(CDEPENDENCIES)
+$(package)_ciface_silent_double_64: $(CDEPENDENCIES)
 
 $(package)_pyiface_silent: $(package)_pyiface_silent_$(PRECIS)
 $(package)_pyiface_silent_single: $(PYDEPENDENCIES)
 $(package)_pyiface_silent_double: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_single_64: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_double_64: $(PYDEPENDENCIES)
 
 #  packages
 
@@ -206,6 +212,10 @@ $(package)_single: $(DEPENDENCIES)
 	$(RANLIB) $(LGS)
 $(package)_double: $(DEPENDENCIES)
 	$(RANLIB) $(LGD)
+$(package)_single_64: $(DEPENDENCIES)
+	$(RANLIB) $(LGS64)
+$(package)_double_64: $(DEPENDENCIES)
+	$(RANLIB) $(LGD64)
 
 $(package)_ciface: $(package)_ciface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
@@ -213,6 +223,10 @@ $(package)_ciface_single: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGS)
 $(package)_ciface_double: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGD)
+$(package)_ciface_single_64: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGS64)
+$(package)_ciface_double_64: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGD64)
 
 $(package)_pyiface: $(package)_pyiface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
@@ -220,12 +234,18 @@ $(package)_pyiface_single: $(PYDEPENDENCIES)
 	$(RANLIB) $(PYLGS)
 $(package)_pyiface_double: $(PYDEPENDENCIES)
 	$(RANLIB) $(PYLGD)
+$(package)_pyiface_single_64: $(PYDEPENDENCIES)
+	$(RANLIB) $(PYLGS64)
+$(package)_pyiface_double_64: $(PYDEPENDENCIES)
+	$(RANLIB) $(PYLGD64)
 
 #  silent CUTEst packages
 
 $(package)_cutest_silent: $(package)_silent_$(PRECIS)
 $(package)_cutest_silent_single: $(DEPENDENCIES) $(CUTESTDEPS)
 $(package)_cutest_silent_double: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_single_64: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_double_64: $(DEPENDENCIES) $(CUTESTDEPS)
 
 #  CUTEst packages
 
@@ -235,12 +255,18 @@ $(package)_cutest_single: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGS)
 $(package)_cutest_double: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGD)
+$(package)_cutest_single_64: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGS64)
+$(package)_cutest_double_64: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGD64)
 
 #  silent AMPL packages
 
 $(package)_ampl_silent: $(package)_silent_$(PRECIS)
 $(package)_ampl_silent_single: $(DEPENDENCIES) $(AMPLDEPS)
 $(package)_ampl_silent_double: $(DEPENDENCIES) $(AMPLDEPS)
+$(package)_ampl_silent_single_64: $(DEPENDENCIES) $(AMPLDEPS)
+$(package)_ampl_silent_double_64: $(DEPENDENCIES) $(AMPLDEPS)
 
 #  AMPL packages
 
@@ -250,12 +276,18 @@ $(package)_ampl_single: $(DEPENDENCIES) $(AMPLDEPS)
 	$(RANLIB) $(LGS)
 $(package)_ampl_double: $(DEPENDENCIES) $(AMPLDEPS)
 	$(RANLIB) $(LGD)
+$(package)_ampl_single_64: $(DEPENDENCIES) $(AMPLDEPS)
+	$(RANLIB) $(LGS64)
+$(package)_ampl_double_64: $(DEPENDENCIES) $(AMPLDEPS)
+	$(RANLIB) $(LGD64)
 
 #  silent QPLIB packages
 
 $(package)_qplib_silent: $(package)_silent_$(PRECIS)
 $(package)_qplib_silent_single: $(DEPENDENCIES) $(QPLIBDEPS)
 $(package)_qplib_silent_double: $(DEPENDENCIES) $(QPLIBDEPS)
+$(package)_qplib_silent_single_64: $(DEPENDENCIES) $(QPLIBDEPS)
+$(package)_qplib_silent_double_64: $(DEPENDENCIES) $(QPLIBDEPS)
 
 #  QPLIB packages
 
@@ -265,6 +297,10 @@ $(package)_qplib_single: $(DEPENDENCIES) $(QPLIBDEPS)
 	$(RANLIB) $(LGS)
 $(package)_qplib_double: $(DEPENDENCIES) $(QPLIBDEPS)
 	$(RANLIB) $(LGD)
+$(package)_qplib_single_64: $(DEPENDENCIES) $(QPLIBDEPS)
+	$(RANLIB) $(LGS64)
+$(package)_qplib_double_64: $(DEPENDENCIES) $(QPLIBDEPS)
+	$(RANLIB) $(LGD64)
 
 #  book keeping
 
@@ -288,971 +324,971 @@ include $(GALAHAD)/src/makedefs/intermediaries
 make_blls_cutest:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_cutest:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_cutest:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_cutest:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_cutest:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_cutest:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_cutest:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_cutest:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_cutest:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_cutest:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_cutest:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_cutest:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_cutest:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_cutest:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_cutest:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_presolve_cutest:
 	( cd $(GALAHAD)/src/presolve ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) presolve_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/presolve )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/presolve )
 
 make_qp_cutest:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_cutest:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_cutest:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_cutest:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_pdqp_cutest:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 make_slls_cutest:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
 
 #  AMPL specific interfaces
 
 make_blls_ampl:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_ampl:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_ampl:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_ampl:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_ampl:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_ampl:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_ampl:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_ampl:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_ampl:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_ampl:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_ampl:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_ampl:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_ampl:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_ampl:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_ampl:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_qp_ampl:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_ampl:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_ampl:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_ampl:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_pdqp_ampl:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 #  QPLIB specific interfaces
 
 make_blls_qplib:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_qplib:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bllsb_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_qplib:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_qplib:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_qplib:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clls_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_qplib:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_qplib:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_qplib:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_qplib:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_qplib:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_qplib:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_qplib:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_qplib:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_qplib:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_qplib:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_qp_qplib:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_qplib:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_qplib:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_qplib:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_pdqp_qplib:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 #  comprehensive tests
 
 make_blls_test:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_test:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_test:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_test:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_test:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_test:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_test:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_test:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_test:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_test:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_test:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_test:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_test:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_test:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_test:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_lsp_test:
 	( cd $(GALAHAD)/src/lsp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lsp )
 
 make_pdqp_test:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 make_qp_test:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_test:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_test:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_test:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_rpd_test:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/rpd )
 
 make_slls_test:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
 
 #  comprehensive and CUTEst tests
 
 make_blls_tests:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_tests:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_tests:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_tests:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_tests:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_tests:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_tests:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_tests:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_tests:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_tests:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_tests:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_tests:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_tests:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_tests:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_tests:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_pdqp_tests:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 make_qp_tests:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_tests:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_tests:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_tests:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_rpd_tests:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/rpd )
 
 make_slls_tests:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
 
 #  all tests except CUTEst and QPLIB ones
 
 make_blls_test_full:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_test_full:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_test_full:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_test_full:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_test_full:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_test_full:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_test_full:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_test_full:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_test_full:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_test_full:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_test_full:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_test_full:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_test_full:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_test_full:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_test_full:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_qp_test_full:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_test_full:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_test_full:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_test_full:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_pdqp_test_full:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 make_slls_test_full:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
 
 #  specification documentation tests
 
 make_blls_test_spec:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_bllsb_test_spec:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_bqp_test_spec:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_bqpb_test_spec:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_clls_test_spec:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_cdqp_test_spec:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_test_spec:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_cqps_test_spec:
 	( cd $(GALAHAD)/src/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqps )
 
 make_dlp_test_spec:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_dqp_test_spec:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_eqp_test_spec:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_l1qp_test_spec:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_lls_test_spec:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_lpa_test_spec:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_lpb_test_spec:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_lsp_test_spec:
 	( cd $(GALAHAD)/src/lsp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lsp )
 
 make_pdqp_test_spec:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/pdqp )
 
 make_qp_test_spec:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_qpa_test_spec:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_qpb_test_spec:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_qpc_test_spec:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_rpd_test_spec:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/rpd )
 
 make_slls_test_spec:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
 
 #  comprehensive C interface tests
 
 make_ciface_blls_test:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_ciface_bllsb_test:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_ciface_bqp_test:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_ciface_bqpb_test:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_ciface_clls_test:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_ciface_cdqp_test:
 	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cdqp )
 
 make_ciface_cqp_test:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_ciface_cqps_test:
 	( cd $(GALAHAD)/src/oblivion/cqps ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/cqps )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/oblivion/cqps )
 
 make_ciface_dlp_test:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dlp )
 
 make_ciface_dqp_test:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_ciface_eqp_test:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_ciface_l1qp_test:
 	( cd $(GALAHAD)/src/l1qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/l1qp )
 
 make_ciface_lsqp_test:
 	( cd $(GALAHAD)/src/lsqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lsqp )
 
 make_ciface_lls_test:
 	( cd $(GALAHAD)/src/lls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lls )
 
 make_ciface_lpa_test:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_ciface_lpb_test:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_ciface_qp_test:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qp )
 
 make_ciface_qpa_test:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_ciface_qpb_test:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_ciface_qpc_test:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpc )
 
 make_ciface_pdqp_test:
 	( cd $(GALAHAD)/src/forthcoming/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+          PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
 make_ciface_rpd_test:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/rpd )
 
 make_ciface_slls_test:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
 
 #  comprehensive python interface tests
 
 make_pyiface_blls_test:
 	( cd $(GALAHAD)/src/blls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/blls )
 
 make_pyiface_bllsb_test:
 	( cd $(GALAHAD)/src/bllsb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bllsb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bllsb )
 
 make_pyiface_bqp_test:
 	( cd $(GALAHAD)/src/bqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqp )
 
 make_pyiface_bqpb_test:
 	( cd $(GALAHAD)/src/bqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/bqpb )
 
 make_pyiface_clls_test:
 	( cd $(GALAHAD)/src/clls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clls )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/clls )
 
 make_pyiface_cqp_test:
 	( cd $(GALAHAD)/src/cqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cqp )
 
 make_pyiface_cro_test:
 	( cd $(GALAHAD)/src/cro ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cro )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/cro )
 
 make_pyiface_dqp_test:
 	( cd $(GALAHAD)/src/dqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/dqp )
 
 make_pyiface_eqp_test:
 	( cd $(GALAHAD)/src/eqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/eqp )
 
 make_pyiface_lpa_test:
 	( cd $(GALAHAD)/src/lpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpa )
 
 make_pyiface_lpb_test:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lpb )
 
 make_pyiface_lsqp_test:
 	( cd $(GALAHAD)/src/lsqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsqp )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/lsqp )
 
 make_pyiface_qpa_test:
 	( cd $(GALAHAD)/src/qpa ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpa )
 
 make_pyiface_qpb_test:
 	( cd $(GALAHAD)/src/qpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/qpb )
 
 make_pyiface_presolve_test:
 	( cd $(GALAHAD)/src/presolve ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/presolve )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/presolve )
 
 make_pyiface_rpd_test:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/rpd )
 
 make_pyiface_slls_test:
 	( cd $(GALAHAD)/src/slls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
-
+          PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(GALAHAD)/src/slls )
