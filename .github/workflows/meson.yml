@@ -124,7 +124,6 @@ jobs:
           # fi
 
       - name: Set environment variables for OpenMP
-        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
