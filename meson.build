@@ -23,13 +23,21 @@ py = import('python').find_installation()
 host_system = host_machine.system()
 
 # Remove messages about deprecated Intel compilers
-if cc.get_id() == 'intel' or cc.get_id() == 'intel-cl'
+if cc.get_id() == 'intel'
   add_global_arguments('-diag-disable=10441', language : 'c')
   add_global_link_arguments('-diag-disable=10441', language : 'c')
 endif
-if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-cl'
+if cc.get_id() == 'intel-cl'
+  add_global_arguments('/Qdiag-disable=10441', language : 'c')
+  add_global_link_arguments('/Qdiag-disable=10441', language : 'c')
+endif
+if cxx.get_id() == 'intel'
   add_global_arguments('-diag-disable=10441', language : 'cpp')
   add_global_link_arguments('-diag-disable=10441', language : 'cpp')
+endif
+if cxx.get_id() == 'intel-cl'
+  add_global_arguments('/Qdiag-disable=10441', language : 'cpp')
+  add_global_link_arguments('/Qdiag-disable=10441', language : 'cpp')
 endif
 
 # Recognise old non-standard double complex intrinsics
@@ -45,15 +53,21 @@ else
 endif
 
 pp_options = []
+pp_flag = []
 if fc.get_id() == 'gcc'
+  pp_flag += '-cpp'
   pp_options += ['-cpp', '-E']
 elif fc.get_id() == 'intel' or fc.get_id() == 'intel-llvm'
+  pp_flag += '-fpp'
   pp_options += ['-fpp', '-P']
 elif fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
+  pp_flag += '/fpp'
   pp_options += ['/fpp', '/P']
 elif fc.get_id() == 'nagfor'
+  pp_flag += '-fpp'
   pp_options += ['-fpp', '-F']
 elif fc.get_id() == 'nvidia_hpc'
+  pp_flag += '-Mcpp'
   pp_options += ['-Mcpp', '-F']
 endif
 
@@ -134,7 +148,7 @@ endif
 
 if cxx.get_id() == 'nvidia_hpc'
   add_global_arguments('-mp', language : 'cpp')
-elif cxx.get_id() == 'gcc' or cxx.get_id() == 'clang'
+elif cxx.get_id() == 'gcc' or cxx.get_id() == 'clang' or cxx.get_id() == 'clang-cl'
   add_global_arguments('-fopenmp', language : 'cpp')
 elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
   add_global_arguments('-qopenmp', language : 'cpp')
@@ -204,6 +218,20 @@ endif
 # HSL
 if libhsl.found()
   add_global_arguments('-DLANCELOT_USE_MA57', language : 'fortran')
+endif
+
+# Link flag for C++
+lstdcpp = '-lstdc++'
+if host_machine.system() != 'linux'
+  if cxx.get_id() == 'clang' or cxx.get_id() == 'clang-cl'
+    lstdcpp = '-lc++'
+  endif
+  if cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
+    lstdcpp = '-cxxlib'
+  endif
+  if cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
+    lstdcpp = '/Qcxxlib'
+  endif
 endif
 
 extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
@@ -360,7 +388,7 @@ if build_single
                               fortran_args : extra_args_single,
                               cpp_args : extra_args_single,
                               link_language : 'fortran',
-                              link_args : '-lstdc++',
+                              link_args : lstdcpp,
                               include_directories: libgalahad_single_include,
                               install : true)
 endif
@@ -391,7 +419,7 @@ if build_double
                               fortran_args : extra_args_double,
                               cpp_args : extra_args_double,
                               link_language : 'fortran',
-                              link_args : '-lstdc++',
+                              link_args : lstdcpp,
                               include_directories: libgalahad_double_include,
                               install : true)
 endif
@@ -437,7 +465,7 @@ if build_single
     binfile = binary[1]
     executable(binname+'_single', binfile,
                dependencies : libgalahad_single_deps + libgalahad_deps,
-               fortran_args : extra_args_single,
+               fortran_args : pp_flag + extra_args_single,
                link_with : libgalahad_single,
                link_language : 'fortran',
                include_directories: libgalahad_single_include,
@@ -451,7 +479,7 @@ if build_double
     binfile = binary[1]
     executable(binname+'_double', binfile,
                dependencies : libgalahad_double_deps + libgalahad_deps,
-               fortran_args : extra_args_double,
+               fortran_args : pp_flag + extra_args_double,
                link_with : libgalahad_double,
                link_language : 'fortran',
                include_directories: libgalahad_double_include,
