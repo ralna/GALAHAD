@@ -218,3 +218,10 @@ jobs:
         with:
           name: ${{ matrix.os }}_${{ matrix.compiler }}_${{ matrix.version }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+
+      - name: Test GALAHAD.jl
+        shell: bash
+        run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")
