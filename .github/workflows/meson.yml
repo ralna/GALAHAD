@@ -116,6 +116,7 @@ jobs:
             echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
             echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
             if [[ "${{matrix.compiler}}" == "intel-classic" ]]; then
+              sudo mount -uw /
               sudo ln -s /opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib /usr/lib/libifcore.dylib
             fi
           fi
@@ -124,6 +125,7 @@ jobs:
           # fi
 
       - name: Set environment variables for OpenMP
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
