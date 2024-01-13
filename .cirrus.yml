@@ -3,9 +3,13 @@ task:
     - name: FreeBSD
       freebsd_instance:
         image: freebsd-13-2-release-amd64
+      env:
+        - JULIA_VERSION: 1
     - name: MacOS M1
       macos_instance:
         image: ghcr.io/cirruslabs/macos-monterey-base:latest
+      env:
+        - JULIA_VERSION: 1
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
@@ -17,6 +21,7 @@ task:
       pip3 install numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/opt/homebrew/lib" >> $CIRRUS_ENV
     fi
+    echo "JULIA_PROJECT_SUBDIR=GALAHAD.jl" >> $CIRRUS_ENV
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
     echo "OMP_CANCELLATION=TRUE" >> $CIRRUS_ENV
     echo "OMP_PROC_BIND=TRUE" >> $CIRRUS_ENV
@@ -32,6 +37,25 @@ task:
     meson install -C builddir
   test_script: |
     meson test -C builddir
+  julia_install_script: |
+    # URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
+    URL="https://raw.githubusercontent.com/amontoison/CirrusCI.jl/package_subfolder/bin/install.sh"
+    set -x
+    if [ "$(uname -s)" = "Linux" ] && command -v apt; then
+        apt update
+        apt install -y curl
+    fi
+    if command -v curl; then
+        sh -c "$(curl ${URL})"
+    elif command -v wget; then
+        sh -c "$(wget ${URL} -q -O-)"
+    elif command -v fetch; then
+        sh -c "$(fetch ${URL} -o -)"
+    fi
+  julia_build_script: |
+    cirrusjl build
+  julia_test_script: |
+    cirrusjl test
   on_failure:
     log_artifacts:
       path: builddir/meson-logs/*log.txt
