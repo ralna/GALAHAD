@@ -174,9 +174,6 @@ jobs:
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SSIDS="false"
           fi
-          if [[ ( "${{matrix.compiler}}" == "intel" || "${{matrix.compiler}}" == "intel-classic" ) && "${{matrix.os}}" == "windows-latest" ]]; then
-            PYTHON_INTERFACE="false"
-          fi
 
           meson setup builddir --buildtype=debug \
                                --prefix=$GITHUB_WORKSPACE/galahad \
@@ -185,7 +182,7 @@ jobs:
                                -Dexamples=true \
                                -Dtests=true \
                                -Dssids=$SSIDS \
-                               -Dpythoniface=${PYTHON_INTERFACE} \
+                               -Dpythoniface=true \
                                -Dgalahad_int64=$INT64 \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
