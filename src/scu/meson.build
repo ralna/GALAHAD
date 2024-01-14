@@ -1,12 +1,8 @@
 libgalahad_src += files('scu.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/scu_ciface.F90')
-endif
+libgalahad_c_src += files('C/scu_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['scu', files('Python/scu_pyiface.c')]]
-endif
+libgalahad_python_src += [['scu', files('Python/scu_pyiface.c')]]
 
 galahad_tests += [['scu', 'scut', files('scut.F90')]]
 

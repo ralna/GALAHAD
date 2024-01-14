@@ -1,12 +1,8 @@
 libgalahad_src += files('ugo.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/ugo_ciface.F90')
-endif
+libgalahad_c_src += files('C/ugo_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['ugo', files('Python/ugo_pyiface.c')]]
-endif
+libgalahad_python_src += [['ugo', files('Python/ugo_pyiface.c')]]
 
 libgalahad_cutest_src += files('useugo.F90')
 

@@ -9,9 +9,7 @@ if build_ssids
                           'fkeep.F90', 'gpu_subtree_no_cuda.F90', 'inform.F90',
                           'lapack_iface.F90', 'profile_iface.F90', 'subtree.F90')
 
-  if build_ciface
-    libgalahad_c_src += files('C/ssids_ciface.F90')
-  endif
+  libgalahad_c_src += files('C/ssids_ciface.F90')
 
   galahad_tests += [['ssids', 'ssidst', files('ssidst.F90')]]
 

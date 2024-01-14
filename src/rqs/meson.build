@@ -1,13 +1,9 @@
 libgalahad_src += files('rqs.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/rqs_ciface.F90')
-endif
+libgalahad_c_src += files('C/rqs_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['rqs', files('Python/rqs_pyiface.c',
-                                          '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c','../sils/Python/sils_pyiface.c')]]
-endif
+libgalahad_python_src += [['rqs', files('Python/rqs_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c','../ir/Python/ir_pyiface.c','../sils/Python/sils_pyiface.c')]]
 
 libgalahad_cutest_src += files('userqs.F90')
 

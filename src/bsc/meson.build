@@ -1,12 +1,8 @@
 libgalahad_src += files('bsc.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/bsc_ciface.F90')
-endif
+libgalahad_c_src += files('C/bsc_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['bsc', files('Python/bsc_pyiface.c')]]
-endif
+libgalahad_python_src += [['bsc', files('Python/bsc_pyiface.c')]]
 
 galahad_tests += [['bsc', 'bsct', files('bsct.F90')]]
 

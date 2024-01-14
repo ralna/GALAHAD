@@ -1,12 +1,8 @@
 libgalahad_src += files('convert.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/convert_ciface.F90')
-endif
+libgalahad_c_src += files('C/convert_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['convert', files('Python/convert_pyiface.c')]]
-endif
+libgalahad_python_src += [['convert', files('Python/convert_pyiface.c')]]
 
 galahad_tests += [['convert', 'convertt', files('convertt.F90')]]
 

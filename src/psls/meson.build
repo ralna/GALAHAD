@@ -1,13 +1,9 @@
 libgalahad_src += files('psls.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/psls_ciface.F90')
-endif
+libgalahad_c_src += files('C/psls_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['psls', files('Python/psls_pyiface.c',
-                                           '../sls/Python/sls_pyiface.c','../sils/Python/sils_pyiface.c')]]
-endif
+libgalahad_python_src += [['psls', files('Python/psls_pyiface.c',
+                                         '../sls/Python/sls_pyiface.c','../sils/Python/sils_pyiface.c')]]
 
 galahad_tests += [['psls', 'pslst', files('pslst.F90')],
                   ['psls', 'pslsti', files('pslsti.F90')]]
