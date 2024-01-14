@@ -1,10 +1,6 @@
 galahad_headers += files('spral_config.h',
                          'spral_procedures.h',
-                         'spral_ssids.h',
-                         'spral_compat.hxx',
-                         'spral_guess_topology.hxx',
-                         'spral_hwloc_wrapper.hxx',
-                         'spral_omp.hxx')
+                         'spral_ssids.h')
 
 if build_ciface
   galahad_headers += files('galahad_arc.h',
@@ -76,33 +72,7 @@ if build_pythoniface
 endif
 
 if build_ssids
-  galahad_headers += files('ssids_contrib.h',
-                           'ssids_cpu_AppendAlloc.hxx',
-                           'ssids_cpu_BlockPool.hxx',
-                           'ssids_cpu_BuddyAllocator.hxx',
-                           'ssids_cpu_cpu_iface.hxx',
-                           'ssids_cpu_factor.hxx',
-                           'ssids_cpu_kernels_assemble.hxx',
-                           'ssids_cpu_kernels_block_ldlt.hxx',
-                           'ssids_cpu_kernels_calc_ld.hxx',
-                           'ssids_cpu_kernels_cholesky.hxx',
-                           'ssids_cpu_kernels_common.hxx',
-                           'ssids_cpu_kernels_ldlt_app.hxx',
-                           'ssids_cpu_kernels_ldlt_app.hxx',
-                           'ssids_cpu_kernels_ldlt_nopiv.hxx',
-                           'ssids_cpu_kernels_ldlt_tpp.hxx',
-                           'ssids_cpu_kernels_SimdVec.hxx',
-                           'ssids_cpu_kernels_verify.hxx',
-                           'ssids_cpu_kernels_wrappers.hxx',
-                           'ssids_cpu_NumericNode.hxx',
-                           'ssids_cpu_NumericSubtree.hxx',
-                           'ssids_cpu_SmallLeafNumericSubtree.hxx',
-                           'ssids_cpu_SmallLeafSymbolicSubtree.hxx',
-                           'ssids_cpu_SymbolicNode.hxx',
-                           'ssids_cpu_SymbolicSubtree.hxx',
-                           'ssids_cpu_ThreadStats.hxx',
-                           'ssids_cpu_Workspace.hxx',
-                           'ssids_profile.hxx')
+  galahad_headers += files('ssids_contrib.h')
 endif
 
 if not libhsl.found()
