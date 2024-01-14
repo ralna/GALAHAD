@@ -1,12 +1,8 @@
 libgalahad_src += files('presolve.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/presolve_ciface.F90')
-endif
+libgalahad_c_src += files('C/presolve_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['presolve', files('Python/presolve_pyiface.c')]]
-endif
+libgalahad_python_src += [['presolve', files('Python/presolve_pyiface.c')]]
 
 libgalahad_cutest_src += files('usepresolve.F90')
 

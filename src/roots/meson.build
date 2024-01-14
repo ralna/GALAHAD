@@ -1,12 +1,8 @@
 libgalahad_src += files('roots.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/roots_ciface.F90')
-endif
+libgalahad_c_src += files('C/roots_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['roots', files('Python/roots_pyiface.c')]]
-endif
+libgalahad_python_src += [['roots', files('Python/roots_pyiface.c')]]
 
 galahad_tests += [['roots', 'rootst', files('rootst.F90')]]
 

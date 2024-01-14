@@ -1,12 +1,8 @@
 libgalahad_src += files('lstr.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/lstr_ciface.F90')
-endif
+libgalahad_c_src += files('C/lstr_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['lstr', files('Python/lstr_pyiface.c')]]
-endif
+libgalahad_python_src += [['lstr', files('Python/lstr_pyiface.c')]]
 
 libgalahad_cutest_src += files('uselstr.F90')
 

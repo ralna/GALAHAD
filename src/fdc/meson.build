@@ -1,14 +1,10 @@
 libgalahad_src += files('fdc.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/fdc_ciface.F90')
-endif
+libgalahad_c_src += files('C/fdc_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['fdc', files('Python/fdc_pyiface.c',
-                                          '../sls/Python/sls_pyiface.c','../uls/Python/uls_pyiface.c','../sils/Python/sils_pyiface.c',
-                                          '../gls/Python/gls_pyiface.c')]]
-endif
+libgalahad_python_src += [['fdc', files('Python/fdc_pyiface.c',
+                                        '../sls/Python/sls_pyiface.c','../uls/Python/uls_pyiface.c','../sils/Python/sils_pyiface.c',
+                                        '../gls/Python/gls_pyiface.c')]]
 
 galahad_tests += [['fdc', 'fdct', files('fdct.F90')],
                   ['fdc', 'fdcti', files('fdcti.F90')]]

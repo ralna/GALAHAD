@@ -1,12 +1,8 @@
 libgalahad_src += files('gls.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/gls_ciface.F90')
-endif
+libgalahad_c_src += files('C/gls_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['gls', files('Python/gls_pyiface.c')]]
-endif
+libgalahad_python_src += [['gls', files('Python/gls_pyiface.c')]]
 
 galahad_tests += [['gls', 'glst', files('glst.F90')]]
 

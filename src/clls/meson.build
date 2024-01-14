@@ -1,8 +1,6 @@
 libgalahad_src += files('clls.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/clls_ciface.F90')
-endif
+libgalahad_c_src += files('C/clls_ciface.F90')
 
 libgalahad_cutest_src += files('useclls.F90')
 

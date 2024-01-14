@@ -370,7 +370,10 @@ if build_single
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@'] + output_generator)
 
-  to_process_single = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src, libgalahad_mumps_single_src]
+  to_process_single = [libgalahad_src, libgalahad_ampl_src, libgalahad_mumps_single_src]
+  if build_ciface
+    to_process_single += libgalahad_c_src
+  endif
   if libcutest_single.found()
     to_process_single += libgalahad_cutest_src
   else
@@ -401,7 +404,10 @@ if build_double
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@'] + output_generator)
 
-  to_process_double = [libgalahad_src, libgalahad_c_src, libgalahad_ampl_src, libgalahad_mumps_double_src]
+  to_process_double = [libgalahad_src, libgalahad_ampl_src, libgalahad_mumps_double_src]
+  if build_ciface
+    to_process_double += libgalahad_c_src
+  endif
   if libcutest_double.found()
     to_process_double += libgalahad_cutest_src
   else

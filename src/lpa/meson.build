@@ -2,14 +2,10 @@ libgalahad_src += files('lpa.F90')
 
 galahad_binaries += [['inlpa', files('inlpa.F90')]]
 
-if build_ciface
-  libgalahad_c_src += files('C/lpa_ciface.F90')
-endif
+libgalahad_c_src += files('C/lpa_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['lpa', files('Python/lpa_pyiface.c',
-                                          '../rpd/Python/rpd_pyiface.c','../lms/Python/lms_pyiface.c')]]
-endif
+libgalahad_python_src += [['lpa', files('Python/lpa_pyiface.c',
+                                        '../rpd/Python/rpd_pyiface.c','../lms/Python/lms_pyiface.c')]]
 
 libgalahad_cutest_src += files('uselpa.F90')
 

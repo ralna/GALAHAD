@@ -1,12 +1,8 @@
 libgalahad_src += files('hash.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/hash_ciface.F90')
-endif
+libgalahad_c_src += files('C/hash_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['hash', files('Python/hash_pyiface.c')]]
-endif
+libgalahad_python_src += [['hash', files('Python/hash_pyiface.c')]]
 
 galahad_tests += [['hash', 'hasht', files('hasht.F90')]]
 

@@ -1,8 +1,8 @@
 libgalahad_src += files('dlp.F90')
+
 galahad_binaries += [['indlp', files('indlp.F90')]]
-if build_ciface
-  libgalahad_c_src += files('C/dlp_ciface.F90')
-endif
+
+libgalahad_c_src += files('C/dlp_ciface.F90')
 
 libgalahad_cutest_src += files('usedlp.F90')
 

@@ -2,15 +2,11 @@ libgalahad_src += files('bqp.F90')
 
 galahad_binaries += [['inbqp', files('inbqp.F90')]]
 
-if build_ciface
-  libgalahad_c_src += files('C/bqp_ciface.F90')
-endif
+libgalahad_c_src += files('C/bqp_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['bqp', files('Python/bqp_pyiface.c',
-                                          '../sbls/Python/sbls_pyiface.c','../gltr/Python/gltr_pyiface.c','../sls/Python/sls_pyiface.c',
-                                          '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c','../gls/Python/gls_pyiface.c')]]
-endif
+libgalahad_python_src += [['bqp', files('Python/bqp_pyiface.c',
+                                        '../sbls/Python/sbls_pyiface.c','../gltr/Python/gltr_pyiface.c','../sls/Python/sls_pyiface.c',
+                                        '../sils/Python/sils_pyiface.c','../uls/Python/uls_pyiface.c','../gls/Python/gls_pyiface.c')]]
 
 libgalahad_cutest_src += files('usebqp.F90')
 

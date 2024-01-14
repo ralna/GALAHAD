@@ -1,12 +1,8 @@
 libgalahad_src += files('ir.F90')
 
-if build_ciface
-  libgalahad_c_src += files('C/ir_ciface.F90')
-endif
+libgalahad_c_src += files('C/ir_ciface.F90')
 
-if build_pythoniface
-  libgalahad_python_src += [['ir', files('Python/ir_pyiface.c')]]
-endif
+libgalahad_python_src += [['ir', files('Python/ir_pyiface.c')]]
 
 galahad_tests += [['ir', 'irt', files('irt.F90')]]
 
