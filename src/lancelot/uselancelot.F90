@@ -138,14 +138,14 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
+     INTEGER ( KIND = ip_ ) :: i, j, ifflag, numvar, igrtyp, iores, ieltyp
      INTEGER ( KIND = ip_ ) :: ntotel, nvrels, nnza, ngpvlu, nepvlu, neltyp
      INTEGER ( KIND = ip_ ) :: ngrtyp, ialgor, nnlneq, nlinin, nnlnin, nobjgr
-     INTEGER ( KIND = ip_ ) :: ieltyp, lfuval, seed_size
-     INTEGER ( KIND = ip_ ) :: nin, ninmax, nelmax, iauto, out
-     INTEGER ( KIND = ip_ ) :: i, j, ifflag, numvar, igrtyp, iores
+     INTEGER ( KIND = ip_ ) :: nin, ninmax, nelmax, iauto, lfuval, out
      INTEGER ( KIND = ip_ ) :: norder, nfree , nfixed, alloc_status
      INTEGER ( KIND = ip_ ) :: nlower, nupper, nboth , nslack, nlinob
      INTEGER ( KIND = ip_ ) :: nnlnob, nlineq, alive_request, pass
+     INTEGER :: seed_size
      REAL    :: time, t, timm, ttotal
      REAL ( KIND = rp_ ) :: fobj, epsmch, rand
      REAL ( KIND = rp_ ), DIMENSION( 2 ) :: OBFBND
@@ -193,7 +193,7 @@
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTINV, ITEST
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IELVAR_temp
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_temp
-     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SEEDS
+     INTEGER, ALLOCATABLE, DIMENSION( : ) :: SEEDS
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -886,35 +886,35 @@
        IF ( inform%status == - 1 ) THEN
          CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
                         prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,    &
-                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
-                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
-                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,       &
+                        prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_, &
+                        prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval,  &
+                        prob%n, prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 1_ip_, i )
          j = 2
          IF ( second ) j = 3
          CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
                         prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,    &
-                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
-                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
-                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, j, i )
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,       &
+                        prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_, &
+                        prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval,  &
+                        prob%n, prob%ISTEPA( prob%nel + 1 ) - 1_ip_, j, i )
        END IF
        IF ( inform%status == - 2 )                                             &
          CALL ELFUN_r ( FUVALS, X_temp, prob%EPVALU,                           &
                         inform%ncalcf, prob%ITYPEE,                            &
                         prob%ISTAEV, IELVAR_temp, prob%INTVAR, prob%ISTADH,    &
-                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
-                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
-                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,       &
+                        prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_, &
+                        prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval,  &
+                        prob%n, prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 1_ip_, i )
        IF ( inform%status == - 3 )                                             &
          CALL ELFUN_r ( FUVALS, X_temp, prob%EPVALU,                           &
                        inform%ncalcf, prob%ITYPEE,                             &
                         prob%ISTAEV, IELVAR_temp, prob%INTVAR, prob%ISTADH,    &
-                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
-                        prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
-                        prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
+                        prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,       &
+                        prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_, &
+                        prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval,  &
+                        prob%n, prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 2_ip_, i )
        IF ( inform%status < 0 ) GO TO 100
 
        DEALLOCATE( ITEST, IELVAR_temp, X_temp )
@@ -1001,13 +1001,13 @@
        IF ( inform%status == - 1 .OR. inform%status == - 2 )                   &
          CALL GROUP_r ( GVALS , prob%ng, FT    , prob%GPVALU,                  &
                         inform%ncalcg, prob%ITYPEG, prob%ISTGPA, ITEST,        &
-                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
-                        prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., i )
+                        prob%ng, prob%ng + 1_ip_, prob%ng, prob%ng,            &
+                        prob%ISTGPA( prob%ng + 1 ) - 1_ip_, .FALSE., i )
        IF ( inform%status == - 1 .OR. inform%status == - 3 )                   &
          CALL GROUP_r ( GVALS , prob%ng, FT    , prob%GPVALU,                  &
                         inform%ncalcg, prob%ITYPEG, prob%ISTGPA, ITEST,        &
-                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
-                        prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE. , i )
+                        prob%ng, prob%ng + 1_ip_, prob%ng, prob%ng,            &
+                        prob%ISTGPA( prob%ng + 1 ) - 1_ip_, .TRUE. , i )
        IF ( inform%status < 0 ) GO TO 200
        DEALLOCATE( ITEST )
 
@@ -1095,24 +1095,25 @@
 
            CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE, &
                  prob%ISTAEV, prob%IELVAR, prob%INTVAR,                        &
-                 prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,     &
-                 prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                &
-                 prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,         &
-                 prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+                 prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_, &
+                 prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_,        &
+                 prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval,         &
+                 prob%n, prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 1_ip_, i )
            IF ( .NOT. fdgrad ) CALL ELFUN_r ( FUVALS, XT, prob%EPVALU,         &
                  inform%ncalcf, prob%ITYPEE, prob%ISTAEV, prob%IELVAR,         &
                  prob%INTVAR, prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel,      &
-                 prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,  &
-                 prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,         &
-                 prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
+                 prob%nel + 1_ip_, prob%ISTAEV( prob%nel + 1 ) - 1_ip_,        &
+                 prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel + 1_ip_,         &
+                 prob%nel, lfuval, prob%n,                                     &
+                 prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 2_ip_, i )
          END IF
          IF ( inform%status == - 2 ) THEN
 
 !  Evaluate the group function derivatives
 
            CALL GROUP_r ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcf,      &
-               prob%ITYPEG, prob%ISTGPA, ICALCF, prob%ng, prob%ng + 1,         &
-               prob%ng, prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., i )
+               prob%ITYPEG, prob%ISTGPA, ICALCF, prob%ng, prob%ng + 1_ip_,     &
+               prob%ng, prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1_ip_, .TRUE., i )
          END IF
          GO TO 220
        ELSE
@@ -1385,10 +1386,10 @@
 
          CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
              prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,               &
-             prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,                      &
-             prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                    &
-             prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,             &
-             prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+             prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,                      &
+             prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_,                    &
+             prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval, prob%n,             &
+             prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 1_ip_, i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 1 ) THEN
              inform%status = 13
@@ -1410,10 +1411,10 @@
          IF ( control%print_level >= 10 ) WRITE( out, 2210 )
          CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
              prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,               &
-             prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,                      &
-             prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                    &
-             prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,             &
-             prob%ISTEPA( prob%nel + 1 ) - 1, ifflag, i )
+             prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,                  &
+             prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_,            &
+             prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval, prob%n,     &
+             prob%ISTEPA( prob%nel + 1 ) - 1_ip_, ifflag, i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 1 ) THEN
              inform%status = 13
@@ -1455,8 +1456,8 @@
          IF ( control%print_level >= 10 ) WRITE( out, 2230 )
          CALL GROUP_r ( GVALS, prob%ng, FT, prob%GPVALU, inform%ncalcg,        &
                         prob%ITYPEG, prob%ISTGPA, ICALCG,                      &
-                        prob%ng, prob%ng + 1, prob%ng, prob%ng,                &
-                        prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., i )
+                        prob%ng, prob%ng + 1_ip_, prob%ng, prob%ng,            &
+                        prob%ISTGPA( prob%ng + 1 ) - 1_ip_, .TRUE., i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 2 ) THEN
              inform%status = 13

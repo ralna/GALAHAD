@@ -3,7 +3,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 1    S U B R O U T I N E S  -*-*-
 
       SUBROUTINE MC61ID( ICNTL, CNTL )
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
       DOUBLE PRECISION :: CNTL( 5 )
       INTEGER ( KIND = ip_ ) :: ICNTL( 10 )
       ICNTL( 1 ) = 6
@@ -22,7 +22,7 @@
 
       SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,
      &                   ICNTL, CNTL, INFO, RINFO )
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
       INTEGER ( KIND = ip_ ) :: job, n, liw, lirn
       DOUBLE PRECISION :: RINFO( 15 )

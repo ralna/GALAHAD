@@ -204,7 +204,7 @@ contains
        ! There are some delays
        contrib%delay_perm => nodes(node)%perm(nelim+1:blkn+ndelay_in)
        contrib%lddelay = blkm-blkn + contrib%ndelay
-       allocate(contrib%delay_val(contrib%lddelay*int(contrib%ndelay,long)), &
+       allocate(contrib%delay_val(contrib%lddelay*int(contrib%ndelay,long_)), &
             stat=st)
        if (st .ne. 0) return
        gpu_delay_ptr = c_ptr_plus( nodes(node)%gpu_lcol, &
@@ -333,7 +333,7 @@ contains
     type(C_PTR) :: gpu_custats
 
     gpu_LDLT = C_NULL_PTR
-    delta = 0.01_wp
+    delta = 0.01_rp_
     eps = tiny(1.0_rp_)
 
     if (gpu%num_levels .eq. 0) return ! Shortcut empty streams (v. small matrices)
@@ -505,7 +505,7 @@ contains
           stats%maxsupernode = max(stats%maxsupernode, blkn)
 
           ! Allocate memory for the local permutation (lperm).
-          call smalloc(alloc, nodes(node)%perm, blkn+0_long, &
+          call smalloc(alloc, nodes(node)%perm, blkn+0_long_, &
                nodes(node)%ismptr, nodes(node)%ismsa, stats%st)
           if (stats%st .ne. 0) go to 100
           lperm => nodes(node)%perm
@@ -531,7 +531,7 @@ contains
        ! in case the user opts for no scaling
        ! FIXME: Make optional?
        ! FIXME: Use CUBLAS instead? [Check if zeroed]
-       k = int( min(65535_long, (level_size - 1)/256 + 1) )
+       k = int( min(65535_long_, (level_size - 1)/256 + 1) )
        ptr_u = custack_alloc(gwork, k*C_SIZEOF(dummy_real))
        ptr_v = custack_alloc(gwork, C_SIZEOF(dummy_real))
        call max_abs( stream, k, level_size, ptr_levL, ptr_u, ptr_v )
@@ -721,7 +721,7 @@ contains
        blkn = sptr(node + 1) - sptr(node) + ndelay
        sz = sz + (blkm+2_long_)*blkn ! calculate 'level_size'
     end do
-    sz = int( min(65535_long, (sz - 1)/256 + 1) )
+    sz = int( min(65535_long_, (sz - 1)/256 + 1) )
     lgpu = max(lgpu, &
          sz*C_SIZEOF(real_dummy) + & ! ptr_u
          C_SIZEOF(real_dummy))       ! ptr_v
@@ -1136,7 +1136,7 @@ contains
              nodes(node)%nelim = nelm(ncb)
              do j = blkm, blkm-nelm(ncb)+1, -1
                 stats%num_factor = stats%num_factor + j
-                stats%num_flops = stats%num_flops + j**2_long
+                stats%num_flops = stats%num_flops + j**2_long_
              end do
           end if
        end do
@@ -1397,7 +1397,7 @@ contains
                   = stats%num_delay + blkn - nelim
              do j = blkm, blkm-nelim+1, -1
                 stats%num_factor = stats%num_factor + j
-                stats%num_flops = stats%num_flops + j**2_long
+                stats%num_flops = stats%num_flops + j**2_long_
              end do
           end if
        end do
@@ -1454,7 +1454,7 @@ contains
           stats%num_delay = stats%num_delay + blkn - nelim
           do j = blkm, blkm-nelim+1, -1
              stats%num_factor = stats%num_factor + j
-             stats%num_flops = stats%num_flops + j**2_long
+             stats%num_flops = stats%num_flops + j**2_long_
           end do
 
        end if

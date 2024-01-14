@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-14 AT 14:15 GMT.
+
+#include "galahad_hsl.h"
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 7    M O D U L E  -*-*-*-
 module hsl_MA87_double

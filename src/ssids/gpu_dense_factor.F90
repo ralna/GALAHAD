@@ -6,14 +6,13 @@ module spral_ssids_gpu_denfact_precision
   use, intrinsic :: iso_c_binding
   use spral_cuda_precision
   use spral_kinds_precision
-  use spral_ssids_gpu_alloc_precision, only : cuda_stack_alloc_type, &
-                                              custack_alloc, &
-                                              custack_free
-  use spral_ssids_gpu_datatypes_precision, only : multinode_fact_type, &
+  use spral_ssids_gpu_alloc_precision, only : cuda_stack_alloc_type,           &
+                                              custack_alloc, custack_free
+  use spral_ssids_gpu_datatypes_precision, only : multinode_fact_type,         &
        multiblock_fact_type, multireorder_data, multielm_data
   use spral_ssids_gpu_ifaces_precision
-  use spral_ssids_types_precision, only : wp, one, &
-       MNF_BLOCKS, SSIDS_ERROR_NOT_POS_DEF
+  use spral_ssids_types_precision, only : one, MNF_BLOCKS,                     &
+                                          SSIDS_ERROR_NOT_POS_DEF
   implicit none
 
   private
@@ -44,8 +43,8 @@ contains
     type(C_PTR) :: gpu_D  ! same for D-factor (2 x ncols)
     type(C_PTR) :: gpu_B  ! same for a buffer (nrows x block_size)
     type(C_PTR) :: gpu_ind ! same for pivot indices (block_size)
-    real(kind = wp), intent(in) :: delta ! admissible pivot threshold
-    real(kind = wp), intent(in) :: eps ! zero pivot threshold
+    real(kind = rp_), intent(in) :: delta ! admissible pivot threshold
+    real(kind = rp_), intent(in) :: eps ! zero pivot threshold
     integer(ip_), intent(inout), target :: perm(nrows) ! row ordering
     integer(C_INT), intent(inout), target :: ind(2*ncols) ! work array for 
        ! reorder
@@ -426,8 +425,8 @@ contains
 !
 ! as with node_ldlt, on input L = A
 !
-  subroutine multinode_ldlt(stream, nlvlnodes, node_m, node_n, node_lcol, &
-       node_ldcol, node_skip, gpu_B, gpu_ind, delta, eps, block_size,      &
+  subroutine multinode_ldlt(stream, nlvlnodes, node_m, node_n, node_lcol,      &
+       node_ldcol, node_skip, gpu_B, gpu_ind, delta, eps, block_size,          &
        perm, done, gwork, cublas_handle, st, cuda_error, cublas_error)
     implicit none
     type(C_PTR), intent(in) :: stream
@@ -440,9 +439,9 @@ contains
     integer(ip_), intent(in) :: block_size ! same as in node_ldlt
     type(C_PTR) :: gpu_B   ! dev. pointer to a buffer
     type(C_PTR) :: gpu_ind  ! dev. pointer to the array of all pivot indices
-    real(kind = wp), intent(in) :: delta, eps ! same as in node_ldlt
-    integer(C_INT), intent(inout), target :: perm(*) ! array of all column indices
-    integer(ip_), intent(out) :: done(nlvlnodes) ! same as done in node_ldlt per node
+    real(kind = rp_), intent(in) :: delta, eps ! same as in node_ldlt
+    integer(C_INT), intent(inout), target :: perm(*) ! array of column indices
+    integer(ip_), intent(out) :: done(nlvlnodes) ! same as node_ldlt per node
     type(cuda_stack_alloc_type), intent(inout) :: gwork
     type(C_PTR), intent(in) :: cublas_handle
     integer(ip_), intent(out) :: st
@@ -501,7 +500,7 @@ contains
     st = 0; cuda_error = 0; cublas_error = 0
   
     gpu_aux = custack_alloc(gwork, 8*C_SIZEOF(dummy_int))
-    allocate(ib(nlvlnodes), jb(nlvlnodes), pstat(nlvlnodes), left(nlvlnodes), &
+    allocate(ib(nlvlnodes), jb(nlvlnodes), pstat(nlvlnodes), left(nlvlnodes),  &
          right(nlvlnodes), stat=st)
     if (st .ne. 0) return
 
@@ -560,7 +559,7 @@ contains
        end do
        ncbr = ncbr + 1
     end do
-    cuda_error = cudaMemcpyAsync_H2D(gpu_mrdata, C_LOC(mrdata), mrdata_size, &
+    cuda_error = cudaMemcpyAsync_H2D(gpu_mrdata, C_LOC(mrdata), mrdata_size,   &
          stream)
     if (cuda_error .ne. 0) return
 
@@ -697,19 +696,19 @@ contains
        end do
        if (ncb .eq. 0) exit main_loop
     
-       call multiblock_ldlt(stream, ncb, gpu_mbfdata, gpu_B, delta, eps, &
+       call multiblock_ldlt(stream, ncb, gpu_mbfdata, gpu_B, delta, eps,       &
             gpu_ind, gpu_stat)
 
-       cuda_error = cudaMemcpyAsync_D2H(C_LOC(pstat), gpu_stat, &
+       cuda_error = cudaMemcpyAsync_D2H(C_LOC(pstat), gpu_stat,                &
             nlvlnodes*C_SIZEOF(pstat(1)), stream)
        if (cuda_error .ne. 0) return
        cuda_error = cudaEventRecord(pstat_event, stream)
        if (cuda_error .ne. 0) return
 
-       call multireorder(stream, ncbr, gpu_mnfdata, gpu_mrdata, gpu_B, &
+       call multireorder(stream, ncbr, gpu_mnfdata, gpu_mrdata, gpu_B,         &
             gpu_stat, gpu_ind, gpu_perm, gpu_aux)
 
-       call cuda_multidsyrk(stream, logical(.false.,C_BOOL), ncbe, gpu_stat, &
+       call cuda_multidsyrk(stream, logical(.false.,C_BOOL), ncbe, gpu_stat,   &
             gpu_medata, gpu_mnfdata)
 
        cuda_error = cudaEventSynchronize(pstat_event)
@@ -729,7 +728,7 @@ contains
     cuda_error = cudaEventDestroy(pstat_event)
     if (cuda_error .ne. 0) return
   
-    cuda_error = cudaMemcpyAsync_D2H(C_LOC(perm), gpu_perm, &
+    cuda_error = cudaMemcpyAsync_D2H(C_LOC(perm), gpu_perm,                    &
        width*C_SIZEOF(perm(1)), stream);
     if (cuda_error .ne. 0) return
     cuda_error = cudaStreamSynchronize(stream) ! Wait for perm before 
@@ -746,7 +745,7 @@ contains
   end subroutine multinode_ldlt
 
   ! llt factorization of one node
-  subroutine node_llt(stream, nrows, ncols, gpu_L, ldL, gpu_B, block_size, &
+  subroutine node_llt(stream, nrows, ncols, gpu_L, ldL, gpu_B, block_size,     &
        cublas_handle, flag, gwork, cuda_error, cublas_error)
     implicit none
     type(C_PTR), intent(in) :: stream
@@ -797,8 +796,8 @@ contains
              sz = (jb + right*ldL)*C_SIZEOF(dummy_real)
              gpu_w = c_ptr_plus(gpu_L, sz)
 
-             cublas_error = cublasDgemm(cublas_handle, 'N', 'T', nrows-jb, &
-                  ncols-right, jb-left, -ONE, gpu_u, ldL, gpu_v, ldL, ONE, &
+             cublas_error = cublasDgemm(cublas_handle, 'N', 'T', nrows-jb,     &
+                  ncols-right, jb-left, -ONE, gpu_u, ldL, gpu_v, ldL, ONE,     &
                   gpu_w, ldL)
           end if
 
@@ -846,8 +845,8 @@ contains
   end subroutine node_llt
 
 ! simultaneous llt factorization of several nodes
-  subroutine multinode_llt(stream, nlvlnodes, node_m, node_n, node_lcol, &
-       cublas, gpu_L, gpu_B, block_size, done, flag, gwork, st, cuda_error, &
+  subroutine multinode_llt(stream, nlvlnodes, node_m, node_n, node_lcol,       &
+       cublas, gpu_L, gpu_B, block_size, done, flag, gwork, st, cuda_error,    &
        cublas_error)
     implicit none
     type(C_PTR), intent(in) :: stream
@@ -916,7 +915,7 @@ contains
     step = 24*block_size
 
     gpu_aux = custack_alloc(gwork, 8*C_SIZEOF(dummy_int))
-    allocate(ib(nlvlnodes), jb(nlvlnodes), pstat(nlvlnodes), left(nlvlnodes), &
+    allocate(ib(nlvlnodes), jb(nlvlnodes), pstat(nlvlnodes), left(nlvlnodes),  &
          right(nlvlnodes), stat=st)
     if (st .ne. 0) return
 
@@ -975,7 +974,7 @@ contains
        end do
        ncbe = ncbe + k*l
     end do
-    cuda_error = cudaMemcpyAsync_h2d(gpu_medata, C_LOC(medata), medata_size, &
+    cuda_error = cudaMemcpyAsync_h2d(gpu_medata, C_LOC(medata), medata_size,   &
          stream)
     if (cuda_error .ne. 0) return
 
@@ -1031,7 +1030,7 @@ contains
     gpu_mbfdata = custack_alloc(gwork, mbfdata_size)
 
     main_loop: do
-       call multiblock_llt_setup(stream, nlvlnodes, gpu_mnfdata, gpu_mbfdata, &
+       call multiblock_llt_setup(stream, nlvlnodes, gpu_mnfdata, gpu_mbfdata,  &
             step, block_size, BLOCKS, gpu_stat, gpu_aux)
        ncb = 0
        do node = 1, nlvlnodes
@@ -1080,10 +1079,10 @@ contains
           done(node) = jb(node)
        end do
 
-       call multicopy(stream, ncbr, gpu_mnfdata, gpu_mrdata, gpu_L, gpu_B, &
+       call multicopy(stream, ncbr, gpu_mnfdata, gpu_mrdata, gpu_L, gpu_B,     &
             gpu_stat, gpu_aux)
 
-       call cuda_multidsyrk(stream, logical(.true., C_BOOL), ncbe, gpu_stat, &
+       call cuda_multidsyrk(stream, logical(.true., C_BOOL), ncbe, gpu_stat,   &
             gpu_medata, gpu_mnfdata)
 
     end do main_loop

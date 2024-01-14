@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-13 AT 15:45 GMT.
+
+#include "galahad_hsl.h"
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 5 7   M O D U L E  -*-*-*-
 
@@ -62,7 +64,7 @@ module hsl_ma57_double
                  !     occur if a zero pivot is detected.
                  !  4  No pivoting is performed but pivots are changed to
                  !     all be positive.
-      integer(ip_) :: thresh ! Controls threshold for detecting full rows in analyse
+      integer(ip_) :: thresh ! threshold for detecting full rows in analyse
                  !     Registered as percentage of N
                  ! 100 Only fully dense rows detected (default)
       integer(ip_) :: ordering  ! Controls ordering:

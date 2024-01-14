@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MA57 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-05-18
+#  This version: 2024-01-13
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -18,8 +18,17 @@ MA57S = blas ma27 zd11 $(HLGS)(mc71s.o) $(HLGS)(ma57s.o) \
 MA57D = blas ma27 zd11 $(HLGD)(mc71d.o) $(HLGD)(ma57d.o) \
                $(HLGD)(mc21d.o) $(HLGD)(mc34d.o) $(HLGD)(mc47d.o) \
                $(HLGD)(mc59d.o) $(HLGD)(mc64d.o) $(HLGD)(hsl_ma57d.o)
+MA57S64 = blas ma27 zd11 $(HLGS64)(mc71s.o) $(HLGS64)(ma57s.o) \
+               $(HLGS64)(mc21s.o) $(HLGS64)(mc34s.o) $(HLGS64)(mc47s.o) \
+               $(HLGS64)(mc59s.o) $(HLGS64)(mc64s.o) $(HLGS64)(hsl_ma57s.o)
+MA57D64 = blas ma27 zd11 $(HLGD64)(mc71d.o) $(HLGD64)(ma57d.o) \
+               $(HLGD64)(mc21d.o) $(HLGD64)(mc34d.o) $(HLGD64)(mc47d.o) \
+               $(HLGD64)(mc59d.o) $(HLGD64)(mc64d.o) $(HLGD64)(hsl_ma57d.o)
+
 MA57CS = $(MA57S) $(HCLGS)(hsl_ma57s_ciface.o)
 MA57CD = $(MA57D) $(HCLGD)(hsl_ma57d_ciface.o)
+MA57CS64 = $(MA57S64) $(HCLGS64)(hsl_ma57s_ciface.o)
+MA57CD64 = $(MA57D64) $(HCLGD64)(hsl_ma57d_ciface.o)
 
 #  compilation agenda
 
@@ -28,27 +37,34 @@ ma57: ma57_$(PRECIS)
 ma57_silent: ma57_$(PRECIS)
 ma57_single: $(MA57S)
 ma57_double: $(MA57D)
+ma57_single_64: $(MA57S64)
+ma57_double_64: $(MA57D64)
 
 ma57_ciface: ma57_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA57 C routines ($(PRECIS) $(SUCC)"
 ma57_ciface_silent: ma57_ciface_$(PRECIS)
 ma57_ciface_single: $(MA57CS)
 ma57_ciface_double: $(MA57CD)
+ma57_ciface_single_64: $(MA57CS64)
+ma57_ciface_double_64: $(MA57CD64)
 
 #  lapack packages
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  hsl packages
 
 ma27:
 	( cd ../ma27 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma27_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ma27 )
+            ma27_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../ma27 )
 zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
+            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../zd11 )
 
 #  individual compilations
 
@@ -102,11 +118,16 @@ mc71d.o: $(HLG)(mc71d.o)
 $(HLG)(mc71d.o): $(MA57)/mc71d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc71d"
 	$(CP) $(MA57)/mc71d.f $(OBJ)/mc71d.f90
+	echo "integer $(INTEGER)"
+	echo "flags $(FFLAGS77)"
+	echo "flags $(FFLAGS)"
+	echo "flags $(FFLAGS77)"
+	echo "$(FORTRAN) -o mc71d.o $(FFLAGS77) mc71d.f90"
 	cd $(OBJ); $(FORTRAN) -o mc71d.o $(FFLAGS77) mc71d.f90
 	cd $(OBJ); $(HARR) mc71d.o ; $(RM) mc71d.f90 mc71d.o
 	@printf '[ OK ]\n'
 
-#mc21s.o: $(HLG)(mc21s.o)
+mc21s.o: $(HLG)(mc21s.o)
 
 $(HLG)(mc21s.o): $(MA33)/mc21s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21s"
@@ -237,7 +258,7 @@ hsl_ma57d.o: $(HLG)(hsl_ma57d.o)
 $(HLG)(hsl_ma57d.o): $(MA57)/hsl_ma57d.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57d"
 	$(CP) $(MA57)/hsl_ma57d.f90 $(OBJ)/hsl_ma57d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d.o $(FFLAGSS) \
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d.o $(FFLAGS) \
                       -DMETIS_NODEND=galahad_metis hsl_ma57d.f90
 	cd $(OBJ) ; $(HARR) hsl_ma57d.o ; $(RM) hsl_ma57d.f90 hsl_ma57d.o
 	$(RMARFILED) mdchl.o

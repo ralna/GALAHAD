@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD ZD11 package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2023-01-26
+#  This version: 2024-01-13
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -48,13 +48,10 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(HLGS)(hsl_$(package)s.o)
-D$(PACKAGE) = $(DEPENDENCIES) $(HLGD)(hsl_$(package)d.o)
-
-#  compilation and run agenda
-
-$(PACKAGE)OBJECTSS = $(S$(PACKAGE))
-$(PACKAGE)OBJECTSD = $(D$(PACKAGE))
+$(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(HLGS)(hsl_$(package)s.o)
+$(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(HLGD)(hsl_$(package)d.o)
+$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(HLGS64)(hsl_$(package)s.o)
+$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(HLGD64)(hsl_$(package)d.o)
 
 #  main compilations and runs
 
@@ -69,12 +66,18 @@ $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(HLGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
 	$(RANLIB) $(HLGD)
+$(package)_single_64: $($(PACKAGE)OBJECTSS64)
+	$(RANLIB) $(HLGS64)
+$(package)_double_64: $($(PACKAGE)OBJECTSD64)
+	$(RANLIB) $(HLGD64)
 
 #  process package silently
 
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
+$(package)_silent_single_64: $($(PACKAGE)OBJECTSS64)
+$(package)_silent_double_64: $($(PACKAGE)OBJECTSD64)
 
 #  book keeping
 

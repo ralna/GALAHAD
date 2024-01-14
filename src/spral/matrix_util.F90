@@ -108,13 +108,13 @@ module spral_matrix_util_precision
 ! Internal types
 !!!!!!!!!!!!!!!!!!!!!!!!
 type dup_list
-   integer(ip_) :: src
-   integer(ip_) :: dest
+   integer(i4_) :: src
+   integer(i4_) :: dest
    type(dup_list), pointer :: next => null()
 end type dup_list
 type dup_list64
-   integer(long_) :: src
-   integer(long_) :: dest
+   integer(i8_) :: src
+   integer(i8_) :: dest
    type(dup_list64), pointer :: next => null()
 end type dup_list64
 
@@ -126,7 +126,7 @@ interface print_matrix
 end interface
 interface apply_conversion_map
    module procedure apply_conversion_map_ptr32_precision, &
-         apply_conversion_map_ptr64_precision
+                    apply_conversion_map_ptr64_precision
 end interface apply_conversion_map
 interface clean_cscl_oop
    module procedure clean_cscl_oop_ptr32_precision, &
@@ -134,7 +134,7 @@ interface clean_cscl_oop
 end interface clean_cscl_oop
 interface convert_coord_to_cscl
    module procedure convert_coord_to_cscl_ptr32_precision, &
-      convert_coord_to_cscl_ptr64_precision
+                    convert_coord_to_cscl_ptr64_precision
 end interface convert_coord_to_cscl
 interface half_to_full
    module procedure half_to_full_int32, half_to_full_int64
@@ -335,7 +335,7 @@ subroutine print_matrix_long_precision(lp, lines, matrix_type, m, n, ptr, row, &
    integer(ip_), intent(in) :: matrix_type ! type of matrix
    integer(ip_), intent(in) :: m ! number of rows in matrix
    integer(ip_), intent(in) :: n ! number of cols in matrix
-   integer(long_), dimension(n+1), intent(in) :: ptr ! column pointers
+   integer(i8_), dimension(n+1), intent(in) :: ptr ! column pointers
    integer(ip_), dimension(*), intent(in) :: row ! row indices
    real(rp_), dimension(*), optional, intent(in) :: val ! matrix vals
    logical, optional, intent(in) :: cbase ! if true, input uses C indexing
@@ -356,7 +356,7 @@ subroutine print_matrix_int_precision(lp, lines, matrix_type, m, n, ptr, row,  &
    integer(ip_), intent(in) :: matrix_type ! type of matrix
    integer(ip_), intent(in) :: m ! number of rows in matrix
    integer(ip_), intent(in) :: n ! number of cols in matrix
-   integer(ip_), dimension(n+1), intent(in) :: ptr ! column pointers
+   integer(i4_), dimension(n+1), intent(in) :: ptr ! column pointers
    integer(ip_), dimension(*), intent(in) :: row ! row indices
    real(rp_), dimension(*), optional, intent(in) :: val ! matrix vals
    logical, optional, intent(in) :: cbase ! if true, input uses C indexing
@@ -541,11 +541,11 @@ subroutine clean_cscl_oop_ptr32_precision(matrix_type, m, n, ptr_in, row_in,   &
    integer(ip_), intent(in) :: matrix_type ! what sort of symmetry is there?
    integer(ip_), intent(in) :: m ! number of rows
    integer(ip_), intent(in) :: n ! number of columns
-   integer(ip_), dimension(*), intent(in) :: ptr_in ! column pointers on input
+   integer(i4_), dimension(*), intent(in) :: ptr_in ! column pointers on input
    integer(ip_), dimension(*), intent(in) :: row_in ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(ip_), dimension(*), intent(out) :: ptr_out ! col ptr output
+   integer(i4_), dimension(*), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row 
       ! indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -553,8 +553,8 @@ subroutine clean_cscl_oop_ptr32_precision(matrix_type, m, n, ptr_in, row_in,   &
    real(rp_), optional, dimension(*), intent(in) :: val_in ! values input
    real(rp_), optional, allocatable, dimension(:) :: val_out
       ! values on output
-   integer(ip_), optional, intent(out) :: lmap
-   integer(ip_), optional, allocatable, dimension(:) :: map
+   integer(i4_), optional, intent(out) :: lmap
+   integer(i4_), optional, allocatable, dimension(:) :: map
       ! map(1:size(val_out)) gives src: map(i) = j means val_out(i)=val_in(j).
       ! map(size(val_out)+1:) gives pairs: map(i:i+1) = (j,k) means
       !     val_out(j) = val_out(j) + val_in(k)
@@ -594,11 +594,11 @@ subroutine clean_cscl_oop_ptr64_precision(matrix_type, m, n, ptr_in, row_in, &
    integer(ip_), intent(in) :: matrix_type ! what sort of symmetry is there?
    integer(ip_), intent(in) :: m ! number of rows
    integer(ip_), intent(in) :: n ! number of columns
-   integer(long_), dimension(*), intent(in) :: ptr_in ! column pointers on input
+   integer(i8_), dimension(*), intent(in) :: ptr_in ! column pointers on input
    integer(ip_), dimension(*), intent(in) :: row_in ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(long_), dimension(*), intent(out) :: ptr_out ! col ptr output
+   integer(i8_), dimension(*), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row indices out
       ! Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -606,8 +606,8 @@ subroutine clean_cscl_oop_ptr64_precision(matrix_type, m, n, ptr_in, row_in, &
    real(rp_), optional, dimension(*), intent(in) :: val_in ! values input
    real(rp_), optional, allocatable, dimension(:) :: val_out
       ! values on output
-   integer(long_), optional, intent(out) :: lmap
-   integer(long_), optional, allocatable, dimension(:) :: map
+   integer(i8_), optional, intent(out) :: lmap
+   integer(i8_), optional, allocatable, dimension(:) :: map
       ! map(1:size(val_out)) gives src: map(i) = j means val_out(i)=val_in(j).
       ! map(size(val_out)+1:) gives pairs: map(i:i+1) = (j,k) means
       !     val_out(j) = val_out(j) + val_in(k)
@@ -652,11 +652,11 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
    integer(ip_), intent(in) :: matrix_type ! what sort of symmetry is there?
    integer(ip_), intent(in) :: m ! number of rows
    integer(ip_), intent(in) :: n ! number of columns
-   integer(ip_), dimension(*), intent(in) :: ptr_in ! column pointers on input
+   integer(i4_), dimension(*), intent(in) :: ptr_in ! column pointers on input
    integer(ip_), dimension(*), intent(in) :: row_in ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(ip_), dimension(*), intent(out) :: ptr_out ! col ptr output
+   integer(i4_), dimension(*), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row 
       ! indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -664,8 +664,8 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
    real(rp_), optional, dimension(*), intent(in) :: val_in ! values input
    real(rp_), optional, allocatable, dimension(:) :: val_out
       ! values on output
-   integer(ip_), optional, intent(out) :: lmap
-   integer(ip_), optional, allocatable, dimension(:) :: map
+   integer(i4_), optional, intent(out) :: lmap
+   integer(i4_), optional, allocatable, dimension(:) :: map
       ! map(1:size(val_out)) gives src: map(i) = j means val_out(i)=val_in(j).
       ! map(size(val_out)+1:) gives pairs: map(i:i+1) = (j,k) means
       !     val_out(j) = val_out(j) + val_in(k)
@@ -1034,11 +1034,11 @@ subroutine clean_cscl_oop_main(context, multiplier, matrix_type, m, n, &
    integer(ip_), intent(in) :: matrix_type ! what sort of symmetry is there?
    integer(ip_), intent(in) :: m ! number of rows
    integer(ip_), intent(in) :: n ! number of columns
-   integer(long_), dimension(*), intent(in) :: ptr_in ! column pointers on input
+   integer(i8_), dimension(*), intent(in) :: ptr_in ! column pointers on input
    integer(ip_), dimension(*), intent(in) :: row_in ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(long_), dimension(*), intent(out) :: ptr_out ! col ptr output
+   integer(i8_), dimension(*), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row 
       ! indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -1046,8 +1046,8 @@ subroutine clean_cscl_oop_main(context, multiplier, matrix_type, m, n, &
    real(rp_), optional, dimension(*), intent(in) :: val_in ! values input
    real(rp_), optional, allocatable, dimension(:) :: val_out
       ! values on output
-   integer(long_), optional, intent(out) :: lmap
-   integer(long_), optional, allocatable, dimension(:) :: map
+   integer(i8_), optional, intent(out) :: lmap
+   integer(i8_), optional, allocatable, dimension(:) :: map
       ! map(1:size(val_out)) gives src: map(i) = j means val_out(i)=val_in(j).
       ! map(size(val_out)+1:) gives pairs: map(i:i+1) = (j,k) means
       !     val_out(j) = val_out(j) + val_in(k)
@@ -1059,12 +1059,12 @@ subroutine clean_cscl_oop_main(context, multiplier, matrix_type, m, n, &
    ! Local variables
    integer(ip_) :: col ! current column
    integer(ip_) :: i
-   integer(long_) :: ii
+   integer(i8_) :: ii
    integer(ip_) :: idiag
    integer(ip_) :: idup
    integer(ip_) :: ioor
    integer(ip_) :: j
-   integer(long_) :: kk
+   integer(i8_) :: kk
    integer(ip_) :: nout ! output unit (set to -1 if nout not present)
    integer(ip_) :: st ! stat parameter
    integer(ip_) :: minidx
@@ -1414,14 +1414,14 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
    integer(ip_), intent(in) :: matrix_type ! what sort of symmetry is there?
    integer(ip_), intent(in) :: m ! number of rows in matrix
    integer(ip_), intent(in) :: n ! number of columns in matrix
-   integer(ip_), intent(in) :: ne ! number of input nonzero entries
+   integer(i4_), intent(in) :: ne ! number of input nonzero entries
    integer(ip_), dimension(ne), intent(in) :: row ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
    integer(ip_), dimension(ne), intent(in) :: col ! column indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(ip_), dimension(n+1), intent(out) :: ptr_out ! col ptr output
+   integer(i4_), dimension(n+1), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row 
       ! indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -1429,8 +1429,8 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
    real(rp_), optional, dimension(*), intent(in) :: val_in ! values input
    real(rp_), optional, allocatable, dimension(:) :: val_out
       ! values on output
-   integer(ip_), optional, intent(out) :: lmap
-   integer(ip_), optional, allocatable, dimension(:) :: map
+   integer(i4_), optional, intent(out) :: lmap
+   integer(i4_), optional, allocatable, dimension(:) :: map
       ! map(1:size(val_out)) gives source: map(i) = j means
       ! val_out(i)=val_in(j).
       ! map(size(val_out)+1:) gives pairs: map(i:i+1) = (j,k) means
@@ -1446,9 +1446,9 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
    integer(ip_) :: idup
    integer(ip_) :: ioor
    integer(ip_) :: j
-   integer(ip_) :: k, l1, l2
    integer(ip_) :: l
-   integer(ip_) :: ne_new
+   integer(i4_) :: k, l1, l2
+   integer(i4_) :: ne_new
    integer(ip_) :: nout ! output unit (set to -1 if lp not present)
    integer(ip_) :: st ! stat parameter
 
@@ -1964,14 +1964,14 @@ subroutine convert_coord_to_cscl_ptr64_precision(matrix_type, m, n, ne, row,   &
    integer(ip_), intent(in) :: matrix_type ! what sort of symmetry is there?
    integer(ip_), intent(in) :: m ! number of rows in matrix
    integer(ip_), intent(in) :: n ! number of columns in matrix
-   integer(long_), intent(in) :: ne ! number of input nonzero entries
+   integer(i8_), intent(in) :: ne ! number of input nonzero entries
    integer(ip_), dimension(ne), intent(in) :: row ! row indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
    integer(ip_), dimension(ne), intent(in) :: col ! column indices on input.
       ! These may be unordered within each column and may contain
       ! duplicates and/or out-of-range entries
-   integer(long_), dimension(n+1), intent(out) :: ptr_out ! col ptr output
+   integer(i8_), dimension(n+1), intent(out) :: ptr_out ! col ptr output
    integer(ip_), allocatable, dimension(:), intent(out) :: row_out ! row
       !  indices out. Duplicates and out-of-range entries are dealt with and
       ! the entries within each column are ordered by increasing row index.
@@ -1979,8 +1979,8 @@ subroutine convert_coord_to_cscl_ptr64_precision(matrix_type, m, n, ne, row,   &
    real(rp_), optional, dimension(*), intent(in) :: val_in ! values input
    real(rp_), optional, allocatable, dimension(:) :: val_out
       ! values on output
-   integer(long_), optional, intent(out) :: lmap
-   integer(long_), optional, allocatable, dimension(:) :: map
+   integer(i8_), optional, intent(out) :: lmap
+   integer(i8_), optional, allocatable, dimension(:) :: map
       ! map(1:size(val_out)) gives source: map(i) = j means
       ! val_out(i)=val_in(j).
       ! map(size(val_out)+1:) gives pairs: map(i:i+1) = (j,k) means
@@ -1997,8 +1997,8 @@ subroutine convert_coord_to_cscl_ptr64_precision(matrix_type, m, n, ne, row,   &
    integer(ip_) :: ioor
    integer(ip_) :: j
    integer(ip_) :: l
-   integer(long_) :: ii, ll, l1, l2, kk
-   integer(long_) :: ne_new
+   integer(i8_) :: ii, ll, l1, l2, kk
+   integer(i8_) :: ne_new
    integer(ip_) :: nout ! output unit (set to -1 if lp not present)
    integer(ip_) :: st ! stat parameter
 
@@ -2510,13 +2510,13 @@ end subroutine convert_coord_to_cscl_ptr64_precision
 subroutine apply_conversion_map_ptr32_precision(matrix_type, lmap, map, val, ne, &
       val_out)
    integer(ip_), intent(in) :: matrix_type
-   integer(ip_), intent(in) :: lmap
-   integer(ip_), dimension(lmap), intent(in) :: map
+   integer(i4_), intent(in) :: lmap
+   integer(i4_), dimension(lmap), intent(in) :: map
    real(rp_), dimension(*), intent(in) :: val
-   integer(ip_), intent(in) :: ne
+   integer(i4_), intent(in) :: ne
    real(rp_), dimension(ne), intent(out) :: val_out
 
-   integer(ip_) :: i, j, k
+   integer(i4_) :: i, j, k
 
    select case(matrix_type)
    case default
@@ -2564,13 +2564,13 @@ end subroutine apply_conversion_map_ptr32_precision
 subroutine apply_conversion_map_ptr64_precision(matrix_type, lmap, map, val,   &
                                                 ne, val_out)
    integer(ip_), intent(in) :: matrix_type
-   integer(long_), intent(in) :: lmap
-   integer(long_), dimension(lmap), intent(in) :: map
+   integer(i8_), intent(in) :: lmap
+   integer(i8_), dimension(lmap), intent(in) :: map
    real(rp_), dimension(*), intent(in) :: val
-   integer(long_), intent(in) :: ne
+   integer(i8_), intent(in) :: ne
    real(rp_), dimension(ne), intent(out) :: val_out
 
-   integer(long_) :: i, j, k
+   integer(i8_) :: i, j, k
 
    select case(matrix_type)
    case default
@@ -2680,7 +2680,7 @@ end subroutine print_matrix_flag
 subroutine sort32( array, n, map, val )
    integer(ip_), intent(in) :: n       ! Size of array to be sorted
    integer(ip_), dimension(n), intent(inout) :: array ! Array to be sorted
-   integer(ip_), dimension(n), optional, intent(inout) :: map
+   integer(i4_), dimension(n), optional, intent(inout) :: map
    real(rp_), dimension(n), optional, intent(inout) :: val ! Apply same
       ! permutation to val
 
@@ -2734,13 +2734,13 @@ end subroutine sort32
 subroutine sort64( array, n, map, val )
    integer(ip_), intent(in) :: n       ! Size of array to be sorted
    integer(ip_), dimension(n), intent(inout) :: array ! Array to be sorted
-   integer(long_), dimension(n), optional, intent(inout) :: map
+   integer(i8_), dimension(n), optional, intent(inout) :: map
    real(rp_), dimension(n), optional, intent(inout) :: val ! Apply same
       ! permutation to val
 
    integer(ip_) :: i
    integer(ip_) :: temp
-   integer(long_) :: ltemp
+   integer(i8_) :: ltemp
    real(rp_) :: vtemp
    integer(ip_) :: root
 
@@ -2790,13 +2790,13 @@ subroutine pushdown32(root, last, array, val, map)
    integer(ip_), intent(in) :: last
    integer(ip_), dimension(last), intent(inout) :: array
    real(rp_), dimension(last), optional, intent(inout) :: val
-   integer(ip_), dimension(last), optional, intent(inout) :: map
+   integer(i4_), dimension(last), optional, intent(inout) :: map
 
    integer(ip_) :: insert ! current insert position
    integer(ip_) :: test ! current position to test
    integer(ip_) :: root_idx ! value of array(root) at start of iteration
    real(rp_) :: root_val ! value of val(root) at start of iteration
-   integer(ip_) :: root_map ! value of map(root) at start of iteration
+   integer(i4_) :: root_map ! value of map(root) at start of iteration
 
    ! NB a heap is a (partial) binary tree with the property that given a
    ! parent and a child, array(child)>=array(parent).
@@ -2901,13 +2901,13 @@ subroutine pushdown64(root, last, array, val, map)
    integer(ip_), intent(in) :: last
    integer(ip_), dimension(last), intent(inout) :: array
    real(rp_), dimension(last), optional, intent(inout) :: val
-   integer(long_), dimension(last), optional, intent(inout) :: map
+   integer(i8_), dimension(last), optional, intent(inout) :: map
 
    integer(ip_) :: insert ! current insert position
    integer(ip_) :: test ! current position to test
    integer(ip_) :: root_idx ! value of array(root) at start of iteration
    real(rp_) :: root_val ! value of val(root) at start of iteration
-   integer(long_) :: root_map ! value of map(root) at start of iteration
+   integer(i8_) :: root_map ! value of map(root) at start of iteration
 
    ! NB a heap is a (partial) binary tree with the property that given a
    ! parent and a child, array(child)>=array(parent).
@@ -3049,7 +3049,7 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
       ! upper triangular part will be in order for each column and will
       ! precede the row indices for the lower triangular part which will
       ! remain in the input order.
-   integer(ip_), intent(inout) ::ptr(n+1)  !  must be set
+   integer(i4_), intent(inout) ::ptr(n+1)  !  must be set
       ! by the user so that ptr(j) is the position in row
       ! of the first entry in column j and
       ! ptr(n+1) must be set to one more than the total number of
@@ -3066,13 +3066,15 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
       ! structure corresponding to the output values of row.
    logical, optional, intent(in) :: cbase
 
-   integer(ip_) :: ckp1 ! used as running pointer
-   integer(ip_) :: i,i1,i2,ii,ipkp1,ipos
-   integer(ip_) :: j,jstart 
+   integer(i4_) :: ckp1 ! used as running pointer
+   integer(ip_) :: i
+   integer(i4_) :: i1,i2,ii,ipkp1,ipos
+   integer(ip_) :: j
+   integer(i4_) :: jstart 
    integer(ip_) :: lenk ! number of entries in col. j of original structure
    integer(ip_) :: ndiag ! number diagonal entries present
-   integer(ip_) :: newtau ! number of entries in expanded storage
-   integer(ip_) :: oldtau ! number of entries in symmetric storage
+   integer(i4_) :: newtau ! number of entries in expanded storage
+   integer(i4_) :: oldtau ! number of entries in symmetric storage
    integer(ip_) :: rebase ! Added to ptr and row to get Fortran base
 
    rebase = 0
@@ -3184,7 +3186,7 @@ subroutine half_to_full_int64(n,row,ptr,iw,a,cbase)
       ! upper triangular part will be in order for each column and will
       ! precede the row indices for the lower triangular part which will
       ! remain in the input order.
-   integer(long_), intent(inout) ::ptr(n+1)  !  must be set
+   integer(i8_), intent(inout) ::ptr(n+1)  !  must be set
       ! by the user so that ptr(j) is the position in row
       ! of the first entry in column j and
       ! ptr(n+1) must be set to one more than the total number of
@@ -3201,15 +3203,15 @@ subroutine half_to_full_int64(n,row,ptr,iw,a,cbase)
       ! structure corresponding to the output values of row.
    logical, optional, intent(in) :: cbase
 
-   integer(long_) :: ckp1 ! used as running pointer
+   integer(i8_) :: ckp1 ! used as running pointer
    integer(ip_) :: i
-   integer(long_) :: i1,i2,ii,ipkp1,ipos
+   integer(i8_) :: i1,i2,ii,ipkp1,ipos
    integer(ip_) :: j
-   integer(long_) :: jstart 
+   integer(i8_) :: jstart 
    integer(ip_) :: lenk ! number of entries in col. j of original structure
    integer(ip_) :: ndiag ! number diagonal entries present
-   integer(long_) :: newtau ! number of entries in expanded storage
-   integer(long_) :: oldtau ! number of entries in symmetric storage
+   integer(i8_) :: newtau ! number of entries in expanded storage
+   integer(i8_) :: oldtau ! number of entries in symmetric storage
    integer(ip_) :: rebase ! Added to ptr and row to get Fortran base
 
    rebase = 0

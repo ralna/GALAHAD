@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD STRING package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-29
+#  This version: 2024-01-13
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -42,10 +42,10 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  non-standard compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(LGS)($(package).o)
-D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
-$(PACKAGE)OBJECTSS = $(S$(PACKAGE))
-$(PACKAGE)OBJECTSD = $(D$(PACKAGE))
+$(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(LGS)($(package).o)
+$(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(LGD)($(package).o)
+$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(LGS64)($(package).o)
+$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(LGD64)($(package).o)
 
 #  process package
 
@@ -55,12 +55,18 @@ $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(LGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
 	$(RANLIB) $(LGD)
+$(package)_single_64: $($(PACKAGE)OBJECTSS64)
+	$(RANLIB) $(LGS)
+$(package)_double_64: $($(PACKAGE)OBJECTSD64)
+	$(RANLIB) $(LGD)
 
 #  process package silently
 
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
+$(package)_silent_single_64: $($(PACKAGE)OBJECTSS64)
+$(package)_silent_double_64: $($(PACKAGE)OBJECTSD64)
 
 #  non-standard package compilation
 

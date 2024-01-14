@@ -1,36 +1,38 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-09
+#  This version: 2024-01-12
 
 #  compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(LGS)($(package)_single.o)
-D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package)_double.o)
-S$(PACKAGE)64 = $(DEPENDENCIES) $(LGS64)($(package)_single.o)
-D$(PACKAGE)64 = $(DEPENDENCIES) $(LGD64)($(package)_double.o)
+$(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(LGS)($(package)_single.o)
+$(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(LGD)($(package)_double.o)
+$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(LGS64)($(package)_single_64.o)
+$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(LGD64)($(package)_double_64.o)
 
 #  compilation agenda for package with C interface
 
-S$(PACKAGE)C = $(S$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
-               $(CLGS)($(package)_ciface_single.o)
-D$(PACKAGE)C = $(D$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
-               $(CLGD)($(package)_ciface_double.o)
-S$(PACKAGE)C64 = $(S$(PACKAGE)64) make_ciface_common $(CDEPENDENCIES) \
-                 $(CLGS64)($(package)_ciface_single.o)
-D$(PACKAGE)C64 = $(D$(PACKAGE)64) make_ciface_common $(CDEPENDENCIES) \
-                 $(CLGD64)($(package)_ciface_double.o)
+$(PACKAGE)OBJECTSCS = $($(PACKAGE)OBJECTSS) make_ciface_common \
+                      $(CDEPENDENCIES) $(CLGS)($(package)_ciface_single.o)
+$(PACKAGE)OBJECTSCD = $($(PACKAGE)OBJECTSD) make_ciface_common \
+                      $(CDEPENDENCIES) $(CLGD)($(package)_ciface_double.o)
+$(PACKAGE)OBJECTSCS64 = $($(PACKAGE)OBJECTSS64) make_ciface_common \
+                        $(CDEPENDENCIES) \
+                        $(CLGS64)($(package)_ciface_single_64.o)
+$(PACKAGE)OBJECTSCD64 = $($(PACKAGE)OBJECTSD64) make_ciface_common \
+                        $(CDEPENDENCIES) \
+                        $(CLGD64)($(package)_ciface_double_64.o)
 
 #  compilation agenda for package with python interface
 
-S$(PACKAGE)PY = $(S$(PACKAGE)C) $(PYDEPENDENCIES) \
-                $(PYLGS)($(package)_pyiface.o)
-D$(PACKAGE)PY = $(D$(PACKAGE)C) $(PYDEPENDENCIES) \
-                $(PYLGD)($(package)_pyiface.o)
-S$(PACKAGE)PY64 = $(S$(PACKAGE)C) $(PYDEPENDENCIES) \
-                  $(PYLGS64)($(package)_pyiface.o)
-D$(PACKAGE)PY64 = $(D$(PACKAGE)C) $(PYDEPENDENCIES) \
-                  $(PYLGD64)($(package)_pyiface.o)
+$(PACKAGE)OBJECTSPYS = $($(PACKAGE)OBJECTSCS) $(PYDEPENDENCIES) \
+                       $(PYLGS)($(package)_pyiface.o)
+$(PACKAGE)OBJECTSPYD = $($(PACKAGE)OBJECTSCD) $(PYDEPENDENCIES) \
+                       $(PYLGD)($(package)_pyiface.o)
+$(PACKAGE)OBJECTSPYS64 = $($(PACKAGE)OBJECTSCS) $(PYDEPENDENCIES) \
+                         $(PYLGS64)($(package)_pyiface_64.o)
+$(PACKAGE)OBJECTSPYD64 = $($(PACKAGE)OBJECTSCD) $(PYDEPENDENCIES) \
+                         $(PYLGD64)($(package)_pyiface_64.o)
 
 #  additional run agenda - main packages
 
@@ -39,10 +41,10 @@ SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGS)(use$(package)_single.o) \
 DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package)_double.o) \
                  $(OBJD)/run$(package)_sif_double.o
 SRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
-                   $(CULGS64)(use$(package)_single.o) \
+                   $(CULGS64)(use$(package)_single_64.o) \
                    $(OBJS64)/run$(package)_sif_single.o
 DRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
-                   $(CULGD64)(use$(package)_double.o) \
+                   $(CULGD64)(use$(package)_double_64.o) \
                    $(OBJD64)/run$(package)_sif_double.o
 
 #  qplib packages
@@ -71,70 +73,64 @@ CLIBS = -lgalahad_c -lgalahad_hsl_c $(LIBS)
 
 #  compilation and run agenda
 
-$(PACKAGE)OBJECTSS = $(S$(PACKAGE))
-$(PACKAGE)OBJECTSD = $(D$(PACKAGE))
-$(PACKAGE)OBJECTSS64 = $(S$(PACKAGE)64)
-$(PACKAGE)OBJECTSD64 = $(D$(PACKAGE)64)
-$(PACKAGE)OBJECTSCS = $(S$(PACKAGE)C)
-$(PACKAGE)OBJECTSCD = $(D$(PACKAGE)C)
-$(PACKAGE)OBJECTSCS64 = $(S$(PACKAGE)C64)
-$(PACKAGE)OBJECTSCD64 = $(D$(PACKAGE)C64)
-$(PACKAGE)OBJECTSPYS = $(S$(PACKAGE)PY)
-$(PACKAGE)OBJECTSPYD = $(D$(PACKAGE)PY)
-$(PACKAGE)OBJECTSPYS64 = $(S$(PACKAGE)PY64)
-$(PACKAGE)OBJECTSPYD64 = $(D$(PACKAGE)PY64)
-$(PACKAGE)OBJECTSS_CUTEST = $(S$(PACKAGE)) $(SRUN$(PACKAGE))
-$(PACKAGE)OBJECTSD_CUTEST = $(D$(PACKAGE)) $(DRUN$(PACKAGE))
-$(PACKAGE)OBJECTSS_CUTEST64 = $(S$(PACKAGE)64) $(SRUN$(PACKAGE)64)
-$(PACKAGE)OBJECTSD_CUTEST64 = $(D$(PACKAGE)64) $(DRUN$(PACKAGE)64)
-$(PACKAGE)OBJECTSS_QPLIB = $(S$(PACKAGE)) $(SQPLIB$(PACKAGE))
-$(PACKAGE)OBJECTSD_QPLIB = $(D$(PACKAGE)) $(DQPLIB$(PACKAGE))
-$(PACKAGE)OBJECTSS_QPLIB64 = $(S$(PACKAGE)64) $(SQPLIB$(PACKAGE)64)
-$(PACKAGE)OBJECTSD_QPLIB64 = $(D$(PACKAGE)64) $(DQPLIB$(PACKAGE)64)
-$(PACKAGE)OBJECTSS_RB = $(S$(PACKAGE)) $(SRB$(PACKAGE))
-$(PACKAGE)OBJECTSD_RB = $(D$(PACKAGE)) $(DRB$(PACKAGE))
-$(PACKAGE)OBJECTSS_RB64 = $(S$(PACKAGE)64) $(SRB$(PACKAGE)64)
-$(PACKAGE)OBJECTSD_RB64 = $(D$(PACKAGE)64) $(DRB$(PACKAGE)64)
+$(PACKAGE)OBJECTSS_CUTEST = $($(PACKAGE)OBJECTSS) $(SRUN$(PACKAGE))
+$(PACKAGE)OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD) $(DRUN$(PACKAGE))
+$(PACKAGE)OBJECTSS_CUTEST64 = $($(PACKAGE)OBJECTSS64) $(SRUN$(PACKAGE)64)
+$(PACKAGE)OBJECTSD_CUTEST64 = $($(PACKAGE)OBJECTSD64) $(DRUN$(PACKAGE)64)
+$(PACKAGE)OBJECTSS_QPLIB = $($(PACKAGE)OBJECTSS) $(SQPLIB$(PACKAGE))
+$(PACKAGE)OBJECTSD_QPLIB = $($(PACKAGE)OBJECTSD) $(DQPLIB$(PACKAGE))
+$(PACKAGE)OBJECTSS_QPLIB64 = $($(PACKAGE)OBJECTSS64) $(SQPLIB$(PACKAGE)64)
+$(PACKAGE)OBJECTSD_QPLIB64 = $($(PACKAGE)OBJECTSD64) $(DQPLIB$(PACKAGE)64)
+$(PACKAGE)OBJECTSS_RB = $($(PACKAGE)OBJECTSS) $(SRB$(PACKAGE))
+$(PACKAGE)OBJECTSD_RB = $($(PACKAGE)OBJECTSD) $(DRB$(PACKAGE))
+$(PACKAGE)OBJECTSS_RB64 = $($(PACKAGE)OBJECTSS64) $(SRB$(PACKAGE)64)
+$(PACKAGE)OBJECTSD_RB64 = $($(PACKAGE)OBJECTSD64) $(DRB$(PACKAGE)64)
 
 #  test agenda
 
-$(PACKAGE)DE = $(D$(PACKAGE)) $(OBJD)/$(package)e_double.o
-$(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s_double.o
-$(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t_double.o
-$(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2_double.o
-$(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3_double.o
-$(PACKAGE)DS4 = $(D$(PACKAGE)) $(OBJD)/$(package)s4_double.o
-$(PACKAGE)DS5 = $(D$(PACKAGE)) $(OBJD)/$(package)s5_double.o
-$(PACKAGE)DS6 = $(D$(PACKAGE)) $(OBJD)/$(package)s6_double.o
-$(PACKAGE)DS7 = $(D$(PACKAGE)) $(OBJD)/$(package)s7_double.o
-$(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2_double.o
-$(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti_double.o
-$(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s_single.o
-$(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t_single.o
-$(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2_single.o
-$(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3_single.o
-$(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4_single.o
-$(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2_single.o
-$(PACKAGE)STI = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)ti_single.o
+$(PACKAGE)DE = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)e_double.o
+$(PACKAGE)DS = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s_double.o
+$(PACKAGE)DT = $($(PACKAGE)OBJECTSD) $(TESTDEPS) $(OBJD)/$(package)t_double.o
+$(PACKAGE)DS2 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s2_double.o
+$(PACKAGE)DS3 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s3_double.o
+$(PACKAGE)DS4 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s4_double.o
+$(PACKAGE)DS5 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s5_double.o
+$(PACKAGE)DS6 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s6_double.o
+$(PACKAGE)DS7 = $($(PACKAGE)OBJECTSD) $(OBJD)/$(package)s7_double.o
+$(PACKAGE)DT2 = $($(PACKAGE)OBJECTSD) $(TESTDEPS) $(OBJD)/$(package)t2_double.o
+$(PACKAGE)DTI = $($(PACKAGE)OBJECTSD) $(TESTDEPS) $(OBJD)/$(package)ti_double.o
+$(PACKAGE)SS = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s_single.o
+$(PACKAGE)ST = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)t_single.o
+$(PACKAGE)SS2 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s2_single.o
+$(PACKAGE)SS3 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s3_single.o
+$(PACKAGE)SS4 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s4_single.o
+$(PACKAGE)ST2 = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)t2_single.o
+$(PACKAGE)STI = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)ti_single.o
 
-$(PACKAGE)DE64 = $(D$(PACKAGE)64) $(OBJD64)/$(package)e_double.o
-$(PACKAGE)DS64 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s_double.o
-$(PACKAGE)DT64 = $(D$(PACKAGE)64) $(TESTDEPS64) $(OBJD)/$(package)t_double.o
-$(PACKAGE)DS264 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s2_double.o
-$(PACKAGE)DS364 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s3_double.o
-$(PACKAGE)DS464 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s4_double.o
-$(PACKAGE)DS564 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s5_double.o
-$(PACKAGE)DS664 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s6_double.o
-$(PACKAGE)DS764 = $(D$(PACKAGE)64) $(OBJD64)/$(package)s7_double.o
-$(PACKAGE)DT264 = $(D$(PACKAGE)64) $(TESTDEPS64) $(OBJD)/$(package)t2_double.o
-$(PACKAGE)DTI64 = $(D$(PACKAGE)64) $(TESTDEPS64) $(OBJD)/$(package)ti_double.o
-$(PACKAGE)SS64 = $(S$(PACKAGE)64) $(OBJS64)/$(package)s_single.o
-$(PACKAGE)ST64 = $(S$(PACKAGE)64) $(TESTDEPS64) $(OBJS)/$(package)t_single.o
-$(PACKAGE)SS264 = $(S$(PACKAGE)64) $(OBJS64)/$(package)s2_single.o
-$(PACKAGE)SS364 = $(S$(PACKAGE)64) $(OBJS64)/$(package)s3_single.o
-$(PACKAGE)SS464 = $(S$(PACKAGE)64) $(OBJS64)/$(package)s4_single.o
-$(PACKAGE)ST264 = $(S$(PACKAGE)64) $(TESTDEPS64) $(OBJS)/$(package)t2_single.o
-$(PACKAGE)STI64 = $(S$(PACKAGE)64) $(TESTDEPS64) $(OBJS)/$(package)ti_single.o
+$(PACKAGE)DE64 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)e_double.o
+$(PACKAGE)DS64 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s_double.o
+$(PACKAGE)DT64 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
+                 $(OBJD)/$(package)t_double.o
+$(PACKAGE)DS264 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s2_double.o
+$(PACKAGE)DS364 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s3_double.o
+$(PACKAGE)DS464 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s4_double.o
+$(PACKAGE)DS564 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s5_double.o
+$(PACKAGE)DS664 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s6_double.o
+$(PACKAGE)DS764 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s7_double.o
+$(PACKAGE)DT264 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
+                  $(OBJD)/$(package)t2_double.o
+$(PACKAGE)DTI64 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
+                  $(OBJD)/$(package)ti_double.o
+$(PACKAGE)SS64 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s_single.o
+$(PACKAGE)ST64 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
+                 $(OBJS)/$(package)t_single.o
+$(PACKAGE)SS264 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s2_single.o
+$(PACKAGE)SS364 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s3_single.o
+$(PACKAGE)SS464 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s4_single.o
+$(PACKAGE)ST264 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
+                  $(OBJS)/$(package)t2_single.o
+$(PACKAGE)STI64 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
+                  $(OBJS)/$(package)ti_single.o
 
 R$(PACKAGE)DE = $(OBJD)/$(package)e_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS = $(OBJD)/$(package)s_double.o -L$(OBJD) $(LIBS)
@@ -176,57 +172,68 @@ R$(PACKAGE)STI64 = $(OBJS64)/$(package)ti_single.o -L$(OBJS64) $(LIBS)
 
 #  test agenda for C interfaces
 
-$(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs_single.o
-$(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct_single.o
-$(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2_single.o
-$(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3_single.o
-$(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4_single.o
-$(PACKAGE)CSS5 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs5_single.o
-$(PACKAGE)CSS6 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs6_single.o
-$(PACKAGE)CSS7 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs7_single.o
-$(PACKAGE)CSTI = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)cti_single.o
-$(PACKAGE)CSTF = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ctf_single.o
+$(PACKAGE)CSS = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs_single.o
+$(PACKAGE)CST = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
+                $(OBJS)/$(package)ct_single.o
+$(PACKAGE)CSS2 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs2_single.o
+$(PACKAGE)CSS3 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs3_single.o
+$(PACKAGE)CSS4 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs4_single.o
+$(PACKAGE)CSS5 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs5_single.o
+$(PACKAGE)CSS6 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs6_single.o
+$(PACKAGE)CSS7 = $($(PACKAGE)OBJECTSCS) $(OBJS)/$(package)cs7_single.o
+$(PACKAGE)CSTI = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
+                 $(OBJS)/$(package)cti_single.o
+$(PACKAGE)CSTF = $($(PACKAGE)OBJECTSCS) $(TESTDEPS) \
+                 $(OBJS)/$(package)ctf_single.o
 
-$(PACKAGE)CDS = $(D$(PACKAGE)C) $(OBJD)/$(package)cs_double.o
-$(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct_double.o
-$(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2_double.o
-$(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3_double.o
-$(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4_double.o
-$(PACKAGE)CDS5 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs5_double.o
-$(PACKAGE)CDS6 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs6_double.o
-$(PACKAGE)CDS7 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs7_double.o
-$(PACKAGE)CDT2 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct2_double.o
-$(PACKAGE)CDT3 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct3_double.o
-$(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti_double.o
-$(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf_double.o
+$(PACKAGE)CDS = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs_double.o
+$(PACKAGE)CDT = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) $(OBJD)/$(package)ct_double.o
+$(PACKAGE)CDS2 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs2_double.o
+$(PACKAGE)CDS3 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs3_double.o
+$(PACKAGE)CDS4 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs4_double.o
+$(PACKAGE)CDS5 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs5_double.o
+$(PACKAGE)CDS6 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs6_double.o
+$(PACKAGE)CDS7 = $($(PACKAGE)OBJECTSCD) $(OBJD)/$(package)cs7_double.o
+$(PACKAGE)CDT2 = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
+                 $(OBJD)/$(package)ct2_double.o
+$(PACKAGE)CDT3 = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
+                 $(OBJD)/$(package)ct3_double.o
+$(PACKAGE)CDTI = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
+                 $(OBJD)/$(package)cti_double.o
+$(PACKAGE)CDTF = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
+                 $(OBJD)/$(package)ctf_double.o
 
-$(PACKAGE)CSS64 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs_single.o
-$(PACKAGE)CST64 = $(S$(PACKAGE)C64) $(TESTDEPS) $(OBJS64)/$(package)ct_single.o
-$(PACKAGE)CSS264 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs2_single.o
-$(PACKAGE)CSS364 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs3_single.o
-$(PACKAGE)CSS464 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs4_single.o
-$(PACKAGE)CSS564 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs5_single.o
-$(PACKAGE)CSS664 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs6_single.o
-$(PACKAGE)CSS764 = $(S$(PACKAGE)C64) $(OBJS64)/$(package)cs7_single.o
-$(PACKAGE)CSTI64 = $(S$(PACKAGE)C64) $(TESTDEPS) \
+$(PACKAGE)CSS64 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs_single.o
+$(PACKAGE)CST64 = $($(PACKAGE)OBJECTSCS64) \
+                  $(TESTDEPS) $(OBJS64)/$(package)ct_single.o
+$(PACKAGE)CSS264 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs2_single.o
+$(PACKAGE)CSS364 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs3_single.o
+$(PACKAGE)CSS464 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs4_single.o
+$(PACKAGE)CSS564 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs5_single.o
+$(PACKAGE)CSS664 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs6_single.o
+$(PACKAGE)CSS764 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs7_single.o
+$(PACKAGE)CSTI64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
                    $(OBJS64)/$(package)cti_single.o
-$(PACKAGE)CSTF64 = $(S$(PACKAGE)C64) $(TESTDEPS) \
+$(PACKAGE)CSTF64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
                    $(OBJS64)/$(package)ctf_single.o
 
-$(PACKAGE)CDS64 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs_double.o
-$(PACKAGE)CDT64 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)ct_double.o
-$(PACKAGE)CDS264 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs2_double.o
-$(PACKAGE)CDS364 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs3_double.o
-$(PACKAGE)CDS464 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs4_double.o
-$(PACKAGE)CDS564 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs5_double.o
-$(PACKAGE)CDS664 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs6_double.o
-$(PACKAGE)CDS764 = $(D$(PACKAGE)C64) $(OBJD64)/$(package)cs7_double.o
-$(PACKAGE)CDT264 = $(D$(PACKAGE)C64) $(TESTDEPS) \
+$(PACKAGE)CDS64 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs_double.o
+$(PACKAGE)CDT64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
+                  $(OBJD64)/$(package)ct_double.o
+$(PACKAGE)CDS264 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs2_double.o
+$(PACKAGE)CDS364 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs3_double.o
+$(PACKAGE)CDS464 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs4_double.o
+$(PACKAGE)CDS564 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs5_double.o
+$(PACKAGE)CDS664 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs6_double.o
+$(PACKAGE)CDS764 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs7_double.o
+$(PACKAGE)CDT264 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
                    $(OBJD64)/$(package)ct2_double.o
-$(PACKAGE)CDT364 = $(D$(PACKAGE)C64) $(TESTDEPS) \
+$(PACKAGE)CDT364 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
                    $(OBJD64)/$(package)ct3_double.o
-$(PACKAGE)CDTI64 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)cti_double.o
-$(PACKAGE)CDTF64 = $(D$(PACKAGE)C64) $(TESTDEPS) $(OBJD64)/$(package)ctf_double.o
+$(PACKAGE)CDTI64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
+                   $(OBJD64)/$(package)cti_double.o
+$(PACKAGE)CDTF64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
+                   $(OBJD64)/$(package)ctf_double.o
 
 R$(PACKAGE)CSS = $(OBJS)/$(package)cs_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CST = $(OBJS)/$(package)ct_single.o -L$(OBJS) $(CLIBS)
@@ -299,19 +306,8 @@ test_cifaces: test_$(package)_cifaces
 
 #  process package
 
-$(package): $(package)_$(PRECIS)
+$(package): $(package)_silent
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
-$(package)_single: $($(PACKAGE)OBJECTSS)
-	$(RANLIB) $(LGS)
-$(package)_double: $($(PACKAGE)OBJECTSD)
-	$(RANLIB) $(LGD)
-$(package)_single_64: $($(PACKAGE)OBJECTSS64)
-	$(RANLIB) $(LGS64)
-$(package)_double_64: $($(PACKAGE)OBJECTSD64)
-	$(RANLIB) $(LGD64)
-
-#  process package silently
-
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)

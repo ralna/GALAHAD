@@ -1,19 +1,69 @@
 #  Standard GALAHAD HSL makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-05-18
+#  This version: 2024-01-12
 
 SHELL = /bin/$(BINSHELL)
 
+ifeq "$(PRECIS)" "single"
+ ifeq "$(INTEGER)" "64bit"
+   DPREC = -DGALAHAD_SINGLE -DGALAHAD_64BIT_INTEGER
+   HSL_PRECIS = s
+ else
+   DPREC = -DGALAHAD_SINGLE
+   HSL_PRECIS = s
+ endif
+else
+ ifeq "$(INTEGER)" "64bit"
+   DPREC = -DGALAHAD_DOUBLE -DGALAHAD_64BIT_INTEGER
+   HSL_PRECIS = d
+ else
+   DPREC = -DGALAHAD_DOUBLE
+   HSL_PRECIS = d
+  endif
+endif
+
 #  compiler flags
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP)
+ifeq "$(INTEGER)" "64bit"
+  FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+               $(DPREC) -I $(GALAHAD)/include $(I8)
+  FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+                 $(DPREC) -I $(GALAHAD)/include $(I8)
+  FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+                 $(DPREC) -I $(GALAHAD)/include $(I8)
+  FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+               $(DPREC) -I $(GALAHAD)/include $(I8)
+  FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+                 $(DPREC) -I $(GALAHAD)/include $(I8)
+  FFLAGS95  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F95) $(USUAL) \
+                 $(DPREC) -I $(GALAHAD)/include  $(I8)
+  FFLAGS95S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F95) $(SPECIAL) \
+                 $(DPREC) -I $(GALAHAD)/include  $(I8)
+  FFLAGS95N = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F95) \
+                 $(DPREC) -I $(GALAHAD)/include  $(I8)
+  FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+                 $(DPREC) -I $(GALAHAD)/include $(OPENMP) $(I8)
+else
+  FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+             $(DPREC) -I $(GALAHAD)/include
+  FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+                 $(DPREC) -I $(GALAHAD)/include
+  FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+                 $(DPREC) -I $(GALAHAD)/include
+  FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+               $(DPREC) -I $(GALAHAD)/include
+  FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+                 $(DPREC) -I $(GALAHAD)/include
+  FFLAGS95  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F95) $(USUAL) \
+                 $(DPREC) -I $(GALAHAD)/include
+  FFLAGS95S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F95) $(SPECIAL) \
+                 $(DPREC) -I $(GALAHAD)/include
+  FFLAGS95N = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F95) \
+                 $(DPREC) -I $(GALAHAD)/include
+  FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+                 $(DPREC) -I $(GALAHAD)/include $(OPENMP)
+endif
 
 #  linking and run flags
 
@@ -25,38 +75,56 @@ RUNFFLAGSOMP = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
 LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
+LGS64 = $(OBJS64)/libgalahad.a
+LGD64 = $(OBJD64)/libgalahad.a
 
 BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
+BLGS64 = $(OBJS64)/libgalahad_blas.a
+BLGD64 = $(OBJD64)/libgalahad_blas.a
 
 CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+CLGS64 = $(OBJS64)/libgalahad_c.a
+CLGD64 = $(OBJD64)/libgalahad_c.a
 
 HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
 HLGD = $(OBJD)/libgalahad_hsl.a
+HLGS64 = $(OBJS64)/libgalahad_hsl.a
+HLGD64 = $(OBJD64)/libgalahad_hsl.a
 
 HCLG  = $(OBJ)/libgalahad_hsl_c.a
 HCLGS = $(OBJS)/libgalahad_hsl_c.a
 HCLGD = $(OBJD)/libgalahad_hsl_c.a
+HCLGS64 = $(OBJS64)/libgalahad_hsl_c.a
+HCLGD64 = $(OBJD64)/libgalahad_hsl_c.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+LLGS64 = $(OBJS64)/libgalahad_lapack.a
+LLGD64 = $(OBJD64)/libgalahad_lapack.a
 
 M4LG  = $(OBJ)/libgalahad_metis4.a
 M4LGS = $(OBJS)/libgalahad_metis4.a
 M4LGD = $(OBJD)/libgalahad_metis4.a
+M4LGS64 = $(OBJS64)/libgalahad_metis4.a
+M4LGD64 = $(OBJD64)/libgalahad_metis4.a
 
 M5LG  = $(OBJ)/libgalahad_metis5.a
 M5LGS = $(OBJS)/libgalahad_metis5.a
 M5LGD = $(OBJD)/libgalahad_metis5.a
+M5LGS64 = $(OBJS64)/libgalahad_metis5.a
+M5LGD64 = $(OBJD64)/libgalahad_metis5.a
 
 MDLG  = $(OBJ)/libgalahad_metis_dummy.a
 MDLGS = $(OBJS)/libgalahad_metis_dummy.a
 MDLGD = $(OBJD)/libgalahad_metis_dummy.a
+MDLGS64 = $(OBJS64)/libgalahad_metis_dummy.a
+MDLGD64 = $(OBJD64)/libgalahad_metis_dummy.a
 
 #  Libraries used
 

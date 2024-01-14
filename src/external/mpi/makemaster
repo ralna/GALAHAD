@@ -1,26 +1,11 @@
 #  Main body of the installation makefile for the MPi stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2023-01-26
+#  This version: 2024-01-12
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile definitions
 
-ifeq "$(PRECIS)" "single"
- DPREC = -DGALAHAD_SINGLE
-else
- DPREC = -DGALAHAD_DOUBLE
-endif
-
-#  compiler flags
-
-FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-           $(DPREC) -I $(GALAHAD)/include
-
-#  names of random libraries
-
-MPILG  = $(OBJ)/libgalahad_mpi.a
-MPILGS = $(OBJS)/libgalahad_mpi.a
-MPILGD = $(OBJD)/libgalahad_mpi.a
+include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
@@ -33,10 +18,10 @@ MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
 
 #  compilation agenda
 
-MPIS = $(MPILG)(mpi_single.o)
-MPID = $(MPILG)(mpi_double.o)
-
-SUCC = precision version) compiled successfully
+MPIS = $(MPILGS)(mpi_single.o)
+MPID = $(MPILGD)(mpi_double.o)
+MPIS64 = $(MPILGS64)(mpi_single_64.o)
+MPID64 = $(MPILGD64)(mpi_double_64.o)
 
 #  mpi
 
@@ -47,6 +32,10 @@ mpi_single: $(MPIS)
 	$(RANLIB) $(MPILGS)
 mpi_double: $(MPID)
 	$(RANLIB) $(MPILGD)
+mpi_single_64: $(MPIS64)
+	$(RANLIB) $(MPILGS64)
+mpi_double_64: $(MPID64)
+	$(RANLIB) $(MPILGD64)
 
 #  individual compilations
 

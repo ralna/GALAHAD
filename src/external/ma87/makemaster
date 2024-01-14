@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MA87 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-01-04
+#  This version: 2024-01-14
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -13,9 +13,15 @@ MA87S = blas lapack zd11 $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_mc78i.o) \
         $(HLGS)(hsl_ma87s.o)
 MA87D =  blas lapack zd11 $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_mc78i.o) \
         $(HLGD)(hsl_ma87d.o)
+MA87S64 = blas lapack zd11 $(HLGS64)(hsl_mc34s.o) $(HLGS64)(hsl_mc78i.o) \
+          $(HLGS64)(hsl_ma87s.o)
+MA87D64 =  blas lapack zd11 $(HLGD64)(hsl_mc34d.o) $(HLGD64)(hsl_mc78i.o) \
+          $(HLGD64)(hsl_ma87d.o)
 
 MA87CS = $(MA87S) $(HCLGS)(hsl_ma87s_ciface.o)
 MA87CD = $(MA87D) $(HCLGD)(hsl_ma87d_ciface.o)
+MA87CS64 = $(MA87S64) $(HCLGS64)(hsl_ma87s_ciface.o)
+MA87CD64 = $(MA87D64) $(HCLGD64)(hsl_ma87d_ciface.o)
 
 #  compilation agenda
 
@@ -24,27 +30,34 @@ ma87: ma87_$(PRECIS)
 ma87_silent: ma87_$(PRECIS)
 ma87_single: $(MA87S) 
 ma87_double: $(MA87D)
+ma87_single_64: $(MA87S64) 
+ma87_double_64: $(MA87D64)
 
 ma87_ciface: ma87_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA87 C routines ($(PRECIS) $(SUCC)"
 ma87_ciface_silent: ma87_ciface_$(PRECIS)
 ma87_ciface_single: $(MA87CS)
 ma87_ciface_double: $(MA87CD)
+ma87_ciface_single_64: $(MA87CS64)
+ma87_ciface_double_64: $(MA87CD64)
 
 #  lapack packages
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  hsl packages
 
 zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
+            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../zd11 )
 
 #  individual compilations
 

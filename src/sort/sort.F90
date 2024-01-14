@@ -205,7 +205,7 @@
 
 !     Local variables
 
-      INTEGER            :: i, pi, pi_old, ixpi, ixpi_old, iypi, iypi_old
+      INTEGER ( KIND = ip_ ) :: i, pi, pi_old, ixpi, ixpi_old, iypi, iypi_old
       REAL ( KIND = rp_ ) :: xpi, xpi_old
 
       IF ( PRESENT( iy ) ) THEN
@@ -540,7 +540,7 @@
 
 !     Local variables
 
-      INTEGER            :: i, pi, pi_old, ixi
+      INTEGER ( KIND = ip_ ) :: i, pi, pi_old, ixi
       REAL ( KIND = rp_ ) :: xi
 
 !     For both x and ix:
@@ -715,7 +715,7 @@
 !     to be sorted
 
       INTEGER ( KIND = ip_ ), PARAMETER :: log2s = 32
-      INTEGER  :: s, l, r, i, j, mid, stack( log2s, 2 ), p, itmp
+      INTEGER ( KIND = ip_ ) :: s, l, r, i, j, mid, stack( log2s, 2 ), p, itmp
       REAL ( KIND = rp_ ) :: rtmp
 
       IF ( size <= 0 ) THEN

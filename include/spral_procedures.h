@@ -1,3 +1,8 @@
+#ifdef GALAHAD_64BIT_INTEGER
+#define GALAHAD_KINDS_single GALAHAD_KINDS_single_64
+#define GALAHAD_KINDS_double GALAHAD_KINDS_double_64
+#endif
+
 #ifdef SPRAL_SINGLE
 #define analyse_precision analyse_single
 #define analyse_precision_ptr32 analyse_single_ptr32
@@ -63,7 +68,6 @@
 #define spral_ssids_contrib_get_data_precision spral_ssids_contrib_get_data_single
 #define spral_cublasgemm spral_cublasSgemm
 #define cublasgemm cublasSgemm
-
 #define spral_ssids_add_delays_precision spral_ssids_add_delays_single
 #define spral_ssids_assemble_precision spral_ssids_assemble_single
 #define spral_ssids_load_nodes_precision spral_ssids_load_nodes_single
@@ -72,7 +76,6 @@
 #define spral_ssids_dsyrk_precision spral_ssids_dsyrk_single
 #define spral_ssids_multidsyrk_precision spral_ssids_multidsyrk_single
 #define spral_ssids_multidsyrk_low_col_precision spral_ssids_multidsyrk_low_col_single
-
 #define spral_ssids_block_ldlt_precision spral_ssids_block_ldlt_single
 #define spral_ssids_block_llt_precision spral_ssids_block_llt_single
 #define spral_ssids_cuda_collect_stats_precision spral_ssids_cuda_collect_stats_single
@@ -81,7 +84,6 @@
 #define spral_ssids_multiblock_llt_precision spral_ssids_multiblock_llt_single
 #define spral_ssids_multiblock_llt_setup_precision spral_ssids_multiblock_llt_setup_single
 #define spral_ssids_square_ldlt_precision spral_ssids_square_ldlt_single
-
 #define spral_ssids_copy_ic_precision spral_ssids_copy_ic_single
 #define spral_ssids_copy_mc_precision spral_ssids_copy_mc_single
 #define spral_ssids_multisymm_precision spral_ssids_multisymm_single
@@ -93,12 +95,10 @@
 #define spral_ssids_swap_ni2Dm_precision spral_ssids_swap_ni2Dm_single
 #define spral_ssids_swap_ni2D_ic_precision spral_ssids_swap_ni2D_ic_single
 #define spral_ssids_swap_ni2D_ir_precision spral_ssids_swap_ni2D_ir_single
-
 #define spral_ssids_run_bwd_solve_kernels_precision spral_ssids_run_bwd_solve_kernels_single
 #define spral_ssids_run_d_solve_kernel_precision spral_ssids_run_d_solve_kernel_single
 #define spral_ssids_run_fwd_solve_kernels_precision spral_ssids_run_fwd_solve_kernels_single
 #define spral_ssids_run_slv_contrib_fwd_precision spral_ssids_run_slv_contrib_fwd_single
-
 #define add_delays_precision add_delays_single
 #define assemble_precision assemble_single
 #define load_nodes_precision load_nodes_single

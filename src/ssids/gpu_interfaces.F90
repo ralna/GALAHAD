@@ -378,7 +378,7 @@ module spral_ssids_gpu_ifaces_precision
              run_fwd_solve_kernels_precision,    & ! execute prepared fwd solve
              run_slv_contrib_fwd_precision         ! execute prepared scatter of contrib
    interface ! solve_kernels.cu
-      subroutine run_bwd_solve_kernels_precision(dsolve, unit_diagonal, x_gpu, 
+      subroutine run_bwd_solve_kernels_precision(dsolve, unit_diagonal, x_gpu, &
             work_gpu, nsync, sync_gpu, gpu, stream) &
             bind(C, name="spral_ssids_run_bwd_solve_kernels_precision")
          use, intrinsic :: iso_c_binding

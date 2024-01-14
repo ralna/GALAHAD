@@ -1,58 +1,11 @@
 #  Main body of the installation makefile for the MC61 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 21 XI 2011
+#  This version: 2024-01-14
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD HSL makefile definitions
 
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MC61IS = $(HLGD)(mc61i.o)
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
-
-SUCC = precision version) compiled successfully
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
 #  compilation agenda
 
@@ -61,6 +14,8 @@ mc61: mc61_$(PRECIS)
 mc61_silent: mc61_$(PRECIS)
 mc61_single: $(HLGS)(mc60s.o) $(HLGS)(mc61s.o)
 mc61_double: $(HLGD)(mc60d.o) $(HLGD)(mc61d.o)
+mc61_single_64: $(HLGS64)(mc60s.o) $(HLGS64)(mc61s.o)
+mc61_double_64: $(HLGD64)(mc60d.o) $(HLGD64)(mc61d.o)
 
 #  individual compilations
 

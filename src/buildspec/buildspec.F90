@@ -89,7 +89,8 @@
 
 !  local variables
 
-        INTEGER ( KIND = ip_ ) :: num_args, len1, len2, stat
+        INTEGER :: len0, len2, stat
+        INTEGER ( KIND = ip_ ) :: len1, num_args
         LOGICAL :: update
         CHARACTER ( LEN = 20 ) :: action
         CHARACTER ( LEN = 20 ) :: package
@@ -115,7 +116,8 @@
 !  obtain both arguments, package and root
 
         CALL GET_COMMAND_ARGUMENT( 1, value = package,                         &
-                                   length = len1, status = stat )
+                                   length = len0, status = stat )
+        len1 = INT( len0, KIND = ip_ )
         IF ( stat /= 0 ) THEN
           WRITE( error, "( ' error: command line arguments 1 of length ', I0,  &
          &                 ' exceeds privided length of 20' )" ) len1

@@ -229,25 +229,25 @@ LARR = $(AR) $(ARREPFLAGS) $(LLG)
 LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
 
 M4ARR = $(AR) $(ARREPFLAGS) $(M4LG)
-M4RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $M4LG)
+M4RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(M4LG)
 
 M5ARR = $(AR) $(ARREPFLAGS) $(M5LG)
-M5RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $M5LG)
+M5RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(M5LG)
 
 MDARR = $(AR) $(ARREPFLAGS) $(MDLG)
-MDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MDLG)
+MDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MDLG)
 
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
-MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPLG)
+MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MPLG)
 
 MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
-MPIRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPILG)
+MPIRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MPILG)
 
 MUARR = $(AR) $(ARREPFLAGS) $(MULG)
-MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MULG)
+MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MULG)
 
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
-PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
+PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)
 
 PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
@@ -260,13 +260,13 @@ PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
 PYRMARFILES = $(GALAHAD)/bin/rmpyarfiles $(AR) $(GREP) $(PYLG)
 
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
-RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
 
 UARR = $(AR) $(ARREPFLAGS) $(ULG)
-URMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $ULG)
+URMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(ULG)
 
 WARR = $(AR) $(ARREPFLAGS) $(WLG)
-WRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $WLG)
+WRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(WLG)
 
 #  linear solver choices
 

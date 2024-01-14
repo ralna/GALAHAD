@@ -68,54 +68,54 @@ module spral_cuda_precision
   interface
      integer(C_IP_) function cudaDeviceEnablePeerAccess(peerDevice, flags) &
           bind(C, name="cudaDeviceEnablePeerAccess")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        integer(C_IP_), value :: peerDevice
        integer(C_IP_), value :: flags ! must be 0, actually unsigned int
      end function cudaDeviceEnablePeerAccess
      integer(C_IP_) function cudaDeviceGetSharedMemConfig(pConfig) &
           bind(C, name="cudaDeviceGetSharedMemConfig")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        integer(C_IP_) :: pConfig
      end function cudaDeviceGetSharedMemConfig
      integer(C_IP_) function cudaDeviceSetSharedMemConfig(config) &
           bind(C, name="cudaDeviceSetSharedMemConfig")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        integer(C_IP_), value :: config
      end function cudaDeviceSetSharedMemConfig
      integer(C_IP_) function cudaDeviceSynchronize() &
           bind(C, name="cudaDeviceSynchronize")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
      end function cudaDeviceSynchronize
      integer(C_IP_) function cudaFree(dev_ptr) &
           bind(C, name="cudaFree")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: dev_ptr
      end function cudaFree
      integer(C_IP_) function cudaGetDeviceCount(cnt) &
           bind(C, name="cudaGetDeviceCount")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        integer(C_IP_), intent(out) :: cnt
      end function cudaGetDeviceCount
      integer(C_IP_) function cudaGetLastError() &
           bind(C, name="cudaGetLastError")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
      end function cudaGetLastError
      integer(C_IP_) function cudaMalloc(dev_ptr, bytes) &
           bind(C, name="cudaMalloc")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), intent(out) :: dev_ptr
        integer(C_SIZE_T), intent(in), value :: bytes
      end function cudaMalloc
      integer(C_IP_) function cudaMemset(devPtr, val, cnt) &
           bind(C, name="cudaMemset")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: devPtr
        integer(C_IP_), value :: val
        integer(C_SIZE_T), value :: cnt
      end function cudaMemset
      integer(C_IP_) function cudaMemcpy(dst, src, cnt, knd) &
           bind(C, name="cudaMemcpy")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: dst
        type(C_PTR), value :: src
        integer(C_SIZE_T), value :: cnt
@@ -123,7 +123,7 @@ module spral_cuda_precision
      end function cudaMemcpy
      integer(C_IP_) function cudaMemcpy2D(dst, dpitch, src, spitch, width, &
           height, kind) bind(C, name="cudaMemcpy2D")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: dst
        integer(C_SIZE_T), value :: dpitch
        type(C_PTR), value :: src
@@ -134,13 +134,13 @@ module spral_cuda_precision
      end function cudaMemcpy2D
      integer(C_IP_) function cudaMemGetInfo(free, total) &
           bind(C, name="cudaMemGetInfo")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        integer(C_SIZE_T), intent(out) :: free
        integer(C_SIZE_T), intent(out) :: total
      end function cudaMemGetInfo
      integer(C_IP_) function cudaSetDevice(device) &
           bind(C, name="cudaSetDevice")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        integer(C_IP_), value :: device
      end function cudaSetDevice
   end interface
@@ -149,17 +149,17 @@ module spral_cuda_precision
   interface
      integer(C_IP_) function cudaStreamCreate(pStream) &
           bind(C, name="spral_cuda_precisionStreamCreate")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), intent(out) :: pStream
      end function cudaStreamCreate
      integer(C_IP_) function cudaStreamDestroy(stream) &
           bind(C, name="spral_cuda_precisionStreamDestroy")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: stream
      end function cudaStreamDestroy
      integer(C_IP_) function cudaMemsetAsync(devPtr, value, count, stream) &
           bind(C, name="spral_cuda_precisionMemsetAsync")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: devPtr
        integer(C_IP_), value :: value
        integer(C_SIZE_T), value :: count
@@ -167,7 +167,7 @@ module spral_cuda_precision
      end function cudaMemsetAsync
      integer(C_IP_) function cudaMemcpyAsync(dst, src, count, kind, &
           stream) bind(C, name="spral_cuda_precisionMemcpyAsync")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: dst
        type(C_PTR), value :: src
        integer(C_SIZE_T), value :: count
@@ -176,7 +176,7 @@ module spral_cuda_precision
      end function cudaMemcpyAsync
      integer(C_IP_) function cudaMemcpy2DAsync(dst, dpitch, src, spitch, &
           width, height, kind, stream) bind(C, name="spral_cuda_precisionMemcpy2DAsync")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: dst
        integer(C_SIZE_T), value :: dpitch
        type(C_PTR), value :: src
@@ -188,7 +188,7 @@ module spral_cuda_precision
      end function cudaMemcpy2DAsync
      integer(C_IP_) function cudaStreamSynchronize(stream) &
           bind(C, name="spral_cuda_precisionStreamSynchronize")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: stream
      end function cudaStreamSynchronize
   end interface
@@ -197,24 +197,24 @@ module spral_cuda_precision
   interface
      integer(C_IP_) function cudaEventCreateWithFlags(event, flags) &
           bind(C, name="spral_cuda_precisionEventCreateWithFlags")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR) :: event
        integer(C_IP_), value :: flags
      end function cudaEventCreateWithFlags
      integer(C_IP_) function cudaEventDestroy(event) &
           bind(C, name="spral_cuda_precisionEventDestroy")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: event
      end function cudaEventDestroy
      integer(C_IP_) function cudaEventRecord(event, stream) &
           bind(C, name="spral_cuda_precisionEventRecord")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: event
        type(C_PTR), value :: stream
      end function cudaEventRecord
      integer(C_IP_) function cudaEventSynchronize(event) &
           bind(C, name="spral_cuda_precisionEventSynchronize")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: event
      end function cudaEventSynchronize
   end interface
@@ -223,18 +223,18 @@ module spral_cuda_precision
   interface
      integer(C_IP_) function cublasCreate(handle) &
           bind(C, name="spral_cublasCreate")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), intent(out) :: handle
      end function cublasCreate
      integer(C_IP_) function cublasDestroy(handle) &
           bind(C, name="spral_cublasDestroy")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: handle
      end function cublasDestroy
      integer(C_IP_) function cublasgemm(handle, transa, transb, &
           m, n, k, alpha, devPtrA, lda, devPtrB, ldb, beta, devPtrC, ldc) &
           bind(C, name="spral_cublasgemm")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds_precision
        type(C_PTR), value :: handle
        character(C_CHAR), intent(in) :: transa
        character(C_CHAR), intent(in) :: transb
@@ -252,7 +252,7 @@ module spral_cuda_precision
      end function cublasgemm
      integer(C_IP_) function cublasSetStream(handle, streamId) &
           bind(C, name="spral_cublasSetStream")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        type(C_PTR), value :: handle
        type(C_PTR), value :: streamId
      end function cublasSetStream
@@ -262,13 +262,13 @@ module spral_cuda_precision
   interface
      type(C_PTR) function c_ptr_plus(base, offset) &
           bind(C, name="spral_c_ptr_plus")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        implicit none
        type(C_PTR), value :: base
        integer(C_SIZE_T), value :: offset
      end function c_ptr_plus
      subroutine c_print_ptr(ptr) bind(C, name="spral_c_print_ptr")
-       use, intrinsic :: iso_c_binding
+       use spral_kinds
        implicit none
        type(C_PTR), value :: ptr
      end subroutine c_print_ptr
@@ -321,11 +321,11 @@ contains
     interface
        type(C_PTR) function c_cudaGetErrorString(error) &
             bind(C, name="cudaGetErrorString")
-         use, intrinsic :: iso_c_binding
+         use spral_kinds
          integer(C_IP_), value :: error
        end function c_cudaGetErrorString
        integer(C_SIZE_T) function strlen(s) bind(C)
-         use, intrinsic :: iso_c_binding
+         use spral_kinds
          type(C_PTR), value :: s
       end function strlen
    end interface
@@ -365,7 +365,7 @@ integer(C_IP_) function cudaMemcpy_h2d_precision(dest, n, src)
        cudaMemcpyHostToDevice)
 end function cudaMemcpy_h2d_precision
 integer(C_IP_) function cudaMemcpy_d2h(dest, src, bytes)
-  use, intrinsic :: iso_c_binding
+  use spral_kinds
   type(C_PTR), value :: dest
   type(C_PTR), value :: src
   integer(C_SIZE_T), intent(in) :: bytes
@@ -373,7 +373,7 @@ integer(C_IP_) function cudaMemcpy_d2h(dest, src, bytes)
   cudaMemcpy_d2h = cudaMemcpy(dest, src, bytes, cudaMemcpyDeviceToHost)
 end function cudaMemcpy_d2h
 integer(C_IP_) function cudaMemcpy_d2d(dest, src, bytes)
-  use, intrinsic :: iso_c_binding
+  use spral_kinds
   type(C_PTR), value :: dest
   type(C_PTR), value :: src
   integer(C_SIZE_T), intent(in) :: bytes
@@ -381,7 +381,7 @@ integer(C_IP_) function cudaMemcpy_d2d(dest, src, bytes)
   cudaMemcpy_d2d = cudaMemcpy(dest, src, bytes, cudaMemcpyDeviceToDevice)
 end function cudaMemcpy_d2d
 integer(C_IP_) function cudaMemcpyAsync_H2D(dst, src, count, stream)
-  use, intrinsic :: iso_c_binding
+  use spral_kinds
   type(C_PTR), value :: dst
   type(C_PTR), value :: src
   integer(C_SIZE_T), value :: count
@@ -391,7 +391,7 @@ integer(C_IP_) function cudaMemcpyAsync_H2D(dst, src, count, stream)
        cudaMemcpyHostToDevice, stream)
 end function cudaMemcpyAsync_H2D
 integer(C_IP_) function cudaMemcpyAsync_D2H(dst, src, count, stream)
-  use, intrinsic :: iso_c_binding
+  use spral_kinds
   type(C_PTR), value :: dst
   type(C_PTR), value :: src
   integer(C_SIZE_T), value :: count
@@ -401,7 +401,7 @@ integer(C_IP_) function cudaMemcpyAsync_D2H(dst, src, count, stream)
        cudaMemcpyDeviceToHost, stream)
 end function cudaMemcpyAsync_D2H
 integer(C_IP_) function cudaMemcpyAsync_D2D(dst, src, count, stream)
-  use, intrinsic :: iso_c_binding
+  use spral_kinds
   type(C_PTR), value :: dst
   type(C_PTR), value :: src
   integer(C_SIZE_T), value :: count

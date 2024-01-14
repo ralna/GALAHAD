@@ -1,85 +1,45 @@
 #  Main body of the installation makefile for the PaStiX stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2023-01-26
+#  This version: 2024-01-12
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile definitions
 
-ifeq "$(PRECIS)" "single"
- DPREC = -DGALAHAD_SINGLE
-else
- DPREC = -DGALAHAD_DOUBLE
-endif
-
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP) $(DPREC) -I $(GALAHAD)/include
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-DLG  = $(OBJ)/libgalahad_dummy.a
-DLGS = $(OBJS)/libgalahad_dummy.a
-DLGD = $(OBJD)/libgalahad_dummy.a
-
-PLG  = $(OBJ)/libgalahad_pastix.a
-PLGS = $(OBJS)/libgalahad_pastix.a
-PLGD = $(OBJD)/libgalahad_pastix.a
+include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
 LIBS = -lgalahad $(PASTIX) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
-#  Archive manipulation strings
-
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-
-PARR = $(AR) $(ARREPFLAGS) $(PLG)
-PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)
-
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-PASTIXS = $(BASICSZ) $(PLGS)(spmf_enums_single.o) \
-          $(PLGS)(spmf_interfaces_single.o) \
-          $(PLGS)(spmf_single.o) $(PLGS)(pastixf_enums_single.o) \
-          $(PLGS)(pastixf_interfaces_single.o) $(PLGS)(pastixf_single.o)
-PASTIXD = $(BASICSZ) $(PLGD)(spmf_enums_double.o) \
-          $(PLGD)(spmf_interfaces_double.o) \
-          $(PLGD)(spmf_double.o) $(PLGD)(pastixf_enums_double.o) \
-          $(PLGD)(pastixf_interfaces_double.o) $(PLGD)(pastixf_double.o)
+PASTIXS = $(BASICSZ) $(PXLGS)(spmf_enums_single.o) \
+          $(PXLGS)(spmf_interfaces_single.o) \
+          $(PXLGS)(spmf_single.o) $(PXLGS)(pastixf_enums_single.o) \
+          $(PXLGS)(pastixf_interfaces_single.o) $(PXLGS)(pastixf_single.o)
+PASTIXD = $(BASICSZ) $(PXLGD)(spmf_enums_double.o) \
+          $(PXLGD)(spmf_interfaces_double.o) \
+          $(PXLGD)(spmf_double.o) $(PXLGD)(pastixf_enums_double.o) \
+          $(PXLGD)(pastixf_interfaces_double.o) $(PXLGD)(pastixf_double.o)
+PASTIXS64 = $(BASICSZ) $(PXLGS64)(spmf_enums_single_64.o) \
+          $(PXLGS64)(spmf_interfaces_single_64.o) \
+          $(PXLGS64)(spmf_single_64.o) $(PXLGS64)(pastixf_enums_single_64.o) \
+          $(PXLGS64)(pastixf_interfaces_single_64.o) \
+          $(PXLGS64)(pastixf_single_64.o)
+PASTIXD64 = $(BASICSZ) $(PXLGD64)(spmf_enums_double_64.o) \
+          $(PXLGD64)(spmf_interfaces_double_64.o) \
+          $(PXLGD64)(spmf_double_64.o) $(PXLGD64)(pastixf_enums_double_64.o) \
+          $(PXLGD64)(pastixf_interfaces_double_64.o) \
+          $(PXLGD64)(pastixf_double_64.o)
 
-PASTIXST = $(PASTIXS) $(OBJS)/pastixt_single.o
-PASTIXDT = $(PASTIXD) $(OBJD)/pastixt_double.o
+PASTIXST = $(PASTIXS) $(OBJ)/pastixt_single.o
+PASTIXDT = $(PASTIXD) $(OBJ)/pastixt_double.o
 
-RPASTIXST = $(OBJS)/pastixt_single.o -L$(OBJS) $(LIBS)
-RPASTIXDT = $(OBJD)/pastixt_double.o -L$(OBJD) $(LIBS)
+RPASTIXST = $(OBJ)/pastixt_single.o -L$(OBJ) $(LIBS)
+RPASTIXDT = $(OBJ)/pastixt_double.o -L$(OBJ) $(LIBS)
 
 SUCC = precision version) compiled successfully
 
@@ -89,9 +49,13 @@ pastix_silent: pastix_$(PRECIS)
 pastix: pastix_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PASTIX) ($(PRECIS) $(SUCC)"
 pastix_single: $(PASTIXS)
-	$(RANLIB) $(PLGS)
+	$(RANLIB) $(PXLGS)
 pastix_double: $(PASTIXD)
-	$(RANLIB) $(PLGD)
+	$(RANLIB) $(PXLGD)
+pastix_single_64: $(PASTIXS64)
+	$(RANLIB) $(PXLGS64)
+pastix_double_64: $(PASTIXD64)
+	$(RANLIB) $(PXLGD64)
 
 #  tests
 
@@ -116,102 +80,108 @@ pastixst: $(PASTIXST)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 symbols:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            symbols_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            dummy_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 blas_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 lapack_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  individual compilations
 
-spmf_enums.o: $(PLG)(spmf_enums_$(PRECIS).o)
+spmf_enums.o: $(PXLG)(spmf_enums_$(PRECIS).o)
 
-$(PLG)(spmf_enums_$(PRECIS).o): ../../dum/spmf_enums.F90
+$(PXLG)(spmf_enums_$(PRECIS).o): ../../dum/spmf_enums.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm_enums  "
 	$(CP) ../../dum/spmf_enums.F90 $(OBJ)/spmf_enums.F90
 	cd $(OBJ); $(FORTRAN) -o spmf_enums_$(PRECIS).o $(FFLAGS) spmf_enums.F90
-	cd $(OBJ); $(PARR) spmf_enums_$(PRECIS).o ; \
+	cd $(OBJ); $(PXARR) spmf_enums_$(PRECIS).o ; \
           $(RM) spmf_enums.F90 spmf_enums_$(PRECIS).o
-	$(PRMARFILE) spmf_interface_$(PRECIS).o
-	$(PRMARFILE) spmf_$(PRECIS).o
-	$(PRMARFILE) pastix_enums_$(PRECIS).o
+	$(PXRMARFILE) spmf_interface_$(PRECIS).o
+	$(PXRMARFILE) spmf_$(PRECIS).o
+	$(PXRMARFILE) pastix_enums_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-spmf_interfaces.o: $(PLG)(spmf_interfaces_$(PRECIS).o)
+spmf_interfaces.o: $(PXLG)(spmf_interfaces_$(PRECIS).o)
 
-$(PLG)(spmf_interfaces_$(PRECIS).o): ../pastix/spmf_interfaces.F90
+$(PXLG)(spmf_interfaces_$(PRECIS).o): ../pastix/spmf_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm_interfaces  "
 	$(CP) ../pastix/spmf_interfaces.F90 $(OBJ)/spmf_interfaces.F90
 	cd $(OBJ); $(FORTRAN) -o spmf_interfaces_$(PRECIS).o \
                      $(FFLAGS) spmf_interfaces.F90
-	cd $(OBJ); $(PARR) spmf_interfaces_$(PRECIS).o ; \
+	cd $(OBJ); $(PXARR) spmf_interfaces_$(PRECIS).o ; \
            $(RM) spmf_interfaces.F90 spmf_interfaces_$(PRECIS).o
 	$(RMARFILE) sls_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-spmf.o: $(PLG)(spmf_$(PRECIS).o)
+spmf.o: $(PXLG)(spmf_$(PRECIS).o)
 
-$(PLG)(spmf_$(PRECIS).o): ../../dum/spmf.F90
+$(PXLG)(spmf_$(PRECIS).o): ../../dum/spmf.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "spm  "
 	$(CP) ../../dum/spmf.F90 $(OBJ)/spmf.F90
 	cd $(OBJ); $(FORTRAN) -o spmf_$(PRECIS).o $(FFLAGS) spmf.F90
-	cd $(OBJ); $(PARR) spmf_$(PRECIS).o ; \
+	cd $(OBJ); $(PXARR) spmf_$(PRECIS).o ; \
            $(RM) spmf.F90 spmf_$(PRECIS).o
 	$(RMARFILE) sls_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-pastixf_enums.o: $(PLG)(pastixf_enums_$(PRECIS).o)
+pastixf_enums.o: $(PXLG)(pastixf_enums_$(PRECIS).o)
 
-$(PLG)(pastixf_enums_$(PRECIS).o): ../../dum/pastixf_enums.F90
+$(PXLG)(pastixf_enums_$(PRECIS).o): ../../dum/pastixf_enums.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_enums  "
 	$(CP) ../../dum/pastixf_enums.F90 $(OBJ)/pastixf_enums.F90
 	cd $(OBJ); $(FORTRAN) -o pastixf_enums_$(PRECIS).o \
            $(FFLAGS) pastixf_enums.F90
-	cd $(OBJ); $(PARR) pastixf_enums_$(PRECIS).o ; \
+	cd $(OBJ); $(PXARR) pastixf_enums_$(PRECIS).o ; \
            $(RM) pastixf_enums.F90 pastixf_enums_$(PRECIS).o
-	$(PRMARFILE) pastixf_interfaces_$(PRECIS).o
-	$(PRMARFILE) pastixf_$(PRECIS).o
+	$(PXRMARFILE) pastixf_interfaces_$(PRECIS).o
+	$(PXRMARFILE) pastixf_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-pastixf_interfaces.o: $(PLG)(pastixf_interfaces_$(PRECIS).o)
+pastixf_interfaces.o: $(PXLG)(pastixf_interfaces_$(PRECIS).o)
 
-$(PLG)(pastixf_interfaces_$(PRECIS).o): ../pastix/pastixf_interfaces.F90
+$(PXLG)(pastixf_interfaces_$(PRECIS).o): ../pastix/pastixf_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_interfaces  "
 	$(CP) ../pastix/pastixf_interfaces.F90 $(OBJ)/pastixf_interfaces.F90
 	cd $(OBJ); $(FORTRAN) -o pastixf_interfaces_$(PRECIS).o \
            $(FFLAGS) pastixf_interfaces.F90
-	cd $(OBJ); $(PARR) pastixf_interfaces_$(PRECIS).o ; \
+	cd $(OBJ); $(PXARR) pastixf_interfaces_$(PRECIS).o ; \
            $(RM) pastixf_interfaces.F90 pastixf_interfaces_$(PRECIS).o
 	$(RMARFILE) sls_$(PRECIS).o
 	@printf '[ OK ]\n'
 
-pastixf.o: $(PLG)(pastixf_$(PRECIS).o)
+pastixf.o: $(PXLG)(pastixf_$(PRECIS).o)
 
-$(PLG)(pastixf_$(PRECIS).o): ../../dum/pastixf.F90
+$(PXLG)(pastixf_$(PRECIS).o): ../../dum/pastixf.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf  "
 	$(CP) ../../dum/pastixf.F90 $(OBJ)/pastixf.F90
 	cd $(OBJ); $(FORTRAN) -o pastixf_$(PRECIS).o \
            $(FFLAGS) pastixf.F90
-	cd $(OBJ); $(PARR) pastixf_$(PRECIS).o ; \
+	cd $(OBJ); $(PXARR) pastixf_$(PRECIS).o ; \
            $(RM) pastixf.F90 pastixf_$(PRECIS).o
 	$(RMARFILE) sls_$(PRECIS).o
-	$(RANLIB) $(PLG)
+	$(RANLIB) $(PXLG)
 	@printf '[ OK ]\n'
 
 #  test programs
@@ -228,7 +198,7 @@ $(OBJ)/pastixt_$(PRECIS).o: ../pastix/pastixt.F90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(PLG) $(OBJ)/pastixs.o $(OBJ)/pastixt.o
+	$(RM) $(PXLG) $(OBJ)/pastixs.o $(OBJ)/pastixt.o
 	@printf '[ OK ]\n'
 
 cleanall:

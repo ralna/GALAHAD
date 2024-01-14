@@ -313,6 +313,8 @@ metis: metis_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: metis ($(PRECIS) $(SUCC)"
 metis_single: dummy_metis_single metis4_single metis5_single
 metis_double: dummy_metis_double metis4_double metis5_double
+metis_single_64: dummy_metis_single_64 metis4_single_64 metis5_single_64
+metis_double_64: dummy_metis_double_64 metis4_double_64 metis5_double_64
 
 #  dummy metis package
 
@@ -323,6 +325,10 @@ dummy_metis_single: symbols_silent $(MDLGS)(dummy_metis.o)
 	$(RANLIB) $(MDLGS)
 dummy_metis_double: symbols_silent $(MDLGD)(dummy_metis.o)
 	$(RANLIB) $(MDLGD)
+dummy_metis_single_64: symbols_silent $(MDLGS64)(dummy_metis.o)
+	$(RANLIB) $(MDLGS64)
+dummy_metis_double_64: symbols_silent $(MDLGD64)(dummy_metis.o)
+	$(RANLIB) $(MDLGD64)
 
 dummy_metis.o: $(MDLG)(dummy_metis.o)
 
@@ -342,6 +348,10 @@ metis4_single: symbols_silent $(M4LGS)(metis4.o)
 	$(RANLIB) $(M4LGS)
 metis4_double: symbols_silent $(M4LGD)(metis4.o)
 	$(RANLIB) $(M4LGD)
+metis4_single_64: symbols_silent $(M4LGS64)(metis4.o)
+	$(RANLIB) $(M4LGS64)
+metis4_double_64: symbols_silent $(M4LGD64)(metis4.o)
+	$(RANLIB) $(M4LGD64)
 
 metis4.o: $(M4LG)(metis4.o)
 
@@ -361,6 +371,12 @@ metis5_single: symbols_silent $(M5LGS)(metis5.o) $(M5LGS)(metis5_adapter.o)
 	$(RANLIB) $(M5LGS)
 metis5_double: symbols_silent $(M5LGD)(metis5.o) $(M5LGD)(metis5_adapter.o)
 	$(RANLIB) $(M5LGD)
+metis5_single_64: symbols_silent $(M5LGS64)(metis5.o) \
+                  $(M5LGS64)(metis5_adapter.o)
+	$(RANLIB) $(M5LGS64)
+metis5_double_64: symbols_silent $(M5LGD64)(metis5.o) \
+                  $(M5LGD64)(metis5_adapter.o)
+	$(RANLIB) $(M5LGD64)
 
 metis5.o: $(M5LG)(metis5.o)
 
@@ -436,6 +452,8 @@ wsmp_silent:
 linearsolver_silent: linearsolver_silent_$(PRECIS)
 linearsolver_silent_single: $($(LINEARSOLVERS))
 linearsolver_silent_double: $($(LINEARSOLVERD))
+linearsolver_silent_single_64: $($(LINEARSOLVERS))
+linearsolver_silent_double_64: $($(LINEARSOLVERD))
 
 linearsolver: linearsolver_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(LINEARSOLVER) ($(PRECIS) $(SUCC)"
@@ -443,12 +461,18 @@ linearsolver_single: $($(LINEARSOLVERS))
 	$(RANLIB) $(LGS)
 linearsolver_double: $($(LINEARSOLVERD))
 	$(RANLIB) $(LGD)
+linearsolver_single_64: $($(LINEARSOLVERS))
+	$(RANLIB) $(LGS64)
+linearsolver_double_64: $($(LINEARSOLVERD))
+	$(RANLIB) $(LGD64)
 
 #  unsymmetric linear solver
 
 ulinearsolver_silent: ulinearsolver_silent_$(PRECIS)
 ulinearsolver_silent_single: $($(ULINEARSOLVERS))
 ulinearsolver_silent_double: $($(ULINEARSOLVERD))
+ulinearsolver_silent_single_64: $($(ULINEARSOLVERS))
+ulinearsolver_silent_double_64: $($(ULINEARSOLVERD))
 
 ulinearsolver: ulinearsolver_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(ULINEARSOLVER) ($(PRECIS) $(SUCC)"
@@ -456,27 +480,45 @@ ulinearsolver_single: $($(ULINEARSOLVERS))
 	$(RANLIB) $(LGS)
 ulinearsolver_double: $($(ULINEARSOLVERD))
 	$(RANLIB) $(LGD)
+ulinearsolver_single_64: $($(ULINEARSOLVERS))
+	$(RANLIB) $(LGS64)
+ulinearsolver_double_64: $($(ULINEARSOLVERD))
+	$(RANLIB) $(LGD64)
 
 SSIDSS = symbols_silent $(RLGS)(ssids_single.o)
 SSIDSD = symbols_silent $(RLGD)(ssids_double.o)
+SSIDSS64 = symbols_silent $(RLGS64)(ssids_single_64.o)
+SSIDSD64 = symbols_silent $(RLGD64)(ssids_double_64.o)
 
 PARDISOS = symbols_silent $(PLGS)(pardiso.o)
 PARDISOD = symbols_silent $(PLGD)(pardiso.o)
+PARDISOS64 = symbols_silent $(PLGS64)(pardiso.o)
+PARDISOD64 = symbols_silent $(PLGD64)(pardiso.o)
 
 METISS = symbols_silent $(MLGS)(metis4.o)
 METISD = symbols_silent $(MLGD)(metis4.o)
+METISS64 = symbols_silent $(MLGS64)(metis4.o)
+METISD64 = symbols_silent $(MLGD64)(metis4.o)
 
 WSMPS = symbols_silent $(WLGS)(wsmp.o)
 WSMPD = symbols_silent $(WLGD)(wsmp.o)
+WSMPS64 = symbols_silent $(WLGS64)(wsmp.o)
+WSMPD64 = symbols_silent $(WLGD64)(wsmp.o)
 
 UMFPACKS = symbols_silent $(ULGS)(umfpack.o)
 UMFPACKD = symbols_silent $(ULGD)(umfpack.o)
+UMFPACKS64 = symbols_silent $(ULGS64)(umfpack.o)
+UMFPACKD64 = symbols_silent $(ULGD64)(umfpack.o)
 
 MUMPSS = symbols_silent $(MULGS)(mumps.o)
 MUMPSD = symbols_silent $(MULGD)(mumps.o)
+MUMPSS64 = symbols_silent $(MULGS64)(mumps.o)
+MUMPSD64 = symbols_silent $(MULGD64)(mumps.o)
 
 PASTIXS = symbols_silent $(PXLGS)(spmf.o) $(PXLGS)(pastixf.o)
 PASTIXD = symbols_silent $(PXLGD)(spmf.o) $(PXLGD)(pastixf.o)
+PASTIXS64 = symbols_silent $(PXLGS64)(spmf.o) $(PXLGS64)(pastixf.o)
+PASTIXD64 = symbols_silent $(PXLGD64)(spmf.o) $(PXLGD64)(pastixf.o)
 
 #  ssids
 
@@ -485,6 +527,10 @@ ssids_dum_silent_single: $(SSIDSS)
 	$(RANLIB) $(RLGS)
 ssids_dum_silent_double: $(SSIDSD)
 	$(RANLIB) $(RLGD)
+ssids_dum_silent_single_64: $(SSIDSS64)
+	$(RANLIB) $(RLGS64)
+ssids_dum_silent_double_64: $(SSIDSD64)
+	$(RANLIB) $(RLGD64)
 
 ssids_dum: ssids_dum_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(SSIDS) ($(PRECIS) $(SUCC)"
@@ -492,6 +538,10 @@ ssids_dum_single: $(SSIDSS)
 	$(RANLIB) $(RLGS)
 ssids_dum_double: $(SSIDSD)
 	$(RANLIB) $(RLGD)
+ssids_dum_single_64: $(SSIDSS64)
+	$(RANLIB) $(RLGS64)
+ssids_dum_double_64: $(SSIDSD64)
+	$(RANLIB) $(RLGD64)
 
 ssids_silent:
 	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

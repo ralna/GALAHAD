@@ -634,6 +634,7 @@ echo ' '                                                           >> $MAKEFILE
 echo 'FORTRAN = '$FORTRAN                                          >> $MAKEFILE
 echo 'BASIC = '$BASIC                                              >> $MAKEFILE
 echo 'MBASIC = '$MBASIC                                            >> $MAKEFILE
+echo 'I8 = '$I8                                                    >> $MAKEFILE
 if (( $CUTEST_REQUIRED )) ; then
 # MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`' '`echo $MODCMDB | $SED 's/MOD/(CUTESTMOD)/g'`
   MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`' '`echo $MODCMDB | $SED 's/-J$MOD//g' | $SED 's/MOD/(CUTESTMOD)/g'`

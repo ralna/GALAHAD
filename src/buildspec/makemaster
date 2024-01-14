@@ -1,13 +1,13 @@
 #  Main body of the installation makefile for the GALAHAD BUILDSPEC package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-07
+#  This version: 2024-01-13
 
 #  include standard GALAHAD makefile definitions
 
 include $(GALAHAD)/src/makedefs/definitions
 
-#  compilations
+#  compilation agenda
 
 all: buildspec
 
@@ -21,7 +21,7 @@ $(OBJ)/buildspec: ../buildspec/buildspec.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "buildspec  "
 	$(CP) ../buildspec/buildspec.F90 $(OBJ)/buildspec.F90
 	cd $(OBJ) ; $(FORTRAN) -o buildspec $(RUNFFLAGS) buildspec.F90 \
-          -lgalahad -L$(OBJ) -I $(GALAHAD)/include
+          -lgalahad -L$(OBJ) $(DPREC) -I $(GALAHAD)/include
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 

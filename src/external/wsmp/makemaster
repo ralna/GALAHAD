@@ -1,74 +1,31 @@
 #  Main body of the installation makefile for the WSMP stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 27 III 2021
+#  This version: 2024-01-12
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile definitions
 
-ifeq "$(PRECIS)" "single"
- DPREC = -DGALAHAD_SINGLE
-else
- DPREC = -DGALAHAD_DOUBLE
-endif
-
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-              $(DPREC) -I $(GALAHAD)/include
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-DLG  = $(OBJ)/libgalahad_dummy.a
-DLGS = $(OBJS)/libgalahad_dummy.a
-DLGD = $(OBJD)/libgalahad_dummy.a
-
-WLG  = $(OBJ)/libgalahad_wsmp.a
-WLGS = $(OBJS)/libgalahad_wsmp.a
-WLGD = $(OBJD)/libgalahad_wsmp.a
+include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
 LIBS = -lgalahad $(WSMP) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
-#  Archive manipulation strings
-
-WARR = $(AR) $(ARREPFLAGS) $(WLG)
-
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-WSMPS = $(BASICSZ) $(WLG)(wsmp.o)
-WSMPD = $(BASICSZ) $(WLG)(wsmp.o)
+WSMPS = $(BASICSZ) $(WLGS)(wsmp.o)
+WSMPD = $(BASICSZ) $(WLGD)(wsmp.o)
+WSMPS64 = $(BASICSZ) $(WLGS64)(wsmp.o)
+WSMPD64 = $(BASICSZ) $(WLGD64)(wsmp.o)
 
-WSMPDT = $(WSMPD) $(OBJD)/wsmpt.o
-WSMPST = $(WSMPS) $(OBJS)/wsmpt.o
+WSMPDT = $(WSMPD) $(OBJ)/wsmpt.o
+WSMPST = $(WSMPS) $(OBJ)/wsmpt.o
 
-RWSMPDT = $(OBJD)/wsmpt.o -L$(OBJD) $(LIBS)
-RWSMPST = $(OBJS)/wsmpt.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
+RWSMPDT = $(OBJ)/wsmpt.o -L$(OBJ) $(LIBS)
+RWSMPST = $(OBJ)/wsmpt.o -L$(OBJ) $(LIBS)
 
 #  wsmp
 
@@ -78,6 +35,10 @@ wsmp: wsmp_$(PRECIS)
 wsmp_single: $(WSMPS)
 	$(RANLIB) $(WLGS)
 wsmp_double: $(WSMPD)
+	$(RANLIB) $(WLGD64)
+wsmp_single_64: $(WSMPS)
+	$(RANLIB) $(WLGS)
+wsmp_double_64: $(WSMPD64)
 	$(RANLIB) $(WLGD)
 
 #  tests
@@ -103,27 +64,33 @@ wsmpst: $(WSMPST)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 symbols:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            symbols_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            dummy_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 blas_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 lapack_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  individual compilations
 
