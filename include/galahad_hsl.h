@@ -1,0 +1,8 @@
+#ifdef GALAHAD_64BIT_INTEGER
+#define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
+#define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
+#define GALAHAD_KINDS_single GALAHAD_KINDS_single_64
+#define GALAHAD_KINDS_double GALAHAD_KINDS_double_64
+#define hsl_zd11_single hsl_zd11_single_64
+#define hsl_zd11_double hsl_zd11_double_64
+#endif
