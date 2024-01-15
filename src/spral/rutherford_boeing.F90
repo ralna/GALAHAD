@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 07:50 GMT.
 
 #include "spral_procedures.h"
 
@@ -36,7 +36,7 @@ module spral_rutherford_boeing_precision
   ! Possible error returns
   integer(ip_), parameter :: SUCCESS           =  0 ! No errors
   integer(ip_), parameter :: ERROR_BAD_FILE    = -1 ! Failed to open file
-  integer(ip_), parameter :: ERROR_NOT_RB      = -2 ! Header not valid for RB
+  integer(ip_),  parameter :: ERROR_NOT_RB      = -2 ! Header not valid for RB
   integer(ip_), parameter :: ERROR_IO          = -3 ! Error return from io
   integer(ip_), parameter :: ERROR_TYPE        = -4 ! Tried to read bad type
   integer(ip_), parameter :: ERROR_ELT_ASM     = -5 ! Read elt as asm or v/v
@@ -218,7 +218,7 @@ contains
        info = ERROR_NOT_RB
        return
     end select
-      
+
     !
     ! Copy out data if requested
     !
@@ -242,7 +242,7 @@ contains
     character(len=*), intent(in) :: filename ! File to read
     integer(ip_), intent(out) :: m
     integer(ip_), intent(out) :: n
-    integer(ip_), dimension(:), allocatable, intent(out) :: ptr
+    integer(i4_), dimension(:), allocatable, intent(out) :: ptr
     integer(ip_), dimension(:), allocatable, target, intent(out) :: row
     real(rp_), dimension(:), allocatable, target, intent(out) :: val
     type(rb_read_options), intent(in) :: options ! control variables
@@ -279,7 +279,7 @@ contains
     character(len=*), intent(in) :: filename ! File to read
     integer(ip_), intent(out) :: m
     integer(ip_), intent(out) :: n
-    integer(long_), dimension(:), allocatable, intent(out) :: ptr
+    integer(i8_), dimension(:), allocatable, intent(out) :: ptr
     integer(ip_), dimension(:), allocatable, target, intent(out) :: row
     real(rp_), dimension(:), allocatable, target, intent(out) :: val
     type(rb_read_options), intent(in) :: options ! control variables
@@ -573,7 +573,7 @@ contains
     !
     ! Error handlers
     !
-200 continue 
+200 continue
     ! Allocation error
     info = ERROR_ALLOC
     goto 100
@@ -599,7 +599,7 @@ contains
     integer(ip_), intent(in) :: matrix_type
     integer(ip_), intent(in) :: m
     integer(ip_), intent(in) :: n
-    integer(ip_), dimension(n+1), intent(in) :: ptr
+    integer(i4_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     type(rb_write_options), intent(in) :: options
     integer(ip_), intent(out) :: inform
@@ -644,7 +644,7 @@ contains
     integer(ip_), intent(in) :: matrix_type
     integer(ip_), intent(in) :: m
     integer(ip_), intent(in) :: n
-    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(i8_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     type(rb_write_options), intent(in) :: options
     integer(ip_), intent(out) :: inform
@@ -654,8 +654,8 @@ contains
 
     character(len=3) :: type
     integer(ip_) :: i, iunit
-    integer(long_) :: ptr_lines, row_lines, val_lines, total_lines
-    integer(long_) :: max_ptr
+    integer(i8_) :: ptr_lines, row_lines, val_lines, total_lines
+    integer(i8_) :: max_ptr
     integer(ip_) :: max_row, ptr_prec, row_prec
     integer(ip_) :: ptr_per_line, row_per_line, val_per_line
     character(len=16) :: ptr_format, row_format
@@ -848,7 +848,7 @@ contains
     ptr(1:n+1) = wptr(1:n+1)
     if (present(val)) val(1:ptr(n+1)-1) = wval(1:ptr(n+1)-1)
   end subroutine flip_lwr_upr
-   
+
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !> Add any missing values to matrix
   subroutine add_missing_diag(m, n, ptr, row, val)
@@ -859,7 +859,7 @@ contains
     integer(ip_), dimension(:), intent(inout) :: row
     real(rp_), dimension(*), optional, intent(inout) :: val
 
-    integer(ip_) :: col 
+    integer(ip_) :: col
     integer(long_) :: i
     integer(ip_) :: ndiag
     logical :: found

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -39,7 +39,7 @@ module spral_ssids_akeep_precision
       integer(ip_), dimension(:), allocatable :: contrib_ptr
       integer(ip_), dimension(:), allocatable :: contrib_idx
 
-      integer(C_INT), dimension(:), allocatable :: invp ! inverse of pivot order
+      integer(ipc_), dimension(:), allocatable :: invp ! inverse of pivot order
          ! that is passed to factorize phase
       integer(long_), dimension(:,:), allocatable :: nlist ! map from A to
          ! factors. For nodes i, the entries nlist(1:2, nptr(i):nptr(i+1)-1)
@@ -48,11 +48,11 @@ module spral_ssids_akeep_precision
      integer(long_), dimension(:), allocatable :: nptr ! Entries into nlist for
          ! nodes of the assembly tree. Has length nnodes+1
       integer(ip_), dimension(:), allocatable :: rlist ! rlist(rptr(i):rptr(i+1)-1)
-         ! contains the row indices for node i of the assembly tree. 
+         ! contains the row indices for node i of the assembly tree.
          ! At each node, the list
          ! is in elimination order. Allocated within mc78_analyse.
       integer(long_), dimension(:), allocatable :: rptr ! Pointers into rlist
-         ! for nodes of assembly tree. Has length nnodes+1. 
+         ! for nodes of assembly tree. Has length nnodes+1.
          ! Allocated within mc78_analyse.
       integer(ip_), dimension(:), allocatable :: sparent ! sparent(i) is parent
          ! of node i in assembly tree. sparent(i)=nnodes+1 if i is a root.

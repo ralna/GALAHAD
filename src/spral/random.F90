@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 07:50 GMT.
 
 #include "spral_procedures.h"
 
@@ -60,7 +60,7 @@ contains
     state%x = seed
   end subroutine random_set_seed
 
-   
+
   !
   !  Real random number in the range
   !  [ 0, 1] (if positive is present and .TRUE.); or
@@ -94,16 +94,16 @@ contains
   integer(long_) function random_integer64(state, n)
     implicit none
     type(random_state), intent(inout) :: state
-    integer(long_), intent(in) :: n
+    integer(i8_), intent(in) :: n
 
-    if (n .le. 0) then
+    if (n .le. 0_i8_) then
        random_integer64 = n
        return
     end if
 
     ! X_{n+1} = (aX_n + c) mod m
     state%x = int(mod(a*state%x+c, m))
-      
+
     ! Take modulo n for return value
     random_integer64 = int(state%x * (real(n,rp_)/real(m,rp_)), long_) + 1
   end function random_integer64
@@ -115,7 +115,7 @@ contains
   integer function random_integer32(state, n)
     implicit none
     type(random_state), intent(inout) :: state
-    integer(ip_), intent(in) :: n
+    integer(i4_), intent(in) :: n
 
     ! Just call 64-bit version with type casts
     random_integer32 = int(random_integer64(state, int(n,long_)))

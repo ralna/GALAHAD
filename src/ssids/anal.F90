@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -186,7 +186,7 @@ contains
     do i = 1, n
        order(i) = abs(order(i))
     end do
-     
+
     ! Check user-supplied order and copy the absolute values to invp.
     ! Also add up number of variables that are not used (null rows)
     do i = 1, n
@@ -205,7 +205,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !> @brief Compute flops for processing a node
-  !> @param akeep Information generated in analysis phase by SSIDS  
+  !> @param akeep Information generated in analysis phase by SSIDS
   !> @param node Node
   function compute_flops(nnodes, sptr, rptr, node)
     implicit none
@@ -409,7 +409,7 @@ contains
            (has_parent .and. (k .le. nnodes))) then
           ! We can't merge j and i
           j = j + 1
-          has_parent = .false. 
+          has_parent = .false.
        end if
        has_parent = has_parent.or.(k.le.nnodes)
     end do
@@ -602,7 +602,7 @@ contains
     if (st .ne. 0) return
     load_balance(:) = 0.0
     total_balance = 0.0
-    ! Sum total 
+    ! Sum total
     do p = 1, nparts
        if (exec_loc(p) .eq. -1) cycle ! not a child subtree
        pflops = flops(part(p+1)-1)
@@ -757,7 +757,7 @@ contains
   !> @brief Prints assembly tree
   subroutine print_atree(nnodes, sptr, sparent, rptr)
     implicit none
-    
+
     integer(ip_), intent(in) :: nnodes
     integer(ip_), dimension(nnodes+1), intent(in) :: sptr
     integer(ip_), dimension(nnodes), intent(in) :: sparent
@@ -789,19 +789,19 @@ contains
 
     do node = 1, nnodes
 
-       weight = real(flops(node)) / tot_weight 
+       weight = real(flops(node)) / tot_weight
 
        if (weight .lt. 0.01) cycle ! Prune smallest nodes
 
-       n = sptr(node+1) - sptr(node) 
+       n = sptr(node+1) - sptr(node)
        m = int(rptr(node+1) - rptr(node))
-       
+
        ! node idx
        write(2, '(i10)', advance="no") node
        write(2, '(" ")', advance="no")
        write(2, '("[")', advance="no")
 
-       ! Node label 
+       ! Node label
        write(2, '("label=""")', advance="no")
        write(2, '("node:", i5,"\n")', advance="no")node
        write(2, '("m:", i5,"\n")', advance="no")m
@@ -828,7 +828,7 @@ contains
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   !> @brief Prints assembly tree with partitions
-  subroutine print_atree_part(nnodes, sptr, sparent, rptr, topology, nparts, & 
+  subroutine print_atree_part(nnodes, sptr, sparent, rptr, topology, nparts, &
        part, exec_loc)
     implicit none
 
@@ -847,7 +847,7 @@ contains
     integer(long_), dimension(:), allocatable :: flops
     real :: tot_weight, weight
     integer(ip_) :: i, j
-    character(len=5) :: part_str 
+    character(len=5) :: part_str
     real :: small
 
     small = 0.001
@@ -873,8 +873,8 @@ contains
     do i = 1, nparts
 
        region = mod((exec_loc(i)-1), size(topology))+1
-       ! print *, "part = ", i, ", exec_loc = ", exec_loc(i), ", region = ", region 
-       
+       ! print *, "part = ", i, ", exec_loc = ", exec_loc(i), ", region = ", region
+
        write(part_str, '(i5)')part(i)
        write(2, *)"subgraph cluster"// adjustl(trim(part_str)) // " {"
        if ( exec_loc(i) .gt. size(topology)) then ! GPU subtree
@@ -890,10 +890,10 @@ contains
 
        do node = part(i), part(i+1)-1
 
-          weight = real(flops(node)) / tot_weight 
+          weight = real(flops(node)) / tot_weight
           if (weight .lt. small) cycle ! Prune smallest nodes
 
-          n = sptr(node+1) - sptr(node) 
+          n = sptr(node+1) - sptr(node)
           m = int(rptr(node+1) - rptr(node))
 
           ! node idx
@@ -901,7 +901,7 @@ contains
           write(2, '(" ")', advance="no")
           write(2, '("[")', advance="no")
 
-          ! Node label 
+          ! Node label
           write(2, '("label=""")', advance="no")
           write(2, '("node:", i5,"\n")', advance="no")node
           write(2, '("m:", i5,"\n")', advance="no")m
@@ -924,7 +924,7 @@ contains
           if (weight .lt. small) cycle ! Prune smallest nodes
           if(sparent(node) .ne. -1) write(2, '(i10, "--", i10)')sparent(node), node
        end do
-          
+
     end do
 
     write(2, '("}")') ! Graph
@@ -947,13 +947,13 @@ contains
        akeep, options, inform)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(long_), intent(in) :: ptr(n+1) ! col pointers (lower triangle) 
+    integer(long_), intent(in) :: ptr(n+1) ! col pointers (lower triangle)
     integer(ip_), intent(in) :: row(ptr(n+1)-1) ! row indices (lower triangle)
     integer(long_), intent(in) :: ptr2(n+1) ! col pointers (whole matrix)
     integer(ip_), intent(in) :: row2(ptr2(n+1)-1) ! row indices (whole matrix)
     integer(ip_), dimension(n), intent(inout) :: order
       !  On exit, holds the pivot order to be used by factorization.
-    integer(ip_), dimension(n), intent(out) :: invp 
+    integer(ip_), dimension(n), intent(out) :: invp
       ! Work array. Used to hold inverse of order but
       ! is NOT set to inverse for the final order that is returned.
     type(ssids_akeep), intent(inout) :: akeep
@@ -1107,7 +1107,7 @@ contains
     inform%maxfront = 0
     inform%maxdepth = 0
     do i = akeep%nnodes, 1, -1
-       blkn = akeep%sptr(i+1) - akeep%sptr(i) 
+       blkn = akeep%sptr(i+1) - akeep%sptr(i)
        blkm = int(akeep%rptr(i+1) - akeep%rptr(i))
        level(i) = level(akeep%sparent(i)) + 1
        inform%maxfront = max(inform%maxfront, blkm)

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -113,7 +113,7 @@ contains
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
@@ -121,7 +121,7 @@ contains
     type(hungarian_inform), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -133,12 +133,12 @@ contains
     call hungarian_scale_sym_int64(n, ptr64, row, val, scaling, options, &
          inform, match=match)
   end subroutine hungarian_scale_sym_int32
-  
+
   subroutine hungarian_scale_sym_int64(n, ptr, row, val, scaling, options, &
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
@@ -181,7 +181,7 @@ contains
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
-    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
@@ -190,7 +190,7 @@ contains
     type(hungarian_inform), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     ! Copy from int32 to int64
     allocate(ptr64(n+1), stat=inform%stat)
@@ -209,7 +209,7 @@ contains
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
-    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
@@ -249,7 +249,7 @@ contains
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
@@ -257,7 +257,7 @@ contains
     type(auction_inform), intent(out) :: inform
     integer(ip_), dimension(n), optional, intent(out) :: match
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -274,7 +274,7 @@ contains
        inform, match)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
@@ -321,7 +321,7 @@ contains
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of columns
-    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
@@ -330,7 +330,7 @@ contains
     type(auction_inform), intent(out) :: inform
     integer(ip_), dimension(m), optional, intent(out) :: match
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -342,13 +342,13 @@ contains
     call auction_scale_unsym_int64(m, n, ptr64, row, val, rscaling, cscaling, &
          options, inform, match=match)
   end subroutine auction_scale_unsym_int32
-  
+
   subroutine auction_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
        cscaling, options, inform, match)
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of columns
-    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
@@ -385,14 +385,14 @@ contains
   subroutine equilib_scale_sym_int32(n, ptr, row, val, scaling, options, inform)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(out) :: inform
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -407,7 +407,7 @@ contains
   subroutine equilib_scale_sym_int64(n, ptr, row, val, scaling, options, inform)
     implicit none
     integer(ip_), intent(in) :: n ! order of system
-    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(n), intent(out) :: scaling
@@ -428,7 +428,7 @@ contains
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
-    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i4_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
@@ -436,7 +436,7 @@ contains
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(out) :: inform
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -454,7 +454,7 @@ contains
     implicit none
     integer(ip_), intent(in) :: m ! number of rows
     integer(ip_), intent(in) :: n ! number of cols
-    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(i8_), intent(in) :: ptr(n+1) ! column pointers of A
     integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
     real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
     real(rp_), dimension(m), intent(out) :: rscaling
@@ -858,7 +858,7 @@ contains
        j = iperm(i) ! Smallest entry in row i is (i,j)
        if (j .eq. 0) cycle ! skip empty rows
        iperm(i) = 0
-       if (jperm(j) .ne. 0) cycle ! If we've already matched column j, skip 
+       if (jperm(j) .ne. 0) cycle ! If we've already matched column j, skip
        ! this row. Don't choose cheap assignment from dense columns
        if ((ptr(j+1)-ptr(j) .gt. m/10) .and. (m .gt. 50)) cycle
        ! Assignment of column j to row i
@@ -958,10 +958,10 @@ contains
 
     integer(long_), allocatable, dimension(:) :: jperm ! a(jperm(j)) is entry of
       ! A for matching in column j.
-    integer(long_), allocatable, dimension(:) :: out ! a(out(i)) is the new 
-      ! entry in a on which we match going along the short path back to 
+    integer(long_), allocatable, dimension(:) :: out ! a(out(i)) is the new
+      ! entry in a on which we match going along the short path back to
       ! original col.
-    integer(ip_), allocatable, dimension(:) :: pr ! pr(i) is a pointer to the 
+    integer(ip_), allocatable, dimension(:) :: pr ! pr(i) is a pointer to the
       ! next column along the shortest path back to the original column
     integer(ip_), allocatable, dimension(:) :: q ! q(1:qlen) forms a binary heap
       ! data structure sorted by d(q(i)) value. q(low:up) is a list of rows
@@ -969,8 +969,8 @@ contains
       ! q(up:n) is a list of already visited rows.
     integer(long_), allocatable, dimension(:) :: longwork
     integer(ip_), allocatable, dimension(:) :: l ! l(:) is an inverse of q(:)
-    real(rp_), allocatable, dimension(:) :: d ! d(i) is current shortest 
-      ! distance to row i from current column (d_i from Fig 4.1 of Duff and 
+    real(rp_), allocatable, dimension(:) :: d ! d(i) is current shortest
+      ! distance to row i from current column (d_i from Fig 4.1 of Duff and
       ! Koster paper)
 
     integer(ip_) :: i,j,jj,jord,q0,qlen,jdum,jsp
@@ -1264,7 +1264,7 @@ contains
    heap_pop = q(1)
 
    ! Delete the root
-   call heap_delete(1,QLEN,N,Q,val,L)
+   call heap_delete(1_ip_,QLEN,N,Q,val,L)
  end function heap_pop
 
 !**********************************************************************

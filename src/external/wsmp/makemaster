@@ -35,11 +35,11 @@ wsmp: wsmp_$(PRECIS)
 wsmp_single: $(WSMPS)
 	$(RANLIB) $(WLGS)
 wsmp_double: $(WSMPD)
-	$(RANLIB) $(WLGD64)
-wsmp_single_64: $(WSMPS)
-	$(RANLIB) $(WLGS)
-wsmp_double_64: $(WSMPD64)
 	$(RANLIB) $(WLGD)
+wsmp_single_64: $(WSMPS)
+	$(RANLIB) $(WLGS64)
+wsmp_double_64: $(WSMPD64)
+	$(RANLIB) $(WLGD64)
 
 #  tests
 

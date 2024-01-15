@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -133,7 +133,7 @@ module spral_ssids_cpu_subtree_precision
        real(C_RP_), dimension(*), intent(inout) :: x
        integer(C_IP_), value :: ldx
      end function c_subtree_solve_diag_bwd
-     
+
      integer(C_IP_) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_bwd_sgl")
@@ -181,7 +181,7 @@ module spral_ssids_cpu_subtree_precision
        type(C_PTR) :: delay_val
        integer(C_IP_) :: lddelay
      end subroutine c_get_contrib
-     
+
      subroutine c_free_contrib(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_subtree_free_contrib_sgl")
        use spral_kinds
@@ -252,7 +252,7 @@ module spral_ssids_cpu_subtree_precision
        real(C_RP_), dimension(*), intent(inout) :: x
        integer(C_IP_), value :: ldx
      end function c_subtree_solve_diag_bwd
-     
+
      integer(C_IP_) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
           bind(C, name="spral_ssids_cpu_subtree_solve_bwd_dbl")
@@ -300,7 +300,7 @@ module spral_ssids_cpu_subtree_precision
        type(C_PTR) :: delay_val
        integer(C_IP_) :: lddelay
      end subroutine c_get_contrib
-     
+
      subroutine c_free_contrib(posdef, subtree) &
           bind(C, name="spral_ssids_cpu_subtree_free_contrib_dbl")
        use spral_kinds_precision
@@ -344,8 +344,8 @@ contains
     ! Call C++ subtree analyse
     call cpu_copy_options_in(options, coptions)
     this%csubtree = &
-         c_create_symbolic_subtree(n, sa, en, sptr, sparent, rptr, rlist, nptr, &
-         nlist, size(contrib_idx), contrib_idx, coptions)
+        c_create_symbolic_subtree(n, sa, en, sptr, sparent, rptr, rlist, nptr, &
+        nlist, int(size(contrib_idx),kind=long_), contrib_idx, coptions)
   end function construct_cpu_symbolic_subtree
 
   subroutine symbolic_cleanup(this)
@@ -459,7 +459,7 @@ contains
     real(rp_), dimension(*), intent(inout) :: x
     integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
-    
+
     integer(C_IP_) :: flag
 
     flag = c_subtree_solve_fwd(this%posdef, this%csubtree, nrhs, x, ldx)
@@ -489,7 +489,7 @@ contains
     type(ssids_inform), intent(inout) :: inform
 
     integer(C_IP_) :: flag
-    
+
     flag = c_subtree_solve_diag_bwd(this%posdef, this%csubtree, nrhs, x, ldx)
     if (flag .ne. SSIDS_SUCCESS) inform%flag = flag
   end subroutine solve_diag_bwd
@@ -503,7 +503,7 @@ contains
     type(ssids_inform), intent(inout) :: inform
 
     integer(C_IP_) :: flag
-    
+
     flag = c_subtree_solve_bwd(this%posdef, this%csubtree, nrhs, x, ldx)
     if (flag .ne. SSIDS_SUCCESS) inform%flag = flag
   end subroutine solve_bwd
@@ -551,5 +551,3 @@ contains
   end subroutine cpu_free_contrib
 
 end module spral_ssids_cpu_subtree_precision
-
-

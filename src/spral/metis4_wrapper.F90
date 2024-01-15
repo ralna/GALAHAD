@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 09:40 GMT.
 
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
@@ -31,7 +31,7 @@ contains
   subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
     implicit none
     integer(ip_), intent(in) :: n ! Must hold the number of rows in A
-    integer(ip_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of start
+    integer(i4_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of start
       ! of row indices for column j. ptr(n)+1 must equal the number of entries
       ! stored + 1. Only the lower triangular entries are stored with no
       ! duplicates or out-of-range entries
@@ -49,7 +49,7 @@ contains
       ! modified
     integer(ip_), allocatable :: row2(:) ! copy of row indices
     integer(ip_) :: metis_opts(8) ! metis options array
-    integer(ip_) :: iwlen ! length of iw
+    integer(i4_) :: iwlen ! length of iw
 
     ! Initialise flag and stat
     flag = 0
@@ -98,7 +98,7 @@ contains
   subroutine metis_order64(n,ptr,row,perm,invp,flag,stat)
     implicit none
     integer(ip_), intent(in) :: n ! Must hold the number of rows in A
-    integer(long_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of
+    integer(i8_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of
       ! start of row indices for column j. ptr(n)+1 must equal the number of
       ! entries stored + 1. Only the lower triangular entries are stored with
       ! no duplicates or out-of-range entries
@@ -116,7 +116,7 @@ contains
       ! modified
     integer(ip_), allocatable :: row2(:) ! copy of row indices
     integer(ip_) :: metis_opts(8) ! metis options array
-    integer(long_) :: iwlen ! length of iw
+    integer(i8_) :: iwlen ! length of iw
 
     ! Initialise flag and stat
     flag = 0
@@ -169,12 +169,13 @@ contains
   subroutine half_to_full_drop_diag32_32(n, ptr, row, ptr2, row2)
     implicit none
     integer(ip_), intent(in) :: n
-    integer(ip_), dimension(n+1), intent(in) :: ptr
+    integer(i4_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     integer(ip_), dimension(*), intent(out) :: ptr2
     integer(ip_), dimension(*), intent(out) :: row2
 
-    integer(ip_) :: i, j, k
+    integer(ip_) :: i, j
+    integer(i4_) :: k
 
     ! Set ptr2(j) to hold no. nonzeros in column j
     ptr2(1:n+1) = 0
@@ -217,13 +218,13 @@ contains
   subroutine half_to_full_drop_diag64_32(n, ptr, row, ptr2, row2)
     implicit none
     integer(ip_), intent(in) :: n
-    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(i8_), dimension(n+1), intent(in) :: ptr
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     integer(ip_), dimension(*), intent(out) :: ptr2
     integer(ip_), dimension(*), intent(out) :: row2
 
     integer(ip_) :: i, j
-    integer(long_) :: kk
+    integer(i8_) :: kk
 
     ! Set ptr2(j) to hold no. nonzeros in column j
     ptr2(1:n+1) = 0

@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 09:40 GMT.
 
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
 ! Origin: Heavily modified version of hsl_mc68
-! 
+!
 ! This version is used to support METIS v5 (different API to v4)
 !
 
@@ -22,17 +22,17 @@ module spral_metis_wrapper
    integer(ip_), parameter :: long = C_INT64_T
 
 #if SPRAL_HAVE_METIS_H
-! metis header is available, check for index types 
+! metis header is available, check for index types
 #if SIZEOF_IDX_T == 8
    integer(ip_), parameter :: metis_idx_t = c_int64_t
 #else
    integer(ip_), parameter :: metis_idx_t = c_int
 #endif
 #else
-   ! metis header is not available, default to 32-bit index types 
+   ! metis header is not available, default to 32-bit index types
    integer(ip_), parameter :: metis_idx_t = c_int
 #endif
-   
+
    ! We use the C interface to METIS via the following interoperable interfaces
    interface METIS_SetDefaultOptions
       ! METIS_SetDefaultOptions 32-bit integer interface
@@ -73,7 +73,7 @@ module spral_metis_wrapper
          integer(c_int64_t), dimension(*), intent(out) :: perm, iperm
        end function METIS_NodeND_64
    end interface METIS_NodeND
-   
+
    ! Following array size based on #define in metis.h
    integer(ip_), parameter :: METIS_NOPTIONS = 40
    ! Following return codes based on enum in metis.h
@@ -98,7 +98,7 @@ module spral_metis_wrapper
                        half_to_full_drop_diag32_64, &
                        half_to_full_drop_diag64_64
    end interface half_to_full_drop_diag
-   
+
 contains
 
 !
@@ -106,13 +106,13 @@ contains
 !
 subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
    integer(ip_), intent(in) :: n ! Must hold the number of rows in A
-   integer(ip_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of start
+   integer(i4_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of start
       ! of row indices for column j. ptr(n)+1 must equal the number of entries
       ! stored + 1. Only the lower triangular entries are stored with no
       ! duplicates or out-of-range entries
    integer(ip_), intent(in) :: row(:) ! size at least ptr(n+1)-1
    integer(ip_), intent(out) :: perm(n) ! Holds elimination order on output
-   integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order 
+   integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order
       ! on exit
    integer(ip_), intent(out) :: flag ! Return value
    integer(ip_), intent(out) :: stat ! Stat value on allocation failure
@@ -120,13 +120,13 @@ subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
    ! ---------------------------------------------
    ! Local variables
    ! ---------------------------------------------
-   integer(metis_idx_t), allocatable :: ptr2(:) ! copy of pointers which is 
+   integer(metis_idx_t), allocatable :: ptr2(:) ! copy of pointers which is
       ! later modified
    integer(metis_idx_t), allocatable :: row2(:) ! copy of row indices
    integer(metis_idx_t) :: metis_opts(METIS_NOPTIONS) ! metis options array
-   integer(ip_) :: iwlen ! length of iw
+   integer(i4_) :: iwlen ! length of iw
    integer(metis_idx_t) :: perm2(n) ! Holds elimination order computed by metis
-   integer(metis_idx_t) :: invp2(n) ! Holds inverse of elimination order 
+   integer(metis_idx_t) :: invp2(n) ! Holds inverse of elimination order
       ! computed by metis
 
    integer(ip_) :: metis_flag
@@ -184,7 +184,7 @@ subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
       print *, "Unknown metis error with code ", metis_flag
       flag = ERROR_UNKNOWN
    end select
-   ! FIXME: If perm and perm2 (or invp and invp2) have the same type, 
+   ! FIXME: If perm and perm2 (or invp and invp2) have the same type,
    ! it is not necessary to make a copy
    perm = perm2 + 1 ! Convert to Fortran-style (1-based) indexing
    invp = invp2 + 1 ! Convert to Fortran-style (1-based) indexing
@@ -196,13 +196,13 @@ subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
 !
 subroutine metis_order64(n,ptr,row,perm,invp,flag,stat)
    integer(ip_), intent(in) :: n ! Must hold the number of rows in A
-   integer(long_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of
+   integer(i8_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of
       ! start of row indices for column j. ptr(n)+1 must equal the number of
       ! entries stored + 1. Only the lower triangular entries are stored with
       ! no duplicates or out-of-range entries
    integer(ip_), intent(in) :: row(:) ! size at least ptr(n+1)-1
    integer(ip_), intent(out) :: perm(n) ! Holds elimination order on output
-   integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order 
+   integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order
       ! on exit
    integer(ip_), intent(out) :: flag ! Return value
    integer(ip_), intent(out) :: stat ! Stat value on allocation failure
@@ -210,13 +210,13 @@ subroutine metis_order64(n,ptr,row,perm,invp,flag,stat)
    ! ---------------------------------------------
    ! Local variables
    ! ---------------------------------------------
-   integer(metis_idx_t), allocatable :: ptr2(:) ! copy of pointers which is 
+   integer(metis_idx_t), allocatable :: ptr2(:) ! copy of pointers which is
       ! later modified
    integer(metis_idx_t), allocatable :: row2(:) ! copy of row indices
    integer(metis_idx_t) :: metis_opts(METIS_NOPTIONS) ! metis options array
-   integer(long_) :: iwlen ! length of iw
+   integer(i8_) :: iwlen ! length of iw
    integer(metis_idx_t) :: perm2(n) ! Holds elimination order computed by metis
-   integer(metis_idx_t) :: invp2(n) ! Holds inverse of elimination order 
+   integer(metis_idx_t) :: invp2(n) ! Holds inverse of elimination order
       ! computed by metis
 
    integer(ip_) :: metis_flag
@@ -279,7 +279,7 @@ subroutine metis_order64(n,ptr,row,perm,invp,flag,stat)
       print *, "Unknown metis error with code ", metis_flag
       flag = ERROR_UNKNOWN
    end select
-   ! FIXME: If perm and perm2 (or invp and invp2) have the same type, it is 
+   ! FIXME: If perm and perm2 (or invp and invp2) have the same type, it is
    ! not necessary to make a copy
    perm = perm2 + 1 ! Convert to Fortran-style (1-based) indexing
    invp = invp2 + 1 ! Convert to Fortran-style (1-based) indexing
@@ -337,12 +337,13 @@ end subroutine half_to_full_drop_diag32_32
 ! Drops any diagonal entries.
 subroutine half_to_full_drop_diag32_64(n, ptr, row, ptr2, row2)
    integer(ip_), intent(in) :: n
-   integer(ip_), dimension(n+1), intent(in) :: ptr
+   integer(i4_), dimension(n+1), intent(in) :: ptr
    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
    integer(c_int64_t), dimension(*), intent(out) :: ptr2
    integer(c_int64_t), dimension(*), intent(out) :: row2
 
-   integer(ip_) :: i, j, k
+   integer(ip_) :: i, j
+   integer(i4_) :: k
 
    ! Set ptr2(j) to hold no. nonzeros in column j
    ptr2(1:n+1) = 0
@@ -385,13 +386,13 @@ subroutine half_to_full_drop_diag32_64(n, ptr, row, ptr2, row2)
 ! 64-bit to 32-bit ptr version. User must ensure no oor entries prior to call.
 subroutine half_to_full_drop_diag64_32(n, ptr, row, ptr2, row2)
    integer(ip_), intent(in) :: n
-   integer(long_), dimension(n+1), intent(in) :: ptr
+   integer(i8_), dimension(n+1), intent(in) :: ptr
    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
    integer(ip_), dimension(*), intent(out) :: ptr2
    integer(ip_), dimension(*), intent(out) :: row2
 
    integer(ip_) :: i, j
-   integer(long_) :: kk
+   integer(i8_) :: kk
 
    ! Set ptr2(j) to hold no. nonzeros in column j
    ptr2(1:n+1) = 0
@@ -434,13 +435,13 @@ end subroutine half_to_full_drop_diag64_32
 ! 64-bit to 32-bit ptr version. User must ensure no oor entries prior to call.
 subroutine half_to_full_drop_diag64_64(n, ptr, row, ptr2, row2)
    integer(ip_), intent(in) :: n
-   integer(long_), dimension(n+1), intent(in) :: ptr
+   integer(i8_), dimension(n+1), intent(in) :: ptr
    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
    integer(c_int64_t), dimension(*), intent(out) :: ptr2
    integer(c_int64_t), dimension(*), intent(out) :: row2
 
    integer(ip_) :: i, j
-   integer(long_) :: kk
+   integer(i8_) :: kk
 
    ! Set ptr2(j) to hold no. nonzeros in column j
    ptr2(1:n+1) = 0

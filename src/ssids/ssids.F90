@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-10-03 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
 ! (consistent with SPRAL up to issue #150)
 
 #include "spral_procedures.h"
@@ -96,12 +96,12 @@ contains
 !>
 !> This routine provides a wrapper around analyse_precision() that copies the
 !> 32-bit ptr to a 64-bit array before calling the 64-bit version.
-  subroutine analyse_precision_ptr32(check, n, ptr, row, akeep, options, inform, &
-       order, val, topology)
+  subroutine analyse_precision_ptr32(check, n, ptr, row, akeep, options, &
+                                     inform, order, val, topology)
     implicit none
     logical, intent(in) :: check
     integer(ip_), intent(in) :: n
-    integer(ip_), intent(in) :: ptr(:)
+    integer(i4_), intent(in) :: ptr(:)
     integer(ip_), intent(in) :: row(:)
     type(ssids_akeep), intent(inout) :: akeep
     type(ssids_options), intent(in) :: options
@@ -110,7 +110,7 @@ contains
     real(rp_), optional, intent(in) :: val(:)
     type(numa_region), dimension(:), optional, intent(in) :: topology
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     ! Copy 32-bit ptr to 64-bit version
     allocate(ptr64(n+1), stat=inform%stat)
@@ -156,7 +156,7 @@ contains
     implicit none
     logical, intent(in) :: check
     integer(ip_), intent(in) :: n
-    integer(long_), intent(in) :: ptr(:)
+    integer(i8_), intent(in) :: ptr(:)
     integer(ip_), intent(in) :: row(:)
     type(ssids_akeep), intent(inout) :: akeep
     type(ssids_options), intent(in) :: options
@@ -749,10 +749,10 @@ contains
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
     real(rp_), dimension(:), optional, intent(inout) :: scale
-    integer(ip_), dimension(akeep%n+1), intent(in) :: ptr
+    integer(i4_), dimension(akeep%n+1), intent(in) :: ptr
     integer(ip_), dimension(*), optional, intent(in) :: row
 
-    integer(long_), dimension(:), allocatable :: ptr64
+    integer(i8_), dimension(:), allocatable :: ptr64
 
     ! Copy from 32-bit to 64-bit ptr
     allocate(ptr64(akeep%n+1), stat=inform%stat)
@@ -787,7 +787,7 @@ contains
       ! options%scaling <= 0
       ! Note: Has to be assumed shape, not assumed size or fixed size to work
       ! around funny compiler bug
-    integer(long_), dimension(akeep%n+1), optional, intent(in) :: ptr ! must be
+    integer(i8_), dimension(akeep%n+1), optional, intent(in) :: ptr ! must be
       ! present if on call to analyse phase, check = .false.. Must be unchanged
       ! since that call.
     integer(ip_), dimension(*), optional, intent(in) :: row ! must be present if
@@ -799,7 +799,7 @@ contains
 
     integer(ip_) :: i
     integer(ip_) :: n
-    integer(long_) :: nz
+    integer(i8_) :: nz
     integer(ip_) :: st
     ! Solve parameters. Tree is broken up into multiple chunks. Parent-child
     ! relations between chunks are stored in fwd_ptr and fwd (see solve routine
@@ -1138,9 +1138,11 @@ contains
 
     ldx = size(x1)
     if (present(job)) then
-       call ssids_solve_mult_precision(1, x1, ldx, akeep, fkeep, options, inform, job)
+       call ssids_solve_mult_precision(1_ip_, x1, ldx, akeep, fkeep, options,  &
+                                       inform, job)
     else
-       call ssids_solve_mult_precision(1, x1, ldx, akeep, fkeep, options, inform)
+       call ssids_solve_mult_precision(1_ip_, x1, ldx, akeep, fkeep, options,  &
+                                       inform)
     end if
   end subroutine ssids_solve_one_precision
 

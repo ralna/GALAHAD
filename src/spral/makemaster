@@ -140,14 +140,14 @@ RSSIDSDS64 = $(OBJD64)/ssidss_double.o -L$(OBJD64) $(SPRAL) $(LIBS)
 RSSIDSDT64 = $(OBJD64)/ssidst_double.o -L$(OBJD64) $(SPRAL) $(LIBS)
 
 CUDAS = $(RLGS)(cuda_nocuda_single.o)
-CUDAScuda = $(RLGS)(api_wrappers_single.o) $(RLGS)(cuda_single.o)
 CUDAD = $(RLGD)(cuda_nocuda_double.o)
-CUDADcuda = $(RLGD)(api_wrappers_double.o) $(RLGD)(cuda_double.o)
+CUDAS64 = $(RLGS64)(cuda_nocuda_single_64.o)
+CUDAD64 = $(RLGD64)(cuda_nocuda_double_64.o)
 
-CUDAS64 = $(RLGS64)(cuda_nocuda_single.o)
-CUDAS64cuda = $(RLGS64)(api_wrappers_single.o) $(RLGS64)(cuda_single.o)
-CUDAD64 = $(RLGD64)(cuda_nocuda_double.o)
-CUDAD64cuda = $(RLGD64)(api_wrappers_double.o) $(RLGD64)(cuda_double.o)
+CUDAScuda = $(RLGS)(api_wrappers_single.o) $(RLGS)(cuda_single.o)
+CUDADcuda = $(RLGD)(api_wrappers_double.o) $(RLGD)(cuda_double.o)
+CUDAS64cuda = $(RLGS64)(api_wrappers_single_64.o) $(RLGS64)(cuda_single_64.o)
+CUDAD64cuda = $(RLGD64)(api_wrappers_double_64.o) $(RLGD64)(cuda_double_64.o)
 
 CUDASUSE = $(CUDAS$(CUDA))
 CUDADUSE = $(CUDAD$(CUDA))
@@ -174,24 +174,28 @@ GPUDcuda = $(RLGD)(gpu_alloc_double.o) $(RLGD)(cpu_solve_double.o) \
            $(RLGD)(gpu_subtree_double.o) $(RLGD)(assemble_double.o) \
            $(RLGD)(dense_factor_double.o) $(RLGD)(reorder_double.o) \
            $(RLGD)(solve_double.o) $(RLGD)(syrk_double.o)
-GPUS64 = $(RLGS64)(gpu_subtree_no_cuda_single.o)
-GPUS64cuda = $(RLGS64)(gpu_alloc_single.o) $(RLGS64)(cpu_solve_single.o) \
-           $(RLGS64)(gpu_datatypes_single.o) \
-           $(RLGS64)(gpu_interfaces_single.o) \
-           $(RLGS64)(gpu_dense_factor_single.o) $(RLGS64)(gpu_solve_single.o) \
-           $(RLGS64)(gpu_smalloc_single.o) $(RLGS64)(gpu_factor_single.o) \
-           $(RLGS64)(gpu_subtree_single.o) $(RLGS64)(assemble_single.o) \
-           $(RLGS64)(dense_factor_single.o) $(RLGS64)(reorder_single.o) \
-           $(RLGS64)(solve_single.o) $(RLGS64)(syrk_single.o)
-GPUD64 = $(RLGD64)(gpu_subtree_no_cuda_double.o)
-GPUD64cuda = $(RLGD64)(gpu_alloc_double.o) $(RLGD64)(cpu_solve_double.o) \
-           $(RLGD64)(gpu_datatypes_double.o) \
-           $(RLGD64)(gpu_interfaces_double.o) \
-           $(RLGD64)(gpu_dense_factor_double.o) $(RLGD64)(gpu_solve_double.o) \
-           $(RLGD64)(gpu_smalloc_double.o) $(RLGD64)(gpu_factor_double.o) \
-           $(RLGD64)(gpu_subtree_double.o) $(RLGD64)(assemble_double.o) \
-           $(RLGD64)(dense_factor_double.o) $(RLGD64)(reorder_double.o) \
-           $(RLGD64)(solve_double.o) $(RLGD64)(syrk_double.o)
+GPUS64 = $(RLGS64)(gpu_subtree_no_cuda_single_64.o)
+GPUS64cuda = $(RLGS64)(gpu_alloc_single_64.o) $(RLGS64)(cpu_solve_single_64.o) \
+           $(RLGS64)(gpu_datatypes_single_64.o) \
+           $(RLGS64)(gpu_interfaces_single_64.o) \
+           $(RLGS64)(gpu_dense_factor_single_64.o) \
+           $(RLGS64)(gpu_solve_single_64.o) \
+           $(RLGS64)(gpu_smalloc_single_64.o) \
+           $(RLGS64)(gpu_factor_single_64.o) \
+           $(RLGS64)(gpu_subtree_single_64.o) $(RLGS64)(assemble_single_64.o) \
+           $(RLGS64)(dense_factor_single_64.o) $(RLGS64)(reorder_single_64.o) \
+           $(RLGS64)(solve_single_64.o) $(RLGS64)(syrk_single_64.o)
+GPUD64 = $(RLGD64)(gpu_subtree_no_cuda_double_64.o)
+GPUD64cuda = $(RLGD64)(gpu_alloc_double_64.o) $(RLGD64)(cpu_solve_double_64.o) \
+           $(RLGD64)(gpu_datatypes_double_64.o) \
+           $(RLGD64)(gpu_interfaces_double_64.o) \
+           $(RLGD64)(gpu_dense_factor_double_64.o) \
+           $(RLGD64)(gpu_solve_double_64.o) \
+           $(RLGD64)(gpu_smalloc_double_64.o) \
+           $(RLGD64)(gpu_factor_double_64.o) \
+           $(RLGD64)(gpu_subtree_double_64.o) $(RLGD64)(assemble_double_64.o) \
+           $(RLGD64)(dense_factor_double_64.o) $(RLGD64)(reorder_double_64.o) \
+           $(RLGD64)(solve_double_64.o) $(RLGD64)(syrk_double_64.o)
 
 SPRALRBS = $(RLGS)(spral_kinds.o) $(RLGS)(matrix_util_single.o) \
            $(RLGS)(random_single.o) $(RLGS)(rutherford_boeing_single.o)
@@ -242,49 +246,47 @@ SSIDSD = extend basics $(SPRALRBD) $(CUDADUSE) \
          $(RLGD)(profile_iface.o) $(GPUDUSE) \
          $(RLGD)(anal_double.o) $(RLGD)(fkeep_double.o) \
          $(RLGD)(contrib_free_double.o) $(RLGD)(ssids_double.o)
-SSIDSS64 = extend basics $(SPRALRBS) $(CUDASUSE) \
+SSIDSS64 = extend basics $(SPRALRBS64) $(CUDASUSE64) \
          $(RLGS64)(compat.o) $(RLGS64)(guess_topology.o) \
-         $(RLGS64)(omp.o) $(RLGS64)(profile.o) $(RLGS64)(SymbolicSubtree.o) \
-         $(RLGS64)(NumericSubtree_single.o) \
-         $(RLGS64)(cholesky_single.o) $(RLGS64)(ldlt_app_single.o) \
-         $(RLGS64)(ldlt_nopiv_single.o) $(RLGS64)(ldlt_tpp_single.o) \
-         $(RLGS64)(wrappers_single.o) \
-         $(RLGS64)(ThreadStats.o) $(RLGS64)(hw_topology.o) \
-         $(RLGS64)(metis4_wrapper.o) \
-         $(RLGS64)(spral_scaling_single.o) \
-         $(RLGS64)(match_order_single.o) $(RLGS64)(datatypes_single.o) \
+         $(RLGS64)(omp.o) $(RLGS64)(profile.o) \
+         $(RLGS64)(SymbolicSubtree.o) $(RLGS64)(NumericSubtree_single_64.o) \
+         $(RLGS64)(cholesky_single_64.o) $(RLGS64)(ldlt_app_single_64.o) \
+         $(RLGS64)(ldlt_nopiv_single_64.o) $(RLGS64)(ldlt_tpp_single_64.o) \
+         $(RLGS64)(wrappers_single_64.o) $(RLGS64)(ThreadStats.o) \
+         $(RLGS64)(hw_topology.o) $(RLGS64)(metis4_wrapper.o) \
+         $(RLGS64)(spral_scaling_single_64.o) \
+         $(RLGS64)(match_order_single_64.o) $(RLGS64)(datatypes_single_64.o) \
          $(RLGS64)(core_analyse.o) $(RLGS64)(pgm.o) \
-         $(RLGS64)(inform_single.o) $(RLGS64)(contrib_single.o) \
-         $(RLGS64)(subtree_single.o) $(RLGS64)(akeep_single.o) \
+         $(RLGS64)(inform_single_64.o) $(RLGS64)(contrib_single_64.o) \
+         $(RLGS64)(subtree_single_64.o) $(RLGS64)(akeep_single_64.o) \
          $(RLGS64)(blas_iface.o) $(RLGS64)(lapack_iface.o) \
-         $(RLGS64)(cpu_iface_single.o) $(RLGS64)(cpu_subtree_single.o) \
-         $(RLGS64)(profile_iface.o) $(GPUSUSE) \
-         $(RLGS64)(anal_single.o) $(RLGS64)(fkeep_single.o) \
-         $(RLGS64)(contrib_free_single.o) $(RLGS64)(ssids_single.o)
-SSIDSD64 = extend basics $(SPRALRBD) $(CUDADUSE) \
+         $(RLGS64)(cpu_iface_single_64.o) $(RLGS64)(cpu_subtree_single_64.o) \
+         $(RLGS64)(profile_iface.o) $(GPUSUSE64) \
+         $(RLGS64)(anal_single_64.o) $(RLGS64)(fkeep_single_64.o) \
+         $(RLGS64)(contrib_free_single_64.o) $(RLGS64)(ssids_single_64.o)
+SSIDSD64 = extend basics $(SPRALRBD64) $(CUDADUSE64) \
          $(RLGD64)(compat.o) $(RLGD64)(guess_topology.o) \
-         $(RLGD64)(omp.o) $(RLGD64)(profile.o) $(RLGD64)(SymbolicSubtree.o) \
-         $(RLGD64)(NumericSubtree_double.o) \
-         $(RLGD64)(cholesky_double.o) $(RLGD64)(ldlt_app_double.o) \
-         $(RLGD64)(ldlt_nopiv_double.o) $(RLGD64)(ldlt_tpp_double.o) \
-         $(RLGD64)(wrappers_double.o) \
-         $(RLGD64)(ThreadStats.o) $(RLGD64)(hw_topology.o) \
-         $(RLGD64)(metis4_wrapper.o) \
-         $(RLGD64)(spral_scaling_double.o) \
-         $(RLGD64)(match_order_double.o) $(RLGD64)(datatypes_double.o) \
+         $(RLGD64)(omp.o) $(RLGD64)(profile.o) \
+         $(RLGD64)(SymbolicSubtree.o) $(RLGD64)(NumericSubtree_double_64.o) \
+         $(RLGD64)(cholesky_double_64.o) $(RLGD64)(ldlt_app_double_64.o) \
+         $(RLGD64)(ldlt_nopiv_double_64.o) $(RLGD64)(ldlt_tpp_double_64.o) \
+         $(RLGD64)(wrappers_double_64.o) $(RLGD64)(ThreadStats.o) \
+         $(RLGD64)(hw_topology.o) $(RLGD64)(metis4_wrapper.o) \
+         $(RLGD64)(spral_scaling_double_64.o) \
+         $(RLGD64)(match_order_double_64.o) $(RLGD64)(datatypes_double_64.o) \
          $(RLGD64)(core_analyse.o) $(RLGD64)(pgm.o) \
-         $(RLGD64)(inform_double.o) $(RLGD64)(contrib_double.o) \
-         $(RLGD64)(subtree_double.o) $(RLGD64)(akeep_double.o) \
+         $(RLGD64)(inform_double_64.o) $(RLGD64)(contrib_double_64.o) \
+         $(RLGD64)(subtree_double_64.o) $(RLGD64)(akeep_double_64.o) \
          $(RLGD64)(blas_iface.o) $(RLGD64)(lapack_iface.o) \
-         $(RLGD64)(cpu_iface_double.o) $(RLGD64)(cpu_subtree_double.o) \
-         $(RLGD64)(profile_iface.o) $(GPUDUSE) \
-         $(RLGD64)(anal_double.o) $(RLGD64)(fkeep_double.o) \
-         $(RLGD64)(contrib_free_double.o) $(RLGD64)(ssids_double.o)
+         $(RLGD64)(cpu_iface_double_64.o) $(RLGD64)(cpu_subtree_double_64.o) \
+         $(RLGD64)(profile_iface.o) $(GPUDUSE64) \
+         $(RLGD64)(anal_double_64.o) $(RLGD64)(fkeep_double_64.o) \
+         $(RLGD64)(contrib_free_double_64.o) $(RLGD64)(ssids_double_64.o)
 
 SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface_single.o)
 SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface_double.o)
-SSIDSCS64 = $(SSIDSS64) $(CLGS64)(ssids_ciface_single.o)
-SSIDSCD64 = $(SSIDSD64) $(CLGD64)(ssids_ciface_double.o)
+SSIDSCS64 = $(SSIDSS64) $(CLGS64)(ssids_ciface_single_64.o)
+SSIDSCD64 = $(SSIDSD64) $(CLGD64)(ssids_ciface_double_64.o)
 
 #  main compilations and runs
 
