@@ -322,7 +322,7 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
     static char *kwlist[] = {"n","H_type","H_ne","H_row","H_col","H_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
                                     &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr,
                                     &py_options))
@@ -366,7 +366,7 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call dps_import
-    dps_import(&control, &data, &status, n, 
+    dps_import(&control, &data, &status, n,
                H_type, H_ne, H_row, H_col, H_ptr);
 
     // Free allocated memory
@@ -415,14 +415,14 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
     // Call dps_solve_problem
     dps_solve_tr_problem(&data, &status, n, H_ne, H_val, g, f, radius, x);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -469,15 +469,15 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
     // Call dps_solve_problem
-    dps_solve_rq_problem(&data, &status, n, H_ne, H_val, g, f, 
+    dps_solve_rq_problem(&data, &status, n, H_ne, H_val, g, f,
                          power, weight, x);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -537,9 +537,9 @@ static PyObject* py_dps_terminate(PyObject *self){
 static PyMethodDef dps_module_methods[] = {
     {"initialize", (PyCFunction) py_dps_initialize, METH_NOARGS,NULL},
     {"load", (PyCFunction) py_dps_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_tr_problem", (PyCFunction) py_dps_solve_tr_problem, 
+    {"solve_tr_problem", (PyCFunction) py_dps_solve_tr_problem,
      METH_VARARGS, NULL},
-    {"solve_rq_problem", (PyCFunction) py_dps_solve_rq_problem, 
+    {"solve_rq_problem", (PyCFunction) py_dps_solve_rq_problem,
      METH_VARARGS, NULL},
     {"information", (PyCFunction) py_dps_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_dps_terminate, METH_NOARGS, NULL},

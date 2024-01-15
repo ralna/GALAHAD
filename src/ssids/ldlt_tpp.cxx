@@ -44,7 +44,7 @@ precision_ fabs_(precision_ x) {
 }
 
 /** Returns true if all entries in col are less than small in abs value */
-bool check_col_small(int idx, int from, int to, precision_ const* a, 
+bool check_col_small(int idx, int from, int to, precision_ const* a,
                      int lda, precision_ small) {
    bool check = true;
    for(int c=from; c<idx; ++c)
@@ -68,12 +68,12 @@ int find_row_abs_max(int from, int to, precision_ const* a, int lda) {
 
 /** Performs symmetric swap of col1 and col2 in lower triangle */
 // FIXME: remove n only here for debug
-void swap_cols(int col1, int col2, int m, int n, int* perm, precision_* a, 
+void swap_cols(int col1, int col2, int m, int n, int* perm, precision_* a,
                int lda, int nleft, precision_* aleft, int ldleft) {
    if(col1 == col2) return; // No-op
 
    // Ensure col1 < col2
-   if(col2<col1) 
+   if(col2<col1)
       std::swap(col1, col2);
 
    // Swap perm entries
@@ -100,7 +100,7 @@ void swap_cols(int col1, int col2, int m, int n, int* perm, precision_* a,
 }
 
 /** Returns abs value of largest unelim entry in row/col not in posn exclude or on diagonal */
-precision_ find_rc_abs_max_exclude(int col, int nelim, int m, 
+precision_ find_rc_abs_max_exclude(int col, int nelim, int m,
                                    precision_ const* a, int lda, int exclude) {
    precision_ best = 0.0;
    for(int c=nelim; c<col; ++c) {
@@ -117,7 +117,7 @@ precision_ find_rc_abs_max_exclude(int col, int nelim, int m,
 /** Return true if (t,p) is a good 2x2 pivot, false otherwise */
 bool test_2x2(int t, int p, precision_ maxt, precision_ maxp, precision_ const* a, int lda, precision_ u, precision_ small, precision_* d) {
    // NB: We know t < p
-   
+
    // Check there is a non-zero in the pivot block
    precision_ a11 = a[t*lda+t];
    precision_ a21 = a[t*lda+p];
@@ -132,7 +132,7 @@ bool test_2x2(int t, int p, precision_ maxt, precision_ maxp, precision_ const* 
    precision_ detpiv1 = (a21*detscale)*a21;
    precision_ detpiv = detpiv0 - detpiv1;
    //printf("t1 %e < %e %e %e?\n", fabs_(detpiv), small, fabs_(detpiv0/2), fabs_(detpiv1/2));
-   if(fabs_(detpiv) < std::max(small, std::max(fabs_(detpiv0/2), 
+   if(fabs_(detpiv) < std::max(small, std::max(fabs_(detpiv0/2),
                                                fabs_(detpiv1/2)))) return false;
 
    // Finally apply threshold pivot check
@@ -149,7 +149,7 @@ bool test_2x2(int t, int p, precision_ maxt, precision_ maxp, precision_ const* 
 }
 
 /** Applies the 2x2 pivot to rest of block column */
-void apply_2x2(int nelim, int m, precision_* a, int lda, precision_* ld, 
+void apply_2x2(int nelim, int m, precision_* a, int lda, precision_* ld,
                int ldld, precision_* d) {
    /* Set diagonal block to identity */
    precision_* a1 = &a[nelim*lda];
@@ -170,7 +170,7 @@ void apply_2x2(int nelim, int m, precision_* a, int lda, precision_* ld,
 }
 
 /** Applies the 1x1 pivot to rest of block column */
-void apply_1x1(int nelim, int m, precision_* a, int lda, precision_* ld, 
+void apply_1x1(int nelim, int m, precision_* a, int lda, precision_* ld,
                int ldld, precision_* d) {
    /* Set diagonal block to identity */
    precision_* a1 = &a[nelim*lda];
@@ -195,8 +195,8 @@ void zero_col(int col, int m, precision_* a, int lda) {
 
 /** Simple LDL^T with threshold partial pivoting.
  * Intended for finishing off small matrices, not for performance */
-int ldlt_tpp_factor(int m, int n, int* perm, precision_* a, int lda, 
-                    precision_* d,  precision_* ld, int ldld, bool action, 
+int ldlt_tpp_factor(int m, int n, int* perm, precision_* a, int lda,
+                    precision_* d,  precision_* ld, int ldld, bool action,
                     precision_ u, precision_ small, int nleft,
       precision_* aleft, int ldleft) {
    //printf("=== ENTRY %d %d ===\n", m, n);
@@ -237,7 +237,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, precision_* a, int lda,
             nelim++;
             break;
          }
-         
+
          // Find column index of largest entry in |a(p, nelim+1:p-1)|
          int t = find_row_abs_max(nelim, p, &a[p], lda);
 
@@ -255,7 +255,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, precision_* a, int lda,
             nelim += 2;
             break;
          }
-          
+
          // Try p as 1x1 pivot
          maxp = std::max(maxp, fabs_(a[t*lda+p]));
          if( fabs_(a[p*lda+p]) >= u*maxp ) {
@@ -273,7 +273,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, precision_* a, int lda,
       }
       if(p>=n) {
          // Pivot search failed
-         
+
          // Try 1x1 pivot on p=nelim as last resort (we started at p=nelim+1)
          p = nelim;
          precision_ maxp = find_rc_abs_max_exclude(p, nelim, m, a, lda, -1);
@@ -304,7 +304,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, precision_* a, int lda,
    return nelim;
 }
 
-void ldlt_tpp_solve_fwd(int m, int n, precision_ const* l, int ldl, int nrhs, 
+void ldlt_tpp_solve_fwd(int m, int n, precision_ const* l, int ldl, int nrhs,
                         precision_* x, int ldx) {
    precision_ one_val = 1.0;
    precision_ minus_one_val = - 1.0;
@@ -313,10 +313,10 @@ void ldlt_tpp_solve_fwd(int m, int n, precision_ const* l, int ldl, int nrhs,
       if(m > n)
          gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, 1, one_val, &x[n], 1);
    } else {
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs, 
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs,
                 one_val, l, ldl, x, ldx);
       if(m > n)
-         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &l[n], 
+         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &l[n],
                    ldl, x, ldx, one_val, &x[n], ldx);
    }
 }
@@ -342,7 +342,7 @@ void ldlt_tpp_solve_diag(int n, precision_ const* d, precision_* x) {
    }
 }
 
-void ldlt_tpp_solve_bwd(int m, int n, precision_ const* l, int ldl, int nrhs, 
+void ldlt_tpp_solve_bwd(int m, int n, precision_ const* l, int ldl, int nrhs,
                         precision_* x, int ldx) {
    precision_ one_val = 1.0;
    precision_ minus_one_val = - 1.0;
@@ -352,9 +352,9 @@ void ldlt_tpp_solve_bwd(int m, int n, precision_ const* l, int ldl, int nrhs,
       host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, 1);
    } else {
       if(m > n)
-         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl, 
+         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl,
                    &x[n], ldx, one_val, x, ldx);
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_UNIT, n, nrhs, 
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_UNIT, n, nrhs,
                 one_val, l, ldl, x, ldx);
    }
 }

@@ -10,7 +10,7 @@
 !  October 11th 2013
 
    MODULE GALAHAD_USEFDH_precision
-            
+
 !  This is the driver program for running FDH for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers

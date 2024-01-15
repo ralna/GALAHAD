@@ -286,7 +286,7 @@ static PyObject* py_fdc_initialize(PyObject *self){
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   FDC_FACTORIZE_MATRIX    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args, 
+static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
                                             PyObject *keywds){
     PyArrayObject *py_A_val, *py_A_col, *py_A_ptr, *py_b;
     PyObject *py_options = NULL;
@@ -303,7 +303,7 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
                              "options",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOO|O", kwlist,
-                                    &m, &n, &py_A_ptr, &py_A_col, &py_A_val, 
+                                    &m, &n, &py_A_ptr, &py_A_col, &py_A_val,
                                     &py_b, &py_options))
         return NULL;
 
@@ -344,12 +344,12 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
 
     // Create NumPy output array
     npy_intp ndim[] = {n}; // size of dimen
-    PyArrayObject *py_depen = 
+    PyArrayObject *py_depen =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *depen = (int *) PyArray_DATA(py_depen);
 
     // Call fdc_find_dependent_rows
-    fdc_find_dependent_rows(&control, &data, &inform, &status, m, n, 
+    fdc_find_dependent_rows(&control, &data, &inform, &status, m, n,
                             A_ne, A_col, A_ptr, A_val, b, &n_depen, depen);
     //printf("A_ne %i\n", A_ne);
     //printf("n_depen %i\n", n_depen);
@@ -369,7 +369,7 @@ static PyObject* py_fdc_find_dependent_rows(PyObject *self, PyObject *args,
     // Return n_depen, depen and inform
     PyObject *find_dependent_rows_return;
     PyObject *py_inform = fdc_make_inform_dict(&inform);
-    find_dependent_rows_return = 
+    find_dependent_rows_return =
       Py_BuildValue("iOO", n_depen, py_depen, py_inform);
     Py_INCREF(find_dependent_rows_return);
     return find_dependent_rows_return;
@@ -399,7 +399,7 @@ static PyObject* py_fdc_terminate(PyObject *self){
 /* fdc python module method table */
 static PyMethodDef fdc_module_methods[] = {
     {"initialize", (PyCFunction) py_fdc_initialize, METH_NOARGS,NULL},
-    {"find_dependent_rows", (PyCFunction) py_fdc_find_dependent_rows, 
+    {"find_dependent_rows", (PyCFunction) py_fdc_find_dependent_rows,
       METH_VARARGS, NULL},
     {"terminate", (PyCFunction) py_fdc_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

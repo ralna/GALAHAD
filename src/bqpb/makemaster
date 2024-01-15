@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD BQPB package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2023-08-08
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -34,7 +34,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sls_deps make_ciface_sls \
                 make_ciface_cro make_ciface_rpd make_ciface_fdc \
                 make_ciface_roots make_ciface_cqp
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS = cqps
 
@@ -45,7 +45,7 @@ PYDEPENDENCIES = make_pyiface_sbls_deps make_pyiface_sbls make_pyiface_scu \
                  make_pyiface_fit make_pyiface_ir make_pyiface_cro \
                  make_pyiface_rpd make_pyiface_fdc
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS =
 
@@ -70,11 +70,11 @@ QPLIB_EXAMPLE = BQPBAND.qplib
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -82,5 +82,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

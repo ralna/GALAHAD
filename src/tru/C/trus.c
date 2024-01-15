@@ -21,7 +21,7 @@ int main(void) {
     // Derived types
     void *data;
     struct tru_control_type control;
-    struct tru_inform_type inform;   
+    struct tru_inform_type inform;
 
     // Initialize TRU
     int status;
@@ -46,7 +46,7 @@ int main(void) {
 
     // Set storage
     real_wp_ g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
     tru_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );
 
@@ -56,7 +56,7 @@ int main(void) {
 
     // Record solution information
     tru_information( &data, &inform, &status );
-    
+
     if(inform.status == 0){ // successful return
         printf("TRU successful solve\n");
         printf("iter: %d \n", inform.iter);
@@ -81,7 +81,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -102,7 +102,7 @@ int grad(int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess(int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess(int n, int ne, const real_wp_ x[], real_wp_ hval[],
          const void *userdata){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;

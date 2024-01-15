@@ -18,7 +18,7 @@ module hsl_ma57_single_ciface
        f_ma57_enquire => ma57_enquire,                           &
        f_ma57_alter_d => ma57_alter_d,                           &
        f_ma57_part_solve => ma57_part_solve,                     &
-       f_ma57_sparse_lsolve => ma57_sparse_lsolve,               &            
+       f_ma57_sparse_lsolve => ma57_sparse_lsolve,               &
        f_ma57_fredholm_alternative => ma57_fredholm_alternative, &
        f_ma57_lmultiply => ma57_lmultiply,                       &
        f_ma57_get_factors => ma57_get_factors,                   &

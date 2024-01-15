@@ -5,17 +5,17 @@
 
 *Font:                            Helvetica 9 bold
 
-! Black      
+! Black
 *Foreground:                      rgb:00/00/00
 ! Grey90
 *Background:                      rgb:e5/e5/e5
-! Black      
+! Black
 *activeForeground:                rgb:00/00/00
 ! Grey80
 *activeBackground:                rgb:cc/cc/cc
 ! Grey80
 *selectColor:                     rgb:cc/cc/cc
-! Black      
+! Black
 *selectForeground:                rgb:00/00/00
 ! Black
 *selectBackground:                rgb:00/00/00
@@ -23,7 +23,7 @@
 *highlightColor:                  rgb:ff/d7/00
 ! Grey90
 *highlightBackground:             rgb:e5/e5/e5
-! Black      
+! Black
 *disabledForeground:              rgb:00/00/00
 ! Grey90
 *insertBackground:                rgb:e5/e5/e5
@@ -33,7 +33,7 @@
 *Listbox*Foreground:              rgb:00/00/00
 ! Grey90
 *Listbox*Background:              rgb:e5/e5/e5
-! Black      
+! Black
 *Button*Foreground:               rgb:00/00/00
 ! Grey90
 *Button*Background:               rgb:e5/e5/e5
@@ -41,7 +41,7 @@
 *Button*activeForeground:         rgb:00/00/00
 ! Grey80
 *Button*activeBackground:         rgb:cc/cc/cc
-! Black      
+! Black
 *Entry*Foreground:                rgb:00/00/00
 ! Grey90
 *Entry*Background:                rgb:e5/e5/e5
@@ -59,15 +59,15 @@
 *Menu*activeBackground:           rgb:cc/cc/cc
 ! Grey90
 *Scrollbar*Background:            rgb:e5/e5/e5
-! Grey80  
+! Grey80
 *Scrollbar*activeBackground:      rgb:cc/cc/cc
 ! Grey90
 *Checkbutton*selectColor:         rgb:e5/e5/e5
-! Black      
+! Black
 *Checkbutton*selectForeground:    rgb:00/00/00
 ! Grey90
 *Checkbutton*selectBackground:    rgb:e5/e5/e5
-! Black      
+! Black
 *Checkbutton*activeForeground:    rgb:00/00/00
 ! Grey80
 *Checkbutton*activeBackground:    rgb:cc/cc/cc
@@ -77,11 +77,11 @@
 *Radiobutton*selectForeground:    rgb:00/00/00
 ! Grey90
 *Radiobutton*selectBackground:    rgb:e5/e5/e5
-! Black      
+! Black
 *Radiobutton*activeForeground:    rgb:00/00/00
 ! Grey80
 *Radiobutton*activeBackground:    rgb:cc/cc/cc
-! Black      
+! Black
 *cdwindow*Foreground:             rgb:00/00/00
 ! Grey90
 *cdwindow*Background:             rgb:e5/e5/e5
@@ -89,7 +89,7 @@
 *cdwindowEntry*Foreground:        rgb:00/00/00
 ! Grey90
 *cdwindowEntry*Background:        rgb:e5/e5/e5
-! Black      
+! Black
 *cdwindowButton*Foreground:       rgb:00/00/00
 ! Grey90
 *cdwindowButton*Background:       rgb:e5/e5/e5

@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_COPYRIGHT
-            
+
       USE GALAHAD_KINDS_precision
 
       IMPLICIT NONE

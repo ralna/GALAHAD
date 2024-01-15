@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD DQP package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -31,7 +31,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_sls \
                 make_ciface_sbls make_ciface_gltr make_ciface_scu \
                 make_ciface_rpd
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS =
 
@@ -41,7 +41,7 @@ CDEPENDS =
 PYDEPENDENCIES = make_pyiface_sls make_pyiface_sbls make_pyiface_gltr \
                  make_pyiface_scu make_pyiface_rpd
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS =
 
@@ -58,11 +58,11 @@ CUTEST_EXAMPLE = QPBAND.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -70,5 +70,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

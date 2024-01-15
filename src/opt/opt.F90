@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_OPT_precision
-            
+
 !     ------------------------------------------------
 !    |                                                |
 !    | Compute criticality measures for the nonlinear |

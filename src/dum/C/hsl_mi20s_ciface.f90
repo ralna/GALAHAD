@@ -50,13 +50,13 @@ module hsl_mi20_single_ciface
 
    type, bind(C) :: mi20_solve_control
       real(spc_) ::  abs_tol
-      real(spc_) ::  breakdown_tol  
-      integer(ipc_) :: gmres_restart 
-      logical(C_BOOL) :: init_guess  
-      integer(ipc_) :: krylov_solver  
-      integer(ipc_) :: max_its  
-      integer(ipc_) :: preconditioner_side  
-      real(spc_) ::  rel_tol  
+      real(spc_) ::  breakdown_tol
+      integer(ipc_) :: gmres_restart
+      logical(C_BOOL) :: init_guess
+      integer(ipc_) :: krylov_solver
+      integer(ipc_) :: max_its
+      integer(ipc_) :: preconditioner_side
+      real(spc_) ::  rel_tol
    end type mi20_solve_control
 
    type, bind(C) :: mi20_info
@@ -110,14 +110,14 @@ contains
       type(mi20_solve_control), intent(in) :: csolve_control
       type(f_mi20_solve_control), intent(out) :: fsolve_control
 
-      fsolve_control%abs_tol             = csolve_control%abs_tol          
+      fsolve_control%abs_tol             = csolve_control%abs_tol
       fsolve_control%breakdown_tol       = csolve_control%breakdown_tol
       fsolve_control%gmres_restart       = csolve_control%gmres_restart
       fsolve_control%init_guess          = csolve_control%init_guess
       fsolve_control%krylov_solver       = csolve_control%krylov_solver
-      fsolve_control%max_its             = csolve_control%max_its  
+      fsolve_control%max_its             = csolve_control%max_its
       fsolve_control%preconditioner_side = csolve_control%preconditioner_side
-      fsolve_control%rel_tol             = csolve_control%rel_tol  
+      fsolve_control%rel_tol             = csolve_control%rel_tol
    end subroutine copy_solve_control_in
 
    subroutine copy_info_out(finfo, cinfo)

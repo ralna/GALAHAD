@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD HASH package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -29,7 +29,7 @@ DEPENDS = dgo
 
 CDEPENDENCIES = make_ciface_common
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS = dgo_ciface
 
@@ -38,7 +38,7 @@ CDEPENDS = dgo_ciface
 
 PYDEPENDENCIES =
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS = dgo_pyiface
 
@@ -55,11 +55,11 @@ TESTS = test_full
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -67,6 +67,6 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries
 

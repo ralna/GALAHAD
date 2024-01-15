@@ -541,9 +541,9 @@
 !    the values of the entries of the lower triangular part of the Hessian
 !    matrix H in any of the available storage schemes.
 !
-!   H%row is a rank-one allocatable array of type default integer, that holds 
-!    the row indices of the lower triangular part of H in the sparse 
-!    co-ordinate storage scheme. It need not be allocated for any of the other 
+!   H%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices of the lower triangular part of H in the sparse
+!    co-ordinate storage scheme. It need not be allocated for any of the other
 !    three schemes
 !
 !   H%col is a rank-one allocatable array variable of type default integer,

@@ -47,10 +47,10 @@ contains
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! Column pointers
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! Row indices
     integer(ip_), dimension(n), intent(inout) :: perm
-      ! perm(i) must hold position of i in the pivot sequence. 
+      ! perm(i) must hold position of i in the pivot sequence.
       ! On exit, holds the pivot order to be used by factorization.
     integer(ip_), intent(out) :: nnodes ! number of supernodes found
-    integer(ip_), dimension(:), allocatable, intent(out) :: sptr ! supernode 
+    integer(ip_), dimension(:), allocatable, intent(out) :: sptr ! supernode
       ! pointers
     integer(ip_), dimension(:), allocatable, intent(out) :: sparent ! assembly
       !  tree
@@ -64,18 +64,18 @@ contains
     integer(long_), intent(out) :: nflops
 
     integer(ip_) :: i
-    integer(ip_), dimension(:), allocatable :: invp ! inverse permutation of 
+    integer(ip_), dimension(:), allocatable :: invp ! inverse permutation of
       ! perm
     integer(ip_) :: j
     integer(ip_) :: realn ! number of variables with an actual entry present
     integer(ip_) :: st ! stat argument in allocate calls
 
     integer(ip_), dimension(:), allocatable :: scc
-    integer(ip_), dimension(:), allocatable :: cc ! number of entries in 
+    integer(ip_), dimension(:), allocatable :: cc ! number of entries in
       ! each column
     integer(ip_), dimension(:), allocatable :: parent ! parent of each node in
       !  etree
-    integer(ip_), dimension(:), allocatable :: tperm ! temporary permutation 
+    integer(ip_), dimension(:), allocatable :: tperm ! temporary permutation
       ! vector
 
     ! Quick exit for n < 0.
@@ -186,7 +186,7 @@ contains
     integer(ip_), intent(in) :: n ! dimension of system
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! column pointers of A
     integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
-    integer(ip_), dimension(n), intent(in) :: perm ! perm(i) is the pivot 
+    integer(ip_), dimension(n), intent(in) :: perm ! perm(i) is the pivot
       ! position of column i
     integer(ip_), dimension(n), intent(in) :: invp ! inverse of perm
     integer(ip_), dimension(n), intent(out) :: parent ! parent(i) is the
@@ -199,7 +199,7 @@ contains
     integer(ip_) :: l ! next ancestor
     integer(ip_) :: piv ! current pivot
     integer(ip_) :: rowidx ! current column of A = invp(piv)
-    integer(ip_), dimension(:), allocatable :: vforest ! virtual forest, used 
+    integer(ip_), dimension(:), allocatable :: vforest ! virtual forest, used
       ! for path compression (shortcuts to top of each tree)
 
     ! Allocate virtual forest and initialise it
@@ -224,7 +224,7 @@ contains
              k = l
           end do
           ! Check if we have already done this pivot
-          if (vforest(k) .eq. piv) cycle 
+          if (vforest(k) .eq. piv) cycle
           parent(k) = piv
           vforest(k) = piv
        end do
@@ -255,7 +255,7 @@ contains
 
     integer(ip_), dimension(:), allocatable :: chead ! chead(i) is first child
       ! of i
-    integer(ip_), dimension(:), allocatable :: cnext ! cnext(i) is next child 
+    integer(ip_), dimension(:), allocatable :: cnext ! cnext(i) is next child
       ! of i
     integer(ip_) :: i
     integer(ip_) :: id
@@ -264,7 +264,7 @@ contains
       ! order to new one
     integer(ip_) :: node
     integer(ip_) :: shead ! pointer to top of stack
-    integer(ip_), dimension(:), allocatable :: stack ! stack for depth first 
+    integer(ip_), dimension(:), allocatable :: stack ! stack for depth first
      ! search
 
     realn = n
@@ -415,7 +415,7 @@ contains
       ! for the first time at node i of the elimination tree (this may be
       ! negative).
     integer(ip_), intent(out) :: st ! stat parmeter for allocate calls
-   
+
     integer(ip_) :: col ! column of matrix associated with piv
     integer(ip_), dimension(:), allocatable :: first ! first descendants
     integer(ip_) :: i
@@ -547,16 +547,16 @@ contains
 ! (b) The number of columns in both u and v is less than nemin
 !
 ! Note: assembly tree must be POSTORDERED on output
-  subroutine find_supernodes(n, realn, parent, cc, sperm, nnodes, sptr, &  
+  subroutine find_supernodes(n, realn, parent, cc, sperm, nnodes, sptr, &
        sparent, scc, nemin, info, st)
     integer(ip_), intent(in) :: n
     integer(ip_), intent(in) :: realn
     integer(ip_), dimension(n), intent(in) :: parent ! parent(i) is the
-      ! parent of supernode i in the elimination/assembly tree. 
+      ! parent of supernode i in the elimination/assembly tree.
     integer(ip_), dimension(n), intent(in) :: cc ! cc(i) is the column count
       ! of supernode i, including elements eliminated at supernode i.
-    integer(ip_), dimension(n), intent(out) :: sperm ! on exit contains a 
-      ! permutation from pivot order to a new pivot order with contigous 
+    integer(ip_), dimension(n), intent(out) :: sperm ! on exit contains a
+      ! permutation from pivot order to a new pivot order with contigous
       ! supernodes
     integer(ip_), intent(out) :: nnodes ! number of supernodes
     integer(ip_), dimension(n+1), intent(out) :: sptr
@@ -567,32 +567,32 @@ contains
     integer(ip_), intent(out) :: st ! stat paremter from allocate calls
 
     integer(ip_) :: i, j, k
-    integer(ip_), dimension(:), allocatable :: height ! used to track height 
+    integer(ip_), dimension(:), allocatable :: height ! used to track height
       ! of tree
-    logical, dimension(:), allocatable :: mark ! flag array for nodes to 
+    logical, dimension(:), allocatable :: mark ! flag array for nodes to
       ! finalise
-    integer(ip_), dimension(:), allocatable :: map ! map vertex idx -> 
+    integer(ip_), dimension(:), allocatable :: map ! map vertex idx ->
       ! supernode idx
-    integer(ip_), dimension(:), allocatable :: nelim ! number of eliminated 
+    integer(ip_), dimension(:), allocatable :: nelim ! number of eliminated
       ! variables
-    integer(ip_), dimension(:), allocatable :: nvert ! number of elimd 
+    integer(ip_), dimension(:), allocatable :: nvert ! number of elimd
       ! supervariables
     integer(ip_) :: node
-    integer(ip_), dimension(:), allocatable :: npar ! temporary array of 
+    integer(ip_), dimension(:), allocatable :: npar ! temporary array of
       ! snode pars
     integer(ip_) :: par ! parent of current node
     integer(ip_) :: shead ! current head of stack
     integer(ip_), dimension(:), allocatable :: stack ! used to navigate tree
     integer(ip_) :: v
-    integer(ip_), dimension(:), allocatable :: vhead ! heads of vertex linked 
+    integer(ip_), dimension(:), allocatable :: vhead ! heads of vertex linked
       ! lists
-    integer(ip_), dimension(:), allocatable :: vnext ! next element in linked 
+    integer(ip_), dimension(:), allocatable :: vnext ! next element in linked
       ! lists
-    integer(long_), dimension(:), allocatable :: ezero ! number of explicit 
+    integer(long_), dimension(:), allocatable :: ezero ! number of explicit
       ! zeros
-    integer(ip_), dimension(:), allocatable :: chead ! chead(i) is first child 
+    integer(ip_), dimension(:), allocatable :: chead ! chead(i) is first child
       ! of i
-    integer(ip_), dimension(:), allocatable :: cnext ! cnext(i) is next child 
+    integer(ip_), dimension(:), allocatable :: cnext ! cnext(i) is next child
       ! of i
     integer(ip_), dimension(:), allocatable :: child
     integer(ip_) :: nchild
@@ -960,9 +960,9 @@ contains
     integer(ip_) :: j
     integer(ip_) :: node ! current node of assembly tree
     integer(ip_) :: piv ! current pivot position
-    integer(ip_), dimension(:), allocatable :: seen ! tag last time index was 
+    integer(ip_), dimension(:), allocatable :: seen ! tag last time index was
       ! seen
-    integer(ip_), dimension(:), allocatable :: chead ! head of child linked 
+    integer(ip_), dimension(:), allocatable :: chead ! head of child linked
       ! lists
     integer(ip_), dimension(:), allocatable :: cnext ! pointer to next child
 

@@ -171,7 +171,7 @@ static int eval_h(int n, int m, int hne, const double x[], const double y[],
     return 0;
 }
 
-static int eval_hprods(int n, int m, int pne, const double x[], const double v[], 
+static int eval_hprods(int n, int m, int pne, const double x[], const double v[],
                   double pval[], bool got_h, const void *userdata){
 
     // Wrap input arrays as NumPy arrays
@@ -871,7 +871,7 @@ static bool nls_update_control(struct nls_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE SUBPROBLEM OPTIONS    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the control struct from C and turn it into a python options dict */
-static PyObject* nls_make_subproblem_options_dict(const struct 
+static PyObject* nls_make_subproblem_options_dict(const struct
                                                   nls_subproblem_control_type *control){
     PyObject *py_options = PyDict_New();
 
@@ -1469,11 +1469,11 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp mdim[] = {m}; // size of c
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
     npy_intp ndim[] = {n}; // size of g
-    PyArrayObject *py_g = 
+    PyArrayObject *py_g =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
 

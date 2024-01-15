@@ -880,7 +880,7 @@
 !   On exit from BQP_solve, other components of inform are set as described
 !   in the comments to BQP_inform_type, see above
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1540,7 +1540,7 @@
 !write(6,*) ' pg '
 !do i = 1, prob%n
 !val = MAX( MIN( prob%X(i) - data%G(i), prob%X_u(i) ),    &
-!                                          prob%X_l(i) ) - prob%X(i) 
+!                                          prob%X_l(i) ) - prob%X(i)
 !if(val /= zero ) write(6,"(I3, 5ES12.4)" ) i, val,  prob%X_l(i), prob%X(i), &
 ! prob%X_u(i), data%G(i)
 !end do
@@ -1983,7 +1983,7 @@
          CASE ( : - 1 )
            IF ( data%printe ) WRITE( control%error, 2010 )                     &
              prefix, data%arcsearch_status, 'BQP_(in)exact_arcsearch'
-           inform%status = GALAHAD_error_inertia   
+           inform%status = GALAHAD_error_inertia
            GO TO 910
 
 !  form the matrix-vector product H * v
@@ -4095,8 +4095,8 @@
      SUBROUTINE BQP_solve_given_h( data, status, H_val, G, f, X_l, X_u,        &
                                    X, Z, X_stat )
 
-!  solve the bound-constrained quadratic programming problem whose structure 
-!  was previously imported. See BQP_solve for a description of the required 
+!  solve the bound-constrained quadratic programming problem whose structure
+!  was previously imported. See BQP_solve for a description of the required
 !  arguments.
 
 !--------------------------------
@@ -4110,7 +4110,7 @@
 !   For other values see, bqp_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in bqp_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -4128,7 +4128,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -4138,10 +4138,10 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -4226,9 +4226,9 @@
                                           NZ_prod, nz_prod_end )
 
 
-!  solve the bound-constrained quadratic programming problem whose structure 
-!  was previously imported, and for which the action of A and its traspose 
-!  on a given vector are obtained by reverse communication. See BQP_solve 
+!  solve the bound-constrained quadratic programming problem whose structure
+!  was previously imported, and for which the action of A and its traspose
+!  on a given vector are obtained by reverse communication. See BQP_solve
 !  for a description of the required arguments.
 
 !--------------------------------
@@ -4238,7 +4238,7 @@
 !  data is a scalar variable of type BQP_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
-!   success or otherwise of the solve. status must be set to 1 on initial 
+!   success or otherwise of the solve. status must be set to 1 on initial
 !   entry, and on exit has possible values:
 !
 !     0 Normal termination with a locally optimal solution.
@@ -4281,7 +4281,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -4291,10 +4291,10 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -4304,7 +4304,7 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  The remaining components V, ... , nz_prod_end need not be set on initial 
+!  The remaining components V, ... , nz_prod_end need not be set on initial
 !  entry, but must be set as instructed by status as above.
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status

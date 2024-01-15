@@ -21,8 +21,8 @@ row = Cint[1, 2, 2, 3, 3, 4, 5]  # row indices
 col = Cint[1, 1, 5, 2, 3, 3, 4]  # column indices
 ptr = Cint[1, 2, 4, 6, 7, 8]  # pointers to indices
 val = Float64[2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0]  # values
-dense = Float64[2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0, 
-                0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 
+dense = Float64[2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0,
+                0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0,
                 0.0, 0.0, 0.0, 1.0, 0.0]
 rhs = Float64[2.0, 33.0, 11.0, 15.0, 4.0]
 rhst = Float64[8.0, 12.0, 23.0, 5.0, 12.0]
@@ -53,7 +53,7 @@ for d = 1:3
   # sparse by rows
   if d == 2
     @printf(" sparse by rows ")
-    uls_factorize_matrix( control, data, status, m, n, 
+    uls_factorize_matrix( control, data, status, m, n,
                           "sparse_by_rows", ne, val, Cint[], col, ptr )
   end
 

@@ -85,7 +85,7 @@ for storage_type = 1:3
   # sparse by rows
   if storage_type == 2
     st = 'R'
-    
+
     dps_resolve_tr_problem( data, status, n, c, f, half_radius, x )
   end
 

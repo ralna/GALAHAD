@@ -3,7 +3,7 @@
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 9 7    M O D U L E  -*-*-*-*-*-
 
 module hsl_MA97_single
-    
+
    USE GALAHAD_KINDS
    USE GALAHAD_SYMBOLS
 
@@ -81,13 +81,13 @@ module hsl_MA97_single
 
   type MA97_control ! The scalar control of this type controls the action
     logical :: action = .true. ! pos_def = .false. only.
-    real(sp_) :: consist_tol = epsilon(one) 
+    real(sp_) :: consist_tol = epsilon(one)
     integer(long_) :: factor_min = 20000000
     integer(ip_) :: nemin = nemin_default
-    real(sp_) :: multiplier = 1.1 
+    real(sp_) :: multiplier = 1.1
     integer(ip_) :: ordering = 5 ! controls choice of ordering
     integer(ip_) :: print_level = 0 ! Controls diagnostic printing
-    integer(ip_) :: scaling = 0 ! controls use of scaling. 
+    integer(ip_) :: scaling = 0 ! controls use of scaling.
     real(sp_) :: small = tiny(one) ! Minimum pivot size
     logical :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
     integer(long_) :: solve_min = 100000 ! Minimum value of info%num_factor
@@ -114,7 +114,7 @@ module hsl_MA97_single
     integer(long_)  :: num_flops = 0_long_ ! Number of flops to calculate L.
     integer(ip_) :: num_delay = 0 ! Number of delayed eliminations.
     integer(ip_) :: num_neg = 0 ! Number of negative eigenvalues.
-    integer(ip_) :: num_sup = 0 ! Number of supervariables. 
+    integer(ip_) :: num_sup = 0 ! Number of supervariables.
     integer(ip_) :: num_two = 0 ! Number of 2x2 pivots.
     integer(ip_) :: ordering = 0 ! ordering actually used
     integer(ip_) :: stat = 0 ! STAT value (when available).
@@ -202,7 +202,7 @@ contains
 
   subroutine MA97_factor_single(matrix_type,val,akeep,fkeep,control,info,      &
                                 scale,ptr,row)
-   integer(ip_),  intent(in) :: matrix_type 
+   integer(ip_),  intent(in) :: matrix_type
    real(sp_), intent(in) :: val(*)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (out) :: fkeep
@@ -227,7 +227,7 @@ contains
 
   subroutine MA97_factor_solve_single(matrix_type,val,nrhs,x,lx,akeep,fkeep,   &
                                       control,info,scale,ptr,row)
-   integer(ip_),  intent(in) :: matrix_type 
+   integer(ip_),  intent(in) :: matrix_type
    real(sp_), intent(in) :: val(*)
    integer(ip_) :: lx, nrhs
    real(sp_), intent(inout) :: x(lx,nrhs)
@@ -235,7 +235,7 @@ contains
    type (MA97_fkeep), intent (out) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(sp_), intent(inout), optional :: scale(:) 
+   real(sp_), intent(inout), optional :: scale(:)
    integer(ip_), intent(in), optional :: ptr(akeep%n+1)
    integer(ip_), intent(in), optional :: row(*)
 
@@ -254,9 +254,9 @@ contains
 
   subroutine MA97_factor_solve_one_single(matrix_type,val,x1,akeep,fkeep,      &
                                           control,info,scale,ptr,row)
-   integer(ip_),  intent(in) :: matrix_type 
+   integer(ip_),  intent(in) :: matrix_type
    real(sp_), intent(in) :: val(*)
-   real(sp_), intent(inout) :: x1(:) 
+   real(sp_), intent(inout) :: x1(:)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent(out) :: fkeep
    type (MA97_control), intent (in) :: control

@@ -31,16 +31,16 @@ int main(void) {
     l=0;
     for( i=0; i < m; i++){
      A_ptr[i] = l;
-     A_row[l] = i; 
-     A_col[l] = i; 
+     A_row[l] = i;
+     A_col[l] = i;
      A_val[l] = 1.0;
      l++;
-     A_row[l] = i; 
-     A_col[l] = m+i;  
+     A_row[l] = i;
+     A_col[l] = m+i;
      A_val[l] = i+1;
      l++;
-     A_row[l] = i; 
-     A_col[l] = n-1;  
+     A_row[l] = i;
+     A_col[l] = n-1;
      A_val[l] = 1.0;
      l++;
     }
@@ -67,8 +67,8 @@ int main(void) {
 
     // store S in sparse formats
     for( i=0; i < n; i++){
-     S_row[i] = i; 
-     S_col[i] = i; 
+     S_row[i] = i;
+     S_col[i] = i;
      S_ptr[i] = i;
      S_val[i] = (i+1)*(i+1);
     }
@@ -91,7 +91,7 @@ int main(void) {
     }
 
    // trust-region radius is one
-   real_wp_ radius = 1.0; 
+   real_wp_ radius = 1.0;
     // Set output storage
     real_wp_ x[n]; // solution
     char st;
@@ -122,28 +122,28 @@ int main(void) {
                    llst_import( &control, &data, &status, m, n,
                                "coordinate", A_ne, A_row, A_col, NULL );
                    if(use_s == 0){
-                      llst_solve_problem( &data, &status, m, n, radius, 
+                      llst_solve_problem( &data, &status, m, n, radius,
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
-                      llst_import_scaling( &control, &data, &status, n, 
-                                           "coordinate", S_ne, S_row, 
+                      llst_import_scaling( &control, &data, &status, n,
+                                           "coordinate", S_ne, S_row,
                                            S_col, NULL );
-                      llst_solve_problem( &data, &status, m, n, radius, 
+                      llst_solve_problem( &data, &status, m, n, radius,
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
                    break;
                case 2: // sparse by rows
                    st = 'R';
-                   llst_import( &control, &data, &status, m, n, 
+                   llst_import( &control, &data, &status, m, n,
                                 "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
                    if(use_s == 0){
-                      llst_solve_problem( &data, &status, m, n, radius, 
+                      llst_solve_problem( &data, &status, m, n, radius,
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
-                      llst_import_scaling( &control, &data, &status, n, 
-                                           "sparse_by_rows", S_ne, NULL, 
+                      llst_import_scaling( &control, &data, &status, n,
+                                           "sparse_by_rows", S_ne, NULL,
                                            S_col, S_ptr );
-                      llst_solve_problem( &data, &status, m, n, radius, 
+                      llst_solve_problem( &data, &status, m, n, radius,
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
                    break;
@@ -156,8 +156,8 @@ int main(void) {
                                           A_dense_ne, A_dense_val, b, x,
                                           0, NULL );
                    }else{
-                      llst_import_scaling( &control, &data, &status, n, 
-                                           "dense", S_dense_ne, 
+                      llst_import_scaling( &control, &data, &status, n,
+                                           "dense", S_dense_ne,
                                            NULL, NULL, NULL );
                       llst_solve_problem( &data, &status, m, n, radius,
                                           A_dense_ne, A_dense_val, b, x,
@@ -169,12 +169,12 @@ int main(void) {
                    llst_import( &control, &data, &status, m, n,
                                 "coordinate", A_ne, A_row, A_col, NULL );
                    if(use_s == 0){
-                      llst_solve_problem( &data, &status, m, n, radius, 
+                      llst_solve_problem( &data, &status, m, n, radius,
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
-                      llst_import_scaling( &control, &data, &status, n, 
+                      llst_import_scaling( &control, &data, &status, n,
                                            "diagonal", S_ne, NULL, NULL, NULL );
-                      llst_solve_problem( &data, &status, m, n, radius, 
+                      llst_solve_problem( &data, &status, m, n, radius,
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
                    break;
@@ -185,9 +185,9 @@ int main(void) {
                printf("storage type %c%1i:  status = %1i, ||r|| = %5.2f\n",
                       st, use_s, inform.status, inform.r_norm );
            }else{
-               printf("storage type %c%1i: LLST_solve exit status = %1i\n", 
+               printf("storage type %c%1i: LLST_solve exit status = %1i\n",
                       st, use_s, inform.status);
-           }  
+           }
         }
         //printf("x: ");
         //for( int i = 0; i < n; i++) printf("%f ", x[i]);

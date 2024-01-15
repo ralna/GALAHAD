@@ -631,8 +631,8 @@
 !            (x_l)_i <=  x_i <= (x_u)_i , i = 1, .... , n,
 !
 !  x is a vector of n components ( x_1, .... , x_n ),  A_o is an o by n
-!  matrix, any of the bounds (x_l)_i, (x_u)_i may be infinite, and the 
-!  weighted norm ||v||_W = sqrt( sum_i=1^o w_i v_i^2 ), using a primal-dual 
+!  matrix, any of the bounds (x_l)_i, (x_u)_i may be infinite, and the
+!  weighted norm ||v||_W = sqrt( sum_i=1^o w_i v_i^2 ), using a primal-dual
 !  interior-point method. The subroutine is particularly appropriate
 !  when A_0 is sparse.
 !
@@ -718,7 +718,7 @@
 !    the required solution, x.
 !
 !   %R is a REAL array of length %o, which is used to store the values of
-!    the residuals A_o x - b. It need not be set on entry. On exit, it will 
+!    the residuals A_o x - b. It need not be set on entry. On exit, it will
 !    have been filled with appropriate values.
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
@@ -771,7 +771,7 @@
 !   - 3 one of the restrictions
 !        prob%n     >=  1
 !        prob%o     >=  1
-!        prob%Ao%type in { 'DENSE', 'DENSE_BY_COLUMNS', 'SPARSE_BY_ROWS', 
+!        prob%Ao%type in { 'DENSE', 'DENSE_BY_COLUMNS', 'SPARSE_BY_ROWS',
 !                          'SPARSE_BY_COLUMNS','COORDINATE' }
 !       has been violated.
 !
@@ -800,7 +800,7 @@
 !       control%clock_time_limit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!  On exit from BLLSB_solve, other components of inform are given in the 
+!  On exit from BLLSB_solve, other components of inform are given in the
 !   preamble to CLLS
 !
 !  regularization_weight is an OPTIONAL REAL, that may be set by the user
@@ -910,7 +910,7 @@
 
 !  save status values while arrays are deallocated
 
-      status = inform%status 
+      status = inform%status
       alloc_status = inform%alloc_status
       bad_alloc = inform%bad_alloc
 
@@ -1192,7 +1192,7 @@
 !  o is a scalar variable of type default integer, that holds the number of
 !   observations
 !
-!  Ao_type is a character string that specifies the objective design matrix 
+!  Ao_type is a character string that specifies the objective design matrix
 !   storage scheme used. It should be one of 'coordinate', 'sparse_by_rows',
 !   'sparse_by_columns', 'dense', 'dense_by_rows' or 'dense_by_columns';
 !   lower or upper case variants are allowed

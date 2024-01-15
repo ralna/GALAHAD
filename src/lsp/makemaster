@@ -4,7 +4,7 @@
 #  This version: 2022-07-20
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================

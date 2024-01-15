@@ -1,23 +1,23 @@
 % GALAHAD_QPB -
 %
-%  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector 
-%  g, a constant f, n-vectors x_l <= x_u and m-vectors c_l <= c_u, 
+%  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector
+%  g, a constant f, n-vectors x_l <= x_u and m-vectors c_l <= c_u,
 %  find a local minimizer of the QUADRATIC PROGRAMMING problem
 %    minimize 0.5 * x' * H * x + g' * x + f
 %    subject to c_l <= A * x <= c_u and x_l <= x <= x_u
 %  using an interior-point method.
-%  H need not be definite. Advantage is taken of sparse A and H. 
+%  H need not be definite. Advantage is taken of sparse A and H.
 %
 %  Simple usage -
 %
 %  to solve the quadratic program
-%   [ x, inform, aux ] 
+%   [ x, inform, aux ]
 %     = galahad_qpb( H, g, f, A, c_l, c_u, x_l, x_u, control )
 %
 %  Sophisticated usage -
 %
 %  to initialize data and control structures prior to solution
-%   [ control ] 
+%   [ control ]
 %     = galahad_qpb( 'initial' )
 %
 %  to solve the quadratic program using existing data structures
@@ -41,7 +41,7 @@
 %    control, a structure containing control parameters.
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
-%      the derived type QPB_CONTROL as described in the 
+%      the derived type QPB_CONTROL as described in the
 %      manual for the fortran 90 package GALAHARS_QPB.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/qpb.pdf
 %
@@ -53,22 +53,22 @@
 %   inform: a structure containing information parameters
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
-%      the derived type QPB_INFORM as described in the manual for 
+%      the derived type QPB_INFORM as described in the manual for
 %      the fortran 90 package GALAHARS_QPB.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/qpb.pdf
 %  aux: a structure containing Lagrange multipliers and constraint status
 %   aux.c: values of the constraints A * x
-%   aux.y: Lagrange multipliers corresponding to the general constraints 
-%        c_l <= A * x <= c_u 
+%   aux.y: Lagrange multipliers corresponding to the general constraints
+%        c_l <= A * x <= c_u
 %   aux.z: dual variables corresponding to the bound constraints
 %        x_l <= x <= x_u
 %   aux.c_stat: vector indicating the status of the general constraints
 %           c_stat(i) < 0 if (c_l)_i = (A * x)_i
-%           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i 
+%           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
 %           c_stat(i) > 0 if (c_u)_i = (A * x)_i
 %   aux.b_stat: vector indicating the status of the bound constraints
 %           b_stat(i) < 0 if (x_l)_i = (x)_i
-%           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i 
+%           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
 %           b_stat(i) > 0 if (x_u)_i = (x)_i
 %
 % This version copyright Nick Gould for GALAHAD productions 17/Feb/2010

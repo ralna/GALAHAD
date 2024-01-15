@@ -11,12 +11,12 @@
 !  History -
 !   originally released GALAHAD Version 2.5. April 19th 2013
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LAPACK_interface
 
-      IMPLICIT NONE 
+      IMPLICIT NONE
 
       PUBLIC
 
@@ -80,7 +80,7 @@
         SUBROUTINE DGELS( trans, m, n, nrhs, A, lda, B, ldb, WORK, lwork, info )
         USE GALAHAD_KINDS_precision
         CHARACTER ( LEN = 1 ) :: trans
-        INTEGER ( KIND = ip_ ) :: m, n, nrhs, lda, ldb, lwork, info 
+        INTEGER ( KIND = ip_ ) :: m, n, nrhs, lda, ldb, lwork, info
         DOUBLE PRECISION :: A( lda, n ), B( ldb, nrhs ), WORK( lwork )
         END SUBROUTINE DGELS
 
@@ -132,7 +132,7 @@
 
       END INTERFACE GELSS
 
-!  Least-squares solution using a divide-and-conquor singular-value 
+!  Least-squares solution using a divide-and-conquor singular-value
 !  decomposition
 
       INTERFACE GELSD
@@ -346,7 +346,7 @@
 
       END INTERFACE PBTRS
 
-!  spectral factorization 
+!  spectral factorization
 
       INTERFACE SYEV
 
@@ -372,7 +372,7 @@
 
       END INTERFACE SYEV
 
-!  generalized spectral factorization 
+!  generalized spectral factorization
 
       INTERFACE SYGV
 

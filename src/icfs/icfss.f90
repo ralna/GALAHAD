@@ -32,7 +32,7 @@
    CALL ICFS_triangular_solve( n, X, .TRUE., data, control, inform )
    IF ( inform%status == 0 ) THEN
      WRITE( 6, "( ' ICFS - Preconditioned solution is ', 5F6.2 )" ) X
-   ELSE 
+   ELSE
      WRITE( 6, "( ' ICFS - exit status = ', I0 )" ) inform%status
    END IF
 ! clean up

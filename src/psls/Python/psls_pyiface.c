@@ -546,7 +546,7 @@ static PyObject* py_psls_apply_preconditioner(PyObject *self, PyObject *args){
     // Call psls_solve_direct
     psls_apply_preconditioner(&data, &status, n, sol);
     // for( int i = 0; i < n; i++) printf("x %f\n", sol[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -603,11 +603,11 @@ static PyObject* py_psls_terminate(PyObject *self){
 static PyMethodDef psls_module_methods[] = {
     {"initialize", (PyCFunction) py_psls_initialize, METH_NOARGS,NULL},
     {"load", (PyCFunction) py_psls_load, METH_VARARGS, NULL},
-    {"form_preconditioner", 
+    {"form_preconditioner",
       (PyCFunction) py_psls_form_preconditioner, METH_VARARGS, NULL},
-    {"form_subset_preconditioner", 
+    {"form_subset_preconditioner",
       (PyCFunction) py_psls_form_subset_preconditioner, METH_VARARGS, NULL},
-    {"apply_preconditioner", 
+    {"apply_preconditioner",
       (PyCFunction) py_psls_apply_preconditioner, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_psls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_psls_terminate, METH_NOARGS, NULL},

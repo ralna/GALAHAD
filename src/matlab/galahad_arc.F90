@@ -359,8 +359,8 @@
           ALLOCATE( nlp%H%row( nlp%H%ne ), nlp%H%col( nlp%H%ne ),              &
                     STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
-          nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ), KIND = int4 ) 
-          nlp%H%col( : nlp%H%ne ) = INT( IW( nlp%H%ne + 1 : ), KIND = int4 ) 
+          nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ), KIND = int4 )
+          nlp%H%col( : nlp%H%ne ) = INT( IW( nlp%H%ne + 1 : ), KIND = int4 )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' deallocation failure ' )
           ALLOCATE( nlp%H%val( nlp%H%ne ), STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )

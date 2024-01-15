@@ -35,7 +35,7 @@
        END DO
      CASE ( 4 )                    ! Restart
         U = 1.0_rp_
-     CASE DEFAULT      
+     CASE DEFAULT
         EXIT
      END SELECT
    END DO

@@ -9,7 +9,7 @@
 !  February 5th 1995
 
    MODULE LANCELOT_HSL_routines
-            
+
      USE GALAHAD_KINDS_precision
 
      IMPLICIT NONE

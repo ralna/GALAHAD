@@ -10,7 +10,7 @@
 !  March 15th 2018
 
    MODULE GALAHAD_USEDPS_precision
-            
+
 !  This is the driver program for running DPS for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers

@@ -79,11 +79,11 @@ PyObject* scu_make_inform_dict(const struct scu_inform_type *inform){
                          PyLong_FromLong(inform->status));
     PyDict_SetItemString(py_inform, "alloc_status",
                          PyLong_FromLong(inform->alloc_status));
-    npy_intp idim[] = {3}; 
-    PyArrayObject *py_inertia = 
+    npy_intp idim[] = {3};
+    PyArrayObject *py_inertia =
       (PyArrayObject*) PyArray_SimpleNew(1, idim, NPY_INT);
-    int *inertia = (int *) PyArray_DATA(py_inertia); 
-    for(int i=0; i<3; i++) inertia[i] = inform->inertia[i];  
+    int *inertia = (int *) PyArray_DATA(py_inertia);
+    for(int i=0; i<3; i++) inertia[i] = inform->inertia[i];
     PyDict_SetItemString(py_inform, "inertia", (PyObject *) py_inertia);
 
     return py_inform;

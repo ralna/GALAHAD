@@ -637,7 +637,7 @@
      ELSE
        WRITE( 6, "( '    fail ' )", advance = 'no' )
      END IF
-     X2( : n, 1 ) = B_diag ; X2( : n, 2 ) = B_diag ; 
+     X2( : n, 1 ) = B_diag ; X2( : n, 2 ) = B_diag ;
      CALL SLS_solve( matrix, X2, data, control, inform )
      IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                       &
              <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                                &
@@ -745,7 +745,7 @@
      WRITE( 6, "( I6 )", advance = 'no' ) inform%status
      DEALLOCATE( matrix%val, matrix%row, matrix%col, matrix%type )
      CALL SLS_terminate( data, control, inform )
-     write(6,"('')", advance = 'no') 
+     write(6,"('')", advance = 'no')
 
 !1111 continue
 ! test for error = GALAHAD_error_inertia

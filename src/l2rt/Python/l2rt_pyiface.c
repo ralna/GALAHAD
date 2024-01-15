@@ -333,14 +333,14 @@ static PyObject* py_l2rt_solve_problem(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
     // Call l2rt_solve_direct
     l2rt_solve_problem(&data, &status, m, n, power, weight, shift, x, u, v);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -395,7 +395,7 @@ static PyObject* py_l2rt_terminate(PyObject *self){
 /* l2rt python module method table */
 static PyMethodDef l2rt_module_methods[] = {
     {"initialize", (PyCFunction) py_l2rt_initialize, METH_NOARGS,NULL},
-    {"load_options", (PyCFunction) py_l2rt_load_options, 
+    {"load_options", (PyCFunction) py_l2rt_load_options,
      METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_problem", (PyCFunction) py_l2rt_solve_problem, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_l2rt_information, METH_NOARGS, NULL},

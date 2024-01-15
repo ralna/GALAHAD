@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD SUPERB package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-30
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -22,7 +22,7 @@ DEPENDENCIES = make_qpd_deps make_qpd make_wcp make_ptrans
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -43,11 +43,11 @@ CUTEST_EXAMPLE = QPBAND.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  non-standard package compilation instructions
@@ -91,5 +91,5 @@ $(CULG)(use$(package)_$(PRECIS).o): ../$(package)/use$(package).F90
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

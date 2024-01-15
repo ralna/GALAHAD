@@ -13236,7 +13236,7 @@
      $                   SAFMIN, SMLNUM, SN, SUM, T1, T2, T3, TR, TST,
      $                   ULP, V2, V3
       INTEGER            I, I1, I2, ITS, ITMAX, J, K, L, M, NH, NR, NZ,
-     $                   KDEFL 
+     $                   KDEFL
 *     ..
 *     .. Local Arrays ..
       DOUBLE PRECISION   V( 3 )
@@ -17065,7 +17065,7 @@
 *     ..
 *     .. Local Scalars ..
       DOUBLE PRECISION   AA, BB, BCMAX, BCMIS, CC, CS1, DD, EPS, P, SAB,
-     $                   SAC, SCALE, SIGMA, SN1, TAU, TEMP, Z, SAFMIN, 
+     $                   SAC, SCALE, SIGMA, SN1, TAU, TEMP, Z, SAFMIN,
      $                   SAFMN2, SAFMX2
       INTEGER            COUNT
 *     ..
@@ -21537,7 +21537,7 @@
                END IF
 
 *
-*              ==== Perform update from right within 
+*              ==== Perform update from right within
 *              .    computational window. ====
 *
                DO 30 J = JTOP, MIN( KBOT, K+3 )
@@ -21547,7 +21547,7 @@
                   H( J, K+2 ) = H( J, K+2 ) - REFSUM*V( 2, M22 )
    30          CONTINUE
 *
-*              ==== Perform update from left within 
+*              ==== Perform update from left within
 *              .    computational window. ====
 *
                IF( ACCUM ) THEN
@@ -21722,7 +21722,7 @@
 *              .     the first column of update from the left.
 *              .     These updates are required for the vigilant
 *              .     deflation check. We still delay most of the
-*              .     updates from the left for efficiency. ====      
+*              .     updates from the left for efficiency. ====
 *
                DO 70 J = JTOP, MIN( KBOT, K+3 )
                   REFSUM = V( 1, M )*( H( J, K+1 )+V( 2, M )*
@@ -66058,7 +66058,7 @@
 *     ..
 *     .. Local Scalars ..
       REAL               AA, BB, BCMAX, BCMIS, CC, CS1, DD, EPS, P, SAB,
-     $                   SAC, SCALE, SIGMA, SN1, TAU, TEMP, Z, SAFMIN, 
+     $                   SAC, SCALE, SIGMA, SN1, TAU, TEMP, Z, SAFMIN,
      $                   SAFMN2, SAFMX2
       INTEGER            COUNT
 *     ..
@@ -70428,7 +70428,7 @@
                END IF
 
 *
-*              ==== Perform update from right within 
+*              ==== Perform update from right within
 *              .    computational window. ====
 *
                DO 30 J = JTOP, MIN( KBOT, K+3 )
@@ -70438,7 +70438,7 @@
                   H( J, K+2 ) = H( J, K+2 ) - REFSUM*V( 2, M22 )
    30          CONTINUE
 *
-*              ==== Perform update from left within 
+*              ==== Perform update from left within
 *              .    computational window. ====
 *
                IF( ACCUM ) THEN
@@ -70613,7 +70613,7 @@
 *              .     the first column of update from the left.
 *              .     These updates are required for the vigilant
 *              .     deflation check. We still delay most of the
-*              .     updates from the left for efficiency. ====      
+*              .     updates from the left for efficiency. ====
 *
                DO 70 J = JTOP, MIN( KBOT, K+3 )
                   REFSUM = V( 1, M )*( H( J, K+1 )+V( 2, M )*

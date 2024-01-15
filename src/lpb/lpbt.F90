@@ -693,7 +693,7 @@
 
    CONTAINS
      SUBROUTINE WHICH_sls( control )
-     TYPE ( LPB_control_type ) :: control        
+     TYPE ( LPB_control_type ) :: control
 #include "galahad_sls_defaults.h"
      control%FDC_control%use_sls = use_sls
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver

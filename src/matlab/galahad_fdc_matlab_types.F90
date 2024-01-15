@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. March 4th, 2011
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_FDC_MATLAB_TYPES
@@ -49,7 +49,7 @@
         mwPointer :: pointer
         mwPointer :: total, analyse, factorize
         mwPointer :: clock_total, clock_analyse, clock_factorize
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: FDC_pointer_type
         mwPointer :: pointer
@@ -60,7 +60,7 @@
         TYPE ( FDC_time_pointer_type ) :: time_pointer
         TYPE ( SLS_pointer_type ) :: SLS_pointer
         TYPE ( ULS_pointer_type ) :: ULS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  F D C _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-

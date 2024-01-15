@@ -24,7 +24,7 @@
    END SUBROUTINE GROUP
 
    MODULE GALAHAD_CUTEST_FUNCTIONS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
      IMPLICIT NONE

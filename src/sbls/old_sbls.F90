@@ -11,16 +11,16 @@
 !   development started May 12th 2004
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SBLS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !      ---------------------------------------------------------------
 !     |                                                               |
-!     | Given matrices A and (symmetric) H and C, provide and apply   | 
+!     | Given matrices A and (symmetric) H and C, provide and apply   |
 !     | preconditioners for the symmetric block linear system         |
 !     |                                                               |
 !     |    ( H   A^T ) ( x ) = ( a )                                  |
@@ -44,7 +44,7 @@
       USE GALAHAD_SILS_precision
       USE GALAHAD_GLS_precision
       USE GALAHAD_SPECFILE_precision
-   
+
       IMPLICIT NONE
 
       PRIVATE
@@ -117,7 +117,7 @@
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL_current
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERT
       END TYPE
-      
+
       TYPE, PUBLIC :: SBLS_null_space_factors_type
         PRIVATE
         INTEGER ( KIND = ip_ ) :: rank_a, m, n, k_n, len_sol_workspace, n_r
@@ -142,7 +142,7 @@
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: R_factors
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: SOL_perm
       END TYPE
-      
+
       TYPE, PUBLIC :: SBLS_data_type
         INTEGER ( KIND = ip_ ) :: last_preconditioner, last_factorization, len_sol
         TYPE ( SBLS_explicit_factors_type ) :: efactors
@@ -193,7 +193,7 @@
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         END SUBROUTINE DPOTRF
 
-      END INTERFACE 
+      END INTERFACE
 
       INTERFACE POTRS
 
@@ -213,7 +213,7 @@
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
         END SUBROUTINE DPOTRS
 
-      END INTERFACE 
+      END INTERFACE
 
    CONTAINS
 
@@ -225,7 +225,7 @@
 !
 !  Default control data for SBLS. This routine should be called before
 !  SBLS_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -234,25 +234,25 @@
 !
 !  INTEGER control parameters:
 !
-!   error. Error and warning diagnostics occur on stream error 
-!   
+!   error. Error and warning diagnostics occur on stream error
+!
 !   out. General output occurs on stream out
-!   
+!
 !   print_level. The level of output required is specified by print_level
-!   
+!
 !   indmin. An initial guess as to the integer workspace required by SILS
 !
 !   valmin. An initial guess as to the real workspace required by SILS
-! 
+!
 !   len_glsmin. An initial guess as to the workspace required by GLS
 !
 !   itref_max. The maximum number of iterative refinements allowed
 !
-!   preconditioner. The preconditioner to be used for the CG is defined by 
+!   preconditioner. The preconditioner to be used for the CG is defined by
 !    preconditioner. Possible values are
 !
 !    variable:
-!      0  automatic 
+!      0  automatic
 !
 !    explicit factorization:
 !
@@ -273,7 +273,7 @@
 !   factorization. The factorization to be used.
 !    Possible values are
 !
-!      0  automatic 
+!      0  automatic
 !      1  Schur-complement factorization
 !      2  augmented-system factorization
 !      3  null-space factorization
@@ -293,7 +293,7 @@
 !
 !      0  unchanged
 !      1  values but not indices have changed
-!      2  values and indices have changed 
+!      2  values and indices have changed
 !
 !   new_c. How much of C has changed since the previous factorization.
 !    Possible values are
@@ -307,12 +307,12 @@
 !   pivot_tol. The threshold pivot used by the matrix factorization.
 !    See the documentation for SILS for details
 !
-!   pivot_tol_for_basis. The threshold pivot used by the matrix 
+!   pivot_tol_for_basis. The threshold pivot used by the matrix
 !    factorization when attempting to construct the basis.
 !    See the documentation for GLS for details
 !
-!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will 
-!    be regarded to be zero when attempting to detect linearly dependent 
+!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will
+!    be regarded to be zero when attempting to detect linearly dependent
 !    constraints
 !
 !   static_tolerance & static_level (may be) used by SILS
@@ -329,11 +329,11 @@
 !    to remove any linear dependencies
 !
 !   check_basis. If true and an implicit or null-space preconditioner is
-!     used, the computed basis matrix will be assessed for ill conditioning 
+!     used, the computed basis matrix will be assessed for ill conditioning
 !     and, if necessary an attempt will be made to correct for this
 !
 !   affine. If true, the second block component of the right-hand side c
-!    will be assumed to be zero. This can lead to some efficiencies 
+!    will be assumed to be zero. This can lead to some efficiencies
 !    in the solve stage
 !
 !   perturb_to_make_definite. If true and the initial attempt at finding
@@ -351,15 +351,15 @@
 !
 !  CHARACTER control parameters:
 !
-!  prefix (len=30). All output lines will be prefixed by 
+!  prefix (len=30). All output lines will be prefixed by
 !    %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: data
-      TYPE ( SBLS_control_type ), INTENT( OUT ) :: control        
+      TYPE ( SBLS_control_type ), INTENT( OUT ) :: control
 
 !  Set control parameters
 
@@ -429,7 +429,7 @@
       CALL SILS_INITIALIZE( data%nfactors%R_sparse_factors,                    &
                             data%nfactors%R_sparse_control )
 
-      RETURN  
+      RETURN
 
 !  End of SBLS_initialize
 
@@ -439,10 +439,10 @@
 
       SUBROUTINE SBLS_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by SBLS_initialize could (roughly) 
+!  The defauly values as given by SBLS_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN SBLS SPECIFICATIONS (DEFAULT)
@@ -479,7 +479,7 @@
 
 !  Dummy arguments
 
-      TYPE ( SBLS_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( SBLS_control_type ), INTENT( INOUT ) :: control
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -499,7 +499,7 @@
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  8 )%keyword = 'initial-workspace-for-unsymmetric-solver'
       spec(  9 )%keyword = 'initial-integer-workspace'
       spec( 10 )%keyword = 'initial-real-workspace'
@@ -648,7 +648,7 @@
 
 !  Dummy arguments
 
-      TYPE ( SBLS_control_type ), INTENT( IN ) :: control        
+      TYPE ( SBLS_control_type ), INTENT( IN ) :: control
       TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: data
 
@@ -1223,7 +1223,7 @@
 
       SUBROUTINE SBLS_form_and_factorize( n, m, H, A, C, data, control, inform )
 
-!  Form and factorize 
+!  Form and factorize
 !
 !        K = ( G   A^T )
 !            ( A   -C  )
@@ -1256,14 +1256,14 @@
 
       INTEGER ( KIND = ip_ ) :: c_ne
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
 !  Set default information values
 
-      inform%status = GALAHAD_ok 
+      inform%status = GALAHAD_ok
       inform%alloc_status = 0 ; inform%bad_alloc = ''
       inform%sils_analyse_status = 0 ; inform%sils_factorize_status = 0
       inform%sils_solve_status = 0
@@ -1281,9 +1281,9 @@
            .NOT. QPT_keyword_A( A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, 2010 ) prefix, inform%status 
+          WRITE( control%error, 2010 ) prefix, inform%status
         RETURN
-      END IF 
+      END IF
 
       IF ( control%out >= 0 .AND. control%print_level >= 1 ) THEN
         WRITE( control%out,                                                    &
@@ -1328,7 +1328,7 @@
         ELSE IF ( SMT_get( C%type ) == 'SPARSE_BY_ROWS' ) THEN
           c_ne = C%ptr( m + 1 ) - 1
         ELSE
-          c_ne = C%ne 
+          c_ne = C%ne
         END IF
         IF ( c_ne /= 0 ) inform%factorization = 1
       END IF
@@ -1367,7 +1367,7 @@
 
 !  Non-executable statements
 
- 2010 FORMAT( ' ', /, A, '   **  Error return ',I3,' from SBLS ' ) 
+ 2010 FORMAT( ' ', /, A, '   **  Error return ',I3,' from SBLS ' )
 
 !  End of subroutine SBLS_form_and_factorize
 
@@ -1379,7 +1379,7 @@
                                                    last_factorization,         &
                                                    control, inform )
 
-!  Form and explicitly factorize 
+!  Form and explicitly factorize
 !
 !        K = ( G   A^T )
 !            ( A    -C )
@@ -1422,7 +1422,7 @@
 
       REAL :: time_start, time_end
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -1444,7 +1444,7 @@
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
       ELSE
-        a_ne = A%ne 
+        a_ne = A%ne
       END IF
 
       IF ( SMT_get( H%type ) == 'DIAGONAL' ) THEN
@@ -1454,7 +1454,7 @@
       ELSE IF ( SMT_get( H%type ) == 'SPARSE_BY_ROWS' ) THEN
         h_ne = H%ptr( n + 1 ) - 1
       ELSE
-        h_ne = H%ne 
+        h_ne = H%ne
       END IF
 
       IF ( SMT_get( C%type ) == 'ZERO' ) THEN
@@ -1466,7 +1466,7 @@
       ELSE IF ( SMT_get( C%type ) == 'SPARSE_BY_ROWS' ) THEN
         c_ne = C%ptr( m + 1 ) - 1
       ELSE
-        c_ne = C%ne 
+        c_ne = C%ne
       END IF
 
       IF ( last_factorization /= inform%factorization ) THEN
@@ -1509,9 +1509,9 @@
 
             efactors%IW = 0
             SELECT CASE ( SMT_get( H%type ) )
-            CASE ( 'DIAGONAL' ) 
+            CASE ( 'DIAGONAL' )
               IF ( COUNT( H%val( : n ) == zero ) > 0 ) inform%factorization = 2
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               inform%factorization = 2
             CASE ( 'SPARSE_BY_ROWS' )
               DO i = 1, n
@@ -1549,7 +1549,7 @@
             END SELECT
           END IF
 
-!  If G is not non-singular and diagonal, use a factorization of the 
+!  If G is not non-singular and diagonal, use a factorization of the
 !  augmented matrix instead
 
           IF ( inform%factorization == 2 ) THEN
@@ -1567,7 +1567,7 @@
               new_c = 2
             END IF
             GO TO 100
-          END IF 
+          END IF
 
 !  G is diagonal. Now check to see if there are not too many entries in
 !  any column of A. Find the number of entries in each column
@@ -1586,7 +1586,7 @@
 
         IF ( new_a == 2 ) THEN
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             max_len = m
           CASE ( 'SPARSE_BY_ROWS' )
             efactors%A_col_ptr( 2 : ) = 0
@@ -1606,7 +1606,7 @@
             max_len = MAXVAL( efactors%A_col_ptr( 2 : ) )
           END SELECT
 
-!  If the column with the largest number of entries exceeds max_col, 
+!  If the column with the largest number of entries exceeds max_col,
 !  use a factorization of the augmented matrix instead
 
           IF ( printi ) WRITE( out, "( A,                                      &
@@ -1622,7 +1622,7 @@
             IF ( printi ) WRITE( out, "(                                       &
            &  A, ' - abandon the Schur-complement factorization', /, A,        &
            &  ' in favour of one of the augmented matrix')") prefix, prefix
-            inform%factorization = 2 
+            inform%factorization = 2
 
             array_name = 'sbls: efactors%IW'
             CALL SPACE_dealloc_array( efactors%IW,                             &
@@ -1666,7 +1666,7 @@
                 exact_size = control%space_critical,                           &
                 bad_alloc = inform%bad_alloc, out = control%error )
             IF ( inform%status /= GALAHAD_ok ) RETURN
-     
+
             efactors%A_row_ptr( 2 : ) = 0
             DO l = 1, A%ne
               i = A%row( l ) + 1
@@ -1717,7 +1717,7 @@
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
             IF ( inform%status /= GALAHAD_ok ) RETURN
-       
+
             SELECT CASE ( SMT_get( A%type ) )
             CASE ( 'SPARSE_BY_ROWS' )
 
@@ -1786,11 +1786,11 @@
             IF ( inform%status /= GALAHAD_ok ) RETURN
           END IF
 
-!  Compute the total storage for the (lower triangle) of 
+!  Compute the total storage for the (lower triangle) of
 !    A diag(G)(inverse) A(transpose)
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             nnz_aat = m * ( m + 1 ) / 2
           CASE ( 'SPARSE_BY_ROWS' )
             nnz_aat = 0
@@ -1896,7 +1896,7 @@
 
         SELECT CASE( inform%preconditioner )
 
-!  The identity matrix        
+!  The identity matrix
 
         CASE( 1 )
           IF ( printi ) WRITE( out, "( A, ' preconditioner: G = I ' )" ) prefix
@@ -1913,9 +1913,9 @@
             END IF
           END IF
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             efactors%G_diag = H%val( : n )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             write(6,*) prefix, " shouldn't be here ... "
           CASE ( 'SPARSE_BY_ROWS' )
             efactors%G_diag = zero
@@ -1939,9 +1939,9 @@
             prefix
           efactors%G_diag = zero
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             efactors%G_diag = H%val( : n )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               l = l + i
@@ -1967,15 +1967,15 @@
 
         IF ( new_a == 2 ) THEN
 
-!  Now insert the (row/col/val) entries of 
+!  Now insert the (row/col/val) entries of
 !  A diag(G)(inverse) A(transpose) into K
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             nnz_aat = 0
             l = 0
             DO i = 1, m
-              efactors%W = A%val( l + 1 : l + n ) / efactors%G_diag           
+              efactors%W = A%val( l + 1 : l + n ) / efactors%G_diag
               k = 0
               DO j = 1, i
                 nnz_aat = nnz_aat + 1
@@ -2032,7 +2032,7 @@
 
 !  IW is incremented since all entries above lie in the upper triangle
 
-                  ELSE 
+                  ELSE
                     efactors%IW( l ) = efactors%IW( l ) + 1
                   END IF
                 END DO
@@ -2087,7 +2087,7 @@
 
 !  IW is incremented since all entries above lie in the upper triangle
 
-                  ELSE 
+                  ELSE
                     efactors%IW( l ) = efactors%IW( l ) + 1
                   END IF
                 END DO
@@ -2098,17 +2098,17 @@
               nnz_aat_old  = nnz_aat
             END DO
           END SELECT
- 
+
         ELSE
 
 !  Now insert the (val) entries of A diag(G)(inverse) A(transpose) into K
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             nnz_aat = 0
             l = 0
             DO i = 1, m
-              efactors%W = A%val( l + 1 : l + n ) / efactors%G_diag           
+              efactors%W = A%val( l + 1 : l + n ) / efactors%G_diag
               k = 0
               DO j = 1, i
                 nnz_aat = nnz_aat + 1
@@ -2161,7 +2161,7 @@
 
 !  IW is incremented since all entries above lie in the upper triangle
 
-                  ELSE 
+                  ELSE
                     efactors%IW( l ) = efactors%IW( l ) + 1
                   END IF
                 END DO
@@ -2214,7 +2214,7 @@
 
 !  IW is incremented since all entries above lie in the upper triangle
 
-                  ELSE 
+                  ELSE
                     efactors%IW( l ) = efactors%IW( l ) + 1
                   END IF
                 END DO
@@ -2225,7 +2225,7 @@
               nnz_aat_old  = nnz_aat
             END DO
           END SELECT
- 
+
         END IF
 
 !  Now insert the (val) entries of C into K ...
@@ -2239,12 +2239,12 @@
         ELSE
           IF ( c_ne > 0 ) THEN
             SELECT CASE ( SMT_get( C%type ) )
-            CASE ( 'DIAGONAL' ) 
+            CASE ( 'DIAGONAL' )
               DO i = 1, m
                 efactors%K%row( nnz_aat + i ) = i
                 efactors%K%col( nnz_aat + i ) = i
               END DO
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               l = 0
               DO i = 1, m
                 DO j = 1, i
@@ -2294,7 +2294,7 @@
 
         CASE( 1 )
 
-!  The identity matrix        
+!  The identity matrix
 
           IF ( printi ) WRITE( out, "( A, ' preconditioner: G = I ' )" ) prefix
           g_ne = n
@@ -2327,9 +2327,9 @@
           IF ( printi ) WRITE( out, "( A, ' preconditioner G = band(H) ' )" )  &
             prefix
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             g_ne = n
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             g_ne = 0
             DO i = 1, n
               DO j = 1, i
@@ -2380,7 +2380,7 @@
             DO i = 1, efactors%rank_a
               efactors%B_COLS_basic( efactors%B_COLS( i ) ) = i
             END DO
-      
+
 !  Mark the non-basic columns
 
             nb = 0
@@ -2389,7 +2389,7 @@
                 nb = nb + 1
                 efactors%B_COLS_basic( i ) = - nb
               END IF
-            END DO     
+            END DO
           END IF
 
           g_ne = 0
@@ -2397,11 +2397,11 @@
             IF ( printi )                                                       &
               WRITE( out, "( A, ' preconditioner: G = H_22 ' )" ) prefix
             SELECT CASE ( SMT_get( H%type ) )
-            CASE ( 'DIAGONAL' ) 
+            CASE ( 'DIAGONAL' )
               DO i = 1, n
                 IF ( efactors%B_COLS_basic( i ) < 0 ) g_ne = g_ne + 1
               END DO
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               DO i = 1, n
                 DO j = 1, i
                   IF ( efactors%B_COLS_basic( i ) < 0 .AND.                    &
@@ -2425,11 +2425,11 @@
             IF ( printi )                                                      &
               WRITE( out, "( A, ' preconditioner: G = H_22 & H_21' )" ) prefix
             SELECT CASE ( SMT_get( H%type ) )
-            CASE ( 'DIAGONAL' ) 
+            CASE ( 'DIAGONAL' )
               DO i = 1, n
                 IF ( efactors%B_COLS_basic( i ) < 0 ) g_ne = g_ne + 1
               END DO
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               DO i = 1, n
                 DO j = 1, i
                   IF ( .NOT. ( efactors%B_COLS_basic( i ) > 0 .AND.            &
@@ -2479,19 +2479,19 @@
 !  Check to see if we need to reallocate the space to hold K
 
       resize = .FALSE.
-      IF ( ALLOCATED( efactors%K%row ) ) THEN    
+      IF ( ALLOCATED( efactors%K%row ) ) THEN
          IF ( SIZE( efactors%K%row ) < k_ne .OR. ( control%space_critical      &
               .AND. SIZE( efactors%K%row ) /= k_ne ) ) resize = .TRUE.
       ELSE
         resize = .TRUE.
       END IF
-      IF ( ALLOCATED( efactors%K%col ) ) THEN    
+      IF ( ALLOCATED( efactors%K%col ) ) THEN
          IF ( SIZE( efactors%K%col ) < k_ne .OR. ( control%space_critical      &
               .AND. SIZE( efactors%K%col ) /= k_ne ) ) resize = .TRUE.
       ELSE
         resize = .TRUE.
       END IF
-      IF ( ALLOCATED( efactors%K%val ) ) THEN    
+      IF ( ALLOCATED( efactors%K%val ) ) THEN
          IF ( SIZE( efactors%K%val ) < k_ne .OR. ( control%space_critical      &
               .AND. SIZE( efactors%K%val ) /= k_ne ) ) resize = .TRUE.
       ELSE
@@ -2537,7 +2537,7 @@
 
       IF ( resize .OR. new_a > 1 ) THEN
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -2545,14 +2545,14 @@
               efactors%K%row( l ) = i + n
               efactors%K%col( l ) = j
             END DO
-          END DO  
+          END DO
         CASE ( 'SPARSE_BY_ROWS' )
           DO i = 1, m
             DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
               efactors%K%row( l ) = i + n
               efactors%K%col( l ) = A%col( l )
             END DO
-          END DO  
+          END DO
         CASE ( 'COORDINATE' )
           efactors%K%row( : a_ne ) = A%row( : a_ne ) + n
           efactors%K%col( : a_ne ) = A%col( : a_ne )
@@ -2566,7 +2566,7 @@
 
       CASE( 1 )
 
-!  The identity matrix        
+!  The identity matrix
 
         IF ( resize .OR. new_a > 1 ) THEN
           DO i = 1, g_ne
@@ -2582,12 +2582,12 @@
 
         IF ( resize .OR. new_a > 1 .OR. new_h > 1 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               efactors%K%row( a_ne + i ) = i
               efactors%K%col( a_ne + i ) = i
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2621,13 +2621,13 @@
             efactors%K%col( a_ne + i ) = i
           END DO
         END IF
- 
+
         IF ( resize .OR. new_a > 1 .OR. new_h > 0 ) THEN
           efactors%K%val( a_ne + 1 : a_ne + g_ne ) = zero
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             efactors%K%val( a_ne + 1 : a_ne + n ) = H%val( : n )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2661,14 +2661,14 @@
         g_ne = a_ne
         IF ( resize .OR. new_a > 1 .OR. new_h > 1 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               g_ne = g_ne + 1
               efactors%K%row( g_ne ) = i
               efactors%K%col( g_ne ) = i
               efactors%K%val( g_ne ) = H%val( i )
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2706,12 +2706,12 @@
           END SELECT
         ELSE IF ( new_h > 0 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               g_ne = g_ne + 1
               efactors%K%val( g_ne ) = H%val( i )
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2749,7 +2749,7 @@
         g_ne = a_ne
         IF ( resize.OR. new_a > 1  .OR. new_h > 1 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               IF ( efactors%B_COLS_basic( i ) < 0 ) THEN
                 g_ne = g_ne + 1
@@ -2758,7 +2758,7 @@
                 efactors%K%val( g_ne ) = H%val( i )
               END IF
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2799,14 +2799,14 @@
           END SELECT
         ELSE IF ( new_h > 0 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               IF ( efactors%B_COLS_basic( i ) < 0 ) THEN
                 g_ne = g_ne + 1
                 efactors%K%val( g_ne ) = H%val( i )
               END IF
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2844,7 +2844,7 @@
         g_ne = a_ne
         IF ( resize.OR. new_a > 1  .OR. new_h > 1 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               IF ( efactors%B_COLS_basic( i ) < 0 ) THEN
                 g_ne = g_ne + 1
@@ -2853,7 +2853,7 @@
                 efactors%K%val( g_ne ) = H%val( i )
               END IF
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2894,14 +2894,14 @@
           END SELECT
         ELSE IF ( new_h > 0 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               IF ( efactors%B_COLS_basic( i ) < 0 ) THEN
                 g_ne = g_ne + 1
                 efactors%K%val( g_ne ) = H%val( i )
               END IF
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -2941,12 +2941,12 @@
       IF ( c_ne > 0 ) THEN
         IF ( new_a == 2 .OR. new_a == 2 .OR. new_c == 2 ) THEN
           SELECT CASE ( SMT_get( C%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, m
               efactors%K%row( k_c + i ) = n + i
               efactors%K%col( k_c + i ) = n + i
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, m
               DO j = 1, i
@@ -2988,7 +2988,7 @@
         END IF
       END IF
 
-!  A diagonal perturbation is to be added to the matrix to be factored 
+!  A diagonal perturbation is to be added to the matrix to be factored
 !  to make the resultant diaginally dominant
 
       IF ( inform%perturbed .AND. .NOT. use_schur_complement ) THEN
@@ -3106,7 +3106,7 @@
               IF ( control%out > 0 .AND. control%print_level > 0 )             &
                 WRITE( control%out,                                            &
                   "( A, ' Perturbing G to try to correct this ' )" ) prefix
-              inform%factorization = 2 
+              inform%factorization = 2
               inform%perturbed = .TRUE.
               GO TO 100
             ELSE
@@ -3186,7 +3186,7 @@
       REAL :: time_start, time_end
 !     REAL :: t1, t2, t3
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -3201,7 +3201,7 @@
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
       ELSE
-        a_ne = A%ne 
+        a_ne = A%ne
       END IF
 
       IF ( inform%preconditioner >= 0 ) THEN
@@ -3281,7 +3281,7 @@
         ifactors%unitb22 = .FALSE.!      3  diagonal, G = diag( H )
 !      4  G_11 = 0, G_21 = 0, !      3  diagonal, G = diag( H )
 !      4  G_11 = 0, G_21 = 0, !      3  diagonal, G = diag( H )
-!      4  G_11 = 0, G_21 = 0, 
+!      4  G_11 = 0, G_21 = 0,
 !      5  G_11 = 0, G_21 = H_21, G_22 = H_22
 !
 !      5  G_11 = 0, G_21 = H_21, G_22 = H_22
@@ -3293,7 +3293,7 @@
         ifactors%zerop11 = .TRUE.
         ifactors%zerop21 = .TRUE.
 !      3  diagonal, G = diag( H )
-!      4  G_11 = 0, G_21 = 0, 
+!      4  G_11 = 0, G_21 = 0,
 !      5  G_11 = 0, G_21 = H_21, G_22 = H_22
 !
 !  Store H_22 in B22; see how much space is required
@@ -3302,12 +3302,12 @@
           ifactors%B22%n = ifactors%n_r
           ifactors%B22%ne = 0
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               IF ( ifactors%A_COLS_order( i ) > ifactors%rank_a )              &
                 ifactors%B22%ne = ifactors%B22%ne + 1
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             DO i = 1, n
               DO j = 1, i
                 IF ( ifactors%A_COLS_order( i ) > ifactors%rank_a .AND.        &
@@ -3363,7 +3363,7 @@
         ifactors%B22%ne = 0
         IF ( new_a > 0 .OR. new_h > 1 ) THEN
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               ii = ifactors%A_COLS_order( i ) - ifactors%rank_a
               IF ( ii > 0 ) THEN
@@ -3373,7 +3373,7 @@
                 ifactors%B22%val( ifactors%B22%ne ) = H%val( i )
               END IF
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -3417,14 +3417,14 @@
           ifactors%B22%row = ifactors%B22%row - ifactors%rank_a
           ifactors%B22%col = ifactors%B22%col - ifactors%rank_a
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               IF ( ifactors%A_COLS_order( i ) > ifactors%rank_a ) THEN
                 ifactors%B22%ne = ifactors%B22%ne + 1
                 ifactors%B22%val( ifactors%B22%ne ) = H%val( i )
               END IF
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i
@@ -3527,12 +3527,12 @@
 
         IF ( FINFO_SILS%NEIG + ifactors%B22%n - FINFO_SILS%rank > 0 ) THEN
           WRITE( out, "( A, ' SILS_FACTORIZE reports B22 is indefinite ' )" )  &
-            prefix  
+            prefix
            inform%status = GALAHAD_error_preconditioner ; RETURN
         END IF
         IF ( printi ) WRITE( out, "( A, ' B22 nnz(prec,factors)', 2( 1X, I0))")&
           prefix, ifactors%B22%ne, FINFO_SILS%nrlbdu
-        
+
 !  Restore the row and colum indices to make matrix-vector products efficient
 
         ifactors%B22%row = ifactors%B22%row + ifactors%rank_a
@@ -3636,7 +3636,7 @@
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SILS_SINFO ) :: SINFO_SILS
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -3694,7 +3694,7 @@
 
             efactors%RHS( np1 : npm ) = - efactors%RHS( np1 : npm )
             SELECT CASE ( SMT_get( A%type ) )
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               l = 0
               DO i = 1, m
                 ii = n + i
@@ -3738,7 +3738,7 @@
 !  Form a <- diag(G)(inverse) ( a - A(trans) y )
 
             SELECT CASE ( SMT_get( A%type ) )
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               l = 0
               DO i = 1, m
                 DO j = 1, n
@@ -3787,7 +3787,7 @@
 
 !  Form the residuals
 
-        IF ( iter < control%itref_max .OR. control%get_norm_residual ) THEN  
+        IF ( iter < control%itref_max .OR. control%get_norm_residual ) THEN
 
 !  ... for the case where G is diagonal ...
 
@@ -3797,12 +3797,12 @@
               efactors%RHS_orig( : n ) - efactors%G_diag( : n ) * SOL( : n )
 
             SELECT CASE ( SMT_get( C%type ) )
-            CASE ( 'ZERO' ) 
+            CASE ( 'ZERO' )
               efactors%RHS( np1 : npm ) = efactors%RHS_orig( np1 : npm )
-            CASE ( 'DIAGONAL' ) 
+            CASE ( 'DIAGONAL' )
               efactors%RHS( np1 : npm ) =                                      &
                 efactors%RHS_orig( np1 : npm ) + C%val( : m ) * SOL( np1 : npm )
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               efactors%RHS( np1 : npm ) = efactors%RHS_orig( np1 : npm )
               l = 0
               DO i = 1, m
@@ -3837,7 +3837,7 @@
             END SELECT
 
             SELECT CASE ( SMT_get( A%type ) )
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               l = 0
               DO i = 1, m
                 ii = n + i
@@ -3878,14 +3878,14 @@
             efactors%RHS = efactors%RHS_orig
 
 !  include terms from A and A^T
-      
+
             DO l = 1, efactors%k_g
               i = efactors%K%row( l ) ; j = efactors%K%col( l )
               val = efactors%K%val( l )
               efactors%RHS( i ) = efactors%RHS( i ) - val * SOL( j )
               efactors%RHS( j ) = efactors%RHS( j ) - val * SOL( i )
             END DO
-     
+
 !  include terms from G and C
 
             DO l = efactors%k_g + 1, efactors%k_pert
@@ -3924,19 +3924,19 @@
 
       SUBROUTINE SBLS_solve_implicit( ifactors, control, inform, SOL )
 
-!  To solve 
+!  To solve
 
 !    Kz = ( P  A^T ) z = b
-!         ( A   -C ) 
+!         ( A   -C )
 
 !   (i) transform b to c = IP b
 !   (ii) solve perm(K) w = c
 !   (iii) recover z = IP^T w
 
 !  where IP = (IC   0 )
-!             ( 0  IR )  
+!             ( 0  IR )
 
-!  and the permutations IR and IC are such that 
+!  and the permutations IR and IC are such that
 !  A = IR ( A1  A2 ) IC^T and the "basis" matrix A1 is nonsingular
 !         (  0   0 )
 !  This induces a re-ordering IC^T P IC of P
@@ -3960,7 +3960,7 @@
       TYPE ( SILS_SINFO ) :: SINFO_SILS
       TYPE ( GLS_SINFO ) :: SINFO_GLS
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -4034,7 +4034,7 @@
 
 !    ( r_1 )   (  P_11^T   P_21^T  P_31^T ) ( v_1 ), where P_31^T = B_31^-1
 !    ( r_2 ) = (  0        P_22^T    0    ) ( v_2 )
-!    ( r_3 )   (  A_1       A_2      0    ) ( v_3 )   
+!    ( r_3 )   (  A_1       A_2      0    ) ( v_3 )
 
 !  with v in ifactors%SOL_current and r in SOL
 
@@ -4096,9 +4096,9 @@
 !  2. Next form
 !     =========
 
-!     ( v_1 )   (   0     0    B_31^T ) ( r_1 )   
+!     ( v_1 )   (   0     0    B_31^T ) ( r_1 )
 !     ( v_2 ) = (   0    B_22  B_32^T ) ( r_2 )
-!     ( v_3 )   (  B_31  B_32   B_33  ) ( r_3 )   
+!     ( v_3 )   (  B_31  B_32   B_33  ) ( r_3 )
 
 !  with r in SOL and v in ifactors%SOL_perm
 
@@ -4173,7 +4173,7 @@
 
 !     ( r_1 )   ( b_1 )   (  P_11    0    A_1^T ) ( v_1 ), where P_31 = B_31^-T
 !     ( r_2 ) = ( b_2 ) - (  P_21   P_22  A_2^T ) ( v_2 )
-!     ( r_3 )   ( b_3 )   (  P_31    0     0    ) ( v_3 )   
+!     ( r_3 )   ( b_3 )   (  P_31    0     0    ) ( v_3 )
 
 !  with v in ifactors%SOL_perm and r in SOL
 
@@ -4306,7 +4306,7 @@
            * ifactors%SOL_perm( n + ifactors%A2%row( l ) )
         END DO
 
-!  1e. Solve P_22 v_2 = r_2 
+!  1e. Solve P_22 v_2 = r_2
 
         IF ( ifactors%unitp22 ) THEN
           ifactors%SOL_perm( start_2 : end_2 ) = SOL( start_2 : end_2 )
@@ -4373,7 +4373,7 @@
           END DO
         END IF
 
-!  2e. Solve B_31 v_1 = r3 
+!  2e. Solve B_31 v_1 = r3
 
         IF ( ifactors%unitb31 ) THEN
           SOL( start_1 : end_1 ) = ifactors%SOL_perm( start_3 : end_3 )
@@ -4482,7 +4482,7 @@
 !   (ii) solve A1 w1 = c and set w = (w1 0)
 !   (iii) recover x = IC^T w
 
-!  and the permutations IR and IC are such that 
+!  and the permutations IR and IC are such that
 !  A = IR ( A1  A2 ) IC^T and the "basis" matrix A1 is nonsingular
 !         (  0   0 )
 
@@ -4646,7 +4646,7 @@
 !     LOGICAL :: printd = .TRUE.
       LOGICAL :: printd = .FALSE.
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -4663,7 +4663,7 @@
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
       ELSE
-        a_ne = A%ne 
+        a_ne = A%ne
       END IF
 
 !     IF ( inform%preconditioner >= 0 ) THEN
@@ -4765,7 +4765,7 @@
         nfactors%H21%ne = 0
         nfactors%H22%ne = 0
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO l = 1, n
             i = nfactors%A_COLS_order( l )
             j = nfactors%A_COLS_order( l )
@@ -4775,7 +4775,7 @@
               nfactors%H11%ne = nfactors%H11%ne + 1
             END IF
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO ii = 1, n
             i = nfactors%A_COLS_order( ii )
@@ -4928,7 +4928,7 @@
         nfactors%H21%ne = 0
         nfactors%H22%ne = 0
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO l = 1, n
             i = nfactors%A_COLS_order( l )
             j = nfactors%A_COLS_order( l )
@@ -4944,7 +4944,7 @@
               nfactors%H21%val( nfactors%H21%ne ) = H%val( l )
             END IF
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO ii = 1, n
             i = nfactors%A_COLS_order( ii )
@@ -5068,8 +5068,8 @@
 
       CASE( 2 )
 
-!  Form the reduced Hessian 
-!    R = ( - A_2^T A_1^-T  I ) ( H_11  H_21^T ) ( - A_1^-1 A_2 )   
+!  Form the reduced Hessian
+!    R = ( - A_2^T A_1^-T  I ) ( H_11  H_21^T ) ( - A_1^-1 A_2 )
 !                              ( H_21   H_22  ) (        I     )
 !  column by column
 
@@ -5109,12 +5109,12 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
 !  Loop over the columns
-        
+
         DO k = 1, nfactors%n_r
           IF ( printd ) WRITE( 6, "( /, ' column ', I0 )" ) k
 
 !  1. First form - A_2 e_k - > v
-         
+
           nfactors%V = zero
           DO l = nfactors%A2%ptr( k ), nfactors%A2%ptr( k + 1 ) - 1
             i = nfactors%A2%row( l )
@@ -5126,7 +5126,7 @@
 
           CALL GLS_SOLVE( nfactors%A1, nfactors%A1_factors,                   &
                           nfactors%V( : nfactors%rank_a ),                    &
-                          nfactors%W( : nfactors%rank_a ),                    & 
+                          nfactors%W( : nfactors%rank_a ),                    &
                           nfactors%A1_control, SINFO_GLS )
           inform%gls_solve_status = SINFO_GLS%flag
           IF ( inform%gls_solve_status < 0 ) THEN
@@ -5159,7 +5159,7 @@
             nfactors%V( nfactors%A2%row( l ) ) = zero
           END DO
           IF ( printd ) WRITE( 6, "( ' v ', ( 4ES12.4 ) )" ) nfactors%V
-          
+
           DO l = nfactors%H21%ptr( k ), nfactors%H21%ptr( k + 1 ) - 1
             i = nfactors%H21%col( l )
             nfactors%V( i ) = nfactors%V( i ) + nfactors%H21%val( l )
@@ -5258,19 +5258,19 @@
 
       SUBROUTINE SBLS_solve_null_space( nfactors, control, inform, SOL )
 
-!  To solve 
+!  To solve
 
 !    Kz = ( P  A^T ) z = b
-!         ( A   0  ) 
+!         ( A   0  )
 
 !   (i) transform b to c = IP b
 !   (ii) solve perm(K) w = c
 !   (iii) recover z = IP^T w
 
 !  where IP = (IC   0 )
-!             ( 0  IR )  
+!             ( 0  IR )
 
-!  and the permutations IR and IC are such that 
+!  and the permutations IR and IC are such that
 !  A = IR ( A1  A2 ) IC^T and the "basis" matrix A1 is nonsingular
 !         (  0   0 )
 !  This induces a re-ordering IC^T P IC of P
@@ -5294,7 +5294,7 @@
 !     TYPE ( SILS_SINFO ) :: SINFO_SILS
       TYPE ( GLS_SINFO ) :: SINFO_GLS
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -5439,7 +5439,7 @@
           nfactors%RHS( : k_n ) = nfactors%RHS_orig
           nfactors%SOL_perm = zero
 
-!  Residuals are 
+!  Residuals are
 
 !  ( r_1 ) - ( H_11  H_21^T  A_1^T ) ( s_1 )
 !  ( r_2 )   ( H_21    W     A_2^T ) ( s_2 )
@@ -5500,7 +5500,7 @@
 
           ELSE
 
-!  Case: W = R + ( - A_2^T A_1^-T  I ) ( H_11  H_21^T ) ( - A_1^-1 A_2 )   
+!  Case: W = R + ( - A_2^T A_1^-T  I ) ( H_11  H_21^T ) ( - A_1^-1 A_2 )
 !                                      ( H_21   H_22  ) (        I     )
 
 !  Terms involving H_11 and H_12
@@ -5564,7 +5564,7 @@
         END IF
 
 !  2. Solve A_1^T y_3 = r_1 - H_11 y_1
-!     and 
+!     and
 !  3. form r_2 - H_21 y_1 - A_2^T y_3
 
 !  2a. Form r_1 - H_11 y_1 -> w
@@ -5751,7 +5751,7 @@
       LOGICAL :: printd = .FALSE.
 
       find_basis_by_transpose = control%find_basis_by_transpose
-      
+
   100 CONTINUE
 
 !  Find sets of basic rows and columns
@@ -5839,19 +5839,19 @@
           A_COLS_order( i ) = rank_a + nb
           A_COLS_basic( rank_a + nb ) = i
         END IF
-      END DO     
+      END DO
 
 !     WRITE( 6, "( A, /, (10I7) )" ) ' rbasics =', A_ROWS_basic( : m )
 !     WRITE( 6, "( A, /, (10I7) )" ) ' cbasics =', A_COLS_basic( : n )
 !     WRITE( 6, "( A, /, (10I7) )" ) ' order =', A_COLS_order( : n )
 
 !  Determine the space required for A1 and A2
-  
+
       A1%ne = 0
       A2%ne = 0
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         DO i = 1, m
           IF ( A_ROWS_order( i ) > rank_a ) CYCLE
           DO j = 1, n
@@ -5915,7 +5915,7 @@
       A1%m = rank_a ; A1%n = rank_a ; A1%ne = 0
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           ii = A_ROWS_order( i )
@@ -5965,7 +5965,7 @@
           ( A1%row( i ), A1%col( i ), A1%val( i ), i = 1, A1%ne )
       END IF
 
-!     WRITE( 29, "( 3( 2I4, ES12.4 ) ) " ) ( A1%row( i ),                      & 
+!     WRITE( 29, "( 3( 2I4, ES12.4 ) ) " ) ( A1%row( i ),                      &
 !        A1%col( i ), A1%val( i ), i = 1, A1%ne )
 
 !  Factorize A1
@@ -6045,7 +6045,7 @@
             inform%status = GALAHAD_error_gls_solve ; RETURN
           END IF
         END IF
-      END IF      
+      END IF
 
 ! Allocate the space to store the non-basic matrix, A2
 
@@ -6078,7 +6078,7 @@
       A2%m = rank_a ; A2%n = rank_a ; A2%ne = 0
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           ii = A_ROWS_order( i )
@@ -6203,7 +6203,7 @@
         A1%m = n ; A1%n = m
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -6307,7 +6307,7 @@
         A1%m = m ; A1%n = n
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -6389,7 +6389,7 @@
 
         CALL GLS_SPECIAL_ROWS_AND_COLS( A1_factors, rank_a, A_ROWS_basic,      &
                                         A_COLS_basic, info )
-      END IF    
+      END IF
 
 !     CALL CPU_TIME( t2 )
 !     WRITE(6,"(' time to find basis ',F6.2)") t2 - t1

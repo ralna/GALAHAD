@@ -37,7 +37,7 @@
 
    CALL USE_TR2A( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif )
    STOP

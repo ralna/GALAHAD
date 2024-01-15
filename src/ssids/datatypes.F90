@@ -65,7 +65,7 @@ module spral_ssids_types_precision
   integer(ip_), parameter, public :: SSIDS_SOLVE_JOB_FWD     = 1 !PLX = B
   integer(ip_), parameter, public :: SSIDS_SOLVE_JOB_DIAG    = 2 !DX = B (indef)
   integer(ip_), parameter, public :: SSIDS_SOLVE_JOB_BWD     = 3 !(PL)^TX = B
-  integer(ip_), parameter, public :: SSIDS_SOLVE_JOB_DIAG_BWD= 4 !D(PL)^TX=B 
+  integer(ip_), parameter, public :: SSIDS_SOLVE_JOB_DIAG_BWD= 4 !D(PL)^TX=B
                                                                  ! (indef)
 
   ! NB: the below must match enum PivotMethod in cpu/cpu_iface.hxx
@@ -126,7 +126,7 @@ module spral_ssids_types_precision
        ! (will also include unneeded data for any columns delayed from this
        ! node)
       integer(ip_), dimension(:), pointer :: perm ! permutation of columns at
-       ! this node: perm(i) is column index in expected global elimination 
+       ! this node: perm(i) is column index in expected global elimination
        ! order that is actually eliminated at local elimination index i
        ! Assuming no delays or permutation this will be
        ! sptr(node):sptr(node+1)-1
@@ -233,7 +233,7 @@ module spral_ssids_types_precision
      !
      ! Options used by ssids_factor() [both indef+posdef]
      !
-     integer(ip_) :: scaling = 0 ! controls use of scaling. 
+     integer(ip_) :: scaling = 0 ! controls use of scaling.
        !  <=0: user supplied (or no) scaling
        !    1: Matching-based scaling by Hungarian Algorithm (MC64-like)
        !    2: Matching-based scaling by Auction Algorithm
@@ -296,7 +296,7 @@ module spral_ssids_types_precision
   integer(ip_), parameter, public :: EXEC_LOC_CPU = 0
   integer(ip_), parameter, public :: EXEC_LOC_GPU = 1
 
-  integer(ip_), parameter, public :: DEBUG_PRINT_LEVEL = 9999 
+  integer(ip_), parameter, public :: DEBUG_PRINT_LEVEL = 9999
 
 contains
 

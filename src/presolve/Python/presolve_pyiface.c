@@ -372,14 +372,14 @@ PyObject* presolve_make_inform_dict(const struct presolve_inform_type *inform){
                          PyLong_FromLong(inform->nbr_transforms));
 
     //npy_intp cdim[] = {3,81};
-    //PyArrayObject *py_message = 
+    //PyArrayObject *py_message =
     //   (PyArrayObject*) PyArray_SimpleNew(2, cdim, NPY_STRING);
     //char *message = (char *) PyArray_DATA(py_message);
     //for(int i=0; i<3; i++) {
     //  for(int j=0; j<81; j++) {
     //    *(message + (i*81) + j) = inform->message[i][j];
     //  }
-    //}    
+    //}
     //PyDict_SetItemString(py_inform, "message", (PyObject *) py_message);
 
     return py_inform;
@@ -448,7 +448,7 @@ PyDoc_STRVAR(presolve_module_doc,
 
 "The presolve package transforms linear and quadratic programming data \n"
 "so that the resulting problem is easier to solve. This reduced problem \n"
-"may then be passed to an appropriate solver.  Once the reduced problem \n" 
+"may then be passed to an appropriate solver.  Once the reduced problem \n"
 "has been solved, it is then a restored to recover the solution for \n"
 "the original formulation.\n"
 "\n"

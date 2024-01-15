@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. March 9th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_SILS_MATLAB_TYPES
@@ -50,7 +50,7 @@
         mwPointer :: nirnec, nrladu, niradu, ncmpa, oor, dup, maxfrt
         mwPointer :: nebdu, nrlbdu, nirbdu, ncmpbr, ncmpbi, ntwo, neig, delay
         mwPointer :: signc, modstep, rank, opsa, opse, opsb, maxchange
-      END TYPE 
+      END TYPE
 
     CONTAINS
 
@@ -304,7 +304,7 @@
            'nebdu    ', 'nrlbdu   ', 'nirbdu   ', 'ncmpbr   ',                 &
            'ncmpbi   ', 'ntwo     ', 'neig     ', 'delay    ',                 &
            'signc    ', 'modstep  ', 'rank     ',                              &
-           'opsa     ', 'opse     ', 'opsb     ', 'maxchange'   /)  
+           'opsa     ', 'opse     ', 'opsb     ', 'maxchange'   /)
 
 !  create the structure
 
@@ -382,7 +382,7 @@
 
       END SUBROUTINE SILS_matlab_inform_create
 
-! S I L S _ M A T L A B _ I N F O R M _ G E T _ A I N F O   S U B R O U T I N E 
+! S I L S _ M A T L A B _ I N F O R M _ G E T _ A I N F O   S U B R O U T I N E
 
       SUBROUTINE SILS_matlab_inform_get_ainfo( AINFO, SILS_pointer )
 
@@ -443,7 +443,7 @@
 
       END SUBROUTINE SILS_matlab_inform_get_ainfo
 
-! S I L S _ M A T L A B _ I N F O R M _ G E T _ F I N F O   S U B R O U T I N E 
+! S I L S _ M A T L A B _ I N F O R M _ G E T _ F I N F O   S U B R O U T I N E
 
       SUBROUTINE SILS_matlab_inform_get_finfo( FINFO, SILS_pointer )
 
@@ -518,7 +518,7 @@
 
       END SUBROUTINE SILS_matlab_inform_get_finfo
 
-! S I L S _ M A T L A B _ I N F O R M _ G E T _ S I N F O   S U B R O U T I N E 
+! S I L S _ M A T L A B _ I N F O R M _ G E T _ S I N F O   S U B R O U T I N E
 
       SUBROUTINE SILS_matlab_inform_get_sinfo( SINFO, SILS_pointer )
 

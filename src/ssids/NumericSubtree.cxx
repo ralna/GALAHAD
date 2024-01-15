@@ -57,7 +57,7 @@
 #define spral_ssids_cpu_subtree_free_contrib \
         spral_ssids_cpu_subtree_free_contrib_dbl
 #endif
- 
+
 using namespace spral::ssids::cpu;
 
 /////////////////////////////////////////////////////////////////////////////

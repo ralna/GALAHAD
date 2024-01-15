@@ -10,7 +10,7 @@
    TYPE ( FDH_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTERFACE
-     SUBROUTINE GRAD( status, X, userdata, G )   
+     SUBROUTINE GRAD( status, X, userdata, G )
      USE GALAHAD_USERDATA_precision
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
@@ -50,8 +50,8 @@
 
 !  set up space for internal parameters
 
-    ALLOCATE( userdata%real( nz_true ) )  
-    ALLOCATE( userdata%integer( 2 + n_true + nz_true ) )  
+    ALLOCATE( userdata%real( nz_true ) )
+    ALLOCATE( userdata%integer( 2 + n_true + nz_true ) )
 
 !  set up an initial structure
 
@@ -63,7 +63,7 @@
 
    userdata%integer( 1 ) = n
    userdata%integer( 2 ) = nz
-   userdata%integer( 2 + 1 : 2 + n ) = DIAG( : n ) 
+   userdata%integer( 2 + 1 : 2 + n ) = DIAG( : n )
    userdata%integer( 2 + n + 1 : 2 + n + nz ) = ROW( : nz )
 
 !  also set up an estimation point and step lengths
@@ -136,7 +136,7 @@
    DO i = 1, nz
      IF ( data%ROW_perm( i ) /= ROW( i ) ) ok = .FALSE.
      IF ( data%OLD( i ) /= i ) ok = .FALSE.
-   END DO 
+   END DO
    data%DIAG_perm( 1 ) = - data%DIAG_perm( 1 )
    DO I = 1, n
      IF ( data%PERM( i ) /= i ) ok = .FALSE.
@@ -189,7 +189,7 @@
    ROW( : nz ) = (/ 1, 3, 4, 2, 4, 3, 5, 4, 5, 5, 6 /)
    userdata%integer( 1 ) = n_true
    userdata%integer( 2 ) = nz_true
-   userdata%integer( 2 + 1 : 2 + n_true ) = DIAG( : n ) 
+   userdata%integer( 2 + 1 : 2 + n_true ) = DIAG( : n )
    userdata%integer( 2 + n_true + 1 : 2 + n_true + nz_true ) = ROW( : nz )
 
    CALL FDH_analyse( n, nz, ROW, DIAG, data, control, inform )
@@ -243,7 +243,7 @@
    END PROGRAM GALAHAD_FDH_test_deck
 
 ! internal subroutine to evaluate the gradient of the objective
-   SUBROUTINE GRAD( status, X, userdata, G )   
+   SUBROUTINE GRAD( status, X, userdata, G )
    USE GALAHAD_USERDATA_precision
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
@@ -275,7 +275,7 @@
    INTEGER ( KIND = ip_ ) :: out, products
    WRITE( out, "( /, 5X, 'products  = ', I3 )" ) products
    WRITE( out, "( 5X, 'ROW_perm  = ', 11I3 )" ) data%ROW_perm( 1 : data%nz )
-   WRITE( out, "( 5X, 'DIAG_perm = ', 6I3 )" ) data%DIAG_perm( 1 : data%n ) 
+   WRITE( out, "( 5X, 'DIAG_perm = ', 6I3 )" ) data%DIAG_perm( 1 : data%n )
    WRITE( out, "( 5X, 'GROUP     = ', 6I3 )" ) data%GROUP( 1 : data%n )
    WRITE( out, "( 5X, 'PERM      = ', 6I3 )" ) data%PERM( 1 : data%n )
    WRITE( out, "( 5X, 'OLD       = ', 11I3, / )" ) data%OLD( 1 : data%nz )
@@ -286,7 +286,7 @@
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ) :: out
    REAL ( KIND = rp_ ), DIMENSION( : ) :: H, H_true
-   INTEGER ( KIND = ip_ ) :: l 
+   INTEGER ( KIND = ip_ ) :: l
    WRITE( out, "( /, 5X, 'True Hessian   = ', 5ES15.7 )" )                     &
       ( H_true( l ), l = 1, 11 )
    WRITE( out, "( 5X, 'approx Hessian = ', 5ES15.7 )" )                        &

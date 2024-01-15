@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_L2RT_precision
-            
+
 !      -------------------------------------------------------
 !      |                                                     |
 !      | Solve the regularised least l_2-norm problem        |

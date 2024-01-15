@@ -7,7 +7,7 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( BQP_reverse_type ) :: reverse
    TYPE ( BQP_data_type ) :: data
-   TYPE ( BQP_control_type ) :: control        
+   TYPE ( BQP_control_type ) :: control
    TYPE ( BQP_inform_type ) :: inform
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, PARAMETER :: n = 3, h_ne = 4, h_all = 5
@@ -32,7 +32,7 @@
    userdata%integer( st_row + 1 : st_row + h_all ) = (/ 1, 2, 1, 2, 3 /)
    userdata%real( st_val + 1 : st_val + h_all )                                &
      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
-! problem data complete   
+! problem data complete
    CALL BQP_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
 !  control%print_level = 1                    ! print one line/iteration
@@ -101,7 +101,7 @@
        END DO
 ! compute H * v for sparse v
      ELSE IF ( PRESENT( NZ_v ) .AND. PRESENT( nz_v_start ) .AND.               &
-               PRESENT( nz_v_end ) ) THEN 
+               PRESENT( nz_v_end ) ) THEN
        PROD = 0.0_wp
        DO l = nz_v_start, nz_v_end
          j = NZ_v( l ) ; v_j = V( j )

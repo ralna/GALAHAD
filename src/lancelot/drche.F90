@@ -16,7 +16,7 @@
 !  January 31st 1995
 
    MODULE LANCELOT_DRCHE_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE LANCELOT_TYPES_precision, ONLY : LANCELOT_problem_type
 
@@ -96,7 +96,7 @@
        REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -114,7 +114,7 @@
        REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
      END INTERFACE
 
@@ -122,7 +122,7 @@
 !   O p t i o n a l   D u m m y   A r g u m e n t s
 !-----------------------------------------------------
 
-     OPTIONAL :: ELFUN 
+     OPTIONAL :: ELFUN
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -134,7 +134,7 @@
 
 ! Initial entry: set up data
 
-     IF ( status == 0 ) THEN 
+     IF ( status == 0 ) THEN
 
 !  If the element functions are to be evaluated internally, check that
 !  the user has supplied appropriate information
@@ -194,7 +194,7 @@
                       ICALCF, ncalcf, X     , FUVALS, IELVAR_temp, X_temp,     &
                       nelmax, ninmax, relpr , second,                          &
                       ITESTL, iprint, iout  , RANGE , status, S,               &
-                      ELFUN , ISTEPA, EPVALU )                     
+                      ELFUN , ISTEPA, EPVALU )
 
 !  Given a partially separable function, check the analytical gradients
 !  (and Hessians if required) against approximations by differences at the
@@ -244,7 +244,7 @@
        REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -255,14 +255,14 @@
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
-       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE(LTYPEE), ISTAEV(LSTAEV) 
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE(LTYPEE), ISTAEV(LSTAEV)
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR(LELVAR), INTVAR(LNTVAR)
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH(LSTADH), ISTEPA(LSTEPA)
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF(LCALCF)
        REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
      END INTERFACE
 
@@ -273,7 +273,7 @@
      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                           &
                                            DIMENSION( nel + 1 ) :: ISTEPA
      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: EPVALU
-     OPTIONAL :: ELFUN 
+     OPTIONAL :: ELFUN
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -294,7 +294,7 @@
      CASE ( - 2 ) ; GO TO 240
      CASE ( - 3 ) ; GO TO 250
      END SELECT
-     
+
      IF ( iout > 0 .AND. iprint > 0 ) WRITE( iout, 2000 )
      S%warning = .FALSE.
      S%epsqrt = SQRT( relpr )
@@ -789,7 +789,7 @@
        DO j = kp1, nelvar
 !        temp = - W_IN( k ) * A( k, j ) -                                      &
 !          DOT_PRODUCT( A( kp1 : ninvar, k ), A( kp1 : ninvar, j ) )
-         temp = - W_IN( k ) * A( k, j ) 
+         temp = - W_IN( k ) * A( k, j )
          DO ii = kp1, ninvar
             temp = temp - A( ii, k ) * A( ii, j )
          END DO

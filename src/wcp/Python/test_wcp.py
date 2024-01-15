@@ -43,7 +43,7 @@ z_u = np.array([0.0,0.0,0.0])
 # find optimum of lp
 print("\n find well-centred point")
 x, c, y_l, y_u, z_l, z_u, x_stat, c_stat \
-  = wcp.find_wcp(n, m, A_ne, A_val, c_l, c_u, x_l, x_u, x, y_l, y_u, 
+  = wcp.find_wcp(n, m, A_ne, A_val, c_l, c_u, x_l, x_u, x, y_l, y_u,
                  z_l, z_u, g)
 print(" x:",x)
 print(" c:",c)

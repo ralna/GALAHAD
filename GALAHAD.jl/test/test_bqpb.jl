@@ -43,11 +43,11 @@ for d = 1:7
   # sparse co-ordinate storage
   if d == 1
     global st = 'C'
-    
+
     bqpb_import( control, data, status, n,
                  "coordinate", H_ne, H_row, H_col, Cint[] )
 
-    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f, 
+    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f,
                    x_l, x_u, x, z, x_stat )
   end
 
@@ -55,7 +55,7 @@ for d = 1:7
   if d == 2
     global st = 'R'
 
-    bqpb_import( control, data, status, n, 
+    bqpb_import( control, data, status, n,
                  "sparse_by_rows", H_ne, Cint[], H_col, H_ptr )
 
     bqpb_solve_qp( data, status, n, H_ne, H_val, g, f,
@@ -82,18 +82,18 @@ for d = 1:7
     bqpb_import( control, data, status, n,
                  "diagonal", H_ne, Cint[], Cint[], Cint[] )
 
-    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f, 
+    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f,
                    x_l, x_u, x, z, x_stat )
   end
 
   # scaled identity
   if d == 5
     global st = 'S'
-  
-    bqpb_import( control, data, status, n, 
+
+    bqpb_import( control, data, status, n,
                  "scaled_identity", H_ne, Cint[], Cint[], Cint[] )
 
-    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f, 
+    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f,
                    x_l, x_u, x, z, x_stat )
   end
 
@@ -101,10 +101,10 @@ for d = 1:7
   if d == 6
     global st = 'I'
 
-    bqpb_import( control, data, status, n, 
+    bqpb_import( control, data, status, n,
                  "identity", H_ne, Cint[], Cint[], Cint[] )
 
-    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f, 
+    bqpb_solve_qp( data, status, n, H_ne, H_val, g, f,
                    x_l, x_u, x, z, x_stat )
   end
 

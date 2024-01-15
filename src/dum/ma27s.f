@@ -6,7 +6,7 @@
 !  Copyright reserved
 !  February 13th 1995
 
-      SUBROUTINE MA27A ( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, 
+      SUBROUTINE MA27A ( n, nz, IRN, ICN, IW, liw, IKEEP, IW1,
      *                   nsteps, iflag, ICNTL, CNTL, INFO, ops )
 
       USE GALAHAD_KINDS
@@ -29,20 +29,20 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27A  with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27A  with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -51,7 +51,7 @@
 
       END SUBROUTINE MA27A
 
-      SUBROUTINE MA27B ( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, 
+      SUBROUTINE MA27B ( n, nz, IRN, ICN, A, la, IW, liw, IKEEP,
      *                   nsteps, maxfrt, IW1, ICNTL, CNTL, INFO )
 
       USE GALAHAD_KINDS
@@ -73,20 +73,20 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27B  with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27B  with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -95,7 +95,7 @@
 
       END SUBROUTINE MA27B
 
-      SUBROUTINE MA27C ( n, A, la, IW, liw, W, maxfrt, RHS, IW1, 
+      SUBROUTINE MA27C ( n, A, la, IW, liw, W, maxfrt, RHS, IW1,
      *                   nsteps, ICNTL, INFO )
 
       USE GALAHAD_KINDS
@@ -115,20 +115,20 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27C  with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27C  with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -156,13 +156,13 @@
 
 !  Non-executable statements
 
-!2000 FORMAT( /, 
-!    *     ' We regret that the solution options that you have ', /, 
+!2000 FORMAT( /,
+!    *     ' We regret that the solution options that you have ', /,
 !    *     ' chosen are not all freely available with GALAHAD.', //,
 !    *     ' If you have HSL (formerly the Harwell Subroutine',
 !    *     ' Library), this ', /,
-!    *     ' option may be enabled by replacing the dummy ', /,      
-!    *     ' subroutine MA27I  with its HSL namesake ', /,        
+!    *     ' option may be enabled by replacing the dummy ', /,
+!    *     ' subroutine MA27I  with its HSL namesake ', /,
 !    *     ' and dependencies. See ', /,
 !    *     '   $GALAHAD/src/makedefs/packages for details.', //,
 !    *     ' *** EXECUTION TERMINATING *** ', / )
@@ -171,7 +171,7 @@
 
       END SUBROUTINE MA27I
 
-      SUBROUTINE MA27Q ( n, A, la, IW, liw, W, maxfnt, RHS, IW2, 
+      SUBROUTINE MA27Q ( n, A, la, IW, liw, W, maxfnt, RHS, IW2,
      *                   nblk, latop, ICNTL )
 
       USE GALAHAD_KINDS
@@ -196,13 +196,13 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27Q  with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27Q  with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )

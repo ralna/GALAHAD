@@ -52,20 +52,20 @@ for d = 1:3
     global st = 'C'
     wcp_import( control, data, status, n, m,
                 "coordinate", A_ne, A_row, A_col, Cint[] )
-  
-    wcp_find_wcp( data, status, n, m, g, A_ne, A_val, 
-                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, 
+
+    wcp_find_wcp( data, status, n, m, g, A_ne, A_val,
+                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u,
                   x_stat, c_stat )
   end
 
   if d == 2
     # sparse by rows
     global st = 'R'
-    wcp_import( control, data, status, n, m, 
+    wcp_import( control, data, status, n, m,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    wcp_find_wcp( data, status, n, m, g, A_ne, A_val, 
-                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, 
+
+    wcp_find_wcp( data, status, n, m, g, A_ne, A_val,
+                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u,
                   x_stat, c_stat )
   end
 
@@ -74,12 +74,12 @@ for d = 1:3
     global st = 'D'
     A_dense_ne = 6 # number of elements of A
     A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
-  
+
     wcp_import( control, data, status, n, m,
                 "dense", A_dense_ne, Cint[], Cint[], Cint[] )
-  
-    wcp_find_wcp( data, status, n, m, g, A_dense_ne, A_dense, 
-                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, 
+
+    wcp_find_wcp( data, status, n, m, g, A_dense_ne, A_dense,
+                  c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u,
                   x_stat, c_stat )
   end
 

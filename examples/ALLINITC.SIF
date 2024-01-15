@@ -58,10 +58,10 @@ BOUNDS
 
 START POINT
 
- V  ALLINITC  X1        1.0 
- V  ALLINITC  X2        2.0 
- V  ALLINITC  X3        3.0 
- V  ALLINITC  X4        4.0 
+ V  ALLINITC  X1        1.0
+ V  ALLINITC  X2        2.0
+ V  ALLINITC  X3        3.0
+ V  ALLINITC  X4        4.0
 
 ELEMENT TYPE
 
@@ -175,7 +175,7 @@ INDIVIDUALS
  T  SQR2
  R  X         Y         1.0            Z         1.0
  F                      P * X * X
- G  X                   P * ( X + X ) 
+ G  X                   P * ( X + X )
  H  X         X         2.0 * P
 
 *  square of sin x

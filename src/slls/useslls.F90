@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USESLLS_precision
-            
+
 !     -------------------------------------------------------
 !    | CUTEst/AMPL interface to SLLS, a preconditioned       |
 !    | projected conjugate-gradient algorithm for            |

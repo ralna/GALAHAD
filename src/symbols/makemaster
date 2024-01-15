@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD SYMBOLS package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2024-01-12
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -22,7 +22,7 @@ DEPENDENCIES =
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -37,7 +37,7 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  non-standard compilation agenda for package
@@ -108,5 +108,5 @@ galahad_error: galahad_error.o
 	rm ./galahad_error
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

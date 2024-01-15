@@ -33,7 +33,7 @@ while [[ $finished != 'true' ]]; do
     LIST=( ${VERS[@]} )
 
     CORRECT_VERSION="false"
-    while [[ $CORRECT_VERSION == "false" ]]; do 
+    while [[ $CORRECT_VERSION == "false" ]]; do
 
 	echo " The following versions of GALAHAD are currently installed."
 	echo " "
@@ -45,11 +45,11 @@ while [[ $finished != 'true' ]]; do
 	    echo "        ($count) ${VERSION}"
 	done
 	echo " "
-	echo " Which do you wish to uninstall: (1-$NUMBER)?" 
+	echo " Which do you wish to uninstall: (1-$NUMBER)?"
 
 	read CHOICE
 	(( CHOICE-- ))
-   
+
 	i=0
 	while [[ $i -lt $NUMBER &&  $CORRECT_VERSION == "false" ]]; do
 	    if [[ $CHOICE == $i ]]; then
@@ -109,7 +109,7 @@ while [[ $finished != 'true' ]]; do
 
     echo " "
     echo " Do you wish to uninstall another version (N/y)?"
-	
+
     YESNO=""
 
     while [[ $YESNO != 'Y' && $YESNO != 'N' ]]; do

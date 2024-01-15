@@ -101,10 +101,10 @@
 
      SUBROUTINE XXX_import( control, data, status )
 
-!  import problem data into internal storage prior to solution. 
+!  import problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to XXX_solve
 !
 !  data is a scalar variable of type XXX_full_data_type used for internal data
@@ -178,7 +178,7 @@
 !  recover inform from internal data
 
      inform = data%xxx_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok

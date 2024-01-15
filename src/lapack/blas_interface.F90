@@ -11,12 +11,12 @@
 !  History -
 !   originally released GALAHAD Version 2.5. April 19th 2013
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_BLAS_interface
 
-     IMPLICIT NONE 
+     IMPLICIT NONE
 
      PUBLIC
 
@@ -42,7 +42,7 @@
        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
        END FUNCTION DNRM2
 
-     END INTERFACE 
+     END INTERFACE
 
 !  compute plane rotation
 

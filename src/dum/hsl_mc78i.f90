@@ -54,7 +54,7 @@ subroutine mc78_analyse_assembled_integer(n, ptr, row, perm, nnodes, sptr, &
    integer(ip_), dimension(n+1), intent(in) :: ptr ! Col pointers
    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! Row indices
    integer(ip_), dimension(n), intent(inout) :: perm
-      ! perm(i) must hold position of i in the pivot sequence. 
+      ! perm(i) must hold position of i in the pivot sequence.
       ! On exit, holds the pivot order to be used by factorization.
    integer(ip_) :: nnodes ! number of supernodes found
    integer(ip_), dimension(:), allocatable :: sptr ! supernode pointers
@@ -69,7 +69,7 @@ subroutine mc78_analyse_assembled_integer(n, ptr, row, perm, nnodes, sptr, &
    integer(long_), optional :: nfact
    integer(long_), optional :: nflops
    integer(ip_), dimension(n), optional, intent(inout) :: piv_size ! If
-      ! present, then matches matrix order and specifies block pivots. 
+      ! present, then matches matrix order and specifies block pivots.
       ! piv_size(i) is the number of entries pivots in the block pivot
       ! containing column i.
 
@@ -96,7 +96,7 @@ subroutine mc78_analyse_elemental_integer(n, nelt, starts, vars, perm, &
    integer(ip_), dimension(starts(nelt+1)-1), intent(in) :: vars ! Variables
       !assoicated with each element. Element i has vars(starts(i):starts(i+1)-1)
    integer(ip_), dimension(n), intent(inout) :: perm
-      ! perm(i) must hold position of i in the pivot sequence. 
+      ! perm(i) must hold position of i in the pivot sequence.
       ! On exit, holds the pivot order to be used by factorization.
    integer(ip_), dimension(nelt) :: eparent ! On exit, eparent(i) holds
       ! node of assembly that element i is a child of.
@@ -115,7 +115,7 @@ subroutine mc78_analyse_elemental_integer(n, nelt, starts, vars, perm, &
    integer(long_), optional :: nflops ! If present, then on exit
       ! contains the number of floating point operations in factorize.
    integer(ip_), dimension(n), optional, intent(inout) :: piv_size ! If
-      ! present, then matches matrix order and specifies block pivots. 
+      ! present, then matches matrix order and specifies block pivots.
       ! piv_size(i) is the number of entries pivots in the block pivot
       ! containing column i.
 

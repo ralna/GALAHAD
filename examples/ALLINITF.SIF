@@ -53,10 +53,10 @@ BOUNDS
 
 START POINT
 
- V  ALLINIT   X1        1.0 
- V  ALLINIT   X2        2.0 
- V  ALLINIT   X3        1.0 
- V  ALLINIT   X4        2.0 
+ V  ALLINIT   X1        1.0
+ V  ALLINIT   X2        2.0
+ V  ALLINIT   X3        1.0
+ V  ALLINIT   X4        2.0
 
 ELEMENT TYPE
 

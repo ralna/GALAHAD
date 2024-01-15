@@ -170,7 +170,7 @@ libgalahad_src = []
 libgalahad_single_src = []
 libgalahad_double_src = []
 
-# FOrtran files *.f
+# Fortran files *.f
 libgalahad_f_src = []
 libgalahad_f_single_src = []
 libgalahad_f_double_src = []

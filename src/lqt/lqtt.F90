@@ -9,7 +9,7 @@
    REAL ( KIND = rp_ ) :: f, radius
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X, C
    TYPE ( LQT_data_type ) :: data
-   TYPE ( LQT_control_type ) :: control        
+   TYPE ( LQT_control_type ) :: control
    TYPE ( LQT_inform_type ) :: inform
 
 !  ==============
@@ -27,9 +27,9 @@
      control%error = 23 ; control%out = 23 ; control%print_level = 10
 !    control%print_level = 1
      SELECT CASE ( pass )
-     CASE ( 2, 4 ) 
+     CASE ( 2, 4 )
        control%unitm = .FALSE.
-     CASE ( 3 ) 
+     CASE ( 3 )
        radius = 10.0_rp_
      END SELECT
      DO                                     !  Iteration to find the minimizer
@@ -64,7 +64,7 @@
      CALL LQT_initialize( data, control, inform ) ! Initialize control params
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      SELECT CASE ( pass )
-     CASE ( 2 ) 
+     CASE ( 2 )
        control%unitm = .FALSE.
      END SELECT
      DO                                     !  Iteration to find the minimizer

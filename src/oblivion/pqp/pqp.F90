@@ -16,7 +16,7 @@
 !   development started September 14th 2004
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_PQP_precision
@@ -91,7 +91,7 @@
 !
 !  Default control data for PQP. This routine should be called before
 !  PQP_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -101,14 +101,14 @@
 !
 !  INTEGER control parameters:
 !
-!   error. Error and warning diagnostics occur on stream error 
-!   
+!   error. Error and warning diagnostics occur on stream error
+!
 !   out. General output occurs on stream out
-!   
+!
 !   print_level. The level of output required is specified by print_level
-!   
-!   maxit. At most maxit inner iterations are allowed 
-!   
+!
+!   maxit. At most maxit inner iterations are allowed
+!
 !   start_print. Any printing will start on this iteration
 !
 !   stop_print. Any printing will stop on this iteration
@@ -116,40 +116,40 @@
 !   factor. The factorization to be used.
 !    Possible values are
 !
-!      0  automatic 
+!      0  automatic
 !      1  Schur-complement factorization
 !      2  augmented-system factorization
 !
 !   max_col. The maximum number of nonzeros in a column of A which is permitted
 !    with the Schur-complement factorization
 !
-!   max_sc. The maximum permitted size of the Schur complement before a 
+!   max_sc. The maximum permitted size of the Schur complement before a
 !    refactorization is performed.
 !
 !   indmin. An initial guess as to the integer workspace required by SLS
 !
 !   valmin. An initial guess as to the real workspace required by SLS
-! 
+!
 !   itref_max. The maximum number of iterative refinements allowed
 !
 !   infeas_check_interval. The infeasibility will be checked for improvement
-!    every infeas_check_interval iterations (see infeas_g_improved_by_factor 
+!    every infeas_check_interval iterations (see infeas_g_improved_by_factor
 !    and infeas_b_improved_by_factor below)
 !
 !   cg_maxit. The maximum number of CG iterations allowed. If cg_maxit < 0,
 !     this number will be reset to the number of degrees of freedom in the
 !     system + 1
 !
-!   precon. The preconditioner to be used for the CG is defined by precon. 
+!   precon. The preconditioner to be used for the CG is defined by precon.
 !    Possible values are
 !
 !     <0  full factorization as direct method
-!      0  automatic 
+!      0  automatic
 !      1  full factorization
 !      2  replace Hessian block by the identity
 !      3  replace Hessian block by those entries lying within a band
 !      4  replace Hessian block for free variables by the identity
-!      5  replace Hessian block for free variables by those entries lying 
+!      5  replace Hessian block for free variables by those entries lying
 !         within a band
 !
 !   nsemib. The semi-bandwidth of a band preconditioner, if appropriate
@@ -176,10 +176,10 @@
 !   monitor_residuals. The frequency at which residuals will be monitored
 !
 !   cold_start. Indicates whether a cold or warm start should be made.
-!    Possible values are 
+!    Possible values are
 !
-!     0 warm start - the values set in C_stat and B_stat indicate which 
-!       constraints will be included in the initial working set. 
+!     0 warm start - the values set in C_stat and B_stat indicate which
+!       constraints will be included in the initial working set.
 !     1 cold start from the value set in X; constraints active
 !       at X will determine the initial working set.
 !     2 cold start with no active constraints
@@ -188,53 +188,53 @@
 !
 !  REAL control parameters:
 !
-!   infinity. Any bound larger than infinity in modulus will be regarded as 
-!    infinite 
-!   
+!   infinity. Any bound larger than infinity in modulus will be regarded as
+!    infinite
+!
 !   feas_tol. Any constraint violated by less than feas_tol will be considered
 !    to be satisfied
 !
 !   obj_unbounded. If the objective function value is smaller than
 !    obj_unbounded, it will be flagged as unbounded from below
 !
-!   increase_rho_g_factor. If the problem is currently infeasible and 
+!   increase_rho_g_factor. If the problem is currently infeasible and
 !    solve_qp (see below) is .TRUE., the current penalty parameter for the
 !    general constraints will be increased by increase_rho_g_factor when needed
 !
-!   increase_rho_b_factor. If the problem is currently infeasible and 
-!    solve_qp or solve_within_bounds (see below) is .TRUE., the current 
-!    penalty parameter for the simple bound constraints will be increased by 
+!   increase_rho_b_factor. If the problem is currently infeasible and
+!    solve_qp or solve_within_bounds (see below) is .TRUE., the current
+!    penalty parameter for the simple bound constraints will be increased by
 !    increase_rho_b_factor when needed
 !
 !   infeas_g_improved_by_factor. If the infeasibility of the general constraints
-!    has not dropped by a factor of infeas_g_improved_by_factor over the 
-!    previous infeas_check_interval iterations, the current corresponding 
+!    has not dropped by a factor of infeas_g_improved_by_factor over the
+!    previous infeas_check_interval iterations, the current corresponding
 !    penalty parameter will be increased
 !
 !   infeas_b_improved_by_factor. If the infeasibility of the simple bounds
-!    has not dropped by a factor of infeas_b_improved_by_factor over the 
-!    previous infeas_check_interval iterations, the current corresponding 
+!    has not dropped by a factor of infeas_b_improved_by_factor over the
+!    previous infeas_check_interval iterations, the current corresponding
 !    penalty parameter will be increased
 !
 !   pivot_tol. The threshold pivot used by the matrix factorization.
 !    See the documentation for SLS for details
 !
-!   pivot_tol_for_dependencies. The threshold pivot used by the matrix 
+!   pivot_tol_for_dependencies. The threshold pivot used by the matrix
 !    factorization when attempting to detect linearly dependent constraints.
 !    See the documentation for SLS for details
 !
-!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will 
-!    be regarded to be zero when attempting to detect linearly dependent 
+!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will
+!    be regarded to be zero when attempting to detect linearly dependent
 !    constraints
 !
-!   multiplier_tol. Any dual variable or Lagrange multiplier which is less than 
+!   multiplier_tol. Any dual variable or Lagrange multiplier which is less than
 !    multiplier_tol outside its optimal interval will be regarded
 !    as being acceptable when checking for optimality.
 !
 !   inner_stop_relative and inner_stop_absolute. The search direction is
 !    considered as an acceptable approximation to the minimizer of the
-!    model if the gradient of the model in the preconditioning(inverse) 
-!    norm is less than 
+!    model if the gradient of the model in the preconditioning(inverse)
+!    norm is less than
 !     max( inner_stop_relative * initial preconditioning(inverse)
 !                                 gradient norm, inner_stop_absolute )
 !
@@ -243,12 +243,12 @@
 !   treat_zero_bounds_as_general. If true, any problem bound with the value
 !    zero will be treated as if it were a general value
 !
-!   solve_qp. If .TRUE., the value of prob%rho_g and prob%rho_b will be 
-!    increased as many times as are needed to ensure that the output 
+!   solve_qp. If .TRUE., the value of prob%rho_g and prob%rho_b will be
+!    increased as many times as are needed to ensure that the output
 !    solution is feasible
 !
-!   solve_within_bounds. If .TRUE., the value of prob%rho_b will be 
-!    increased as many times as are needed to ensure that the output 
+!   solve_within_bounds. If .TRUE., the value of prob%rho_b will be
+!    increased as many times as are needed to ensure that the output
 !    solution is feasible with respect to the simple bounds
 !
 !   randomize. If .TRUE., the constraint bounds will be perturbed by
@@ -257,12 +257,12 @@
 !    helps when solving degenerate problems
 !
 !   array_syntax_worse_than_do_loop. If array_syntax_worse_than_do_loop is
-!    true, f77-style do loops will be used rather than 
+!    true, f77-style do loops will be used rather than
 !    f90-style array syntax for vector operations
 !
 !   each_interval. If each_interval is true, control will pass back to the
 !    user after the solution has been computed between each pair of breakpoints
-!    in the parametric interval (see argument action for pqp_solve. 
+!    in the parametric interval (see argument action for pqp_solve.
 !    Otherwise, only the solution at omega_max will be computed.
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -271,7 +271,7 @@
 
       TYPE ( PQP_interval_type ), INTENT( INOUT ) :: interval
       TYPE ( PQP_data_type ), INTENT( OUT ) :: data
-      TYPE ( PQP_control_type ), INTENT( OUT ) :: control        
+      TYPE ( PQP_control_type ), INTENT( OUT ) :: control
 
 !  Initalize random number seed
 
@@ -322,7 +322,7 @@
       control%multiplier_tol = epsmch ** 0.5
       control%inner_stop_relative = zero
       control%inner_stop_absolute = SQRT( EPSILON( one ) )
- 
+
 !  Logical parameters
 
       control%treat_zero_bounds_as_general = .FALSE.
@@ -332,7 +332,7 @@
       control%array_syntax_worse_than_do_loop = .FALSE.
       control%each_interval = .FALSE.
 
-      RETURN  
+      RETURN
 
 !  End of PQP_initialize
 
@@ -342,10 +342,10 @@
 
       SUBROUTINE PQP_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by PQP_initialize could (roughly) 
+!  The default values as given by PQP_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN PQP SPECIFICATIONS (DEFAULT)
@@ -393,7 +393,7 @@
 
 !  Dummy arguments
 
-      TYPE ( PQP_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( PQP_control_type ), INTENT( INOUT ) :: control
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -412,7 +412,7 @@
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  4 )%keyword = 'maximum-number-of-iterations'
       spec(  5 )%keyword = 'start-print'
       spec(  6 )%keyword = 'stop-print'
@@ -518,21 +518,21 @@
       CALL SPECFILE_assign_real( spec( 22 ), control%infinity,                 &
                                  control%error )
       CALL SPECFILE_assign_real( spec( 23 ), control%feas_tol,                 &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 24 ), control%obj_unbounded,            &
                                  control%error )
 
 
       CALL SPECFILE_assign_real( spec( 25 ), control%increase_rho_g_factor,    &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 26 ), control%increase_rho_g_factor,    &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 27 ),                                   &
                                  control%infeas_g_improved_by_factor,          &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 28 ),                                   &
                                  control%infeas_b_improved_by_factor,          &
-                                 control%error )     
+                                 control%error )
 
 
       CALL SPECFILE_assign_real( spec( 29 ), control%pivot_tol,                &
@@ -581,16 +581,16 @@
 
 !  Solve the quadratic program
 !
-!      QP(theta):  minimize   1/2 x(T) H x + g(T) x + f + theta dg(T) x 
+!      QP(theta):  minimize   1/2 x(T) H x + g(T) x + f + theta dg(T) x
 !                  subject to c_l + theta dc_l <= A x <= c_u + theta dc_u
 !                  and        x_l + theta dx_l <=  x  <= x_u + theta dx_u
-!                                                               
+!
 !      for all 0 <= theta <= theta_max
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), f is a constant
-!  g and dg are an n-vectors, H is a symmetric matrix, A is an m by n matrix, 
+!  g and dg are an n-vectors, H is a symmetric matrix, A is an m by n matrix,
 !  and any of the bounds c_l, c_u, x_l, x_u may be infinite, using an active
-!  set method. The subroutine is particularly appropriate when A and H are 
+!  set method. The subroutine is particularly appropriate when A and H are
 !  sparse, and when we do not anticipate a large number of active set
 !  changes prior to optimality
 !
@@ -602,16 +602,16 @@
 !   to the string "start" on initial entry. On exit, if action contains
 !   the string "re-enter", the subroutine should be re-entered with
 !   all data preserved since the last exit. This variable allows the
-!   user to examine the status of the solution in the current 
+!   user to examine the status of the solution in the current
 !   (sub-)interval, as indicated in the varible interval (see below).
 !   If action contains the string "end", the final interval has been
 !   processed, and no further action is necessary.
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to 
+!   %new_problem_structure is a LOGICAL variable, which must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to PQP_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
@@ -619,10 +619,10 @@
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
+!
 !   %H_* is used to hold the LOWER TRIANGULAR part of H.
 !   Three storage formats are permitted:
 !
@@ -633,12 +633,12 @@
 !       %H%val( : )  the values of the components of H
 !       %H%row( : )  the row indices of the components of H
 !       %H%col( : )  the column indices of the components of H
-!       %H%ne        the number of nonzeros used to store 
+!       %H%ne        the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !       In addition, the array
 !
-!       %H%ptr( : )   must be of length %n + 1 
+!       %H%ptr( : )   must be of length %n + 1
 !
 !       but need not be set
 !
@@ -663,7 +663,7 @@
 !       In this case, the following must be set:
 !
 !       %H%val( : )  the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !       %H%ne    = - 2
 !
@@ -680,21 +680,21 @@
 !    However, if scheme (i) is used for input, the output %H%row will contain
 !    the row numbers corresponding to the values in %H%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (ii).
-!    
+!
 !   %G is a REAL array of length %n, which must be set by
 !    the user to the value of the gradient, g, of the linear term of the
 !    quadratic objective function. The i-th component of G, i = 1, ....,
-!    n, should contain the value of g_i.  
+!    n, should contain the value of g_i.
 !    On exit, G will most likely have been reordered.
-!   
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function. On exit, it may have
 !    been changed to reflect variables which have been fixed.
 !
-!   %rho_g is a REAL variable, which must be set by the user to the 
+!   %rho_g is a REAL variable, which must be set by the user to the
 !    required value of the penalty parameter for the general constraints
 !
-!   %rho_b is a REAL variable, which must be set by the user to the 
+!   %rho_b is a REAL variable, which must be set by the user to the
 !    required value of the penalty parameter for the simple bound constraints
 !
 !   %A_* is used to hold the matrix A. Three storage formats
@@ -711,7 +711,7 @@
 !
 !       In addition, the array
 !
-!       %A%ptr( : )   must be of length %m + 1 
+!       %A%ptr( : )   must be of length %m + 1
 !
 !       but need not be set
 !
@@ -736,7 +736,7 @@
 !       In this case, the following must be set:
 !
 !       %A%val( : )   the values of the components of A, stored row by row,
-!                     with each the entries in each row in order of 
+!                     with each the entries in each row in order of
 !                     increasing column indicies.
 !       %A%ne    = -2
 !
@@ -752,10 +752,10 @@
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output %A%row will contain
 !    the row numbers corresponding to the values in %A%val, and thus in this
-!    case the output matrix will be available in both formats (i) and (ii).   
-! 
-!   %C is a REAL array of length %m, which is used to store the values of 
-!    A x. It need not be set on entry. On exit, it will have been filled 
+!    case the output matrix will be available in both formats (i) and (ii).
+!
+!   %C is a REAL array of length %m, which is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
 !    with appropriate values.
 !
 !   %X is a REAL array of length %n, which must be set by the user
@@ -764,39 +764,39 @@
 !
 !   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
-!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %C_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %C_u to a value larger than 
-!    control%infinity. On exit, %C_l and %C_u will most likely have been 
+!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %C_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %C_u to a value larger than
+!    control%infinity. On exit, %C_l and %C_u will most likely have been
 !    reordered.
-!   
+!
 !   %Y is a REAL array of length %m, which must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
-!    On successful exit, it will contain the required vector of Lagrange 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
+!    On successful exit, it will contain the required vector of Lagrange
 !    multipliers.
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. On exit, %X_l and %X_u will most likely have been 
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
-!   
-!   %Z is a REAL array of length %n, which must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
-!    x_l <= x <= x_u). On successful exit, it will contain
-!   the required vector of dual variables. 
 !
-!  interval is a structure of type PQP_interval_type, whose components hold 
+!   %Z is a REAL array of length %n, which must be set by the user to
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
+!    x_l <= x <= x_u). On successful exit, it will contain
+!   the required vector of dual variables.
+!
+!  interval is a structure of type PQP_interval_type, whose components hold
 !   information about the solution within the current sub-interval.
 !   The following components will have been set:
 !
@@ -808,41 +808,41 @@
 !   the component control%cold_start must be set to 0 on entry; C_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   C_stat( i ) < 0, the i-th constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   C_stat( i ) < 0, the i-th constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 !
 !  B_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to PQP_solve to indicate which of the simple bound constraints 
+!   on entry to PQP_solve to indicate which of the simple bound constraints
 !   are to be included in the initial working set. If this facility is required,
 !   the component control%cold_start must be set to 0 on entry; B_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   B_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   B_stat( i ) < 0, the i-th bound constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   B_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  data is a structure of type PQP_data_type which holds private internal 
+!  data is a structure of type PQP_data_type which holds private internal
 !   data
 !
-!  control is a structure of type PQP_control_type that controls the 
+!  control is a structure of type PQP_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to PQP_initialize. 
+!   the elements may be set by a call to PQP_initialize.
 !   See PQP_initialize for details
 !
-!  inform is a structure of type PQP_inform_type that provides 
-!    information on exit from PQP_solve. The component status 
+!  inform is a structure of type PQP_inform_type that provides
+!    information on exit from PQP_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
-!   - 1 one of the restrictions 
+!   - 1 one of the restrictions
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%A%ne  >=  -2
@@ -863,30 +863,30 @@
 !
 !    -7 The factorization failed; the return status from the factorization
 !       package is given in the component factor_status.
-!      
+!
 !    -8 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
+!       control%maxit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
 !    -9 The objective function appears to be unbounded from below on the
 !       feasible set.
 !
-!  On exit from PQP_solve, other components of inform give the 
+!  On exit from PQP_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
+!     alloc_status = The status of the last attempted allocation/deallocation
 !     iter   = The total number of iterations required.
 !     cg_iter = The total number of conjugate gradient iterations required.
-!     factorization_integer = The total integer workspace required for the 
+!     factorization_integer = The total integer workspace required for the
 !       factorization.
-!     factorization_real = The total real workspace required for the 
+!     factorization_real = The total real workspace required for the
 !       factorization.
 !     nfacts = The total number of factorizations performed.
-!     nmods  = The total number of factorizations which were modified to 
-!       ensure that the matrix was an appropriate preconditioner. 
+!     nmods  = The total number of factorizations which were modified to
+!       ensure that the matrix was an appropriate preconditioner.
 !     factorization_status = the return status from the matrix factorization
-!       package.   
-!     obj = the value of the objective function at the best estimate of the 
+!       package.
+!     obj = the value of the objective function at the best estimate of the
 !       solution determined by PQP_solve.
 !     infeas_g = the 1-norm of the infeasibility of the general constraints
 !     infeas_b = the 1-norm of the infeasibility of the simple bound constraints
@@ -925,7 +925,7 @@
       LOGICAL :: reallocate, printe, printi, printt
       CHARACTER ( LEN = 30 ) :: bad_alloc
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -965,7 +965,7 @@
       inform%nmods = 0 ; inform%alloc_status = 0
       inform%factorization_integer = - 1 ; inform%factorization_real = - 1
       inform%factorization_status = 0
-      inform%obj = prob%f 
+      inform%obj = prob%f
 
 !  Reduce print level for QP phase
 
@@ -973,8 +973,8 @@
 
 !  Basic single line of output per iteration
 
-      printe = control%error > 0 .AND. control%print_level >= 1 
-      printi = control%out > 0 .AND. control%print_level >= 1 
+      printe = control%error > 0 .AND. control%print_level >= 1
+      printi = control%out > 0 .AND. control%print_level >= 1
       printt = control%out > 0 .AND. control%print_level >= 2
 
 !  Ensure that input parameters are within allowed ranges
@@ -983,10 +983,10 @@
            prob%A%ne < - 2 .OR. prob%H%ne < - 2 ) THEN
         inform%status = - 1
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, 2010 ) inform%status 
-        CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
+          WRITE( control%error, 2010 ) inform%status
+        CALL CPU_TIME( time ) ; inform%time%total = time - time_start
         GO TO 800
-      END IF 
+      END IF
 
 !  ===========================
 !  Preprocess the problem data
@@ -1009,7 +1009,7 @@
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
           a_ne = prob%A%ptr( prob%m + 1 ) - 1
         ELSE
-          a_ne = prob%A%ne 
+          a_ne = prob%A%ne
         END IF
 
         IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
@@ -1017,7 +1017,7 @@
         ELSE IF ( SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS' ) THEN
           h_ne = prob%H%ptr( prob%n + 1 ) - 1
         ELSE
-          h_ne = prob%H%ne 
+          h_ne = prob%H%ne
         END IF
 
         IF ( printi ) WRITE( control%out,                                      &
@@ -1027,13 +1027,13 @@
 
 !  Perform the preprocessing
 
-        CALL CPU_TIME( time ) 
+        CALL CPU_TIME( time )
         CALL QPP_reorder( data%QPP_map, data%QPP_control,                      &
                            data%QPP_inform, data%dims, prob,                   &
                            .FALSE., .FALSE., .FALSE., parametric = .TRUE. )
         CALL CPU_TIME( dum ) ; dum = dum - time
         inform%time%preprocess = inform%time%preprocess + dum
-  
+
 !  Test for satisfactory termination
 
         IF ( data%QPP_inform%status /= 0 ) THEN
@@ -1042,12 +1042,12 @@
             WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')" )   &
              data%QPP_inform%status
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
+            WRITE( control%error, 2010 ) inform%status
           IF ( control%out > 0 .AND. control%print_level > 0 .AND.             &
-               inform%status == - 4 ) WRITE( control%error, 2240 ) 
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-          GO TO 800 
-        END IF 
+               inform%status == - 4 ) WRITE( control%error, 2240 )
+          CALL CPU_TIME( time ) ; inform%time%total = time - time_start
+          GO TO 800
+        END IF
 
 !  Record array lengths
 
@@ -1056,7 +1056,7 @@
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
           a_ne = prob%A%ptr( prob%m + 1 ) - 1
         ELSE
-          a_ne = prob%A%ne 
+          a_ne = prob%A%ne
         END IF
 
         IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
@@ -1064,7 +1064,7 @@
         ELSE IF ( SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS' ) THEN
           h_ne = prob%H%ptr( prob%n + 1 ) - 1
         ELSE
-          h_ne = prob%H%ne 
+          h_ne = prob%H%ne
         END IF
 
         IF ( printi ) WRITE( control%out,                                      &
@@ -1077,24 +1077,24 @@
 !  Recover the problem dimensions after preprocessing
 
       ELSE
-        CALL CPU_TIME( time ) 
+        CALL CPU_TIME( time )
         CALL QPP_apply( data%QPP_map, data%QPP_inform, prob,                   &
                         get_all_parametric = .TRUE. )
-        CALL CPU_TIME( dum ) ; dum = dum - time  
-        inform%time%preprocess = inform%time%preprocess + dum  
-   
-!  Test for satisfactory termination  
-  
-        IF ( data%QPP_inform%status /= 0 ) THEN  
-          inform%status = data%QPP_inform%status  
+        CALL CPU_TIME( dum ) ; dum = dum - time
+        inform%time%preprocess = inform%time%preprocess + dum
+
+!  Test for satisfactory termination
+
+        IF ( data%QPP_inform%status /= 0 ) THEN
+          inform%status = data%QPP_inform%status
           IF ( control%out > 0 .AND. control%print_level >= 5 )                &
             WRITE( control%out, "( ' status ', I3, ' after QPP_apply ')" )     &
-             data%QPP_inform%status  
+             data%QPP_inform%status
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status   
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start   
-          GO TO 800   
-        END IF   
+            WRITE( control%error, 2010 ) inform%status
+          CALL CPU_TIME( time ) ; inform%time%total = time - time_start
+          GO TO 800
+        END IF
       END IF
 
 !  Permute initial working sets if provided
@@ -1119,28 +1119,28 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%IBREAK ) ) THEN
         IF ( SIZE( data%IBREAK ) < lbreak ) THEN
-          DEALLOCATE( data%IBREAK ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( data%IBREAK )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%IBREAK( lbreak ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%IBREAK' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%RES_l ) ) THEN
         IF ( LBOUND( data%RES_l, 1 ) /= 1 .OR.                                 &
-             UBOUND( data%RES_l, 1 ) /= data%dims%c_l_end ) THEN 
+             UBOUND( data%RES_l, 1 ) /= data%dims%c_l_end ) THEN
           DEALLOCATE( data%RES_l )
         ELSE ; reallocate = .FALSE. ; END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%RES_l( 1 : data%dims%c_l_end ),                         &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%RES_l' ; GO TO 900
         END IF
       END IF
@@ -1148,14 +1148,14 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%RES_u ) ) THEN
         IF ( LBOUND( data%RES_u, 1 ) /= data%dims%c_u_start .OR.               &
-             UBOUND( data%RES_u, 1 ) /= prob%m ) THEN 
+             UBOUND( data%RES_u, 1 ) /= prob%m ) THEN
           DEALLOCATE( data%RES_u )
         ELSE ; reallocate = .FALSE. ; END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%RES_u( data%dims%c_u_start : prob%m ),                  &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%RES_u' ; GO TO 900
         END IF
       END IF
@@ -1163,17 +1163,17 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%A_norms ) ) THEN
         IF ( SIZE( data%A_norms ) < prob%m ) THEN
-          DEALLOCATE( data%A_norms ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( data%A_norms )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%A_norms( prob%m ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%A_norms' ; GO TO 900
         END IF
       END IF
-      
+
 !  Compute the initial residuals
 
       DO i = 1, data%dims%c_u_start - 1
@@ -1192,7 +1192,7 @@
         DO ii = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
           a_x = a_x + prob%A%val( ii ) * prob%X( prob%A%col( ii ) )
           a_norms = a_norms + prob%A%val( ii ) ** 2
-        END DO 
+        END DO
 !       write(6,*) 'l', i, a_x, prob%C_l( i )
 !       write(6,*) 'u', i, a_x, prob%C_u( i )
         data%RES_l( i ) = a_x - prob%C_l( i )
@@ -1319,7 +1319,7 @@
 !  cold start with only equality constraints active
 
       ELSE IF ( control%cold_start == 3 ) THEN
-        B_stat = 0 
+        B_stat = 0
         C_stat( : MIN( data%dims%c_equality, prob%n ) ) = 1
         C_stat( MIN( data%dims%c_equality, prob%n ) + 1 : ) = 0
 
@@ -1327,7 +1327,7 @@
 
       ELSE IF ( control%cold_start == 4 ) THEN
         B_stat = 0 ; C_stat = 0
-        l = 0 
+        l = 0
 
 !  equality constraints
 
@@ -1381,7 +1381,7 @@
 !  Remove any dependent working constraints
 !  ========================================
 
-      CALL CPU_TIME( time ) 
+      CALL CPU_TIME( time )
       CALL QPA_remove_dependent( prob%n, prob%m, prob%A%val, prob%A%col,       &
                                  prob%A%ptr, data%K, data%SLS_data,            &
                                  data%SLS_control, C_stat, B_stat,             &
@@ -1389,22 +1389,22 @@
                                  prefix, control, inform, n_depen )
       CALL CPU_TIME( dum ) ; dum = dum - time
       inform%time%preprocess = inform%time%preprocess + dum
-      
+
 !  Allocate more real workspace arrays
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%H_s ) ) THEN
-        IF ( SIZE( data%H_s ) < prob%n ) THEN ; DEALLOCATE( data%H_s ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%H_s ) < prob%n ) THEN ; DEALLOCATE( data%H_s )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%H_s( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%H_s' ; GO TO 900
         END IF
       END IF
-      
+
 !  Check for error exits
 
       IF ( inform%status /= 0 ) THEN
@@ -1447,125 +1447,125 @@
       IF ( ALLOCATED( data%BREAKP ) ) THEN
         IF ( SIZE( data%BREAKP ) < lbreak ) THEN
           DEALLOCATE( data%BREAKP )
-        ELSE ; reallocate = .FALSE. 
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%BREAKP( lbreak ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%BREAKP' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%A_s ) ) THEN
-        IF ( SIZE( data%A_s ) < prob%m ) THEN ; DEALLOCATE( data%A_s ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%A_s ) < prob%m ) THEN ; DEALLOCATE( data%A_s )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%A_s( prob%m ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%A_s' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%PERT ) ) THEN
         IF ( SIZE( data%PERT ) < prob%m + prob%n ) THEN
-          DEALLOCATE( data%PERT ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( data%PERT )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%PERT( prob%m + prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%PERT' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%GRAD ) ) THEN
-        IF ( SIZE( data%GRAD ) < prob%n ) THEN ; DEALLOCATE( data%GRAD ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%GRAD ) < prob%n ) THEN ; DEALLOCATE( data%GRAD )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%GRAD( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%GRAD' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%VECTOR ) ) THEN
-        IF ( SIZE( data%VECTOR ) < k_n_max ) THEN ; DEALLOCATE( data%VECTOR ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%VECTOR ) < k_n_max ) THEN ; DEALLOCATE( data%VECTOR )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%VECTOR( k_n_max ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%VECTOR' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%RHS ) ) THEN
         IF ( SIZE( data%RHS ) < k_n_max + control%max_sc ) THEN
-          DEALLOCATE( data%RHS ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( data%RHS )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%RHS( k_n_max + control%max_sc ),                        &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%RHS' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%S ) ) THEN
-        IF ( SIZE( data%S ) < k_n_max + control%max_sc ) THEN 
-          DEALLOCATE( data%S ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%S ) < k_n_max + control%max_sc ) THEN
+          DEALLOCATE( data%S )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%S( k_n_max + control%max_sc ),                          &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%S' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%B ) ) THEN
-        IF ( SIZE( data%B ) < k_n_max + control%max_sc ) THEN 
-          DEALLOCATE( data%B ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%B ) < k_n_max + control%max_sc ) THEN
+          DEALLOCATE( data%B )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%B( k_n_max + control%max_sc ),                          &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%B' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%RES ) ) THEN
-        IF ( SIZE( data%RES ) < k_n_max + control%max_sc ) THEN 
-          DEALLOCATE( data%RES ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%RES ) < k_n_max + control%max_sc ) THEN
+          DEALLOCATE( data%RES )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%RES( k_n_max + control%max_sc ),                        &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%RES' ; GO TO 900
         END IF
       END IF
@@ -1573,44 +1573,44 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%S_perm ) ) THEN
         IF ( SIZE( data%S_perm ) < k_n_max + control%max_sc ) THEN
-          DEALLOCATE( data%S_perm ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( data%S_perm )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%S_perm( k_n_max + control%max_sc ),                     &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%S_perm' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%DX ) ) THEN
-        IF ( SIZE( data%DX ) < k_n_max + control%max_sc ) THEN 
-          DEALLOCATE( data%DX ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%DX ) < k_n_max + control%max_sc ) THEN
+          DEALLOCATE( data%DX )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%DX( k_n_max + control%max_sc ),                         &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%DX' ; GO TO 900
         END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%RES_print ) ) THEN
-        IF ( SIZE( data%RES_print ) < k_n_max + control%max_sc ) THEN 
-          DEALLOCATE( data%RES_print ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%RES_print ) < k_n_max + control%max_sc ) THEN
+          DEALLOCATE( data%RES_print )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%RES_print( k_n_max + control%max_sc ),                  &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%RES_print' ; GO TO 900
         END IF
       END IF
@@ -1623,39 +1623,39 @@
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%R_pcg ) ) THEN
-        IF ( SIZE( data%R_pcg ) < n_pcg ) THEN ; DEALLOCATE( data%R_pcg ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%R_pcg ) < n_pcg ) THEN ; DEALLOCATE( data%R_pcg )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%R_pcg( n_pcg ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%R_pcg' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%X_pcg ) ) THEN
-        IF ( SIZE( data%X_pcg ) < n_pcg ) THEN ; DEALLOCATE( data%X_pcg ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%X_pcg ) < n_pcg ) THEN ; DEALLOCATE( data%X_pcg )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%X_pcg( n_pcg ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%X_pcg' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%P_pcg ) ) THEN
-        IF ( SIZE( data%P_pcg ) < n_pcg ) THEN ; DEALLOCATE( data%P_pcg ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%P_pcg ) < n_pcg ) THEN ; DEALLOCATE( data%P_pcg )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%P_pcg( n_pcg ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%P_pcg' ; GO TO 900
         END IF
       END IF
@@ -1664,42 +1664,42 @@
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%SC ) ) THEN
-        IF ( SIZE( data%SC ) < control%max_sc + 1 ) THEN 
-          DEALLOCATE( data%SC ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%SC ) < control%max_sc + 1 ) THEN
+          DEALLOCATE( data%SC )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%SC( control%max_sc + 1 ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%SC' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%REF ) ) THEN
-        IF ( SIZE( data%REF ) < m_link ) THEN ; DEALLOCATE( data%REF ) 
-        ELSE ; reallocate = .FALSE. 
+        IF ( SIZE( data%REF ) < m_link ) THEN ; DEALLOCATE( data%REF )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
        ALLOCATE( data%REF( m_link ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%REF' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( data%C_up_or_low ) ) THEN
         IF ( LBOUND( data%C_up_or_low, 1 ) /= data%dims%c_u_start .OR.         &
-             UBOUND( data%C_up_or_low, 1 ) /= data%dims%c_l_end ) THEN 
+             UBOUND( data%C_up_or_low, 1 ) /= data%dims%c_l_end ) THEN
           DEALLOCATE( data%C_up_or_low )
         ELSE ; reallocate = .FALSE. ; END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%C_up_or_low( data%dims%c_u_start : data%dims%c_l_end ), &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%C_up_or_low' ; GO TO 900
         END IF
       END IF
@@ -1707,14 +1707,14 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%X_up_or_low ) ) THEN
         IF ( LBOUND( data%X_up_or_low, 1 ) /= data%dims%x_u_start .OR.         &
-             UBOUND( data%X_up_or_low, 1 ) /= data%dims%x_l_end ) THEN 
+             UBOUND( data%X_up_or_low, 1 ) /= data%dims%x_l_end ) THEN
           DEALLOCATE( data%X_up_or_low )
         ELSE ; reallocate = .FALSE. ; END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%X_up_or_low( data%dims%x_u_start : data%dims%x_l_end ), &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%X_up_or_low' ; GO TO 900
         END IF
       END IF
@@ -1722,14 +1722,14 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%PERM ) ) THEN
         IF ( SIZE( data%PERM ) < k_n_max + control%max_sc ) THEN
-          DEALLOCATE( data%PERM ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( data%PERM )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%PERM( k_n_max + control%max_sc ),                       &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%PERM' ; GO TO 900
         END IF
       END IF
@@ -1754,14 +1754,14 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%SCU_mat%BD_col_start ) ) THEN
         IF ( SIZE( data%SCU_mat%BD_col_start ) < control%max_sc + 1 ) THEN
-           DEALLOCATE( data%SCU_mat%BD_col_start ) 
-         ELSE ; reallocate = .FALSE. 
+           DEALLOCATE( data%SCU_mat%BD_col_start )
+         ELSE ; reallocate = .FALSE.
          END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%SCU_mat%BD_col_start( control%max_sc + 1 ),             &
                   STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%SCU_mat%BD_col_start' ; GO TO 900
         END IF
       END IF
@@ -1769,13 +1769,13 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%SCU_mat%BD_val ) ) THEN
         IF ( SIZE( data%SCU_mat%BD_val ) < lbd ) THEN
-           DEALLOCATE( data%SCU_mat%BD_val ) 
-         ELSE ; reallocate = .FALSE. 
+           DEALLOCATE( data%SCU_mat%BD_val )
+         ELSE ; reallocate = .FALSE.
          END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%SCU_mat%BD_val( lbd ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%SCU_mat%BD_val' ; GO TO 900
         END IF
       END IF
@@ -1783,13 +1783,13 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( data%SCU_mat%BD_row ) ) THEN
         IF ( SIZE( data%SCU_mat%BD_row ) < lbd ) THEN
-           DEALLOCATE( data%SCU_mat%BD_row ) 
-         ELSE ; reallocate = .FALSE. 
+           DEALLOCATE( data%SCU_mat%BD_row )
+         ELSE ; reallocate = .FALSE.
          END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%SCU_mat%BD_row( lbd ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%SCU_mat%BD_row' ; GO TO 900
         END IF
       END IF
@@ -1798,13 +1798,13 @@
       IF ( ALLOCATED( data%DIAG ) ) THEN
         IF ( SIZE( data%DIAG, 1 ) /= 2 .OR.                                    &
              SIZE( data%DIAG, 2 ) /= K_n_max ) THEN
-           DEALLOCATE( data%DIAG ) 
-         ELSE ; reallocate = .FALSE. 
+           DEALLOCATE( data%DIAG )
+         ELSE ; reallocate = .FALSE.
          END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( data%DIAG( 2, K_n_max ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'data%DIAG' ; GO TO 900
         END IF
       END IF
@@ -1814,7 +1814,7 @@
       data%auto_prec = control%precon == 0
       data%auto_fact = control%factor == 0
 
-!  If the Hessian has semi-bandwidth smaller than nsemib and the preconditioner 
+!  If the Hessian has semi-bandwidth smaller than nsemib and the preconditioner
 !  is to be picked automatically, use the full Hessian. Otherwise, use the
 !  Hessian of the specified semi-bandwidth.
 
@@ -1829,78 +1829,78 @@
 !  Check to see if the Hessian is banded
 
  dod :  DO type = 1, 6
-        
+
           SELECT CASE( type )
           CASE ( 1 )
-        
+
             hd_start  = 1
             hd_end    = data%dims%h_diag_end_free
             hnd_start = hd_end + 1
             hnd_end   = data%dims%x_free
-        
+
           CASE ( 2 )
-        
+
             hd_start  = data%dims%x_free + 1
             hd_end    = data%dims%h_diag_end_nonneg
             hnd_start = hd_end + 1
             hnd_end   = data%dims%x_l_start - 1
-        
+
           CASE ( 3 )
-        
+
             hd_start  = data%dims%x_l_start
             hd_end    = data%dims%h_diag_end_lower
             hnd_start = hd_end + 1
             hnd_end   = data%dims%x_u_start - 1
-        
+
           CASE ( 4 )
-        
+
             hd_start  = data%dims%x_u_start
             hd_end    = data%dims%h_diag_end_range
             hnd_start = hd_end + 1
             hnd_end   = data%dims%x_l_end
-        
+
           CASE ( 5 )
-        
+
             hd_start  = data%dims%x_l_end + 1
             hd_end    = data%dims%h_diag_end_upper
             hnd_start = hd_end + 1
             hnd_end   = data%dims%x_u_end
-        
+
           CASE ( 6 )
-        
+
             hd_start  = data%dims%x_u_end + 1
             hd_end    = data%dims%h_diag_end_nonpos
             hnd_start = hd_end + 1
             hnd_end   = prob%n
-        
+
           END SELECT
-    
+
 !  rows with a diagonal entry
-    
+
           hd_end = MIN( hd_end, prob%n )
           DO i = hd_start, hd_end
             DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 2
               IF ( ABS( i - prob%H%col( l ) ) > control%nsemib ) THEN
                 data%prec_hist = 1
                 EXIT dod
-              END IF  
+              END IF
             END DO
           END DO
           IF ( hd_end == prob%n ) EXIT
-    
+
 !  rows without a diagonal entry
-    
+
           hnd_end = MIN( hnd_end, prob%n )
           DO i = hnd_start, hnd_end
             DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
               IF ( ABS( i - prob%H%col( l ) ) > control%nsemib ) THEN
                 data%prec_hist = 1
                 EXIT dod
-              END IF  
+              END IF
             END DO
           END DO
           IF ( hd_end == prob%n ) EXIT
-    
+
         END DO dod
 
       END IF
@@ -1936,7 +1936,7 @@
                          printi, prefix, control, inform )
 
       control%print_level = control%print_level + 1
-      printi = control%out > 0 .AND. control%print_level >= 1 
+      printi = control%out > 0 .AND. control%print_level >= 1
 
       IF ( printi )                                                            &
         WRITE( control%out, "( /, ' Optimality established when theta = 0.0' )")
@@ -1950,41 +1950,41 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( interval%X ) ) THEN
         IF ( SIZE( interval%X ) < prob%n ) THEN
-          DEALLOCATE( interval%X ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( interval%X )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( interval%X( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'interval%X' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( interval%Y ) ) THEN
         IF ( SIZE( interval%Y ) < prob%m ) THEN
-          DEALLOCATE( interval%Y ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( interval%Y )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( interval%Y( prob%m ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'interval%Y' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( interval%Z ) ) THEN
         IF ( SIZE( interval%Z ) < prob%n ) THEN
-          DEALLOCATE( interval%Z ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( interval%Z )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( interval%Z( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'interval%Z' ; GO TO 900
         END IF
       END IF
@@ -1992,47 +1992,47 @@
       reallocate = .TRUE.
       IF ( ALLOCATED( interval%DX ) ) THEN
         IF ( SIZE( interval%DX ) < prob%n ) THEN
-          DEALLOCATE( interval%DX ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( interval%DX )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( interval%DX( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'interval%DX' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( interval%DY ) ) THEN
         IF ( SIZE( interval%DY ) < prob%m ) THEN
-          DEALLOCATE( interval%DY ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( interval%DY )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( interval%DY( prob%m ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'interval%DY' ; GO TO 900
         END IF
       END IF
-      
+
       reallocate = .TRUE.
       IF ( ALLOCATED( interval%DZ ) ) THEN
         IF ( SIZE( interval%DZ ) < prob%n ) THEN
-          DEALLOCATE( interval%DZ ) 
-        ELSE ; reallocate = .FALSE. 
+          DEALLOCATE( interval%DZ )
+        ELSE ; reallocate = .FALSE.
         END IF
       END IF
-      IF ( reallocate ) THEN 
+      IF ( reallocate ) THEN
         ALLOCATE( interval%DZ( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
+        IF ( inform%alloc_status /= 0 ) THEN
           bad_alloc = 'interval%DZ' ; GO TO 900
         END IF
       END IF
       printi = .TRUE.
-      
-!  Loop over the intervals      
+
+!  Loop over the intervals
 
 !  Compute the solution over the next parametric interval
 
@@ -2070,7 +2070,7 @@
 
 !  Restore the problem to its original form
 
-  750 CONTINUE 
+  750 CONTINUE
       CALL CPU_TIME( time )
 
 !  Full restore
@@ -2081,14 +2081,14 @@
         CALL SORT_inverse_permute( data%QPP_map%n, data%QPP_map%x_map,        &
                                    IX = B_stat( : data%QPP_map%n ) )
 !     END IF
-        
-      IF ( control%restore_problem >= 2 ) THEN  
+
+      IF ( control%restore_problem >= 2 ) THEN
         CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,                &
-                          get_all_parametric = .TRUE. )  
-  
-!  Restore vectors and scalars  
-  
-      ELSE IF ( control%restore_problem == 1 ) THEN  
+                          get_all_parametric = .TRUE. )
+
+!  Restore vectors and scalars
+
+      ELSE IF ( control%restore_problem == 1 ) THEN
         CALL QPP_restore( data%QPP_map, data%QPP_inform,                      &
                            prob, get_g = .TRUE.,                              &
                            get_x = .TRUE., get_x_bounds = .TRUE.,             &
@@ -2096,10 +2096,10 @@
                            get_c = .TRUE., get_c_bounds = .TRUE.,             &
                            get_dg = .TRUE., get_dx_bounds = .TRUE.,           &
                            get_dc_bounds = .TRUE. )
-  
-!  Solution recovery  
-  
-      ELSE  
+
+!  Solution recovery
+
+      ELSE
         CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,                &
                           get_x = .TRUE., get_y = .TRUE., get_z = .TRUE.,     &
                           get_c = .TRUE. )
@@ -2111,27 +2111,27 @@
 
 !  Compute total time
 
-      CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
+      CALL CPU_TIME( time ) ; inform%time%total = time - time_start
       IF ( printi ) WRITE( control%out, 2000 )                                 &
         inform%time%total, inform%time%preprocess,                             &
         inform%time%analyse, inform%time%factorize, inform%time%solve
 
-  800 CONTINUE 
+  800 CONTINUE
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' leaving PQP_solve ' )" )
 
-      RETURN  
+      RETURN
 
 !  Allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = - 2
-      CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
+      CALL CPU_TIME( time ) ; inform%time%total = time - time_start
       IF ( printi ) WRITE( control%out, 2900 ) bad_alloc, inform%alloc_status
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' leaving PQP_solve ' )" )
 
-      RETURN  
+      RETURN
 
 !  Non-executable statements
 
@@ -2142,11 +2142,11 @@
               /, 14X, ' =     analyse   factorize    solve      =',            &
               /, 14X, ' =', 3F11.2, 6x, '=',                                   &
               /, 14X, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=' )
- 2010 FORMAT( ' ', /, '   **  Error return ',I3,' from PQP ' ) 
- 2040 FORMAT( '   **  Error return ', I6, ' from ', A15 ) 
+ 2010 FORMAT( ' ', /, '   **  Error return ',I3,' from PQP ' )
+ 2040 FORMAT( '   **  Error return ', I6, ' from ', A15 )
  2240 FORMAT( /, '  Warning - an entry from strict upper triangle of H given ' )
  2900 FORMAT( ' ** Message from -PQP_solve-', /,                          &
-              ' Allocation error, for ', A30, /, ' status = ', I6 ) 
+              ' Allocation error, for ', A30, /, ' status = ', I6 )
 
 !  End of PQP_solve
 
@@ -2173,7 +2173,7 @@
 !  Dummy arguments
 
       TYPE ( PQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( PQP_control_type ), INTENT( IN ) :: control        
+      TYPE ( PQP_control_type ), INTENT( IN ) :: control
       TYPE ( PQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
@@ -2494,7 +2494,7 @@
 !  Non-executable statement
 
  2900 FORMAT( ' ** Message from -PQP_terminate-', /,                      &
-                 ' Allocation error, for ', A20, ', status = ', I6 ) 
+                 ' Allocation error, for ', A20, ', status = ', I6 )
 
 !  End of subroutine PQP_terminate
 
@@ -2531,9 +2531,9 @@
 !               + rho_b min(  x - x_l , 0  ) + rho_b max(  x - x_u , 0  )
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), f, rho_g/rho_b are
-!  constant, g is an n-vector, H is a symmetric matrix, A is an m by n matrix, 
+!  constant, g is an n-vector, H is a symmetric matrix, A is an m by n matrix,
 !  and any of the bounds c_l, c_u, x_l, x_u may be infinite, using an active
-!  set method. The subroutine is particularly appropriate when A and H are 
+!  set method. The subroutine is particularly appropriate when A and H are
 !  sparse, and when we do not anticipate a large number of active set
 !  changes prior to optimality
 !
@@ -2547,73 +2547,73 @@
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
+!
 !   %x_free is an INTEGER variable, which must be set by the user to the
 !    number of free variables. RESTRICTION: %x_free >= 0
-!                 
+!
 !   %x_l_start is an INTEGER variable, which must be set by the user to the
 !    index of the first variable with a nonzero lower (or lower range) bound.
 !    RESTRICTION: %x_l_start >= %x_free + 1
-!                 
+!
 !   %x_l_end is an INTEGER variable, which must be set by the user to the
 !    index of the last variable with a nonzero lower (or lower range) bound.
 !    RESTRICTION: %x_l_end >= %x_l_start
-!                 
+!
 !   %x_u_start is an INTEGER variable, which must be set by the user to the
-!    index of the first variable with a nonzero upper (or upper range) bound. 
+!    index of the first variable with a nonzero upper (or upper range) bound.
 !    RESTRICTION: %x_u_start >= %x_l_start
-!                 
+!
 !   %x_u_end is an INTEGER variable, which must be set by the user to the
-!    index of the last variable with a nonzero upper (or upper range) bound. 
+!    index of the last variable with a nonzero upper (or upper range) bound.
 !    RESTRICTION: %x_u_end >= %x_u_start
-!                 
+!
 !   %c_equality is an INTEGER variable, which must be set by the user to the
 !    number of equality constraints, m. RESTRICTION: %c_equality >= 0
-!                 
+!
 !   %c_l_start is an INTEGER variable, which must be set by the user to the
-!    index of the first inequality constraint with a lower (or lower range) 
-!    bound. RESTRICTION: %c_l_start = %c_equality + 1 
+!    index of the first inequality constraint with a lower (or lower range)
+!    bound. RESTRICTION: %c_l_start = %c_equality + 1
 !    (strictly, this information is redundant!)
-!                 
+!
 !   %c_l_end is an INTEGER variable, which must be set by the user to the
-!    index of the last inequality constraint with a lower (or lower range) 
+!    index of the last inequality constraint with a lower (or lower range)
 !    bound. RESTRICTION: %c_l_end >= %c_l_start
-!                 
+!
 !   %c_u_start is an INTEGER variable, which must be set by the user to the
-!    index of the first inequality constraint with an upper (or upper range) 
+!    index of the first inequality constraint with an upper (or upper range)
 !    bound. RESTRICTION: %c_u_start >= %c_l_start
 !    (strictly, this information is redundant!)
-!                 
+!
 !   %c_u_end is an INTEGER variable, which must be set by the user to the
-!    index of the last inequality constraint with an upper (or upper range) 
+!    index of the last inequality constraint with an upper (or upper range)
 !    bound. RESTRICTION: %c_u_end = %m
 !    (strictly, this information is redundant!)
 !
-!   %h_diag_end_free is an INTEGER variable, which must be set by the user to 
-!    the index of the last free variable whose for which the Hessian has a 
+!   %h_diag_end_free is an INTEGER variable, which must be set by the user to
+!    the index of the last free variable whose for which the Hessian has a
 !    diagonal entry
 !
 !   %h_diag_end_nonneg is an INTEGER variable, which must be set by the user to
 !    the index of the last nonnegative variable whose for which the Hessian has
 !    a diagonal entry
 !
-!   %h_diag_end_lower is an INTEGER variable, which must be set by the user to 
-!    the index of the last flower-bounded variable whose for which the Hessian 
+!   %h_diag_end_lower is an INTEGER variable, which must be set by the user to
+!    the index of the last flower-bounded variable whose for which the Hessian
 !    has a diagonal entry
 !
-!   %h_diag_end_range is an INTEGER variable, which must be set by the user to 
-!    the index of the last range variable whose for which the Hessian has a 
+!   %h_diag_end_range is an INTEGER variable, which must be set by the user to
+!    the index of the last range variable whose for which the Hessian has a
 !    diagonal entry
 !
-!   %h_diag_end_upper is an INTEGER variable, which must be set by the user to 
-!    the index of the last upper-bounded variable whose for which the Hessian 
+!   %h_diag_end_upper is an INTEGER variable, which must be set by the user to
+!    the index of the last upper-bounded variable whose for which the Hessian
 !    has a diagonal entry
 !
 !   %h_diag_end_nonpos is an INTEGER variable, which must be set by the user to
-!    the index of the last  nonpositive variable whose for which the Hessian 
+!    the index of the last  nonpositive variable whose for which the Hessian
 !    has a diagonal entry
 !
 !   %np1 is an INTEGER variable, which must be set by the user to the
@@ -2632,7 +2632,7 @@
 !    value n
 !
 !   %c_s is an INTEGER variable, which must be set by the user to the
-!    value dims%x_e + 1 
+!    value dims%x_e + 1
 !
 !   %c_e is an INTEGER variable, which must be set by the user to the
 !    value dims%x_e + nc
@@ -2653,72 +2653,72 @@
 !    value dims%y_e
 !
 !  f is a REAL variable, which must be set by the user to the value of
-!   the constant term f in the objective function. 
+!   the constant term f in the objective function.
 !   This argument is not altered by the subroutine
 !
 !  rho_g and rho_b are REAL variables, which must be set by the
 !   user to the values of the penalty parameters, rho_g and rho_b.
-!  
+!
 !  G is a REAL array of length n, which must be set by
 !   the user to the value of the gradient, g, of the linear term of the
 !   quadratic objective function. The i-th component of G, i = 1, ....,
-!   n, should contain the value of g_i.  The contents of this argument 
+!   n, should contain the value of g_i.  The contents of this argument
 !   are not altered by the subroutine
-!  
+!
 !  A_* is used to hold the matrix A by rows. In particular:
 !      A_col( : )   the column indices of the components of A
 !      A_ptr( : )   pointers to the start of each row, and past the end of
-!                   the last row. 
+!                   the last row.
 !      A_val( : )   the values of the components of A
 !
 !  H_* is used to hold the LOWER TRIANGLULAR PART of H by rows. In particular:
 !      H_col( : )   the column indices of the components of H
 !      H_ptr( : )   pointers to the start of each row, and past the end of
-!                   the last row. 
+!                   the last row.
 !      H_val( : )   the values of the components of H
 !
 !   NB. Each off-diagonal pair of nonzeros should be represented
-!   by a single component of H. 
-!  
-!  X_l, X_u are REAL arrays of length n, which must be set by the user to the 
+!   by a single component of H.
+!
+!  X_l, X_u are REAL arrays of length n, which must be set by the user to the
 !   values of the arrays x_l and x_u of lower and upper bounds on x. Any
 !   bound X_l( i ) or X_u( i ) larger than or equal to biginf in absolute value
 !   will be regarded as being infinite (see the entry control%biginf).
-!   Thus, an infinite lower bound may be specified by setting the appropriate 
-!   component of X_l to a value smaller than -biginf, while an infinite 
+!   Thus, an infinite lower bound may be specified by setting the appropriate
+!   component of X_l to a value smaller than -biginf, while an infinite
 !   upper bound can be specified by setting the appropriate element of X_u
 !   to a value larger than biginf. If X_u( i ) < X_l( i ), X_u( i ) will be
-!   reset to X_l( i ). Otherwise, the contents of these arguments are not 
+!   reset to X_l( i ). Otherwise, the contents of these arguments are not
 !   altered by the subroutine
-!  
-!  C_l, C_u are  REAL array of length m, which must be set by the user to the 
+!
+!  C_l, C_u are  REAL array of length m, which must be set by the user to the
 !  values of the arrays bl and bu of lower and upper bounds on A x.
 !   Any bound bl_i or bu_i larger than or equal to biginf in absolute value
 !   will be regarded as being infinite (see the entry control%biginf).
-!   Thus, an infinite lower bound may be specified by setting the appropriate 
-!   component of C_u to a value smaller than -biginf, while an infinite 
+!   Thus, an infinite lower bound may be specified by setting the appropriate
+!   component of C_u to a value smaller than -biginf, while an infinite
 !   upper bound can be specified by setting the appropriate element of BU
 !   to a value larger than biginf. If C_u( i ) < C_l( i ), C_u( i ) will be
-!   reset to C_u( i ). Otherwise, the contents of these arguments are not 
+!   reset to C_u( i ). Otherwise, the contents of these arguments are not
 !   altered by the subroutine
-!  
+!
 !  X is a REAL array of length n, which must be set by
-!   the user on entry to QPA_solve to give an initial estimate of the 
-!   optimization parameters, x. The i-th component of X should contain 
-!   the initial estimate of x_i, for i = 1, .... , n.  The estimate need 
-!   not satisfy the simple bound constraints and may be perturbed by 
-!   QPA_solve prior to the start of the minimization.  On exit from 
-!   QPA_solve, X will contain the best estimate of the optimization 
+!   the user on entry to QPA_solve to give an initial estimate of the
+!   optimization parameters, x. The i-th component of X should contain
+!   the initial estimate of x_i, for i = 1, .... , n.  The estimate need
+!   not satisfy the simple bound constraints and may be perturbed by
+!   QPA_solve prior to the start of the minimization.  On exit from
+!   QPA_solve, X will contain the best estimate of the optimization
 !   parameters found
-!  
+!
 !  Y is a REAL array of length m, which need not be set on entry.
 !   On exit, the i-th component of Y contains the best estimate of the
 !   the Lagrange multiplier connected to constraint i.
-!  
+!
 !  Z is a REAL array of length n, which need not be set on entry.
 !   On exit, the i-th component of Z contains the best estimate of the
 !   the Dual variable connected to simple bound constraint i.
-!  
+!
 !  C is a REAL array of length m, which need not be set on entry.
 !   On exit, the i-th component of C contains the product Ax
 !
@@ -2728,45 +2728,45 @@
 !   the component control%warm_start must be set .TRUE. on entry; C_stat
 !   need not be set if control%warm_start is .FALSE. . On exit,
 !   C_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   C_stat( i ) < 0, the i-th constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   C_stat( i ) < 0, the i-th constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 !
 !  B_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to QPA_solve to indicate which of the simple bound constraints 
+!   on entry to QPA_solve to indicate which of the simple bound constraints
 !   are to be included in the initial working set. If this facility is required,
 !   the component control%warm_start must be set .TRUE. on entry; B_stat
 !   need not be set if control%warm_start is .FALSE. . On exit,
 !   B_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   B_stat( i ) < 0, the i-th bound constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   B_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  control is a structure of type QPA_control_type that controls the 
+!  control is a structure of type QPA_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to QPA_initialize. See QPA_initialize 
+!   the elements may be set by a call to QPA_initialize. See QPA_initialize
 !   for details
 !
-!  inform is a structure of type QPA_inform_type that provides 
-!    information on exit from QPA_solve. The component status 
+!  inform is a structure of type QPA_inform_type that provides
+!    information on exit from QPA_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !     1 The objective function is unbounded below along the line
 !       starting at X and pointing in the direction ??
 !
 !     2 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
+!       control%maxit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!     3 one of the restrictions 
+!     3 one of the restrictions
 !          n     >=  1
 !          m     >=  0
 !       has been violated.
@@ -2784,8 +2784,8 @@
 !  Dummy arguments
 
       CHARACTER ( LEN = 20 ), INTENT( INOUT ) :: action
-      TYPE ( PQP_control_type ), INTENT( INOUT ) :: control        
-!     TYPE ( PQP__control_type ), INTENT( IN ) :: control        
+      TYPE ( PQP_control_type ), INTENT( INOUT ) :: control
+!     TYPE ( PQP__control_type ), INTENT( IN ) :: control
 ! *** nb change control back to "in" here and before
       TYPE ( PQP_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( PQP_dims_type ), INTENT( IN ) :: dims
@@ -2969,7 +2969,7 @@
             "( /, ' ** Warning: parametric solution will be infeasible',       &
          &     ' for all theta >', ES11.4, /, '    Reducing upper limit from', &
          &     ' requested upper limit' ,  ES11.4 )" ) theta, theta_max
-      END IF 
+      END IF
 
       IF ( printd ) WRITE( control%out, "( ' entering QPA_solve_main ' )" )
 
@@ -3027,7 +3027,7 @@
   200 CONTINUE
 
       theta_c = theta
-      
+
 !  If necessary, form the new reference matrix
 
       IF ( .NOT. new_reference ) GO TO 20
@@ -3036,7 +3036,7 @@
         addel = '          '
 
 !  Determine which constraints occur in the reference set
-    
+
         K_part%m_ref = 0
 
 !  general equalities
@@ -3238,7 +3238,7 @@
 !  ----------------------------------------------------------
 
 !  Consider the interval starting frtom theta_c for which the
-!  solution is (x_c,y_c,z_c). i.e., 
+!  solution is (x_c,y_c,z_c). i.e.,
 
 !    (  H   A_W  I_W^T ) ( x_c )   (  - (g  + theta_c  dg  ) )
 !    ( A_W             ) ( y_c ) = (    c_W + theta_c dc_W   )
@@ -3251,10 +3251,10 @@
 !    ( A_W             ) ( dy ) = ( dc_W )
 !    ( I_W             ) ( dz )   ( db_W )
 
-!  and examine the piecewise linear solution 
+!  and examine the piecewise linear solution
 
 !    ( x_c )                     ( dx )
-!    ( y_c ) + (theta - theta_c) ( dy ) 
+!    ( y_c ) + (theta - theta_c) ( dy )
 !    ( z_c )                     ( dz )
 
 !  for theta > theta_c
@@ -3315,7 +3315,7 @@
         END IF
       END DO
 !     write( 6, "( I6, ES12.4 )" ) ( i, S( i ), i = 1, K_part%k_ref )
-          
+
 !  Solve the system to find a feasible point; store dx in S
 
       S_perm( PERM( : K_part%k_ref ) ) = S( : K_part%k_ref )
@@ -3336,12 +3336,12 @@
 
       inform%factorization_status = inform%status
       IF ( printm ) WRITE( out, "( ' ' )" )
-  
+
 !     write(6,"( 's,rhs ', /, ( 2ES12.4 ) )" ) ( S_perm( PERM( i ) ),          &
 !          S( i ), i = 1, n_all )
 !     write( 6, "( I6, ES12.4 )" ) ( i, S( i ), i = 1, K_part%k_ref )
-  
-      S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) ) 
+
+      S( : K_part%k_ref ) = S_perm( PERM( : K_part%k_ref ) )
 
 !     WRITE( out, "( ' s ', /, ( 5ES12.4 ) )" ) S( : n )
 
@@ -3374,15 +3374,15 @@
                       RES_print( : K_part%n_free + K_part%c_ref ) )
         itref_max = iii - 1
 !       WRITE(6,*) ' EQP solution found '
-  
+
         IF ( pcg_status < 0 ) THEN
           IF ( printt ) WRITE( out, "( /,                                      &
          &  ' Warning return from QPA_pcg, status = ', I6 )") pcg_status
-        END IF          
+        END IF
 !       IF ( pcg_status == 0 .OR. pcg_status == 1 ) X = S( : n )
         inner_stop_absolute = control%inner_stop_absolute
         inner_stop_relative = control%inner_stop_relative
-      END IF          
+      END IF
 
 !     WRITE( out, "( ' s ', /, ( 5ES12.4 ) )" ) S( : n )
       write( 6, "( I6, ES12.4 )" ) ( i, S( i ), i = 1, K_part%k_ref )
@@ -3400,7 +3400,7 @@
         END DO
       END DO
 
-!  Record the piecewise solution 
+!  Record the piecewise solution
 !    (x_c,y_c,z_c)+(theta-theta_c) (dx,dy,dz)
 
       X_int = X
@@ -3411,7 +3411,7 @@
       DZ_int = zero
 
 !   ------------------------------------------
-!                DETERMINE INTERVAL 
+!                DETERMINE INTERVAL
 !   ------------------------------------------
 
 !  Now determine the upper extent of the current interval:
@@ -3429,7 +3429,7 @@
 ! Check
 
 ! a)  c_l + theta dc_l <= A x_c + ( theta - theta_c ) A dx <= c_u + theta dc_u
-!     (for inactive constrints) 
+!     (for inactive constrints)
 
 !  equality constraints
 
@@ -3497,7 +3497,7 @@
 ! Now check
 
 ! b)  x_l + theta dx_l <= x_c + ( theta - theta_c ) dx <= x_u + theta dx_u
-!     (for inactive bounds) 
+!     (for inactive bounds)
 
 !  simple non-negativity
 
@@ -3602,7 +3602,7 @@
 !  Finally check
 
 ! c)  y_c + ( theta - theta_c ) dy_l >= 0
-!     (for active constrints) and 
+!     (for active constrints) and
 ! d)  z_c + ( theta - theta_c ) dz_l >= 0
 !     (for active bounds)
 
@@ -3774,7 +3774,7 @@
                 s_minus, printt, printm, printd, printe, addel, sc_data,       &
                 C_stat, B_stat, SC, REF, PERM, C_up_or_low, X_up_or_low,       &
                 B, RES, RES_print, VECTOR, PERT, SCU_mat,                      &
-                SCU_info, SCU_data, K, SLS_control, SLS_data )                  
+                SCU_info, SCU_data, K, SLS_control, SLS_data )
 
      ELSE
        addel = '      end'
@@ -3793,7 +3793,7 @@
 
        SELECT CASE( QPA_addel_constraint_status )
        CASE ( 1 )
-!        CALL CPU_TIME( time ) ; time = time - time_start 
+!        CALL CPU_TIME( time ) ; time = time - time_start
 !        IF ( printt .OR. ( printi .AND. ( imin < 0 .AND. pcount == 0 ) ) )    &
 !          WRITE( out, 2040 ) precon
 !        IF ( printi ) WRITE( out, 2050 ) inform%iter, inform%merit,           &
@@ -3891,16 +3891,16 @@
                    H_val, H_col, H_ptr, S( : n ), '+' )
 
       f_int = inform%obj
-      g_int = DOT_PRODUCT( GRAD, S( : n ) ) + DOT_PRODUCT( DG, X ) 
+      g_int = DOT_PRODUCT( GRAD, S( : n ) ) + DOT_PRODUCT( DG, X )
       h_int = half * DOT_PRODUCT( H_dx, S( : n ) ) +                           &
-                     DOT_PRODUCT( DG, S( : n ) ) 
+                     DOT_PRODUCT( DG, S( : n ) )
 
 !  Record the value of the function and gradient at the end of the interval
 
       inform%obj = f_int + g_int * dtheta + h_int * dtheta ** 2
       GRAD = GRAD + dtheta * ( DG + H_dx )
 
-!  Record the values of the primal and dual variables and multipliers 
+!  Record the values of the primal and dual variables and multipliers
 !  at the end of the interval
 
       X = X_int + dtheta * DX_int
@@ -3988,7 +3988,7 @@
 
 !  Re-entry
 
-      RETURN  
+      RETURN
 
 !  Non-executable statements
 

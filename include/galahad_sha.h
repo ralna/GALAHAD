@@ -23,11 +23,11 @@
 
   Find a <b>component-wise secant approximation to the Hessian matrix</b>
   \f$H(x)\f$, for which \f$(H(x))_{i,j} = \partial f^2 (x) / \partial x_i \partial x_j\f$,
-  \f$1 \leq i, j \leq n\f$, using values of the gradient \f$g(x) = \nabla_x f(x)\f$ 
+  \f$1 \leq i, j \leq n\f$, using values of the gradient \f$g(x) = \nabla_x f(x)\f$
   of the function \f$f(x)\f$ of \f$n\f$ unknowns \f$x = (x_1, \ldots, x_n)^T\f$
   at a sequence of given distinct \f${x^{(k)}}\f$, \f$k \geq 0\f$.
   More specifically, given <b>differences</b>
-  \f[s^{(k)} = x^{(k+1)} - x^{(k)}\f] 
+  \f[s^{(k)} = x^{(k+1)} - x^{(k)}\f]
 \manonly
   \n
   s^(k) = x^(k+1) - x^(k)
@@ -41,16 +41,16 @@
   \n
 \endmanonly
   the package aims to find a good estimate \f$B\f$ of \f$H(x)\f$ for
-  which the secant conditions \f$B s^{(k)} = y^{(k)}\f$ hold 
+  which the secant conditions \f$B s^{(k)} = y^{(k)}\f$ hold
   approximately for a chosen set of values \f$k\f$.
   The methods provided take advantage of the entries in the Hessian that
   are known to be zero.
 
   The package is particularly intended to allow gradient-based
-  optimization methods, that generate iterates 
+  optimization methods, that generate iterates
   \f$x^{(k+1)} = x^{(k)} + s^{(k)}\f$ based upon the values \f$g( x^{(k)})\f$
-  for \f$k \geq 0\f$, to build a suitable approximation to the Hessian 
-  \f$H(x^{(k+1)})\f$. This then gives the method an opportunity to 
+  for \f$k \geq 0\f$, to build a suitable approximation to the Hessian
+  \f$H(x^{(k+1)})\f$. This then gives the method an opportunity to
   accelerate the iteration using the Hessian approximation.
 
   \subsection sha_authors Authors
@@ -69,31 +69,31 @@
 
   The package computes the entries in the each row of \f$B\f$ one at a time.
   The entries \f$b_{ij}\f$ in row \f$i\f$ may be chosen to
-  \f[(1) \;\;\; \minin{b_{i,j}} \;\; \sum_{k \in {\cal I}_i} 
-  \left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j} 
+  \f[(1) \;\;\; \minin{b_{i,j}} \;\; \sum_{k \in {\cal I}_i}
+  \left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j}
   b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2,
   \f]
 \manonly
   \n
-  (1)  min_{b_{i,j}} sum_{k \in I_i} 
+  (1)  min_{b_{i,j}} sum_{k \in I_i}
                    [ sum_{nonzeros j} b_{i,j} s_j^(k) - y_i^(k) ]^2
   \n
 \endmanonly
-  where \f$I_i\f$ is ideally chosen to be sufficiently large so that 
+  where \f$I_i\f$ is ideally chosen to be sufficiently large so that
   (1) has a unique minimizer. Since this requires that there are at least
   as many \f$(s^{(k)}, y^{(k)})\f$ pairs as the maximum number of nonzeros
-  in any row, this may be prohibitive in some cases. We might then be content 
+  in any row, this may be prohibitive in some cases. We might then be content
   with a minimum-norm (under-determined) least-squares solution. Or, we may
   take advantage of the symmetry of the Hessian, and note that if we
-  have already found the values in row \f$j\f$, then the value 
+  have already found the values in row \f$j\f$, then the value
   \f$b_{i,j} = b_{j,i}\f$
-  in (1) is known before we process row \f$i\f$. Thus by ordering the rows 
-  and exploiting symmetry we may reduce the numbers of unknowns in 
+  in (1) is known before we process row \f$i\f$. Thus by ordering the rows
+  and exploiting symmetry we may reduce the numbers of unknowns in
   future unprocessed rows.
 
   In the analysis phase, we order the rows by constructing the connectivity
-  graph---a graph comprising nodes \f$1\f$ to \f$n\f$ and edges connecting 
-  nodes \f$i\f$ and \f$j\f$ if \f$h_{i,j}\f$ is everywhere nonzero---of 
+  graph---a graph comprising nodes \f$1\f$ to \f$n\f$ and edges connecting
+  nodes \f$i\f$ and \f$j\f$ if \f$h_{i,j}\f$ is everywhere nonzero---of
   \f$H(x)\f$.
   The nodes are ordered by increasing degree (that is, the number of edges
   emanating from the node) using a bucket sort. The row chosen to be
@@ -116,7 +116,7 @@
 \endmanonly
   the \f$( B_{11} \;\; B_{12})\f$ rows are processed without regard
   for symmetry but give the \f$2,1\f$ block \f$B^T_{12}\f$, and finally
-  the \f$2,2\f$ block \f$B_{22}\f$ is processed either 
+  the \f$2,2\f$ block \f$B_{22}\f$ is processed either
   with the option of exploiting
   symmetry. More details of the precise algorithms (Algorithms 2.1--2.5)
   are given in the reference below. The linear least-squares problems (1)
@@ -132,7 +132,7 @@
 
   \subsection sha_call_order Call order
 
-  To find the Hessian approximation, functions from the sha package 
+  To find the Hessian approximation, functions from the sha package
   must be called in the following order:
 
   - \link sha_initialize \endlink - provide default control parameters and
@@ -260,7 +260,7 @@ struct sha_inform_type {
     int bad_row;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred.
     char bad_alloc[81];
 };
@@ -353,7 +353,7 @@ void sha_analyse_matrix( struct sha_control_type *control,
    sparse row-wise storage scheme.
 
  @param[out] m is a scalar variable of type int, that holds the minimum number
-  of \f$(s^(k),y^(k))\f$ pairs that will be needed to recover a good 
+  of \f$(s^(k),y^(k))\f$ pairs that will be needed to recover a good
   Hessian approximation
 
 */
@@ -399,24 +399,24 @@ void sha_recover_matrix( void **data,
  @param[in] m is a scalar variable of type int, that holds the number of
     \f$(s,y)\f$ pairs that are available.
 
- @param[in] ls1 is a scalar variable of type int, that holds the leading 
+ @param[in] ls1 is a scalar variable of type int, that holds the leading
     dimension of the array s.
 
  @param[in] ls2 is a scalar variable of type int, that holds the trailing
     dimension of the array s.
 
- @param[in] strans is a two-dimensional array of size [ls1][ls2] and 
-    type double, that holds the values of the vectors \f$s^{(k) T}\f$. 
+ @param[in] strans is a two-dimensional array of size [ls1][ls2] and
+    type double, that holds the values of the vectors \f$s^{(k) T}\f$.
     Component \f$k,i\f$ holds \f$s_i^{(k)}\f$.
 
- @param[in] ly1 is a scalar variable of type int, that holds the leading 
+ @param[in] ly1 is a scalar variable of type int, that holds the leading
     dimension of the array y.
 
  @param[in] ly2 is a scalar variable of type int, that holds the trailing
     dimension of the array y.
 
- @param[in] ytrans is a two-dimensional array of size [ly1][ly2] and 
-    type double, that holds the values of the vectors \f$y^{(k) T}\f$. 
+ @param[in] ytrans is a two-dimensional array of size [ly1][ly2] and
+    type double, that holds the values of the vectors \f$y^{(k) T}\f$.
     Component \f$k,i\f$ holds \f$y_i^{(k)}\f$.
 
  @param[out] val is a one-dimensional array of size ne and type double,
@@ -424,10 +424,10 @@ void sha_recover_matrix( void **data,
     symmetric matrix \f$H\f$ in the sparse coordinate scheme.
 
  @param[in] precedence is a one-dimensional array of size m and type int, that
-   holds the preferred order of access for the pairs \f$(s^(k),y^(k))\f$. 
-   The \f$k\f$-th component of precedence specifies the row number of strans 
-   and ytrans that will be used as the \f$k\f$-th most favoured. precedence 
-   need not be set if the natural order, \f$k, k = 1,...,\f$ m, is desired, 
+   holds the preferred order of access for the pairs \f$(s^(k),y^(k))\f$.
+   The \f$k\f$-th component of precedence specifies the row number of strans
+   and ytrans that will be used as the \f$k\f$-th most favoured. precedence
+   need not be set if the natural order, \f$k, k = 1,...,\f$ m, is desired,
    and this case precedence should be NULL.
 */
 

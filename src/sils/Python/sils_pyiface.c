@@ -50,7 +50,7 @@ bool sils_update_control(struct sils_control_type *control,
 
         // Parse each option
         if(strcmp(key_name, "ICNTL") == 0){
-            if(!parse_int_array_option((PyArrayObject*) value, "ICNTL", 
+            if(!parse_int_array_option((PyArrayObject*) value, "ICNTL",
                                        control->ICNTL, 30))
                 return false;
             continue;
@@ -152,7 +152,7 @@ bool sils_update_control(struct sils_control_type *control,
             continue;
         }
         if(strcmp(key_name, "CNTL") == 0){
-            if(!parse_double_array_option((PyArrayObject*) value, "CNTL", 
+            if(!parse_double_array_option((PyArrayObject*) value, "CNTL",
                                   control->CNTL, 5))
                 return false;
             continue;

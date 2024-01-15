@@ -59,7 +59,7 @@ for d = 1:7
                  "coordinate", H_ne, H_row, H_col, Cint[],
                  "coordinate", A_ne, A_row, A_col, Cint[] )
 
-    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
@@ -68,12 +68,12 @@ for d = 1:7
   if d == 2
     global st = 'R'
 
-    ccqp_import( control, data, status, n, m, 
+    ccqp_import( control, data, status, n, m,
                  "sparse_by_rows", H_ne, Cint[], H_col, H_ptr,
                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
 
@@ -89,8 +89,8 @@ for d = 1:7
                  "dense", H_ne, Cint[], Cint[], Cint[],
                  "dense", A_ne, Cint[], Cint[], Cint[] )
 
-    ccqp_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f, 
-                   A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+    ccqp_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f,
+                   A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                    x, c, y, z, x_stat, c_stat )
   end
 
@@ -102,8 +102,8 @@ for d = 1:7
                  "diagonal", H_ne, Cint[], Cint[], Cint[],
                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
 
@@ -111,12 +111,12 @@ for d = 1:7
   if d == 5
     global st = 'S'
 
-    ccqp_import( control, data, status, n, m, 
+    ccqp_import( control, data, status, n, m,
                  "scaled_identity", H_ne, Cint[], Cint[], Cint[],
                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
 
@@ -124,11 +124,11 @@ for d = 1:7
   if d == 6
     global st = 'I'
 
-    ccqp_import( control, data, status, n, m, 
+    ccqp_import( control, data, status, n, m,
                  "identity", H_ne, Cint[], Cint[], Cint[],
                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
@@ -137,12 +137,12 @@ for d = 1:7
   if d == 7
     global st = 'Z'
 
-    ccqp_import( control, data, status, n, m, 
+    ccqp_import( control, data, status, n, m,
                  "zero", H_ne, Cint[], Cint[], Cint[],
                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    ccqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
 
@@ -194,7 +194,7 @@ for d = 1:1
                  "shifted_least_distance", H_ne, Cint[], Cint[], Cint[],
                  "coordinate", A_ne, A_row, A_col, Cint[] )
 
-    ccqp_solve_sldqp( data, status, n, m, w, x_0, g, f, 
+    ccqp_solve_sldqp( data, status, n, m, w, x_0, g, f,
                       A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                       x_stat, c_stat )
   end

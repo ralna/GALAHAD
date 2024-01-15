@@ -82,7 +82,7 @@
      IF ( ALLOCATED( p%Ao%type ) ) DEALLOCATE( p%Ao%type )
      CALL SMT_put( p%Ao%type, 'SPARSE_BY_ROWS', smt_stat )
      p%Ao%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                &
-                   1.0_rp_, 1.0_rp_ /) 
+                   1.0_rp_, 1.0_rp_ /)
      p%Ao%col = (/ 1, 2, 2, 3, 1, 3, 2 /)
      p%Ao%ptr = (/ 1, 3, 5, 6, 7 /)
      p%X = 0.0_rp_ ; p%Z = 0.0_rp_

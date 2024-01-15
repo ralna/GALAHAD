@@ -156,7 +156,7 @@ struct convert_inform_type {
     int duplicates;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred.
     char bad_alloc[81];
 

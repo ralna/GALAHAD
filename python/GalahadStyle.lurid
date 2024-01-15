@@ -4,7 +4,7 @@
 
 *Font:                            Helvetica 9 bold
 
-! Gold       
+! Gold
 *Foreground:                      rgb:ff/d7/00
 ! DarkGreen
 *Background:                      rgb:00/64/00
@@ -58,27 +58,27 @@
 *Menu*activeBackground:           rgb:cc/cc/cc
 ! Grey90
 *Scrollbar*Background:            rgb:e5/e5/e5
-! Grey80  
+! Grey80
 *Scrollbar*activeBackground:      rgb:cc/cc/cc
 ! Purple
 *Checkbutton*selectColor:         rgb:a0/20/f0
 ! DarkGreen
 *Checkbutton*selectForeground:    rgb:00/64/00
-! Gold       
+! Gold
 *Checkbutton*selectBackground:    rgb:ff/d7/00
 ! DarkGreen
 *Checkbutton*activeForeground:    rgb:00/64/00
-! Gold       
+! Gold
 *Checkbutton*activeBackground:    rgb:ff/d7/00
 ! Purple
 *Radiobutton*selectColor:         rgb:a0/20/f0
 ! DarkGreen
 *Radiobutton*selectForeground:    rgb:00/64/00
-! Gold       
+! Gold
 *Radiobutton*selectBackground:    rgb:ff/d7/00
 ! DarkGreen
 *Radiobutton*activeForeground:    rgb:00/64/00
-! Gold       
+! Gold
 *Radiobutton*activeBackground:    rgb:ff/d7/00
 ! White
 *cdwindow*Foreground:             rgb:ff/ff/ff

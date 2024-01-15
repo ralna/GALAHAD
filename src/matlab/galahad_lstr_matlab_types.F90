@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 19th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LSTR_MATLAB_TYPES
@@ -48,7 +48,7 @@
         mwPointer :: status, alloc_status, bad_alloc
         mwPointer :: iter, iter_pass2
         mwPointer :: multiplier, x_norm, r_norm, Atr_norm
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  L S T R _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -124,7 +124,7 @@
         CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, LSTR_control%deallocate_error_fatal )
-        CASE( 'prefix' )                                           
+        CASE( 'prefix' )
           CALL galmxGetCharacter( ps, 'prefix',                                &
                                   pc, LSTR_control%prefix, len )
         END SELECT

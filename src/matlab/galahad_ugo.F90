@@ -40,10 +40,10 @@
 !    eval_fgh: a user-provided subroutine named eval_fgh.m for which
 !              [f,g,h,status] = eval_fgh(x)
 !            returns the value of objective function f and its first
-!            derivative g = f'(x) at x. Additionally, if 
+!            derivative g = f'(x) at x. Additionally, if
 !            control.second_derivative_available is true, also returns
 !            the value of the second derivative h = f''(x) at x; h need
-!            not be set otherwise. status should be set to 0 if the 
+!            not be set otherwise. status should be set to 0 if the
 !            evaluations succeed, and a non-zero value if an evaluation fails.
 !
 !  Optional Input -
@@ -367,7 +367,7 @@
             EXIT
           END SELECT
         END DO
- 
+
 !  Print details to Matlab window
 
 !       IF ( control%error > 0 ) CLOSE( control%error )

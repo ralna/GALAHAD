@@ -14,7 +14,7 @@ struct userdata_type {
 // Function prototypes
 int fun(int n, const real_wp_ x[], real_wp_ *f, const void *);
 int grad(int n, const real_wp_ x[], real_wp_ g[], const void *);
-int hessprod(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
              bool got_h, const void *);
 
 int main(void) {
@@ -45,7 +45,7 @@ int main(void) {
 
     // Set storage
     real_wp_ g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
     arc_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
 
@@ -80,7 +80,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -93,7 +93,7 @@ int fun(int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
 int grad(int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
-    
+
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
     g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] );
@@ -101,7 +101,7 @@ int grad(int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
              bool got_h, const void *userdata){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );

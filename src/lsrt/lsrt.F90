@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_LSRT_precision
-            
+
 !      -------------------------------------------------------------
 !      |                                                           |
 !      | Solve the regularised least-squares problem               |

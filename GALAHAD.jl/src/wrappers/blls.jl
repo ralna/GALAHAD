@@ -118,25 +118,25 @@ end
 
 export blls_import_s
 
-function blls_import_s(control, data, status, n, o, 
+function blls_import_s(control, data, status, n, o,
                        Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
   @ccall libgalahad_single.blls_import_s(control::Ref{blls_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          o::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
                                          Ao_row::Ptr{Cint}, Ao_col::Ptr{Cint},
-                                         Ao_ptr_ne::Cint, 
+                                         Ao_ptr_ne::Cint,
                                          Ao_ptr::Ptr{Cint})::Cvoid
 end
 
 export blls_import
 
-function blls_import(control, data, status, n, o, 
+function blls_import(control, data, status, n, o,
                      Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
   @ccall libgalahad_double.blls_import(control::Ref{blls_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                        o::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
                                        Ao_row::Ptr{Cint}, Ao_col::Ptr{Cint},
-                                       Ao_ptr_ne::Cint, 
+                                       Ao_ptr_ne::Cint,
                                        Ao_ptr::Ptr{Cint})::Cvoid
 end
 

@@ -21,7 +21,7 @@ namespace spral { namespace ssids { namespace cpu {
  *  Support is only added as required, so don't expect all intrinsics to be
  *  wrapped yet! */
 
-#ifdef SPRAL_SINGLE /* float version */ 
+#ifdef SPRAL_SINGLE /* float version */
 
 template <typename T>
 class SimdVec;
@@ -273,7 +273,7 @@ private:
    simd_precision_type val;
 };
 
-#else /* double version */ 
+#else /* double version */
 
 template <typename T>
 class SimdVec;

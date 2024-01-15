@@ -376,7 +376,7 @@
          CALL CUTEST_cdimsg_r( cutest_status, nnzg )
          IF ( cutest_status /= 0 ) GO TO 930
           nlp%Go%ne = nnzg
-       ELSE 
+       ELSE
          nnzg = 0
          nlp%Go%ne = n
        END IF
@@ -436,7 +436,7 @@
        userdata%integer( loc_chpind ) = ichpind
        userdata%integer( loc_chpptr ) = ichpptr
 
-!  determine if there is a constant in the linear constraints. Adjust the 
+!  determine if there is a constant in the linear constraints. Adjust the
 !  bounds if necessary
 
        IF ( nlp%m_a > 0 ) THEN
@@ -1201,8 +1201,8 @@
 
      SUBROUTINE CUTEst_eval_SGJ( status, X, userdata, G, J_val )
 
-!  Evaluate the values of the gradient of the objective function G(X) and 
-!  those of the constraint Jacobian Jval(X) for the nonzeros corresponding 
+!  Evaluate the values of the gradient of the objective function G(X) and
+!  those of the constraint Jacobian Jval(X) for the nonzeros corresponding
 !  to the sparse coordinate formats set in CUTEst_initialize
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
@@ -1944,9 +1944,9 @@
      SUBROUTINE CUTEst_eval_HOCPRODS( status, X, V, userdata,                  &
                                       PO_val, PC_val, got_h )
 
-!  Compute the products P_o = H(X) * V and P_c = H_i(X) * V involving the 
-!  Hessians of the objective (H) and constraints (H_i). If got_h is PRESENT 
-!  and TRUE, the Hessians are as recorded at the last point at which they 
+!  Compute the products P_o = H(X) * V and P_c = H_i(X) * V involving the
+!  Hessians of the objective (H) and constraints (H_i). If got_h is PRESENT
+!  and TRUE, the Hessians are as recorded at the last point at which they
 !  were evaluated.
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status

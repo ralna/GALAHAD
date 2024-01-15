@@ -20,7 +20,7 @@ A_dense_ne = 6  # number of elements of A
 C_dense_ne = 3  # number of elements of C
 H_row = Cint[1, 2, 3, 3]  # row indices, NB lower triangle
 H_col = Cint[1, 2, 3, 1]
-H_ptr = Cint[1, 2, 3, 5] 
+H_ptr = Cint[1, 2, 3, 5]
 A_row = Cint[1, 1, 2]
 A_col = Cint[1, 2, 3]
 A_ptr = Cint[1, 3, 4]
@@ -158,7 +158,7 @@ for d = 1:7
 
     sbls_factorize_matrix( data, status, n,
                            0, H_val,
-                           A_dense_ne, A_dense, 
+                           A_dense_ne, A_dense,
                            0, Cint[], Cint[] )
   end
 

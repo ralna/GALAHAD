@@ -704,7 +704,7 @@ struct qpa_control_type {
 
     /// \brief
     ///
-    /// indicates whether a cold or warm start should be made. 
+    /// indicates whether a cold or warm start should be made.
     /// Possible values are
     ///
     /// 0 warm start - the values set in C_stat and B_stat indicate which
@@ -736,7 +736,7 @@ struct qpa_control_type {
     real_wp_ obj_unbounded;
 
     /// \brief
-    /// if the problem is currently infeasible and solve_qp (see below) is 
+    /// if the problem is currently infeasible and solve_qp (see below) is
     /// .TRUE. the current penalty parameter for the general constraints will
     /// be increased by increase_rho_g_factor when needed
     real_wp_ increase_rho_g_factor;
@@ -932,7 +932,7 @@ struct qpa_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 

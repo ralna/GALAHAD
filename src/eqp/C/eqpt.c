@@ -64,16 +64,16 @@ int main(void) {
                 eqp_import( &control, &data, &status, n, m,
                            "coordinate", H_ne, H_row, H_col, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
-                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
                 st = 'R';
-                eqp_import( &control, &data, &status, n, m, 
+                eqp_import( &control, &data, &status, n, m,
                             "sparse_by_rows", H_ne, NULL, H_col, H_ptr,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
             case 3: // dense
@@ -85,7 +85,7 @@ int main(void) {
                 eqp_import( &control, &data, &status, n, m,
                             "dense", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL );
-                eqp_solve_qp( &data, &status, n, m, H_dense_ne, H_dense, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_dense_ne, H_dense, g, f,
                               A_dense_ne, A_dense, c, x, y );
                 break;
             case 4: // diagonal
@@ -93,32 +93,32 @@ int main(void) {
                 eqp_import( &control, &data, &status, n, m,
                             "diagonal", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
 
             case 5: // scaled identity
                 st = 'S';
-                eqp_import( &control, &data, &status, n, m, 
+                eqp_import( &control, &data, &status, n, m,
                             "scaled_identity", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
             case 6: // identity
                 st = 'I';
-                eqp_import( &control, &data, &status, n, m, 
+                eqp_import( &control, &data, &status, n, m,
                             "identity", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
             case 7: // zero
                 st = 'Z';
-                eqp_import( &control, &data, &status, n, m, 
+                eqp_import( &control, &data, &status, n, m,
                             "zero", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
+                eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
 
@@ -172,7 +172,7 @@ int main(void) {
                 eqp_import( &control, &data, &status, n, m,
                            "shifted_least_distance", H_ne, NULL, NULL, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
-                eqp_solve_sldqp( &data, &status, n, m, w, x_0, g, f, 
+                eqp_solve_sldqp( &data, &status, n, m, w, x_0, g, f,
                                  A_ne, A_val, c, x, y );
                 break;
 

@@ -34,10 +34,10 @@ for unit_m = 0:1
   # resolve with a smaller radius ?
   for new_radius = 0:1
     if new_radius == 0
-      global radius = 1.0 
+      global radius = 1.0
       status[] = 1
     else
-      global radius = 0.1 
+      global radius = 0.1
       status[] = 4
     end
 

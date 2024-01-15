@@ -9,7 +9,7 @@
 !  May 15th 2008
 
    MODULE GALAHAD_USETRU_precision
-            
+
 !  This is the driver program for running TRU for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers

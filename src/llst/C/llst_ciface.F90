@@ -129,12 +129,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( llst_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_llst_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER ( KIND = ipc_ ) :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -180,12 +180,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_llst_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( llst_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER ( KIND = ipc_ ) :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -233,7 +233,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( llst_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_llst_time_type ), INTENT( OUT ) :: ftime
 
@@ -254,7 +254,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_llst_time_type ), INTENT( IN ) :: ftime
     TYPE ( llst_time_type ), INTENT( OUT ) :: ctime
 
@@ -275,7 +275,7 @@
 
 !  copy C history parameters to fortran
 
-    SUBROUTINE copy_history_in( chistory, fhistory ) 
+    SUBROUTINE copy_history_in( chistory, fhistory )
     TYPE ( llst_history_type ), INTENT( IN ), DIMENSION( 100 ) :: chistory
     TYPE ( f_llst_history_type ), INTENT( OUT ), DIMENSION( 100 ) :: fhistory
 
@@ -289,7 +289,7 @@
 
 !  copy fortran history parameters to C
 
-    SUBROUTINE copy_history_out( fhistory, chistory ) 
+    SUBROUTINE copy_history_out( fhistory, chistory )
     TYPE ( f_llst_history_type ), INTENT( IN ), DIMENSION( 100 ) :: fhistory
     TYPE ( llst_history_type ), INTENT( OUT ), DIMENSION( 100 ) :: chistory
 
@@ -303,7 +303,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( llst_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_llst_inform_type ), INTENT( OUT ) :: finform
     INTEGER ( KIND = ipc_ ) :: i
@@ -337,7 +337,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_llst_inform_type ), INTENT( IN ) :: finform
     TYPE ( llst_inform_type ), INTENT( OUT ) :: cinform
     INTEGER ( KIND = ipc_ ) :: i, l
@@ -376,7 +376,7 @@
 !  C interface to fortran llst_initialize
 !  -------------------------------------
 
-  SUBROUTINE llst_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE llst_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_LLST_precision_ciface
   IMPLICIT NONE
 
@@ -391,7 +391,7 @@
   TYPE ( f_llst_full_data_type ), POINTER :: fdata
   TYPE ( f_llst_control_type ) :: fcontrol
   TYPE ( f_llst_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -407,7 +407,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -444,11 +444,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_llst_read_specfile( fcontrol, device )
@@ -651,7 +651,7 @@
 !  C interface to fortran llst_information
 !  --------------------------------------
 
-  SUBROUTINE llst_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE llst_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_LLST_precision_ciface
   IMPLICIT NONE
 
@@ -685,7 +685,7 @@
 !  C interface to fortran llst_terminate
 !  ------------------------------------
 
-  SUBROUTINE llst_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE llst_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_LLST_precision_ciface
   IMPLICIT NONE
 
@@ -724,7 +724,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE llst_terminate

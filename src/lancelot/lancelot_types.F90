@@ -30,7 +30,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE LANCELOT_TYPES_precision
-            
+
 !  |-------------------------------------------------------|
 !  |                                                       |
 !  |  Derived types used by LANCELOT B and its associates  |
@@ -123,7 +123,7 @@
 
 !  the old SBMIN saved variables
 
-       INTEGER ( KIND = ip_ ) :: ifactr, ldx, lfxi, lgxi, lhxi, lggfx, nvar2 
+       INTEGER ( KIND = ip_ ) :: ifactr, ldx, lfxi, lgxi, lhxi, lggfx, nvar2
        INTEGER ( KIND = ip_ ) :: nfreef, nfree, nnonnz, nadd, icfact
        INTEGER ( KIND = ip_ ) :: jumpto, nbprod, infor, number, nfixed, ibqpst
        INTEGER ( KIND = ip_ ) :: nmhist, maxsel, ntotin, nfreec, lnguvl, lnhuvl

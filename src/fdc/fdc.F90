@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FDC_precision
-            
+
 !     -----------------------------------------------------
 !     |                                                   |
 !     | Check if A x = c is consistent and if so which    |

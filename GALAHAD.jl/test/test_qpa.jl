@@ -56,29 +56,29 @@ for d = 1:7
   # sparse co-ordinate storage
   if d == 1
     global st = 'C'
-    
+
     qpa_import( control, data, status, n, m,
                 "coordinate", H_ne, H_row, H_col, Cint[],
                 "coordinate", A_ne, A_row, A_col, Cint[] )
-  
-    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
   # sparse by rows
   if d == 2
     global st = 'R'
-  
-    qpa_import( control, data, status, n, m, 
+
+    qpa_import( control, data, status, n, m,
                 "sparse_by_rows", H_ne, Cint[], H_col, H_ptr,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
-  
+
   # dense
   if d == 3
     global st = 'D'
@@ -91,8 +91,8 @@ for d = 1:7
                 "dense", H_ne, Cint[], Cint[], Cint[],
                 "dense", A_ne, Cint[], Cint[], Cint[] )
 
-    qpa_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f, 
-                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+    qpa_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f,
+                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                   x, c, y, z, x_stat, c_stat )
   end
 
@@ -104,8 +104,8 @@ for d = 1:7
                 "diagonal", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -113,12 +113,12 @@ for d = 1:7
   if d == 5
     global st = 'S'
 
-    qpa_import( control, data, status, n, m, 
+    qpa_import( control, data, status, n, m,
                 "scaled_identity", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -126,25 +126,25 @@ for d = 1:7
   if d == 6
     global st = 'I'
 
-    qpa_import( control, data, status, n, m, 
+    qpa_import( control, data, status, n, m,
                 "identity", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
   # zero
   if d == 7
     global st = 'Z'
-    
-    qpa_import( control, data, status, n, m, 
+
+    qpa_import( control, data, status, n, m,
                 "zero", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    qpa_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -187,7 +187,7 @@ for d = 1:7
               "coordinate", A_ne, A_row, A_col, Cint[] )
 
   qpa_solve_l1qp( data, status, n, m, H_ne, H_val, g, f, rho_g, rho_b,
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
 
   qpa_information( data, inform, status )
@@ -207,9 +207,9 @@ for d = 1:7
   qpa_import( control, data, status, n, m,
               "coordinate", H_ne, H_row, H_col, Cint[],
               "coordinate", A_ne, A_row, A_col, Cint[] )
-  
-  qpa_solve_bcl1qp( data, status, n, m, H_ne, H_val, g, f, rho_g, 
-                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+  qpa_solve_bcl1qp( data, status, n, m, H_ne, H_val, g, f, rho_g,
+                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                     x_stat, c_stat )
 
   qpa_information( data, inform, status )

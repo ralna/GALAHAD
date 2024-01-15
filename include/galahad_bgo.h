@@ -415,7 +415,7 @@ struct bgo_inform_type {
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objective 
+    /// the total number of evaluations of the gradient of the objective
     /// function
     int g_eval;
 

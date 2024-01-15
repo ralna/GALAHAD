@@ -734,22 +734,22 @@
 !    in the sparse row-wise storage scheme. It need not be allocated when the
 !    other schemes are used.
 !
-!  Go is scalar variable of type SVT_TYPE that holds the gradient of the 
+!  Go is scalar variable of type SVT_TYPE that holds the gradient of the
 !   objective function g. The following components are used here:
 !
 !   Go%sparse is a scalar variable of type default logical, that should be set
 !    to .TRUE. if only the structural nonzeros of the vector g are provided.
 !    If it is .FALSE., all values are provided (in the natural order
 !
-!   Go%ne is a scalar variable of type default integer, that holds the 
+!   Go%ne is a scalar variable of type default integer, that holds the
 !    number of nonzeros in the vector g. If Go%sparse is .FALSE., GO%ne
 !    should be n
 !
-!   Go%val is a rank-one allocatable array of type default real, that 
+!   Go%val is a rank-one allocatable array of type default real, that
 !    holds the values of the nonzeros in the vector g. If Go%sparse is .FALSE.,
 !    Go%val(i) = g_i for i = 1,...,n
 !
-!   Go%ind is a rank-one allocatable array of type default integer, that 
+!   Go%ind is a rank-one allocatable array of type default integer, that
 !    holds the indices of the nonzeros in the vector g. If Go%sparse is .FALSE.,
 !    GO%ind need not be provided
 !
@@ -983,7 +983,7 @@
 !
 !  data is a scalar variable of type TRU_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1003,8 +1003,8 @@
 !   function f(x) evaluated at x=X must be returned in f, and the status
 !   variable set to 0. If C is present, the values of the constraint functions
 !   c(x) evaluated at x=X must be returned in C, and the status variable set
-!   to 0. If the evaluation is impossible at X, status should be set to a 
-!   nonzero value. If eval_FC is not present, COLT_solve will return to the 
+!   to 0. If the evaluation is impossible at X, status should be set to a
+!   nonzero value. If eval_FC is not present, COLT_solve will return to the
 !   user with inform%status = 2 each time an evaluation is required.
 !
 !  eval_J is an optional subroutine which if present must have the arguments
@@ -1017,7 +1017,7 @@
 !
 !  eval_GJ is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). If G is present, the components of
-!   the nonzeros of the gradient nabla_x f(x) of the objective function 
+!   the nonzeros of the gradient nabla_x f(x) of the objective function
 !   evaluated at x=X in the same order as presented in nlp%GO,
 !   must be returned in G. If J is present, the nonzeros of the Jacobian
 !   nabla_x c(x) evaluated at x=X must be returned in J_val in the same
@@ -1038,9 +1038,9 @@
 !  eval_HJ is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the Hessian
 !   y_0 nabla_xx f(x) - sum_i=1^m y_i c_i(x) of the John function evaluated
-!   at x=X, y_0 = y0 and y=Y must be returned in H_val in the same order as 
+!   at x=X, y_0 = y0 and y=Y must be returned in H_val in the same order as
 !   presented in nlp%H, and the status variable set to 0. If the evaluation is
-!   impossible at X, status should be set to a nonzero value. If eval_HJ is 
+!   impossible at X, status should be set to a nonzero value. If eval_HJ is
 !   not present, COLT_solve will return to the user with inform%status = 6
 !   each time an evaluation is required.
 !
@@ -1061,11 +1061,11 @@
 !   the Hessian of the ith residual function evaluated at x=X and the
 !   vector v=V must be returned in PC_val in the same order as presented in
 !   nlp%P, and the status variable set to 0. The nonzeros of the vector
-!   the product nabla_xx f(x) v between the Hessian of the objective 
+!   the product nabla_xx f(x) v between the Hessian of the objective
 !   function evaluated at x=X and the vector v=V must be returned in PO_val.
-!   If the evaluation is impossible at X, status should be set to a nonzero 
-!   value. If eval_HOCPRODS is not present, NLS_solve will return to the user 
-!   with inform%status = 8 each time an evaluation is required. The Hessians 
+!   If the evaluation is impossible at X, status should be set to a nonzero
+!   value. If eval_HOCPRODS is not present, NLS_solve will return to the user
+!   with inform%status = 8 each time an evaluation is required. The Hessians
 !   have already been evaluated or used at x=X if got_h is .TRUE.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1459,7 +1459,7 @@
 
 !  record dimensions for feasibility problem
 
-     data%nls%n = data%nls_dims%n_f ; data%nls%m = data%nls_dims%m_f   
+     data%nls%n = data%nls_dims%n_f ; data%nls%m = data%nls_dims%m_f
      data%nls%J%ne = data%nls_dims%j_f_ne ; data%nls%H%ne = data%nls_dims%h_f_ne
      data%nls%P%ne = data%nls_dims%p_f_ne
 
@@ -1497,7 +1497,7 @@
            data%branch = 100 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_J( data%eval_status, data%nls%X, userdata,                &
-                        nlp%J%val )   
+                        nlp%J%val )
            SELECT CASE ( SMT_get( data%nls%J%type ) )
            CASE ( 'DENSE' )
              j_ne = 0 ; l = 0
@@ -1569,7 +1569,7 @@
              DO j = 1, nlp%m
                WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
                  j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
-                      data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
+                      data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 )
              END DO
            END IF
          END IF
@@ -1788,8 +1788,8 @@
 
 ! 240  CONTINUE
 
-!  solve the target problem: find x(t) = (local) argmin 1/2||c(x),f)x)-t||^2 
-!  using the the nls solver.  All function evlautions are for the vector of 
+!  solve the target problem: find x(t) = (local) argmin 1/2||c(x),f)x)-t||^2
+!  using the the nls solver.  All function evlautions are for the vector of
 !  residuals (c(x),f(x)-t)
 
        inform%NLS_inform%status = 1
@@ -1834,7 +1834,7 @@ write(6,*) ' x ', nlp%X
              data%branch = 300 ; inform%status = 4 ; RETURN
            ELSE
              CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
-                           nlp%Go%val, nlp%J%val )   
+                           nlp%Go%val, nlp%J%val )
              SELECT CASE ( SMT_get( data%nls%J%type ) )
              CASE ( 'DENSE' )
                j_ne = 0 ; l = 0
@@ -1844,7 +1844,7 @@ write(6,*) ' x ', nlp%X
                  j_ne = j_ne + data%nls%n ; l = l + nlp%n
                END DO
                IF ( nlp%Go%sparse ) THEN ! from g(x)
-                 DO i = 1, nlp%Go%ne 
+                 DO i = 1, nlp%Go%ne
                    data%nls%J%val( j_ne + nlp%Go%ind( i ) ) = nlp%Go%val( i )
                  END DO
                ELSE
@@ -1927,7 +1927,7 @@ write(6,*) ' x ', nlp%X
                DO j = 1, data%nls%n
                  WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
                    j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
-                        data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 ) 
+                        data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 )
                END DO
              END IF
            END IF
@@ -1990,7 +1990,7 @@ write(6,*) ' x ', nlp%X
                = inform%target + 0.99_rp_ * ( t_star - inform%target )
            END IF
          END IF
-       END IF           
+       END IF
 
 !write(6,*) ' x ', nlp%X
 
@@ -2386,17 +2386,17 @@ write(6,*) ' x ', nlp%X
        inform%status = GALAHAD_error_allocate ; RETURN ; END IF
 
 !  calculate the size of the resiual Jacobian
-    
+
      nls%J%m = nls%m ; nls%J%n = nls%n
      SELECT CASE ( SMT_get( nls%J%type ) )
      CASE ( 'DENSE' )
        nls_dims%j_f_ne = nls_dims%m_f *  nls_dims%n_f
        nls_dims%j_ne = nls%J%m * nls%J%n
      CASE ( 'SPARSE_BY_ROWS' )
-       nls_dims%j_f_ne = nlp%J%ptr( nlp%m + 1 ) - 1 + n_slacks 
+       nls_dims%j_f_ne = nlp%J%ptr( nlp%m + 1 ) - 1 + n_slacks
        nls_dims%j_ne =  nls_dims%j_f_ne + nlp%Go%ne
      CASE ( 'COORDINATE' )
-       nls_dims%j_f_ne = nlp%J%ne + n_slacks 
+       nls_dims%j_f_ne = nlp%J%ne + n_slacks
        nls_dims%j_ne =  nls_dims%j_f_ne + nlp%Go%ne
      END SELECT
      nls%J%ne = nls_dims%j_ne
@@ -2410,7 +2410,7 @@ write(6,*) ' x ', nlp%X
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 910
- 
+
 !  set up space for, and transfer, the sparsity pattern along with fixed values
 
      SELECT CASE ( SMT_get( nls%J%type ) )
@@ -2466,7 +2466,7 @@ write(6,*) ' x ', nlp%X
        END DO
        nls%J%ptr( nlp%m + 1 ) = j_ne + 1
        IF ( nlp%Go%sparse ) THEN ! from g(x)
-         DO i = 1, nlp%Go%ne 
+         DO i = 1, nlp%Go%ne
            j = nlp%Go%ind( i ) ; j_ne = j_ne + 1
            nls%J%col( j_ne ) = j
          END DO
@@ -2542,7 +2542,7 @@ write(6,*) ' x ', nlp%X
        END SELECT
      END IF
 
-!  if required set up space for the Hessian, y_0 H(x) + sum_i=1^m y_i H_i(x), 
+!  if required set up space for the Hessian, y_0 H(x) + sum_i=1^m y_i H_i(x),
 !  of the John function
 
      IF ( PRESENT( h_available ) ) THEN
@@ -2558,7 +2558,7 @@ write(6,*) ' x ', nlp%X
                      inform%alloc_status )
        IF ( inform%alloc_status /= 0 ) THEN
          inform%status = GALAHAD_error_allocate ; RETURN ; END IF
-      
+
        nls%H%n = nls%n
        IF ( array_name( 1 : len_array ) == 'DENSE' ) THEN
          nls%H%ne = nls%H%n * ( nls%H%n + 1 ) / 2
@@ -2617,7 +2617,7 @@ write(6,*) ' x ', nlp%X
        nls_dims%h_ne = - 1 ; nls_dims%h_f_ne = - 1  ! unset values
      END IF
 
-!  if required set up space for the matrix of residual Hessian-vector products, 
+!  if required set up space for the matrix of residual Hessian-vector products,
 !  P = (H_i(x)v,H(x)r)
 
      IF ( PRESENT( p_available ) ) THEN

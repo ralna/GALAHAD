@@ -58,8 +58,8 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: spec_device = 60
 
    ! Derived TRIMSQP data types.
-   
-   TYPE ( NLPT_problem_type ) :: nlp 
+
+   TYPE ( NLPT_problem_type ) :: nlp
    TYPE ( TRIMSQP_control_type ) :: control
    TYPE ( TRIMSQP_inform_type ) :: inform
    TYPE ( TRIMSQP_data_type ) :: data
@@ -83,7 +83,7 @@
         TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funG_reverse
    END INTERFACE
-   
+
    INTERFACE
       SUBROUTINE funJ_reverse(J_val, X, userdata)
         USE GALAHAD_USERDATA_precision
@@ -92,8 +92,8 @@
         TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funJ_reverse
    END INTERFACE
-   
-   
+
+
    INTERFACE
       SUBROUTINE funH_reverse(H_val, X, Y, userdata)
         USE GALAHAD_USERDATA_precision
@@ -104,12 +104,12 @@
         TYPE ( GALAHAD_userdata_type ), OPTIONAL :: userdata
       END SUBROUTINE funH_reverse
    END INTERFACE
-   
+
 
    ! ***********************************************************
-   
+
    ! Set problem dimensions.
-        
+
    nlp%n = 4;	n = nlp%n
    nlp%m = 3;	m = nlp%m
 
@@ -224,7 +224,7 @@
    nlp%EQUATION = (/ .FALSE., .FALSE., .FALSE. /)
    nlp%LINEAR   = (/ .FALSE., .FALSE., .FALSE. /)
 
-   nlp%J_col = (/ 1, 2, 3, 2, 4, 1, 2 /) 
+   nlp%J_col = (/ 1, 2, 3, 2, 4, 1, 2 /)
    nlp%J_row = (/ 1, 1, 1, 2, 2, 3, 3 /)
    nlp%H_col = (/ 1, 1, 2, 1, 2, 3 /)
    nlp%H_row = (/ 1, 2, 2, 3, 3, 3 /)
@@ -234,7 +234,7 @@
 
    ! nlp%H_ptr:  'Co-ordinate' used -> not needed (allocated).
    ! nlp%H_val:  Allocated, but not set.
-   ! nlp%J_ptr:  'Co-ordinate' used -> not needed (allocated). 
+   ! nlp%J_ptr:  'Co-ordinate' used -> not needed (allocated).
    ! nlp%J_val:  Allocated, but not set.
 
 
@@ -309,7 +309,7 @@
       CASE (8)
          WRITE(*,*) 'Which means : REVERSE COMMUNICATION : u <- J^T*v+u is needed.'
          !transpose = .TRUE.
-         !CALL fun_Jv_reverse( data%u, data%v, nlp%X, transpose )         
+         !CALL fun_Jv_reverse( data%u, data%v, nlp%X, transpose )
       CASE (9)
          WRITE(*,*) 'Which means : REVERSE COMMUNICATION : u <- H*v+u is needed.'
          !CALL fun_Hv_reverse( data%u, data%v, nlp%X )
@@ -318,7 +318,7 @@
       END SELECT
 
       num_recursive_calls = num_recursive_calls + 1
-      
+
    END DO
 
 
@@ -350,7 +350,7 @@
 
    CALL SPACE_dealloc_array( userdata%character_userdata, status, alloc_status )
    IF ( status /= 0 ) GO TO 991
-  
+
    WRITE(*,*)
    WRITE(*,*) 'deallocation of userdata : SUCCESSFUL'
    WRITE(*,*)
@@ -410,9 +410,9 @@
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: C
 
    ! local variables
-   
-   REAL( KIND = rp_ ) :: X1, X2, X3, X4, C1, C2, C3 
-   
+
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, C1, C2, C3
+
    X1 = X(1)
    X2 = X(2)
    X3 = X(3)
@@ -427,7 +427,7 @@
    C(1) = C1
    C(2) = C2
    C(3) = C3
-   
+
    RETURN
 
    END SUBROUTINE funFC
@@ -451,7 +451,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
- 
+
    TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
@@ -459,7 +459,7 @@
   ! local variables
 
    REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32
 
 
    X1 = X(1)
@@ -470,7 +470,7 @@
    G1 = two * ( x1+ X2 + X3 )
    G2 = two * ( x1+ X2 + X3 )
    G3 = two * ( x1+ X2 + X3 ) + three
-   G4 = five 
+   G4 = five
 
    G(1) = G1
    G(2) = G2
@@ -500,7 +500,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
- 
+
    TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
@@ -508,7 +508,7 @@
   ! local variables
 
    REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32
 
 
    X1 = X(1)
@@ -556,7 +556,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
- 
+
    TYPE( GALAHAD_userdata_type ), INTENT(INOUT) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
@@ -565,7 +565,7 @@
   ! local variables
 
    REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32
 
 
    X1 = X(1)
@@ -576,7 +576,7 @@
    G1 = two * ( x1+ X2 + X3 )
    G2 = two * ( x1+ X2 + X3 )
    G3 = two * ( x1+ X2 + X3 ) + three
-   G4 = five 
+   G4 = five
 
    G(1) = G1
    G(2) = G2
@@ -608,7 +608,7 @@
    SUBROUTINE funH( Hval, X, Y, userdata )
 
    USE GALAHAD_USERDATA_precision
- 
+
    IMPLICIT NONE
 
    ! Set precision
@@ -622,7 +622,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
-   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_   
+   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_
 
    TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
@@ -632,7 +632,7 @@
 
    REAL( KIND = rp_ ) :: X1, X2, Y1, Y2
    REAL( KIND = rp_ ) :: H11, H21, H22, H31, H32, H33
-   
+
    !X1 = X(1)
    X2 = X(2)
    !X3 = X(3)
@@ -690,9 +690,9 @@
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: C
 
    ! local variables
-   
-   REAL( KIND = rp_ ) :: X1, X2, X3, X4, C1, C2, C3 
-   
+
+   REAL( KIND = rp_ ) :: X1, X2, X3, X4, C1, C2, C3
+
    X1 = X(1)
    X2 = X(2)
    X3 = X(3)
@@ -707,7 +707,7 @@
    C(1) = C1
    C(2) = C2
    C(3) = C3
-   
+
    RETURN
 
    END SUBROUTINE funFC_reverse
@@ -731,7 +731,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
- 
+
    TYPE( GALAHAD_userdata_type ), INTENT(INOUT), OPTIONAL :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: G
@@ -739,7 +739,7 @@
   ! local variables
 
    REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32
 
 
    X1 = X(1)
@@ -750,7 +750,7 @@
    G1 = two * ( x1+ X2 + X3 )
    G2 = two * ( x1+ X2 + X3 )
    G3 = two * ( x1+ X2 + X3 ) + three
-   G4 = five 
+   G4 = five
 
    G(1) = G1
    G(2) = G2
@@ -780,7 +780,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
- 
+
    TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X
    REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: Jval
@@ -788,7 +788,7 @@
   ! local variables
 
    REAL( KIND = rp_ ) :: X1, X2, X3, X4, G1, G2, G3, G4
-   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32 
+   REAL( KIND = rp_ ) :: J11, J12, J13, J22, J24, J31, J32
 
 
    X1 = X(1)
@@ -821,7 +821,7 @@
    SUBROUTINE funH_reverse( Hval, X, Y, userdata )
 
    USE GALAHAD_USERDATA_precision
- 
+
    IMPLICIT NONE
 
    ! Set precision
@@ -835,7 +835,7 @@
    REAL ( KIND = rp_ ), PARAMETER ::  three  = 3.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  four   = 4.0_rp_
    REAL ( KIND = rp_ ), PARAMETER ::  five   = 5.0_rp_
-   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_   
+   REAL ( KIND = rp_ ), PARAMETER ::  twelve = 12.0_rp_
 
    TYPE( GALAHAD_userdata_type ), INTENT( INOUT ), OPTIONAL :: userdata
    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ), INTENT( IN ) :: X, Y
@@ -845,7 +845,7 @@
 
    REAL( KIND = rp_ ) :: X1, X2, Y1, Y2
    REAL( KIND = rp_ ) :: H11, H21, H22, H31, H32, H33
-   
+
    !X1 = X(1)
    X2 = X(2)
    !X3 = X(3)

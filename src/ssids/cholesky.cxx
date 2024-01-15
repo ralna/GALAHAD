@@ -41,7 +41,7 @@ namespace spral { namespace ssids { namespace cpu {
  * \param info is initialized to -1, and will be changed to the index of any
  *    column where a non-zero column is encountered.
  */
-void cholesky_factor(int m, int n, precision_* a, int lda, precision_ beta, 
+void cholesky_factor(int m, int n, precision_* a, int lda, precision_ beta,
                      precision_* upd, int ldupd, int blksz, int *info) {
    if(n < blksz) {
       // Adjust so blocks have blksz**2 entries
@@ -147,8 +147,8 @@ void cholesky_factor(int m, int n, precision_* a, int lda, precision_ beta,
              int blkm = std::min(blksz, m-i);
              precision_ one_val = 1.0;
              precision_ minus_one_val = - 1.0;
-             host_gemm(OP_N, OP_T, blkm, blkk, blkn, minus_one_val, 
-                       &a[j*lda+i], lda, &a[j*lda+k], lda, one_val, 
+             host_gemm(OP_N, OP_T, blkm, blkk, blkn, minus_one_val,
+                       &a[j*lda+i], lda, &a[j*lda+k], lda, one_val,
                        &a[k*lda+i], lda);
              if ((blkk < blksz) && upd) {
                precision_ rbeta = (j==0) ? beta : 1.0;
@@ -208,7 +208,7 @@ void cholesky_factor(int m, int n, precision_* a, int lda, precision_ beta,
 }
 
 /* Forwards solve corresponding to cholesky_factor() */
-void cholesky_solve_fwd(int m, int n, precision_ const* a, int lda, 
+void cholesky_solve_fwd(int m, int n, precision_ const* a, int lda,
                         int nrhs, precision_* x, int ldx) {
    precision_ one_val = 1.0;
    precision_ minus_one_val = - 1.0;
@@ -217,16 +217,16 @@ void cholesky_solve_fwd(int m, int n, precision_ const* a, int lda,
       if(m > n)
          gemv(OP_N, m-n, n, minus_one_val, &a[n], lda, x, 1, one_val, &x[n], 1);
    } else {
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, nrhs, 
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_NON_UNIT, n, nrhs,
                 one_val, a, lda, x, ldx);
       if(m > n)
-         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &a[n], lda, x, 
+         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &a[n], lda, x,
                    ldx, one_val, &x[n], ldx);
    }
 }
 
 /* Backwards solve corresponding to cholesky_factor() */
-void cholesky_solve_bwd(int m, int n, precision_ const* a, int lda, 
+void cholesky_solve_bwd(int m, int n, precision_ const* a, int lda,
                         int nrhs, precision_* x, int ldx) {
    precision_ one_val = 1.0;
    precision_ minus_one_val = - 1.0;
@@ -236,9 +236,9 @@ void cholesky_solve_bwd(int m, int n, precision_ const* a, int lda,
       host_trsv(FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, a, lda, x, 1);
    } else {
       if(m > n)
-         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &a[n], lda, &x[n], 
+         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &a[n], lda, &x[n],
                    ldx, one_val, x, ldx);
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, nrhs, 
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_NON_UNIT, n, nrhs,
                 one_val, a, lda, x, ldx);
    }
 }

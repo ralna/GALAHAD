@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_GLTR_precision
-            
+
 !      -----------------------------------------------
 !      |                                             |
 !      | Solve the (trust-region) quadratic program  |

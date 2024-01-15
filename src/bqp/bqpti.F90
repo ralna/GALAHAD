@@ -36,9 +36,9 @@
    H_row( l ) = 1 ;  H_col( l ) = 1 ; H_val( l ) = 2.0_rp_
    DO i = 2, n
      l = l + 1 ; H_ptr( i ) = l
-     H_row( l ) = i ; H_col( l ) = i - 1 ; H_val( l ) = 1.0_rp_ 
+     H_row( l ) = i ; H_col( l ) = i - 1 ; H_val( l ) = 1.0_rp_
      l = l + 1
-     H_row( l ) = i ; H_col( l ) = i ; H_val( l ) = 2.0_rp_ 
+     H_row( l ) = i ; H_col( l ) = i ; H_val( l ) = 2.0_rp_
    END DO
    H_ptr( n + 1 ) = l + 1
    l = 0
@@ -119,7 +119,7 @@
    st = ' I'
    CALL BQP_import_without_h( control, data, status, n )
    status = 1
-   DO 
+   DO
      CALL BQP_solve_reverse_h_prod( data, status, G, f, X_l, X_u, X, Z,        &
                                     X_stat, V, PROD, NZ_v, nz_v_start,         &
                                     nz_v_end, NZ_prod, nz_prod_end )

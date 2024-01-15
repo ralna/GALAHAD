@@ -3,11 +3,11 @@
    USE GALAHAD_HASH
    IMPLICIT NONE
    TYPE ( HASH_data_type ) :: data
-   TYPE ( HASH_control_type ) :: control        
+   TYPE ( HASH_control_type ) :: control
    TYPE ( HASH_inform_type ) :: inform
    INTEGER, PARAMETER :: nchar = 10
    INTEGER, PARAMETER :: length = 100
-   INTEGER, PARAMETER :: new_length = 200 
+   INTEGER, PARAMETER :: new_length = 200
    INTEGER, PARAMETER :: nkeys1 = 8
    INTEGER, PARAMETER :: nkeys2 = 10
    INTEGER, PARAMETER :: nkeys3 = 3

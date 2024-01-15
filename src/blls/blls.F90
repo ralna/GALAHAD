@@ -265,7 +265,7 @@
      TYPE, PUBLIC :: BLLS_time_type
 
 !  total time
- 
+
        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  time for the analysis phase
@@ -875,7 +875,7 @@
 !       In this case, the following must be set:
 !
 !       Ao%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', Ao%type )
-!       Ao%val( : )  the values of the components of A_o, stored 
+!       Ao%val( : )  the values of the components of A_o, stored
 !                    column by column
 !       Ao%row( : )  the row indices of the components of A
 !       Ao%ptr( : )  pointers to the start of each column, and past the end of
@@ -895,7 +895,7 @@
 !       In this case, the following must be set:
 !
 !       Ao%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', Ao%type )
-!       Ao%val( : )  the values of the components of A_o, stored column by 
+!       Ao%val( : )  the values of the components of A_o, stored column by
 !                    column, with each the entries in each column in order
 !                    of increasing row indicies.
 !
@@ -1074,7 +1074,7 @@
 !
 !  W is an optional rank-one array of type default real that if present
 !   must be of length prob%o and filled with the weights w_i > 0. If W is
-!   absent, weights of one will be used. 
+!   absent, weights of one will be used.
 !   N.B. currently only available when A_o is provided explicitly.
 !
 !  reverse is an OPTIONAL structure of type BLLS_reverse_type which is used to
@@ -2389,7 +2389,7 @@
        ELSE
          X_stat( i ) = 1
        END IF
-     END DO 
+     END DO
      CALL CPU_TIME( time ) ; CALL CLOCK_time( clock_now )
      inform%time%total = time - data%time_start
      inform%time%clock_total = clock_now - data%clock_start
@@ -6539,11 +6539,11 @@
 !   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
-!  Ao_ptr is a rank-one array of dimension max(o+1,n+1) and type default 
+!  Ao_ptr is a rank-one array of dimension max(o+1,n+1) and type default
 !   integer, that holds the starting position of each row of Ao, as well
-!   as the total number of entries plus one, in the sparse row-wise 
-!   storage scheme, or the starting position of each column of Ao, as well as 
-!   the total number of entries plus one, in the sparse column-wise storage 
+!   as the total number of entries plus one, in the sparse row-wise
+!   storage scheme, or the starting position of each column of Ao, as well as
+!   the total number of entries plus one, in the sparse column-wise storage
 !   scheme. It need not be set when the other schemes are used, and in this
 !   case can be of length 0
 !
@@ -6881,8 +6881,8 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  W is an OPTIONAL rank-one array of dimension o and type default real, 
-!   that holds the vector of weights, w, If W is not present, weights of 
+!  W is an OPTIONAL rank-one array of dimension o and type default real,
+!   that holds the vector of weights, w, If W is not present, weights of
 !   one will be used.
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
@@ -7109,8 +7109,8 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  W is an OPTIONAL rank-one array of dimension o and type default real, 
-!   that holds the vector of weights, w, If W is not present, weights of 
+!  W is an OPTIONAL rank-one array of dimension o and type default real,
+!   that holds the vector of weights, w, If W is not present, weights of
 !   one will be used.
 !
 !  The remaining components V, ... , nz_out_end need not be set

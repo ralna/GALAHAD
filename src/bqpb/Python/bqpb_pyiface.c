@@ -652,16 +652,16 @@ static PyObject* bqpb_make_inform_dict(const struct bqpb_inform_type *inform){
                          PyBool_FromLong(inform->feasible));
 
     // include checkpoint arrays
-    npy_intp cdim[] = {16}; 
-    PyArrayObject *py_iter = 
+    npy_intp cdim[] = {16};
+    PyArrayObject *py_iter =
       (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
-    int *iter = (int *) PyArray_DATA(py_iter); 
-    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    int *iter = (int *) PyArray_DATA(py_iter);
+    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
-    PyArrayObject *py_time = 
+    PyArrayObject *py_time =
       (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_DOUBLE);
-    double *time = (double *) PyArray_DATA(py_time); 
-    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    double *time = (double *) PyArray_DATA(py_time);
+    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];
     PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
 
     // Set time nested dictionary
@@ -794,7 +794,7 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g,
                          &H_ne, &py_H_val, &py_x_l, &py_x_u,
                          &py_x, &py_z))
         return NULL;
@@ -823,17 +823,17 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bqpb_solve_direct
     status = 1; // set status to 1 on entry
-    bqpb_solve_qp(&data, &status, n, H_ne, H_val, g, f, 
+    bqpb_solve_qp(&data, &status, n, H_ne, H_val, g, f,
                    x_l, x_u, x, z, x_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -866,7 +866,7 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idOOOOOOO", &n, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "idOOOOOOO", &n, &f, &py_g,
                          &py_w, &py_x0, &py_x_l, &py_x_u,
                          &py_x, &py_z))
         return NULL;
@@ -898,7 +898,7 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
 
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 

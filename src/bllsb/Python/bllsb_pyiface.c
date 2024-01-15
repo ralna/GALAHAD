@@ -636,16 +636,16 @@ static PyObject* bllsb_make_inform_dict(const struct bllsb_inform_type *inform){
                          PyBool_FromLong(inform->feasible));
 
     // include checkpoint arrays
-    npy_intp cdim[] = {16}; 
-    PyArrayObject *py_iter = 
+    npy_intp cdim[] = {16};
+    PyArrayObject *py_iter =
       (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_INT);
-    int *iter = (int *) PyArray_DATA(py_iter); 
-    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];  
+    int *iter = (int *) PyArray_DATA(py_iter);
+    for(int i=0; i<16; i++) iter[i] = inform->checkpointsIter[i];
     PyDict_SetItemString(py_inform, "checkpointsIter", (PyObject *) py_iter);
-    PyArrayObject *py_time = 
+    PyArrayObject *py_time =
       (PyArrayObject*) PyArray_SimpleNew(1, cdim, NPY_DOUBLE);
-    double *time = (double *) PyArray_DATA(py_time); 
-    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];  
+    double *time = (double *) PyArray_DATA(py_time);
+    for(int i=0; i<16; i++) time[i] = inform->checkpointsTime[i];
     PyDict_SetItemString(py_inform, "checkpointsTime", (PyObject *) py_time);
 
     // Set time nested dictionary
@@ -814,10 +814,10 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args){
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp odim[] = {o}; // size of r
-    PyArrayObject *py_r = 
+    PyArrayObject *py_r =
       (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
     double *r = (double *) PyArray_DATA(py_r);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
@@ -829,7 +829,7 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args){
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -902,7 +902,7 @@ PyDoc_STRVAR(bllsb_module_doc,
 "q(x) = 1/2 ||Ao x - b||_W^2 + sigma/2 ||x||^2,\n"
 "subject to the simple bound constraints\n"
 "x_j^l  <=  x_j  <= x_j^u, j = 1, ... , n,\n"
-"where the o by n matrix Ao, the vectors b, w, x^l, x^u" 
+"where the o by n matrix Ao, the vectors b, w, x^l, x^u"
 "and the regularization weight sigma >= 0 are given,\n"
 "and the norms are defined by ||v||_W^2 = v^T W v and ||v||^2 = v^T v,\n"
 "where W is the digonal matrix whose entries are the components of w > 0\n"

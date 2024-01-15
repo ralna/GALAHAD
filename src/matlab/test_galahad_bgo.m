@@ -15,7 +15,7 @@ control.attempts_max = 1000;
 control.max_evals = 1000;
 control.TRB_control.maxit = 10;
 control.random_multistart = true;
-   
+
 % Bgo problem (sparse Hessian)
 
 pattern_h = [ 1 1 ; 2 2 ; 3 1 ; 3 2 ; 3 3 ];

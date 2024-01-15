@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USELSTR_precision
-            
+
 !     ----------------------------------------------------
 !    | CUTEst/AMPL interface to LSTR, an iterative method |
 !    | for trust-region regularized linear least squares  |

@@ -629,7 +629,7 @@ static PyMethodDef llsr_module_methods[] = {
 PyDoc_STRVAR(llsr_module_doc,
 
 "Given a real m by n matrix A, a real n by n symmetric diagonally-dominant\n"
-"matrix S, a real m vector b and scalars sigma>0 and $p>=2$,\n" 
+"matrix S, a real m vector b and scalars sigma>0 and $p>=2$,\n"
 "the llsr package finds a minimizer of the regularized\n"
 "linear least-squares objective function\n"
 "   1/2 || A x  - b ||_2^w + sigma/p ||x||_S^p,\n"

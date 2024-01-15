@@ -19,19 +19,19 @@ int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
 int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
 int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
 int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void * );
-int shessprod( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[], 
-               const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[], 
+int shessprod( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
+               const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[],
                bool got_h, const void * );
 int prec(int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], const void * );
 int fun_diag(int n, const real_wp_ x[], real_wp_ *f, const void * );
 int grad_diag(int n, const real_wp_ x[], real_wp_ g[], const void * );
 int hess_diag(int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
-int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                    bool got_h, const void * );
 int shessprod_diag( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
-                    const real_wp_ v[], int *nnz_u, int index_nz_u[], 
+                    const real_wp_ v[], int *nnz_u, int index_nz_u[],
                     real_wp_ u[], bool got_h, const void * );
 
 int main(void) {
@@ -50,7 +50,7 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    real_wp_ x_l[] = {-10,-10,-10}; 
+    real_wp_ x_l[] = {-10,-10,-10};
     real_wp_ x_u[] = {0.5,0.5,0.5};
     int H_row[] = {0, 1, 2, 2, 2}; // Hessian H
     int H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
@@ -84,38 +84,38 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "coordinate", ne, H_row, H_col, NULL );
-                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g,
                                     ne, fun, grad, hess, hessprod, prec );
                 break;
-            case 2: // sparse by rows  
+            case 2: // sparse by rows
                 st = 'R';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
-                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g,
                                     ne, fun, grad, hess, hessprod, prec );
                 break;
             case 3: // dense
                 st = 'D';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "dense", ne, NULL, NULL, NULL );
-                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g,
                                     ne, fun, grad, hess_dense, hessprod, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "diagonal", ne, NULL, NULL, NULL );
-                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
-                                    ne, fun_diag, grad_diag, hess_diag, 
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g,
+                                    ne, fun_diag, grad_diag, hess_diag,
                                     hessprod_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "absent", ne, NULL, NULL, NULL );
-                bgo_solve_without_mat( &data, &userdata, &status, n, x, g, 
+                bgo_solve_without_mat( &data, &userdata, &status, n, x, g,
                                        fun, grad, hessprod, shessprod, prec );
                 break;
         }
@@ -148,7 +148,7 @@ int main(void) {
     real_wp_ u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
     real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
- 
+
     for(int d=1; d <= 5; d++){
 
         // Initialize BGO
@@ -168,10 +168,10 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "coordinate", ne, H_row, H_col, NULL );
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status,
                                                 n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -201,18 +201,18 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                                status );
                         break;
                     }
                 }
                 break;
-            case 2: // sparse by rows  
+            case 2: // sparse by rows
                 st = 'R';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status,
                                                 n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -242,7 +242,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                                status);
                         break;
                     }
@@ -250,11 +250,11 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "dense", ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
-                                                n, x, f, g, n*(n+1)/2, 
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status,
+                                                n, x, f, g, n*(n+1)/2,
                                                 H_dense, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -265,7 +265,7 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, 
+                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense,
                                                   &userdata );
                     }else if(status == 5){ // evaluate Hv product
                         eval_status = hessprod( n, x, u, v, false, &userdata );
@@ -285,7 +285,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                                status);
                         break;
                     }
@@ -293,10 +293,10 @@ int main(void) {
                 break;
             case 4: // diagonal
                 st = 'I';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "diagonal", ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status,
                                                 n, x, f, g, n, H_diag, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -309,7 +309,7 @@ int main(void) {
                     }else if(status == 4){ // evaluate H
                         eval_status = hess_diag( n, n, x, H_diag, &userdata );
                     }else if(status == 5){ // evaluate Hv product
-                        eval_status = hessprod_diag( n, x, u, v, false, 
+                        eval_status = hessprod_diag( n, x, u, v, false,
                                                      &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
@@ -318,19 +318,19 @@ int main(void) {
                         eval_status = grad_diag( n, x, g, &userdata );
                     }else if(status == 25){ // evaluate f and Hv product
                         eval_status = fun_diag( n, x, &f, &userdata );
-                        eval_status = hessprod_diag( n, x, u, v, false, 
+                        eval_status = hessprod_diag( n, x, u, v, false,
                                                      &userdata );
                     }else if(status == 35){ // evaluate g and Hv product
                         eval_status = grad_diag( n, x, g, &userdata );
-                        eval_status = hessprod_diag( n, x, u, v, false, 
+                        eval_status = hessprod_diag( n, x, u, v, false,
                                                      &userdata );
                     }else if(status == 235){ // evaluate f, g and Hv product
                         eval_status = fun_diag( n, x, &f, &userdata );
                         eval_status = grad_diag( n, x, g, &userdata );
-                        eval_status = hessprod_diag( n, x, u, v, false, 
+                        eval_status = hessprod_diag( n, x, u, v, false,
                                                      &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                                status);
                         break;
                     }
@@ -338,7 +338,7 @@ int main(void) {
                 break;
             case 5: // access by products
                 st = 'P';
-                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                bgo_import( &control, &data, &status, n, x_l, x_u,
                             "absent", ne, NULL, NULL, NULL );
                 nnz_u = 0;
                 while(true){ // reverse-communication loop
@@ -358,8 +358,8 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else if(status == 7){ // evaluate sparse Hess-vect product
-                        eval_status = shessprod( n, x, nnz_v, index_nz_v, v, 
-                                                 &nnz_u, index_nz_u, u, 
+                        eval_status = shessprod( n, x, nnz_v, index_nz_v, v,
+                                                 &nnz_u, index_nz_u, u,
                                                  false, &userdata );
                     }else if(status == 23){ // evaluate f and g
                         eval_status = fun( n, x, &f, &userdata );
@@ -375,7 +375,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                                status);
                         break;
                     }
@@ -405,10 +405,10 @@ int main(void) {
 
 }
 
-// Objective function 
-int fun( int n, 
-         const real_wp_ x[], 
-         real_wp_ *f, 
+// Objective function
+int fun( int n,
+         const real_wp_ x[],
+         real_wp_ *f,
          const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -421,9 +421,9 @@ int fun( int n,
 }
 
 // Gradient of the objective
-int grad( int n, 
-          const real_wp_ x[], 
-          real_wp_ g[], 
+int grad( int n,
+          const real_wp_ x[],
+          real_wp_ g[],
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -437,15 +437,15 @@ int grad( int n,
 }
 
 // Hessian of the objective
-int hess( int n, 
-          int ne, 
-          const real_wp_ x[], 
-          real_wp_ hval[], 
+int hess( int n,
+          int ne,
+          const real_wp_ x[],
+          real_wp_ hval[],
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
-    
+
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -455,15 +455,15 @@ int hess( int n,
 }
 
 // Dense Hessian
-int hess_dense( int n, 
-                int ne, 
-                const real_wp_ x[], 
-                real_wp_ hval[], 
-                const void *userdata ){ 
+int hess_dense( int n,
+                int ne,
+                const real_wp_ x[],
+                real_wp_ hval[],
+                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
-    
+
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 0.0;
     hval[2] = 2.0;
@@ -474,17 +474,17 @@ int hess_dense( int n,
 }
 
 // Hessian-vector product
-int hessprod( int n, 
-              const real_wp_ x[], 
-              real_wp_ u[], 
-              const real_wp_ v[], 
-              bool got_h, 
+int hessprod( int n,
+              const real_wp_ x[],
+              real_wp_ u[],
+              const real_wp_ v[],
+              bool got_h,
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
-    
-    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+
+    u[0] = u[0] + 2.0 * ( v[0] + v[2] )
            - mag * freq * freq * cos(freq*x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -492,15 +492,15 @@ int hessprod( int n,
 }
 
 // Sparse Hessian-vector product
-int shessprod( int n, 
-               const real_wp_ x[], 
-               int nnz_v, 
-               const int index_nz_v[], 
-               const real_wp_ v[], 
-               int *nnz_u, 
-               int index_nz_u[], 
-               real_wp_ u[], 
-               bool got_h, 
+int shessprod( int n,
+               const real_wp_ x[],
+               int nnz_v,
+               const int index_nz_v[],
+               const real_wp_ v[],
+               int *nnz_u,
+               int index_nz_u[],
+               real_wp_ u[],
+               bool got_h,
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
@@ -545,10 +545,10 @@ int shessprod( int n,
 }
 
 // Apply preconditioner
-int prec( int n, 
-          const real_wp_ x[], 
-          real_wp_ u[], 
-          const real_wp_ v[], 
+int prec( int n,
+          const real_wp_ x[],
+          real_wp_ u[],
+          const real_wp_ v[],
           const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
@@ -556,10 +556,10 @@ int prec( int n,
    return 0;
 }
 
-// Objective function 
-int fun_diag( int n, 
-              const real_wp_ x[], 
-              real_wp_ *f, 
+// Objective function
+int fun_diag( int n,
+              const real_wp_ x[],
+              real_wp_ *f,
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -572,9 +572,9 @@ int fun_diag( int n,
 }
 
 // Gradient of the objective
-int grad_diag( int n, 
-               const real_wp_ x[], 
-               real_wp_ g[], 
+int grad_diag( int n,
+               const real_wp_ x[],
+               real_wp_ g[],
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -588,10 +588,10 @@ int grad_diag( int n,
 }
 
 // Hessian of the objective
-int hess_diag( int n, 
-               int ne, 
-               const real_wp_ x[], 
-               real_wp_ hval[], 
+int hess_diag( int n,
+               int ne,
+               const real_wp_ x[],
+               real_wp_ hval[],
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
@@ -601,14 +601,14 @@ int hess_diag( int n,
     hval[1] = 2.0;
     hval[2] = 2.0;
     return 0;
-}  
+}
 
 // Hessian-vector product
-int hessprod_diag( int n, 
-                   const real_wp_ x[], 
-                   real_wp_ u[], 
-                   const real_wp_ v[], 
-                   bool got_h, 
+int hessprod_diag( int n,
+                   const real_wp_ x[],
+                   real_wp_ u[],
+                   const real_wp_ v[],
+                   bool got_h,
                    const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
@@ -621,15 +621,15 @@ int hessprod_diag( int n,
 }
 
 // Sparse Hessian-vector product
-int shessprod_diag( int n, 
-                    const real_wp_ x[], 
-                    int nnz_v, 
-                    const int index_nz_v[], 
-                    const real_wp_ v[], 
-                    int *nnz_u, 
-                    int index_nz_u[], 
-                    real_wp_ u[], 
-                    bool got_h, 
+int shessprod_diag( int n,
+                    const real_wp_ x[],
+                    int nnz_v,
+                    const int index_nz_v[],
+                    const real_wp_ v[],
+                    int *nnz_u,
+                    int index_nz_u[],
+                    real_wp_ u[],
+                    bool got_h,
                     const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;

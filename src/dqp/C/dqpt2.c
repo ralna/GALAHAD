@@ -59,8 +59,8 @@ int main(void) {
     dqp_import( &control, &data, &status, n, m,
                "coordinate", H_ne, H_row, H_col, NULL,
                "coordinate", A_ne, A_row, A_col, NULL );
-    dqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    dqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat );
     dqp_information( &data, &inform, &status );
     printf("status %i\n", inform.status);

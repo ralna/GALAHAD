@@ -1450,7 +1450,7 @@ data%control%SHA_control%print_level = 0
 
      nlp%H%val( : nlp%H%ne ) = zero
      data%successful = .FALSE.
-     
+
 !  compute the stopping tolerance
 
 !    write(6,*) ' stop a, r, g ', control%stop_g_absolute,                     &
@@ -1508,7 +1508,7 @@ data%control%SHA_control%print_level = 0
                 data%bndry, data%negcur, data%perturb, inform%obj,             &
                 inform%norm_g, data%ratio, data%old_radius, data%s_norm,       &
                 data%clock_now
-           END IF 
+           END IF
          ELSE
            WRITE( data%out, 2140 ) prefix, char_iter, inform%obj,              &
                inform%norm_g, inform%radius, data%clock_now
@@ -2037,7 +2037,7 @@ if ( data%s_norm <= 0.01_rp_ ) then
                             data%DG_past, nlp%n, data%total_diffs,             &
                             data%VAL_est, data%SHA_data,                       &
                             data%control%SHA_control, inform%SHA_inform,       &
-                            ORDER = data%PAST )                        
+                            ORDER = data%PAST )
 
          IF ( inform%SHA_inform%status == 0 ) THEN
            data%hmax_error =                                                   &

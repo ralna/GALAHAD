@@ -42,14 +42,14 @@ int main(void) {
     int Ao_ne = 2 * n; // sparse Jacobian elements
     int Ao_dense_ne = o * n; // dense Jacobian elements
     // row-wise storage
-    int Ao_row[Ao_ne]; // row indices, 
+    int Ao_row[Ao_ne]; // row indices,
     int Ao_col[Ao_ne]; // column indices
     int Ao_ptr_ne = o+1; // number of row pointers
     int Ao_ptr[ Ao_ptr_ne];  // row pointers
     real_wp_ Ao_val[Ao_ne]; // values
     real_wp_ Ao_dense[Ao_dense_ne]; // dense values
     // column-wise storage
-    int Ao_by_col_row[Ao_ne]; // row indices, 
+    int Ao_by_col_row[Ao_ne]; // row indices,
     int Ao_by_col_ptr_ne = n+1; // number of column pointers
     int Ao_by_col_ptr[Ao_by_col_ptr_ne];  // column pointers
     real_wp_ Ao_by_col_val[Ao_ne]; // values
@@ -167,17 +167,17 @@ int main(void) {
                 strcpy( st, "CO" );
                 blls_import( &control, &data, &status, n, o,
                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, o, 
+                blls_solve_given_a( &data, &userdata, &status, n, o,
                                     Ao_ne, Ao_val, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
             case 2: // sparse by rows
                 strcpy( st, "SR" );
                 blls_import( &control, &data, &status, n, o,
-                             "sparse_by_rows", Ao_ne, NULL, Ao_col, 
+                             "sparse_by_rows", Ao_ne, NULL, Ao_col,
                              Ao_ptr_ne, Ao_ptr );
-                blls_solve_given_a( &data, &userdata, &status, n, o, 
-                                    Ao_ne, Ao_val, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, o,
+                                    Ao_ne, Ao_val, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
             case 3: // dense by rows
@@ -185,26 +185,26 @@ int main(void) {
                 blls_import( &control, &data, &status, n, o,
                              "dense_by_rows", Ao_dense_ne,
                               NULL, NULL,0,  NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, o, 
-                                    Ao_dense_ne, Ao_dense, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, o,
+                                    Ao_dense_ne, Ao_dense, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
             case 4: // sparse by columns
                 strcpy( st, "SC" );
                 blls_import( &control, &data, &status, n, o,
-                             "sparse_by_columns", Ao_ne, Ao_by_col_row, 
+                             "sparse_by_columns", Ao_ne, Ao_by_col_row,
                              NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr );
-                blls_solve_given_a( &data, &userdata, &status, n, o, 
-                                    Ao_ne, Ao_by_col_val, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, o,
+                                    Ao_ne, Ao_by_col_val, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
             case 5: // dense by columns
                 strcpy( st, "DC" );
                 blls_import( &control, &data, &status, n, o,
-                             "dense_by_columns", Ao_dense_ne, 
+                             "dense_by_columns", Ao_dense_ne,
                              NULL, NULL, 0, NULL);
-                blls_solve_given_a( &data, &userdata, &status, n, o, 
-                                    Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, o,
+                                    Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u,
                                     x, z, r, g, x_stat, w, prec );
                 break;
             }
@@ -254,7 +254,7 @@ int main(void) {
     for( int i = 0; i < o; i++) mask[i] = 0;
     blls_import_without_a( &control, &data, &status, n, o ) ;
     while(true){ // reverse-communication loop
-        blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b, 
+        blls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
                                    x_l, x_u, x, z, r, g, x_stat, v, p,
                                    nz_v, &nz_v_start, &nz_v_end,
                                    nz_p, nz_p_end, w );

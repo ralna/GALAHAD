@@ -1,6 +1,6 @@
 #  Main body of the installation makefile for the GALAHAD FISQP package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-04-27
 
 #  ===========================================================================
@@ -29,13 +29,13 @@ TESTDEPS = make_copyright make_cutest_functions
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions

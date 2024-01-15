@@ -315,7 +315,7 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiidOO", &status, &m, &n, &radius, 
+    if(!PyArg_ParseTuple(args, "iiidOO", &status, &m, &n, &radius,
                          &py_u, &py_v))
         return NULL;
 
@@ -331,14 +331,14 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
     // Call lstr_solve_direct
     lstr_solve_problem(&data, &status, m, n, radius, x, u, v);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -393,7 +393,7 @@ static PyObject* py_lstr_terminate(PyObject *self){
 /* lstr python module method table */
 static PyMethodDef lstr_module_methods[] = {
     {"initialize", (PyCFunction) py_lstr_initialize, METH_NOARGS,NULL},
-    {"load_options", (PyCFunction) py_lstr_load_options, 
+    {"load_options", (PyCFunction) py_lstr_load_options,
      METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_problem", (PyCFunction) py_lstr_solve_problem, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_lstr_information, METH_NOARGS, NULL},

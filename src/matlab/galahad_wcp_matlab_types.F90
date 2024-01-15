@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 20th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_WCP_MATLAB_TYPES
@@ -51,7 +51,7 @@
         mwPointer :: analyse, factorize, solve
         mwPointer :: clock_total, clock_preprocess, clock_find_dependent
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: WCP_pointer_type
         mwPointer :: pointer
@@ -62,7 +62,7 @@
         TYPE ( WCP_time_pointer_type ) :: time_pointer
         TYPE ( FDC_pointer_type ) :: FDC_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  W C P _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -142,22 +142,22 @@
         CASE( 'perturbation_strategy' )
           CALL MATLAB_get_value( ps, 'perturbation_strategy',                  &
                                  pc, WCP_control%perturbation_strategy )
-        CASE( 'infinity' )                                                     
+        CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, WCP_control%infinity )
-        CASE( 'identical_bounds_tol' )                                         
+        CASE( 'identical_bounds_tol' )
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, WCP_control%identical_bounds_tol )
-        CASE( 'pivot_tol_for_dependencies' )                                   
+        CASE( 'pivot_tol_for_dependencies' )
           CALL MATLAB_get_value( ps, 'pivot_tol_for_dependencies',             &
                                  pc, WCP_control%pivot_tol_for_dependencies )
-        CASE( 'zero_pivot' )                                                   
+        CASE( 'zero_pivot' )
           CALL MATLAB_get_value( ps, 'zero_pivot',                             &
                                  pc, WCP_control%zero_pivot )
-        CASE( 'cpu_time_limit' )                                               
+        CASE( 'cpu_time_limit' )
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                                  pc, WCP_control%cpu_time_limit )
-        CASE( 'clock_time_limit' )         
+        CASE( 'clock_time_limit' )
           CALL MATLAB_get_value( ps, 'clock_time_limit',                       &
                                  pc, WCP_control%clock_time_limit )
         CASE( 'stop_p' )
@@ -211,13 +211,13 @@
         CASE( 'perturbation_small' )
           CALL MATLAB_get_value( ps, 'perturbation_small',                     &
                                  pc, WCP_control%perturbation_small )
-        CASE( 'treat_zero_bounds_as_general' )                                 
+        CASE( 'treat_zero_bounds_as_general' )
           CALL MATLAB_get_value( ps, 'treat_zero_bounds_as_general',           &
-                                 pc, WCP_control%treat_zero_bounds_as_general ) 
-        CASE( 'space_critical' )                                               
+                                 pc, WCP_control%treat_zero_bounds_as_general )
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, WCP_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, WCP_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, WCP_control%deallocate_error_fatal )
         CASE( 'remove_dependencies' )
@@ -605,11 +605,11 @@
       CALL MATLAB_copy_to_ptr( WCP_pointer%pointer,                            &
                                'bad_alloc', WCP_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( WCP_inform%factorization_status,                &
-                               mxGetPr( WCP_pointer%factorization_status ) )    
+                               mxGetPr( WCP_pointer%factorization_status ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%factorization_integer,               &
-                               mxGetPr( WCP_pointer%factorization_integer ) )   
+                               mxGetPr( WCP_pointer%factorization_integer ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%factorization_real,                  &
-                               mxGetPr( WCP_pointer%factorization_real ) )      
+                               mxGetPr( WCP_pointer%factorization_real ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%iter,                                &
                                mxGetPr( WCP_pointer%iter ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%nfacts,                              &
@@ -625,9 +625,9 @@
       CALL MATLAB_copy_to_ptr( WCP_inform%feasible,                            &
                                mxGetPr( WCP_pointer%feasible ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%obj,                                 &
-                               mxGetPr( WCP_pointer%obj ) )                     
+                               mxGetPr( WCP_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%mu_final_target_max,                 &
-                               mxGetPr( WCP_pointer%mu_final_target_max ) )  
+                               mxGetPr( WCP_pointer%mu_final_target_max ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%non_negligible_pivot,                &
                                mxGetPr( WCP_pointer%non_negligible_pivot ) )
 

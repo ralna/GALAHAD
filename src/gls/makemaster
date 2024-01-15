@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD GLS package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -20,7 +20,7 @@ PACKAGE = GLS
 
 DEPENDENCIES = make_dummy make_zd11 make_smt make_ma33
 
-#  auxiliary packages that the C interface to the current package depends 
+#  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_common
@@ -42,11 +42,11 @@ TESTS = test_full
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -54,5 +54,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

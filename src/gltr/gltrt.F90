@@ -11,7 +11,7 @@
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    REAL ( KIND = rp_ ), DIMENSION( 0 ) :: X0, R0, VECTOR0
    TYPE ( GLTR_data_type ) :: data
-   TYPE ( GLTR_control_type ) :: control        
+   TYPE ( GLTR_control_type ) :: control
    TYPE ( GLTR_inform_type ) :: info
 
 !  ==============
@@ -35,7 +35,7 @@
       IF ( pass == 2 ) control%unitm = .FALSE. ; radius = 1000.0_rp_
       IF ( pass == 4 ) THEN
            radius = radius / two ; info%status = 4
-      END IF           
+      END IF
       IF ( pass == 5 ) radius = 0.0001_rp_
       IF ( pass == 7 ) THEN
          radius = 0.1_rp_ ; control%boundary = .TRUE. ; info%status = 4
@@ -55,7 +55,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
          CALL GLTR_solve( n, radius, f, X, R, VECTOR, data, control, info )
 
 ! Branch as a result of info%status
@@ -64,12 +64,12 @@
 
 !  Form the preconditioned gradient
 
-         CASE( 2, 6 )                  
+         CASE( 2, 6 )
             VECTOR = VECTOR / two
 
 !  Form the matrix-vector product
 
-         CASE ( 3, 7 )                 
+         CASE ( 3, 7 )
             IF ( pass == 2 .OR. pass == 6 .OR. pass == 7 .OR. pass == 8 ) THEN
                H_vector( 1 ) =  two * VECTOR( 1 ) + VECTOR( 2 )
                DO i = 2, n - 1
@@ -96,11 +96,11 @@
                END DO
                H_vector( n ) = VECTOR( n - 1 ) - two * VECTOR( n )
             END IF
-            VECTOR = H_vector 
+            VECTOR = H_vector
 
 !  Restart
 
-         CASE ( 5 )       
+         CASE ( 5 )
             IF ( pass == 10 .OR. pass == 11 ) THEN
                R( : n - 1 ) = 0.000000000001_rp_
                R( n ) = one
@@ -110,12 +110,12 @@
 
 !  Successful return
 
-         CASE ( - 2 : 0 )  
+         CASE ( - 2 : 0 )
             EXIT
 
 !  Error returns
 
-         CASE DEFAULT      
+         CASE DEFAULT
             EXIT
          END SELECT
       END DO
@@ -152,7 +152,7 @@ stop
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
          IF ( pass /= 4 ) THEN
            CALL GLTR_solve( nn, radius, f, X( : nn ), R( : nn ),                &
                             VECTOR( : nn ), data, control, info )
@@ -167,7 +167,7 @@ stop
 
 !  Form the preconditioned gradient
 
-         CASE( 2, 6 )                  
+         CASE( 2, 6 )
             IF ( pass /= 3 ) THEN
                VECTOR = VECTOR / two
             ELSE
@@ -176,28 +176,28 @@ stop
 
 !  Form the matrix-vector product
 
-         CASE ( 3, 7 )                 
+         CASE ( 3, 7 )
             H_vector( 1 ) = - two * VECTOR( 1 ) + VECTOR( 2 )
             DO i = 2, n - 1
               H_vector( i ) = VECTOR( i - 1 ) - two * VECTOR( i ) +         &
                               VECTOR( i + 1 )
             END DO
             H_vector( n ) = VECTOR( n - 1 ) - two * VECTOR( n )
-            VECTOR = H_vector 
+            VECTOR = H_vector
 
 !  Restart
 
-         CASE ( 5 )       
+         CASE ( 5 )
             R = one
 
 !  Successful return
 
-         CASE ( - 2 : 0 )  
+         CASE ( - 2 : 0 )
             EXIT
 
 !  Error returns
 
-         CASE DEFAULT      
+         CASE DEFAULT
             EXIT
          END SELECT
       END DO

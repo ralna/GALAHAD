@@ -11,7 +11,7 @@ extra_differences = 1
 
 #  Hessian co-ordinate indices, NB upper triangle
 
-row = np.array([0,0,0,0,0,1,2,3,4])  
+row = np.array([0,0,0,0,0,1,2,3,4])
 col = np.array([0,1,2,3,4,1,2,3,4])
 #val = np.empty(ne)
 
@@ -40,7 +40,7 @@ for algorithm in range(1,6):
 
   # analyse the co-ordinate structure
   m = sha.analyse_matrix(n, ne, row, col, options)
-  print('\n Algorithm ' + str(algorithm) + ' - ' + str(m) + 
+  print('\n Algorithm ' + str(algorithm) + ' - ' + str(m) +
         ' differences required, one extra might help')
 
   # add a little flexibility just in case of (accidental) dependence of s

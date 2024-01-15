@@ -9,7 +9,7 @@
 !  February 1st 1995
 
    MODULE LANCELOT_SCALN_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE LANCELOT_TYPES_precision, ONLY: LANCELOT_problem_type,                &
                                          LANCELOT_data_type
@@ -17,10 +17,10 @@
                                           OTHERS_fdgrad
      USE LANCELOT_INITW_precision
      IMPLICIT NONE
-     
+
      PRIVATE
      PUBLIC :: SCALN_save_type, SCALN_get_scalings
-     
+
 !  Set other parameters
 
      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
@@ -52,10 +52,10 @@
 !  successful exit. If status is negative on exit, the user must set
 !  appropriate values and re-enter. Possible values of status are:
 !   -1  compute the values of the element functions and their derivatives
-!       at prob%X, and return the values in FUVALS. All other arguments 
+!       at prob%X, and return the values in FUVALS. All other arguments
 !       must be unaltered on re-entry
-!   -2  compute the values of the first derivatives of the the group 
-!       functions evaluated at FT, and return the values in GVALS( :, 2 ). 
+!   -2  compute the values of the first derivatives of the the group
+!       functions evaluated at FT, and return the values in GVALS( :, 2 ).
 !       All other arguments must be unaltered on re-entry
 
 !-----------------------------------------------
@@ -94,7 +94,7 @@
        REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -112,7 +112,7 @@
        REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
 !  Interface block for GROUP
 
@@ -152,7 +152,7 @@
 
 ! Initial entry: set up data
 
-     IF ( status == 0 ) THEN 
+     IF ( status == 0 ) THEN
 
        IF ( prob%n <= 0 .OR. prob%ng <= 0 ) RETURN
 
@@ -200,7 +200,7 @@
        data%S%EXTEND%lh = lmin
 
      END IF
-     
+
 !  ========================================================
 !  Call the main subroutine to perform the bulk of the work
 !  ========================================================
@@ -217,7 +217,7 @@
            stopga, stopca, prob%GSCALE, prob%ESCALE, prob%VSCALE, scaleg,      &
            scalev, prob%KNDOFG, prob%ITYPEE, prob%GXEQX, prob%INTREP, RANGE ,  &
            iout, iprint, buffer, fdgrad, status, S,                            &
-!    workspace                                                               
+!    workspace
            data%ISYMMD, data%ISYMMH, data%ISWKSP, data%ISTAJC, data%ISTAGV,    &
            data%ISVGRP, data%ISLGRP, data%IGCOLJ, data%IVALJR, data%IUSED ,    &
            data%ITYPER, data%ISSWTR, data%ISSITR, data%ISET  , data%ISVSET,    &
@@ -231,7 +231,7 @@
            ELFUN = ELFUN , ISTEPA = prob%ISTEPA, EPVALU = prob%EPVALU,         &
            GROUP = GROUP , ISTGPA = prob%ISTGPA,                               &
            ITYPEG = prob%ITYPEG, GPVALU = prob%GPVALU )
-     
+
 !  Just internal element evaluations will be performed
 !  ---------------------------------------------------
 
@@ -244,7 +244,7 @@
            stopga, stopca, prob%GSCALE, prob%ESCALE, prob%VSCALE, scaleg,      &
            scalev, prob%KNDOFG, prob%ITYPEE, prob%GXEQX, prob%INTREP, RANGE ,  &
            iout, iprint, buffer, fdgrad, status, S,                            &
-!    workspace                                                               
+!    workspace
            data%ISYMMD, data%ISYMMH, data%ISWKSP, data%ISTAJC, data%ISTAGV,    &
            data%ISVGRP, data%ISLGRP, data%IGCOLJ, data%IVALJR, data%IUSED ,    &
            data%ITYPER, data%ISSWTR, data%ISSITR, data%ISET  , data%ISVSET,    &
@@ -256,7 +256,7 @@
            data%LINK_elem_uses_var,                                            &
            data%S%EXTEND%l_link_e_u_v, data%S%EXTEND%llink_min,                &
            ELFUN = ELFUN , ISTEPA = prob%ISTEPA, EPVALU = prob%EPVALU )
-     
+
 !  Just internal group evaluations will be performed
 !  -------------------------------------------------
 
@@ -269,7 +269,7 @@
            stopga, stopca, prob%GSCALE, prob%ESCALE, prob%VSCALE, scaleg,      &
            scalev, prob%KNDOFG, prob%ITYPEE, prob%GXEQX, prob%INTREP, RANGE ,  &
            iout, iprint, buffer, fdgrad, status, S,                            &
-!    workspace                                                               
+!    workspace
            data%ISYMMD, data%ISYMMH, data%ISWKSP, data%ISTAJC, data%ISTAGV,    &
            data%ISVGRP, data%ISLGRP, data%IGCOLJ, data%IVALJR, data%IUSED ,    &
            data%ITYPER, data%ISSWTR, data%ISSITR, data%ISET  , data%ISVSET,    &
@@ -282,7 +282,7 @@
            data%S%EXTEND%l_link_e_u_v, data%S%EXTEND%llink_min,                &
            GROUP = GROUP, ISTGPA = prob%ISTGPA,                                &
            ITYPEG = prob%ITYPEG, GPVALU = prob%GPVALU )
-     
+
 !  Element and group evaluations will be performed via reverse communication
 !  -------------------------------------------------------------------------
 
@@ -295,7 +295,7 @@
            stopga, stopca, prob%GSCALE, prob%ESCALE, prob%VSCALE, scaleg,      &
            scalev, prob%KNDOFG, prob%ITYPEE, prob%GXEQX, prob%INTREP, RANGE ,  &
            iout, iprint, buffer, fdgrad, status, S,                            &
-!    workspace                                                               
+!    workspace
            data%ISYMMD, data%ISYMMH, data%ISWKSP, data%ISTAJC, data%ISTAGV,    &
            data%ISVGRP, data%ISLGRP, data%IGCOLJ, data%IVALJR, data%IUSED ,    &
            data%ITYPER, data%ISSWTR, data%ISSITR, data%ISET  , data%ISVSET,    &
@@ -377,7 +377,7 @@
      LOGICAL, INTENT( IN    ), DIMENSION( nel ) :: INTREP
 
 !--------------------------------------------------------------
-!   D u m m y   A r g u m e n t s  f o r   W o r k s p a c e 
+!   D u m m y   A r g u m e n t s  f o r   W o r k s p a c e
 !--------------------------------------------------------------
 
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lwtran, litran
@@ -390,7 +390,7 @@
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IGCOLJ, IVALJR
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IUSED, ITYPER
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISSWTR, ISSITR
-     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISVSET, INVSET 
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISVSET, INVSET
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISET, LIST_elements
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW_asmbl
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_comp_w
@@ -402,7 +402,7 @@
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ITRANS
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LINK_elem_uses_var
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: FUVALS_temp, X_temp
-     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WTRANS 
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WTRANS
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -423,7 +423,7 @@
        REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -441,7 +441,7 @@
        REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
 !  Interface block for GROUP
 
@@ -531,10 +531,10 @@
          ISVGRP, ISLGRP, IGCOLJ, IVALJR, IUSED , ITYPER, ISSWTR, ISSITR,       &
          ISET  , ISVSET, INVSET, LIST_elements, ISYMMH, IW_asmbl, NZ_comp_w,   &
          W_ws, W_el, W_in, H_el, H_in, status, alloc_status, bad_alloc,        &
-         .FALSE. ) 
+         .FALSE. )
 
      IF ( status > 0 ) THEN ; WRITE( iout, 2100 ) ; GO TO 610 ; END IF
-   
+
      S%igetfd = 0
 
 !  Set up the starting addresses for the element gradients with respect to
@@ -550,7 +550,7 @@
      IF ( external_el ) RETURN
 
 !  Evaluate the element function and derivative value
-       
+
  100 CONTINUE
      CALL ELFUN ( FUVALS, X, EPVALU, ncalc, ITYPEE, ISTAEV, IELVAR, INTVAR,    &
                   ISTADH, ISTEPA, ICALC, nel, nel + 1, ISTAEV( nel + 1 ) - 1,  &
@@ -571,30 +571,30 @@
 !  Store the values of the nonlinear elements for future use
 
        IF ( S%igetfd == 0 ) THEN
-     
+
           reallocate = .TRUE.
           IF ( ALLOCATED( X_temp ) ) THEN
             IF ( SIZE( X_temp ) < n ) THEN ; DEALLOCATE( X_temp )
             ELSE ; reallocate = .FALSE. ; END IF
           END IF
-          IF ( reallocate ) THEN 
+          IF ( reallocate ) THEN
             ALLOCATE( X_temp( n ), STAT = alloc_status )
             IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'X_temp'; GO TO 620
             END IF
           END IF
-       
+
           reallocate = .TRUE.
           IF ( ALLOCATED( FUVALS_temp ) ) THEN
             IF ( SIZE( FUVALS_temp ) < nel ) THEN
                DEALLOCATE( FUVALS_temp )
             ELSE ; reallocate = .FALSE. ; END IF
           END IF
-          IF ( reallocate ) THEN 
+          IF ( reallocate ) THEN
             ALLOCATE( FUVALS_temp( nel ), STAT = alloc_status )
             IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'FUVAL_'; GO TO 620
             END IF
           END IF
-       
+
           X_temp( : n ) = X( : n )
           FUVALS_temp( : nel ) = FUVALS( : nel )
           centrl = .TRUE.
@@ -643,8 +643,8 @@
 
 !  Compute the group function values
 
-     IF ( S%altriv ) THEN 
-       GVALS( : ng, 2 ) = FT( : ng ) 
+     IF ( S%altriv ) THEN
+       GVALS( : ng, 2 ) = FT( : ng )
      ELSE
 
 !  If necessary, return to the calling program to obtain the group function
@@ -666,7 +666,7 @@
      END IF
 
 !  2. Form the Jacobian matrix of the nonlinear function (group( 1 ), .... ,
-!     group(NG))(transpose). 
+!     group(NG))(transpose).
 
      lgrjac = ISTAGV( ng + 1 ) - 1
 
@@ -677,61 +677,61 @@
        IF ( SIZE( IRNGRJ ) < lgrjac ) THEN ; DEALLOCATE( IRNGRJ )
        ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( IRNGRJ( lgrjac ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'IRNGRJ'; GO TO 620 ; END IF
      END IF
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( ICNGRJ ) ) THEN
        IF ( SIZE( ICNGRJ ) < lgrjac ) THEN ; DEALLOCATE( ICNGRJ )
        ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( ICNGRJ( lgrjac ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'ICNGRJ'; GO TO 620 ; END IF
      END IF
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( GRJAC ) ) THEN
        IF ( SIZE( GRJAC ) < lgrjac ) THEN ; DEALLOCATE( GRJAC )
        ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( GRJAC( lgrjac ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'GRJAC'; GO TO 620 ; END IF
      END IF
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( GRPSCA ) ) THEN
        IF ( SIZE( GRPSCA ) < ng ) THEN ; DEALLOCATE( GRPSCA )
        ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( GRPSCA( ng ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'GRPSCA'; GO TO 620 ; END IF
      END IF
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( WK_n ) ) THEN
        IF ( SIZE( WK_n ) < n ) THEN ; DEALLOCATE( WK_n )
        ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( WK_n( n ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'WK_n'; GO TO 620 ; END IF
      END IF
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( WK_t ) ) THEN
        IF ( SIZE( WK_t ) < MAX( ng, n ) ) THEN ; DEALLOCATE( WK_t )
        ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( WK_t( MAX( ng, n ) ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'WK_t'; GO TO 620 ; END IF
      END IF
-  
+
 !  Consider the IG-th group
 
      nnzgrj = 0
@@ -922,7 +922,7 @@
 
  610 CONTINUE
      DEALLOCATE( ISTAGV, ISVGRP )
-     
+
      RETURN
 
 !  Unsuccessful returns
@@ -990,7 +990,7 @@
 
      REAL ( KIND = rp_ ), DIMENSION( m ) :: ROW_COUNT, M_INV_SIG
      REAL ( KIND = rp_ ), DIMENSION( n ) :: COL_COUNT, COL_RHS, SHIFT_C
-     
+
      IF ( m < 1 .OR. n < 1 ) RETURN
 
 !  Set the stopping tolerance
@@ -1042,7 +1042,7 @@
 
 !  Set initial values
 
-     e = zero ; q = one ; 
+     e = zero ; q = one ;
 !    ss = DOT_PRODUCT( ROW_COUNT, R ** 2 )
      ss = zero ; DO k = 1, m ; ss = ss + ROW_COUNT( k ) * R( k ) ** 2 ; END DO
      IF ( ss > stop_tol ) THEN
@@ -1151,4 +1151,4 @@
 
 
 
- 
+

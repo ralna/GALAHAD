@@ -10,7 +10,7 @@
    REAL ( KIND = rp_ ) :: power = 3.0_rp_
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLRT_full_data_type ) :: data
-   TYPE ( GLRT_control_type ) :: control        
+   TYPE ( GLRT_control_type ) :: control
    TYPE ( GLRT_inform_type ) :: inform
 
    CALL GLRT_initialize( data, control, inform )
@@ -36,7 +36,7 @@
                              VECTOR( i + 1 )
            END DO
            H_vector( n ) = VECTOR( n - 1 ) + 2.0_rp_ * VECTOR( n )
-           VECTOR = H_vector 
+           VECTOR = H_vector
          CASE ( 4 ) ! restart
            R = 1.0_rp_
          CASE ( 0 )  ! successful return

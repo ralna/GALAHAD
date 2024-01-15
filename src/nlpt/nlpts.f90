@@ -6,7 +6,7 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
   INTEGER, PARAMETER                :: wp = KIND( 1.0D+0 )
   INTEGER,           PARAMETER      :: iout = 6        ! stdout and stderr
   REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
-  TYPE( NLPT_problem_type     )     :: problem 
+  TYPE( NLPT_problem_type     )     :: problem
 ! Set the problem up.
   problem%pname    = 'EXAMPLE'
   problem%n        = 2
@@ -17,7 +17,7 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
   ALLOCATE( problem%equation( problem%m ), problem%linear( problem%m ),        &
             problem%c( problem%m ) , problem%c_l( problem%m ),                 &
             problem%c_u( problem%m), problem%y( problem%m ),                   &
-            problem%cnames( problem%m ) ) 
+            problem%cnames( problem%m ) )
   problem%J_ne     = 4
   ALLOCATE( problem%J_val( problem%J_ne ), problem%J_row( problem%J_ne ),      &
             problem%J_col( problem%J_ne ) )

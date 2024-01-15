@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.6. March 1st, 2014
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LLST_MATLAB_TYPES
@@ -52,7 +52,7 @@
         mwPointer :: total, assemble, analyse, factorize, solve
         mwPointer :: clock_total, clock_assemble
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: LLST_history_pointer_type
         mwPointer :: pointer
@@ -70,7 +70,7 @@
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
         TYPE ( SLS_pointer_type ) :: SLS_pointer
         TYPE ( IR_pointer_type ) :: IR_pointer
-      END TYPE 
+      END TYPE
 
     CONTAINS
 

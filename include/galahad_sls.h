@@ -146,7 +146,7 @@ http://hsl.rl.ac.uk
 The solver \c SSIDS is from the SPRAL sparse-matrix collection,
 and is available as part of GALAHAD.
 
-The solver \c MUMPS is available from Mumps Technologies in France, and 
+The solver \c MUMPS is available from Mumps Technologies in France, and
 version 5.5.1 or above is sufficient.
 To obtain \c MUMPS, see
 
@@ -164,7 +164,7 @@ To obtain this version of \c PARDISO, see
 
 https://software.intel.com/content/www/us/en/develop/tools/oneapi.html .
 
-The solver \c PaStix is available from Inria in France, and 
+The solver \c PaStix is available from Inria in France, and
 version 6.2 or above is sufficient.
 To obtain \c PaStiX, see
 
@@ -204,13 +204,13 @@ HSL 2011, A collection of Fortran codes for large-scale scientific
 
 and papers
 
-E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L'Excellent, A. Guermouche 
+E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L'Excellent, A. Guermouche
 and F.-H. Rouet,
 ``Robust memory-aware mappings for parallel multifrontal factorizations''.
 SIAM Journal on Scientific Computing, \b 38(3) (2016), C256--C279,
 
 P. R. Amestoy, I. S. Duff, J. Koster and J.-Y. L'Excellent.
-``A fully asynchronous multifrontal solver using distributed 
+``A fully asynchronous multifrontal solver using distributed
 dynamic scheduling''.
 SIAM Journal on Matrix Analysis and Applications \b 23(1) (2001) 15-41,
 
@@ -221,11 +221,11 @@ IBM Research Report RC 21886, IBM T. J. Watson Research Center,
 NY 10598, USA (2010),
 
 P. Henon, P. Ramet and J. Roman,
-``PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric 
+``PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric
 Definite Systems''.
 Parallel Computing, \b 28(2) (2002) 301--321,
 
-J.D. Hogg, E. Ovtchinnikov and J.A. Scott. 
+J.D. Hogg, E. Ovtchinnikov and J.A. Scott.
 ``A sparse symmetric indefinite direct solver for GPU architectures''.
 ACM Transactions on Mathematical Software \b 42(1) (2014), Article 1,
 

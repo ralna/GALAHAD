@@ -99,7 +99,7 @@ int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     real_wp_ freq = myuserdata->freq;
     real_wp_ mag = myuserdata->mag;
 
-    *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) 
+    *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2)
            + mag * cos( freq * x[0]) + x[0] + x[1] + x[2];
     return 0;
 }
@@ -118,7 +118,7 @@ int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
           const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;

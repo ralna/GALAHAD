@@ -7,10 +7,10 @@
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QP_data_type ) :: data
-   TYPE ( QP_control_type ) :: control        
+   TYPE ( QP_control_type ) :: control
    TYPE ( QP_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: s
-   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4 
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -26,7 +26,7 @@
    p%X_u = (/ 1.0_rp_, infinity, 2.0_rp_ /)     ! variable upper bound
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_ ! start from zero
 !  sparse co-ordinate storage format
-   CALL SMT_put( p%H%type, 'COORDINATE', s )     ! Specify co-ordinate 
+   CALL SMT_put( p%H%type, 'COORDINATE', s )     ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )

@@ -11,7 +11,7 @@
 !   development started October 20th 2007
 !   originally released GALAHAD Version 2.1. October 20th 2007
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_LLS_precision
@@ -35,7 +35,7 @@
       USE GALAHAD_SBLS_precision
       USE GALAHAD_GLTR_precision
       USE GALAHAD_SPECFILE_precision
-   
+
       IMPLICIT NONE
 
       PRIVATE
@@ -62,8 +62,8 @@
 
       TYPE, PUBLIC :: LLS_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
         INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
@@ -73,8 +73,8 @@
 !   the level of output required is specified by print_level
 
         INTEGER ( KIND = ip_ ) :: print_level = 0
- 
-!   preconditioner. The preconditioner to be used for the CG is defined by 
+
+!   preconditioner. The preconditioner to be used for the CG is defined by
 !    preconditioner. Possible values are
 !
 !    variable:
@@ -106,7 +106,7 @@
         LOGICAL :: deallocate_error_fatal = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -186,7 +186,7 @@
 
         INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
-!  the value of the objective function at the best estimate of the solution 
+!  the value of the objective function at the best estimate of the solution
 !   determined by LLS_solve
 
         REAL ( KIND = rp_ ) :: obj = HUGE( one )
@@ -218,7 +218,7 @@
 !
 !  Default control data for LLS. This routine should be called before
 !  LLS_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -230,8 +230,8 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( LLS_data_type ), INTENT( OUT ) :: data
-      TYPE ( LLS_control_type ), INTENT( OUT ) :: control        
-      TYPE ( LLS_inform_type ), INTENT( OUT ) :: inform 
+      TYPE ( LLS_control_type ), INTENT( OUT ) :: control
+      TYPE ( LLS_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
 
@@ -263,7 +263,7 @@
 
       data%new_h = .TRUE.
       data%new_c = .TRUE.
-      RETURN  
+      RETURN
 
 !  End of LLS_initialize
 
@@ -273,10 +273,10 @@
 
       SUBROUTINE LLS_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LLS_initialize could (roughly) 
+!  The defauly values as given by LLS_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN LLS SPECIFICATIONS (DEFAULT)
@@ -292,7 +292,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LLS_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LLS_control_type ), INTENT( INOUT ) :: control
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -322,7 +322,7 @@
 
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
-      spec( print_level )%keyword = 'print-level' 
+      spec( print_level )%keyword = 'print-level'
       spec( preconditioner )%keyword = 'preconditioner-used'
 
 !  Real key-words
@@ -416,9 +416,9 @@
 !
 !     subject to    || S^{-1} x ||_2 <= Delta
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), 
-!  A is an m by n matrix, P and S are non-singular m x m and n x n 
-!  diagonal matries, c is an m-vector and Delta is a constant, using 
+!  where x is a vector of n components ( x_1, .... , x_n ),
+!  A is an m by n matrix, P and S are non-singular m x m and n x n
+!  diagonal matries, c is an m-vector and Delta is a constant, using
 !  a preconditioned conjugate-gradient method.
 !  The subroutine is particularly appropriate when A is sparse
 !
@@ -426,11 +426,11 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, that must be set to 
+!   %new_problem_structure is a LOGICAL variable, that must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to LLS_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
@@ -438,11 +438,11 @@
 !
 !   %n is an INTEGER variable, that must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, that must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
-!   %A is a structure of type SMT_type used to hold the matrix A. 
+!
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -471,33 +471,33 @@
 !
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output A%row will contain
 !    the row numbers corresponding to the values in A%val, and thus in this
-!    case the output matrix will be available in both formats (i) and (ii).   
-! 
+!    case the output matrix will be available in both formats (i) and (ii).
+!
 !   %X is a REAL array of length %n, that must be set by the user
 !    to an estimate of the solution x. On successful exit, it will contain
 !    the required solution.
 !
 !   %C is a REAL array of length %m, that must be set by the user
 !    to the values of the array c of constant terms in || Ax + c ||
-!   
+!
 !  data is a structure of type LLS_data_type that holds private internal data
 !
-!  control is a structure of type LLS_control_type that controls the 
+!  control is a structure of type LLS_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to LLS_initialize. See LLS_initialize 
+!   the elements may be set by a call to LLS_initialize. See LLS_initialize
 !   for details
 !
-!  inform is a structure of type LLS_inform_type that provides 
-!    information on exit from LLS_solve. The component status 
+!  inform is a structure of type LLS_inform_type that provides
+!    information on exit from LLS_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !    -1 An allocation error occured; the status is given in the component
@@ -506,42 +506,42 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
 !       has been violated.
 !
-!    -4 an error has occured in SILS_analyse; the status as returned by 
+!    -4 an error has occured in SILS_analyse; the status as returned by
 !       AINFO%FLAG is given in the component sils_analyse_status
 !
-!    -5 an error has occured in SILS_factorize; the status as returned by 
+!    -5 an error has occured in SILS_factorize; the status as returned by
 !       FINFO%FLAG is given in the component sils_factorize_status
 !
-!    -6 an error has occured in SILS_solve; the status as returned by 
+!    -6 an error has occured in SILS_solve; the status as returned by
 !       SINFO%FLAG is given in the component sils_solve_status
 !
-!    -7 an error has occured in GLS_analyse; the status as returned by 
+!    -7 an error has occured in GLS_analyse; the status as returned by
 !       AINFO%FLAG is given in the component gls_analyse_status
 !
-!    -8 an error has occured in GLS_solve; the status as returned by 
+!    -8 an error has occured in GLS_solve; the status as returned by
 !       SINFO%FLAG is given in the component gls_solve_status
 !
 !    -9 the computed precondition is insufficient. Try another
 !
 !   -11 the residuals are large; the factorization may be unsatisfactory
 !
-!  On exit from LLS_solve, other components of inform give the 
+!  On exit from LLS_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = the status of the last attempted allocation/deallocation 
+!     alloc_status = the status of the last attempted allocation/deallocation
 !     bad_alloc = the name of the last array for which (de)allocation failed
 !     cg_iter = the total number of conjugate gradient iterations required.
-!     factorization_integer = the total integer workspace required for the 
+!     factorization_integer = the total integer workspace required for the
 !       factorization.
-!     factorization_real = the total real workspace required for the 
+!     factorization_real = the total real workspace required for the
 !       factorization.
-!     obj = the value of the objective function 1/2||Ax+c||^2 at the best 
+!     obj = the value of the objective function 1/2||Ax+c||^2 at the best
 !       estimate of the solution determined by LLS_solve.
 !     time%total = the total time spent in the package.
 !     time%factorize = the time spent factorizing the required matrices.
@@ -549,14 +549,14 @@
 !     SBLS_inform = inform components from SBLS
 !     GLTR_inform = inform components from GLTR
 !
-!   W is an optional REAL array of length prob%m, that if present must be set 
-!    by the user to the (nonzero) values of the diagonal scaling matrix W. 
+!   W is an optional REAL array of length prob%m, that if present must be set
+!    by the user to the (nonzero) values of the diagonal scaling matrix W.
 !    If W is absent, scaling with the identity is assumed.
-!   
-!   S is an optional REAL array of length prob%n, that if present must be set 
-!    by the user to the (nonzero) values of the diagonal trust-region scaling 
+!
+!   S is an optional REAL array of length prob%n, that if present must be set
+!    by the user to the (nonzero) values of the diagonal trust-region scaling
 !    matrix S. If S is absent, scaling with the identity is assumed.
-!   
+!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -573,12 +573,12 @@
       INTEGER ( KIND = ip_ ) :: i, j
       REAL ( KIND = rp_ ) :: time_end, clock_end
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
-!  Set initial values for inform 
+!  Set initial values for inform
 
       inform%status = GALAHAD_ok
       inform%alloc_status = 0 ; inform%bad_alloc = ''
@@ -592,21 +592,21 @@
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error,                                                &
             "( ' ', /, A, ' **  Error return ', I0,' from LLS ' )" )           &
-            prefix, inform%status 
+            prefix, inform%status
         RETURN
-      END IF 
+      END IF
 
 !  Return the value zero if there are no constraints
 
     IF ( prob%m == 0 ) THEN
-      prob%X = zero      
+      prob%X = zero
       CALL CPU_TIME( time_end ) ; CALL CLOCK_time( clock_end )
       inform%time%total = time_end - inform%time%total
       inform%time%clock_total = clock_end - inform%time%clock_total
       RETURN
     END IF
 
-!  If required, write out problem 
+!  If required, write out problem
 
       IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
         WRITE( control%out, "( ' n, m = ', 2I8 )" ) prob%n, prob%m
@@ -656,9 +656,9 @@
 !
 !     subject to    || S^{-1} x ||_2 <= Delta
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), 
-!  A is an m by n matrix, P and S are non-singular m x m and n x n 
-!  diagonal matries, c is an m-vector and Delta is a constant, using 
+!  where x is a vector of n components ( x_1, .... , x_n ),
+!  A is an m by n matrix, P and S are non-singular m x m and n x n
+!  diagonal matries, c is an m-vector and Delta is a constant, using
 !  a preconditioned conjugate-gradient method.
 !  The subroutine is particularly appropriate when A is sparse
 !
@@ -685,7 +685,7 @@
       REAL ( KIND = rp_ ) :: radius
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -699,7 +699,7 @@
     END IF
 
     IF ( m == 0 ) THEN
-      X = zero      
+      X = zero
       q = zero
       inform%status = GALAHAD_ok
       RETURN
@@ -714,14 +714,14 @@
 !  Single line of output per iteration
 !  but with additional timings for various operations
 
-      printt = out > 0 .AND. control%print_level >= 2 
+      printt = out > 0 .AND. control%print_level >= 2
 
-!  As per printt, but with checking of residuals, etc, and also with an 
+!  As per printt, but with checking of residuals, etc, and also with an
 !  indication of where in the code we are
 
       printw = out > 0 .AND. control%print_level >= 4
 
-      inform%GLTR_inform%status = 1 
+      inform%GLTR_inform%status = 1
       inform%GLTR_inform%negative_curvature = .TRUE.
 
       w_ne_id = PRESENT( W )
@@ -861,7 +861,7 @@
       data%ATc( : n ) = zero
       IF ( w_ne_id ) THEN
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             data%ATc( i ) = data%ATc( i )                                     &
@@ -883,7 +883,7 @@
         END SELECT
       ELSE
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             data%ATc( 1 : n )                                                  &
@@ -907,12 +907,12 @@
 !     WRITE( 6, "( ' ATc =      ', 4ES12.4, /, ( 5ES12.4 ) )" ) data%ATc( : n )
 
 !  Set initial data
-     
+
       IF ( control%radius > zero ) THEN
         radius = control%radius
       ELSE
         radius = SQRT( point1 * HUGE( one ) )
-      END IF 
+      END IF
 
       control%GLTR_control%f_0 = half * DOT_PRODUCT( C, C )
 
@@ -948,7 +948,7 @@
          &  A, ' Warning return from GLTR, status = ', I6 )" ) prefix,         &
               inform%GLTR_inform%status
           EXIT
-          
+
 !  Allocation errors
 
          CASE ( GALAHAD_error_allocate )
@@ -980,7 +980,7 @@
           IF ( printw ) WRITE( out,                                            &
              "( A, ' ............... precondition  ............... ' )" ) prefix
 
-          data%VECTOR( : n ) = data%VECTOR( : n )  * ( S( : n ) ) ** 2 
+          data%VECTOR( : n ) = data%VECTOR( : n )  * ( S( : n ) ) ** 2
 
 !!         control%SBLS_control%out = 6
 !!         control%SBLS_control%print_level = 2
@@ -1002,7 +1002,7 @@
 
           data%Ax( : m ) = zero
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, m
               data%Ax( i ) = data%Ax( i )                                      &
@@ -1062,7 +1062,7 @@
 !  Reform the initial residual
 
         CASE ( 5 )
-          
+
           IF ( printw ) WRITE( out,                                            &
             "( A, ' ................. restarting ................ ' )" ) prefix
 
@@ -1080,7 +1080,7 @@
       IF ( printw ) THEN
         data%Ax( : m ) = C( : m )
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             data%Ax( i )                                                      &
@@ -1125,7 +1125,7 @@
       END IF
 
       RETURN
- 
+
 !  Error returns
 
   900 CONTINUE
@@ -1164,7 +1164,7 @@
 !  Dummy arguments
 
       TYPE ( LLS_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLS_control_type ), INTENT( IN ) :: control        
+      TYPE ( LLS_control_type ), INTENT( IN ) :: control
       TYPE ( LLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables

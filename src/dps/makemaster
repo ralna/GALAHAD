@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD DPS package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2023-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -31,18 +31,18 @@ DEPENDS = arc tru
 
 CDEPENDENCIES = make_sls_ciface
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
-CDEPENDS = arc_ciface tru_ciface 
+CDEPENDS = arc_ciface tru_ciface
 
 #  auxiliary packages that the python interface to the current package depends
 #  on (prepend with make_pyiface_)
 
 PYDEPENDENCIES = make_sls_pyiface
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
-PYDEPENDS = arc_pyiface tru_pyiface 
+PYDEPENDS = arc_pyiface tru_pyiface
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -61,11 +61,11 @@ CUTEST_EXAMPLE = ALLINITU.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -73,5 +73,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

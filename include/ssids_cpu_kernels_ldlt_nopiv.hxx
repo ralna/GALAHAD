@@ -22,11 +22,11 @@
 namespace spral { namespace ssids { namespace cpu {
 
 int ldlt_nopiv_factor(int m, int n, precision_* a, int lda, precision_* work);
-void ldlt_nopiv_solve_fwd(int m, int n, precision_ const* a, int lda, 
+void ldlt_nopiv_solve_fwd(int m, int n, precision_ const* a, int lda,
    precision_ *x);
-void ldlt_nopiv_solve_diag(int m, int n, precision_ const* a, int lda, 
+void ldlt_nopiv_solve_diag(int m, int n, precision_ const* a, int lda,
    precision_ *x);
-void ldlt_nopiv_solve_bwd(int m, int n, precision_ const* a, int lda, 
+void ldlt_nopiv_solve_bwd(int m, int n, precision_ const* a, int lda,
    precision_ *x);
 
 }}} /* namespaces spral::ssids::cpu */

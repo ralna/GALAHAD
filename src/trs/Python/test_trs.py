@@ -78,7 +78,7 @@ trs.load_a(m, A_type, A_ne, A_row, A_col, A_ptr)
 
 # find minimum of quadratic within the trust region
 print("\n solve problem 3 with additional linear constraint")
-x, y = trs.solve_problem(n, radius, f, g, H_ne, H_val, 
+x, y = trs.solve_problem(n, radius, f, g, H_ne, H_val,
                          M_ne, M_val, m, A_ne, A_val)
 print(" x:",x)
 print(" y:",y)

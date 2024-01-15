@@ -9,7 +9,7 @@
 !  May 6th 2001
 
    MODULE LANCELOT_STRUTR_precision
-            
+
      USE GALAHAD_KINDS_precision
 
      PRIVATE
@@ -118,8 +118,8 @@
      REAL ( KIND = rp_ ) :: si, d_mod, d_mod2,  gdash, dm, df, md, hg2dash
      REAL ( KIND = rp_ ) :: scalee
      LOGICAL ::  nullwk
-  
-  
+
+
 !    WRITE(6, "( ' s ', 5ES12.4 )" ) S
 !    WRITE(6, "( '    ig     d_f         d_m     GXEQX  radius')" )
      md = prered / ng
@@ -131,7 +131,7 @@
 !  Change in the i-th model
 !  ::::::::::::::::::::::::
 
-!  The change is - [ g_i' s^T ( grad g_i + 1/2 hess g_i * s ) 
+!  The change is - [ g_i' s^T ( grad g_i + 1/2 hess g_i * s )
 !                    + 1/2 g_i'' (s^T grad g_i )^2 ]
 !  where g_i is the ith group
 
@@ -272,9 +272,9 @@
            GRJAC( IVALJR( istrgv : iendgv ) ) + half *                         &
              TEMP_el( ISVGRP( istrgv : iendgv ) )
        END IF
-!      WRITE(6,*) ' temp_el ', TEMP_el( ISVGRP( istrgv : iendgv ) ) 
+!      WRITE(6,*) ' temp_el ', TEMP_el( ISVGRP( istrgv : iendgv ) )
 
-!  Finally form - [ g_i' s^T ( grad g_i + 1/2 hess g_i * s ) 
+!  Finally form - [ g_i' s^T ( grad g_i + 1/2 hess g_i * s )
 !                   + 1/2 g_i'' (s^T grad g_i )^2 ]
 
        d_mod = zero ; d_mod2 = zero
@@ -307,7 +307,7 @@
 !  Meaningful elements
 
        IF ( ABS( dm ) > mu_meaningful_model * md ) THEN
-       
+
          IF ( df >= dm - ( one - eta_extremely_successful) * md ) THEN
            IF ( ared >= eta_successful * prered ) THEN
              RADII( ig ) = MIN( gamma_increase * RADII( ig ), radmax )

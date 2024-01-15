@@ -40,7 +40,7 @@ CDEPENDS = arc_ciface nls_ciface tru_ciface \
 
 PYDEPENDENCIES = make_pyiface_sls
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS = arc_pyiface nls_pyiface tru_pyiface \
             cqps_pyiface ermo_pyiface ism_pyiface

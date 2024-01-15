@@ -40,7 +40,7 @@ CDEPENDS =
 
 PYDEPENDENCIES = make_pyiface_sbls_deps make_pyiface_sbls make_pyiface_convert
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS =
 

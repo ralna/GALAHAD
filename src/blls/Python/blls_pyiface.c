@@ -538,8 +538,8 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiOiOOOOOO", &n, &o, &py_w, 
-                         &Ao_ne, &py_Ao_val, &py_b, &py_x_l, &py_x_u, 
+    if(!PyArg_ParseTuple(args, "iiOiOOOOOO", &n, &o, &py_w,
+                         &Ao_ne, &py_Ao_val, &py_b, &py_x_l, &py_x_u,
                          &py_x, &py_z))
         return NULL;
 
@@ -571,25 +571,25 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of g and x_stat
     npy_intp odim[] = {o}; // size of c
-    PyArrayObject *py_r = 
+    PyArrayObject *py_r =
       (PyArrayObject *) PyArray_SimpleNew(1, odim, NPY_DOUBLE);
     double *r = (double *) PyArray_DATA(py_r);
-    PyArrayObject *py_g = 
+    PyArrayObject *py_g =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call blls_solve_direct
     status = 1; // set status to 1 on entry
-    blls_solve_given_a(&data, NULL, &status, n, o, Ao_ne, Ao_val, 
+    blls_solve_given_a(&data, NULL, &status, n, o, Ao_ne, Ao_val,
                        b, x_l, x_u, x, z, r, g, x_stat, w, NULL);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < o; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < o; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -600,7 +600,7 @@ static PyObject* py_blls_solve_ls(PyObject *self, PyObject *args){
 
     // Return x, z, r, g and x_stat
     PyObject *solve_ls_return;
-    solve_ls_return = Py_BuildValue("OOOOO", py_x, py_z, py_r, py_g, 
+    solve_ls_return = Py_BuildValue("OOOOO", py_x, py_z, py_r, py_g,
                                      py_x_stat);
     Py_INCREF(solve_ls_return);
     return solve_ls_return;

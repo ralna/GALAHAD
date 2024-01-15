@@ -6,7 +6,7 @@
    REAL ( KIND = wp ), DIMENSION( n ) :: C, X
    TYPE ( SMT_type ) :: H, M
    TYPE ( TRS_data_type ) :: data
-   TYPE ( TRS_control_type ) :: control        
+   TYPE ( TRS_control_type ) :: control
    TYPE ( TRS_inform_type ) :: inform
    REAL ( KIND = wp ) :: f = 1.0_wp             ! constant term, f
    REAL ( KIND = wp ) :: radius = 10.0_wp       ! trust-region radius
@@ -16,10 +16,10 @@
    H%ne = 2 * n - 1
    ALLOCATE( H%val( H%ne ), H%row( H%ne ), H%col( H%ne ) )
    DO i = 1, n
-    H%row( i ) = i ; H%col( i ) = i ; H%val( i ) = - 2.0_wp 
+    H%row( i ) = i ; H%col( i ) = i ; H%val( i ) = - 2.0_wp
    END DO
    DO i = 1, n - 1
-    H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_wp 
+    H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_wp
    END DO
    CALL SMT_put( M%type, 'DIAGONAL', s )        ! Specify diagonal for M
    ALLOCATE( M%val( n ) ) ; M%val = 2.0_wp

@@ -8,7 +8,7 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, X
    TYPE ( SMT_type ) :: H
    TYPE ( RQS_data_type ) :: data
-   TYPE ( RQS_control_type ) :: control        
+   TYPE ( RQS_control_type ) :: control
    TYPE ( RQS_inform_type ) :: inform
    REAL ( KIND = rp_ ) :: f = 0.0_rp_           ! constant term, f
    REAL ( KIND = rp_ ) :: sigma = 10.0_rp_      ! regularisation weight
@@ -64,11 +64,11 @@
      DO i = 2, n2 - 1
        l = l + 1
        H%row( l ) = n2 ; H%col( l ) = i ; H%val( l ) = 2.0_rp_
-     END DO     
+     END DO
      DO i = n2 + 1, n - 1
        l = l + 1
        H%row( l ) = i ; H%col( l ) = n2 ; H%val( l ) = 2.0_rp_
-     END DO     
+     END DO
 
      CALL RQS_initialize( data, control )       ! Initialize control parameters
      control%print_level = 1

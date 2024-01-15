@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SILS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !     ---------------------------------------------
@@ -207,7 +207,7 @@
        INTEGER ( KIND = ip_ ) :: oor = 0    ! Number of indices out-of-range
        INTEGER ( KIND = ip_ ) :: dup = 0    ! Number of duplicates
        INTEGER ( KIND = ip_ ) :: maxfrt = - 1 ! Forecast maximum front size
-       INTEGER ( KIND = ip_ ) :: stat = 0   ! STAT value after allocate failure 
+       INTEGER ( KIND = ip_ ) :: stat = 0   ! STAT value after allocate failure
        INTEGER ( KIND = ip_ ) :: faulty = 0 ! OLD
        REAL ( KIND = rp_ ) :: opsa = - 1.0_rp_ ! Anticipated # ops. in assembly
        REAL ( KIND = rp_ ) :: opse = - 1.0_rp_ ! Anticipated # ops. in elimin
@@ -229,10 +229,10 @@
        INTEGER ( KIND = ip_ ) :: ntwo = - 1   ! Number 2x2 pivots
        INTEGER ( KIND = ip_ ) :: neig = - 1   ! Number negative eigenvalues
        INTEGER ( KIND = ip_ ) :: delay = - 1  ! Number delayed pivots (total)
-       INTEGER ( KIND = ip_ ) :: signc = - 1  ! Number pivot sign changes 
+       INTEGER ( KIND = ip_ ) :: signc = - 1  ! Number pivot sign changes
 !                                               (pivoting=3)
        INTEGER ( KIND = ip_ ) :: static = - 1 ! Number of static pivots chosen
-       INTEGER ( KIND = ip_ ) :: modstep = -1 ! First pivot modification 
+       INTEGER ( KIND = ip_ ) :: modstep = -1 ! First pivot modification
 !                                               (pivoting=4_
        INTEGER ( KIND = ip_ ) :: rank = - 1   ! Rank of original factorization
        INTEGER ( KIND = ip_ ) :: stat = - 1   ! STAT value after allocate fail

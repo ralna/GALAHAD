@@ -348,7 +348,7 @@ static PyObject* py_gltr_solve_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOO", &status, &n, &radius, 
+    if(!PyArg_ParseTuple(args, "iidOO", &status, &n, &radius,
                          &py_r, &py_v))
         return NULL;
 
@@ -364,7 +364,7 @@ static PyObject* py_gltr_solve_problem(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
@@ -372,7 +372,7 @@ static PyObject* py_gltr_solve_problem(PyObject *self, PyObject *args){
     gltr_solve_problem(&data, &status, n, radius, x, r, v);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < n; i++) printf("r %f\n", r[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -427,7 +427,7 @@ static PyObject* py_gltr_terminate(PyObject *self){
 /* gltr python module method table */
 static PyMethodDef gltr_module_methods[] = {
     {"initialize", (PyCFunction) py_gltr_initialize, METH_NOARGS,NULL},
-    {"load_options", (PyCFunction) py_gltr_load_options, 
+    {"load_options", (PyCFunction) py_gltr_load_options,
      METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_problem", (PyCFunction) py_gltr_solve_problem, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_gltr_information, METH_NOARGS, NULL},

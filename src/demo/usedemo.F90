@@ -10,8 +10,8 @@
 
    MODULE GALAHAD_USEDEMO_precision
 
-!  This is the driver program for running DEMO for a variety of computing 
-!  systems. It opens and closes all the files, allocate arrays, reads and 
+!  This is the driver program for running DEMO for a variety of computing
+!  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
      USE GALAHAD_KINDS_precision

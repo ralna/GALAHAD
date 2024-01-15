@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_GLRT_precision
-            
+
 !      ---------------------------------------------------------------------
 !      |                                                                   |
 !      | Solve the regularised quadratic minimization problem              |

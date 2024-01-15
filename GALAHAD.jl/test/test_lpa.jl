@@ -53,8 +53,8 @@ for d = 1:3
     lpa_import( control, data, status, n, m,
                 "coordinate", A_ne, A_row, A_col, Cint[] )
 
-    lpa_solve_lp( data, status, n, m, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    lpa_solve_lp( data, status, n, m, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -62,11 +62,11 @@ for d = 1:3
   if d == 2
     global st = 'R'
 
-    lpa_import( control, data, status, n, m, 
+    lpa_import( control, data, status, n, m,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    lpa_solve_lp( data, status, n, m, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    lpa_solve_lp( data, status, n, m, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -79,8 +79,8 @@ for d = 1:3
     lpa_import( control, data, status, n, m,
                 "dense", A_ne, Cint[], Cint[], Cint[] )
 
-    lpa_solve_lp( data, status, n, m, g, f, 
-                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+    lpa_solve_lp( data, status, n, m, g, f,
+                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                   x, c, y, z, x_stat, c_stat )
   end
 

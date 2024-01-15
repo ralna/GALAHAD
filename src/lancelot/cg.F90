@@ -9,7 +9,7 @@
 !  January 29th 1995
 
    MODULE LANCELOT_CG_precision
-            
+
       USE GALAHAD_KINDS_precision
 
       IMPLICIT NONE
@@ -181,7 +181,7 @@
 !          If status = 14, the last step taken is so small that further
 !                          progress is unlikely. The best estimate of the
 !                          solution is given in XT
-!          If status = 15, the preconditioner does not appear to be 
+!          If status = 15, the preconditioner does not appear to be
 !                          positive definite. The best estimate of the
 !                          solution is given in XT
 !  P      (REAL array of length at least n) contains the values of the
@@ -205,7 +205,7 @@
 !          the preconditioned steepest-descent direction every nresrt
 !          iterations. ** this variable is not altered by the subroutine
 !  twonrm (LOGICAL) the search for the minimizer will be terminated on the
-!          boundary of the spherical (2-norm) region ||X-X0||_2 <= R if and 
+!          boundary of the spherical (2-norm) region ||X-X0||_2 <= R if and
 !          only if twonrm is set to .TRUE. on initial (jumpto=1) entry.
 !          ** this variable is not altered by the subroutine
 !  r      (REAL) the radius, R, of the spherical region. r need not be
@@ -246,7 +246,7 @@
 !          if a maximization were actually taking place, by setting
 !          findmx to - 1.0. Normally findmx should be set to 1.0
 !  itercg (INTEGER) gives the number of conjugate gradient iterations taken
-!  itcgmx (INTEGER) gives the maximum number of conjugate gradient 
+!  itcgmx (INTEGER) gives the maximum number of conjugate gradient
 !         iterations permitted
 !  ifixed (INTEGER) gives the variable which most recently hits a bound
 !  DIST_bound (REAL) workspace of dimension n

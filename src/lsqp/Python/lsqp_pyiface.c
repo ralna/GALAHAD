@@ -710,7 +710,7 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOOOiOOOOOOOO", &n, &m, &f, &py_g,
                          &py_w, &py_x0, &A_ne, &py_A_val,
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
@@ -756,19 +756,19 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args){
     // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
+    PyArrayObject *py_c_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call lsqp_solve_direct
     status = 1; // set status to 1 on entry
-    lsqp_solve_qp(&data, &status, n, m, w, x0, g, f, A_ne, A_val, 
+    lsqp_solve_qp(&data, &status, n, m, w, x0, g, f, A_ne, A_val,
                     c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
 
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
@@ -786,7 +786,7 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args){
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *solve_qp_return;
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
+    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
                                                  py_x_stat, py_c_stat);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;

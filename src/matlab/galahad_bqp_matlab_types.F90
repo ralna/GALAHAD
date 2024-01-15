@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 19th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_BQP_MATLAB_TYPES
@@ -47,7 +47,7 @@
       TYPE, PUBLIC :: BQP_time_pointer_type
         mwPointer :: pointer
         mwPointer :: total, analyse, factorize, solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: BQP_pointer_type
         mwPointer :: pointer
@@ -55,7 +55,7 @@
         mwPointer :: iter, cg_iter, obj, norm_pg
         TYPE ( BQP_time_pointer_type ) :: time_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  B Q P _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -99,58 +99,58 @@
         CASE( 'print_level' )
           CALL MATLAB_get_value( ps, 'print_level',                            &
                                  pc, BQP_control%print_level )
-        CASE( 'start_print' )                                                  
+        CASE( 'start_print' )
           CALL MATLAB_get_value( ps, 'start_print',                            &
                                  pc, BQP_control%start_print )
-        CASE( 'stop_print' )                                                    
+        CASE( 'stop_print' )
           CALL MATLAB_get_value( ps, 'stop_print',                             &
                                  pc, BQP_control%stop_print )
-        CASE( 'print_gap' )                                                    
+        CASE( 'print_gap' )
           CALL MATLAB_get_value( ps, 'print_gap',                              &
                                  pc, BQP_control%print_gap )
-        CASE( 'ratio_cg_vs_sd' )                 
+        CASE( 'ratio_cg_vs_sd' )
           CALL MATLAB_get_value( ps, 'ratio_cg_vs_sd',                         &
                                  pc, BQP_control%ratio_cg_vs_sd )
-        CASE( 'change_max' )                                         
+        CASE( 'change_max' )
           CALL MATLAB_get_value( ps, 'change_max',                             &
                                  pc, BQP_control%change_max )
-        CASE( 'cg_maxit' )                                                    
+        CASE( 'cg_maxit' )
           CALL MATLAB_get_value( ps, 'cg_maxit',                               &
                                  pc, BQP_control%cg_maxit )
-        CASE( 'infinity' )                                                     
+        CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, BQP_control%infinity )
         CASE( 'stop_p' )
           CALL MATLAB_get_value( ps, 'stop_p',                                 &
                                  pc, BQP_control%stop_p )
-        CASE( 'stop_d' )                                                        
+        CASE( 'stop_d' )
           CALL MATLAB_get_value( ps, 'stop_d',                                 &
                                  pc, BQP_control%stop_d )
-        CASE( 'stop_c' )                                                        
+        CASE( 'stop_c' )
           CALL MATLAB_get_value( ps, 'stop_c',                                 &
                                  pc, BQP_control%stop_c )
-        CASE( 'identical_bounds_tol' )                                         
+        CASE( 'identical_bounds_tol' )
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, BQP_control%identical_bounds_tol )
-        CASE( 'stop_cg_relative' )                                         
+        CASE( 'stop_cg_relative' )
           CALL MATLAB_get_value( ps, 'stop_cg_relative',                       &
                                  pc, BQP_control%stop_cg_relative )
-        CASE( 'stop_cg_absolute' )                                         
+        CASE( 'stop_cg_absolute' )
           CALL MATLAB_get_value( ps, 'stop_cg_absolute',                       &
                                  pc, BQP_control%stop_cg_absolute )
-        CASE( 'zero_curvature' )                                         
+        CASE( 'zero_curvature' )
           CALL MATLAB_get_value( ps, 'zero_curvature',                         &
                                  pc, BQP_control%zero_curvature )
-        CASE( 'cpu_time_limit' )                                               
+        CASE( 'cpu_time_limit' )
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                                  pc, BQP_control%cpu_time_limit )
-        CASE( 'exact_arcsearch' )                                         
+        CASE( 'exact_arcsearch' )
           CALL MATLAB_get_value( ps, 'exact_arcsearch',                        &
                                  pc, BQP_control%exact_arcsearch )
-        CASE( 'space_critical' )                                               
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, BQP_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, BQP_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, BQP_control%deallocate_error_fatal )
         CASE( 'prefix' )
@@ -397,13 +397,13 @@
       CALL MATLAB_copy_to_ptr( BQP_pointer%pointer,                            &
                                'bad_alloc', BQP_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( BQP_inform%factorization_status,                &
-                               mxGetPr( BQP_pointer%factorization_status ) )    
+                               mxGetPr( BQP_pointer%factorization_status ) )
       CALL MATLAB_copy_to_ptr( BQP_inform%iter,                                &
-                               mxGetPr( BQP_pointer%iter ) )             
+                               mxGetPr( BQP_pointer%iter ) )
       CALL MATLAB_copy_to_ptr( BQP_inform%cg_iter,                             &
-                               mxGetPr( BQP_pointer%cg_iter ) )             
+                               mxGetPr( BQP_pointer%cg_iter ) )
       CALL MATLAB_copy_to_ptr( BQP_inform%obj,                                 &
-                               mxGetPr( BQP_pointer%obj ) )                     
+                               mxGetPr( BQP_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( BQP_inform%norm_pg,                             &
                                mxGetPr( BQP_pointer%norm_pg ) )
 

@@ -7,7 +7,7 @@
    IMPLICIT NONE
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, m = 3
    TYPE ( LMS_data_type ) :: data, data2
-   TYPE ( LMS_control_type ) :: control, control2       
+   TYPE ( LMS_control_type ) :: control, control2
    TYPE ( LMS_inform_type ) :: inform, inform2
    REAL ( KIND = rp_ ), DIMENSION( n ) :: S, Y, U, V
    INTEGER ( KIND = ip_ ) :: iter, fail, method, mem
@@ -16,7 +16,7 @@
 #ifdef GALAHAD_SINGLE
    REAL ( KIND = sp_ ) :: error_tol = 1.0_sp_
 #else
-   REAL ( KIND = dp_ ) :: error_tol = 0.00001_dp_ 
+   REAL ( KIND = dp_ ) :: error_tol = 0.00001_dp_
 #endif
 
 ! ==================== tests error returns ======================
@@ -32,7 +32,7 @@
    CALL LMS_initialize( data, control, inform ) !  initialize data
    control%print_level = 1
    CALL LMS_setup( n, data, control, inform )
-   delta = 0.0_rp_ ; S = 1.0_rp_ ; Y = S 
+   delta = 0.0_rp_ ; S = 1.0_rp_ ; Y = S
    CALL LMS_form( S, Y, delta, data, control, inform ) ! delta <= 0
    WRITE( 6, "( ' exit status = ', I0 )" ) inform%status
    CALL LMS_terminate( data, control, inform )  !  delete internal workspace
@@ -41,7 +41,7 @@
    control%print_level = 1
    control%method = 4
    CALL LMS_setup( n, data, control, inform )
-   delta = 1.0_rp_ ; S = 1.0_rp_ ; Y = S 
+   delta = 1.0_rp_ ; S = 1.0_rp_ ; Y = S
    CALL LMS_form( S, Y, delta, data, control, inform, lambda = - 1.0_rp_ )
    WRITE( 6, "( ' exit status = ', I0 )" ) inform%status
    CALL LMS_terminate( data, control, inform )  !  delete internal workspace
@@ -79,7 +79,7 @@
    CALL LMS_setup( n, data, control, inform )
    delta = 1.0_rp_ ; S = 1.0_rp_ ; Y = S
    CALL LMS_form( S, Y, delta, data, control, inform )
-   CALL LMS_change_method( data, control, inform ) ! .not. any_method 
+   CALL LMS_change_method( data, control, inform ) ! .not. any_method
    WRITE( 6, "( ' exit status = ', I0 )" ) inform%status
    CALL LMS_terminate( data, control, inform )  !  delete internal workspace
 
@@ -124,9 +124,9 @@
 
        IF ( method == 5 ) THEN
          lambda = 0.0_rp_ ! apply the shifted L_BFGS (inverse) with zero shift
-         CALL LMS_form( S, Y, delta, data, control, inform, lambda = lambda ) 
+         CALL LMS_form( S, Y, delta, data, control, inform, lambda = lambda )
        ELSE
-         CALL LMS_form( S, Y, delta, data, control, inform ) 
+         CALL LMS_form( S, Y, delta, data, control, inform )
        END IF
        IF ( inform%status /= 0 ) THEN
          WRITE( 6, "( ' update error, status = ', I0 )" ) inform%status
@@ -174,7 +174,7 @@
      control%method = 1
      control2%method = 4
 
-     CALL LMS_setup( n, data, control, inform ) ! firstly apply L-BFGS   
+     CALL LMS_setup( n, data, control, inform ) ! firstly apply L-BFGS
      CALL LMS_setup( n, data2, control2, inform2 ) ! then apply L_BFGS (inverse)
 
      fail = 0 ! count the failures
@@ -231,7 +231,7 @@
        WRITE( 6, "( 1X, I0, ' failures ' )" ) fail
      END IF
      CALL LMS_terminate( data, control, inform )  !  delete internal workspace
-     CALL LMS_terminate( data2, control2, inform2 ) 
+     CALL LMS_terminate( data2, control2, inform2 )
    END DO
 
 ! ==================== tests indididual methods ======================

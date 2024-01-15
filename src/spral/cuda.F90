@@ -3,7 +3,7 @@
 #include "spral_procedures.h"
 
 ! Provides interface definitions for CUDA functions
-module spral_cuda_precision  
+module spral_cuda_precision
   use spral_kinds_precision
   use, intrinsic :: iso_c_binding
   implicit none
@@ -292,7 +292,7 @@ contains
     implicit none
     type(C_PTR), intent(in) :: base
     integer(C_SIZE_T), intent(in) :: sz
-    
+
     c_ptr_plus_aligned = c_ptr_plus(base, aligned_size(sz))
   end function c_ptr_plus_aligned
 
@@ -313,7 +313,7 @@ contains
   character(len=200) function cudaGetErrorString(error)
     implicit none
     integer(C_IP_) :: error
- 
+
     integer(ip_) :: i
     type(C_PTR) :: cstr
     character(kind=C_CHAR), dimension(:), pointer, contiguous :: fstr

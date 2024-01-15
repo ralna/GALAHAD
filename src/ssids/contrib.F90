@@ -55,7 +55,7 @@ subroutine spral_ssids_contrib_get_data_precision(ccontrib, n, val, ldval, &
 
   type(contrib_type), pointer, volatile :: fcontrib
 ! type(contrib_type), pointer :: fcontrib
-   
+
   if (c_associated(ccontrib)) then
      call c_f_pointer(ccontrib, fcontrib)
 

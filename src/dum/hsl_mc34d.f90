@@ -16,7 +16,7 @@
      integer(ip_),  intent(inout) :: row(*)
      integer(ip_),  intent(inout) ::ptr(n+1)
      integer(ip_) :: iw(n) ! workspace
-     real(dp_), optional, intent(inout) :: a(*) 
-     integer(ip_),  optional, intent(in) :: sym_type 
+     real(dp_), optional, intent(inout) :: a(*)
+     integer(ip_),  optional, intent(in) :: sym_type
      end subroutine mc34_expand_double
    end module hsl_mc34_double

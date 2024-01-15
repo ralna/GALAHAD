@@ -8,7 +8,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. January 27th 2011
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_CLOCK
@@ -20,7 +20,7 @@
      USE GALAHAD_KINDS, ONLY : long_, sp_, dp_
 
      IMPLICIT NONE
- 
+
      PRIVATE
      PUBLIC :: CLOCK_time
 

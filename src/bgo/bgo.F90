@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_BGO_precision
-            
+
 !     ------------------------------------------------------------------
 !    |                                                                  |
 !    | BGO, an algorithm for bound-constrained global optimization      |

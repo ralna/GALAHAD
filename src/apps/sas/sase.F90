@@ -721,7 +721,7 @@
 !  before finding phi, fix l, r, theta and phi, and solve for xi and b
 
    f = 0.0_rp_
-   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ 
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_
    r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
@@ -778,7 +778,7 @@
 !  fix l, r, theta and phi, and solve for xi and b
 
    f = 0.0_rp_
-   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ 
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_
    r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    DO i = 1, obs
      alpha = 0.0_rp_

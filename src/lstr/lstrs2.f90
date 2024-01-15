@@ -26,8 +26,8 @@
 !  Set up data -
 
 !  A = ( I_m - yy^T/2y^Ty) D ( I_n - zz^T/2z^Tz), where
-!  y_i = 1 (i=1:n), z_i = 1 (i=1:n:2), -1 (i=2:n:2) and 
-!  D=0 except D_ii = c + e*i (i=1:min(m,n)), 
+!  y_i = 1 (i=1:n), z_i = 1 (i=1:n:2), -1 (i=2:n:2) and
+!  D=0 except D_ii = c + e*i (i=1:min(m,n)),
 !  e = (1-rho)/(1-min(m,n)), c = 1-e
 !  b_i = 1
 
@@ -37,13 +37,13 @@
    DO dim = 1, dim_max
 !  DO dim = 3, 3
     SELECT CASE( dim )
-    CASE ( 1 ) 
+    CASE ( 1 )
       n = 5000
       m = 1000
-    CASE ( 2 ) 
+    CASE ( 2 )
       n = 1000
       m = 5000
-    CASE ( 3 ) 
+    CASE ( 3 )
       n = 5000
       m = 5000
     END SELECT
@@ -54,19 +54,19 @@
     Y = one
     DO i = 1, n, 2
       Z( i ) = one ; Z( i + 1 ) = - one
-    END DO 
+    END DO
     tyty = two * DOT_PRODUCT( Y, Y )
     tztz = two * DOT_PRODUCT( Z, Z )
 
     DO cond = 1, cond_max
 !   DO cond = 2, 2
      rho = rhos( cond )
- 
+
      e = ( one - rho ) / ( one - mn ) ; c = one - e
      DO i = 1, mn
        D( i ) = c + e * i
      END DO
-   
+
      DO rad = 1, rad_max
 !    DO rad = 3, 3
       radius = radii( rad )
@@ -150,7 +150,7 @@
    END DO
 
    DO rad = 1, rad_max
-     DO cond = 1, cond_max 
+     DO cond = 1, cond_max
       WRITE( 45, "( F0.5, ' & ' , F0.0, ' & ' )" )                             &
           radii( rad ), one / rhos( cond )
      WRITE( 45, "( 3 ( I4, ' & ',  F5.1, ' & ', I4, ' & ' ) )" )               &

@@ -1,21 +1,21 @@
 % GALAHAD_LSRT -
 %
-%  Given an m by n matrix A, an m-vector b, and scalars p and sigma, find 
+%  Given an m by n matrix A, an m-vector b, and scalars p and sigma, find
 %  an approximate solution of the REGULARISED LEAST-L_2-NORM subproblem
-%    minimize || A x - b ||_2 + 1/p sigma ||x||^p_2 
+%    minimize || A x - b ||_2 + 1/p sigma ||x||^p_2
 %  using an iterative method. Here ||.||_2 is the Euclidean (l_2-)norm.
-%  Advantage is taken of sparse A. 
+%  Advantage is taken of sparse A.
 %
 %  Simple usage -
 %
 %  to solve the regularised least-l_2-norm subproblem
-%   [ x, obj, inform ] 
+%   [ x, obj, inform ]
 %     = galahad_lsrt( A, b, p, sigma, mu, control )
 %
 %  Sophisticated usage -
 %
 %  to initialize data and control structures prior to solution
-%   [ control ] 
+%   [ control ]
 %     = galahad_lsrt( 'initial' )
 %
 %  to solve the problem using existing data structures
@@ -36,7 +36,7 @@
 %    control: a structure containing control parameters.
 %            The components are of the form control.value, where
 %            value is the name of the corresponding component of
-%            the derived type LSRT_CONTROL as described in the 
+%            the derived type LSRT_CONTROL as described in the
 %            manual for the fortran 90 package GALAHAD_LSRT.
 %            See: http://galahad.rl.ac.uk/galahad-www/doc/lsrt.pdf
 %
@@ -49,8 +49,8 @@
 %   inform: a structure containing information parameters
 %           The components are of the form inform.value, where
 %           value is the name of the corresponding component of the
-%           derived type LSRT_INFORM as described in the manual for 
-%           the fortran 90 package GALAHAD_LSRT. 
+%           derived type LSRT_INFORM as described in the manual for
+%           the fortran 90 package GALAHAD_LSRT.
 %           See: http://galahad.rl.ac.uk/galahad-www/doc/lsrt.pdf
 %           Note that as the objective value is already available
 %           the component obj from LSRT_inform is omitted.

@@ -47,7 +47,7 @@ z = np.array([0.0,0.0,0.0])
 # find optimum of qp
 #print("\nsolve lsqp")
 x, c, y, z, x_stat, c_stat \
-  = lsqp.solve_qp(n, m, f, g, w, x0, A_ne, A_val, 
+  = lsqp.solve_qp(n, m, f, g, w, x0, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)

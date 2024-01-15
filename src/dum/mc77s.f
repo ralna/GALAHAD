@@ -7,7 +7,7 @@
       INTEGER ( KIND = ip_ ) :: ICNTL( LICNTL )
       REAL ( KIND = sp_ ) :: CNTL( LCNTL )
       ICNTL( 1 ) = - 1
-!     WRITE( 6, 
+!     WRITE( 6,
 !    & "( ' We regret that the solution options that you have', /,
 !    &    ' chosen are not all freely available with GALAHAD.', /,
 !    &    ' If you have HSL (formerly the Harwell Subroutine', /,
@@ -17,7 +17,7 @@
 !    &    '   $GALAHAD/src/makedefs/packages for details.' )" )
       END
 
-      SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw, 
+      SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,
      &                  ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
@@ -39,7 +39,7 @@
        INFO( 1 ) = GALAHAD_unavailable_option
       END
 
-      SUBROUTINE MC77B( job, m, n, nnz, IRN, JCN, A, IW, liw, DW, ldw, 
+      SUBROUTINE MC77B( job, m, n, nnz, IRN, JCN, A, IW, liw, DW, ldw,
      &                  ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
@@ -61,7 +61,7 @@
        INFO( 1 ) = GALAHAD_unavailable_option
       END
 
-      SUBROUTINE MC77C( job, m, n, A, lda, IW, liw, DW, ldw, 
+      SUBROUTINE MC77C( job, m, n, A, lda, IW, liw, DW, ldw,
      &                  ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS

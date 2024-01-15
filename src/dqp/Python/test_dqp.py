@@ -44,7 +44,7 @@ options['sbls_options']['definite_linear_solver'] = 'sytr '
 #print("options:", options)
 
 # load data (and optionally non-default options)
-dqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+dqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -56,7 +56,7 @@ z = np.array([0.0,0.0,0.0])
 # find optimum of qp
 print("\n 1st problem: solve qp")
 x, c, y, z, x_stat, c_stat \
-  = dqp.solve_qp(n, m, f, g, H_ne, H_val, 
+  = dqp.solve_qp(n, m, f, g, H_ne, H_val,
                  A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)
@@ -83,7 +83,7 @@ H_type = 'shifted_least_distance'
 dqp.initialize()
 
 # load data (and optionally non-default options)
-dqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+dqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -95,7 +95,7 @@ z = np.array([0.0,0.0,0.0])
 # find optimum of sldqp
 print("\n 2nd problem: solve sldqp")
 x, c, y, z, x_stat, c_stat \
-  = dqp.solve_sldqp(n, m, f, g, w, x0, 
+  = dqp.solve_sldqp(n, m, f, g, w, x0,
                     A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)

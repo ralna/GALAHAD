@@ -50,7 +50,7 @@ for d = 1:3
   if d == 1
     global st = 'C'
 
-    blls_import( control, data, status, n, o, 
+    blls_import( control, data, status, n, o,
                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, Cint[] )
 
     blls_solve_blls_given_a( data, status, n, o, m, Ao_ne, Ao_val, b, sigma,
@@ -61,7 +61,7 @@ for d = 1:3
   if d == 2
     global st = 'R'
 
-    blls_import( control, data, status, n, o,  
+    blls_import( control, data, status, n, o,
                  "sparse_by_rows", Ao_ne, Cint[], Ao_col, Ao_ptr_ne, Ao_ptr )
 
 
@@ -74,13 +74,13 @@ for d = 1:3
     global st = 'D'
 
     Ao_dense_ne = 12  # number of elements of Ao
-    Ao_dense = Float64[1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 
+    Ao_dense = Float64[1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
                        1.0, 0.0, 1.0, 0.0, 1.0, 0.0]
 
-    blls_import( control, data, status, n, o, 
+    blls_import( control, data, status, n, o,
                   "dense", Ao_ne, Cint[], Cint[], 0, Cint[] )
 
-    blls_solve_blls_given_a( data, status, n, o, Ao_dense_ne, Ao_dense, b, 
+    blls_solve_blls_given_a( data, status, n, o, Ao_dense_ne, Ao_dense, b,
                              sigma, x_l, x_u, x, z, r, g, x_stat, w, nothing )
   end
 

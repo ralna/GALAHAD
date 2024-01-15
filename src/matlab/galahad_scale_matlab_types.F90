@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 1st, 2011
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_SCALE_MATLAB_TYPES
@@ -47,7 +47,7 @@
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc
         mwPointer :: iter, deviation
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  S C A L E _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -90,28 +90,28 @@
         CASE( 'print_level' )
           CALL MATLAB_get_value( ps, 'print_level',                            &
                                  pc, SCALE_control%print_level )
-        CASE( 'maxit' )                                                  
+        CASE( 'maxit' )
           CALL MATLAB_get_value( ps, 'maxit',                                  &
                                  pc, SCALE_control%maxit )
-        CASE( 'shift_x' )                                                  
+        CASE( 'shift_x' )
           CALL MATLAB_get_value( ps, 'shift_x',                                &
                                  pc, SCALE_control%shift_x )
-        CASE( 'scale_x' )                                                  
+        CASE( 'scale_x' )
           CALL MATLAB_get_value( ps, 'scale_x',                                &
                                  pc, SCALE_control%scale_x )
-        CASE( 'shift_c' )                                                  
+        CASE( 'shift_c' )
           CALL MATLAB_get_value( ps, 'shift_c',                                &
                                  pc, SCALE_control%shift_c )
-        CASE( 'scale_c' )                                                  
+        CASE( 'scale_c' )
           CALL MATLAB_get_value( ps, 'scale_c',                                &
                                  pc, SCALE_control%scale_c )
-        CASE( 'shift_f' )                                                  
+        CASE( 'shift_f' )
           CALL MATLAB_get_value( ps, 'shift_f',                                &
                                  pc, SCALE_control%shift_f )
-        CASE( 'scale_f' )                                                  
+        CASE( 'scale_f' )
           CALL MATLAB_get_value( ps, 'scale_f',                                &
                                  pc, SCALE_control%scale_f )
-        CASE( 'infinity' )                                                     
+        CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, SCALE_control%infinity )
         CASE( 'stop_tol' )
@@ -123,10 +123,10 @@
         CASE( 'scale_c_min' )
           CALL MATLAB_get_value( ps, 'scale_c_min',                            &
                                  pc, SCALE_control%scale_c_min )
-        CASE( 'space_critical' )                                               
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, SCALE_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, SCALE_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, SCALE_control%deallocate_error_fatal )
         CASE( 'prefix' )

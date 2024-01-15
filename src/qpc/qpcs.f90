@@ -6,10 +6,10 @@
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QPC_data_type ) :: data
-   TYPE ( QPC_control_type ) :: control        
+   TYPE ( QPC_control_type ) :: control
    TYPE ( QPC_inform_type ) :: inform
    INTEGER :: s
-   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4 
+   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
@@ -25,7 +25,7 @@
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
 !  sparse co-ordinate storage format
-   CALL SMT_put( p%H%type, 'COORDINATE', s )     ! Specify co-ordinate 
+   CALL SMT_put( p%H%type, 'COORDINATE', s )     ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -35,7 +35,7 @@
    p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
    p%A%row = (/ 1, 1, 2, 2 /)
    p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
-! problem data complete   
+! problem data complete
    CALL QPC_initialize( data, control, inform )  ! Initialize control parameters
    control%infinity = infinity                   ! Set infinity
 !  control%print_level = 1

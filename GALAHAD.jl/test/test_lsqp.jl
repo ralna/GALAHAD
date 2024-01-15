@@ -51,12 +51,12 @@ for d = 1:3
   # sparse co-ordinate storage
   if d == 1
     global st = 'C'
-    
+
     lsqp_import( control, data, status, n, m,
                  "coordinate", A_ne, A_row, A_col, Cint[] )
 
-    lsqp_solve_qp( data, status, n, m, w, x_0, g, f, 
-                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    lsqp_solve_qp( data, status, n, m, w, x_0, g, f,
+                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
 
@@ -64,11 +64,11 @@ for d = 1:3
   if d == 2
     global st = 'R'
 
-    lsqp_import( control, data, status, n, m, 
+    lsqp_import( control, data, status, n, m,
                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    lsqp_solve_qp( data, status, n, m, w, x_0, g, f, 
-                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    lsqp_solve_qp( data, status, n, m, w, x_0, g, f,
+                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat )
   end
 
@@ -81,8 +81,8 @@ for d = 1:3
     lsqp_import( control, data, status, n, m,
                  "dense", A_dense_ne, Cint[], Cint[], Cint[] )
 
-    lsqp_solve_qp( data, status, n, m, w, x_0, g, f, 
-                   A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+    lsqp_solve_qp( data, status, n, m, w, x_0, g, f,
+                   A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                    x, c, y, z, x_stat, c_stat )
   end
 

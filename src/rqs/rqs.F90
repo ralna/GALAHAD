@@ -17,7 +17,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_RQS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !       --------------------------------------------------------
@@ -2627,7 +2627,7 @@
 
           n_lambda = 0
 
-!  compute Taylor approximants of degree one; special (but frequent) case 
+!  compute Taylor approximants of degree one; special (but frequent) case
 !  when p = 3
 
           IF ( p == three ) THEN

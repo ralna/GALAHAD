@@ -23,7 +23,7 @@ H_ptr = Cint[1, 2, 3, 5]
 M_row = Cint[1, 2, 3]  # row indices, NB lower triangle
 M_col = Cint[1, 2, 3]
 M_ptr = Cint[1, 2, 3, 4]
-A_row = Cint[1, 1, 1] 
+A_row = Cint[1, 1, 1]
 A_col = Cint[1, 2, 3]
 A_ptr = Cint[1, 4]
 H_val = Float64[1.0, 2.0, 3.0, 4.0]
@@ -75,7 +75,7 @@ for a_is = 0:1  # add a linear constraint?
         # import the control parameters and structural data
         trs_import( control, data, status, n,
                     "coordinate", H_ne, H_row, H_col, Cint[] )
-      
+
         if m_is == 1
           trs_import_m( data, status, n,
                         "coordinate", M_ne, M_row, M_col, Cint[] )
@@ -88,19 +88,19 @@ for a_is = 0:1  # add a linear constraint?
 
         # solve the problem
         if (a_is == 1) && (m_is == 1)
-          trs_solve_problem( data, status, n, 
+          trs_solve_problem( data, status, n,
                              radius, f, c, H_ne, H_val, x,
                              M_ne, M_val, m, A_ne, A_val, Cint[] )
         elseif a_is == 1
-          trs_solve_problem( data, status, n, 
+          trs_solve_problem( data, status, n,
                              radius, f, c, H_ne, H_val, x,
                              0, Cint[], m, A_ne, A_val, Cint[] )
         elseif m_is == 1
-          trs_solve_problem( data, status, n, 
+          trs_solve_problem( data, status, n,
                              radius, f, c, H_ne, H_val, x,
                              M_ne, M_val, 0, 0, Cint[], Cint[] )
         else
-          trs_solve_problem( data, status, n, 
+          trs_solve_problem( data, status, n,
                              radius, f, c, H_ne, H_val, x,
                              0, Cint[], 0, 0, Cint[], Cint[] )
         end
@@ -147,7 +147,7 @@ for a_is = 0:1  # add a linear constraint?
     # dense
     if d == 3
       global st = 'D'
-      
+
       # import the control parameters and structural data
       trs_import( control, data, status, n,
                   "dense", H_ne, Cint[], Cint[], Cint[] )
@@ -164,15 +164,15 @@ for a_is = 0:1  # add a linear constraint?
 
       # solve the problem
       if (a_is == 1) && (m_is == 1)
-        trs_solve_problem( data, status, n, 
+        trs_solve_problem( data, status, n,
                            radius, f, c, H_dense_ne, H_dense, x,
                            M_dense_ne, M_dense, m, A_ne, A_val, Cint[] )
       elseif a_is == 1
-        trs_solve_problem( data, status, n, 
+        trs_solve_problem( data, status, n,
                            radius, f, c, H_dense_ne, H_dense, x,
                            0, Cint[], m, A_ne, A_val, Cint[] )
       elseif m_is == 1
-        trs_solve_problem( data, status, n, 
+        trs_solve_problem( data, status, n,
                            radius, f, c, H_dense_ne, H_dense, x,
                            M_dense_ne, M_dense, 0, 0, Cint[], Cint[] )
       else
@@ -181,7 +181,7 @@ for a_is = 0:1  # add a linear constraint?
                            0, Cint[], 0, 0, Cint[], Cint[] )
       end
     end
-    
+
     # diagonal
     if d == 4
       global st = 'L'
@@ -189,7 +189,7 @@ for a_is = 0:1  # add a linear constraint?
       # import the control parameters and structural data
       trs_import( control, data, status, n,
                   "diagonal", H_ne, Cint[], Cint[], Cint[] )
-      
+
       if m_is == 1
         trs_import_m( data, status, n,
                       "diagonal", M_ne, Cint[], Cint[], Cint[] )
@@ -202,11 +202,11 @@ for a_is = 0:1  # add a linear constraint?
 
       # solve the problem
       if (a_is == 1) && (m_is == 1)
-        trs_solve_problem( data, status, n, 
+        trs_solve_problem( data, status, n,
                            radius, f, c, n, H_diag, x,
                            n, M_diag, m, A_ne, A_val, Cint[] )
       elseif a_is == 1
-        trs_solve_problem( data, status, n, 
+        trs_solve_problem( data, status, n,
                            radius, f, c, n, H_diag, x,
                            0, Cint[], m, A_ne, A_val, Cint[] )
       elseif m_is == 1

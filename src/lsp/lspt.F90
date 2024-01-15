@@ -7,7 +7,7 @@
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( QPT_dimensions_type ) :: d
    TYPE ( LSP_map_type ) :: map
-   TYPE ( LSP_control_type ) :: control        
+   TYPE ( LSP_control_type ) :: control
    TYPE ( LSP_inform_type ) :: info
    TYPE ( QPT_problem_type ) :: p
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_orig, Y_orig, Z_orig
@@ -20,7 +20,7 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: dense = 4, dense_by_columns = 5
 
 !  GO TO 1
-   n = 3 ; m = 2 ; o = 3 ; a_ne = 4 ; l_ne = 4 
+   n = 3 ; m = 2 ; o = 3 ; a_ne = 4 ; l_ne = 4
    ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ), X_orig( n ) )
@@ -61,7 +61,7 @@
      p%Ao%col = (/ 1, 2, 3, 1 /)
      p%Ao%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
      p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
@@ -69,9 +69,9 @@
 
      IF ( status == 1 ) THEN
        p%n = 0 ; p%m = - 1
-     ELSE IF ( status == 2 ) THEN 
+     ELSE IF ( status == 2 ) THEN
        p%X_u( 1 ) = - 2.0_rp_
-     ELSE IF ( status == 3 ) THEN 
+     ELSE IF ( status == 3 ) THEN
        p%C_u( 1 ) = - 2.0_rp_
      END IF
      IF ( status == 4 ) THEN
@@ -193,7 +193,7 @@
        ALLOCATE( p%Ao%val( a_ne ), p%Ao%row( 0 ), p%Ao%col( a_ne ) )
        ALLOCATE( p%A%val( l_ne ), p%A%row( 0 ), p%A%col( l_ne ) )
        ALLOCATE( p%Ao%ptr( o + 1 ), p%A%ptr( m + 1 ) )
-       p%Ao%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /) 
+       p%Ao%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /)
        p%Ao%ptr = (/ 1, 2, 4, 7, 11, 14, 16, 17 /)
        p%A%col = (/ 1, 2, 2, 3, 4 /)
        p%A%ptr = (/ 1, 3, 6 /)
@@ -204,7 +204,7 @@
        ALLOCATE( p%Ao%val( a_ne ), p%Ao%row( a_ne ), p%Ao%col( 0 ) )
        ALLOCATE( p%A%val( l_ne ), p%A%row( l_ne ), p%A%col( 0 ) )
        ALLOCATE( p%Ao%ptr( n + 1 ), p%A%ptr( n + 1 ) )
-       p%Ao%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /) 
+       p%Ao%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /)
        p%Ao%ptr = (/ 1, 5, 9, 13, 17 /)
        p%A%row = (/ 1, 1, 2, 2, 2 /)
        p%A%ptr = (/ 1, 2, 4, 5, 6 /)
@@ -317,10 +317,10 @@
    CALL SMT_put( p%Ao%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%o = o ; p%Ao%ne = a_ne ; p%A%ne = l_ne 
+   p%n = n ; p%m = m ; p%o = o ; p%Ao%ne = a_ne ; p%A%ne = l_ne
    p%B = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
             1.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,     &
-            2.0_rp_ /) 
+            2.0_rp_ /)
    p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - infinity, - infinity,               &
               4.0_rp_, 2.0_rp_, 6.0_rp_, - infinity, - infinity,               &
               - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
@@ -360,7 +360,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
 !  WRITE( 6, "( ' A ', /, 5( 2I3, ES8.1 ) )" )                                 &
 !    ( p%Ao%row( i ), p%Ao%col( i ), p%Ao%val( i ), i = 1, p%Ao%ne )
@@ -406,7 +406,7 @@
    CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col, p%A%ptr,    &
             p%X, p%C )
    CALL LSP_apply( map, info, p, get_Ao = .TRUE. )
-   WRITE( 6, 10 ) st, 1, sname, info%status 
+   WRITE( 6, 10 ) st, 1, sname, info%status
    CALL LSP_apply( map, info, p, get_A = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    CALL LSP_apply( map, info, p, get_x = .TRUE. )
@@ -473,7 +473,7 @@
    CONTAINS
 
    SUBROUTINE AX(  m, n, a_type, a_ne, A_val, A_row, A_col, A_ptr, X, C )
-    
+
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, a_ne
    CHARACTER, INTENT( IN ), DIMENSION( : ) :: a_type
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) ::  A_row, A_col
@@ -513,7 +513,7 @@
      DO l = 1, a_ne
        i = A_row( l )
        C( i ) = C( i ) + A_val( l ) * X( A_col( l ) )
-     END DO 
+     END DO
    END IF
 
    RETURN

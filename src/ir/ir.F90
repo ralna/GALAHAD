@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_IR_precision
-            
+
 !      --------------------------------------------------
 !     |                                                  |
 !     | Given a factorization of the symmetric matrix A, |

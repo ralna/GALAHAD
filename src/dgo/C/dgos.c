@@ -117,7 +117,7 @@ int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
           const void *userdata){
     real_wp_ freq = 10.0;
     real_wp_ mag = 1000.0;

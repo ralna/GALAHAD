@@ -70,5 +70,5 @@
 !  U vector to be preconditioned
 !  V result of preconditioning
 !  data - derived type containing (rank-1?) allocatable/pointer
-!      arrays of type integer, real, logical (etc) for user-provided data 
+!      arrays of type integer, real, logical (etc) for user-provided data
 

@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_DGO_precision
-            
+
 !     ------------------------------------------------------
 !    |                                                      |
 !    | DGO, a determinitic algorithm for bound-constrained  |
@@ -64,7 +64,7 @@
 !   P a r a m e t e r s
 !----------------------
 
-     INTEGER ( KIND = ip_ ), PARAMETER :: rwidth = 24 ! space required for 
+     INTEGER ( KIND = ip_ ), PARAMETER :: rwidth = 24 ! space required for
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_ ! a double-precision #
      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_

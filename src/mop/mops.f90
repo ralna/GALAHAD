@@ -14,15 +14,15 @@ PROGRAM GALAHAD_mop_example
   A%m = 2 ; A%n = 3 ; A%ne = 6
   ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ), X( A%n ),             &
             u( A%m ), v( A%n ), R( A%m ) )
-  A%row = (/ 1, 1, 1, 2, 2, 2 /) ;  A%col = (/ 1, 2, 3, 1, 2, 3 /) 
-  A%val = (/ 1, 2, 3, 4, 5, 6 /)  
+  A%row = (/ 1, 1, 1, 2, 2, 2 /) ;  A%col = (/ 1, 2, 3, 1, 2, 3 /)
+  A%val = (/ 1, 2, 3, 4, 5, 6 /)
   CALL SMT_put( A%id, 'Toy 2x3 matrix', stat );
   CALL SMT_put( A%type, 'COORDINATE', stat )
   X = (/ one, one, one /)  ;  R = (/ three, three /)
   u = (/ two, -one /)      ;  v = (/ three, one, two /)
 ! Compute : R <- 3*A X + 2*R
   alpha = three ;    print_level = 3
-  beta  = two   ;    symmetric   = .false. 
+  beta  = two   ;    symmetric   = .false.
   out   = 6     ;    transpose   = .false.
   error = 6
   write(*,*) 'Compute R <- alpha*A*X + beta*R .....'

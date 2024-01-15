@@ -13,7 +13,7 @@
 !   update released with GALAHAD Version 2.0. May 11th 2006
 
    MODULE LANCELOT_DRCHG_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE LANCELOT_TYPES_precision, ONLY: LANCELOT_problem_type
 

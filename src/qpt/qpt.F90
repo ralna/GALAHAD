@@ -23,7 +23,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_QPT_precision
-            
+
 !     -----------------------------------------------------------------------
 !     |                                                                     |
 !     | Provide a derived data type for the (possible parametric)           |
@@ -201,7 +201,7 @@
 
 !  constant objective term
 
-        REAL ( KIND = rp_ ) :: f = 0.0_rp_ 
+        REAL ( KIND = rp_ ) :: f = 0.0_rp_
 
 !  parametric constant term
 
@@ -229,7 +229,7 @@
 
 !  penalty parameter for general linear constraints for l_1 QPs
 
-        REAL ( KIND = rp_ ) :: rho_g = 1.0_rp_ 
+        REAL ( KIND = rp_ ) :: rho_g = 1.0_rp_
 
 !  penalty parameter for simple bound constraints for l_1 QPs
 
@@ -1078,7 +1078,7 @@
 !                            Write the constraints.
 !     --------------------------------------------------------------------------
 
-      IF ( prob%n > 0 ) WRITE( out, "( '' )" ) 
+      IF ( prob%n > 0 ) WRITE( out, "( '' )" )
       WRITE( out, "( '   m = ', I0 )" ) prob%m
 
       IF ( lev == 2 ) THEN

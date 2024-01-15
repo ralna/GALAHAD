@@ -39,7 +39,7 @@ PROGRAM TEST_WSMP
       IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_rp_
     END DO
     IA( n + 1 ) = n + 1
-  ELSE 
+  ELSE
     nz = 18
     ALLOCATE( A( nz ), JA( nz ) )
     IA = (/ 1, 5, 8, 10, 12, 15, 17, 18, 19 /)
@@ -106,7 +106,7 @@ PROGRAM TEST_WSMP
 
   ELSE
 
-!  reordering and Symbolic Factorization, This step also allocates all memory 
+!  reordering and Symbolic Factorization, This step also allocates all memory
 !  that is necessary for the factorization
 
     IPARM( 2 ) = 1
@@ -171,7 +171,7 @@ PROGRAM TEST_WSMP
 
 !  termination and release of memory
 
-1 CONTINUE 
+1 CONTINUE
   DEALLOCATE( IA, JA, A, DIAG, X, B, PERM, INVP, AUX, MRP, IPARM, DPARM )
   CALL WSMP_clear( )
   CALL WSSFREE( )

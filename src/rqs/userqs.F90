@@ -10,7 +10,7 @@
 !  November 24th 2008
 
    MODULE GALAHAD_USERQS_precision
-            
+
  !  This is the driver program for running RQS for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers

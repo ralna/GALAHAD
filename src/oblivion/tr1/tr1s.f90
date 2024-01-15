@@ -20,7 +20,7 @@
    ALLOCATE( nlp%H%val( h_ne ), nlp%H%row( h_ne ), nlp%H%col( h_ne ) )
    nlp%H%row = (/ 1, 3, 2, 3, 3 /)              ! Hessian H
    nlp%H%col = (/ 1, 1, 2, 2, 3 /)              ! NB lower triangle
-! problem data complete   
+! problem data complete
    ALLOCATE( userdata%real( 1 ) )               ! Allocate space for parameter
    userdata%real( 1 ) = p                       ! Record parameter, p
    CALL TR1_initialize( data, control, inform ) ! Initialize control parameters

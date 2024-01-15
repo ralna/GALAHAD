@@ -15,8 +15,8 @@ NAME          MGH09
 *   Source:  Problem from the NIST nonlinear regression test set
 *     http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml
 
-*   Reference: Kowalik, J.S., and M. R. Osborne, (1978).  
-*     Methods for Unconstrained Optimization Problems.  
+*   Reference: Kowalik, J.S., and M. R. Osborne, (1978).
+*     Methods for Unconstrained Optimization Problems.
 *     New York, NY:  Elsevier North-Holland.
 
 *   SIF input: Nick Gould and Tyrone Rees, Oct 2015
@@ -37,9 +37,9 @@ NAME          MGH09
 
 *  Data values
 
- RE X1                  4.0E+0 
- RE X2                  2.0E+0 
- RE X3                  1.0E+0 
+ RE X1                  4.0E+0
+ RE X2                  2.0E+0
+ RE X3                  1.0E+0
  RE X4                  5.00E-1
  RE X5                  2.50E-1
  RE X6                  1.67E-1
@@ -52,14 +52,14 @@ NAME          MGH09
  RE Y1                  1.957E-1
  RE Y2                  1.947E-1
  RE Y3                  1.735E-1
- RE Y4                  1.60E-1 
- RE Y5                  8.44E-2 
- RE Y6                  6.27E-2 
- RE Y7                  4.56E-2 
- RE Y8                  3.42E-2 
- RE Y9                  3.23E-2 
- RE Y10                 2.35E-2 
- RE Y11                 2.46E-2 
+ RE Y4                  1.60E-1
+ RE Y5                  8.44E-2
+ RE Y6                  6.27E-2
+ RE Y7                  4.56E-2
+ RE Y8                  3.42E-2
+ RE Y9                  3.23E-2
+ RE Y10                 2.35E-2
+ RE Y11                 2.46E-2
 
 VARIABLES
 
@@ -77,7 +77,7 @@ CONSTANTS
 
  DO I         1                        M
  Z  MGH09     F(I)                     Y(I)
- ND        
+ ND
 
 BOUNDS
 
@@ -92,10 +92,10 @@ START POINT
 
 *  Alternative start point
 
-    START2    B1        0.25 
-    START2    B2        0.39 
+    START2    B1        0.25
+    START2    B2        0.39
     START2    B3        0.415
-    START2    B4        0.39 
+    START2    B4        0.39
 
 ELEMENT TYPE
 
@@ -130,7 +130,7 @@ OBJECT BOUND
 
 *   Solution
 
-*LO SOLTN               
+*LO SOLTN
 
 ENDATA
 
@@ -166,18 +166,18 @@ INDIVIDUALS
  A  V1T                 V1 * T
  A  V1XT                V1X * T
 
- F                      V1T / B 
- G  V1                  T / B 
- G  V2                  V1X / B 
- G  V3                  - V1XT / B2 
- G  V4                  - V1T / B2 
- H  V1        V2        X / B 
- H  V1        V3        - X * T / B2 
- H  V1        V4        - T / B2 
- H  V2        V3        - V1X2 / B2 
- H  V2        V4        - V1X / B2 
- H  V3        V3        2.0 * V1X2 * T / B3 
- H  V3        V4        2.0 * V1XT / B3 
- H  V4        V4        2.0 * V1T / B3 
+ F                      V1T / B
+ G  V1                  T / B
+ G  V2                  V1X / B
+ G  V3                  - V1XT / B2
+ G  V4                  - V1T / B2
+ H  V1        V2        X / B
+ H  V1        V3        - X * T / B2
+ H  V1        V4        - T / B2
+ H  V2        V3        - V1X2 / B2
+ H  V2        V4        - V1X / B2
+ H  V3        V3        2.0 * V1X2 * T / B3
+ H  V3        V4        2.0 * V1XT / B3
+ H  V4        V4        2.0 * V1T / B3
 
 ENDATA

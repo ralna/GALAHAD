@@ -537,8 +537,8 @@
 !    -3 one of the restrictions
 !          prob%n     >=  1
 !          prob%m     >=  0
-!          prob%A%type in { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS', 
-!                           'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 
+!          prob%A%type in { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
+!                           'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS',
 !                           'COORDINATE' }
 !          prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',
 !                           'DIAGONAL', 'SCALED_IDENTITY', 'IDENTITY',
@@ -1887,7 +1887,7 @@
       IF ( map%a_type == a_dense .OR. map%a_type == a_dense_by_rows ) THEN
         l = 0
         DO ll = 1, map%m
-          i = map%c_map( ll ) 
+          i = map%c_map( ll )
           DO k = 1, map%n
             l = l + 1
             j = map%x_map( k )

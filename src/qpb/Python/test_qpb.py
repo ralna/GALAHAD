@@ -40,7 +40,7 @@ options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
-qpb.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+qpb.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -52,7 +52,7 @@ z = np.array([0.0,0.0,0.0])
 # find optimum of qp
 #print("solve qp")
 x, c, y, z, x_stat, c_stat \
-  = qpb.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, 
+  = qpb.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)

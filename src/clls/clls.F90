@@ -1344,7 +1344,7 @@
 !    the required solution, x.
 !
 !   %R is a REAL array of length %o, which is used to store the values of
-!    the residuals A_o x - b. It need not be set on entry. On exit, it will 
+!    the residuals A_o x - b. It need not be set on entry. On exit, it will
 !    have been filled with appropriate values.
 !
 !   %C is a REAL array of length %m, which is used to store the values of
@@ -1428,7 +1428,7 @@
 !        prob%n     >=  1
 !        prob%m     >=  1
 !        prob%m     >=  0
-!        prob%Ao%type, prob%A%type, in { 'DENSE', 'DENSE_BY_COLUMNS', 
+!        prob%Ao%type, prob%A%type, in { 'DENSE', 'DENSE_BY_COLUMNS',
 !              'SPARSE_BY_ROWS', SPARSE_BY_COLUMNS','COORDINATE' }
 !       has been violated.
 !
@@ -6496,7 +6496,7 @@
                                 DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,        &
                                 GRAD_L( dims%x_s : dims%x_e ), C_RES,          &
                                 tau, res_primal, inform%dual_infeasibility,    &
-                                res_primal_dual, res_cs )                      
+                                res_primal_dual, res_cs )
 
 !  if required, make the solution exactly complementary
 
@@ -8723,7 +8723,7 @@
 !  m is a scalar variable of type default integer, that holds the number of
 !   residuals
 !
-!  Ao_type is a character string that specifies the objective design matrix 
+!  Ao_type is a character string that specifies the objective design matrix
 !   storage scheme used. It should be one of 'coordinate', 'sparse_by_rows',
 !   'sparse_by_columns', 'dense', 'dense_by_rows' or 'dense_by_columns';
 !   lower or upper case variants are allowed

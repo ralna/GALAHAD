@@ -40,7 +40,7 @@ options['sbls_options']['definite_linear_solver'] = 'sytr '
 #print("options:", options)
 
 # load data (and optionally non-default options)
-eqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+eqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -72,7 +72,7 @@ H_type = 'shifted_least_distance'
 eqp.initialize()
 
 # load data (and optionally non-default options)
-eqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+eqp.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)

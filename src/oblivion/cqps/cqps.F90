@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. January 1st 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_CQPS_precision
@@ -65,14 +65,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: CQPS_control_type
-        
+
 !  unit number for error and warning diagnostics
-      
+
        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  general output unit number
@@ -87,7 +87,7 @@
 
        INTEGER ( KIND = ip_ ) :: sif_file_device = 51
 
-!  any bound larger than infinity in modulus will be regarded as infinite 
+!  any bound larger than infinity in modulus will be regarded as infinite
 
        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
@@ -146,7 +146,7 @@
 
 !  all output lines will be prefixed by a string (max 30 characters)
 !    prefix(2:LEN(TRIM(%prefix))-1)
-!   where prefix contains the required string enclosed in 
+!   where prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 !
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -180,10 +180,10 @@
 
        REAL :: solve = 0.0
      END TYPE CQPS_time_type
-   
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: CQPS_inform_type
 
@@ -267,7 +267,7 @@
        INTEGER ( KIND = ip_ ) :: n_sub, branch
        REAL :: time_start
        REAL ( KIND = rp_ ) :: eta, rho, norm_g_2
-       LOGICAL :: printt, printi, printm, printw, printd, printe 
+       LOGICAL :: printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse_h, explicit_h, use_hprod
        LOGICAL :: reverse_a, explicit_a, use_aprod
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SUB, B_stat
@@ -296,7 +296,7 @@
 !
 !  Default control data for CQPS. This routine should be called before
 !  CQPS_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -309,7 +309,7 @@
 
      TYPE ( CQPS_data_type ), INTENT( INOUT ) :: data
      TYPE ( CQPS_control_type ), INTENT( OUT ) :: control
-     TYPE ( CQPS_inform_type ), INTENT( OUT ) :: inform     
+     TYPE ( CQPS_inform_type ), INTENT( OUT ) :: inform
 
      inform%status = GALAHAD_ready_to_solve
 
@@ -332,7 +332,7 @@
      control%PSLS_control%prefix = '" - PSLS:"                    '
      control%PSLS_control%preconditioner = 1
 
-!  added here to prevent for compiler bugs 
+!  added here to prevent for compiler bugs
 
      control%stop_p = epsmch ** 0.33_rp_
      control%stop_d = epsmch ** 0.33_rp_
@@ -348,10 +348,10 @@
 
      SUBROUTINE CQPS_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by CQPS_initialize could (roughly) 
+!  The defauly values as given by CQPS_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN CQPS SPECIFICATIONS (DEFAULT)
@@ -376,7 +376,7 @@
 
 !  Dummy arguments
 
-     TYPE ( CQPS_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( CQPS_control_type ), INTENT( INOUT ) :: control
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -555,7 +555,7 @@
 !        and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric matrix, 
+!  constant, g is an n-vector, H is a symmetric matrix,
 !  A is an m by n matrix, and any of the bounds (c_l)_i, (c_u)_i
 !  (x_l)_i, (x_u)_i may be infinite, using a primal-dual method.
 !  The subroutine is particularly appropriate when A and H are sparse
@@ -564,11 +564,11 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to 
+!   %new_problem_structure is a LOGICAL variable, which must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to CQPS_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
@@ -576,11 +576,11 @@
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
-!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part 
+!
+!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part
 !    of H. Four storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -591,7 +591,7 @@
 !       H%val( : )   the values of the components of H
 !       H%row( : )   the row indices of the components of H
 !       H%col( : )   the column indices of the components of H
-!       H%ne         the number of nonzeros used to store 
+!       H%ne         the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !    ii) sparse, by rows
@@ -610,7 +610,7 @@
 !
 !       H%type( 1 : 5 ) = TRANSFER( 'DENSE', H%type )
 !       H%val( : )   the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    iv) diagonal
@@ -619,7 +619,7 @@
 !
 !       H%type( 1 : 8 ) = TRANSFER( 'DIAGONAL', H%type )
 !       H%val( : )   the values of the diagonals of H, stored in order
-!    
+!
 !    If H is not available explicitly, matrix-vector products must be
 !      provided by the user using either reverse communication
 !      (see reverse_h below) or a provided subroutine (see eval_HPROD below).
@@ -627,14 +627,14 @@
 !   %G is a REAL array of length %n, which must be set by
 !    the user to the value of the gradient, g, of the linear term of the
 !    quadratic objective function. The i-th component of G, i = 1, ....,
-!    n, should contain the value of g_i.  
+!    n, should contain the value of g_i.
 !    On exit, G will most likely have been reordered.
-!   
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function. On exit, it may have
 !    been changed to reflect variables which have been fixed.
 !
-!   %A is a structure of type SMT_type used to hold the matrix A. 
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -663,16 +663,16 @@
 !
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    If A is not available explicitly, matrix-vector products with
-!      A and its transpose must be provided by the user using either 
-!      reverse communication (see reverse_a below) or a provided subroutine 
+!      A and its transpose must be provided by the user using either
+!      reverse communication (see reverse_a below) or a provided subroutine
 !      (see eval_APROD below).
 !
-!   %C is a REAL array of length %m, which is used to store the values of 
-!    A x. It need not be set on entry. On exit, it will have been filled 
+!   %C is a REAL array of length %m, which is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
 !    with appropriate values.
 !
 !   %X is a REAL array of length %n, which must be set by the user
@@ -681,37 +681,37 @@
 !
 !   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
-!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %C_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %C_u to a value larger than 
-!    control%infinity. On exit, %C_l and %C_u will most likely have been 
+!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %C_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %C_u to a value larger than
+!    control%infinity. On exit, %C_l and %C_u will most likely have been
 !    reordered.
-!   
+!
 !   %Y is a REAL array of length %m, which must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
-!    On successful exit, it will contain the required vector of Lagrange 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
+!    On successful exit, it will contain the required vector of Lagrange
 !    multipliers.
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. On exit, %X_l and %X_u will most likely have been 
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
-!   
+!
 !   %Z is a REAL array of length %n, which must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
 !    x_l <= x <= x_u). On successful exit, it will contain
-!   the required vector of dual variables. 
+!   the required vector of dual variables.
 !
 !  C_stat is a INTEGER array of length m, which may be set by the user
 !   on entry to QPA_solve to indicate which of the constraints are to
@@ -719,54 +719,54 @@
 !   the component control%cold_start must be set to 0 on entry; C_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   C_stat( i ) < 0, the i-th constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   C_stat( i ) < 0, the i-th constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 !
 !  B_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to QPA_solve to indicate which of the simple bound constraints 
+!   on entry to QPA_solve to indicate which of the simple bound constraints
 !   are to be included in the initial working set. If this facility is required,
 !   the component control%cold_start must be set to 0 on entry; B_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   B_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   B_stat( i ) < 0, the i-th bound constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   B_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
 !  data is a structure of type CQPS_data_type which holds private internal data
 !
-!  control is a structure of type CQPS_control_type that controls the 
+!  control is a structure of type CQPS_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to CQPS_initialize. See CQPS_initialize 
+!   the elements may be set by a call to CQPS_initialize. See CQPS_initialize
 !   for details
 !
-!  inform is a structure of type CQPS_inform_type that provides 
-!    information on exit from CQPS_solve. The component status 
+!  inform is a structure of type CQPS_inform_type that provides
+!    information on exit from CQPS_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !     2 The product H * v of the Hessian H with a given output vector v
 !       is required from the user. The vector v will be stored in reverse_h%V
-!       and the product H * v must be returned in reverse_h%PROD, and 
-!       BQP_solve re-entered with all other arguments unchanged. 
+!       and the product H * v must be returned in reverse_h%PROD, and
+!       BQP_solve re-entered with all other arguments unchanged.
 !
 !     3 The product A * v of the Jacobian A with a given output vector v
 !       is required from the user. The vector v will be stored in reverse_a%V
-!       and the product A * v must be returned in reverse_a%PROD, and 
-!       BQP_solve re-entered with all other arguments unchanged. 
+!       and the product A * v must be returned in reverse_a%PROD, and
+!       BQP_solve re-entered with all other arguments unchanged.
 !
-!     4 The product A^T * v of the transpose of the Jacobian A^T with a given 
-!       output vector v is required from the user. The vector v will be stored 
-!       in reverse_a%V and the product A^T * v must be returned in 
-!       reverse_a%PROD, and BQP_solve re-entered with all other arguments 
-!       unchanged. 
+!     4 The product A^T * v of the transpose of the Jacobian A^T with a given
+!       output vector v is required from the user. The vector v will be stored
+!       in reverse_a%V and the product A^T * v must be returned in
+!       reverse_a%PROD, and BQP_solve re-entered with all other arguments
+!       unchanged.
 !
 !    -1 An allocation error occured; the status is given in the component
 !       alloc_status.
@@ -774,7 +774,7 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !        prob%n     >=  1
 !        prob%m     >=  0
 !        prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
@@ -790,13 +790,13 @@
 !
 !    -9 The factorization failed; the return status from the factorization
 !       package is given in the component factorization_status.
-!      
-!    -13 The problem is so ill-conditoned that further progress is impossible.  
+!
+!    -13 The problem is so ill-conditoned that further progress is impossible.
 !
 !    -16 The step is too small to make further impact.
 !
 !    -17 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
+!       control%maxit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
 !    -18 Too much CPU time has passed. This may happen if control%cpu_time_limit
@@ -804,20 +804,20 @@
 !
 !    -23 an entry from the strict upper triangle of H has been input.
 !
-!  On exit from CQPS_solve, other components of inform give the 
+!  On exit from CQPS_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
-!     factorization_integer = The total integer workspace required for the 
+!     alloc_status = The status of the last attempted allocation/deallocation
+!     factorization_integer = The total integer workspace required for the
 !       factorization.
-!     factorization_real = The total real workspace required for the 
+!     factorization_real = The total real workspace required for the
 !       factorization.
 !     nfacts = The total number of factorizations performed.
-!     nmods = The total number of factorizations which were modified to 
-!       ensure that the matrix was an appropriate preconditioner. 
+!     nmods = The total number of factorizations which were modified to
+!       ensure that the matrix was an appropriate preconditioner.
 !     factorization_status = the return status from the matrix factorization
-!       package.   
-!     obj = the value of the objective function at the best estimate of the 
+!       package.
+!     obj = the value of the objective function at the best estimate of the
 !       solution determined by CQPS_solve.
 !     non_negligible_pivot = the smallest pivot which was not judged to be
 !       zero when detecting linearly dependent constraints
@@ -831,7 +831,7 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -846,43 +846,43 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
-!  reverse_h is an OPTIONAL structure of type CQPS_reverse_h_type which is used 
-!   to pass intermediate data to and from CQPS_solve. This will only be 
-!   necessary if reverse-communication is to be used to form matrix-vector 
-!   products of the form H * v or preconditioning steps of the form P * v. If 
+!  reverse_h is an OPTIONAL structure of type CQPS_reverse_h_type which is used
+!   to pass intermediate data to and from CQPS_solve. This will only be
+!   necessary if reverse-communication is to be used to form matrix-vector
+!   products of the form H * v or preconditioning steps of the form P * v. If
 !   reverse is present (and eval_HPROD is absent), reverse communication
-!   will be used and the user must monitor the value of inform%status 
+!   will be used and the user must monitor the value of inform%status
 !   (see above) to await instructions about required matrix-vector products.
 !
 !  reverse_a is an OPTIONAL structure of type CQPS_reverse_a_type which is used
-!   to pass intermediate data to and from CQPS_solve. This will only be 
-!   necessary if reverse-communication is to be used to form matrix-vector 
-!   products of the form A * v or A^T v. If reverse is present (and 
-!   eval_APROD is absent), reverse communication will be used and the user 
-!   must monitor the value of inform%status (see above) to await instructions 
+!   to pass intermediate data to and from CQPS_solve. This will only be
+!   necessary if reverse-communication is to be used to form matrix-vector
+!   products of the form A * v or A^T v. If reverse is present (and
+!   eval_APROD is absent), reverse communication will be used and the user
+!   must monitor the value of inform%status (see above) to await instructions
 !   about required matrix-vector products.
 !
 !  eval_HPROD is an OPTIONAL subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product H * v of the given 
-!   matrix H and vector v stored in V must be returned in PROD; only the 
-!   components NZ_v( nz_v_start : nz_v_end ) of V are nonzero. If either of 
-!   the optional argeuments NZ_prod or nz_prod_end are absent, the WHOLE of H v 
-!   including zeros should be returned in PROD. If NZ_prod and nz_prod_end are 
-!   present, the NONZEROS in the product H * v must be placed in their 
-!   appropriate comnponents of reverse%PROD, while a list of indices of the 
-!   nonzeos placed in NZ_prod( 1 : nz_prod_end ). In both cases, the status 
+!   given below (see the interface blocks). The product H * v of the given
+!   matrix H and vector v stored in V must be returned in PROD; only the
+!   components NZ_v( nz_v_start : nz_v_end ) of V are nonzero. If either of
+!   the optional argeuments NZ_prod or nz_prod_end are absent, the WHOLE of H v
+!   including zeros should be returned in PROD. If NZ_prod and nz_prod_end are
+!   present, the NONZEROS in the product H * v must be placed in their
+!   appropriate comnponents of reverse%PROD, while a list of indices of the
+!   nonzeos placed in NZ_prod( 1 : nz_prod_end ). In both cases, the status
 !   variable should be set to 0 unless the product is impossible in which
 !   case status should be set to a nonzero value. If eval_HPROD is not
-!   present, CQPS_solve will either return to the user each time an evaluation 
-!   is required (see reverse_h above) or form the product directly from 
+!   present, CQPS_solve will either return to the user each time an evaluation
+!   is required (see reverse_h above) or form the product directly from
 !   user-provided %H.
 !
 !  eval_APROD is an OPTIONAL subroutine which if present must have the arguments
 !   given below (see the interface blocks). The product A * v or A^T * v
-!   of the given matrix A (or its trnspose if transpose =.TRUE.) and vector 
-!   v stored in V must be returned in PROD. If eval_APROD is not present, 
-!   CQPS_solve will either return to the user each time an evaluation is 
-!   required (see reverse_a above) or form the product directly from 
+!   of the given matrix A (or its trnspose if transpose =.TRUE.) and vector
+!   v stored in V must be returned in PROD. If eval_APROD is not present,
+!   CQPS_solve will either return to the user each time an evaluation is
+!   required (see reverse_a above) or form the product directly from
 !   user-provided %A.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -917,7 +917,7 @@
                                                INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
-   
+
      INTERFACE
        SUBROUTINE eval_APROD( status, userdata, transpose, V, PROD )
        USE GALAHAD_USERDATA_precision
@@ -928,7 +928,7 @@
        LOGICAL, INTENT( IN ) :: transpose
        END SUBROUTINE eval_APROD
      END INTERFACE
-   
+
 !  Local variables
 
      INTEGER ( KIND = ip_ ) :: i, j, k, l, nnz
@@ -940,7 +940,7 @@
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -973,7 +973,7 @@
        WRITE( control%out, 2000 ) prefix, ' entering '
 
 ! -------------------------------------------------------------------
-!  If desired, generate a SIF file for problem passed 
+!  If desired, generate a SIF file for problem passed
 
      IF ( control%generate_sif_file ) THEN
        CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,     &
@@ -1021,17 +1021,17 @@
        IF ( .NOT. QPT_keyword_H( prob%H%type ) ) THEN
          inform%status = GALAHAD_error_restrictions
          GO TO 910
-       END IF 
-     END IF 
+       END IF
+     END IF
 
      IF ( data%explicit_a ) THEN
        IF ( .NOT. QPT_keyword_A( prob%A%type ) ) THEN
          inform%status = GALAHAD_error_restrictions
          GO TO 910
-       END IF 
-     END IF 
+       END IF
+     END IF
 
-!  If required, write out problem 
+!  If required, write out problem
 
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
        WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) prob%n, prob%m
@@ -1088,7 +1088,7 @@
      DO i = 1, prob%n
        IF ( prob%X_l( i ) - prob%X_u( i ) > control%identical_bounds_tol ) THEN
          inform%status = GALAHAD_error_bad_bounds
-         GO TO 910 
+         GO TO 910
        ELSE IF ( prob%X_u( i ) == prob%X_l( i ) ) THEN
        ELSE IF ( prob%X_u( i ) - prob%X_l( i )                                 &
                  <= control%identical_bounds_tol ) THEN
@@ -1098,7 +1098,7 @@
        ELSE
          data%n_sub = data%n_sub + 1
        END IF
-     END DO   
+     END DO
      IF ( reset_bnd .AND. data%printi ) WRITE( control%out,                    &
        "( ' ', /, '   **  Warning: one or more variable bounds reset ' )" )
 
@@ -1106,7 +1106,7 @@
      DO i = 1, prob%m
        IF ( prob%C_l( i ) - prob%C_u( i ) > control%identical_bounds_tol ) THEN
          inform%status = GALAHAD_error_bad_bounds
-         GO TO 910 
+         GO TO 910
        ELSE IF ( prob%C_u( i ) == prob%C_l( i ) ) THEN
        ELSE IF ( prob%C_u( i ) - prob%C_l( i )                                 &
                  <= control%identical_bounds_tol ) THEN
@@ -1114,7 +1114,7 @@
          prob%C_l( i ) = av_bnd ; prob%C_u( i ) = av_bnd
          reset_bnd = .TRUE.
        END IF
-     END DO   
+     END DO
      IF ( reset_bnd .AND. data%printi ) WRITE( control%out,                    &
        "( ' ', /, '   **  Warning: one or more constraint bounds reset ' )" )
 
@@ -1138,7 +1138,7 @@
            data%n_sub = data%n_sub + 1
            data%SUB( data%n_sub ) = i
          END IF
-       END DO   
+       END DO
 
 !  Form and factorize an approximation P(inverse) to H
 
@@ -1425,7 +1425,7 @@
 
 !  =====================  BQP problem construction  =======================
 !
-!  Data for the BQP is stored in data%bqp. Variables and their bounds are 
+!  Data for the BQP is stored in data%bqp. Variables and their bounds are
 !  as follows:
 !
 !      w = ( x c_i y_e y_i y_l y_u z_l z_u )
@@ -1442,14 +1442,14 @@
 !       0  <= z_u
 !
 !  and the index sets e and i refer to the general equality and inequality
-!  constraints, respectively. The BQP is then to minimize 
+!  constraints, respectively. The BQP is then to minimize
 !
-!   phi(w) = 
+!   phi(w) =
 !
-!    - [ g^T x + 1/2 x^T H x 
-!        - y_e^T ( A_e x - c_e ) - y_i^T (A_i x - c_i ) 
+!    - [ g^T x + 1/2 x^T H x
+!        - y_e^T ( A_e x - c_e ) - y_i^T (A_i x - c_i )
 !        - ( c_i - c_l )^T y_l - ( c_u - c_i )^T y_u
-!        - ( x - x_l )^T z_l - ( x_u - x )^T z_u ] 
+!        - ( x - x_l )^T z_l - ( x_u - x )^T z_u ]
 !    + 1/2 eta || g + H x - A_e^T y_e - A_i^T y_i - ( z_l - z_u ) ||_P^2
 !    + 1/2 eta || y_i - ( y_l - y_u ) ||^2
 !    + 1/2 rho || A_i x - c_i ||^2
@@ -1492,7 +1492,7 @@
 !  z_u variables
 
        IF ( prob%X_u( i ) < control%infinity ) data%n_z_u = data%n_z_u + 1
-     END DO   
+     END DO
 
 !  record the starting addresses of each variable sub-vector
 
@@ -1680,7 +1680,7 @@
 !  c_i variables
 
          IF ( prob%C_l( i ) > - control%infinity .OR.                          &
-              prob%C_u( i ) < control%infinity ) THEN 
+              prob%C_u( i ) < control%infinity ) THEN
            c_i = c_i + 1
            data%bqp%X_l( c_i ) = prob%C_l( i )
            data%bqp%X_u( c_i ) = prob%C_u( i )
@@ -1693,7 +1693,7 @@
              y_l = y_l + 1
              data%bqp%X_l( y_l ) = zero
              data%bqp%X_u( y_l ) = ten * control%infinity
-             data%bqp%X( y_l ) = MAX( prob%Y( i ), zero ) 
+             data%bqp%X( y_l ) = MAX( prob%Y( i ), zero )
              data%bqp%Z( y_l ) = zero
            END IF
 
@@ -1703,7 +1703,7 @@
              y_u = y_u + 1
              data%bqp%X_l( y_u ) = zero
              data%bqp%X_u( y_u ) = ten * control%infinity
-             data%bqp%X( y_u ) = MAX( - prob%Y( i ), zero ) 
+             data%bqp%X( y_u ) = MAX( - prob%Y( i ), zero )
              data%bqp%Z( y_u ) = zero
            END IF
          END IF
@@ -1718,7 +1718,7 @@
          z_l = z_l + 1
          data%bqp%X_l( z_l ) = zero
          data%bqp%X_u( z_l ) = ten * control%infinity
-         data%bqp%X( z_l ) = MAX( prob%Z( i ), zero ) 
+         data%bqp%X( z_l ) = MAX( prob%Z( i ), zero )
          data%bqp%Z( z_l ) = zero
        END IF
 
@@ -1728,10 +1728,10 @@
          z_u = z_u + 1
          data%bqp%X_l( z_u ) = zero
          data%bqp%X_u( z_u ) = ten * control%infinity
-         data%bqp%X( z_u ) = MAX( - prob%Z( i ), zero ) 
+         data%bqp%X( z_u ) = MAX( - prob%Z( i ), zero )
          data%bqp%Z( z_u ) = zero
        END IF
-     END DO   
+     END DO
 
 !  assign the initial regularisation parameters
 
@@ -1747,7 +1747,7 @@
        data%eta = one
      END IF
 
-!  set up the gradient for the BQP. Since 
+!  set up the gradient for the BQP. Since
 !
 !   grad_w phi(w) =
 !
@@ -1900,7 +1900,7 @@
 !  wrt to the c_i variables
 
          IF ( prob%C_l( i ) > - control%infinity .OR.                          &
-              prob%C_u( i ) < control%infinity ) THEN 
+              prob%C_u( i ) < control%infinity ) THEN
            c_i = c_i + 1
            data%bqp%G( c_i ) = zero
 
@@ -1936,7 +1936,7 @@
          z_u = z_u + 1
          data%bqp%G( z_u ) = prob%X_u( i ) + data%eta * data%PPROD( i )
        END IF
-     END DO   
+     END DO
 
      IF ( data%printi ) THEN
        WRITE( control%out,                                                     &
@@ -1981,7 +1981,7 @@
                    .OR.                                                        &
                    inform%BQP_inform%status == GALAHAD_error_cpu_limit ) THEN
            inform%status = inform%BQP_inform%status
-           GO TO 600 
+           GO TO 600
 
 !  error exit without the solution
 
@@ -2028,7 +2028,7 @@
                    .OR.                                                        &
                    inform%bqpb_inform%status == GALAHAD_error_cpu_limit ) THEN
            inform%status = inform%BQP_inform%status
-           GO TO 600 
+           GO TO 600
 
 !  error exit without the solution
 
@@ -2050,7 +2050,7 @@
 !   Hess_ww phi(w) =
 !
 !              x     c_i     y_e    y_i    y_l      y_u     z_l    z_u
-!     x: [  - H       0     A_e^T  A_i^T    0        0       I     - I  ] 
+!     x: [  - H       0     A_e^T  A_i^T    0        0       I     - I  ]
 !   c_i: [    0       0       0     - I     I       -I       0      0   ]
 !   y_e: [   A_e      0       0      0      0        0       0      0   ]
 !   y_i: [   A_i     - I      0      0      0        0       0      0   ]
@@ -2061,27 +2061,27 @@
 !
 !                             x   c_i    y_e     y_i     y_l   y_u   z_l   z_u
 !     x: + eta [  H    ] P [  H    0  - A_e^T  - A_i^T    0     0    - I    I  ]
-!   c_i:       [  0    ]  
+!   c_i:       [  0    ]
 !   y_e:       [ - A_e ]
 !   y_i:       [ - A_i ]
 !   y_l:       [   0   ]
 !   y_u:       [   0   ]
-!   z_l:       [ - I   ]   
+!   z_l:       [ - I   ]
 !   z_u:       [   I   ]
 !
 !                             x   c_i    y_e     y_i     y_l   y_u   z_l   z_u
-!     x: + eta [   0   ]   [  0    0      0       I      - I    I     0     0 ] 
-!   c_i:       [   0   ]  
+!     x: + eta [   0   ]   [  0    0      0       I      - I    I     0     0 ]
+!   c_i:       [   0   ]
 !   y_e:       [   0   ]
 !   y_i:       [   I   ]
 !   y_l:       [ - I   ]
 !   y_u:       [   I   ]
-!   z_l:       [   0   ]   
+!   z_l:       [   0   ]
 !   z_u:       [   0   ]
 !
 !                             x   c_i    y_e     y_i     y_l   y_u   z_l   z_u
 !     x: + rho [ A_i^T ]   [  A   -I      0       0       0     0     0     0 ]
-!   c_i:       [  - I  ]  
+!   c_i:       [  - I  ]
 !   y_e:       [   0   ]
 !   y_i:       [   0   ]
 !   y_l:       [   0   ]
@@ -2089,32 +2089,32 @@
 !   z_l:       [   0   ]
 !   z_u:       [   0   ]
 !
-!  so if v = ( v_x  v_c_i  v_y_e  v_y_i   v_y_l  v_y_u  v_z_l  v_z_u ), 
+!  so if v = ( v_x  v_c_i  v_y_e  v_y_i   v_y_l  v_y_u  v_z_l  v_z_u ),
 !
-!  Hess_ww phi(w) v = 
+!  Hess_ww phi(w) v =
 !
-!     x: [    - u     + eta H P u           + rho A_i^T r_i ]  
+!     x: [    - u     + eta H P u           + rho A_i^T r_i ]
 !   c_i: [                                  - rho r_i       ]
 !   y_e: [   A_e v_x  - eta A_e P u                         ]
 !   y_i: [   A_i v_x  - eta A_i P u + eta s_i               ]
 !   y_l: [                          - eta s_i               ]
 !   y_u: [                            eta s_i               ]
 !   z_l: [    v_x     - eta  P u                            ]
-!   z_u: [  - v_x     + eta  P u                            ]            
+!   z_u: [  - v_x     + eta  P u                            ]
 !
 !  where
 !
 !   u = ( H v_x - A_e^T v_y_e - A_i^T v_y_i - v_z_l + v_z_u )
-!   r_i = A_i v_x - v_c_i 
+!   r_i = A_i v_x - v_c_i
 !   s_i = v_y_i - v_y_l + v_y_u
 
 !  the products should be over sparse v  ** replace later **
 
        IF ( data%control%use_bqp ) THEN
          SELECT CASE ( inform%BQP_inform%status )
-         CASE ( 2 ) 
+         CASE ( 2 )
            data%BQP_V( : data%bqp%n ) = data%BQP_reverse%V( : data%bqp%n )
-         CASE ( 3, 4 ) 
+         CASE ( 3, 4 )
            data%BQP_V( : data%bqp%n ) = zero
            DO l = data%BQP_reverse%nz_v_start, data%BQP_reverse%nz_v_end
              data%BQP_V( data%BQP_reverse%NZ_v( l ) ) =                        &
@@ -2258,7 +2258,7 @@
  430   CONTINUE
        IF ( data%reverse_a ) data%PROD( : prob%n ) = reverse_a%PROD( : prob%n )
 
-!  record (  v_y_e ) 
+!  record (  v_y_e )
 !         (  v_y_i )
 
 !      y = data%st_y ; y_l = data%st_y_l ; y_u = data%st_y_u
@@ -2268,7 +2268,7 @@
          data%branch = 440 ; inform%status = 4 ; RETURN
        END IF
 
-!  compute A^T ( v_y_e ) 
+!  compute A^T ( v_y_e )
 !              ( v_y_i )
 
        IF ( data%use_aprod ) THEN
@@ -2328,7 +2328,7 @@
            z_u = z_u + 1
            data%U( i ) = data%U( i ) + data%BQP_V( z_u )
          END IF
-       END DO  
+       END DO
 
 !  continue the x-th components of Hess_ww phi(w) v
 
@@ -2357,9 +2357,9 @@
            z_u = z_u + 1
            data%PROD( z_u ) = - data%BQP_V( i ) + data%eta * data%U( i )
          END IF
-       END DO  
+       END DO
 
-!  record P u 
+!  record P u
 
        IF ( data%reverse_h ) THEN
          reverse_h%V( : prob%n ) = data%U( : prob%n )
@@ -2450,7 +2450,7 @@
            y = y + 1
            s_i = data%BQP_V( y )
            IF ( prob%C_l( i ) > - control%infinity .OR.                        &
-                prob%C_u( i ) < control%infinity ) THEN 
+                prob%C_u( i ) < control%infinity ) THEN
              IF ( prob%C_l( i ) > - control%infinity ) THEN
                y_l = y_l + 1
                s_i = s_i - data%BQP_V( y_l )
@@ -2517,7 +2517,7 @@
          z_u = z_u + 1
          prob%Z( i ) = prob%Z( i ) - data%bqp%X( z_u )
        END IF
-     END DO   
+     END DO
 
 !  compute H x
 
@@ -2614,7 +2614,7 @@
              MAX( inform%complementary_slackness,                              &
                   ( prob%X_u( i ) - prob%X( i ) ) * MAX( - prob%Z( i ), zero ) )
        END IF
-     END DO   
+     END DO
 
 !  ... and the linear constraints
 
@@ -2747,7 +2747,7 @@
        IF ( prob%C_l( i ) == prob%C_u( i ) ) THEN
          y = y + 1
          data%bqp%G( y ) =  ratio_eta * data%bqp%G( y ) -                      &
-           one_minus_ratio_eta * prob%C_l( i ) 
+           one_minus_ratio_eta * prob%C_l( i )
 
 !  wrt to the y_i variables
 
@@ -2773,7 +2773,7 @@
          data%bqp%G( z_u ) = ratio_eta * data%bqp%G( z_u ) +                   &
            one_minus_ratio_eta * prob%X_u( i )
        END IF
-     END DO   
+     END DO
 
 !  re-solve the BQP
 
@@ -2806,7 +2806,7 @@
 
  900 CONTINUE
      inform%status = 0
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printi ) THEN
        WRITE( control%out,                                                     &
          "( /, A, ' primal infeasibility = ', ES11.4, /,                       &
@@ -2829,8 +2829,8 @@
 
 !  Error returns
 
- 910 CONTINUE 
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+ 910 CONTINUE
+     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printi ) THEN
        SELECT CASE ( inform%status )
        CASE ( GALAHAD_ok )
@@ -2870,12 +2870,12 @@
        WRITE( control%error, 2010 ) prefix, inform%status, 'CQPS_solve'
      END IF
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
-     RETURN  
+     RETURN
 
 !  Non-executable statements
 
-2000 FORMAT( /, A, ' --', A, ' CQPS_solve' ) 
-2010 FORMAT( A, '   **  Error return ', I0, ' from ', A ) 
+2000 FORMAT( /, A, ' --', A, ' CQPS_solve' )
+2010 FORMAT( A, '   **  Error return ', I0, ' from ', A )
 2020 FORMAT( /, A, ' CQPS error exit: ', A )
 2030 FORMAT( /, A, ' allocation error status ', I0, ' for ', A )
 2040 FORMAT( /, A, ' projection-based BQP solver used' )
@@ -2913,7 +2913,7 @@
 !  Dummy arguments
 
      TYPE ( CQPS_data_type ), INTENT( INOUT ) :: data
-     TYPE ( CQPS_control_type ), INTENT( IN ) :: control        
+     TYPE ( CQPS_control_type ), INTENT( IN ) :: control
      TYPE ( CQPS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( CQPS_reverse_h_type ), OPTIONAL, INTENT( INOUT ) :: reverse_h
      TYPE ( CQPS_reverse_a_type ), OPTIONAL, INTENT( INOUT ) :: reverse_a

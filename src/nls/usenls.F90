@@ -9,7 +9,7 @@
 !  October 27th 2015
 
    MODULE GALAHAD_USENLS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !  This is the driver program for running NLS for a variety of computing

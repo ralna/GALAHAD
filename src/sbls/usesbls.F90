@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USESBLS_precision
-            
+
 !    -----------------------------------------------
 !    | CUTEst/AMPL interface to SBLS, a method for |
 !    | solving block systems of linear equations   |

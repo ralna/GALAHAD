@@ -1474,14 +1474,14 @@
 !                  = 0, the i-th constraint is likely not in the active set
 !    It need not be set on entry.
 !
-!   %X_status is an INTEGER array of length %n, which will be set on exit to 
-!    indicate the likely ultimate status of the simple bound constraints. 
+!   %X_status is an INTEGER array of length %n, which will be set on exit to
+!    indicate the likely ultimate status of the simple bound constraints.
 !    Possible values are
 !    X_status( i ) < 0, the i-th bound constraint is likely in the active set,
 !                       on its lower bound,
 !                  > 0, the i-th bound constraint is likely in the active set
 !                       on its upper bound, and
-!                  = 0, the i-th bound constraint is likely not in the active 
+!                  = 0, the i-th bound constraint is likely not in the active
 !                       set
 !    It need not be set on entry.
 !
@@ -1763,7 +1763,7 @@
         END IF
  10     CONTINUE
 
-!  make sure that X_status, C_status and C have been allocated and are 
+!  make sure that X_status, C_status and C have been allocated and are
 !  large enough
 
         array_name = 'ccqp: prob%X_status'
@@ -2252,7 +2252,7 @@
                                 prob%target_kind,                              &
                                 C_last = data%A_s, X_last = data%H_s,          &
                                 Y_last = data%Y_last, Z_last = data%Z_last )
-        ELSE                                                                  
+        ELSE
           CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
                                 prob%A%val, prob%A%col, prob%A%ptr,            &
                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
@@ -2282,7 +2282,7 @@
                                 G = prob%G,                                    &
                                 C_last = data%A_s, X_last = data%H_s,          &
                                 Y_last = data%Y_last, Z_last = data%Z_last )
-        END IF                                                                
+        END IF
       ELSE IF ( prob%Hessian_kind == 1 ) THEN
         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
           CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
@@ -2314,7 +2314,7 @@
                                 X0 = prob%X0,                                  &
                                 C_last = data%A_s, X_last = data%H_s,          &
                                 Y_last = data%Y_last, Z_last = data%Z_last )
-        ELSE                                                                  
+        ELSE
           CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
                                 prob%A%val, prob%A%col, prob%A%ptr,            &
                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
@@ -2344,7 +2344,7 @@
                                 X0 = prob%X0, G = prob%G,                      &
                                 C_last = data%A_s, X_last = data%H_s,          &
                                 Y_last = data%Y_last, Z_last = data%Z_last )
-        END IF                                                                
+        END IF
       ELSE IF ( prob%Hessian_kind == 2 ) THEN
         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
           CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
@@ -2376,7 +2376,7 @@
                                 WEIGHT = prob%WEIGHT, X0 = prob%X0,            &
                                 C_last = data%A_s, X_last = data%H_s,          &
                                 Y_last = data%Y_last, Z_last = data%Z_last )
-        ELSE                                                                  
+        ELSE
           CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
                                 prob%A%val, prob%A%col, prob%A%ptr,            &
                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
@@ -7116,13 +7116,13 @@
                               h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
             IF ( printd ) THEN
               WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
-              WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last 
+              WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last
               WRITE( out, "( ' C before ', /, ( 5ES12.4 ) )" ) C_res
-              WRITE( out, "( ' C ', /, ( 5ES12.4 ) )" ) C_last 
+              WRITE( out, "( ' C ', /, ( 5ES12.4 ) )" ) C_last
               WRITE( out, "( ' Y before ', /, ( 5ES12.4 ) )" ) Y
-              WRITE( out, "( ' Y ', /, ( 5ES12.4 ) )" ) Y_last 
+              WRITE( out, "( ' Y ', /, ( 5ES12.4 ) )" ) Y_last
               WRITE( out, "( ' Z before ', /, ( 5ES12.4 ) )" ) Z
-              WRITE( out, "( ' Z ', /, ( 5ES12.4 ) )" ) Z_last 
+              WRITE( out, "( ' Z ', /, ( 5ES12.4 ) )" ) Z_last
             END IF
 
             IF ( optimal ) THEN
@@ -7554,11 +7554,11 @@
           WRITE( out, "( A, 2X, I0, ' projected CG iterations taken ' )" )     &
             prefix, inform%SBLS_inform%iter_pcg
         SELECT CASE ( control%indicator_type )
-        CASE( 1 ) 
+        CASE( 1 )
           WRITE( out, "( A, '  Primal indicators used' )" ) prefix
-        CASE( 2 ) 
+        CASE( 2 )
           WRITE( out, "( A, '  Primal-dual indicators used' )" ) prefix
-        CASE( 3 ) 
+        CASE( 3 )
           WRITE( out, "( A, '  Tapia indicators used' )" ) prefix
         END SELECT
       END IF
@@ -8355,7 +8355,7 @@
 !  construct the equality-constrained QP according to the variables and
 !  constraints that are predicted to be active via
 
-!  C_stat is an INTEGER array of length m, which must have been be set to 
+!  C_stat is an INTEGER array of length m, which must have been be set to
 !   indicate the likely ultimate status of the constraints.
 !   Possible values are
 !   C_stat( i ) < 0, the i-th constraint is likely in the active set,
@@ -8385,15 +8385,15 @@
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SMT_type ) :: C_zero
 
-!  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 } 
-!  and A = { i | C_stat( i ) = 0 }, the corresponding "optimality" system 
+!  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 }
+!  and A = { i | C_stat( i ) = 0 }, the corresponding "optimality" system
 
 !     (  H_BB  H_BF^T  A_AB^T  I_B^T  ) (   x_B ) = ( - g_B )
 !     (  H_BF   H_FF   A_AF^T    0    ) (   x_F )   ( - g_F )    (1)
 !     (  A_AB   A_AF     0       0    ) ( - y_A )   (  c_A  )
 !     (  I_B     0       0       0    ) ( - z_B )   (  b_B  )
 
-!  may either be solved "as is", or by eliminating x_B = b_B, 
+!  may either be solved "as is", or by eliminating x_B = b_B,
 !  solving the "reduced" system
 
 !     (  H_FF   A_AF^T  ) (   x_F ) =  ( - g_F - H_BF x_B )       (2)
@@ -8416,7 +8416,7 @@
 !  the active components of x to their appropriate bounds and the
 !  inactive dual variables z to zero, and initialize the active dual
 !  varaibles to g_B
-      
+
         n_free = 0
         DO j = 1, n
           IF ( X_stat( j ) == 0 ) THEN
@@ -8534,7 +8534,7 @@
                  exact_size = control%space_critical,                          &
                  bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
-  
+
 !  set up H_FF, and add H_BF x_B to g_F
 
           CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
@@ -8562,7 +8562,7 @@
                 ii = X_free( i )
                 IF ( ii > 0 ) THEN
                   SOL( ii ) = SOL( ii ) + H_val( l ) * X( j )
-                END IF 
+                END IF
               END DO
             END IF
           END DO
@@ -8605,7 +8605,7 @@
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  set up A_AF, and subtract A_AB x_B from c_A; store c_A in 
+!  set up A_AF, and subtract A_AB x_B from c_A; store c_A in
 !  SOL(n_free+1:n_free+m_actve)
 
         CALL SMT_put( A_active%type, 'SPARSE_BY_ROWS', alloc_status )
@@ -8730,7 +8730,7 @@
         DO i = 1, m
           IF ( C_stat( i ) /= 0 ) THEN
             DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
-              j = A_col( l ) 
+              j = A_col( l )
               IF ( X_stat( j ) /= 0 ) THEN ! entry from A_AB
                 Z( j ) = Z( j ) - A_val( l ) * Y( i )
               END IF
@@ -8744,7 +8744,7 @@
 
       ELSE
 
-!  compute the number of active constraints, and the number of nonzeros 
+!  compute the number of active constraints, and the number of nonzeros
 !  in the active Jacobian A_active
 
         n_free = n
@@ -8826,7 +8826,7 @@
           END IF
         END IF
 
-!  compute the number of active constraints, and the number of nonzeros 
+!  compute the number of active constraints, and the number of nonzeros
 !  in the active Jacobian A_active
 
         m_active = 0 ; nz_a_active = 0
@@ -9004,7 +9004,7 @@
 !  equality constraint
 
         ei = SOL( i )
-        IF ( C_l( i ) == C_u( i ) ) THEN 
+        IF ( C_l( i ) == C_u( i ) ) THEN
 
 !  infeasible inequality constraint
 
@@ -9042,7 +9042,7 @@
 
 !  fixed variable
 
-        IF ( X_l( j ) == X_u( j ) ) THEN 
+        IF ( X_l( j ) == X_u( j ) ) THEN
 
 !  infeasible simple bound
 
@@ -9658,7 +9658,7 @@
 !   For other values see, ccqp_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in ccqp_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -9689,7 +9689,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -9707,8 +9707,8 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
-!   that mwill be set on exit to indicate which constraints are in the final 
+!  X_stat is a rank-one array of dimension n and type default integer,
+!   that mwill be set on exit to indicate which constraints are in the final
 !   working set. Possible exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
 !                    on its lower bound,
@@ -9716,8 +9716,8 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that will be set on exit to indicate which constraints are in the final 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that will be set on exit to indicate which constraints are in the final
 !   working set. Possible exit values are
 !   C_stat( i ) < 0, the i-th constraint is in the working set,
 !                    on its lower bound,
@@ -9884,7 +9884,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -9902,8 +9902,8 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
-!   that mwill be set on exit to indicate which constraints are in the final 
+!  X_stat is a rank-one array of dimension n and type default integer,
+!   that mwill be set on exit to indicate which constraints are in the final
 !   working set. Possible exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
 !                    on its lower bound,
@@ -9911,8 +9911,8 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that will be set on exit to indicate which constraints are in the final 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that will be set on exit to indicate which constraints are in the final
 !   working set. Possible exit values are
 !   C_stat( i ) < 0, the i-th constraint is in the working set,
 !                    on its lower bound,

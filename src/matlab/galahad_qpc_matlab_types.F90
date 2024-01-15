@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 15th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_QPC_MATLAB_TYPES
@@ -54,7 +54,7 @@
         mwPointer :: analyse, factorize, solve
         mwPointer :: clock_total, clock_preprocess, clock_find_dependent
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: QPC_pointer_type
         mwPointer :: pointer
@@ -67,7 +67,7 @@
         TYPE ( CQP_pointer_type ) :: CQP_pointer
         TYPE ( EQP_pointer_type ) :: EQP_pointer
         TYPE ( FDC_pointer_type ) :: FDC_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  Q P C _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -120,47 +120,47 @@
         CASE( 'restore_problem' )
           CALL MATLAB_get_value( ps, 'restore_problem',                        &
                                  pc, QPC_control%restore_problem )
-        CASE( 'infinity' )                                                     
+        CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, QPC_control%infinity )
-        CASE( 'identical_bounds_tol' )                                         
+        CASE( 'identical_bounds_tol' )
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, QPC_control%identical_bounds_tol )
         CASE( 'rho_g' )
           CALL MATLAB_get_value( ps, 'rho_g',                                  &
                                  pc, QPC_control%rho_g )
-        CASE( 'rho_b' )                                                        
+        CASE( 'rho_b' )
           CALL MATLAB_get_value( ps, 'rho_b',                                  &
                                  pc, QPC_control%rho_b )
-        CASE( 'pivot_tol_for_dependencies' )                                   
+        CASE( 'pivot_tol_for_dependencies' )
           CALL MATLAB_get_value( ps, 'pivot_tol_for_dependencies',             &
                                  pc, QPC_control%pivot_tol_for_dependencies )
-        CASE( 'zero_pivot' )                                                   
+        CASE( 'zero_pivot' )
           CALL MATLAB_get_value( ps, 'zero_pivot',                             &
                                  pc, QPC_control%zero_pivot )
-        CASE( 'cpu_time_limit' )                                               
+        CASE( 'cpu_time_limit' )
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                                  pc, QPC_control%cpu_time_limit )
-        CASE( 'clock_time_limit' )         
+        CASE( 'clock_time_limit' )
           CALL MATLAB_get_value( ps, 'clock_time_limit',                       &
                                  pc, QPC_control%clock_time_limit )
-        CASE( 'treat_zero_bounds_as_general' )                                 
+        CASE( 'treat_zero_bounds_as_general' )
           CALL MATLAB_get_value( ps, 'treat_zero_bounds_as_general',           &
-                                 pc, QPC_control%treat_zero_bounds_as_general ) 
-        CASE( 'array_syntax_worse_than_do_loop' )                              
+                                 pc, QPC_control%treat_zero_bounds_as_general )
+        CASE( 'array_syntax_worse_than_do_loop' )
           CALL MATLAB_get_value( ps, 'array_syntax_worse_than_do_loop',        &
                                  pc,                                           &
                                  QPC_control%array_syntax_worse_than_do_loop )
-        CASE( 'space_critical' )                                               
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, QPC_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, QPC_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, QPC_control%deallocate_error_fatal )
-        CASE( 'no_qpa' )                                                       
+        CASE( 'no_qpa' )
           CALL MATLAB_get_value( ps, 'no_qpa',                                 &
                                  pc, QPC_control%no_qpa )
-        CASE( 'no_qpb' )                                                       
+        CASE( 'no_qpb' )
           CALL MATLAB_get_value( ps, 'no_qpb',                                 &
                                  pc, QPC_control%no_qpb )
         CASE( 'prefix' )
@@ -363,7 +363,7 @@
            'non_negligible_pivot ', 'time                 ',                   &
            'QPA_inform           ', 'QPB_inform           ',                   &
            'CQP_inform           ', 'EQP_inform           ',                   &
-           'FDC_inform           ' /) 
+           'FDC_inform           ' /)
       INTEGER * 4, PARAMETER :: t_ninform = 12
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'preprocess           ',                   &
@@ -457,7 +457,7 @@
       CALL EQP_matlab_inform_create( QPC_pointer%pointer,                      &
                                      QPC_pointer%EQP_pointer, 'EQP_inform' )
 
-!  Define the components of sub-structure FDC_inform 
+!  Define the components of sub-structure FDC_inform
 
       CALL FDC_matlab_inform_create( QPC_pointer%pointer,                      &
                                      QPC_pointer%FDC_pointer, 'FDC_inform' )
@@ -497,19 +497,19 @@
       CALL MATLAB_copy_to_ptr( QPC_pointer%pointer,                            &
                                'bad_alloc', QPC_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( QPC_inform%factorization_status,                &
-                               mxGetPr( QPC_pointer%factorization_status ) )    
+                               mxGetPr( QPC_pointer%factorization_status ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%factorization_integer,               &
-                               mxGetPr( QPC_pointer%factorization_integer ) )   
+                               mxGetPr( QPC_pointer%factorization_integer ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%factorization_real,                  &
-                               mxGetPr( QPC_pointer%factorization_real ) )      
+                               mxGetPr( QPC_pointer%factorization_real ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%nfacts,                              &
-                               mxGetPr( QPC_pointer%nfacts ) )                  
+                               mxGetPr( QPC_pointer%nfacts ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%nmods,                               &
-                               mxGetPr( QPC_pointer%nmods ) )                   
+                               mxGetPr( QPC_pointer%nmods ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%p_found,                             &
-                               mxGetPr( QPC_pointer%p_found ) )                
+                               mxGetPr( QPC_pointer%p_found ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%obj,                                 &
-                               mxGetPr( QPC_pointer%obj ) )                     
+                               mxGetPr( QPC_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( QPC_inform%non_negligible_pivot,                &
                                mxGetPr( QPC_pointer%non_negligible_pivot ) )
 

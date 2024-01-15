@@ -39,7 +39,7 @@
           TRACE     => GALAHAD_TRACE,                                          &
           DEBUG     => GALAHAD_DEBUG,                                          &
           GENERAL   => GALAHAD_GENERAL,                                        &
-          ALL_ZEROS => GALAHAD_ALL_ZEROS                            
+          ALL_ZEROS => GALAHAD_ALL_ZEROS
       USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE

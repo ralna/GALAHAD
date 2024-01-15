@@ -31,7 +31,7 @@
 !  February 2nd 1995
 
    MODULE LANCELOT_FRNTL_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
@@ -40,9 +40,9 @@
                                        SCU_solve, SCU_append
      USE LANCELOT_ASMBL_precision
      USE LANCELOT_MDCHL_precision
-   
+
      IMPLICIT NONE
-   
+
      PRIVATE
      PUBLIC :: FRNTL_get_search_direction
 
@@ -137,13 +137,13 @@
      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !---------------------------------------------------------------
-!   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e 
+!   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e
 !--------------------------------------------------------------
 
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IVUSE
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS, RHS2, P2, DIAG
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: OFFDIA
-     
+
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISVGRP
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAGV
 
@@ -212,7 +212,7 @@
          lirnh, ljcnh, lh, matrix%row, matrix%col, matrix%val,                 &
          ROW_start, POS_in_H, USED, FILLED, lrowst, lpos, lused, lfilled,      &
          IW_asmbl, W_ws, W_el, W_in, H_el, H_in, skipg,                        &
-         nnzh = nnzh, KNDOFG = KNDOFG )                                      
+         nnzh = nnzh, KNDOFG = KNDOFG )
      IF ( status /= 0 ) RETURN
 
 !  Choose initial values for the control parameters
@@ -245,7 +245,7 @@
           ELSE ; reallocate = .FALSE.
           END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
           ALLOCATE( DIAG( nfree ), STAT = alloc_status )
           IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'DIAG' ; GO TO 980
           END IF
@@ -277,7 +277,7 @@
        IF ( SIZE( RHS ) < nfree ) THEN
          DEALLOCATE( RHS ) ; ELSE ; reallocate = .FALSE. ; END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
        ALLOCATE( RHS( nfree ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'RHS' ; GO TO 980 ; END IF
      END IF
@@ -285,31 +285,31 @@
      SCU_matrix%n = nfree
      SCU_matrix%m = nfixed
      CALL SCU_restart_m_eq_0( SCU_data, SCU_info )
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( RHS2 ) ) THEN
         IF ( SIZE( RHS2 ) < nfree + max_sc ) THEN ; DEALLOCATE( RHS2 )
         ELSE ; reallocate = .FALSE.
         END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
         ALLOCATE( RHS2( nfree + max_sc ), STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'RHS2' ; GO TO 980
         END IF
      END IF
-     
+
      reallocate = .TRUE.
      IF ( ALLOCATED( P2 ) ) THEN
         IF ( SIZE( P2 ) <  nfree + max_sc ) THEN ; DEALLOCATE( P2 )
         ELSE ; reallocate = .FALSE.
         END IF
      END IF
-     IF ( reallocate ) THEN 
+     IF ( reallocate ) THEN
         ALLOCATE( P2(  nfree + max_sc ), STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'P2' ; GO TO 980
         END IF
      END IF
-     
+
      IF ( .NOT. modchl ) THEN
        reallocate = .TRUE.
        IF ( ALLOCATED( OFFDIA ) ) THEN
@@ -317,7 +317,7 @@
               SIZE( OFFDIA, 2 ) < nfree ) THEN ; DEALLOCATE( OFFDIA )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( OFFDIA( 2, nfree ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'OFFDIA'; GO TO 980
          END IF
@@ -329,7 +329,7 @@
             DEALLOCATE( IVUSE ) ; ELSE ; reallocate = .FALSE.
           END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( IVUSE( nfree ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'IVUSE' ; GO TO 980 ; END IF
@@ -471,7 +471,7 @@
          END IF
        END DO
      END IF
-     
+
      IF ( boundx ) THEN
        dxtp = zero ; ptp = zero
 !DIR$ IVDEP

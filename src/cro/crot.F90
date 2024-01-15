@@ -6,7 +6,7 @@
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( CRO_data_type ) :: data
-   TYPE ( CRO_control_type ) :: control        
+   TYPE ( CRO_control_type ) :: control
    TYPE ( CRO_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: i
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 11, m = 3, m_equal = 1
