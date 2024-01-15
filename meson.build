@@ -165,33 +165,47 @@ libgalahad_deps = [libblas, liblapack, libmetis, libhsl,
                    libwsmp, libpardiso, libspmf, libpastix,
                    libampl, libmpi, libhwloc]
 
+# Fortran files *.F90 or *.f90
+libgalahad_src = []
 libgalahad_single_src = []
 libgalahad_double_src = []
-libgalahad_integer_src = []
-libgalahad_multi_src = []
-libgalahad_src = []
-libgalahad_aux = []
 
-galahad_headers = []
+# FOrtran files *.f
+libgalahad_f_src = []
+libgalahad_f_single_src = []
+libgalahad_f_double_src = []
+
+# Fortran files that contain programs
 galahad_binaries = []
-galahad_cutest_binaries = []
 
+# Header files
+galahad_headers = []
+
+# Fortran files for the C interfaces
+libgalahad_c_src = []
 libgalahad_c_single_src = []
 libgalahad_c_double_src = []
-libgalahad_c_integer_src = []
-libgalahad_c_src = []
 
-libgalahad_cpp_src = []
-libgalahad_cutest_src = []
-libgalahad_ampl_src = []
-libgalahad_mumps_single_src = []
-libgalahad_mumps_double_src = []
+# C files for the Python interfaces
 libgalahad_python_src = []
 
+# Files related to the CUTEst interfaces
+libgalahad_cutest_src = []
+galahad_cutest_binaries = []
+
+# C and C++ files required by GALAHAD
+libgalahad_cpp_src = []
+libgalahad_cc_src = []
+
+# Fortran examples and tests
 galahad_examples = []
-galahad_c_examples = []
 galahad_tests = []
+
+# C examples and tests for the C interfaces
+galahad_c_examples = []
 galahad_c_tests = []
+
+# Python files for the Python interfaces
 galahad_python_tests = []
 
 # Headers and Fortran modules
@@ -370,9 +384,10 @@ if build_single
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@'] + output_generator)
 
-  to_process_single = [libgalahad_src, libgalahad_ampl_src, libgalahad_mumps_single_src]
+  to_process_single = [libgalahad_src, libgalahad_single_src]
   if build_ciface
     to_process_single += libgalahad_c_src
+    to_process_single += libgalahad_c_single_src
   endif
   if libcutest_single.found()
     to_process_single += libgalahad_cutest_src
@@ -381,9 +396,8 @@ if build_single
   endif
   pp_sources_single = gen_single.process(to_process_single)
 
-  sources_single = [libgalahad_multi_src, libgalahad_single_src, libgalahad_integer_src,
-                    libgalahad_c_single_src, libgalahad_c_integer_src,
-                    pp_sources_single, libgalahad_cpp_src, libgalahad_aux]
+  sources_single = [pp_sources_single, libgalahad_f_src, libgalahad_f_single_src,
+                    libgalahad_cpp_src, libgalahad_cc_src]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -404,9 +418,10 @@ if build_double
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@'] + output_generator)
 
-  to_process_double = [libgalahad_src, libgalahad_ampl_src, libgalahad_mumps_double_src]
+  to_process_double = [libgalahad_src, libgalahad_double_src]
   if build_ciface
     to_process_double += libgalahad_c_src
+    to_process_double += libgalahad_c_double_src
   endif
   if libcutest_double.found()
     to_process_double += libgalahad_cutest_src
@@ -415,9 +430,8 @@ if build_double
   endif
   pp_sources_double = gen_double.process(to_process_double)
 
-  sources_double = [libgalahad_multi_src, libgalahad_double_src, libgalahad_integer_src,
-                    libgalahad_c_double_src, libgalahad_c_integer_src,
-                    pp_sources_double, libgalahad_cpp_src, libgalahad_aux]
+  sources_double = [pp_sources_double, libgalahad_f_src, libgalahad_f_double_src,
+                    libgalahad_cpp_src, libgalahad_cc_src]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
@@ -503,11 +517,9 @@ endif
 
 # Precisions
 precisions = []
-
 if build_single
   precisions += [['single', extra_args_single, libgalahad_single]]
 endif
-
 if build_double
   precisions += [['double', extra_args_double, libgalahad_double]]
 endif
