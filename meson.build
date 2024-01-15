@@ -384,6 +384,13 @@ if build_single
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@'] + output_generator)
 
+  gen_f_single = generator(fc_compiler,
+                           output : 'single_@BASENAME@.f',
+                           arguments : pp_options + extra_args_single +
+                                       ['-I', '@CURRENT_SOURCE_DIR@/include',
+                                        '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                        '@INPUT@'] + output_generator)
+
   to_process_single = [libgalahad_src, libgalahad_single_src]
   if build_ciface
     to_process_single += libgalahad_c_src
@@ -396,8 +403,10 @@ if build_single
   endif
   pp_sources_single = gen_single.process(to_process_single)
 
-  sources_single = [pp_sources_single, libgalahad_f_src, libgalahad_f_single_src,
-                    libgalahad_cpp_src, libgalahad_cc_src]
+  to_process_f_single = [libgalahad_f_src, libgalahad_f_single_src]
+  pp_sources_f_single = gen_f_single.process(to_process_f_single)
+
+  sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
 
   libgalahad_single = library('galahad_single',
                               sources : sources_single,
@@ -418,6 +427,13 @@ if build_double
                                       '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
                                       '@INPUT@'] + output_generator)
 
+  gen_f_double = generator(fc_compiler,
+                           output : 'double_@BASENAME@.f',
+                           arguments : pp_options + extra_args_double +
+                                       ['-I', '@CURRENT_SOURCE_DIR@/include',
+                                        '-I', '@CURRENT_SOURCE_DIR@/src/dum/include',
+                                        '@INPUT@'] + output_generator)
+
   to_process_double = [libgalahad_src, libgalahad_double_src]
   if build_ciface
     to_process_double += libgalahad_c_src
@@ -430,8 +446,10 @@ if build_double
   endif
   pp_sources_double = gen_double.process(to_process_double)
 
-  sources_double = [pp_sources_double, libgalahad_f_src, libgalahad_f_double_src,
-                    libgalahad_cpp_src, libgalahad_cc_src]
+  to_process_f_double = [libgalahad_f_src, libgalahad_f_double_src]
+  pp_sources_f_double = gen_f_double.process(to_process_f_double)
+
+  sources_double = [pp_sources_double, pp_sources_f_double, libgalahad_cpp_src, libgalahad_cc_src]
 
   libgalahad_double = library('galahad_double',
                               sources : sources_double,
