@@ -58,7 +58,7 @@ This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
 ```
-CC=icx CXX=icpx FC=ifort meson setup builddir [options...]
+CC=icc CXX=icpc FC=ifort meson setup builddir -Dssids=false [options...]
 CC=icx CXX=icpx FC=ifx meson setup builddir [options...]
 CC=nvc CXX=nvc++ FC=nvfortran meson setup builddir -Dc_std=none -Dcpp_std=none [options...]
 ```
@@ -141,6 +141,8 @@ like this:
 libgalahad_src += files('abcd.F90')
 
 libgalahad_c_src += files('C/abcd_ciface.F90')
+
+galahad_binaries += [['abcd_program', files('abcd_program.F90')]]
 
 libgalahad_python_src += [['abcd', files('Python/abcd_pyiface.c',
                                          '../efgh/Python/efgh_pyiface.c','../ijkl/Python/ijkl_pyiface.c',
