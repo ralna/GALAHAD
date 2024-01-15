@@ -27,8 +27,8 @@ int main(void) {
     int col[] = {1, 1, 5, 2, 3, 3, 4}; // column indices
     int ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
     real_wp_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0}; // values
-    real_wp_ dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0, 
-                      0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 
+    real_wp_ dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0,
+                      0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0,
                       0.0, 0.0, 0.0, 1.0, 0.0};
     real_wp_ rhs[] = {2.0, 33.0, 11.0, 15.0, 4.0};
     real_wp_ rhst[] = {8.0, 12.0, 23.0, 5.0, 12.0};
@@ -62,7 +62,7 @@ int main(void) {
                 break;
             case 2: // sparse by rows
                 printf(" sparse by rows ");
-                uls_factorize_matrix( &control, &data, &status, m, n, 
+                uls_factorize_matrix( &control, &data, &status, m, n,
                                     "sparse_by_rows", ne, val, NULL, col, ptr );
                 break;
             case 3: // dense
@@ -165,7 +165,7 @@ int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs)
     {
         b = fabs(a[i]);
 	if(max<b)
-          max=b;       
+          max=b;
     }
     *maxabs=max;
  }

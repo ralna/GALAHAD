@@ -708,7 +708,7 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g,
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
@@ -751,25 +751,25 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args){
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
+    PyArrayObject *py_c_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call qpa_solve_direct
     status = 1; // set status to 1 on entry
-    qpa_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, 
+    qpa_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -782,7 +782,7 @@ static PyObject* py_qpa_solve_qp(PyObject *self, PyObject *args){
     PyObject *solve_qp_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
+    solve_qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
                                               py_x_stat, py_c_stat);
     Py_INCREF(solve_qp_return);
     return solve_qp_return;
@@ -804,8 +804,8 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOddiOOOOOOOO", &n, &m, &f, &py_g, 
-                         &H_ne, &py_H_val, &rho_g, &rho_b, &A_ne, &py_A_val, 
+    if(!PyArg_ParseTuple(args, "iidOiOddiOOOOOOOO", &n, &m, &f, &py_g,
+                         &H_ne, &py_H_val, &rho_g, &rho_b, &A_ne, &py_A_val,
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
         return NULL;
@@ -847,25 +847,25 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args){
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
+    PyArrayObject *py_c_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call qpa_solve_direct
     status = 1; // set status to 1 on entry
-    qpa_solve_l1qp(&data, &status, n, m, H_ne, H_val, g, f, rho_g, rho_b, 
+    qpa_solve_l1qp(&data, &status, n, m, H_ne, H_val, g, f, rho_g, rho_b,
                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -878,7 +878,7 @@ static PyObject* py_qpa_solve_l1qp(PyObject *self, PyObject *args){
     PyObject *solve_l1qp_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_l1qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
+    solve_l1qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
                                                 py_x_stat, py_c_stat);
     Py_INCREF(solve_l1qp_return);
     return solve_l1qp_return;
@@ -900,8 +900,8 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOdiOOOOOOOO", &n, &m, &f, &py_g, 
-                         &H_ne, &py_H_val, &rho_g, &A_ne, &py_A_val, 
+    if(!PyArg_ParseTuple(args, "iidOiOdiOOOOOOOO", &n, &m, &f, &py_g,
+                         &H_ne, &py_H_val, &rho_g, &A_ne, &py_A_val,
                          &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                          &py_x, &py_y, &py_z))
         return NULL;
@@ -943,25 +943,25 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args){
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
     npy_intp mdim[] = {m}; // size of c and c_ztar
-    PyArrayObject *py_c = 
+    PyArrayObject *py_c =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *c = (double *) PyArray_DATA(py_c);
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
-    PyArrayObject *py_c_stat = 
+    PyArrayObject *py_c_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_INT);
     int *c_stat = (int *) PyArray_DATA(py_c_stat);
 
     // Call qpa_solve_direct
     status = 1; // set status to 1 on entry
-    qpa_solve_bcl1qp(&data, &status, n, m, H_ne, H_val, g, f, rho_g, A_ne, 
+    qpa_solve_bcl1qp(&data, &status, n, m, H_ne, H_val, g, f, rho_g, A_ne,
                      A_val, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("c %f\n", c[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
     // for( int i = 0; i < m; i++) printf("c_stat %i\n", c_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -974,7 +974,7 @@ static PyObject* py_qpa_solve_bcl1qp(PyObject *self, PyObject *args){
     PyObject *solve_l1qp_return;
 
     // solve_qp_return = Py_BuildValue("O", py_x);
-    solve_l1qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z, 
+    solve_l1qp_return = Py_BuildValue("OOOOOO", py_x, py_c, py_y, py_z,
                                                 py_x_stat, py_c_stat);
     Py_INCREF(solve_l1qp_return);
     return solve_l1qp_return;
@@ -1041,7 +1041,7 @@ PyDoc_STRVAR(qpa_module_doc,
 "v_g(x) = sum_{i=1}^m max(c_i^l - a_i^T x, 0) + sum_{i=1}^m max(a_i^T x - c_i^u, 0)\n"
 "and\n"
 "$v_b(x) = sum_{j=1}^n max(x_j^l - x_j  , 0) + sum_{j=1}^n max(x_j  - x_j^u , 0),\n"
-"where the n by n symmetric matrix H,\n" 
+"where the n by n symmetric matrix H,\n"
 "the vectors g, a_i, c^l, c^u, x^l, x^u and the scalar f are given.\n"
 "Full advantage is taken of any zero coefficients in the matrix H\n"
 "or the matrix A of vectors a_i.\n"

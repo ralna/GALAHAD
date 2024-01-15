@@ -243,15 +243,15 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
-            if(!parse_char_option(value, "prefix", 
-                                  control->prefix, 
+            if(!parse_char_option(value, "prefix",
+                                  control->prefix,
                                   sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
-            if(!parse_char_option(value, "alive_file", 
-                                  control->alive_file, 
+            if(!parse_char_option(value, "alive_file",
+                                  control->alive_file,
                                   sizeof(control->alive_file)))
                 return false;
             continue;

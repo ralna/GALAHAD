@@ -289,7 +289,7 @@ static PyObject* py_glrt_initialize(PyObject *self){
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   GLRT_LOAD_OPTIONS    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_glrt_load_options(PyObject *self, PyObject *args, 
+static PyObject* py_glrt_load_options(PyObject *self, PyObject *args,
                                       PyObject *keywds){
     PyObject *py_options = NULL;
 
@@ -344,7 +344,7 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
@@ -352,7 +352,7 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args){
     glrt_solve_problem(&data, &status, n, power, weight, x, r, v);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < n; i++) printf("r %f\n", r[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -407,7 +407,7 @@ static PyObject* py_glrt_terminate(PyObject *self){
 /* glrt python module method table */
 static PyMethodDef glrt_module_methods[] = {
     {"initialize", (PyCFunction) py_glrt_initialize, METH_NOARGS,NULL},
-    {"load_options", (PyCFunction) py_glrt_load_options, 
+    {"load_options", (PyCFunction) py_glrt_load_options,
      METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_problem", (PyCFunction) py_glrt_solve_problem, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_glrt_information, METH_NOARGS, NULL},

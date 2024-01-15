@@ -2,7 +2,7 @@
 * SET UP THE INITIAL DATA *
 ***************************
 
-NAME          QPBAND  
+NAME          QPBAND
 
 *   Problem :
 *   *********
@@ -22,11 +22,11 @@ VARIABLES
  OD J
 
 GROUPS
- 
+
  N  OBJ       X1                -0.2   X2                -0.4
  N  OBJ       X3                -0.6   X4                -0.8
  N  OBJ       X5                 -1.
- 
+
  G  C1        X1                  1.   X3                  1.
  G  C2        X2                  1.   X4                  1.
 

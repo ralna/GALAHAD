@@ -1471,7 +1471,7 @@
 !
 !  data is a scalar variable of type TRU_data_type used for internal data.
 !
-!  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !

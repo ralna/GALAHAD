@@ -8,9 +8,9 @@
     SUBROUTINE NLLSRT( N, M, X, MAXIT,TOL, OUTPUT,IERR, iter, iter_int,        &
                        iter_int_tot, iprint)
     USE GALAHAD_LSRT_precision
-       
+
     ! dummy arguments
-    INTEGER ( KIND = ip_ ), INTENT( IN ) :: N,M , iprint  
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: N,M , iprint
     INTEGER ( KIND = ip_ ), INTENT(OUT) :: IERR, iter, iter_int, iter_int_tot
     INTEGER ( KIND = ip_ ), INTENT(IN) :: MAXIT !  maximum number of iterations
     REAL (KIND = rp_), INTENT( INOUT ) :: X(N)
@@ -32,7 +32,7 @@
 
     !internal parameters
     REAL(KIND = rp_),PARAMETER::eta1=0.01_rp_, eta2=0.95_rp_, gamma1=1.0_rp_, &
-                             gamma2=2.0_rp_, eps_m=10.0_wp**(-15)  
+                             gamma2=2.0_rp_, eps_m=10.0_wp**(-15)
     REAL(KIND = rp_),PARAMETER:: one=1.0_rp_, zero=0.0_rp_
     REAL(KIND = rp_),PARAMETER:: ten=10.0_rp_, half=0.5_rp_
 
@@ -40,42 +40,42 @@
    eps_ca=TOL(1)
    eps_cr=TOL(2)
    eps_ga=TOL(3)
-   eps_gr=TOL(4)	
-   
-       
+   eps_gr=TOL(4)
+
+
     !IERR   = 0   zero residual solution found
     !       = 1   non zero solution found
-    !       = -3  maxit   
+    !       = -3  maxit
     !       = -1  small step
-    
+
     !initialization
     OUTPUT = 0.0_rp_
     sigma = one    !initial regularization parameter
     p = 3.0_rp_
     IERR = -3
     iter_int = 0
-    iter_int_tot = 0	
+    iter_int_tot = 0
     XPS = 0.0_rp_
     CXPS = 0.0_rp_
     CJACTXPS = 0.0_rp_
 
-    ! compute C(x_0) and JAC(x_0)^T  
-    CALL CCFG( N, M, X, M+1, C, .TRUE., N+1, M+1,  CJACT, .true. )  
+    ! compute C(x_0) and JAC(x_0)^T
+    CALL CCFG( N, M, X, M+1, C, .TRUE., N+1, M+1,  CJACT, .true. )
     NC=sqrt(dot_product(C(:M),C(:M)))    ! compute ||C(x_0)||
-    NC0=NC  
-    GRAD=matmul(CJACT(:N,:M),C(:M))      ! compute grad(x_0)=Jac(x_0)^TC(x_0) 
+    NC0=NC
+    GRAD=matmul(CJACT(:N,:M),C(:M))      ! compute grad(x_0)=Jac(x_0)^TC(x_0)
     NG=SQRT(DOT_PRODUCT(GRAD,GRAD))      ! compute ||grad(x_0)||
     NG0=NG
-    CJAC(:M,:N)=transpose(CJACT(:N,:M))  ! compute JAC(x_0) 
-       
-    !   MAIN LOOP    
-         
+    CJAC(:M,:N)=transpose(CJACT(:N,:M))  ! compute JAC(x_0)
+
+    !   MAIN LOOP
+
     DO itc=1,MAXIT
-       
+
       OUTPUT(1) = NC**2
       OUTPUT(2) = NG
-      iter = itc - 1 
-       
+      iter = itc - 1
+
       if (iprint.gt.0) then
         print '(''It='', I4, '' ||C_k||= '',d10.5,'' ||grad_k||= '',d10.5 ) ', &
           iter,  NC, NG
@@ -84,8 +84,8 @@
         end if
 
        IF ((NC.le.max(eps_cr* NC0,eps_ca)).or.(NG.le.max(eps_gr* NG0,eps_ga)))&
-          then 	
-	 	
+          then
+
 	 if  (NC.le.max(eps_cr* NC0,eps_ca)) THEN
 	                IERR=0                  ! zero residual solution found
 	             else
@@ -93,75 +93,75 @@
 	             end if
 	       RETURN
 	     END IF
-     
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-     !COMPUTE A SOLUTION OF THE REGULARIZED PROBLEM   
-     !        
-     !             min 0.5 ||Js+C||^2+sigma/p ||s||^p 
+     !COMPUTE A SOLUTION OF THE REGULARIZED PROBLEM
+     !
+     !             min 0.5 ||Js+C||^2+sigma/p ||s||^p
      !
      !using the GALAHAD module  GALAHAD_LSRT_precision
-     
-     
+
+
      CALL LSRT_initialize(data,control,inform) ! initialize control parameters
-   
+
 	if (NC.le.ten**(-1)) then
-             control%fraction_opt = one               
+             control%fraction_opt = one
 	else
 	     control%fraction_opt = 0.9_rp_  ! only require 90% of the best
 	end if
 
-!     control%fraction_opt=0.9_rp_               
+!     control%fraction_opt=0.9_rp_
      control%print_level = 1
      n2ATb=dot_product(matmul(CJACT(:N,:M),-C(:M)),matmul(CJACT(:N,:M),-C(:M)))
 ! norma al quadrato grad modello nel punto inz 0
-     
+
     control%stop_relative=min(0.1_rp_,sqrt(sqrt(n2ATb)))
-      
+
      U = -C(:M)                                ! the term b in min||Ax-b||
      inform%status = 1
      DO                                      !iteration to find the minimizer
         CALL LSRT_solve(M,N,p,sigma,S,U,V,data,control,inform)
-        
+
         SELECT CASE(inform%status)
         CASE(2)                                ! form  U=U+J*V
            U=U+matmul(CJAC(:M,:N),V)
         CASE(3)                                ! form V=V+J^TU
-           V=V+matmul(CJACT(:N,:M),U)  
+           V=V+matmul(CJACT(:N,:M),U)
         CASE(4)                                ! Restart
-           U=-C(:M)                            ! reinitialize U to C(x_k) 
+           U=-C(:M)                            ! reinitialize U to C(x_k)
         CASE(-2:0)                             ! succesful return
-           
+
        !  WRITE(6,'(1X,I0,'' 1st pass and '',I0, '' 2nd pass iterationsS'')') &
            !       inform%iter, inform%iter_pass2
-           
+
        ! compute the step norm for checking
        !  NS=SQRT(DOT_PRODUCT(S,S))            ! compute ||S||
        !  WRITE(6,'('' ||s|| recurred and calculated = '', 2ES16.8)') &
        !             inform%x_norm, NS
-                  
+
        ! compute the residual for checking   RES=-C(x_k)-JAC(x_k)s
        !      RES=-C(:M)-matmul(CJAC(:M,:N),S)
        !      NRES=SQRT(DOT_PRODUCT(RES,RES))      ! compute ||RES||
        ! WRITE(102,'('' ||Js+C|| recurred and calculated = '', 2ES16.8)') &
        !              inform%r_norm, NRES
-      
+
        ! WRITE(102,'('' objective recurred and calculated = '', 2ES16.8)') &
        !              inform%obj,0.5_wp* NRES+(sigma/p)*NS**p
-             CALL LSRT_terminate(data, control, inform) 
+             CALL LSRT_terminate(data, control, inform)
              EXIT
           CASE DEFAULT
              !  WRITE(6,'('' LSTR_solve exit status = '', I6)' ) inform%status
              CALL LSRT_terminate(data, control, inform)
              EXIT
           END SELECT
-          
+
        END DO
         NRES = inform%r_norm
         NS = inform%x_norm
         INFO = inform%status
-	if ((INFO).lt.0) then 
+	if ((INFO).lt.0) then
  		print*,'errore nel sottoprogramma',INFO
 	end if
         ! print*,NS,NRES
@@ -170,9 +170,9 @@
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
        ! test to accept the trial step  S
-       CALL ABSV(N,S,AS)  ! compute the absolute value 
+       CALL ABSV(N,S,AS)  ! compute the absolute value
                           ! of the vector S (componentwise)
-                 
+
        IF (maxval(AS).LT.ten*eps_m) THEN
           if (iprint.gt.0) then
              print*,'     ||s||=', NS
@@ -180,24 +180,24 @@
              print*,'itc=', itc
            !  write(200,'(''itc= '')') itc
           end if
-         
+
           IERR = -1
-          
+
           return
        END IF
 
-       XPS = X+S           ! compute x_k+s_k       
+       XPS = X+S           ! compute x_k+s_k
        ! compute C(x_k+s_k) and JacT(x_k+s_k)
-       CALL CCFG( N, M, XPS, M+1, CXPS, .true., N+1, M+1, CJACTXPS, .true. ) 
+       CALL CCFG( N, M, XPS, M+1, CXPS, .true., N+1, M+1, CJACTXPS, .true. )
        NCXPS=SQRT(DOT_PRODUCT(CXPS(:M),CXPS(:M)))       ! ||C(x_k+s_k)||
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
        !  compute rho
-   
+
        nrho = half * (NC**2-NCXPS**2)                         ! numerator
        drho = half * NC**2 -(half*NRES**2 + (sigma/p)*NS**p)  ! denominator
        rho = nrho/drho
-        
+
        ! if rho<0, compute an estimate of the rounding error e
        if (rho.lt.0) then
           q = zero
@@ -209,17 +209,17 @@
              e=e+abs(C(i))+q
           end do
           epsbar=eps_m*e
-       
-	! set rho=1 if nrho or drho are < eps_m*e  
+
+	! set rho=1 if nrho or drho are < eps_m*e
           if (((abs(nrho).lt.epsbar).and.(abs(drho).lt.epsbar)).or.            &
                (NCXPS.eq.NRES)) then
-   	 	rho = one 
+   	 	rho = one
    	 	print*,'rho===1'
    	 	write(200,"('rho===1')")
  		endif
        end if
 
-     
+
        if (iprint.gt.0) then
   	  write(200,"(3X,' pass1=', I4, ' pass2=', I4,' rho=', d15.8,          &
          & ' ||s||=',d10.5,  ' sigma=',d10.5 )")                               &
@@ -229,17 +229,17 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      ! sigma update
-        
+
       IF (rho.GE.eta2) THEN
 
          sigma = max (min (gamma1 * sigma, NG), eps_m)  ! ACO rule
-        
+
          if (iprint.gt.0) then
              write(200,"('  verys')")
          end if
- 
-     ELSE IF (rho.GE.eta1) THEN 
-                   
+
+     ELSE IF (rho.GE.eta1) THEN
+
          if (iprint.gt.0) then
             write(200,"('  succ')")
          end if
@@ -253,29 +253,29 @@
          sigma = gamma2 * sigma
 
       END IF
-      
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      ! iterate update
-  
+
       IF (rho.GE.eta1) THEN
          X = XPS           ! x_k+1=x_k+s_k
          C = CXPS          ! C(x_k+1)
-     
+
          NC = NCXPS        ! ||C(x_k+1)||
-              
-         CJACT = CJACTXPS                        ! Jac^T(x_k+1)  
+
+         CJACT = CJACTXPS                        ! Jac^T(x_k+1)
          CJAC(:M,:N) = transpose(CJACT(:N,:M))   ! Jac (x_k+1)
-                 
+
          GRAD = matmul(CJACT(:N,:M),C(:M)) ! grad(x_k+1)=Jac(x_k+1)^TC(x_k+1)nx1
-     
+
          NG = SQRT(DOT_PRODUCT(GRAD,GRAD)) ! ||grad(x_k+1)||
-	
+
       END IF
-            
+
    END DO
-	
+
 	iter = MAXIT
-    
+
    RETURN
  END SUBROUTINE NLLSRT
 
@@ -289,15 +289,15 @@
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: N
    REAL (KIND = rp_), INTENT( IN ) :: V(N)
    REAL (KIND = rp_), INTENT( OUT ) :: AV(N)
-   
+
    !local variables
    INTEGER ( KIND = ip_ ) :: i
-   
+
    DO i=1,N
       AV(i)=ABS(V(i))
    END DO
-   
+
    RETURN
  END SUBROUTINE ABSV
- 
+
   END MODULE GALAHAD_NLLSRT_precision

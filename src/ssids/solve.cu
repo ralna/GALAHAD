@@ -706,8 +706,8 @@ void spral_ssids_run_fwd_solve_kernels(bool posdef,
    CudaCheckError();
 }
 
-void spral_ssids_run_d_solve_kernel(precision_ *x_gpu, 
-      precision_ *y_gpu, struct lookups_gpu_bwd *gpu, 
+void spral_ssids_run_d_solve_kernel(precision_ *x_gpu,
+      precision_ *y_gpu, struct lookups_gpu_bwd *gpu,
      const cudaStream_t *stream) {
 
    if(gpu->nrds>0) {
@@ -719,9 +719,9 @@ void spral_ssids_run_d_solve_kernel(precision_ *x_gpu,
    }
 }
 
-void spral_ssids_run_bwd_solve_kernels(bool dsolve, 
-      bool unit_diagonal, precision_ *x_gpu, precision_ *work_gpu, 
-      int nsync, int *sync_gpu, struct lookups_gpu_bwd *gpu, 
+void spral_ssids_run_bwd_solve_kernels(bool dsolve,
+      bool unit_diagonal, precision_ *x_gpu, precision_ *work_gpu,
+      int nsync, int *sync_gpu, struct lookups_gpu_bwd *gpu,
       const cudaStream_t *stream) {
 
    /* === Kernel Launches === */
@@ -784,7 +784,7 @@ void spral_ssids_run_bwd_solve_kernels(bool dsolve,
 
 void spral_ssids_run_slv_contrib_fwd(
       struct lookup_contrib_fwd const* gpu,
-      precision_* x_gpu, precision_ const* xstack_gpu, 
+      precision_* x_gpu, precision_ const* xstack_gpu,
       const cudaStream_t *stream) {
    if(gpu->nscatter>0) {
       for(int i=0; i<gpu->nscatter; i+=65535)

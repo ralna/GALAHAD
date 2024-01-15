@@ -1,7 +1,7 @@
 % GALAHAD_LSQP-
 %
 %  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector g, a
-%  constant f, n-vectors x_l <= x_u, w & x0 and m-vectors c_l <= c_u, 
+%  constant f, n-vectors x_l <= x_u, w & x0 and m-vectors c_l <= c_u,
 %  solve the SEPERABLE QUADRATIC PROGRAMMING problem
 %    minimize 0.5 * sum w_i^2 ( x_i - x0_i )^2 + g' * x + f
 %    subject to c_l <= A * x <= c_u and x_l <= x <= x_u
@@ -13,22 +13,22 @@
 %  Simple usage -
 %
 %  to solve the separable quadratic program
-%   [ x, inform, aux ] 
+%   [ x, inform, aux ]
 %     = galahad_lsqp( g, f, A, c_l, c_u, x_l, x_u, w, x0, control )
 %
 %  to solve the linear program
-%   [ x, inform, aux ] 
+%   [ x, inform, aux ]
 %     = galahad_lsqp( g, f, A, c_l, c_u, x_l, x_u, control )
 %
 %  Sophisticated usage -
 %
 %  to initialize data and control structures prior to solution
-%   [ control ] 
+%   [ control ]
 %     = galahad_lsqp( 'initial' )
 %
 %  to solve the separable quadratic program using existing data structures
 %   [ x, inform, aux ]
-%     = galahad_lsqp( 'existing', g, f, A, c_l, c_u, x_l, x_u, w, x0, 
+%     = galahad_lsqp( 'existing', g, f, A, c_l, c_u, x_l, x_u, w, x0,
 %                     control )
 %
 %  to solve the linear program using existing data structures
@@ -48,12 +48,12 @@
 %    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 %
 %  Optional Input -
-%    w: the n-vector of weights w. If one of w and x0 is given, they must both 
+%    w: the n-vector of weights w. If one of w and x0 is given, they must both
 %    x0: the n-vector of shifts x0                                        be
 %    control, a structure containing control parameters.
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
-%      the derived type LSQP_CONTROL as described in the 
+%      the derived type LSQP_CONTROL as described in the
 %      manual for the fortran 90 package GALAHAD_LSQP.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/lsqp.pdf
 %
@@ -65,22 +65,22 @@
 %   inform: a structure containing information parameters
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
-%      the derived type LSQP_INFORM as described in the manual for 
+%      the derived type LSQP_INFORM as described in the manual for
 %      the fortran 90 package GALAHAD_LSQP.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/lsqp.pdf
 %  aux: a structure containing Lagrange multipliers and constraint status
 %   aux.c: values of the constraints A * x
-%   aux.y: Lagrange multipliers corresponding to the general constraints 
-%        c_l <= A * x <= c_u 
+%   aux.y: Lagrange multipliers corresponding to the general constraints
+%        c_l <= A * x <= c_u
 %   aux.z: dual variables corresponding to the bound constraints
 %        x_l <= x <= x_u
 %   aux.c_stat: vector indicating the status of the general constraints
 %           c_stat(i) < 0 if (c_l)_i = (A * x)_i
-%           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i 
+%           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
 %           c_stat(i) > 0 if (c_u)_i = (A * x)_i
 %   aux.b_stat: vector indicating the status of the bound constraints
 %           b_stat(i) < 0 if (x_l)_i = (x)_i
-%           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i 
+%           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
 %           b_stat(i) > 0 if (x_u)_i = (x)_i
 %
 % This version copyright Nick Gould for GALAHAD productions 18/February/2010

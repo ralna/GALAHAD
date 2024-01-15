@@ -19,7 +19,7 @@
 #include "galahad_dgo.h"
 
 /* Nested UGO control and inform prototypes */
-bool ugo_update_control(struct ugo_control_type *control, 
+bool ugo_update_control(struct ugo_control_type *control,
                         PyObject *py_options);
 PyObject* ugo_make_options_dict(const struct ugo_control_type *control);
 PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform);
@@ -327,14 +327,14 @@ static bool dgo_update_control(struct dgo_control_type *control,
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix, 
+                                  control->prefix,
                                   sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file, 
+                                  control->alive_file,
                                   sizeof(control->alive_file)))
                 return false;
             continue;
@@ -651,7 +651,7 @@ static PyObject* py_dgo_solve(PyObject *self, PyObject *args){
 
     // Create NumPy output array
     npy_intp ndim[] = {n}; // size of g
-    PyArrayObject *py_g = 
+    PyArrayObject *py_g =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
 

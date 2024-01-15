@@ -31,7 +31,7 @@ Purple    = "#%02x%02x%02x" % ( 160,  32, 240 )
 #  select fixed colours
 
 logobackground         = White
-logoforeground         = Blue 
+logoforeground         = Blue
 warningbackground      = White
 warningforeground      = Red
 
@@ -79,10 +79,10 @@ class TkGalahad:
   ' TkGalahad class definition (GALAHAD productions 2002-2004)'
   instancesopen = 0
   def __init__( self ):
-#   next line should work (but doesn't) 
+#   next line should work (but doesn't)
 # def __init__( self, master=None ):
 #   Frame.__init__( self, master, class_="TkGalahad" )
-    
+
 #  initial values
 
     self.dir = os.getcwd( )
@@ -140,7 +140,7 @@ class TkGalahad:
     self.normalfont = tkFont.Font( family="Helvetica",size=9, weight="bold" )
     self.bigfont = tkFont.Font( family="Helvetica",size=24 )
     self.helpfont = tkFont.Font( family="Helvetica",size=14 )
- 
+
 #  set default option values
 
     self.root.option_add( "*Font", self.normalfont )
@@ -221,7 +221,7 @@ class TkGalahad:
     self.logo = Text( self.frame, borderwidth=1, pady=3, padx=10,
                       width=9, height=2, font=self.bigfont,
 #                     background=logoforeground,
-#                     foreground=logobackground, 
+#                     foreground=logobackground,
                       )
     self.logo.insert( END, "GALAHAD\nstarting..." )
     self.logo.pack( side=LEFT )
@@ -234,7 +234,7 @@ class TkGalahad:
       self.advice( )
       return
 
-    if os.path.exists( self.galahad ) == 1 : 
+    if os.path.exists( self.galahad ) == 1 :
       self.architecture = os.listdir( self.galahad+"/makefiles" )
       self.architecture.sort( )
       self.var_arch = StringVar( )
@@ -257,7 +257,7 @@ class TkGalahad:
 #  read resorce file to override style defaults
 
     home = os.environ["HOME"]
-    if os.path.exists( home+'/.GalahadStyle' ) == 1 : 
+    if os.path.exists( home+'/.GalahadStyle' ) == 1 :
       self.root.option_clear()
       self.root.option_readfile( home+"/.GalahadStyle", priority=60 )
       print "Reading style resources from user resorce file ~/.GalahadStyle"
@@ -270,7 +270,7 @@ class TkGalahad:
 
 #  read resorce file to override package and architecture defaults
 
-    if os.path.exists( home+'/.GalahadDefaults' ) == 1 : 
+    if os.path.exists( home+'/.GalahadDefaults' ) == 1 :
       self.readdefaults( home+"/.GalahadDefaults" )
       print "Reading package/achitecture resources from user resorce file" \
             +" ~/.GalahadDefaults"
@@ -329,63 +329,63 @@ class TkGalahad:
 
     self.scroll.config( command=self.list.yview )
 
-############# 
+#############
 #  LHS box  #
-############# 
+#############
 
 #  assemble buttons for button box
 
 #    Button( self.buttons,
 #            width=10, height=1,
-#            text="help", 
+#            text="help",
 #            command=self.presshelp
 #            ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="cd",
             command=self.presscdmenu
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="refresh",
             command=self.runrefresh
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
-            text="spec", 
+            text="spec",
             command=self.pressspec
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="package",
             command=self.selectsolver
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="solve",
             command=self.runsdgal
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="resolve",
             command=self.rungal
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="solution",
             command=self.printsol
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="summary",
             command=self.printsum
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="stop",
             command=self.delalive
             ).pack( )
-    Button( self.buttons, 
+    Button( self.buttons,
             width=10, height=1,
             text="exit",
             command=self.root.destroy
@@ -398,7 +398,7 @@ class TkGalahad:
     self.space( )
     self.createpacklogobox( )
 
-############# 
+#############
 #  RHS box  #
 #############
 
@@ -455,7 +455,7 @@ class TkGalahad:
         import sys
         sys.exit( 0 )
 
-#  function to bind double-mouse-1 to edit            
+#  function to bind double-mouse-1 to edit
 #  ---------------------------------------
 
   def editfile( self, event ):
@@ -496,7 +496,7 @@ class TkGalahad:
 
     Label( self.helpwindow, anchor=W, justify=LEFT,
            takefocus=1, text=helptext ).pack( side=TOP )
-   
+
   def presshelpabout( self ):
     if self.helpaboutwindowopen == 1 :
         return
@@ -511,7 +511,7 @@ class TkGalahad:
 
     Label( self.helpaboutwindow, anchor=W, justify=LEFT,
            takefocus=1, text=helpabouttext ).pack( side=TOP )
-   
+
   def presshelpcommands( self ):
     if self.helpcommandswindowopen == 1 :
         return
@@ -526,7 +526,7 @@ class TkGalahad:
 
     Label( self.helpcommandswindow, anchor=W, justify=LEFT,
            takefocus=1, text=helpcommandstext ).pack( side=TOP )
-   
+
 #   function to destroy help windows
 #   --------------------------------
 
@@ -559,7 +559,7 @@ class TkGalahad:
 
     Label( self.prefwindow, anchor=W, justify=LEFT,
            takefocus=1, text=preftext ).pack( side=TOP )
-   
+
 #   function to destroy pref window
 #   -------------------------------
 
@@ -711,7 +711,7 @@ class TkGalahad:
 
   def cdmenuupdate( self ):
     self.cdmenuupdatemain( )
-    
+
   def cdmenuupdatemain( self ):
 
     n = self.cdmenuwindow.list.curselection( )
@@ -741,7 +741,7 @@ class TkGalahad:
     self.cdmenuwindowopen = 0
     self.cdmenuwindow.destroy( )
     self.presscdmenu( )
-    
+
   def cdmenuwindowdestroy( self ):
     self.cdmenuwindowopen = 0
     self.cdmenuwindow.destroy( )
@@ -769,7 +769,7 @@ class TkGalahad:
                                       name="selectwindowf2" )
 
     Label( self.selectwindow.frame1, width=2, text="" ).pack( side=LEFT )
-    Label( self.selectwindow.frame1, 
+    Label( self.selectwindow.frame1,
            anchor=W, relief=FLAT, borderwidth=0, width=14,
            text="\nPackage to use:"
           ).pack( side=TOP )
@@ -779,10 +779,10 @@ class TkGalahad:
 
     for packages in [ 'lanb', 'filt', 'qpb', 'qpa' ]:
       if packages == 'lanb' : label = "LANCELOT B"
-      elif packages == 'filt' : label = "FILTRANE" 
-      elif packages == 'qpb' : label = "QPB / LSQP" 
-      elif packages == 'qpa' : label = "QPA" 
-      else :label = "" 
+      elif packages == 'filt' : label = "FILTRANE"
+      elif packages == 'qpb' : label = "QPB / LSQP"
+      elif packages == 'qpa' : label = "QPA"
+      else :label = ""
       Radiobutton( self.selectwindow.packagesframe1,
                    highlightthickness=0, relief=FLAT,
                    width=14, anchor=W,
@@ -794,7 +794,7 @@ class TkGalahad:
     self.selectwindow.packagesframe1.pack( side=TOP )
     self.selectwindow.frame1.pack( side=LEFT )
 
-    Label( self.selectwindow.frame2, 
+    Label( self.selectwindow.frame2,
            anchor=W, relief=FLAT, borderwidth=0, width=17,
            text="\nArchitecture to use:"
           ).pack( side=TOP )
@@ -802,7 +802,7 @@ class TkGalahad:
     self.selectwindow.packagesframe2 = Frame( self.selectwindow.frame2,
                                              name="selectwindow2" )
 
-    if os.path.exists( self.galahad ) == 1 : 
+    if os.path.exists( self.galahad ) == 1 :
       self.architecture = os.listdir( self.galahad+"/makefiles" )
       self.architecture.sort( )
       for eachfile in self.architecture :
@@ -862,8 +862,8 @@ class TkGalahad:
 
     Label( self.advicewindow.frame, height=1, background=warningbackground,
            text="" ).pack( side=TOP )
-    Label( self.advicewindow.frame, 
-           relief=FLAT, borderwidth=1, 
+    Label( self.advicewindow.frame,
+           relief=FLAT, borderwidth=1,
            foreground=warningforeground,
            background=warningbackground,
            font=self.helpfont,
@@ -895,10 +895,10 @@ class TkGalahad:
 
   def selectupdate( self ):
     self.selectupdatemain( )
-    
+
   def selectupdatemain( self ):
     self.selectwindowdestroy( )
-    
+
   def selectwindowdestroy( self ):
     self.selectwindowopen = 0
     if self.var_package.get( ) == 'lanb' :
@@ -934,19 +934,19 @@ class TkGalahad:
   def runsdgalevent( self, event ):
     self.sdgalout = ''
     self.runsdgalmain( )
-    
+
   def runsdgaleventdetails( self, event ):
     self.sdgalout = '-o 1'
     self.runsdgalmain( )
-    
+
   def runsdgaleventdebug( self, event ):
     self.sdgalout = '-o -1'
     self.runsdgalmain( )
-    
+
   def runsdgal( self ):
     self.sdgalout = ''
     self.runsdgalmain( )
-    
+
   def runsdgalmain( self ):
     if len( self.threads ) != 0 :
       while self.threads[0].isAlive( ) :
@@ -971,7 +971,7 @@ class TkGalahad:
     os.system( 'sdgal '+self.var_arch.get( )+' '+self.var_package.get( ) \
                        +' '+self.sdgalout+' '+self.file )
 
-#  function to run selected GALAHAD on previously-decoded SIF problem 
+#  function to run selected GALAHAD on previously-decoded SIF problem
 #  ------------------------------------------------------------------
 
   def rungal( self ):
@@ -995,8 +995,8 @@ class TkGalahad:
   def galthread( self  ):
     print 'gal '+self.var_arch.get( )+' '+self.var_package.get( )
     os.system( 'gal '+self.var_arch.get( )+' '+self.var_package.get( ) )
-    
-#  function to run selected GALAHAD package on previously-decoded 
+
+#  function to run selected GALAHAD package on previously-decoded
 #  SIF problem using current spec values
 #  -------------------------------------
 
@@ -1035,7 +1035,7 @@ class TkGalahad:
     print 'gal '+self.var_arch.get( )+' '+self.var_package.get( )
     os.system( 'gal '+self.var_arch.get( )+' '+self.var_package.get( ) )
     if self.specexists == 1 : os.rename( self.specbak, self.spec )
-    
+
 #  function to print solution
 #  --------------------------
 
@@ -1088,7 +1088,7 @@ class TkGalahad:
 #                         borderwidth=1, pady=4, padx=10,
                           width=12, height=4,
 #                         font=self.bigfont,
-                          background=logobackground, 
+                          background=logobackground,
                           foreground=logoforeground,
                           )
     self.packname.insert( END,
@@ -1119,7 +1119,7 @@ class TkGalahad:
 
     self.logo = Text( self.frame1, borderwidth=1, pady=3, padx=10,
                       width=1, height=7, font=self.bigfont,
-                      background=logobackground, 
+                      background=logobackground,
                       foreground=logoforeground,
                       )
     self.logo.insert( END, "G\nA\nL\nA\nH\nA\nD\n" )
@@ -1163,7 +1163,7 @@ class TkGalahad:
 #  set variables if the first time through
 
     if self.lanbspec_used == 'no' :
-      
+
 #  integer (check-button) variables used with encodings
 
       self.lanb_check_maximizer = IntVar( )
@@ -1315,24 +1315,24 @@ class TkGalahad:
       self.lanb_default_firstr = '1.0'
 
       self.lanb_var_gradient = StringVar( )
-      self.lanb_string_gradient = 'first-derivative-approximations' 
+      self.lanb_string_gradient = 'first-derivative-approximations'
       self.lanb_default_gradient = 'exact'
 
       self.lanb_var_hessian = StringVar( )
-      self.lanb_string_hessian = 'second-derivative-approximations' 
+      self.lanb_string_hessian = 'second-derivative-approximations'
       self.lanb_default_hessian = 'exact'
 
       self.lanb_var_solver = StringVar( )
-      self.lanb_string_solver = 'linear-solver-used' 
+      self.lanb_string_solver = 'linear-solver-used'
       self.lanb_default_solver = 'band_cg'
 
       self.lanb_var_bandwidth = StringVar( )
-      self.lanb_string_bandwidth = 'semi-bandwidth-for-band-preconditioner' 
+      self.lanb_string_bandwidth = 'semi-bandwidth-for-band-preconditioner'
       self.lanb_default_bandwidth = '5'
       self.current_bandwidth = self.lanb_default_bandwidth
 
       self.lanb_var_linmore = StringVar( )
-      self.lanb_string_linmore = 'number-of-lin-more-vectors-used' 
+      self.lanb_string_linmore = 'number-of-lin-more-vectors-used'
       self.lanb_default_linmore = '5'
       self.current_linmore = self.lanb_default_linmore
 
@@ -1395,7 +1395,7 @@ class TkGalahad:
       self.lanbspec_used = 'yes'
 
 #  setup the window frame
-    
+
     self.specwindow = Toplevel( self.root )
     self.specwindow.geometry( '+100+100' )
     self.specwindow.title( 'LANCELOT B spec tool' )
@@ -1420,7 +1420,7 @@ class TkGalahad:
                    self.lanb_check_checkgr,
                    self.lanb_check_ignoreder,
                    self.lanb_check_ignoreel,
-                   self.lanb_check_ignoregr, 
+                   self.lanb_check_ignoregr,
                    self.lanb_check_qp
                    ]
 
@@ -1445,7 +1445,7 @@ class TkGalahad:
                               self.lanb_check_accuratebqp,
                               self.lanb_check_restart,
                               self.lanb_check_scaling,
-                              self.lanb_check_cscaling, 
+                              self.lanb_check_cscaling,
                               self.lanb_check_vscaling,
                               self.lanb_check_gscaling,
                               self.lanb_check_wproblem
@@ -1462,7 +1462,7 @@ class TkGalahad:
                              "Get scaling factors",
                              "Write problem data to file"
                              ] )
-    
+
     self.specwindow.varrstart = self.specwindow.varlstop
     self.specwindow.varrstop = len( self.check )
 
@@ -1561,7 +1561,7 @@ class TkGalahad:
     self.specwindow.entrylbrstart = self.specwindow.entrylblstop
     self.specwindow.entrylbrstop = len( self.var )
 
-#  Set the name and logo 
+#  Set the name and logo
 
     Label( self.specwindow, text="\nLANCELOT B OPTIONS\n"
            ).pack( side=TOP, fill=BOTH )
@@ -1645,7 +1645,7 @@ class TkGalahad:
                    variable=self.check[i],
                    text=self.checkstring[i]
                    ).pack( side=TOP, fill=BOTH )
-    
+
     self.specwindow.check.left.pack( side=LEFT, fill=BOTH )
     Label( self.specwindow.check, width=4,
            text="" ).pack( side=LEFT, fill=BOTH )
@@ -1685,7 +1685,7 @@ class TkGalahad:
                    command=self.nofdgandexacthessian,
                    text=gradient
                    ).pack( side=LEFT, fill=BOTH )
-                                                 
+
     self.specwindow.gradient.pack( side=TOP, fill=BOTH )
     self.specwindow.ghcheck.left.pack( side=LEFT, fill=BOTH )
 
@@ -1707,7 +1707,7 @@ class TkGalahad:
                    command=self.nofdgandexacthessian,
                    text=hessian
                    ).pack( side=LEFT, fill=BOTH )
-                                                 
+
     self.specwindow.hessian.pack( side=TOP, fill=BOTH )
     self.specwindow.ghcheck.right.pack( side=LEFT, fill=BOTH )
 
@@ -1805,17 +1805,17 @@ class TkGalahad:
                      'schnabel_eskow_cg', 'multifrontal', \
                      'modified_multifrontal' ]:
       if solvers == 'cg' : label = "CG"
-      elif solvers == 'diagonal_cg' : label = "Diagonal" 
-      elif solvers == 'munksgaard_cg' : label = "Munksgaard (+)" 
-      elif solvers == 'expanding_band_cg' : label = "Expanding Band (*)" 
-      elif solvers == 'gmps_cg' : label = "Gill-Murray-Poncelon-Saunders (*)" 
-      elif solvers == 'schnabel_eskow_cg' : label = "Schnabel-Eskow (*)" 
-      elif solvers == 'band_cg' : label = "Band: semibandwidth" 
-      elif solvers == 'lin_more_cg' : label = "Lin-More (\"): vectors" 
-      elif solvers == 'multifrontal' : label = "Direct multifrontal (*)" 
+      elif solvers == 'diagonal_cg' : label = "Diagonal"
+      elif solvers == 'munksgaard_cg' : label = "Munksgaard (+)"
+      elif solvers == 'expanding_band_cg' : label = "Expanding Band (*)"
+      elif solvers == 'gmps_cg' : label = "Gill-Murray-Poncelon-Saunders (*)"
+      elif solvers == 'schnabel_eskow_cg' : label = "Schnabel-Eskow (*)"
+      elif solvers == 'band_cg' : label = "Band: semibandwidth"
+      elif solvers == 'lin_more_cg' : label = "Lin-More (\"): vectors"
+      elif solvers == 'multifrontal' : label = "Direct multifrontal (*)"
       elif solvers == 'modified_multifrontal' :
-        label = "Direct modified multifrontal (*)" 
-      else :label = "" 
+        label = "Direct modified multifrontal (*)"
+      else :label = ""
       if solvers == 'band_cg' :
         self.specwindow.bandsolver = Frame( self.specwindow.solver )
         Radiobutton( self.specwindow.bandsolver,
@@ -1919,31 +1919,31 @@ class TkGalahad:
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Dismiss\nwindow", 
+            text="Dismiss\nwindow",
             command=self.specwindowdestroy
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Edit RUNLANB.SPC\ndirectly", 
+            text="Edit RUNLANB.SPC\ndirectly",
             command=self.editlanbspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Read existing\nvalues", 
+            text="Read existing\nvalues",
             command=self.readlanbspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Restore default\nvalues", 
+            text="Restore default\nvalues",
             command=self.restorelanbdefaults
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Save current\nvalues", 
+            text="Save current\nvalues",
             command=self.writelanbspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
@@ -2038,11 +2038,11 @@ class TkGalahad:
     self.current_bandwidth = self.lanb_default_bandwidth
     self.current_linmore = self.lanb_default_linmore
     self.lanbsolversonoff( )
-  
+
 #  function to switch on and off semibandwidth/line-more vectors as appropriate
 #  ----------------------------------------------------------------------------
 
-  def lanbsolversonoff( self ): 
+  def lanbsolversonoff( self ):
     if self.lanb_var_solver.get( ) == 'band_cg' :
       self.lanb_var_bandwidth.set( self.current_bandwidth )
     else:
@@ -2060,7 +2060,7 @@ class TkGalahad:
 #  as finite-diffreence gradients
 #  ------------------------------
 
-  def nofdgandexacthessian( self ): 
+  def nofdgandexacthessian( self ):
     if self.lanb_var_hessian.get( ) == 'exact' and \
        self.lanb_var_gradient.get( ) != 'exact' :
       self.lanb_var_hessian.set( 'sr1' )
@@ -2068,7 +2068,7 @@ class TkGalahad:
 #  function to read the current values to the spec file
 #  -----------------------------------------------------
 
-  def readlanbspec( self ): 
+  def readlanbspec( self ):
 
 #  open file and set header
 
@@ -2093,10 +2093,10 @@ class TkGalahad:
 
 #  convert the line to lower case, and remove leading and trailing blanks
 
-      line = line.lower( ) 
+      line = line.lower( )
       line = line.strip( )
-      blank_start = line.find( ' ' ) 
-      
+      blank_start = line.find( ' ' )
+
       if blank_start != -1 :
         stringc = line[0:blank_start]
       else :
@@ -2104,7 +2104,7 @@ class TkGalahad:
 
 #  look for string variables to set
 
-      blank_end = line.rfind( ' ' ) 
+      blank_end = line.rfind( ' ' )
       if blank_start == -1 :
         stringd = 'YES'
       else:
@@ -2185,7 +2185,7 @@ class TkGalahad:
         continue
 
       if stringc == self.lanb_string_gradient :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == 'forward' :
           self.lanb_var_gradient.set( 'forward' )
         elif stringd == 'central' :
@@ -2194,7 +2194,7 @@ class TkGalahad:
           self.lanb_var_gradient.set( 'exact' )
         continue
       elif stringc ==  self.lanb_string_hessian :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == 'bfgs':
           self.lanb_var_hessian.set( 'bfgs' )
         elif stringd == 'dfp':
@@ -2207,9 +2207,9 @@ class TkGalahad:
           self.lanb_var_hessian.set( 'exact' )
         continue
       elif stringc == self.lanb_string_solver :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == 'cg':
-          self.lanb_var_solver.set( 'cg' ) 
+          self.lanb_var_solver.set( 'cg' )
         elif stringd == 'diagonal_cg':
           self.lanb_var_solver.set( 'diagonal_cg' )
         elif stringd == 'munksgaard_cg':
@@ -2331,7 +2331,7 @@ class TkGalahad:
 #  function to write the current values to the spec file
 #  -----------------------------------------------------
 
-  def writelanbspec( self ): 
+  def writelanbspec( self ):
 
 #  open file and set header
 
@@ -2342,12 +2342,12 @@ class TkGalahad:
     self.runlanbspc.write( "BEGIN RUNLANB SPECIFICATIONS\n" )
 
     self.writelanbspecline_int( self.lanb_check_wproblem,
-                            self.lanb_default_wproblem, 
+                            self.lanb_default_wproblem,
                             self.lanb_string_wproblem )
     self.writelanbspecdummy( 'problem-data-file-name', 'LANB.data' )
     self.writelanbspecdummy( 'problem-data-file-device', '26' )
     self.writelanbspecline_int( self.lanb_check_printfullsol,
-                            self.lanb_default_printfullsol, 
+                            self.lanb_default_printfullsol,
                             self.lanb_string_printfullsol )
     self.writelanbspecdummy( 'write-solution', 'YES' )
     self.writelanbspecdummy( 'solution-file-name', 'LANBSOL.d' )
@@ -2356,7 +2356,7 @@ class TkGalahad:
     self.writelanbspecdummy( 'result-summary-file-name', 'LANBRES.d' )
     self.writelanbspecdummy( 'result-summary-file-device', '47' )
     self.writelanbspecline_int( self.lanb_check_checkall,
-                            self.lanb_default_checkall, 
+                            self.lanb_default_checkall,
                             self.lanb_string_checkall )
     self.writelanbspecline_int( self.lanb_check_checkder,
                             self.lanb_default_checkder,
@@ -2368,34 +2368,34 @@ class TkGalahad:
                             self.lanb_default_checkgr,
                             self.lanb_string_checkgr )
     self.writelanbspecline_int( self.lanb_check_ignoreder,
-                            self.lanb_default_ignoreder, 
+                            self.lanb_default_ignoreder,
                             self.lanb_string_ignoreder )
     self.writelanbspecline_int( self.lanb_check_ignoreel,
-                            self.lanb_default_ignoreel, 
+                            self.lanb_default_ignoreel,
                             self.lanb_string_ignoreel )
     self.writelanbspecline_int( self.lanb_check_ignoregr,
-                            self.lanb_default_ignoregr, 
+                            self.lanb_default_ignoregr,
                             self.lanb_string_ignoregr )
     self.writelanbspecline_int( self.lanb_check_gscaling,
-                            self.lanb_default_gscaling, 
+                            self.lanb_default_gscaling,
                             self.lanb_string_gscaling )
     self.writelanbspecline_stringval( self.lanb_var_slevel,
                                   self.lanb_default_plevel,
                                   self.lanb_string_slevel )
     self.writelanbspecline_int( self.lanb_check_scaling,
-                            self.lanb_default_scaling, 
+                            self.lanb_default_scaling,
                             self.lanb_string_scaling )
     self.writelanbspecline_int( self.lanb_check_cscaling,
-                            self.lanb_default_cscaling, 
+                            self.lanb_default_cscaling,
                             self.lanb_string_cscaling )
     self.writelanbspecline_int( self.lanb_check_vscaling,
-                            self.lanb_default_vscaling, 
+                            self.lanb_default_vscaling,
                             self.lanb_string_vscaling )
     self.writelanbspecline_int( self.lanb_check_maximizer,
-                            self.lanb_default_maximizer, 
+                            self.lanb_default_maximizer,
                             self.lanb_string_maximizer )
     self.writelanbspecline_int( self.lanb_check_restart,
-                            self.lanb_default_restart, 
+                            self.lanb_default_restart,
                             self.lanb_string_restart )
     self.writelanbspecdummy( 'restart-data-file-name', 'LANBSAVE.d' )
     self.writelanbspecdummy( 'restart-data-file-device', '59' )
@@ -2498,7 +2498,7 @@ class TkGalahad:
     elif self.lanb_var_gradient.get( ) == "central" :
       self.writelanbspecline_string( self.lanb_var_gradient, "central",
                                  self.lanb_string_gradient )
-    else : 
+    else :
       if self.lanb_check_writeall.get( ) == 1 :
         self.runlanbspc.write( "!  "+self.lanb_string_gradient.ljust( 50 ) \
                                +"EXACT\n" )
@@ -2579,20 +2579,20 @@ class TkGalahad:
                                   self.lanb_default_pivtol,
                                   self.lanb_string_pivtol )
     self.writelanbspecline_int( self.lanb_check_qp,
-                            self.lanb_default_qp, 
+                            self.lanb_default_qp,
                             self.lanb_string_qp )
     self.writelanbspecline_int( self.lanb_check_twonorm,
-                            self.lanb_default_twonorm, 
+                            self.lanb_default_twonorm,
                             self.lanb_string_twonorm )
     self.writelanbspecline_int( self.lanb_check_gcp,
                             self.lanb_default_gcp,
                             self.lanb_string_gcp )
     self.writelanbspecdummy( 'magical-steps-allowed', 'NO' )
     self.writelanbspecline_int( self.lanb_check_accuratebqp,
-                            self.lanb_default_accuratebqp, 
+                            self.lanb_default_accuratebqp,
                             self.lanb_string_accuratebqp )
     self.writelanbspecline_int( self.lanb_check_strtr,
-                            self.lanb_default_strtr, 
+                            self.lanb_default_strtr,
                             self.lanb_string_strtr )
     if self.lanb_check_maximizer.get( ) == 0 :
       if self.lanb_check_writeall.get( ) == 1 :
@@ -2611,7 +2611,7 @@ class TkGalahad:
 
 #  functions to produce various output lines
 
-  def writelanbspecline_int( self, var, default, line ): 
+  def writelanbspecline_int( self, var, default, line ):
     if var.get( ) == default :
       if self.lanb_check_writeall.get( ) == 1 :
         if default == 0 :
@@ -2623,8 +2623,8 @@ class TkGalahad:
         self.runlanbspc.write( "   "+line.ljust( 50 )+"YES\n" )
       else :
         self.runlanbspc.write( "   "+line.ljust( 50 )+"NO\n" )
-    
-  def writelanbspecline_string( self, var, string, line ): 
+
+  def writelanbspecline_string( self, var, string, line ):
     self.varget = var.get( )
     stringupper = string.upper( )
     if self.varget == string :
@@ -2633,7 +2633,7 @@ class TkGalahad:
       if self.lanb_check_writeall.get( ) == 1 :
         self.runlanbspc.write( "!  "+line.ljust( 50 )+stringupper+"\n" )
 
-  def writelanbspecline_stringval( self, var, default, line ): 
+  def writelanbspecline_stringval( self, var, default, line ):
     self.varget = var.get( )
     if self.varget == default or self.varget == "" :
       if self.lanb_check_writeall.get( ) == 1 :
@@ -2641,7 +2641,7 @@ class TkGalahad:
     else :
       self.runlanbspc.write( "   "+line.ljust( 50 )+self.varget+"\n" )
 
-  def writelanbspecdummy( self, line1, line2 ): 
+  def writelanbspecdummy( self, line1, line2 ):
     if self.lanb_check_writeall.get( ) == 1 :
       self.runlanbspc.write( "!  "+line1.ljust( 50 )+line2+"\n" )
 
@@ -2654,9 +2654,9 @@ class TkGalahad:
     elif os.system( 'which acroread > /dev/null' ) == 0 :
       self.pdfread = 'acroread'
     else:
-      print 'error: no known pdf file reader' 
+      print 'error: no known pdf file reader'
       return
-    
+
     self.threads =[ ]
     self.t = threading.Thread( target=self.pdfreadlanbthread )
     self.threads.append( self.t )
@@ -2720,7 +2720,7 @@ class TkGalahad:
          stringyesno.lower( ) == 'off' or stringyesno.lower( ) == 'false' or \
          stringyesno.lower( ) == '.false.' or stringyesno.lower( ) == 'n' :
       string.set( 0 )
-      
+
 #  function to destroy spec window
 #  -------------------------------
 
@@ -2740,7 +2740,7 @@ class TkGalahad:
 #  set variables if the first time through
 
     if self.qpaspec_used == 'no' :
-      
+
 #  integer (check-button) variables used with encodings
 
       self.qpa_check_write_prob = IntVar( )
@@ -2940,7 +2940,7 @@ class TkGalahad:
       self.qpaspec_used = 'yes'
 
 #  setup the window frame
-    
+
     self.specwindow = Toplevel( self.root )
     self.specwindow.geometry( '+100+100' )
     self.specwindow.title( 'QPA spec tool' )
@@ -2985,7 +2985,7 @@ class TkGalahad:
                                "Solve within bounds",
                                "Perturb constraint bounds"
                                ] )
-    
+
     self.specwindow.varrstart = self.specwindow.varlstop
     self.specwindow.varrstop = len( self.check )
 
@@ -3069,7 +3069,7 @@ class TkGalahad:
     self.specwindow.entrytrstart = self.specwindow.entrytlstop
     self.specwindow.entrytrstop = len( self.var )
 
-#  Set the name and logo 
+#  Set the name and logo
 
     Label( self.specwindow, text="\nQPA OPTIONS\n"
            ).pack( side=TOP, fill=BOTH )
@@ -3137,7 +3137,7 @@ class TkGalahad:
                    variable=self.check[i],
                    text=self.checkstring[i]
                    ).pack( side=TOP, fill=BOTH )
-    
+
     self.specwindow.check.left.pack( side=LEFT, fill=BOTH )
     Label( self.specwindow.check, width=4,
            text="" ).pack( side=LEFT, fill=BOTH )
@@ -3266,7 +3266,7 @@ class TkGalahad:
              ).pack( side=RIGHT, fill=BOTH )
       self.specwindow.i.pack( side=TOP, fill=BOTH )
     self.specwindow.frame.rhs.top.left.pack( side=LEFT, fill=BOTH )
-    
+
 #  contents of rhs top right data entry frame
 
     Label( self.specwindow.frame.rhs.top, width=1,
@@ -3318,31 +3318,31 @@ class TkGalahad:
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Dismiss\nwindow", 
+            text="Dismiss\nwindow",
             command=self.specwindowdestroy
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Edit RUNQPA.SPC\ndirectly", 
+            text="Edit RUNQPA.SPC\ndirectly",
             command=self.editqpaspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Read existing\nvalues", 
+            text="Read existing\nvalues",
             command=self.readqpaspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Restore default\nvalues", 
+            text="Restore default\nvalues",
             command=self.restoreqpadefaults
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Save current\nvalues", 
+            text="Save current\nvalues",
             command=self.writeqpaspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
@@ -3401,7 +3401,7 @@ class TkGalahad:
     self.qpa_var_intmin.set( self.qpa_default_intmin )
     self.qpa_var_valmin.set( self.qpa_default_valmin )
     self.qpa_var_itref_max.set( self.qpa_default_itref_max )
-    self.qpa_var_infeas_check_interval.set( 
+    self.qpa_var_infeas_check_interval.set(
       self.qpa_default_infeas_check_interval )
     self.qpa_var_cg_maxit.set( self.qpa_default_cg_maxit )
     self.qpa_var_full_max_fill.set( self.qpa_default_full_max_fill )
@@ -3430,11 +3430,11 @@ class TkGalahad:
     self.current_nsemiba = self.qpa_default_nsemiba
     self.current_nsemibb = self.qpa_default_nsemibb
     self.qpapreconsonoff( )
-  
+
 #  function to switch on and off semibandwidth/line-more vectors as appropriate
 #  ----------------------------------------------------------------------------
 
-  def qpapreconsonoff( self ): 
+  def qpapreconsonoff( self ):
     if self.qpa_var_precon.get( ) == '3' :
       self.qpa_var_nsemiba.set( self.current_nsemiba )
     else:
@@ -3451,7 +3451,7 @@ class TkGalahad:
 #  function to read the current values to the spec file
 #  -----------------------------------------------------
 
-  def readqpaspec( self ): 
+  def readqpaspec( self ):
 
 #  open file and set header
 
@@ -3476,10 +3476,10 @@ class TkGalahad:
 
 #  convert the line to lower case, and remove leading and trailing blanks
 
-      line = line.lower( ) 
+      line = line.lower( )
       line = line.strip( )
-      blank_start = line.find( ' ' ) 
-      
+      blank_start = line.find( ' ' )
+
       if blank_start != -1 :
         stringc = line[0:blank_start]
       else :
@@ -3487,7 +3487,7 @@ class TkGalahad:
 
 #  look for string variables to set
 
-      blank_end = line.rfind( ' ' ) 
+      blank_end = line.rfind( ' ' )
       if blank_start == -1 :
         stringd = 'YES'
       else:
@@ -3535,7 +3535,7 @@ class TkGalahad:
         continue
 
       if stringc == self.qpa_string_factor :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '1' :
           self.qpa_var_factor.set( '1' )
         elif stringd == '2' :
@@ -3544,13 +3544,13 @@ class TkGalahad:
           self.qpa_var_factor.set( '3' )
         continue
       elif stringc == self.qpa_string_precon :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0':
           self.qpa_var_precon.set( '0' )
         elif stringd == '1':
           self.qpa_var_precon.set( '1' )
         elif stringd == '2':
-          self.qpa_var_precon.set( '2' ) 
+          self.qpa_var_precon.set( '2' )
         elif stringd == '3':
           self.qpa_var_precon.set( '3' )
         elif stringd == '4':
@@ -3667,7 +3667,7 @@ class TkGalahad:
 #  function to write the current values to the spec file
 #  -----------------------------------------------------
 
-  def writeqpaspec( self ): 
+  def writeqpaspec( self ):
 
 #  open file and set header
 
@@ -3677,12 +3677,12 @@ class TkGalahad:
 
     self.runqpaspc.write( "BEGIN RUNQPA SPECIFICATIONS\n" )
     self.writeqpaspecline_int( self.qpa_check_write_prob,
-                            self.qpa_default_write_prob, 
+                            self.qpa_default_write_prob,
                             self.qpa_string_write_prob )
     self.writeqpaspecdummy( 'problem-data-file-name', 'QPA.data' )
     self.writeqpaspecdummy( 'problem-data-file-device', '26' )
     self.writeqpaspecline_int( self.qpa_check_write_initial_sif,
-                            self.qpa_default_write_initial_sif, 
+                            self.qpa_default_write_initial_sif,
                             self.qpa_string_write_initial_sif )
     self.writeqpaspecdummy( 'initial-sif-file-name', 'INITIAL.SIF' )
     self.writeqpaspecdummy( 'initial-sif-file-device', '51' )
@@ -3699,7 +3699,7 @@ class TkGalahad:
                             self.qpa_default_presolve_prob,
                             self.qpa_string_presolve_prob )
     self.writeqpaspecline_int( self.qpa_check_write_presolve_sif,
-                            self.qpa_default_write_presolve_sif, 
+                            self.qpa_default_write_presolve_sif,
                             self.qpa_string_write_presolve_sif )
     self.writeqpaspecdummy( 'presolved-sif-file-name', 'PRESOLVE.SIF' )
     self.writeqpaspecdummy( 'presolved-sif-file-device', '52' )
@@ -3811,13 +3811,13 @@ class TkGalahad:
       self.writeqpaspecline_string( self.qpa_var_precon,
                                  "5",
                                  self.qpa_string_precon )
-      self.writeqpaspecline_stringval( self.qpa_var_nsemibb, 
+      self.writeqpaspecline_stringval( self.qpa_var_nsemibb,
                                     self.qpa_default_nsemibb,
                                     self.qpa_string_nsemib )
 
 #  record remaining options
 
-    self.writeqpaspecline_stringval( self.qpa_var_full_max_fill, 
+    self.writeqpaspecline_stringval( self.qpa_var_full_max_fill,
                                   self.qpa_default_full_max_fill,
                                   self.qpa_string_full_max_fill )
     self.writeqpaspecline_stringval( self.qpa_var_deletion_strategy,
@@ -3875,13 +3875,13 @@ class TkGalahad:
                             self.qpa_default_treat_zero_bnds,
                             self.qpa_string_treat_zero_bnds )
     self.writeqpaspecline_int( self.qpa_check_solve_qp,
-                            self.qpa_default_solve_qp, 
+                            self.qpa_default_solve_qp,
                             self.qpa_string_solve_qp )
     self.writeqpaspecline_int( self.qpa_check_randomize,
-                            self.qpa_default_randomize, 
+                            self.qpa_default_randomize,
                             self.qpa_string_randomize )
     self.writeqpaspecline_int( self.qpa_check_randomize,
-                            self.qpa_default_randomize, 
+                            self.qpa_default_randomize,
                             self.qpa_string_randomize )
     self.writeqpaspecdummy( 'array-syntax-worse-than-do-loop', 'NO' )
     self.runqpaspc.write( "END QPA SPECIFICATIONS\n\n" )
@@ -3941,13 +3941,13 @@ class TkGalahad:
     self.runqpaspc.write( "END PRESOLVE SPECIFICATIONS\n" )
 
 #  close file
-   
+
     self.runqpaspc.close( )
     print "new RUNQPA.SPC saved"
 
 #  functions to produce various output lines
 
-  def writeqpaspecline_int( self, var, default, line ): 
+  def writeqpaspecline_int( self, var, default, line ):
     if var.get( ) == default :
       if self.qpa_check_writeall.get( ) == 1 :
         if default == 0 :
@@ -3959,8 +3959,8 @@ class TkGalahad:
         self.runqpaspc.write( "   "+line.ljust( 50 )+"YES\n" )
       else :
         self.runqpaspc.write( "   "+line.ljust( 50 )+"NO\n" )
-    
-  def writeqpaspecline_string( self, var, string, line ): 
+
+  def writeqpaspecline_string( self, var, string, line ):
     self.varget = var.get( )
     stringupper = string.upper( )
     if self.varget == string :
@@ -3969,7 +3969,7 @@ class TkGalahad:
       if self.qpa_check_writeall.get( ) == 1 :
         self.runqpaspc.write( "!  "+line.ljust( 50 )+stringupper+"\n" )
 
-  def writeqpaspecline_stringval( self, var, default, line ): 
+  def writeqpaspecline_stringval( self, var, default, line ):
     self.varget = var.get( )
     if self.varget == default or self.varget == "" :
       if self.qpa_check_writeall.get( ) == 1 :
@@ -3977,7 +3977,7 @@ class TkGalahad:
     else :
       self.runqpaspc.write( "   "+line.ljust( 50 )+self.varget+"\n" )
 
-  def writeqpaspecdummy( self, line1, line2 ): 
+  def writeqpaspecdummy( self, line1, line2 ):
     if self.qpa_check_writeall.get( ) == 1 :
       self.runqpaspc.write( "!  "+line1.ljust( 50 )+line2+"\n" )
 
@@ -3990,9 +3990,9 @@ class TkGalahad:
     elif os.system( 'which acroread > /dev/null' ) == 0 :
       self.pdfread = 'acroread'
     else:
-      print 'error: no known pdf file reader' 
+      print 'error: no known pdf file reader'
       return
-    
+
     self.threads =[ ]
     self.t = threading.Thread( target=self.pdfreadqpathread )
     self.threads.append( self.t )
@@ -4017,7 +4017,7 @@ class TkGalahad:
 #  set variables if the first time through
 
     if self.qpbspec_used == 'no' :
-      
+
 #  integer (check-button) variables used with encodings
 
       self.qpb_check_write_prob = IntVar( )
@@ -4211,7 +4211,7 @@ class TkGalahad:
       self.qpbspec_used = 'yes'
 
 #  setup the window frame
-    
+
     self.specwindow = Toplevel( self.root )
     self.specwindow.geometry( '+100+100' )
     self.specwindow.title( 'QPB / LSQP spec tool' )
@@ -4260,7 +4260,7 @@ class TkGalahad:
                                "Use primal barrier",
                                "Move solution onto bounds"
                                ] )
-    
+
     self.specwindow.varrstart = self.specwindow.varlstop
     self.specwindow.varrstop = len( self.check )
 
@@ -4338,7 +4338,7 @@ class TkGalahad:
     self.specwindow.entrytrstart = self.specwindow.entrytlstop
     self.specwindow.entrytrstop = len( self.var )
 
-#  Set the name and logo 
+#  Set the name and logo
 
     Label( self.specwindow, text="\nQPB / LSQP OPTIONS\n"
            ).pack( side=TOP, fill=BOTH )
@@ -4406,7 +4406,7 @@ class TkGalahad:
                    variable=self.check[i],
                    text=self.checkstring[i]
                    ).pack( side=TOP, fill=BOTH )
-    
+
     self.specwindow.check.left.pack( side=LEFT, fill=BOTH )
     Label( self.specwindow.check, width=2,
            text="" ).pack( side=LEFT, fill=BOTH )
@@ -4507,7 +4507,7 @@ class TkGalahad:
              ).pack( side=RIGHT, fill=BOTH )
       self.specwindow.i.pack( side=TOP, fill=BOTH )
     self.specwindow.frame.rhs.top.left.pack( side=LEFT, fill=BOTH )
-    
+
 #  contents of rhs top right data entry frame
 
     Label( self.specwindow.frame.rhs.top, width=1,
@@ -4571,31 +4571,31 @@ class TkGalahad:
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Dismiss\nwindow", 
+            text="Dismiss\nwindow",
             command=self.specwindowdestroy
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Edit RUNQPB.SPC\ndirectly", 
+            text="Edit RUNQPB.SPC\ndirectly",
             command=self.editqpbspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Read existing\nvalues", 
+            text="Read existing\nvalues",
             command=self.readqpbspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Restore default\nvalues", 
+            text="Restore default\nvalues",
             command=self.restoreqpbdefaults
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Save current\nvalues", 
+            text="Save current\nvalues",
             command=self.writeqpbspec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
@@ -4681,11 +4681,11 @@ class TkGalahad:
     self.current_nsemiba = self.qpb_default_nsemiba
     self.current_nsemibb = self.qpb_default_nsemibb
     self.qpbpreconsonoff( )
-  
+
 #  function to switch on and off semibandwidth/line-more vectors as appropriate
 #  ----------------------------------------------------------------------------
 
-  def qpbpreconsonoff( self ): 
+  def qpbpreconsonoff( self ):
     if self.qpb_var_precon.get( ) == '3' :
       self.qpb_var_nsemiba.set( self.current_nsemiba )
     else:
@@ -4696,7 +4696,7 @@ class TkGalahad:
 #  function to read the current values to the spec file
 #  -----------------------------------------------------
 
-  def readqpbspec( self ): 
+  def readqpbspec( self ):
 
 #  open file and set header
 
@@ -4721,10 +4721,10 @@ class TkGalahad:
 
 #  convert the line to lower case, and remove leading and trailing blanks
 
-      line = line.lower( ) 
+      line = line.lower( )
       line = line.strip( )
-      blank_start = line.find( ' ' ) 
-      
+      blank_start = line.find( ' ' )
+
       if blank_start != -1 :
         stringc = line[0:blank_start]
       else :
@@ -4732,7 +4732,7 @@ class TkGalahad:
 
 #  look for string variables to set
 
-      blank_end = line.rfind( ' ' ) 
+      blank_end = line.rfind( ' ' )
       if blank_start == -1 :
         stringd = 'YES'
       else:
@@ -4785,7 +4785,7 @@ class TkGalahad:
         continue
 
       if stringc == self.qpb_string_factor :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '1' :
           self.qpb_var_factor.set( '1' )
         elif stringd == '2' :
@@ -4794,13 +4794,13 @@ class TkGalahad:
           self.qpb_var_factor.set( '3' )
         continue
       elif stringc == self.qpb_string_precon :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0':
           self.qpb_var_precon.set( '0' )
         elif stringd == '1':
           self.qpb_var_precon.set( '1' )
         elif stringd == '2':
-          self.qpb_var_precon.set( '2' ) 
+          self.qpb_var_precon.set( '2' )
         elif stringd == '3':
           self.qpb_var_precon.set( '3' )
         elif stringd == '4':
@@ -4908,7 +4908,7 @@ class TkGalahad:
 #  function to write the current values to the spec file
 #  -----------------------------------------------------
 
-  def writeqpbspec( self ): 
+  def writeqpbspec( self ):
 
 #  open file and set header
 
@@ -4918,17 +4918,17 @@ class TkGalahad:
 
     self.runqpbspc.write( "BEGIN RUNQPB SPECIFICATIONS\n" )
     self.writeqpbspecline_int( self.qpb_check_write_prob,
-                            self.qpb_default_write_prob, 
+                            self.qpb_default_write_prob,
                             self.qpb_string_write_prob )
     self.writeqpbspecdummy( 'problem-data-file-name', 'QPB.data' )
     self.writeqpbspecdummy( 'problem-data-file-device', '26' )
     self.writeqpbspecline_int( self.qpb_check_write_initial_sif,
-                            self.qpb_default_write_initial_sif, 
+                            self.qpb_default_write_initial_sif,
                             self.qpb_string_write_initial_sif )
     self.writeqpbspecdummy( 'initial-sif-file-name', 'INITIAL.SIF' )
     self.writeqpbspecdummy( 'initial-sif-file-device', '51' )
     self.writeqpbspecline_int( self.qpb_check_lsqp,
-                            self.qpb_default_lsqp, 
+                            self.qpb_default_lsqp,
                             self.qpb_string_lsqp )
     self.writeqpbspecline_stringval( self.qpb_var_scale,
                                   self.qpb_default_scale,
@@ -4937,7 +4937,7 @@ class TkGalahad:
                             self.qpb_default_presolve_problem,
                             self.qpb_string_presolve_problem )
     self.writeqpbspecline_int( self.qpb_check_write_presolve_sif,
-                            self.qpb_default_write_presolve_sif, 
+                            self.qpb_default_write_presolve_sif,
                             self.qpb_string_write_presolve_sif )
     self.writeqpbspecdummy( 'presolved-sif-file-name', 'PRESOLVE.SIF' )
     self.writeqpbspecdummy( 'presolved-sif-file-device', '52' )
@@ -5084,7 +5084,7 @@ class TkGalahad:
     self.writeqpbspecline_stringval( self.qpb_var_zero_pivot,
                                   self.qpb_default_zero_pivot,
                                   self.qpb_string_zero_pivot )
-    self.writeqpbspecline_stringval( self.qpb_var_identical_bnds, 
+    self.writeqpbspecline_stringval( self.qpb_var_identical_bnds,
                                   self.qpb_default_identical_bnds,
                                   self.qpb_string_identical_bnds )
     self.writeqpbspecline_stringval( self.qpb_var_initial_radius,
@@ -5103,16 +5103,16 @@ class TkGalahad:
                             self.qpb_default_treat_zero_as_gen,
                             self.qpb_string_treat_zero_as_gen )
     self.writeqpbspecline_int( self.qpb_check_remove_deps,
-                            self.qpb_default_remove_deps, 
+                            self.qpb_default_remove_deps,
                             self.qpb_string_remove_deps )
     self.writeqpbspecline_int( self.qpb_check_center,
-                            self.qpb_default_center, 
+                            self.qpb_default_center,
                             self.qpb_string_center )
     self.writeqpbspecline_int( self.qpb_check_primal,
-                            self.qpb_default_primal, 
+                            self.qpb_default_primal,
                             self.qpb_string_primal )
     self.writeqpbspecline_int( self.qpb_check_feasol,
-                            self.qpb_default_feasol, 
+                            self.qpb_default_feasol,
                             self.qpb_string_feasol )
     self.writeqpbspecdummy( 'array-syntax-worse-than-do-loop', 'NO' )
     self.runqpbspc.write( "END QPB SPECIFICATIONS\n\n" )
@@ -5208,13 +5208,13 @@ class TkGalahad:
     self.runqpbspc.write( "END PRESOLVE SPECIFICATIONS\n" )
 
 #  close file
-   
+
     self.runqpbspc.close( )
     print "new RUNQPB.SPC saved"
 
 #  functions to produce various output lines
 
-  def writeqpbspecline_int( self, var, default, line ): 
+  def writeqpbspecline_int( self, var, default, line ):
     if var.get( ) == default :
       if self.qpb_check_writeall.get( ) == 1 :
         if default == 0 :
@@ -5226,8 +5226,8 @@ class TkGalahad:
         self.runqpbspc.write( "   "+line.ljust( 50 )+"YES\n" )
       else :
         self.runqpbspc.write( "   "+line.ljust( 50 )+"NO\n" )
-    
-  def writeqpbspecline_string( self, var, string, line ): 
+
+  def writeqpbspecline_string( self, var, string, line ):
     self.varget = var.get( )
     stringupper = string.upper( )
     if self.varget == string :
@@ -5236,7 +5236,7 @@ class TkGalahad:
       if self.qpb_check_writeall.get( ) == 1 :
         self.runqpbspc.write( "!  "+line.ljust( 50 )+stringupper+"\n" )
 
-  def writeqpbspecline_stringval( self, var, default, line ): 
+  def writeqpbspecline_stringval( self, var, default, line ):
     self.varget = var.get( )
     if self.varget == default or self.varget == "" :
       if self.qpb_check_writeall.get( ) == 1 :
@@ -5244,7 +5244,7 @@ class TkGalahad:
     else :
       self.runqpbspc.write( "   "+line.ljust( 50 )+self.varget+"\n" )
 
-  def writeqpbspecdummy( self, line1, line2 ): 
+  def writeqpbspecdummy( self, line1, line2 ):
     if self.qpb_check_writeall.get( ) == 1 :
       self.runqpbspc.write( "!  "+line1.ljust( 50 )+line2+"\n" )
 
@@ -5257,9 +5257,9 @@ class TkGalahad:
     elif os.system( 'which acroread > /dev/null' ) == 0 :
       self.pdfread = 'acroread'
     else:
-      print 'error: no known pdf file reader' 
+      print 'error: no known pdf file reader'
       return
-    
+
     self.threads =[ ]
     self.t = threading.Thread( target=self.pdfreadqpbthread )
     self.threads.append( self.t )
@@ -5283,7 +5283,7 @@ class TkGalahad:
 #  set variables if the first time through
 
     if self.filtranespec_used == 'no' :
-      
+
 #  integer (check-button) variables used with encodings
 
       self.filtrane_check_fulsol = IntVar( )
@@ -5469,7 +5469,7 @@ class TkGalahad:
       self.filtranespec_used = 'yes'
 
 #  setup the window frame
-    
+
     self.specwindow = Toplevel( self.root )
     self.specwindow.geometry( '+100+100' )
     self.specwindow.title( 'FILTRANE spec tool' )
@@ -5512,7 +5512,7 @@ class TkGalahad:
                                "Balance initial group values",
                                "Remove dominated filter entries"
                                ] )
-    
+
     self.specwindow.varrstart = self.specwindow.varlstop
     self.specwindow.varrstop = len( self.check )
 
@@ -5585,7 +5585,7 @@ class TkGalahad:
     self.specwindow.entrybrstart = self.specwindow.entrytrstop
     self.specwindow.entrybrstop = len( self.var )
 
-#  Set the name and logo 
+#  Set the name and logo
 
     Label( self.specwindow, text="\nFILTRANE OPTIONS\n"
            ).pack( side=TOP, fill=BOTH )
@@ -5669,7 +5669,7 @@ class TkGalahad:
                    variable=self.check[i],
                    text=self.checkstring[i]
                    ).pack( side=TOP, fill=BOTH )
-    
+
     self.specwindow.check.left.pack( side=LEFT, fill=BOTH )
     Label( self.specwindow.check, width=1,
            text="" ).pack( side=LEFT, fill=BOTH )
@@ -5691,7 +5691,7 @@ class TkGalahad:
 
     self.specwindow.check.pack( side=TOP, fill=BOTH )
 
-    Label( self.specwindow.ghcheck.left, 
+    Label( self.specwindow.ghcheck.left,
            text=" " ).pack( side=TOP, fill=BOTH )
 
 #  contents of gradient frame (label and radio buttons)
@@ -5994,31 +5994,31 @@ class TkGalahad:
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Dismiss\nwindow", 
+            text="Dismiss\nwindow",
             command=self.specwindowdestroy
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Edit RUNFILT.SPC\ndirectly", 
+            text="Edit RUNFILT.SPC\ndirectly",
             command=self.editfiltranespec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Read existing\nvalues", 
+            text="Read existing\nvalues",
             command=self.readfiltranespec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Restore default\nvalues", 
+            text="Restore default\nvalues",
             command=self.restorefiltranedefaults
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Save current\nvalues", 
+            text="Save current\nvalues",
             command=self.writefiltranespec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
@@ -6056,19 +6056,19 @@ class TkGalahad:
 
   def restorefiltranedefaults( self ):
     self.filtrane_check_fulsol.set( self.filtrane_default_fulsol )
-    self.filtrane_check_stop_on_prec_g.set( 
+    self.filtrane_check_stop_on_prec_g.set(
        self.filtrane_default_stop_on_prec_g )
-    self.filtrane_check_stop_on_g_max.set( 
+    self.filtrane_check_stop_on_g_max.set(
        self.filtrane_default_stop_on_g_max )
-    self.filtrane_check_balance_group_values.set( 
+    self.filtrane_check_balance_group_values.set(
        self.filtrane_default_balance_group_values )
-    self.filtrane_check_filter_sign_restriction.set( 
+    self.filtrane_check_filter_sign_restriction.set(
        self.filtrane_default_filter_sign_restriction )
-    self.filtrane_check_remove_dominated.set( 
+    self.filtrane_check_remove_dominated.set(
        self.filtrane_default_remove_dominated )
-    self.filtrane_check_save_best_point.set( 
+    self.filtrane_check_save_best_point.set(
        self.filtrane_default_save_best_point )
-    self.filtrane_check_restart_from_checkpoint.set( 
+    self.filtrane_check_restart_from_checkpoint.set(
        self.filtrane_default_restart_from_checkpoint )
 
     self.filtrane_var_start_print.set( self.filtrane_default_start_print )
@@ -6076,24 +6076,24 @@ class TkGalahad:
     self.filtrane_var_c_accuracy.set( self.filtrane_default_c_accuracy )
     self.filtrane_var_g_accuracy.set( self.filtrane_default_g_accuracy )
     self.filtrane_var_max_iterations.set( self.filtrane_default_max_iterations )
-    self.filtrane_var_inequality_penalty_type.set( 
+    self.filtrane_var_inequality_penalty_type.set(
       self.filtrane_default_inequality_penalty_type )
     self.filtrane_var_model_inertia.set( self.filtrane_default_model_inertia )
-    self.filtrane_var_max_cg_iterations.set( 
+    self.filtrane_var_max_cg_iterations.set(
       self.filtrane_default_max_cg_iterations )
-    self.filtrane_var_min_gltr_accuracy.set( 
+    self.filtrane_var_min_gltr_accuracy.set(
       self.filtrane_default_min_gltr_accuracy )
-    self.filtrane_var_gltr_accuracy_power.set( 
+    self.filtrane_var_gltr_accuracy_power.set(
       self.filtrane_default_gltr_accuracy_power )
-    self.filtrane_var_maximal_filter_size.set( 
+    self.filtrane_var_maximal_filter_size.set(
       self.filtrane_default_maximal_filter_size )
-    self.filtrane_var_filter_size_increment.set( 
+    self.filtrane_var_filter_size_increment.set(
       self.filtrane_default_filter_size_increment )
     self.filtrane_var_gamma_f.set( self.filtrane_default_gamma_f )
     self.filtrane_var_initial_radius.set( self.filtrane_default_initial_radius )
-    self.filtrane_var_min_weak_accept_factor.set( 
+    self.filtrane_var_min_weak_accept_factor.set(
       self.filtrane_default_min_weak_accept_factor )
-    self.filtrane_var_weak_accept_power.set( 
+    self.filtrane_var_weak_accept_power.set(
       self.filtrane_default_weak_accept_power )
     self.filtrane_var_eta_1.set( self.filtrane_default_eta_1 )
     self.filtrane_var_eta_2.set( self.filtrane_default_eta_2 )
@@ -6108,23 +6108,23 @@ class TkGalahad:
     self.filtrane_var_grouping.set( self.filtrane_default_grouping )
     self.filtrane_var_nbr_groups.set( self.filtrane_default_nbr_groups )
     self.filtrane_var_print_level.set( self.filtrane_default_print_level )
-    self.filtrane_var_model_criterion.set( 
+    self.filtrane_var_model_criterion.set(
       self.filtrane_default_model_criterion )
-    self.filtrane_var_subproblem_accuracy.set( 
+    self.filtrane_var_subproblem_accuracy.set(
       self.filtrane_default_subproblem_accuracy )
     self.filtrane_var_use_filter.set( self.filtrane_default_use_filter )
-    self.filtrane_var_filter_margin_type.set( 
+    self.filtrane_var_filter_margin_type.set(
       self.filtrane_default_filter_margin_type )
 
     self.current_semi_bandwidth = self.filtrane_default_semi_bandwidth
     self.current_nbr_groups = self.filtrane_default_nbr_groups
     self.filtranesolversonoff( )
     self.filtranegroupsonoff( )
-  
+
 #  function to switch on and off semibandwidth as appropriate
 #  ----------------------------------------------------------
 
-  def filtranesolversonoff( self ): 
+  def filtranesolversonoff( self ):
     if self.filtrane_var_prec_used.get( ) == '1' :
       self.filtrane_var_semi_bandwidth.set( self.current_semi_bandwidth )
     else:
@@ -6135,7 +6135,7 @@ class TkGalahad:
 #  function to switch on and off number of groups as appropriate
 #  -------------------------------------------------------------
 
-  def filtranegroupsonoff( self ): 
+  def filtranegroupsonoff( self ):
     if self.filtrane_var_grouping.get( ) == '1' :
       self.filtrane_var_nbr_groups.set( self.current_nbr_groups )
     else:
@@ -6147,7 +6147,7 @@ class TkGalahad:
 #  as finite-diffreence gradients
 #  ------------------------------
 
-#  def nofdgandexacthessian( self ): 
+#  def nofdgandexacthessian( self ):
 #    if self.filtrane_var_svarb.get( ) == '1' and \
 #       self.filtrane_var_model_type.get( ) != '1' :
 #     self.filtrane_var_svarb.set( '5' )
@@ -6155,7 +6155,7 @@ class TkGalahad:
 #  function to read the current values to the spec file
 #  -----------------------------------------------------
 
-  def readfiltranespec( self ): 
+  def readfiltranespec( self ):
 
 #  open file and set header
 
@@ -6180,10 +6180,10 @@ class TkGalahad:
 
 #  convert the line to lower case, and remove leading and trailing blanks
 
-      line = line.lower( ) 
+      line = line.lower( )
       line = line.strip( )
-      blank_start = line.find( ' ' ) 
-      
+      blank_start = line.find( ' ' )
+
       if blank_start != -1 :
         stringc = line[0:blank_start]
       else :
@@ -6191,7 +6191,7 @@ class TkGalahad:
 
 #  look for string variables to set
 
-      blank_end = line.rfind( ' ' ) 
+      blank_end = line.rfind( ' ' )
       if blank_start == -1 :
         stringd = 'YES'
       else:
@@ -6236,7 +6236,7 @@ class TkGalahad:
         continue
 
       if stringc == self.filtrane_string_model_type :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'gauss-newton' :
           self.filtrane_var_model_type.set( '0' )
         elif stringd == '1' or stringd == 'newton' :
@@ -6245,29 +6245,29 @@ class TkGalahad:
           self.filtrane_var_model_type.set( '10' )
         continue
       elif stringc == self.filtrane_string_prec_used :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'none' :
           self.filtrane_var_prec_used.set( '0' )
         elif stringd == '1' or stringd == 'banded' :
-          self.filtrane_var_prec_used.set( '1' ) 
+          self.filtrane_var_prec_used.set( '1' )
         continue
       elif stringc == self.filtrane_string_semi_bandwidth :
         self.filtrane_var_semi_bandwidth.set( stringd )
         self.current_semi_bandwidth = stringd
         continue
       elif stringc == self.filtrane_string_grouping :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'none' :
           self.filtrane_var_grouping.set( '0' )
         elif stringd == '1' or stringd == 'automatic' :
-          self.filtrane_var_grouping.set( '1' ) 
+          self.filtrane_var_grouping.set( '1' )
         continue
       elif stringc == self.filtrane_string_nbr_groups :
         self.filtrane_var_nbr_groups.set( stringd )
         self.current_nbr_groups = stringd
         continue
       elif stringc ==  self.filtrane_string_print_level :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'silent' :
           self.filtrane_var_print_level.set( '0' )
         elif stringd == '1' or stringd == 'trace':
@@ -6282,36 +6282,36 @@ class TkGalahad:
           self.filtrane_var_print_level.set( '5' )
         continue
       elif stringc == self.filtrane_string_model_criterion :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'best_fit' :
           self.filtrane_var_model_criterion.set( '0' )
         elif stringd == '1' or stringd == 'best_reduction' :
-          self.filtrane_var_model_criterion.set( '1' ) 
+          self.filtrane_var_model_criterion.set( '1' )
         continue
       elif stringc == self.filtrane_string_subproblem_accuracy :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'adaptive' :
           self.filtrane_var_subproblem_accuracy.set( '0' )
         elif stringd == '1' or stringd == 'full' :
-          self.filtrane_var_subproblem_accuracy.set( '1' ) 
+          self.filtrane_var_subproblem_accuracy.set( '1' )
         continue
       elif stringc == self.filtrane_string_use_filter :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '3' or stringd == 'never' :
           self.filtrane_var_use_filter.set( '3' )
         elif stringd == '4' or stringd == 'initial' :
-          self.filtrane_var_use_filter.set( '4' ) 
+          self.filtrane_var_use_filter.set( '4' )
         elif stringd == '5' or stringd == 'always' :
-          self.filtrane_var_use_filter.set( '5' ) 
+          self.filtrane_var_use_filter.set( '5' )
         continue
       elif stringc == self.filtrane_string_filter_margin_type :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == '0' or stringd == 'current' :
           self.filtrane_var_filter_margin_type.set( '0' )
         elif stringd == '1' or stringd == 'fixed' :
-          self.filtrane_var_filter_margin_type.set( '1' ) 
+          self.filtrane_var_filter_margin_type.set( '1' )
         elif stringd == '2' or stringd == 'smallest' :
-          self.filtrane_var_filter_margin_type.set( '2' ) 
+          self.filtrane_var_filter_margin_type.set( '2' )
         continue
       elif stringc == self.filtrane_string_start_print :
         self.filtrane_var_start_print.set( stringd )
@@ -6392,7 +6392,7 @@ class TkGalahad:
 #  function to write the current values to the spec file
 #  -----------------------------------------------------
 
-  def writefiltranespec( self ): 
+  def writefiltranespec( self ):
 
 #  open file and set header
 
@@ -6402,7 +6402,7 @@ class TkGalahad:
 
     self.runfiltranespc.write( "BEGIN RUNFILT SPECIFICATIONS\n" )
     self.writefiltranespecline_int( self.filtrane_check_fulsol,
-                            self.filtrane_default_fulsol, 
+                            self.filtrane_default_fulsol,
                             self.filtrane_string_fulsol )
     self.writefiltranespecdummy( 'write-solution', 'NO' )
     self.writefiltranespecdummy( 'solution-file-name', 'FILTRANE.sol' )
@@ -6455,7 +6455,7 @@ class TkGalahad:
                                   self.filtrane_default_g_accuracy,
                                   self.filtrane_string_g_accuracy )
     self.writefiltranespecline_int( self.filtrane_check_stop_on_prec_g,
-                            self.filtrane_default_stop_on_prec_g, 
+                            self.filtrane_default_stop_on_prec_g,
                             self.filtrane_string_stop_on_prec_g )
     self.writefiltranespecline_int( self.filtrane_check_stop_on_g_max,
                             self.filtrane_default_stop_on_g_max,
@@ -6463,7 +6463,7 @@ class TkGalahad:
     self.writefiltranespecline_stringval( self.filtrane_var_max_iterations,
                                   self.filtrane_default_max_iterations,
                                   self.filtrane_string_max_iterations )
-    self.writefiltranespecline_stringval( 
+    self.writefiltranespecline_stringval(
                                   self.filtrane_var_inequality_penalty_type,
                                   self.filtrane_default_inequality_penalty_type,
                                   self.filtrane_string_inequality_penalty_type )
@@ -6493,7 +6493,7 @@ class TkGalahad:
         self.runfiltranespc.write( "!  " \
           +self.filtrane_string_model_criterion.ljust( 50 )+"BEST_FIT\n" )
     elif self.filtrane_var_model_criterion.get( ) == "1" :
-      self.writefiltranespecline_string( "BEST_REDUCTION", 
+      self.writefiltranespecline_string( "BEST_REDUCTION",
                                  self.filtrane_string_model_criterion )
 
 #  record further options
@@ -6527,7 +6527,7 @@ class TkGalahad:
         self.runfiltranespc.write( "!  " \
           +self.filtrane_string_prec_used.ljust( 50 )+"NONE\n" )
     elif self.filtrane_var_prec_used.get( ) == "1" :
-      self.writefiltranespecline_string( "BANDED", 
+      self.writefiltranespecline_string( "BANDED",
                                  self.filtrane_string_prec_used )
 
     self.writefiltranespecline_stringval( self.filtrane_var_semi_bandwidth,
@@ -6553,7 +6553,7 @@ class TkGalahad:
 #  record further options
 
     self.writefiltranespecline_int( self.filtrane_check_balance_group_values,
-                            self.filtrane_default_balance_group_values, 
+                            self.filtrane_default_balance_group_values,
                             self.filtrane_string_balance_group_values )
 
 #  record whether to use filter
@@ -6563,10 +6563,10 @@ class TkGalahad:
         self.runfiltranespc.write( "!  " \
            +self.filtrane_string_use_filter.ljust( 50 )+"ALWAYS\n" )
     elif self.filtrane_var_use_filter.get( ) == "3" :
-      self.writefiltranespecline_string( "NEVER", 
+      self.writefiltranespecline_string( "NEVER",
                                  self.filtrane_string_use_filter )
     elif self.filtrane_var_use_filter.get( ) == "4" :
-      self.writefiltranespecline_string( "INITIAL", 
+      self.writefiltranespecline_string( "INITIAL",
                                  self.filtrane_string_use_filter )
 
     self.writefiltranespecline_int( self.filtrane_check_filter_sign_restriction,
@@ -6577,7 +6577,7 @@ class TkGalahad:
                                   self.filtrane_default_maximal_filter_size,
                                   self.filtrane_string_maximal_filter_size )
 
-    self.writefiltranespecline_stringval( 
+    self.writefiltranespecline_stringval(
                                   self.filtrane_var_filter_size_increment,
                                   self.filtrane_default_filter_size_increment,
                                   self.filtrane_string_filter_size_increment )
@@ -6589,10 +6589,10 @@ class TkGalahad:
         self.runfiltranespc.write( "!  " \
             +self.filtrane_string_filter_margin_type.ljust( 50 )+"CURRENT\n" )
     elif self.filtrane_var_filter_margin_type.get( ) == "1" :
-      self.writefiltranespecline_string( "FIXED", 
+      self.writefiltranespecline_string( "FIXED",
                                       self.filtrane_string_filter_margin_type )
     elif self.filtrane_var_filter_margin_type.get( ) == "2" :
-      self.writefiltranespecline_string( "SMALLEST", 
+      self.writefiltranespecline_string( "SMALLEST",
                                       self.filtrane_string_filter_margin_type )
 
 #  record remaining options
@@ -6603,7 +6603,7 @@ class TkGalahad:
     self.writefiltranespecline_int( self.filtrane_check_remove_dominated,
                                     self.filtrane_default_remove_dominated,
                                     self.filtrane_string_remove_dominated )
-    self.writefiltranespecline_stringval( 
+    self.writefiltranespecline_stringval(
                                   self.filtrane_var_min_weak_accept_factor,
                                   self.filtrane_default_min_weak_accept_factor,
                                   self.filtrane_string_min_weak_accept_factor )
@@ -6616,7 +6616,7 @@ class TkGalahad:
     self.writefiltranespecline_stringval( self.filtrane_var_eta_1,
                                   self.filtrane_default_eta_1,
                                   self.filtrane_string_eta_1 )
-    self.writefiltranespecline_stringval( self.filtrane_var_eta_2, 
+    self.writefiltranespecline_stringval( self.filtrane_var_eta_2,
                                   self.filtrane_default_eta_2,
                                   self.filtrane_string_eta_2 )
     self.writefiltranespecline_stringval( self.filtrane_var_gamma_1,
@@ -6635,13 +6635,13 @@ class TkGalahad:
                                   self.filtrane_default_str_relax,
                                   self.filtrane_string_str_relax )
     self.writefiltranespecline_int( self.filtrane_check_save_best_point,
-                            self.filtrane_default_save_best_point, 
+                            self.filtrane_default_save_best_point,
                             self.filtrane_string_save_best_point )
     self.writefiltranespecdummy( 'checkpointing-frequency', '0' )
     self.writefiltranespecdummy( 'checkpointing-device', '55' )
     self.writefiltranespecdummy( 'checkpointing-file', 'FILTRANE.chk' )
     self.writefiltranespecline_int( self.filtrane_check_restart_from_checkpoint,
-                            self.filtrane_default_restart_from_checkpoint, 
+                            self.filtrane_default_restart_from_checkpoint,
                             self.filtrane_string_restart_from_checkpoint )
 
 #  set footer and close file
@@ -6652,7 +6652,7 @@ class TkGalahad:
 
 #  functions to produce various output lines
 
-  def writefiltranespecline_int( self, var, default, line ): 
+  def writefiltranespecline_int( self, var, default, line ):
     if var.get( ) == default :
       if self.filtrane_check_writeall.get( ) == 1 :
         if default == 0 :
@@ -6664,12 +6664,12 @@ class TkGalahad:
         self.runfiltranespc.write( "   "+line.ljust( 50 )+"YES\n" )
       else :
         self.runfiltranespc.write( "   "+line.ljust( 50 )+"NO\n" )
-    
-  def writefiltranespecline_string( self, string, line ): 
+
+  def writefiltranespecline_string( self, string, line ):
     stringupper = string.upper( )
     self.runfiltranespc.write( "   "+line.ljust( 50 )+stringupper+"\n" )
 
-  def writefiltranespecline_stringval( self, var, default, line ): 
+  def writefiltranespecline_stringval( self, var, default, line ):
     self.varget = var.get( )
     if self.varget == default or self.varget == "" :
       if self.filtrane_check_writeall.get( ) == 1 :
@@ -6677,7 +6677,7 @@ class TkGalahad:
     else :
       self.runfiltranespc.write( "   "+line.ljust( 50 )+self.varget+"\n" )
 
-  def writefiltranespecdummy( self, line1, line2 ): 
+  def writefiltranespecdummy( self, line1, line2 ):
     if self.filtrane_check_writeall.get( ) == 1 :
       self.runfiltranespc.write( "!  "+line1.ljust( 50 )+line2+"\n" )
 
@@ -6690,9 +6690,9 @@ class TkGalahad:
     elif os.system( 'which acroread > /dev/null' ) == 0 :
       self.pdfread = 'acroread'
     else:
-      print 'error: no known pdf file reader' 
+      print 'error: no known pdf file reader'
       return
-    
+
     self.threads =[ ]
     self.t = threading.Thread( target=self.pdfreadfiltranethread )
     self.threads.append( self.t )
@@ -6708,7 +6708,7 @@ class TkGalahad:
 #  function to read the current values to the spec file
 #  -----------------------------------------------------
 
-  def readdefaults( self, file ): 
+  def readdefaults( self, file ):
 
 #  open file and set header
 
@@ -6725,10 +6725,10 @@ class TkGalahad:
 
 #  convert the line to lower case, and remove leading and trailing blanks
 
-      line = line.lower( ) 
+      line = line.lower( )
       line = line.strip( )
-      blank_start = line.find( ':' ) 
-      
+      blank_start = line.find( ':' )
+
       if blank_start != -1 :
         stringc = line[0:blank_start]
       else :
@@ -6736,7 +6736,7 @@ class TkGalahad:
 
 #  look for string variables to set
 
-      blank_end = line.rfind( ' ' ) 
+      blank_end = line.rfind( ' ' )
       if blank_start == -1 :
         stringd = 'none'
       else:

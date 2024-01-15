@@ -213,7 +213,7 @@ static inline bool check_init(bool init_called){
 /* Check that structure has been initialised */
 static inline bool check_load(bool load_called){
     if(!load_called){
-        PyErr_SetString(PyExc_Exception, 
+        PyErr_SetString(PyExc_Exception,
                         "matrix structure has not been initialised");
         return false;
     }
@@ -235,10 +235,10 @@ static inline bool check_callable(PyObject *arg){
 
 /* Check that ndarray is 1D, double and of correct length */
 static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
-    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) && 
+    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) &&
          PyArray_TYPE(arr)==NPY_DOUBLE &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "%s must be a 1D double array of length %i", name, n);
         return false;
     }
@@ -246,12 +246,12 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
 }
 
 /* Check that ndarray is 2D, double and of correct length */
-static inline bool check_2darray_double(char *name, PyArrayObject *arr, 
+static inline bool check_2darray_double(char *name, PyArrayObject *arr,
                                         int m, int n){
-    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) && 
-         PyArray_TYPE(arr)==NPY_DOUBLE && PyArray_NDIM(arr)==2 && 
+    if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) &&
+         PyArray_TYPE(arr)==NPY_DOUBLE && PyArray_NDIM(arr)==2 &&
          PyArray_DIM(arr,0)==m && PyArray_DIM(arr,1)==n)){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "%s must be a 2D double array of size(%i,%i)", name, m, n);
         return false;
     }
@@ -262,10 +262,10 @@ static inline bool check_2darray_double(char *name, PyArrayObject *arr,
 static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None
         return true;
-    if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) && 
+    if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) &&
          PyArray_TYPE(arr)==NPY_LONG &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "%s must be a 1D int array of length %i", name, n);
         return false;
     }
@@ -294,7 +294,7 @@ static inline bool parse_double(char *name, PyObject *value, double *out){
 static inline bool parse_options_key(PyObject *key, const char **key_name){
     *key_name = PyUnicode_AsUTF8AndSize(key, NULL);
     if(!*key_name){
-        PyErr_SetString(PyExc_TypeError, 
+        PyErr_SetString(PyExc_TypeError,
                         "the keys in the options dictionary must be strings");
         return false;
     }
@@ -302,11 +302,11 @@ static inline bool parse_options_key(PyObject *key, const char **key_name){
 }
 
 /* Parse int option from Python value to C out */
-static inline bool parse_int_option(PyObject *value, char *option_name, 
+static inline bool parse_int_option(PyObject *value, char *option_name,
                                     int *out){
     *out = PyLong_AsLong(value);
     if(*out == -1 && PyErr_Occurred()){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "options['%s'] must be an integer", option_name);
         return false;
     }
@@ -314,11 +314,11 @@ static inline bool parse_int_option(PyObject *value, char *option_name,
 }
 
 /* Parse int64_t option from Python value to C out */
-static inline bool parse_int64_t_option(PyObject *value, char *option_name, 
+static inline bool parse_int64_t_option(PyObject *value, char *option_name,
                                         int64_t *out){
     *out = PyLong_AsLong(value);
     if(*out == -1 && PyErr_Occurred()){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "options['%s'] must be an 64 bit integer", option_name);
         return false;
     }
@@ -330,7 +330,7 @@ static inline bool parse_double_option(PyObject *value, char *option_name,
                                        double *out){
     *out = PyFloat_AsDouble(value);
     if(*out == -1.0 && PyErr_Occurred()){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "options['%s'] must be a float", option_name);
         return false;
     }
@@ -338,10 +338,10 @@ static inline bool parse_double_option(PyObject *value, char *option_name,
 }
 
 /* Parse bool option from Python value to C out */
-static inline bool parse_bool_option(PyObject *value, char *option_name, 
+static inline bool parse_bool_option(PyObject *value, char *option_name,
                                      bool *out){
     if(!PyBool_Check(value)){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "options['%s'] must be a bool", option_name);
         return false;
     }
@@ -351,7 +351,7 @@ static inline bool parse_bool_option(PyObject *value, char *option_name,
 	}else if(vint == 0){
 	    *out = false;
 	}else{ // returns -1 on error, should never reach this
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "error parsing bool options['%s']", option_name);
         return false;
     }
@@ -359,16 +359,16 @@ static inline bool parse_bool_option(PyObject *value, char *option_name,
 }
 
 /* Parse char option from Python value to C out */
-static inline bool parse_char_option(PyObject *value, char *option_name, 
+static inline bool parse_char_option(PyObject *value, char *option_name,
                                      char *out, size_t outsize){
     Py_ssize_t pylen; // excludes terminating null char
     const char* pystring = PyUnicode_AsUTF8AndSize(value, &pylen);
     if(!pystring){
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "options['%s'] must be a string", option_name);
         return false;
     }else if(pylen+1 > outsize){ // outsize includes terminating null char
-        PyErr_Format(PyExc_TypeError, 
+        PyErr_Format(PyExc_TypeError,
                      "options['%s'] too long, max size is %d characters",
                      option_name, outsize-1);
         return false;
@@ -378,13 +378,13 @@ static inline bool parse_char_option(PyObject *value, char *option_name,
 }
 
 /* Parse int array from Python value to C out */
-static inline bool parse_int_array_option(PyArrayObject *value, 
-                                          char *option_name, int *out, 
+static inline bool parse_int_array_option(PyArrayObject *value,
+                                          char *option_name, int *out,
                                           int outsize){
-    if(!(PyArray_Check(value) && PyArray_ISINTEGER(value) && 
+    if(!(PyArray_Check(value) && PyArray_ISINTEGER(value) &&
          PyArray_TYPE(value)==NPY_LONG &&
          PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
-           PyErr_Format(PyExc_TypeError, 
+           PyErr_Format(PyExc_TypeError,
               "%s must be a 1D int array of length %i", option_name, outsize);
         return false;
     }
@@ -394,13 +394,13 @@ static inline bool parse_int_array_option(PyArrayObject *value,
 }
 
 /* Parse double array from Python value to C out */
-static inline bool parse_double_array_option(PyArrayObject *value, 
-                                             char *option_name, double *out, 
+static inline bool parse_double_array_option(PyArrayObject *value,
+                                             char *option_name, double *out,
                                              int outsize){
-    if(!(PyArray_Check(value) && PyArray_ISFLOAT(value) && 
+    if(!(PyArray_Check(value) && PyArray_ISFLOAT(value) &&
          PyArray_TYPE(value)==NPY_DOUBLE &&
          PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
-           PyErr_Format(PyExc_TypeError, 
+           PyErr_Format(PyExc_TypeError,
              "%s must be a 1D double array of length %i", option_name, outsize);
         return false;
     }

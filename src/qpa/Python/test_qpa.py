@@ -40,7 +40,7 @@ options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
-qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -52,7 +52,7 @@ z = np.array([0.0,0.0,0.0])
 # find optimum of qp
 print("1st problem: solve qp")
 x, c, y, z, x_stat, c_stat \
-  = qpa.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, 
+  = qpa.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)
@@ -78,7 +78,7 @@ options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
-qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -95,7 +95,7 @@ rho_b = 1.0
 # find optimum of qp
 print("\n 2nd problem: solve l1qp")
 x, c, y, z, x_stat, c_stat \
-  = qpa.solve_l1qp(n, m, f, g, H_ne, H_val, rho_g, rho_b, A_ne, A_val, 
+  = qpa.solve_l1qp(n, m, f, g, H_ne, H_val, rho_g, rho_b, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)
@@ -121,7 +121,7 @@ options['print_level'] = 0
 #print("options:", options)
 
 # load data (and optionally non-default options)
-qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr, 
+qpa.load(n, m, H_type, H_ne, H_row, H_col, H_ptr,
          A_type, A_ne, A_row, A_col, A_ptr, options)
 
 #  provide starting values (not crucial)
@@ -138,7 +138,7 @@ rho_b = 1.0
 # find optimum of qp
 print("\n 3rd problem: solve bcl1qp")
 x, c, y, z, x_stat, c_stat \
-  = qpa.solve_bcl1qp(n, m, f, g, H_ne, H_val, rho_g, A_ne, A_val, 
+  = qpa.solve_bcl1qp(n, m, f, g, H_ne, H_val, rho_g, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)

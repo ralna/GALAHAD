@@ -48,7 +48,7 @@
       TYPE, PUBLIC :: QPS_scale_type
          REAL ( KIND = rp_ ) :: col_scale_rhs
          REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: row_scale
-         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: col_scale_x 
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: col_scale_x
          REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: col_scale_c
          REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: shift_x, shift_c
       END TYPE
@@ -137,7 +137,7 @@
       scale%row_scale = one
       scale%col_scale_x = one ; scale%col_scale_c = one
       scale%col_scale_rhs = one
-      
+
       DO cycle = 1, max_cycle
         DO i = 1, prob%m
 
@@ -201,14 +201,14 @@
 !  Un-shift the variables
 
       DO i = 1, prob%n
-        prob%X_l( i ) = prob%X_l( i ) + scale%shift_x( i ) 
+        prob%X_l( i ) = prob%X_l( i ) + scale%shift_x( i )
         prob%X_u( i ) = prob%X_u( i ) + scale%shift_x( i )
       END DO
 
 !  Un-shift the constraints
 
       DO i = 1, prob%m
-        prob%C_l( i ) = prob%C_l( i ) + scale%shift_c( i ) 
+        prob%C_l( i ) = prob%C_l( i ) + scale%shift_c( i )
         prob%C_u( i ) = prob%C_u( i ) + scale%shift_c( i )
       END DO
 

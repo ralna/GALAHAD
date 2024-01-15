@@ -407,7 +407,7 @@ struct dgo_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 
@@ -680,9 +680,9 @@ void dgo_solve_with_mat( void **data,
          sub-boxes is full, and there is no room to increase it further.
   \li -99. The budget limit on function evaluations has
          been reached.  This will happen if the limit control.max_evals is
-         exceeded, and is quite normal for stochastic global-optimization 
-         methods. The user may explore increasing control.max_evals to see 
-         if that produces a lower value of the objective function, but 
+         exceeded, and is quite normal for stochastic global-optimization
+         methods. The user may explore increasing control.max_evals to see
+         if that produces a lower value of the objective function, but
          there are unfortunately no guarantees.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -816,9 +816,9 @@ void dgo_solve_without_mat( void **data,
          named control.alive_file from unit unit control.alive_unit.
   \li -99. The budget limit on function evaluations has
          been reached.  This will happen if the limit control.max_evals is
-         exceeded, and is quite normal for stochastic global-optimization 
-         methods. The user may explore increasing control.max_evals to see 
-         if that produces a lower value of the objective function, but 
+         exceeded, and is quite normal for stochastic global-optimization
+         methods. The user may explore increasing control.max_evals to see
+         if that produces a lower value of the objective function, but
          there are unfortunately no guarantees.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -958,9 +958,9 @@ void dgo_solve_reverse_with_mat( void **data,
          named control.alive_file from unit unit control.alive_unit.
   \li -99. The budget limit on function evaluations has
          been reached.  This will happen if the limit control.max_evals is
-         exceeded, and is quite normal for stochastic global-optimization 
-         methods. The user may explore increasing control.max_evals to see 
-         if that produces a lower value of the objective function, but 
+         exceeded, and is quite normal for stochastic global-optimization
+         methods. The user may explore increasing control.max_evals to see
+         if that produces a lower value of the objective function, but
          there are unfortunately no guarantees.
 
  @param status (continued)
@@ -1108,9 +1108,9 @@ void dgo_solve_reverse_without_mat( void **data,
          named control.alive_file from unit unit control.alive_unit.
   \li -99. The budget limit on function evaluations has
          been reached.  This will happen if the limit control.max_evals is
-         exceeded, and is quite normal for stochastic global-optimization 
-         methods. The user may explore increasing control.max_evals to see 
-         if that produces a lower value of the objective function, but 
+         exceeded, and is quite normal for stochastic global-optimization
+         methods. The user may explore increasing control.max_evals to see
+         if that produces a lower value of the objective function, but
          there are unfortunately no guarantees.
 
  @param status (continued)

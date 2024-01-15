@@ -376,7 +376,7 @@ struct lpb_control_type {
     real_wp_ infinity;
 
     /// \brief
-    /// the required absolute and relative accuracies for the primal 
+    /// the required absolute and relative accuracies for the primal
     /// infeasibility
     real_wp_ stop_abs_p;
     /// see stop_abs_p
@@ -409,7 +409,7 @@ struct lpb_control_type {
     real_wp_ muzero;
 
     /// \brief
-    /// the weight attached to primal-dual infeasibility compared to 
+    /// the weight attached to primal-dual infeasibility compared to
     /// complementarity when assessing step acceptance
     real_wp_ tau;
 
@@ -646,7 +646,7 @@ struct lpb_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 
@@ -709,7 +709,7 @@ struct lpb_inform_type {
     real_wp_ potential;
 
     /// \brief
-    /// the smallest pivot which was not judged to be zero when detecting 
+    /// the smallest pivot which was not judged to be zero when detecting
     /// linearly dependent constraints
     real_wp_ non_negligible_pivot;
 

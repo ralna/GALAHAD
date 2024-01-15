@@ -165,7 +165,7 @@ end
 
 export slls_solve_given_a_s
 
-function slls_solve_given_a_s(data, userdata, status, n, o, Ao_ne, Ao_val, 
+function slls_solve_given_a_s(data, userdata, status, n, o, Ao_ne, Ao_val,
                               b, x, z, r, g, x_stat, eval_prec)
   @ccall libgalahad_single.slls_solve_given_a_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                                 status::Ptr{Cint}, n::Cint, o::Cint,
@@ -178,7 +178,7 @@ end
 
 export slls_solve_given_a
 
-function slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, 
+function slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val,
                             b, x, z, r, g,x_stat, eval_prec)
   @ccall libgalahad_double.slls_solve_given_a(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                               status::Ptr{Cint}, n::Cint, o::Cint,

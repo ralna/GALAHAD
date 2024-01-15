@@ -431,7 +431,7 @@ static PyObject* py_bqp_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call bqp_import
-    bqp_import(&control, &data, &status, n, 
+    bqp_import(&control, &data, &status, n,
                H_type, H_ne, H_row, H_col, H_ptr);
 
     // Free allocated memory
@@ -463,7 +463,7 @@ static PyObject* py_bqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g,
                          &H_ne, &py_H_val, &py_x_l, &py_x_u,
                          &py_x, &py_z))
         return NULL;
@@ -492,17 +492,17 @@ static PyObject* py_bqp_solve_qp(PyObject *self, PyObject *args){
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x_stat
-    PyArrayObject *py_x_stat = 
+    PyArrayObject *py_x_stat =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_INT);
     int *x_stat = (int *) PyArray_DATA(py_x_stat);
 
     // Call bqp_solve_direct
     status = 1; // set status to 1 on entry
-    bqp_solve_given_h(&data, &status, n, H_ne, H_val, g, f, 
+    bqp_solve_given_h(&data, &status, n, H_ne, H_val, g, f,
                       x_l, x_u, x, z, x_stat);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < n; i++) printf("x_stat %i\n", x_stat[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;

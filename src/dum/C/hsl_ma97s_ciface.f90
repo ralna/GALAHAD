@@ -26,7 +26,7 @@ module hsl_ma97_single_ciface
       f_ma97_get_nz__         => ma97_get_nz__
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                     ! *** 
+   integer, parameter :: longc_ = C_LONG                     ! ***
 
    type, bind(C) :: ma97_control
       integer(ipc_) :: f_arrays ! true(!=0) or false(==0)

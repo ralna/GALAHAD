@@ -10,11 +10,11 @@
 !  History -
 !   originally released GALAHAD Version 2.0. May 25th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FILTER_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_precision
@@ -23,7 +23,7 @@
 !     |  NLP filter manipulation tools  |
 !      ---------------------------------
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: FILTER_read_specfile, filter_initialize_filter,                 &
@@ -39,28 +39,28 @@
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
-     REAL ( KIND = rp_ ), PARAMETER :: minus_infinity = - infinity / two 
+     REAL ( KIND = rp_ ), PARAMETER :: minus_infinity = - infinity / two
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
 !  - - - - - - - - - - -
-!   filter derived type 
+!   filter derived type
 !  - - - - - - - - - - -
 
      TYPE, PUBLIC :: FILTER_filter_type
        REAL ( KIND = rp_ ) :: o, v
      END TYPE FILTER_filter_type
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: FILTER_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
@@ -95,16 +95,16 @@
        LOGICAL :: deallocate_error_fatal  = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
       CHARACTER ( LEN = 30 ) :: prefix = '""                            '
 
      END TYPE FILTER_control_type
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: FILTER_inform_type
 
@@ -144,10 +144,10 @@
 
      SUBROUTINE FILTER_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by FILTER_initialize could (roughly) 
+!  The default values as given by FILTER_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN FILTER SPECIFICATIONS (DEFAULT)
@@ -166,7 +166,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( FILTER_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( FILTER_control_type ), INTENT( INOUT ) :: control
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -199,7 +199,7 @@
 
      spec( error )%keyword = 'error-printout-device'
      spec( out )%keyword = 'printout-device'
-     spec( print_level )%keyword = 'print-level' 
+     spec( print_level )%keyword = 'print-level'
      spec( initial_filter_size )%keyword = 'initial-filter-size'
 
 !  Real key-words
@@ -319,11 +319,11 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
-!   check if (o_new,v_new) is acceptable for the current filter and 
+!   check if (o_new,v_new) is acceptable for the current filter and
 !   optionally (o,v)
 
 !   a new point (o_new,v_new) will be acceptable to a filter entry (o_i,v_i) if
-!      v_new < control%beta_filter v_i 
+!      v_new < control%beta_filter v_i
 !   or
 !      o_new < o_i - control%gamma_filter control%beta_filter v_i
 !   where 0 < control%gamma_filter < control%beta_filter < 1
@@ -441,7 +441,7 @@
      END DO
 
 !  if necessary, increase the space required to hold the filter
-     
+
      IF ( data%n_filter + 1 > data%max_filter ) THEN
        data%max_filter = 2 * data%max_filter
        IF (  data%first_filter_in_use ) THEN
@@ -455,7 +455,7 @@
                 bad_alloc = inform%bad_alloc, out = control%error )
          IF ( inform%status /= 0 ) RETURN
 
-         data%filter2( : data%n_filter ) = data%filter1( : data%n_filter ) 
+         data%filter2( : data%n_filter ) = data%filter1( : data%n_filter )
          data%filter => data%filter2
          data%first_filter_in_use = .FALSE.
 
@@ -474,7 +474,7 @@
                 bad_alloc = inform%bad_alloc, out = control%error )
          IF ( inform%status /= 0 ) RETURN
 
-         data%filter1( : data%n_filter ) = data%filter2( : data%n_filter ) 
+         data%filter1( : data%n_filter ) = data%filter2( : data%n_filter )
          data%filter => data%filter1
          data%first_filter_in_use = .TRUE.
 
@@ -505,8 +505,8 @@
 
 !  ensure that the filter_type pointer array "point" is of lenth at least len.
 
-!  if exact_size is present and true, point is reallocated to be of size len. 
-!  Otherwise point is only reallocated if its length is currently smaller 
+!  if exact_size is present and true, point is reallocated to be of size len.
+!  Otherwise point is only reallocated if its length is currently smaller
 !  than len
 
 !  Dummy arguments
@@ -530,20 +530,20 @@
      IF ( ASSOCIATED( point ) ) THEN
        IF ( PRESENT( exact_size ) ) THEN
          IF ( exact_size ) THEN
-           IF ( SIZE( point ) /= len ) THEN 
+           IF ( SIZE( point ) /= len ) THEN
              CALL FILTER_dealloc_filter( point, status, alloc_status,          &
                                          array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          ELSE
-           IF ( SIZE( point ) < len ) THEN 
+           IF ( SIZE( point ) < len ) THEN
              CALL FILTER_dealloc_filter( point, status, alloc_status,          &
                                          array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          END IF
        ELSE
-         IF ( SIZE( point ) < len ) THEN 
+         IF ( SIZE( point ) < len ) THEN
            CALL FILTER_dealloc_filter( point, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            DEALLOCATE( point, STAT = alloc_status )
@@ -589,7 +589,7 @@
      END SUBROUTINE FILTER_resize_filter
 
 ! -*-*-  F I L T E R _ D E A L L O C _ F I L T E R   S U B R O U T I N E  -*-*-
- 
+
     SUBROUTINE FILTER_dealloc_filter( point, status, alloc_status,             &
                                       array_name, bad_alloc, out )
 
@@ -646,7 +646,7 @@
      TYPE ( FILTER_data_type ), INTENT( INOUT ) :: data
      TYPE ( FILTER_control_type ), INTENT( IN ) :: control
      TYPE ( FILTER_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------

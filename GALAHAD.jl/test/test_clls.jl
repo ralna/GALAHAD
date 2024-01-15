@@ -65,7 +65,7 @@ for d = 1:3
                 "coordinate", A_ne, A_row, A_col, 0, Cint[] )
 
     clls_solve_clls( data, status, n, o, m, Ao_ne, Ao_val, b, sigma,
-                     A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                     A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                      x_stat, c_stat, w )
   end
 
@@ -73,12 +73,12 @@ for d = 1:3
   if d == 2
     global st = 'R'
 
-    clls_import( control, data, status, n, o, m, 
+    clls_import( control, data, status, n, o, m,
                 "sparse_by_rows", Ao_ne, Cint[], Ao_col, Ao_ptr_ne, Ao_ptr,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr_ne, A_ptr )
 
     clls_solve_clls( data, status, n, o, m, Ao_ne, Ao_val, b, sigma,
-                     A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                     A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                      x_stat, c_stat, w )
   end
 
@@ -88,7 +88,7 @@ for d = 1:3
 
     Ao_dense_ne = 12  # number of elements of Ao
     A_dense_ne = 6  # number of elements of A
-    Ao_dense = Float64[1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 
+    Ao_dense = Float64[1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
                        1.0, 0.0, 1.0, 0.0, 1.0, 0.0]
     A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
@@ -97,7 +97,7 @@ for d = 1:3
                 "dense", A_ne, Cint[], Cint[], 0, Cint[] )
 
     clls_solve_clls( data, status, n, o, m, Ao_dense_ne, Ao_dense, b, sigma,
-                     A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+                     A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                      x, c, y, z, x_stat, c_stat, w )
   end
 

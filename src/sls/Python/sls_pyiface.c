@@ -855,7 +855,7 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args){
     // Call sls_solve_direct
     sls_solve_system(&data, &status, n, sol);
     // for( int i = 0; i < n; i++) printf("x %f\n", sol[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -897,7 +897,7 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args){
     // Call sls_solve_direct
     sls_partial_solve_system(&part, &data, &status, n, sol);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -959,10 +959,10 @@ static PyObject* py_sls_terminate(PyObject *self){
 static PyMethodDef sls_module_methods[] = {
     {"initialize", (PyCFunction) py_sls_initialize, METH_VARARGS,NULL},
     {"analyse_matrix", (PyCFunction) py_sls_analyse_matrix, METH_VARARGS, NULL},
-    {"factorize_matrix", (PyCFunction) py_sls_factorize_matrix, 
+    {"factorize_matrix", (PyCFunction) py_sls_factorize_matrix,
       METH_VARARGS, NULL},
     {"solve_system", (PyCFunction) py_sls_solve_system, METH_VARARGS, NULL},
-    {"partial_solve_system", (PyCFunction) py_sls_partial_solve_system, 
+    {"partial_solve_system", (PyCFunction) py_sls_partial_solve_system,
       METH_VARARGS, NULL},
     {"information", (PyCFunction) py_sls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_sls_terminate, METH_NOARGS, NULL},

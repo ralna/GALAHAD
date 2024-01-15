@@ -33,7 +33,7 @@
   whenever \f$A\f$ is not of full rank.
 
   The method provides a common interface to a variety of well-known solvers
-  from HSL and elsewhere. Currently supported solvers include \c MA28/GLS 
+  from HSL and elsewhere. Currently supported solvers include \c MA28/GLS
   and \c HSL\_MA48 from HSL, as well as \c GETR from LAPACK.
   Note that, with the exception of he Netlib reference LAPACK code,
   <b> the solvers themselves do not form part of this package
@@ -82,7 +82,7 @@
     computation (2007).  \n
     http://www.cse.clrc.ac.uk/nag/hsl
 
-  The solver \c GETR is available as \c S/DGETRF/S as part of LAPACK. 
+  The solver \c GETR is available as \c S/DGETRF/S as part of LAPACK.
   Reference versions are provided by GALAHAD, but for good performance
   machined-tuned versions should be used.
 

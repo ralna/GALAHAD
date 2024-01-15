@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD ZD11 package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2024-01-13
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -37,11 +37,11 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 #include $(GALAHAD)/src/makedefs/instructions
 
 #  -------------- non-default section ----------------
@@ -120,5 +120,5 @@ $(HLG)(hsl_$(package)$(HSL_PRECIS).o): ../$(package)/$(package).F90
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

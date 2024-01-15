@@ -5,11 +5,11 @@
    USE GALAHAD_HASH
    IMPLICIT NONE
    TYPE ( HASH_data_type ) :: data
-   TYPE ( HASH_control_type ) :: control        
+   TYPE ( HASH_control_type ) :: control
    TYPE ( HASH_inform_type ) :: inform
    INTEGER ( KIND = ip_ ), PARAMETER :: nchar = 10
    INTEGER ( KIND = ip_ ), PARAMETER :: length = 100
-   INTEGER ( KIND = ip_ ), PARAMETER :: new_length = 200 
+   INTEGER ( KIND = ip_ ), PARAMETER :: new_length = 200
    INTEGER ( KIND = ip_ ), PARAMETER :: nkeys1 = 8
    INTEGER ( KIND = ip_ ), PARAMETER :: nkeys2 = 10
    INTEGER ( KIND = ip_ ), PARAMETER :: nkeys3 = 3

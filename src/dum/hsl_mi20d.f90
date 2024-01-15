@@ -67,7 +67,7 @@
        type(zd11_type) :: ma48_matrix
        logical :: ma48_matrix_exists = .false.
        integer(ip_) :: dsolve_level = -1
-       integer(ip_) :: max_its = 0 
+       integer(ip_) :: max_its = 0
        logical :: zd11_internal_conversion = .false.
        type( zd11_type ) :: A
      end type mi20_keep

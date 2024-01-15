@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SLLS_precision
-            
+
 !        --------------------------------------------------------------------
 !        |                                                                  |
 !        | Solve the simplex-constrained linear-least-squares problem       |
@@ -3232,7 +3232,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
 !  projection path P( x + t d ) from a given x in Delta^n and direction d as
 !  t increases from zero, and P(v) projects v onto Delta^n, and stop at the
-!  first (local) minimizer of 
+!  first (local) minimizer of
 !    1/2 || A P( x + t d ) - b ||^2 + 1/2 weight || P( x + t d ) ||^2
 
 !  ------------------------------- dummy arguments -----------------------
@@ -3426,7 +3426,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         data%f_0 = half * DOT_PRODUCT( R, R )
       END IF
 
-!  if there is a regularization term, initialize rho_1 = x^T s and 
+!  if there is a regularization term, initialize rho_1 = x^T s and
 !  rho_2 = ||s||^2
 
       IF ( weight > zero ) THEN
@@ -3668,7 +3668,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
 !  projection path x(t) = P( x + t d ) from a given x and direction d for
 !  a sequence of decreasing/increasing values of t, from an initial value
-!  t_0 > 0, to find an approximate local minimizer of the regularized 
+!  t_0 > 0, to find an approximate local minimizer of the regularized
 !  least-squares objective
 !
 !    f(x) = 1/2 || A_o x - b ||^2 + 1/2 weight || x ||^2 for x = P(x(t))
@@ -4915,7 +4915,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0 has been violated.
 !
-!  n is a scalar variable of type default integer, that holds the number of 
+!  n is a scalar variable of type default integer, that holds the number of
 !   variables (columns of Ao)
 !
 !  o is a scalar variable of type default integer, that holds the number of
@@ -5049,7 +5049,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  o is a scalar variable of type default integer, that holds the number of
 !   residuals (rows of Ao)
 !
-!  Ao_type is a character string that specifies the design matrix storage 
+!  Ao_type is a character string that specifies the design matrix storage
 !   scheme used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
 !   or 'absent', the latter if m = 0; lower or upper case variants are allowed
 !
@@ -5066,9 +5066,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
-!  Ao_ptr is a rank-one array of dimension max(o+1,n+1) and type default 
+!  Ao_ptr is a rank-one array of dimension max(o+1,n+1) and type default
 !   integer, that holds the starting position of each row of J, as well as the
-!   total number of entries plus one, in the sparse row-wise storage scheme, 
+!   total number of entries plus one, in the sparse row-wise storage scheme,
 !   or the starting position of each column of Ao, as well as the total
 !   number of entries plus one, in the sparse column-wise storage scheme.
 !   It need not be set when the other schemes are used, and in this case

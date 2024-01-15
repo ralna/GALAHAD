@@ -52,15 +52,15 @@ int main(void) {
                 st = 'C';
                 bqpb_import( &control, &data, &status, n,
                             "coordinate", H_ne, H_row, H_col, NULL );
-                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
                 st = 'R';
-                bqpb_import( &control, &data, &status, n, 
+                bqpb_import( &control, &data, &status, n,
                              "sparse_by_rows", H_ne, NULL, H_col, H_ptr );
-                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
             case 3: // dense
@@ -69,36 +69,36 @@ int main(void) {
                 real_wp_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
                 bqpb_import( &control, &data, &status, n,
                              "dense", H_ne, NULL, NULL, NULL );
-                bqpb_solve_qp( &data, &status, n, H_dense_ne, H_dense, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_dense_ne, H_dense, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
             case 4: // diagonal
                 st = 'L';
                 bqpb_import( &control, &data, &status, n,
                              "diagonal", H_ne, NULL, NULL, NULL );
-                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
 
             case 5: // scaled identity
                 st = 'S';
-                bqpb_import( &control, &data, &status, n, 
+                bqpb_import( &control, &data, &status, n,
                              "scaled_identity", H_ne, NULL, NULL, NULL );
-                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
             case 6: // identity
                 st = 'I';
-                bqpb_import( &control, &data, &status, n, 
+                bqpb_import( &control, &data, &status, n,
                              "identity", H_ne, NULL, NULL, NULL );
-                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
             case 7: // zero
                 st = 'Z';
-                bqpb_import( &control, &data, &status, n, 
+                bqpb_import( &control, &data, &status, n,
                              "zero", H_ne, NULL, NULL, NULL );
-                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f, 
+                bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
 
@@ -147,7 +147,7 @@ int main(void) {
                 st = 'W';
                 bqpb_import( &control, &data, &status, n,
                            "shifted_least_distance", H_ne, NULL, NULL, NULL );
-                bqpb_solve_sldqp( &data, &status, n, w, x_0, g, f, 
+                bqpb_solve_sldqp( &data, &status, n, w, x_0, g, f,
                                  x_l, x_u, x, z, x_stat );
                 break;
 

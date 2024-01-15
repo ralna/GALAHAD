@@ -203,7 +203,7 @@ static PyObject* py_sha_analyse_matrix(PyObject *self, PyObject *args, PyObject 
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","ne","row","col","options",NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOO|O",
-                                    kwlist, &n, &ne, &py_row, &py_col, 
+                                    kwlist, &n, &ne, &py_row, &py_col,
                                     &py_options))
         return NULL;
 
@@ -267,17 +267,17 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
     static char *kwlist[] = {"ne","m","ls1","ls2","s","ly1","ly2","y",
                              "order",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOiiO|O", 
-                                    kwlist, &ne, &m, &ls1, &ls2, &py_s1, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOiiO|O",
+                                    kwlist, &ne, &m, &ls1, &ls2, &py_s1,
                                     &ly1, &ly2, &py_y1, &py_order))
         return NULL;
 
     // s and y are actually 2d arrays, so make the connection
     npy_intp sdims[] = {ls1, ls2};
     npy_intp ydims[] = {ly1, ly2};
-    PyArrayObject *py_s = (PyArrayObject *) PyArray_SimpleNew(2, sdims, 
+    PyArrayObject *py_s = (PyArrayObject *) PyArray_SimpleNew(2, sdims,
                                                               NPY_DOUBLE);
-    PyArrayObject *py_y = (PyArrayObject *) PyArray_SimpleNew(2, ydims, 
+    PyArrayObject *py_y = (PyArrayObject *) PyArray_SimpleNew(2, ydims,
                                                               NPY_DOUBLE);
     py_s = py_s1;
     py_y = py_y1;
@@ -307,7 +307,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
 
    // Create NumPy output array for val
     npy_intp nedim[] = {ne};
-    PyArrayObject *py_val = 
+    PyArrayObject *py_val =
       (PyArrayObject *) PyArray_SimpleNew(1, nedim, NPY_DOUBLE);
     double *val = (double *) PyArray_DATA(py_val);
 
@@ -316,7 +316,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
                         val, order );
 
     //for( int i = 0; i < ne; i++) printf("val %f\n", val[i]);
-    
+
     // Free allocated memory
     if(order != NULL) free(order);
 
@@ -373,9 +373,9 @@ static PyObject* py_sha_terminate(PyObject *self){
 /* sha python module method table */
 static PyMethodDef sha_module_methods[] = {
     {"initialize", (PyCFunction) py_sha_initialize, METH_NOARGS,NULL},
-    {"analyse_matrix", (PyCFunction) py_sha_analyse_matrix, 
+    {"analyse_matrix", (PyCFunction) py_sha_analyse_matrix,
        METH_VARARGS | METH_KEYWORDS, NULL},
-    {"recover_matrix", (PyCFunction) py_sha_recover_matrix, 
+    {"recover_matrix", (PyCFunction) py_sha_recover_matrix,
        METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_sha_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_sha_terminate, METH_NOARGS, NULL},

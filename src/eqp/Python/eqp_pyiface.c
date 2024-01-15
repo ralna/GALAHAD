@@ -583,7 +583,7 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOiOiOOOO", &n, &m, &f, &py_g,
                          &H_ne, &py_H_val, &A_ne, &py_A_val,
                          &py_c, &py_x, &py_y))
         return NULL;
@@ -614,7 +614,7 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
     status = 1; // set status to 1 on entry
     eqp_solve_qp(&data, &status, n, m, H_ne, H_val, g, f, A_ne, A_val, c, x, y);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -646,7 +646,7 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOO", &n, &m, &f, &py_g, 
+    if(!PyArg_ParseTuple(args, "iidOOOiOOOO", &n, &m, &f, &py_g,
                          &py_w, &py_x0, &A_ne, &py_A_val,
                          &py_c, &py_x, &py_y))
         return NULL;
@@ -747,7 +747,7 @@ static PyMethodDef eqp_module_methods[] = {
 PyDoc_STRVAR(eqp_module_doc,
 
 "The eqp package uses an iterative method to solve the a given\n"
-"equality-constrained quadratic programming problem. The aim is to\n" 
+"equality-constrained quadratic programming problem. The aim is to\n"
 "minimize the quadratic objective\n"
 "q(x) = 1/2 x^T H x + g^T x + f,\n"
 "or the shifted least-distance objective\n"

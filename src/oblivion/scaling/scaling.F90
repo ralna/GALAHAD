@@ -12,7 +12,7 @@
 !  Name changed from oldscale to scaling GALAHAD 3.3 May 20th, 2021
 
    MODULE GALAHAD_SCALING_precision
-            
+
 !     ------------------------------------------
 !     | Scale data for the quadratic program   |
 !     |                                        |
@@ -126,7 +126,7 @@
 !     REAL ( KIND = rp_ ), PARAMETER :: rmin = 0.01_rp_
 
 !  local variables
- 
+
 !  AK    Scalar of cg iteration.
 !  BK    Scalar of cg iteration.
 !  I     Row index.
@@ -270,7 +270,7 @@
         SH( i ) = two ** ANINT( SH( i ) )
         smax = MAX( smax, SH( i ) ) ; smin = MIN( smin, SH( i ) )
       END DO
-      IF ( smax /= smin ) ifail = ifail + 1   
+      IF ( smax /= smin ) ifail = ifail + 1
       IF ( CONTROL%print_level > 0 .AND. CONTROL%out > 0 )                    &
            WRITE( CONTROL%out, 2010 ) smin, smax
 
@@ -317,7 +317,7 @@
 
 !   The required scalings are then 2^nint(r) and 2^nint(c) respectively
 
-!   Use Reid's special purpose method for matrices with property "A". 
+!   Use Reid's special purpose method for matrices with property "A".
 !   Comments refer to equation numbers in Curtis and Reid's paper
 
 !  arguments:
@@ -337,14 +337,14 @@
 !  Dummy arguments
 
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: m , n
-      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifail 
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifail
       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
       INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
                                 DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( M  ) :: R 
-      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( N  ) :: C 
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( M  ) :: R
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( N  ) :: C
       TYPE( SCALING_control_type ) :: CONTROL
 
 !  Constant parameters
@@ -352,7 +352,7 @@
 !  itmax is the maximal permitted number of iterations.
 !  rmin  is used in a convergence test on (residual norm)**2
 
-      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = 100 
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = 100
       REAL ( KIND = rp_ ), PARAMETER :: rmin = 0.1_rp_
 
 !  Automatic arrays
@@ -383,11 +383,11 @@
 
 !  Initialise for accumulation of sums and products
 
-      R = ZERO 
-      C = ZERO 
-      ROW_count = ZERO 
-      COL_count = ZERO 
-      COL_rhs = ZERO 
+      R = ZERO
+      C = ZERO
+      ROW_count = ZERO
+      COL_count = ZERO
+      COL_rhs = ZERO
 
 !  Count non-zeros in the rows, and compute r.h.s. vectors; use R to store
 !  the row r.h.s. (sigma in Curtis+Reid)
@@ -398,18 +398,18 @@
           IF ( u /= zero ) THEN
             j = A_col( k )
             u = LOG( u ) / loge2
-            ROW_count( i ) = ROW_count( i ) + one 
-            COL_count( j ) = COL_count( j ) + one 
-            R( i ) = R( i ) + u 
-            COL_rhs( j ) = COL_rhs( j ) + u 
-           END IF 
-         END DO 
-       END DO 
+            ROW_count( i ) = ROW_count( i ) + one
+            COL_count( j ) = COL_count( j ) + one
+            R( i ) = R( i ) + u
+            COL_rhs( j ) = COL_rhs( j ) + u
+           END IF
+         END DO
+       END DO
 
 !  Account for structural singularity
 
-      WHERE ( ROW_count == zero ) ROW_count = one 
-      WHERE ( COL_count == zero ) COL_count = one 
+      WHERE ( ROW_count == zero ) ROW_count = one
+      WHERE ( COL_count == zero ) COL_count = one
 
 !  Form M^-1 sigma and N^-1 tau (in C+R's notation)
 
@@ -426,20 +426,20 @@
         DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
         IF ( A_val( k ) /= zero )                                              &
            R( i ) = R( i ) - COL_rhs( A_col( k ) ) / ROW_count( i )  ! (4.3)
-        END DO 
-      END DO 
+        END DO
+      END DO
 
 !  Set initial values
 
-      e = zero 
-      q = one 
-      s = DOT_PRODUCT( ROW_count, R ** 2 ) 
+      e = zero
+      q = one
+      s = DOT_PRODUCT( ROW_count, R ** 2 )
       IF ( s > stop_tol ) THEN
-        SHIFT_c = zero 
+        SHIFT_c = zero
 
 !  Iteration loop
 
-        DO iter = 1, itmax 
+        DO iter = 1, itmax
 
 !  Update column residual vector
 
@@ -447,87 +447,87 @@
             DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
               IF ( A_val( k ) /= zero ) THEN
                 j = A_col( k )
-                C( j ) = C( j ) + R( i ) 
+                C( j ) = C( j ) + R( i )
               END IF
-            END DO 
-          END DO 
+            END DO
+          END DO
 
 !  Rescale column residual
 
-          s1 = s ; s = zero 
-          DO j = 1, n 
-            v = - C( j ) / q 
+          s1 = s ; s = zero
+          DO j = 1, n
+            v = - C( j ) / q
             C( j ) = v / COL_count( j )    ! (4.4a)
             s = s + v * C( j )       ! (4.5a)
-          END DO 
+          END DO
 
 !  Rescale row residual vector
 
-          e1 = e 
+          e1 = e
           e = q * s / s1                ! (4.6)
           q = one - e                   ! (4.7)
-          IF ( s <= stop_tol ) e = zero 
-          R = R * e * ROW_count 
+          IF ( s <= stop_tol ) e = zero
+          R = R * e * ROW_count
 
 !  Test for termination
 
-          IF ( s <= stop_tol ) GO TO 100 
-          em = e * e1 
+          IF ( s <= stop_tol ) GO TO 100
+          em = e * e1
 
 !  Update row residual
 
           DO i = 1, m
             DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
-              IF ( A_val( k ) /= zero ) R( i ) = R( i ) + C( A_col( k ) ) 
-            END DO 
-          END DO 
+              IF ( A_val( k ) /= zero ) R( i ) = R( i ) + C( A_col( k ) )
+            END DO
+          END DO
 
 !  Again, rescale row residual
 
-          s1 = s ; s = zero 
-          DO i = 1, m 
-             v = - R( i ) / q 
+          s1 = s ; s = zero
+          DO i = 1, m
+             v = - R( i ) / q
              R( i ) = v / ROW_count( i )  ! (4.4b)
              s = s + v * R( i )           ! (4.5b)
-          END DO 
+          END DO
           e1 = e ; e = q * s / s1         ! (4.6)
           q1 = q ; q = one - e            ! (4.7)
 
 !  Special fixup for last iteration
 
-          IF ( s <= stop_tol ) q = one 
+          IF ( s <= stop_tol ) q = one
 
 !  Rescale column residual vector
 
-          qm = q * q1 
-          SHIFT_c = ( em * SHIFT_c + C ) / qm 
-          COL_rhs = COL_rhs + SHIFT_c 
+          qm = q * q1
+          SHIFT_c = ( em * SHIFT_c + C ) / qm
+          COL_rhs = COL_rhs + SHIFT_c
 
 !  Test for termination
 
-          IF ( s <= stop_tol ) EXIT  
+          IF ( s <= stop_tol ) EXIT
 
 !  Update column scaling factors
 
-          C = e * C * COL_count 
-        END DO 
+          C = e * C * COL_count
+        END DO
       END IF
-      R = R * ROW_count 
+      R = R * ROW_count
 
 !  Sweep through matrix to prepare to get row scaling powers
 
-  100 CONTINUE 
+  100 CONTINUE
 
       DO i = 1, m
         DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
           IF ( A_val( k ) /= zero ) R( i ) = R( i ) + COL_rhs( A_col( k ) )
-        END DO 
-      END DO 
+        END DO
+      END DO
 
 !  Final conversion to output values
 
-      R = R / ROW_count - M_inv_sig 
-      C = - COL_rhs 
+      R = R / ROW_count - M_inv_sig
+      C = - COL_rhs
 
 !  Obtain the scaling factors
 !  Factors for the H rows
@@ -557,11 +557,11 @@
         IF ( CONTROL%print_level > 0 .AND. CONTROL%out > 0 )                   &
              WRITE( CONTROL%out, 2020 ) smin, smax
       END IF
-      RETURN  
+      RETURN
 
 !  Error returns
 
-  600 CONTINUE 
+  600 CONTINUE
       IF ( CONTROL%out_error > 0 ) WRITE ( CONTROL%out_error, 2000 ) ifail
       RETURN
 
@@ -586,10 +586,10 @@
 !  ---------
 
 !  A_ See QPB
-!  R     is an array that must be set on entry to the current row scaling 
+!  R     is an array that must be set on entry to the current row scaling
 !        factors R. On exit, R may have been altered to reflect the
 !        rescaling
-!  C     is an array that must be set on entry to the current column scaling 
+!  C     is an array that must be set on entry to the current column scaling
 !        factors C. It is unaltered on exit
 
 !  Dummy arguments
@@ -600,8 +600,8 @@
                                 DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
       REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                                 DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m  ) :: R 
-      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n  ) :: C 
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m  ) :: R
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n  ) :: C
 
 !  local variables
 
@@ -649,31 +649,31 @@
 !
 !      min 1/2 y^T ( Sh H Sh ) v + y^T ( Sh g )
 !
-!      s.t.  ( Sa c_l )  <= ( Sa A Sh ) v <=  ( Sa c_u ),   
+!      s.t.  ( Sa c_l )  <= ( Sa A Sh ) v <=  ( Sa c_u ),
 !      and  ( Sh^-1 x_l) <=       v       <= ( Sh^-1 x_u ).
 !
 !   (optionally the parametric problem
 !
 !      min 1/2 y^T ( Sh H Sh ) v + y^T ( Sh g ) + theta y^T ( Sh dg )
 !
-!      s.t.  ( Sa c_l ) + theta ( Sa dc_l ) <= ( Sa A Sh ) v 
+!      s.t.  ( Sa c_l ) + theta ( Sa dc_l ) <= ( Sa A Sh ) v
 !                                           <=  ( Sa c_u ) + theta ( Sa dc_u )
 !      and  ( Sh^-1 x_l ) + theta ( Sh^-1 dx_l ) <= v
 !                                       <= ( Sh^-1 x_u ) + theta ( Sh^-1 x_u ).)
 !
-!  If SCALE is .TRUE., Sh and Sa are as input in SH and SA. 
+!  If SCALE is .TRUE., Sh and Sa are as input in SH and SA.
 !  Otherwise, Sh and Sa are the reciprocals of SH and SA.
 !
 !  The data H, x, g, A, c_l, c_u, x_l and x_u and the multipliers for
-!  the general constraints and dual variables for the bounds is input as 
-!           H, X, G, A, C_l, C_u, X_l, X_u, Y and Z 
+!  the general constraints and dual variables for the bounds is input as
+!           H, X, G, A, C_l, C_u, X_l, X_u, Y and Z
 !  (and optionally C = Ax, DG, DC_l, DC_u, DX_l and DX_u ).
 !
-!  The resulting scaled variants, 
-!  ( Sh H Sh ), ( Sh^-1 x ), ( Sh g ), ( Sa A Sh ), ( Sa c bounds ), 
-!  ( Sh^-1 x bounds), ( Sa^-1 multipliers) and ( Sh^-1 duals ) are output as 
+!  The resulting scaled variants,
+!  ( Sh H Sh ), ( Sh^-1 x ), ( Sh g ), ( Sa A Sh ), ( Sa c bounds ),
+!  ( Sh^-1 x bounds), ( Sa^-1 multipliers) and ( Sh^-1 duals ) are output as
 !           H, X, G, A, ( C_l, C_u ), ( X_l, X_u ), Y and Z
-!  (optionally (Sa c ), ( Sh g ), ( Sa c bounds ) and ( Sh^-1 x bounds) are 
+!  (optionally (Sa c ), ( Sh g ), ( Sa c bounds ) and ( Sh^-1 x bounds) are
 !     output as C, DG, DC_l, DC_u, DX_l and DX_u ).
 !
 !  Nick Gould, Rutherford Appleton Laboratory.
@@ -741,12 +741,12 @@
           IF ( X_l( i ) == X_u( i ) ) THEN
             X_l( i ) = X_l( i ) / SH( i )
             X_u( i ) = X_u( i ) / SH( i )
-          ELSE 
+          ELSE
             IF ( X_l( i ) > - biginf ) THEN
               X_l( i )  = X_l( i ) / SH( i )
               IF ( PRESENT( DX_l ) ) DX_l( i )  = DX_l( i ) / SH( i )
             END IF
-            IF  ( X_u( i ) < biginf ) THEN 
+            IF  ( X_u( i ) < biginf ) THEN
               X_u( i ) = X_u( i ) / SH( i )
               IF ( PRESENT( DX_u ) ) DX_u( i )  = DX_u( i ) / SH( i )
             END IF
@@ -761,12 +761,12 @@
           IF ( C_l( i ) == C_u( i ) ) THEN
             C_l( i ) = C_l( i ) * SA( i )
             C_u( i ) = C_u( i ) * SA( i )
-          ELSE 
+          ELSE
             IF ( C_l( i ) > - biginf ) THEN
               C_l( i )  = C_l( i ) * SA( i )
               IF ( PRESENT( DC_l ) ) DC_l( i ) = DC_l( i ) * SA( i )
             END IF
-            IF  ( C_u( i ) < biginf ) THEN 
+            IF  ( C_u( i ) < biginf ) THEN
               C_u( i ) = C_u( i ) * SA( i )
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) * SA( i )
             END IF
@@ -776,7 +776,7 @@
         END DO
 
         Y = Y / SA
-        
+
 ! ==================
 !  Unscale the data
 ! ==================
@@ -811,12 +811,12 @@
           IF ( X_l( i ) == X_u( i ) ) THEN
             X_l( i ) = X_l( i ) * SH( i )
             X_u( i ) = X_u( i ) * SH( i )
-          ELSE 
+          ELSE
             IF ( X_l( i ) > - biginf ) THEN
               X_l( i )  = X_l( i ) * SH( i )
               IF ( PRESENT( DX_l ) ) DX_l( i )  = DX_l( i ) * SH( i )
             END IF
-            IF  ( X_u( i ) < biginf ) THEN 
+            IF  ( X_u( i ) < biginf ) THEN
               X_u( i ) = X_u( i ) * SH( i )
               IF ( PRESENT( DX_u ) ) DX_u( i )  = DX_u( i ) * SH( i )
             END IF
@@ -831,12 +831,12 @@
           IF ( C_l( i ) == C_u( i ) ) THEN
             C_l( i ) = C_l( i ) / SA( i )
             C_u( i ) = C_u( i ) / SA( i )
-          ELSE 
+          ELSE
             IF ( C_l( i ) > - biginf ) THEN
               C_l( i )  = C_l( i ) / SA( i )
               IF ( PRESENT( DC_l ) ) DC_l( i ) = DC_l( i ) / SA( i )
             END IF
-            IF  ( C_u( i ) < biginf ) THEN 
+            IF  ( C_u( i ) < biginf ) THEN
               C_u( i ) = C_u( i ) / SA( i )
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) / SA( i )
             END IF
@@ -878,31 +878,31 @@
 !
 !      min 1/2 y^T ( Sh H Sh ) v + y^T ( Sh g )
 !
-!      s.t.  ( Sa c_l )  <= ( Sa A Sh ) v <=  ( Sa c_u ),   
+!      s.t.  ( Sa c_l )  <= ( Sa A Sh ) v <=  ( Sa c_u ),
 !      and  ( Sh^-1 x_l) <=       v       <= ( Sh^-1 x_u ).
 !
 !   (optionally the parametric problem
 !
 !      min 1/2 y^T ( Sh H Sh ) v + y^T ( Sh g ) + theta y^T ( Sh dg )
 !
-!      s.t.  ( Sa c_l ) + theta ( Sa dc_l ) <= ( Sa A Sh ) v 
+!      s.t.  ( Sa c_l ) + theta ( Sa dc_l ) <= ( Sa A Sh ) v
 !                                           <=  ( Sa c_u ) + theta ( Sa dc_u )
 !      and  ( Sh^-1 x_l ) + theta ( Sh^-1 dx_l ) <= v
 !                                       <= ( Sh^-1 x_u ) + theta ( Sh^-1 x_u ).)
 !
-!  If SCALE is .TRUE., Sh and Sa are as input in SH and SA. 
+!  If SCALE is .TRUE., Sh and Sa are as input in SH and SA.
 !  Otherwise, Sh and Sa are the reciprocals of SH and SA.
 !
 !  The data H, x, g, A, c_l, c_u, x_l and x_u and the multipliers for
-!  the general constraints and dual variables for the bounds is input as 
+!  the general constraints and dual variables for the bounds is input as
 !           H, X, G, A, C_l, C_u, X_l, X_u, Y_l, Y_u, Z_l and Z_u
 !  (and optionally C = Ax, DG, DC_l, DC_u, DX_l and DX_u ).
 !
-!  The resulting scaled variants, 
-!  ( Sh H Sh ), ( Sh^-1 x ), ( Sh g ), ( Sa A Sh ), ( Sa c bounds ), 
-!  ( Sh^-1 x bounds), ( Sa^-1 multipliers) and ( Sh^-1 duals ) are output as 
+!  The resulting scaled variants,
+!  ( Sh H Sh ), ( Sh^-1 x ), ( Sh g ), ( Sa A Sh ), ( Sa c bounds ),
+!  ( Sh^-1 x bounds), ( Sa^-1 multipliers) and ( Sh^-1 duals ) are output as
 !           H, X, G, A, ( C_l, C_u ), ( X_l, X_u ), Y_l, Y_u, Z_l and Z_u
-!  (optionally (Sa c ), ( Sh g ), ( Sa c bounds ) and ( Sh^-1 x bounds) are 
+!  (optionally (Sa c ), ( Sh g ), ( Sa c bounds ) and ( Sh^-1 x bounds) are
 !     output as C, DG, DC_l, DC_u, DX_l and DX_u ).
 !
 !  Nick Gould, Rutherford Appleton Laboratory.
@@ -970,12 +970,12 @@
           IF ( X_l( i ) == X_u( i ) ) THEN
             X_l( i ) = X_l( i ) / SH( i )
             X_u( i ) = X_u( i ) / SH( i )
-          ELSE 
+          ELSE
             IF ( X_l( i ) > - biginf ) THEN
               X_l( i )  = X_l( i ) / SH( i )
               IF ( PRESENT( DX_l ) ) DX_l( i )  = DX_l( i ) / SH( i )
             END IF
-            IF  ( X_u( i ) < biginf ) THEN 
+            IF  ( X_u( i ) < biginf ) THEN
               X_u( i ) = X_u( i ) / SH( i )
               IF ( PRESENT( DX_u ) ) DX_u( i )  = DX_u( i ) / SH( i )
             END IF
@@ -990,12 +990,12 @@
           IF ( C_l( i ) == C_u( i ) ) THEN
             C_l( i ) = C_l( i ) * SA( i )
             C_u( i ) = C_u( i ) * SA( i )
-          ELSE 
+          ELSE
             IF ( C_l( i ) > - biginf ) THEN
               C_l( i )  = C_l( i ) * SA( i )
               IF ( PRESENT( DC_l ) ) DC_l( i ) = DC_l( i ) * SA( i )
             END IF
-            IF  ( C_u( i ) < biginf ) THEN 
+            IF  ( C_u( i ) < biginf ) THEN
               C_u( i ) = C_u( i ) * SA( i )
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) * SA( i )
             END IF
@@ -1005,7 +1005,7 @@
         END DO
 
         Y_l = Y_l / SA ; Y_u = Y_u / SA
-        
+
 ! ==================
 !  Unscale the data
 ! ==================
@@ -1040,12 +1040,12 @@
           IF ( X_l( i ) == X_u( i ) ) THEN
             X_l( i ) = X_l( i ) * SH( i )
             X_u( i ) = X_u( i ) * SH( i )
-          ELSE 
+          ELSE
             IF ( X_l( i ) > - biginf ) THEN
               X_l( i )  = X_l( i ) * SH( i )
               IF ( PRESENT( DX_l ) ) DX_l( i )  = DX_l( i ) * SH( i )
             END IF
-            IF  ( X_u( i ) < biginf ) THEN 
+            IF  ( X_u( i ) < biginf ) THEN
               X_u( i ) = X_u( i ) * SH( i )
               IF ( PRESENT( DX_u ) ) DX_u( i )  = DX_u( i ) * SH( i )
             END IF
@@ -1060,12 +1060,12 @@
           IF ( C_l( i ) == C_u( i ) ) THEN
             C_l( i ) = C_l( i ) / SA( i )
             C_u( i ) = C_u( i ) / SA( i )
-          ELSE 
+          ELSE
             IF ( C_l( i ) > - biginf ) THEN
               C_l( i )  = C_l( i ) / SA( i )
               IF ( PRESENT( DC_l ) ) DC_l( i ) = DC_l( i ) / SA( i )
             END IF
-            IF  ( C_u( i ) < biginf ) THEN 
+            IF  ( C_u( i ) < biginf ) THEN
               C_u( i ) = C_u( i ) / SA( i )
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) / SA( i )
             END IF

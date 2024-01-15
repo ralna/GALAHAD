@@ -160,7 +160,7 @@ int main(void) {
             case 2: // sparse by rows
                 strcpy( st, "SR" );
                 slls_import( &control, &data, &status, n, o,
-                             "sparse_by_rows", Ao_ne, NULL, Ao_col, 
+                             "sparse_by_rows", Ao_ne, NULL, Ao_col,
                              Ao_ptr_ne, Ao_ptr );
                 slls_solve_given_a( &data, &userdata, &status, n, o,
                                     Ao_ne, Ao_val, b,
@@ -169,7 +169,7 @@ int main(void) {
             case 3: // dense by rows
                 strcpy( st, "DR" );
                 slls_import( &control, &data, &status, n, o,
-                             "dense_by_rows", Ao_dense_ne, 
+                             "dense_by_rows", Ao_dense_ne,
                              NULL, NULL, 0, NULL );
                 slls_solve_given_a( &data, &userdata, &status, n, o,
                                     Ao_dense_ne, Ao_dense, b,
@@ -187,7 +187,7 @@ int main(void) {
             case 5: // dense by columns
                 strcpy( st, "DC" );
                 slls_import( &control, &data, &status, n, o,
-                             "dense_by_columns", Ao_dense_ne, 
+                             "dense_by_columns", Ao_dense_ne,
                              NULL, NULL, 0, NULL );
                 slls_solve_given_a( &data, &userdata, &status, n, o,
                                     Ao_dense_ne, Ao_by_col_dense, b,

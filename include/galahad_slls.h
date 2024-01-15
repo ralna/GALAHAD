@@ -567,8 +567,8 @@ void slls_import( struct slls_control_type *control,
 
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
-   used for the objective design matrix, \f$A_o\f$. It should be one of 
-   'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+   used for the objective design matrix, \f$A_o\f$. It should be one of
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns',
    'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
  @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
@@ -727,7 +727,7 @@ void slls_solve_given_a( void **data,
     entries in the design matrix \f$A_o\f$.
 
  @param[in] Ao_val is a one-dimensional array of size A_ne and type double,
-    that holds the values of the entries of the designmatrix \f$A_o\f$ 
+    that holds the values of the entries of the designmatrix \f$A_o\f$
     in any of the available storage schemes.
 
  @param[in] b is a one-dimensional array of size o and type double, that

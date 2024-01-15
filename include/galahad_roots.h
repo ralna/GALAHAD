@@ -134,7 +134,7 @@ struct roots_inform_type {
     /// returned allocation status and a string containing the
     /// name of the offending array are held in
     /// inform.alloc_status and inform.bad_alloc respectively.
-    /// \li -3. Either the specified degree of the polynomial in degree 
+    /// \li -3. Either the specified degree of the polynomial in degree
     /// is less than 0, or the declared dimension of the array roots
     /// is smaller than the specified degree.
     int status;
@@ -144,7 +144,7 @@ struct roots_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 };

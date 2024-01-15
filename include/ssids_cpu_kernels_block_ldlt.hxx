@@ -95,7 +95,7 @@ void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, i
             }
          }
       }
-      bestv_out = 
+      bestv_out =
          (cloc < BLOCK_SIZE && rloc < BLOCK_SIZE) ? a[cloc*lda+rloc]
                                                   : 0.0;
       return;
@@ -206,7 +206,7 @@ void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, i
 }
 
 /** Returns true if a 2x2 pivot can be stably inverted.
- * 
+ *
  * We assume that a21 is the maximum entry in the matrix, at which stage
  * the proofs in doc/LDLT.tex apply.
  */

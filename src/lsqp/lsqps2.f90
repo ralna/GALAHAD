@@ -6,7 +6,7 @@
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( LSQP_data_type ) :: data
-   TYPE ( LSQP_control_type ) :: control        
+   TYPE ( LSQP_control_type ) :: control
    TYPE ( LSQP_inform_type ) :: inform
    INTEGER, PARAMETER :: n = 16, m = 8, a_ne = 53
    INTEGER, PARAMETER :: data_unit = 40
@@ -44,7 +44,7 @@
    READ( data_unit, "( ( 5ES12.4 ) )" ) p%C_l( : p%m )
    READ( data_unit, "( ( 5ES12.4 ) )" ) p%C_u( : p%m )
    CLOSE( data_unit )
-! integer components complete   
+! integer components complete
    CALL LSQP_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
    control%restore_problem = 1                ! Restore vector data on exit
@@ -54,7 +54,7 @@
    p%X = 0.0_wp
    p%Y = 0.0_wp ; p%Z = 1000.0_wp                 ! start multipliers from zero
 ! sparse co-ordinate storage format: real components
-! real components complete   
+! real components complete
      ALLOCATE( p%X0( n ) ) ; p%X0 = 0.0
      CALL LSQP_solve( p, data, control, inform )   ! Solve problem
      IF ( inform%status == 0 ) THEN                ! Successful return

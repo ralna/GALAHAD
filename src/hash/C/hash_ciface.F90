@@ -54,11 +54,11 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol )
     TYPE ( hash_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_hash_control_type ), INTENT( OUT ) :: fcontrol
     INTEGER ( KIND = ip_ ) :: i
-    
+
     ! Integers
     fcontrol%error = ccontrol%error
     fcontrol%out = ccontrol%out
@@ -79,11 +79,11 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol )
     TYPE ( f_hash_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( hash_control_type ), INTENT( OUT ) :: ccontrol
     INTEGER ( KIND = ip_ ) :: i, l
-    
+
     ! Integers
     ccontrol%error = fcontrol%error
     ccontrol%out = fcontrol%out
@@ -105,7 +105,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( hash_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_hash_inform_type ), INTENT( OUT ) :: finform
     INTEGER ( KIND = ip_ ) :: i
@@ -125,7 +125,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_hash_inform_type ), INTENT( IN ) :: finform
     TYPE ( hash_inform_type ), INTENT( OUT ) :: cinform
     INTEGER ( KIND = ip_ ) :: i, l
@@ -151,7 +151,7 @@
 !  -------------------------------------
 
   SUBROUTINE hash_initialize( nchar, length, cdata, ccontrol,                  &
-                              cinform ) BIND( C ) 
+                              cinform ) BIND( C )
   USE GALAHAD_HASH_ciface
   IMPLICIT NONE
 
@@ -176,7 +176,7 @@
 
   CALL f_hash_initialize( nchar, length, fdata, fcontrol, finform )
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol )
 
@@ -225,7 +225,7 @@
 !  C interface to fortran hash_terminate
 !  ------------------------------------
 
-  SUBROUTINE hash_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE hash_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_HASH_ciface
   IMPLICIT NONE
 
@@ -263,7 +263,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE hash_terminate

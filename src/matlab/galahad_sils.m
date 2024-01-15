@@ -1,9 +1,9 @@
 % GALAHAD_SILS -
 %
-%  Given a symmetric n by n matrix A and an n-vector b or an n by r 
-%  matrix B, solve the system A x = b or the system AX=B. The matrix 
+%  Given a symmetric n by n matrix A and an n-vector b or an n by r
+%  matrix B, solve the system A x = b or the system AX=B. The matrix
 %  A need not be definite. Advantage is taken of sparse A. Options
-%  are provided to factorize a matrix A without solving the system, 
+%  are provided to factorize a matrix A without solving the system,
 %  and to solve systems using previously-determined factors.
 %
 %  Usage -
@@ -16,7 +16,7 @@
 %  Sophisticated usage -
 %
 %  to initialize data and control structures prior to factorization
-%   [ control ] 
+%   [ control ]
 %     = galahad_sils( 'initial' )
 %
 %  to factorize A
@@ -36,7 +36,7 @@
 %    control, a structure containing control parameters.
 %      The components are of the form control.value, where
 %      value is the name of the corresponding component of
-%      the derived type SILS_CONTROL as described in the 
+%      the derived type SILS_CONTROL as described in the
 %      manual for the fortran 90 package GALAHARS_SILS.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/sils.pdf
 %
@@ -48,7 +48,7 @@
 %    inform: a structure containing information parameters
 %      The components are of the form inform.value, where
 %      value is the name of the corresponding component of
-%      the derived type SILS_AINFO/FINFO/SINFO as described 
+%      the derived type SILS_AINFO/FINFO/SINFO as described
 %      in the manual for the fortran 90 package GALAHARS_SILS.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/sils.pdf
 %

@@ -42,10 +42,10 @@ P_ptr = np.array([0,1,2,2])
 w = np.array([1.0,1.0,1.0])
 
 # load data (and optionally non-default options)
-nls.load(n, m, 
-         J_type, J_ne, J_row, J_col, J_ptr, 
-         H_type, H_ne, H_row, H_col, H_ptr, 
-         P_type, P_ne, P_row, P_col, P_ptr, 
+nls.load(n, m,
+         J_type, J_ne, J_row, J_col, J_ptr,
+         H_type, H_ne, H_row, H_col, H_ptr,
+         P_type, P_ne, P_row, P_col, P_ptr,
          w, options)
 
 # define residual function and its derivatives
@@ -62,7 +62,7 @@ def eval_hprod(x,v):
 x = np.array([1.5,1.5])
 
 # find optimum
-x, c, g = nls.solve(n, m, x, eval_c, J_ne, eval_j, H_ne, eval_h, 
+x, c, g = nls.solve(n, m, x, eval_c, J_ne, eval_j, H_ne, eval_h,
                     P_ne, eval_hprod)
 print(" x:",x)
 print(" c:",c)

@@ -30,7 +30,7 @@ A_ptr = np.array([0,11,20,30])
 c_l = np.array([10.0,9.0,-infinity])
 c_u = np.array([10.0,infinity,10.0])
 x_l = np.array([0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0])
-x_u  = np.array([infinity,infinity,infinity,infinity,infinity,infinity,      
+x_u  = np.array([infinity,infinity,infinity,infinity,infinity,infinity,
           infinity,infinity,infinity,infinity,infinity])
 
 # allocate internal data and set default options
@@ -57,8 +57,8 @@ x_stat = np.array([-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1])
 
 # crossover from an interior-point to a basic solution
 x, c, y, z, x_stat, c_stat, inform \
-  = cro.crossover_solution(n, m, m_equal, g, H_ne, H_val, H_col, H_ptr, 
-                           A_ne, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u, 
+  = cro.crossover_solution(n, m, m_equal, g, H_ne, H_val, H_col, H_ptr,
+                           A_ne, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u,
                            x, c, y, z, x_stat, c_stat, options)
 print(" x:",x)
 print(" c:",c)

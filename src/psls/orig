@@ -77,7 +77,7 @@
      INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !---------------------------------------------------------------
-!   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e 
+!   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e
 !--------------------------------------------------------------
 
      INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
@@ -86,7 +86,7 @@
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) ::                            &
        W, RHS, RHS2, P2, G , DIAG
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA
-     
+
      INTEGER, INTENT( IN ), DIMENSION( : ) :: ISVGRP
      INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAGV
 
@@ -171,19 +171,19 @@
            ELSE ; reallocate = .FALSE.
            END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( DIAG( nvar ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'DIAG' ; GO TO 980
            END IF
          END IF
-       
+
          reallocate = .TRUE.
          IF ( ALLOCATED( OFFDIA ) ) THEN
            IF ( SIZE( OFFDIA, 1 ) /= S%nsemiw .OR.                             &
                 SIZE( OFFDIA, 2 ) < nvar ) THEN ; DEALLOCATE( OFFDIA )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( OFFDIA( S%nsemiw, nvar ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'OFFDIA'; GO TO 980
            END IF
@@ -201,7 +201,7 @@
              LINK_col, POS_in_H, llink, lpos,                                  &
              IW_asmbl, W_ws, W_el, W_in, H_el, H_in, skipg,                    &
              maxsbw = maxsbw, DIAG = DIAG, OFFDIA = OFFDIA,                    &
-             KNDOFG = KNDOFG )        
+             KNDOFG = KNDOFG )
        ELSE
 
 !  Set starting addresses for partitions of the integer workspace
@@ -218,7 +218,7 @@
              SA, lirnh, ljcnh, lh, matrix%row, matrix%col, matrix%val,         &
              LINK_col, POS_in_H, llink, lpos,                                  &
              IW_asmbl, W_ws, W_el, W_in, H_el, H_in, skipg, nnzh = nnzh,       &
-             KNDOFG = KNDOFG )        
+             KNDOFG = KNDOFG )
        END IF
        IF ( iprint >= 200 .AND. out > 0 ) THEN
          CALL CPU_TIME( time ) ; WRITE( out, 2220 ) time - tt
@@ -262,7 +262,7 @@
            nlh = iai ; ulh = nnzh; mlh = nnzh
            CALL EXTEND_arrays( matrix%row, lirnh, ulh, nlh, mlh, buffer,       &
                                status, alloc_status )
-           IF ( status /= 0 ) THEN 
+           IF ( status /= 0 ) THEN
              bad_alloc = 'matrix%row' ; GO TO 990 ; END IF
            lirnh = nlh ; iai = lirnh
          END IF
@@ -289,31 +289,31 @@
            IF ( SIZE( IKEEP, 1 ) /= nvar .OR. SIZE( IKEEP, 2 ) < 4 ) THEN
              DEALLOCATE( IKEEP ) ; ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN    
+         IF ( reallocate ) THEN
            ALLOCATE( IKEEP( nvar, 4 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'IKEEP' ; GO TO 980; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( IW1 ) ) THEN
            IF ( SIZE( IW1, 1 ) /= nvar .OR. SIZE( IW1, 2 ) < 4 ) THEN
              DEALLOCATE( IW1 ) ; ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( IW1( nvar, 4 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'IW1' ; GO TO 980 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( W1 ) ) THEN
            IF ( SIZE( W1, 1 ) /= nvar .OR. SIZE( W1, 2 ) < 3 ) THEN
              DEALLOCATE( W1 ) ; ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( W1( nvar, 3 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'W1' ; GO TO 980 ; END IF
          END IF
 
@@ -360,54 +360,54 @@
             IF ( SIZE( IW ) < 3 * nvar ) THEN ; DEALLOCATE( IW )
             ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( IW( 3 * nvar ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'IW' ; GO TO 980 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( H_col_ptr ) ) THEN
-           IF ( SIZE( H_col_ptr ) < nvar + 1 ) THEN 
+           IF ( SIZE( H_col_ptr ) < nvar + 1 ) THEN
              DEALLOCATE( H_col_ptr )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( H_col_ptr( nvar + 1 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'H_col_ptr' ; GO TO 980 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( L_col_ptr ) ) THEN
-           IF ( SIZE( L_col_ptr ) < nvar + 1 ) THEN 
+           IF ( SIZE( L_col_ptr ) < nvar + 1 ) THEN
              DEALLOCATE( L_col_ptr )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( L_col_ptr( nvar + 1 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'L_col_ptr' ; GO TO 980 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( DIAG ) ) THEN
-           IF ( SIZE( DIAG ) < nvar ) THEN 
+           IF ( SIZE( DIAG ) < nvar ) THEN
              DEALLOCATE( DIAG, STAT = alloc_status )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( DIAG( nvar ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'DIAG' ; GO TO 980 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( W ) ) THEN
            IF ( SIZE( W ) < nvar ) THEN
              DEALLOCATE( W, STAT = alloc_status )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( W( nvar ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'W' ; GO TO 980 ; END IF
          END IF
@@ -415,7 +415,7 @@
 !  Check to see if H contains a diagonal entry in each row
 
          IW( : nvar ) = 0
-         DO j = 1, nnzh        
+         DO j = 1, nnzh
           i = matrix%row( j )
           IF ( i == matrix%col( j ) ) IW( i ) = IW( i ) + 1
          END DO
@@ -452,7 +452,7 @@
 !  First count how many nonzeros there are in each column
 
          IW( : nvar ) = 0
-         DO j = 1, nnzh        
+         DO j = 1, nnzh
           i = matrix%row( j )
           IF ( i /= matrix%col( j ) ) IW( i ) = IW( i ) + 1
          END DO
@@ -466,7 +466,7 @@
 
 !  Finally copy the data into its correct position ...
 
-         DO j = 1, nnzh        
+         DO j = 1, nnzh
            i = matrix%row( j )
            IF ( i /= matrix%col( j ) ) THEN  ! off-diagonal term
              matrix%val( H_col_ptr( i ) ) = matrix%val( j )
@@ -477,7 +477,7 @@
            END IF
          END DO
 
-!   ... and reposition the starting addresses 
+!   ... and reposition the starting addresses
 
          H_col_ptr( 1 ) = 1
          DO i = 1, nvar
@@ -493,8 +493,8 @@
                      H_col_ptr, matrix%row( S%nextra + nvar + 1 : ntotal ),    &
                      matrix%val( nvar + 1 : S%nextra ), matrix%val( : nvar ),  &
                      L_col_ptr, matrix%row( nvar + 1 : S%nextra ),             &
-                     icfact, pertur, IW, DIAG, W )                            
-                                                                              
+                     icfact, pertur, IW, DIAG, W )
+
 !  - - - - - - - - - - - - - - - - - -
 !  A band preconditioner is to be used
 !  - - - - - - - - - - - - - - - - - -
@@ -522,7 +522,7 @@
 !  Allocate the arrays for the analysis phase
 
            S%liw = 1.2 * ( 2 * nnzh + 3 * nvar + 1 )
-       
+
 !  Choose initial values for the control parameters
 
            IF ( iprint >= 1000 ) THEN
@@ -557,7 +557,7 @@
                IF ( SIZE( DIAG ) < nvar ) THEN ; DEALLOCATE( DIAG )
                ELSE ; reallocate = .FALSE. ; END IF
              END IF
-             IF ( reallocate ) THEN 
+             IF ( reallocate ) THEN
                ALLOCATE( DIAG( nvar ), STAT = alloc_status )
                IF ( alloc_status /= 0 ) THEN
                   bad_alloc = 'DIAG' ; GO TO 980 ; END IF
@@ -568,7 +568,7 @@
                 IF ( SIZE( IW ) < nvar ) THEN ; DEALLOCATE( IW )
                 ELSE ; reallocate = .FALSE. ; END IF
              END IF
-             IF ( reallocate ) THEN 
+             IF ( reallocate ) THEN
                ALLOCATE( IW( nvar ), STAT = alloc_status )
                IF ( alloc_status /= 0 ) THEN
                  bad_alloc = 'IW' ; GO TO 980 ; END IF
@@ -580,13 +580,13 @@
                     SIZE( OFFDIA, 2 ) < nvar ) THEN ; DEALLOCATE( OFFDIA )
                ELSE ; reallocate = .FALSE. ; END IF
              END IF
-             IF ( reallocate ) THEN 
+             IF ( reallocate ) THEN
                ALLOCATE( OFFDIA( 2, nvar ), STAT = alloc_status )
                IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'OFFDIA'; GO TO 980
                END IF
              END IF
            END IF
-           
+
 !  Factorize the matrix M, using the Schnabel-Eskow modified Cholesky method
 !  or the Gill-Murray-Ponceleon-Saunders modification to the symmetric
 !  indefinite factorization
@@ -602,7 +602,7 @@
 !  Test that the factorization succeeded
 
            IF ( SILS_infof%flag < 0 ) RETURN
-           
+
            IF ( seprec ) THEN
 
 !  Calculate the maximum perturbation made to the diagonals of H
@@ -617,7 +617,7 @@
                END IF
              END IF
            ELSE
-          
+
              CALL CPU_TIME( tt )
 
 !  Modify the pivots
@@ -664,28 +664,28 @@
 !  Allocate further workspace
 
 !      S%lrmax = max_sc * ( max_sc + 1 ) / 2
-       
+
        reallocate = .TRUE.
        IF ( ALLOCATED( IVUSE ) ) THEN
          IF ( SIZE( IVUSE ) < n ) THEN ; DEALLOCATE( IVUSE )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( IVUSE( n ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'IVUSE' ; GO TO 980 ; END IF
        END IF
-       
+
        reallocate = .TRUE.
        IF ( ALLOCATED( RHS ) ) THEN
          IF ( SIZE( RHS ) < nfree ) THEN ; DEALLOCATE( RHS )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( RHS( nfree ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'RHS' ; GO TO 980 ; END IF
        END IF
-       
+
        SCU_matrix%n = nfree
        SCU_matrix%m = nfixed
        CALL SCU_restart_m_eq_0( SCU_data, SCU_info )
@@ -695,31 +695,31 @@
          IF ( SIZE( RHS2 ) < nfree + max_sc ) THEN ; DEALLOCATE( RHS2 )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( RHS2( nfree + max_sc ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'RHS2' ; GO TO 980 ; END IF
        END IF
-       
+
        reallocate = .TRUE.
        IF ( ALLOCATED( P2 ) ) THEN
          IF ( SIZE( P2 ) < nfree + max_sc ) THEN ; DEALLOCATE( P2 )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( P2( nfree + max_sc ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'P2' ; GO TO 980 ; END IF
        END IF
-       
+
        reallocate = .TRUE.
        IF ( ALLOCATED( G ) ) THEN
          IF ( SIZE( G ) < n ) THEN ; DEALLOCATE( G )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( G( n ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'G' ; GO TO 980 ; END IF
        END IF
-       
+
 !  Record the time taken to assemble and factorize the preconditioner
 
        CALL CPU_TIME( time )
@@ -745,7 +745,7 @@
          refact = .TRUE.
          GO TO 100
        END IF
-       
+
        CALL CPU_TIME( t )
 
 !  Record the variables which are still free by first setting the appropriate

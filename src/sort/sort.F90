@@ -23,7 +23,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SORT_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !
@@ -1001,7 +1001,7 @@
 !  ** This parameter must be increased  if more than 2**32 numbers are to
 !  to be sorted
 
-      INTEGER ( KIND = ip_ ), PARAMETER :: log2s = 32  
+      INTEGER ( KIND = ip_ ), PARAMETER :: log2s = 32
 
       INTEGER ( KIND = ip_ ) :: s, l, r, i, j, stack( log2s, 2 ), p, itmp
       REAL ( KIND = rp_ ) :: rtmp, mid

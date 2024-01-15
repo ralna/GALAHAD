@@ -229,7 +229,7 @@ struct bsc_inform_type {
     /// returned allocation status and a string containing the
     /// name of the offending array are held in
     /// inform.alloc_status and inform.bad_alloc respectively.
-    /// \li -3. The restrictions n > 0 or m > 0 or requirement that a type 
+    /// \li -3. The restrictions n > 0 or m > 0 or requirement that a type
     /// contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
     /// has been violated.
 

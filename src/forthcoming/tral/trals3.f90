@@ -15,7 +15,7 @@
    nlp%n = n ; nlp%H%ne = h_ne                  ! dimensions
    ALLOCATE( nlp%X( n ), nlp%G( n ) )
    nlp%X = 1.0_wp                               ! start from one
-! problem data complete   
+! problem data complete
    CALL TRAL_initialize( data, control, inform ) ! Initialize control parameters
    control%hessian_available = .FALSE.          ! Hessian products will be used
 !  control%psls_control%preconditioner = - 3    ! Apply uesr's preconditioner

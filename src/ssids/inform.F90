@@ -21,7 +21,7 @@ module spral_ssids_inform_precision
   ! Data type for information returned by code
   !
   type ssids_inform
-     integer(ip_) :: flag = SSIDS_SUCCESS ! Takes one of the enumerated 
+     integer(ip_) :: flag = SSIDS_SUCCESS ! Takes one of the enumerated
          ! flag values:
          !  SSIDS_SUCCESS
          !  SSIDS_ERROR_XXX
@@ -29,7 +29,7 @@ module spral_ssids_inform_precision
      integer(ip_) :: matrix_dup = 0 ! Number of duplicated entries.
      integer(ip_) :: matrix_missing_diag = 0 ! Number of missing diag. entries
      integer(ip_) :: matrix_outrange = 0 ! Number of out-of-range entries.
-     integer(ip_) :: matrix_rank = 0 ! Rank of matrix (anal=structral, 
+     integer(ip_) :: matrix_rank = 0 ! Rank of matrix (anal=structral,
                                      ! fact=actual)
      integer(ip_) :: maxdepth = 0 ! Maximum depth of tree
      integer(ip_) :: maxfront = 0 ! Maximum front size

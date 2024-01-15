@@ -103,11 +103,11 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( gls_control ), INTENT( IN ) :: ccontrol
     TYPE ( f_gls_control ), INTENT( OUT ) :: fcontrol
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -144,11 +144,11 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_gls_control ), INTENT( IN ) :: fcontrol
     TYPE ( gls_control ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -188,7 +188,7 @@
     SUBROUTINE copy_ainfo_in( cainfo, fainfo )
     TYPE ( gls_ainfo ), INTENT( IN ) :: cainfo
     TYPE ( f_gls_ainfo ), INTENT( OUT ) :: fainfo
-    
+
     ! Integers
     fainfo%flag = cainfo%flag
     fainfo%more = cainfo%more
@@ -217,7 +217,7 @@
     SUBROUTINE copy_ainfo_out( fainfo, cainfo )
     TYPE ( f_gls_ainfo ), INTENT( IN ) :: fainfo
     TYPE ( gls_ainfo ), INTENT( OUT ) :: cainfo
-    
+
     ! Integers
     cainfo%flag = fainfo%flag
     cainfo%more = fainfo%more
@@ -268,7 +268,7 @@
     SUBROUTINE copy_finfo_out( ffinfo, cfinfo )
     TYPE ( f_gls_finfo ), INTENT( IN ) :: ffinfo
     TYPE ( gls_finfo ), INTENT( OUT ) :: cfinfo
-    
+
     ! Integers
     cfinfo%flag = ffinfo%flag
     cfinfo%more = ffinfo%more
@@ -290,7 +290,7 @@
     SUBROUTINE copy_sinfo_in( csinfo, fsinfo )
     TYPE ( gls_sinfo ), INTENT( IN ) :: csinfo
     TYPE ( f_gls_sinfo ), INTENT( OUT ) :: fsinfo
-    
+
     ! Integers
     fsinfo%flag = csinfo%flag
     fsinfo%more = csinfo%more
@@ -321,7 +321,7 @@
 !  C interface to fortran gls_initialize
 !  -------------------------------------
 
-  SUBROUTINE gls_initialize( cdata, ccontrol ) BIND( C ) 
+  SUBROUTINE gls_initialize( cdata, ccontrol ) BIND( C )
   USE GALAHAD_GLS_precision_ciface
   IMPLICIT NONE
 
@@ -334,7 +334,7 @@
 
   TYPE ( f_gls_full_data_type ), POINTER :: fdata
   TYPE ( f_gls_control ) :: fcontrol
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -349,7 +349,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -439,7 +439,7 @@
 !  C interface to fortran gls_finalize
 !  ------------------------------------
 
-  SUBROUTINE gls_finalize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE gls_finalize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_GLS_precision_ciface
   IMPLICIT NONE
 
@@ -469,7 +469,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE gls_finalize

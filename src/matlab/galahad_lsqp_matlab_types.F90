@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 16th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LSQP_MATLAB_TYPES
@@ -51,7 +51,7 @@
         mwPointer :: analyse, factorize, solve
         mwPointer :: clock_total, clock_preprocess, clock_find_dependent
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: LSQP_pointer_type
         mwPointer :: pointer
@@ -63,7 +63,7 @@
         TYPE ( LSQP_time_pointer_type ) :: time_pointer
         TYPE ( FDC_pointer_type ) :: FDC_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  L S Q P _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -194,7 +194,7 @@
         CASE( 'cpu_time_limit' )
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                         pc, LSQP_control%cpu_time_limit )
-        CASE( 'clock_time_limit' )         
+        CASE( 'clock_time_limit' )
           CALL MATLAB_get_value( ps, 'clock_time_limit',                       &
                                  pc, LSQP_control%clock_time_limit )
         CASE( 'remove_dependencies' )
@@ -219,14 +219,14 @@
         CASE( 'use_corrector' )
           CALL MATLAB_get_value( ps, 'use_corrector',                          &
                               pc, LSQP_control%use_corrector )
-        CASE( 'array_syntax_worse_than_do_loop' )     
+        CASE( 'array_syntax_worse_than_do_loop' )
           CALL MATLAB_get_value( ps, 'array_syntax_worse_than_do_loop',        &
                                  pc,                                           &
                                  LSQP_control%array_syntax_worse_than_do_loop )
         CASE( 'generate_sif_file' )
           CALL MATLAB_get_value( ps, 'generate_sif_file',                      &
                               pc, LSQP_control%generate_sif_file )
-        CASE( 'prefix' )                                           
+        CASE( 'prefix' )
           CALL galmxGetCharacter( ps, 'prefix',                                &
                                   pc, LSQP_control%prefix, len )
         CASE( 'FDC_control' )
@@ -575,21 +575,21 @@
       CALL MATLAB_copy_to_ptr( LSQP_inform%iter,                               &
                                mxGetPr( LSQP_pointer%iter ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%factorization_status,               &
-                               mxGetPr( LSQP_pointer%factorization_status ) )   
+                               mxGetPr( LSQP_pointer%factorization_status ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%factorization_integer,              &
-                               mxGetPr( LSQP_pointer%factorization_integer ) )  
+                               mxGetPr( LSQP_pointer%factorization_integer ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%factorization_real,                 &
-                               mxGetPr( LSQP_pointer%factorization_real ) )     
+                               mxGetPr( LSQP_pointer%factorization_real ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%nfacts,                             &
-                               mxGetPr( LSQP_pointer%nfacts ) )                 
+                               mxGetPr( LSQP_pointer%nfacts ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%nbacts,                             &
-                               mxGetPr( LSQP_pointer%nbacts ) )                 
+                               mxGetPr( LSQP_pointer%nbacts ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%obj,                                &
-                               mxGetPr( LSQP_pointer%obj ) )                    
+                               mxGetPr( LSQP_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%potential,                          &
-                               mxGetPr( LSQP_pointer%potential ) )         
+                               mxGetPr( LSQP_pointer%potential ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%non_negligible_pivot,               &
-                               mxGetPr( LSQP_pointer%non_negligible_pivot ) ) 
+                               mxGetPr( LSQP_pointer%non_negligible_pivot ) )
       CALL MATLAB_copy_to_ptr( LSQP_inform%feasible,                           &
                                mxGetPr( LSQP_pointer%feasible ) )
 

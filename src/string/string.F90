@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_STRING
-            
+
 !     ----------------------------
 !    |  Set strings appropriate   |
 !    !  for singular and plural   |

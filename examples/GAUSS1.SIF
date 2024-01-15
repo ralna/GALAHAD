@@ -36,105 +36,105 @@ NAME          GAUSS1
 
 *  Data values
 
- RE X1                  1.0  
- RE X2                  2.0  
- RE X3                  3.0  
- RE X4                  4.0  
- RE X5                  5.0  
- RE X6                  6.0  
- RE X7                  7.0  
- RE X8                  8.0  
- RE X9                  9.0  
- RE X10                 10.0 
- RE X11                 11.0 
- RE X12                 12.0 
- RE X13                 13.0 
- RE X14                 14.0 
- RE X15                 15.0 
- RE X16                 16.0 
- RE X17                 17.0 
- RE X18                 18.0 
- RE X19                 19.0 
- RE X20                 20.0 
- RE X21                 21.0 
- RE X22                 22.0 
- RE X23                 23.0 
- RE X24                 24.0 
- RE X25                 25.0 
- RE X26                 26.0 
- RE X27                 27.0 
- RE X28                 28.0 
- RE X29                 29.0 
- RE X30                 30.0 
- RE X31                 31.0 
- RE X32                 32.0 
- RE X33                 33.0 
- RE X34                 34.0 
- RE X35                 35.0 
- RE X36                 36.0 
- RE X37                 37.0 
- RE X38                 38.0 
- RE X39                 39.0 
- RE X40                 40.0 
- RE X41                 41.0 
- RE X42                 42.0 
- RE X43                 43.0 
- RE X44                 44.0 
- RE X45                 45.0 
- RE X46                 46.0 
- RE X47                 47.0 
- RE X48                 48.0 
- RE X49                 49.0 
- RE X50                 50.0 
- RE X51                 51.0 
- RE X52                 52.0 
- RE X53                 53.0 
- RE X54                 54.0 
- RE X55                 55.0 
- RE X56                 56.0 
- RE X57                 57.0 
- RE X58                 58.0 
- RE X59                 59.0 
- RE X60                 60.0 
- RE X61                 61.0 
- RE X62                 62.0 
- RE X63                 63.0 
- RE X64                 64.0 
- RE X65                 65.0 
- RE X66                 66.0 
- RE X67                 67.0 
- RE X68                 68.0 
- RE X69                 69.0 
- RE X70                 70.0 
- RE X71                 71.0 
- RE X72                 72.0 
- RE X73                 73.0 
- RE X74                 74.0 
- RE X75                 75.0 
- RE X76                 76.0 
- RE X77                 77.0 
- RE X78                 78.0 
- RE X79                 79.0 
- RE X80                 80.0 
- RE X81                 81.0 
- RE X82                 82.0 
- RE X83                 83.0 
- RE X84                 84.0 
- RE X85                 85.0 
- RE X86                 86.0 
- RE X87                 87.0 
- RE X88                 88.0 
- RE X89                 89.0 
- RE X90                 90.0 
- RE X91                 91.0 
- RE X92                 92.0 
- RE X93                 93.0 
- RE X94                 94.0 
- RE X95                 95.0 
- RE X96                 96.0 
- RE X97                 97.0 
- RE X98                 98.0 
- RE X99                 99.0 
+ RE X1                  1.0
+ RE X2                  2.0
+ RE X3                  3.0
+ RE X4                  4.0
+ RE X5                  5.0
+ RE X6                  6.0
+ RE X7                  7.0
+ RE X8                  8.0
+ RE X9                  9.0
+ RE X10                 10.0
+ RE X11                 11.0
+ RE X12                 12.0
+ RE X13                 13.0
+ RE X14                 14.0
+ RE X15                 15.0
+ RE X16                 16.0
+ RE X17                 17.0
+ RE X18                 18.0
+ RE X19                 19.0
+ RE X20                 20.0
+ RE X21                 21.0
+ RE X22                 22.0
+ RE X23                 23.0
+ RE X24                 24.0
+ RE X25                 25.0
+ RE X26                 26.0
+ RE X27                 27.0
+ RE X28                 28.0
+ RE X29                 29.0
+ RE X30                 30.0
+ RE X31                 31.0
+ RE X32                 32.0
+ RE X33                 33.0
+ RE X34                 34.0
+ RE X35                 35.0
+ RE X36                 36.0
+ RE X37                 37.0
+ RE X38                 38.0
+ RE X39                 39.0
+ RE X40                 40.0
+ RE X41                 41.0
+ RE X42                 42.0
+ RE X43                 43.0
+ RE X44                 44.0
+ RE X45                 45.0
+ RE X46                 46.0
+ RE X47                 47.0
+ RE X48                 48.0
+ RE X49                 49.0
+ RE X50                 50.0
+ RE X51                 51.0
+ RE X52                 52.0
+ RE X53                 53.0
+ RE X54                 54.0
+ RE X55                 55.0
+ RE X56                 56.0
+ RE X57                 57.0
+ RE X58                 58.0
+ RE X59                 59.0
+ RE X60                 60.0
+ RE X61                 61.0
+ RE X62                 62.0
+ RE X63                 63.0
+ RE X64                 64.0
+ RE X65                 65.0
+ RE X66                 66.0
+ RE X67                 67.0
+ RE X68                 68.0
+ RE X69                 69.0
+ RE X70                 70.0
+ RE X71                 71.0
+ RE X72                 72.0
+ RE X73                 73.0
+ RE X74                 74.0
+ RE X75                 75.0
+ RE X76                 76.0
+ RE X77                 77.0
+ RE X78                 78.0
+ RE X79                 79.0
+ RE X80                 80.0
+ RE X81                 81.0
+ RE X82                 82.0
+ RE X83                 83.0
+ RE X84                 84.0
+ RE X85                 85.0
+ RE X86                 86.0
+ RE X87                 87.0
+ RE X88                 88.0
+ RE X89                 89.0
+ RE X90                 90.0
+ RE X91                 91.0
+ RE X92                 92.0
+ RE X93                 93.0
+ RE X94                 94.0
+ RE X95                 95.0
+ RE X96                 96.0
+ RE X97                 97.0
+ RE X98                 98.0
+ RE X99                 99.0
  RE X100                100.0
  RE X101                101.0
  RE X102                102.0
@@ -554,7 +554,7 @@ CONSTANTS
 
  DO I         1                        M
  Z  GAUSS1    F(I)                     Y(I)
- ND        
+ ND
 
 BOUNDS
 
@@ -562,25 +562,25 @@ BOUNDS
 
 START POINT
 
-    START1    B1        97.0 
+    START1    B1        97.0
     START1    B2        0.009
     START1    B3        100.0
-    START1    B4        65.0 
-    START1    B5        20.0 
-    START1    B6        70.0 
+    START1    B4        65.0
+    START1    B5        20.0
+    START1    B6        70.0
     START1    B7        178.0
-    START1    B8        16.5 
+    START1    B8        16.5
 
 *  Alternative start point
 
-    START2    B1        94.0  
+    START2    B1        94.0
     START2    B2        0.0105
-    START2    B3        99.0  
-    START2    B4        63.0  
-    START2    B5        25.0  
-    START2    B6        71.0  
-    START2    B7        180.0 
-    START2    B8        20.0  
+    START2    B3        99.0
+    START2    B4        63.0
+    START2    B5        25.0
+    START2    B6        71.0
+    START2    B7        180.0
+    START2    B8        20.0
 
 ELEMENT TYPE
 
@@ -627,7 +627,7 @@ OBJECT BOUND
 
 *   Solution
 
-*LO SOLTN               
+*LO SOLTN
 
 ENDATA
 
@@ -662,7 +662,7 @@ INDIVIDUALS
  A  V1E                 V1 * E
 
  F                      V1E
- G  V1                  E 
+ G  V1                  E
  G  V2                  - V1E * X
  H  V1        V2        - X * E
  H  V2        V2        V1E * X ** 2
@@ -679,19 +679,19 @@ INDIVIDUALS
  A  V33                 V3 * V32
  A  V1E                 V1 * E
  A  TV1E                2.0 * V1E
- A  TV2MXV              TV2MX / V32 
+ A  TV2MXV              TV2MX / V32
  A  TV2MXW              TV2MX2 / V32
 
  F                      V1E
  G  V1                  E
- G  V2                  - V1E * TV2MXV 
+ G  V2                  - V1E * TV2MXV
  G  V3                  TV1E * V2MX2 / V33
  H  V1        V2        - E * TV2MXV
- H  V1        V3        E * TV2MX2 / V33 
+ H  V1        V3        E * TV2MX2 / V33
  H  V2        V2        TV1E * ( TV2MXW - 1.0 ) / V32
- H  V2        V3        TV1E * TV2MX * 
+ H  V2        V3        TV1E * TV2MX *
  H+                      ( 1.0 - V2MX2 / V32 ) / V33
- H  V3        V3        TV1E * V2MX2 * 
+ H  V3        V3        TV1E * V2MX2 *
  H+                       ( TV2MXW - 3.0 ) / V3 ** 4
 ENDATA
 

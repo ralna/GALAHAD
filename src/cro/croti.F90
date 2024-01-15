@@ -5,7 +5,7 @@
    USE GALAHAD_CRO_double                    ! double precision version
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
-   TYPE ( CRO_control_type ) :: control        
+   TYPE ( CRO_control_type ) :: control
    TYPE ( CRO_inform_type ) :: inform
    TYPE ( CRO_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: i

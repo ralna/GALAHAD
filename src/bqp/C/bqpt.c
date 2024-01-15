@@ -18,7 +18,7 @@ int main(void) {
     int n = 10; // dimension
     int H_ne = 2 * n - 1; // Hesssian elements, NB lower triangle
     int H_dense_ne = n * ( n + 1 ) / 2; // dense Hessian elements
-    int H_row[H_ne]; // row indices, 
+    int H_row[H_ne]; // row indices,
     int H_col[H_ne]; // column indices
     int H_ptr[n+1];  // row pointers
     real_wp_ H_val[H_ne]; // values
@@ -46,12 +46,12 @@ int main(void) {
 
     // H = tridiag(2,1), H_dense = diag(2)
 
-    l = 0 ; 
+    l = 0 ;
     H_ptr[0] = l;
     H_row[l] = 0; H_col[l] = 0; H_val[l] = 2.0;
     for( int i = 1; i < n; i++)
     {
-      l = l + 1; 
+      l = l + 1;
       H_ptr[i] = l;
       H_row[l] = i; H_col[l] = i - 1; H_val[l] = 1.0;
       l = l + 1;
@@ -59,7 +59,7 @@ int main(void) {
     }
     H_ptr[n] = l + 1;
 
-    l = - 1 ; 
+    l = - 1 ;
     for( int i = 0; i < n; i++)
     {
       H_diag[i] = 2.0;
@@ -99,29 +99,29 @@ int main(void) {
                 st = 'C';
                 bqp_import( &control, &data, &status, n,
                             "coordinate", H_ne, H_row, H_col, NULL );
-                bqp_solve_given_h( &data, &status, n, H_ne, H_val, g, f, 
+                bqp_solve_given_h( &data, &status, n, H_ne, H_val, g, f,
                                    x_l, x_u, x, z, x_stat );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
                 st = 'R';
-                bqp_import( &control, &data, &status, n, 
+                bqp_import( &control, &data, &status, n,
                              "sparse_by_rows", H_ne, NULL, H_col, H_ptr );
-                bqp_solve_given_h( &data, &status, n, H_ne, H_val, g, f, 
+                bqp_solve_given_h( &data, &status, n, H_ne, H_val, g, f,
                                    x_l, x_u, x, z, x_stat );
                 break;
             case 3: // dense
                 st = 'D';
                 bqp_import( &control, &data, &status, n,
                              "dense", H_dense_ne, NULL, NULL, NULL );
-                bqp_solve_given_h( &data, &status, n, H_dense_ne, H_dense, 
+                bqp_solve_given_h( &data, &status, n, H_dense_ne, H_dense,
                                    g, f, x_l, x_u, x, z, x_stat );
                 break;
             case 4: // diagonal
                 st = 'L';
                 bqp_import( &control, &data, &status, n,
                              "diagonal", H_ne, NULL, NULL, NULL );
-                bqp_solve_given_h( &data, &status, n, n, H_diag, g, f, 
+                bqp_solve_given_h( &data, &status, n, n, H_diag, g, f,
                                    x_l, x_u, x, z, x_stat );
                 break;
             }
@@ -168,8 +168,8 @@ int main(void) {
     for( int i = 0; i < n; i++) mask[i] = 0;
     bqp_import_without_h( &control, &data, &status, n ) ;
     while(true){ // reverse-communication loop
-        bqp_solve_reverse_h_prod( &data, &status, n, g, f, x_l, x_u, 
-                                  x, z, x_stat, v, prod, 
+        bqp_solve_reverse_h_prod( &data, &status, n, g, f, x_l, x_u,
+                                  x, z, x_stat, v, prod,
                                   nz_v, &nz_v_start, &nz_v_end,
                                   nz_prod, nz_prod_end );
         if(status == 0){ // successful termination
@@ -233,7 +233,7 @@ int main(void) {
 
     // Print solution details
     if(inform.status == 0){
-        printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
+        printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
                st, inform.iter, inform.obj, inform.status);
     }else{
         printf("%c: BQP_solve exit status = %1i\n", st, inform.status);

@@ -49,7 +49,7 @@ print("3\n*")
 # find optimum of lp
 #print("\n solve lp")
 x, c, y, z, x_stat, c_stat \
-  = lpb.solve_lp(n, m, f, g, A_ne, A_val, 
+  = lpb.solve_lp(n, m, f, g, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)

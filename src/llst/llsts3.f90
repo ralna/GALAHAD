@@ -34,7 +34,7 @@
    END DO
    CALL LLST_solve( m, n, radius, A, B, X, data, control, inform, S = S )
    IF ( inform%status == 0 ) THEN  !  Successful return
-     DO l = 1, A%ne 
+     DO l = 1, A%ne
        i =  A%row( l )
        B( i ) = B( i ) - A%val( l ) * X( A%col( l ) )
      END DO

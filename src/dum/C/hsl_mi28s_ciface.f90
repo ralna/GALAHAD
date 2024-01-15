@@ -33,7 +33,7 @@
 
      REAL( KIND = spc_ ) :: alpha
 
-!  if set to true, user's data is checked. Otherwise, no checking and may 
+!  if set to true, user's data is checked. Otherwise, no checking and may
 !  fail in unexpected way if there are duplicates/out-of-range entries.
 
      LOGICAL( KIND = C_BOOL ) :: check
@@ -64,21 +64,21 @@
 
      REAL( KIND = spc_ ) :: lowalpha
 
-!  During search for shift, we decrease the lower bound max(alpha,lowalpha) 
+!  During search for shift, we decrease the lower bound max(alpha,lowalpha)
 !  on the shift by shift_factor2 at most maxshift times (so this limits the
-!  number of refactorizations that are performed ... idea is reducing alpha 
-!  as much as possible will give better preconditioner but reducing too far 
-!  will lead to breakdown and then a refactorization is required (expensive 
+!  number of refactorizations that are performed ... idea is reducing alpha
+!  as much as possible will give better preconditioner but reducing too far
+!  will lead to breakdown and then a refactorization is required (expensive
 !  so limit number of reductions). Note: Lin and More set this to 3.
 
      INTEGER( KIND = ipc_ ) :: maxshift
 
-!  controls whether entries of RR^T that cause no additional fill are allowed. 
+!  controls whether entries of RR^T that cause no additional fill are allowed.
 !  They are allowed if rrt = .true. and not otherwise.
 
      LOGICAL( KIND = C_BOOL ) :: rrt
 
-!  if the current shift is found to be too small, it is increased by at least 
+!  if the current shift is found to be too small, it is increased by at least
 !  a factor of shift_factor. Values <= 1.0 are treated as default.
 
      REAL( KIND = spc_ ) :: shift_factor
@@ -89,8 +89,8 @@
      REAL( KIND = spc_ ) :: shift_factor2
      REAL( KIND = spc_ ) :: small
 
-!  used to select "small" entries that are dropped from L (but may be 
-!  included in R). 
+!  used to select "small" entries that are dropped from L (but may be
+!  included in R).
 
      REAL( KIND = spc_ ) :: tau1
 
@@ -162,7 +162,7 @@
 
      REAL( KIND = spc_ ) :: profile_after
 
-!  size of arrays jr and ar that are used for r   
+!  size of arrays jr and ar that are used for r
 
      INTEGER( KIND = longc_ ) :: size_r
 

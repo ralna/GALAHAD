@@ -10,7 +10,7 @@
 !  October 24th 2016
 
    MODULE GALAHAD_USEGLTR_precision
-            
+
 !  This is the driver program for running GLTR for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers

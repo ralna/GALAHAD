@@ -300,7 +300,7 @@
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type for dense solve with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- 
+
      TYPE, PUBLIC :: GSM_dense_inform_type
 
 !  the total number of iterations performed
@@ -381,7 +381,7 @@
        CHARACTER ( LEN = 1 ) :: accept
        TYPE ( TRS_data_type ) :: trs_data
      END TYPE GSM_dense_data_type
-     
+
      TYPE, PUBLIC :: GSM_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
@@ -1458,7 +1458,7 @@
        END IF
 
 !  ============================================================================
-!  2. Calculate the new search subspace, Q, by appending the latest gradient, 
+!  2. Calculate the new search subspace, Q, by appending the latest gradient,
 !     if there is space, and orthogonalising with respect to the existing set
 !  ============================================================================
 
@@ -1538,7 +1538,7 @@
          data%H_dense%ne = data%H_dense%ne + 1
          data%H_dense%val( data%H_dense%ne ) = h_diag
        END IF
-!write(6,"( ' ne = ', I0, ' H_initial =', /, ( 5ES12.4 ) )" ) 
+!write(6,"( ' ne = ', I0, ' H_initial =', /, ( 5ES12.4 ) )" )
 !    data%H_dense%ne, data%H_dense%val( : data%H_dense%ne )
 
 !  subspace problem iteration loop
@@ -2436,7 +2436,7 @@
 !   0  termination test satisfied at x = X with f(x) = f and g(x) = G
 !   2  return to evaluate f = f(x) at new X = x
 !   3  return to evaluate G = g(x) at new X = x
-!  <0  error exit 
+!  <0  error exit
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -2565,7 +2565,7 @@
 
   20   CONTINUE
 
-!  if the trial objective value is a NaN, reduce the trust region radiius 
+!  if the trial objective value is a NaN, reduce the trust region radiius
 !  and try again
 
        f_is_nan = f /= f
@@ -2625,7 +2625,7 @@
          END IF
 
 !  update the symmetric rank-one Hessian estimate,
-!  H^+ = H + (y - H s) (y - Hs)^T / (y - Hs)^T s 
+!  H^+ = H + (y - H s) (y - Hs)^T / (y - Hs)^T s
 !  if (y - Hs)^T s is not too small
 
 !  compute y = g^+ - g
@@ -2655,7 +2655,7 @@
              yioveryts = Y( i ) / yts
              DO j = 1, i
                k = k + 1
-               H%val( k ) = H%val( k ) + yioveryts * Y( j ) 
+               H%val( k ) = H%val( k ) + yioveryts * Y( j )
              END DO
            END DO
          END IF
@@ -2979,13 +2979,13 @@
   10 CONTINUE
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
 
-if ( .false. ) then  
+if ( .false. ) then
      CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, nlp%f )
      CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,                &
                   nlp%G( : nlp%n ) )
      data%dense_radius = - one
      inform%f_eval = 1 ; inform%g_eval = 1 ; inform%status = 1
-     DO 
+     DO
        CALL GSM_dense_solve( inform%status, nlp%n, nlp%X, nlp%f, nlp%G,        &
                              data%dense_radius, control, data%dense_data,      &
                              data%X_dense, data%S_dense,                       &
@@ -3623,7 +3623,7 @@ end if
              WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
                 data%bndry, data%negcur, data%perturb, inform%obj,             &
                 inform%norm_g, data%ratio, inform%radius, data%norm_s,         &
-                data%clock_now                                               
+                data%clock_now
            END IF
 
 !  form the next trial step
@@ -3829,9 +3829,9 @@ end if
 !      CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, nlp%f )
 !      CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,              &
 !                   nlp%G( : nlp%n ) )
-!      inform%f_eval = 1 ; inform%g_eval = 1 ; 
+!      inform%f_eval = 1 ; inform%g_eval = 1 ;
        inform%status = 1
-       DO 
+       DO
          CALL GSM_dense_solve( inform%status, data%n_s, data%X_s, data%F_s,    &
                                data%G_s, data%dense_radius, control,           &
                                data%dense_data, data%X_dense, data%S_dense,    &
@@ -3878,7 +3878,7 @@ end if
        WRITE( data%out, 2130 ) prefix, char_iter, data%accept,                 &
           data%bndry, data%negcur, data%perturb, inform%obj,                   &
           inform%norm_g, data%ratio, inform%radius, data%norm_s,               &
-          data%clock_now                                                    
+          data%clock_now
      END IF
 
 !  print details of solution
@@ -4257,9 +4257,9 @@ end if
 
      SUBROUTINE GSM_solve_direct( data, userdata, status, X, G, eval_F, eval_G )
 
-!  solve the unconstrained problem previously imported when accessto the 
-!  function and gradient are available via subroutine calls. See GSM_solve for 
-!  a description of the required arguments. The variable status is a proxy 
+!  solve the unconstrained problem previously imported when accessto the
+!  function and gradient are available via subroutine calls. See GSM_solve for
+!  a description of the required arguments. The variable status is a proxy
 !  for inform%status
 
 !-----------------------------------------------
@@ -4298,9 +4298,9 @@ end if
 
      SUBROUTINE GSM_solve_reverse( data, status, eval_status, X, f, G )
 
-!  solve the unconstrained problem previously imported when access to the 
-!  function and gradient are available via reverse communication. See 
-!  GSM_solve for a description of the required arguments. The variable status 
+!  solve the unconstrained problem previously imported when access to the
+!  function and gradient are available via reverse communication. See
+!  GSM_solve for a description of the required arguments. The variable status
 !  is a proxy for inform%status
 
 !-----------------------------------------------

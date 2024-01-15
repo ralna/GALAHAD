@@ -39,7 +39,7 @@
           TRACE     => GALAHAD_TRACE,                                          &
           DEBUG     => GALAHAD_DEBUG,                                          &
           GENERAL   => GALAHAD_GENERAL,                                        &
-          ALL_ZEROS => GALAHAD_ALL_ZEROS                            
+          ALL_ZEROS => GALAHAD_ALL_ZEROS
       USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
@@ -421,7 +421,7 @@
       prob%Ao%ptr( o + 1 ) = Ao_ne + 1
       prob%Ao%m = o ; prob%Ao%n = n ;  prob%Ao%ne = Ao_ne
       CALL SMT_put( prob%Ao%type, 'SPARSE_BY_ROWS', smt_stat )
-      
+
 !  Allocate and initialize dual variables.
 
       ALLOCATE( prob%Z( n ), STAT = alloc_stat )
@@ -723,7 +723,7 @@
 
         solv = ' CLLS'
         IF ( printo ) WRITE( out, " ( ' ** CLLS solver used ** ' ) " )
-        CALL CLLS_solve( prob, data, control, inform,               & 
+        CALL CLLS_solve( prob, data, control, inform,               &
                          regularization_weight = regularization_weight )
 
         IF ( printo ) WRITE( out, " ( /, ' ** CLLS solver used ** ' ) " )

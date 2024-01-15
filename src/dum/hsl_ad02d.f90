@@ -11,7 +11,7 @@ MODULE HSL_AD02_FORWARD_DOUBLE
       IMPLICIT NONE
       PRIVATE
       PUBLIC :: AD02_INITIALIZE
-    
+
 !  Dummy HSL_AD02_FORWARD_DOUBLE module
 
       TYPE, PUBLIC :: AD02_REAL
@@ -33,7 +33,7 @@ CONTAINS
         INTEGER ( KIND = ip_ ), OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
         TYPE (AD02_DATA), POINTER :: DATA
         REAL ( KIND = dp_ ), INTENT (IN) :: VALUE
-    
+
 !  Dummy subroutine available with LANCELOT
 
         WRITE ( 6, 2000 )
@@ -66,7 +66,7 @@ MODULE HSL_AD02_BACKWARD_DOUBLE
       IMPLICIT NONE
       PRIVATE
       PUBLIC :: AD02_INITIALIZE
-    
+
 !  Dummy HSL_AD02_BACKWARD_DOUBLE module
 
       TYPE, PUBLIC :: AD02_REAL
@@ -88,7 +88,7 @@ CONTAINS
         INTEGER ( KIND = ip_ ), OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
         TYPE (AD02_DATA), POINTER :: DATA
         REAL ( KIND = dp_ ), INTENT (IN) :: VALUE
-    
+
 !  Dummy subroutine available with LANCELOT
 
         WRITE ( 6, 2000 )

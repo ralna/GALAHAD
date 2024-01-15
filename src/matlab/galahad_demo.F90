@@ -8,10 +8,10 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!   [ control ] 
+!   [ control ]
 !     = galahad_demo( 'initial' )
 !  or
-!   [ control ] 
+!   [ control ]
 !     = galahad_demo( H )
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -22,7 +22,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4 February 12th 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )

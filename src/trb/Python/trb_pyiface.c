@@ -871,7 +871,7 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args){
 
    // Create NumPy output array
     npy_intp ndim[] = {n}; // size of g
-    PyArrayObject *py_g = 
+    PyArrayObject *py_g =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
 

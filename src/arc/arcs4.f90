@@ -16,7 +16,7 @@
    ALLOCATE( X( n ), G( n ), U( n ), V( n ) )
    ALLOCATE( H_row( 0 ), H_col( 0 ), H_ptr( 0 ) )
    X = 1.0_wp                               ! start from one
-! problem data complete   
+! problem data complete
    CALL ARC_initialize( data, control, inform ) ! Initialize control parameters
    control%hessian_available = .FALSE.          ! Hessian products will be used
 !  control%print_level = 5

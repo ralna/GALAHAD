@@ -51,7 +51,7 @@ for d = 1:3
   if d == 2
     # sparse by rows
     @printf(" sparse by rows ")
-    sls_analyse_matrix( control, data, status, n, 
+    sls_analyse_matrix( control, data, status, n,
                         "sparse_by_rows", ne, Cint[], col, ptr )
     sls_factorize_matrix( data, status, ne, val )
   end

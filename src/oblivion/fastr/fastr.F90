@@ -11,7 +11,7 @@
 !  History -
 !   originally released GALAHAD Version 2.0. May 25th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FASTR_precision
@@ -47,7 +47,7 @@
      USE GALAHAD_NORMS_precision, ONLY: TWO_norm, INFINITY_norm
 !PLPLOT USE PLPLOT
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: FASTR_initialize, FASTR_read_specfile, FASTR_solve,             &
@@ -88,14 +88,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: FASTR_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
@@ -139,7 +139,7 @@
        INTEGER ( KIND = ip_ ) :: multipliers = 0
 
 !   overall convergence tolerances. The iteration will terminate when the norm
-!    of violation of the constraints (the "primal infeasibility") is smaller 
+!    of violation of the constraints (the "primal infeasibility") is smaller
 !    than stop_p, the norm of the gradient of the Lagrangian function (the
 !    "dual infeasibility") is smaller than stop_d, and the norm of the
 !    complementary slackness is smaller than stop_c
@@ -163,14 +163,14 @@
 
        REAL ( KIND = rp_ ) :: stop_p_restoration = epsmch
 
-!   initial values for the trust-region radiii for the RLP (activity 
+!   initial values for the trust-region radiii for the RLP (activity
 !    determination) and EQP (step dtermination) phases
 
        REAL ( KIND = rp_ ) :: initial_radius_rlp = one
        REAL ( KIND = rp_ ) :: initial_radius_eqp = ten
 
-!   on very successful iterations, the RLP trust-region radius will be 
-!    increased by the factor %rlp_radius_increase, while if the iteration is 
+!   on very successful iterations, the RLP trust-region radius will be
+!    increased by the factor %rlp_radius_increase, while if the iteration is
 !    unsucceful, the radius will be decreased by a factor %rlp_radius_reduce
 !    but no more than %rlp_radius_reduce_max
 
@@ -178,8 +178,8 @@
        REAL ( KIND = rp_ ) :: rlp_radius_reduce = tenth
        REAL ( KIND = rp_ ) :: rlp_radius_reduce_max = point01
 
-!   on very successful iterations, the EQP trust-region radius will be 
-!    increased by the factor %eqp_radius_increase, while if the iteration is 
+!   on very successful iterations, the EQP trust-region radius will be
+!    increased by the factor %eqp_radius_increase, while if the iteration is
 !    unsucceful, the radius will be decreased by a factor %eqp_radius_reduce
 !    but no more than %eqp_radius_reduce_max
 
@@ -187,8 +187,8 @@
        REAL ( KIND = rp_ ) :: eqp_radius_reduce = half
        REAL ( KIND = rp_ ) :: eqp_radius_reduce_max = sixteenth
 
-!   the maximum infeasibility tolerated will be the larger of 
-!    max_absolute_infeasibility and max_relative_infeasibility 
+!   the maximum infeasibility tolerated will be the larger of
+!    max_absolute_infeasibility and max_relative_infeasibility
 !    times the initial infeasibility
 
        REAL ( KIND = rp_ ) :: max_absolute_infeasibility = ten
@@ -201,7 +201,7 @@
        REAL ( KIND = rp_ ) :: beta_filter = one - point01
        REAL ( KIND = rp_ ) :: gamma_filter = point01
 
-!   a potential filter point will be added to the filter whenever the linear 
+!   a potential filter point will be added to the filter whenever the linear
 !    decrease predicted by the RLP is smaller than delta_feas times
 !    the square of the current violation
 
@@ -252,14 +252,14 @@
        LOGICAL :: explicit_linear_constraints = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
 
 !  control parameters for EQP
 
-       TYPE ( EQP_control_type ) :: EQP_control        
+       TYPE ( EQP_control_type ) :: EQP_control
 
 !  control parameters for CQP
 
@@ -319,9 +319,9 @@
 
      END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: FASTR_inform_type
 
@@ -377,7 +377,7 @@
 
        INTEGER ( KIND = ip_ ) :: factorization_real = - 1
 
-!  the value of the objective function at the best estimate of the solution 
+!  the value of the objective function at the best estimate of the solution
 !   determined by FASTR_solve
 
        REAL ( KIND = rp_ ) :: obj = HUGE( one )
@@ -421,7 +421,7 @@
      END TYPE FASTR_inform_type
 
 !  - - - - - - - - - - -
-!   filter derived type 
+!   filter derived type
 !  - - - - - - - - - - -
 
      TYPE, PUBLIC :: FASTR_filter_type
@@ -436,7 +436,7 @@
        INTEGER ( KIND = ip_ ) :: branch, branch_restoration, eval_status
        INTEGER ( KIND = ip_ ) :: n_filter, max_filter, max_filter_restoration
        INTEGER ( KIND = ip_ ) :: n, J_ne, H_ne, n_filter_restoration
-       INTEGER ( KIND = ip_ ) :: n_restoration, J_ne_restoration 
+       INTEGER ( KIND = ip_ ) :: n_restoration, J_ne_restoration
        INTEGER ( KIND = ip_ ) :: H_ne_restoration, m_linear
        INTEGER ( KIND = ip_ ) :: out, start_print, stop_print, print_level
        INTEGER ( KIND = ip_ ) :: print_level_cqp, print_level_eqp
@@ -558,10 +558,10 @@
 
      SUBROUTINE FASTR_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by FASTR_initialize could (roughly) 
+!  The default values as given by FASTR_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN FASTR SPECIFICATIONS (DEFAULT)
@@ -570,7 +570,7 @@
 !  alive-device                                   60
 !  print-level                                    0
 !  maximum-number-of-iterations                   1000
-!  start-print                                    -1 
+!  start-print                                    -1
 !  stop-print                                     -1
 !  iterations-between-printing                    1
 !  lagrange-multiplier-estimates-used             0
@@ -611,7 +611,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( FASTR_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( FASTR_control_type ), INTENT( INOUT ) :: control
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -638,7 +638,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_c = stop_abs_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_p_restoration = stop_rel_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: initial_radius_rlp                   &
-                                            = stop_p_restoration + 1 
+                                            = stop_p_restoration + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: initial_radius_eqp                   &
                                             = initial_radius_rlp + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: rlp_radius_increase                  &
@@ -693,7 +693,7 @@
      spec( error )%keyword = 'error-printout-device'
      spec( out )%keyword = 'printout-device'
      spec( alive_unit )%keyword = 'alive-device'
-     spec( print_level )%keyword = 'print-level' 
+     spec( print_level )%keyword = 'print-level'
      spec( maxit )%keyword = 'maximum-number-of-iterations'
      spec( start_print )%keyword = 'start-print'
      spec( stop_print  )%keyword = 'stop-print'
@@ -916,143 +916,143 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  FASTR_solve, a method for finding a local minimizer of a function subject 
+!  FASTR_solve, a method for finding a local minimizer of a function subject
 !  to general constraints and simple bounds on the sizes of the variables.
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  For full details see the specification sheet for GALAHAD_FASTR. 
+!  For full details see the specification sheet for GALAHAD_FASTR.
 !
-!  ** NB. default real/complex means double precision real/complex in 
+!  ** NB. default real/complex means double precision real/complex in
 !  ** GALAHAD_FASTR_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
 !
-!  n is a scalar variable of type default integer, that holds the number of 
+!  n is a scalar variable of type default integer, that holds the number of
 !   variables
 !
-!  m is a scalar variable of type default integer, that holds the number of 
+!  m is a scalar variable of type default integer, that holds the number of
 !   constraints
 !
-!  H is scalar variable of type SMT_TYPE that holds the Hessian matrix H. The 
+!  H is scalar variable of type SMT_TYPE that holds the Hessian matrix H. The
 !   following components are used here:
 !
 !   H%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme 
+!    is used to indicate the storage scheme used. If the dense storage scheme
 !    is used, the first five components of H%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of H%type must 
+!    For the sparse co-ordinate scheme, the first ten components of H%type must
 !    contain the string COORDINATE, for the sparse row-wise storage scheme, the
 !    first fourteen components of H%type must contain the string SPARSE_BY_ROWS,
-!    and for the diagonal storage scheme, the first eight components of H%type 
+!    and for the diagonal storage scheme, the first eight components of H%type
 !    must contain the string DIAGONAL.
 !
-!    For convenience, the procedure SMT_put may be used to allocate sufficient 
-!    space and insert the required keyword into H%type. For example, if nlp is 
-!    of derived type packagename_problem_type and involves a Hessian we wish to 
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into H%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves a Hessian we wish to
 !    store using the co-ordinate scheme, we may simply
 !
 !         CALL SMT_put( nlp%H%type, 'COORDINATE' )
 !
-!    See the documentation for the galahad package SMT for further details on 
+!    See the documentation for the galahad package SMT for further details on
 !    the use of SMT_put.
 
-!   H%ne is a scalar variable of type default integer, that holds the number of 
-!    entries in the lower triangular part of H in the sparse co-ordinate 
+!   H%ne is a scalar variable of type default integer, that holds the number of
+!    entries in the lower triangular part of H in the sparse co-ordinate
 !    storage scheme. It need not be set for any of the other three schemes.
 !
 !   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the  lower triangular part of the Hessian 
+!    the values of the entries of the  lower triangular part of the Hessian
 !    matrix H in any of the available storage schemes.
 !
-!   H%row is a rank-one allocatable array of type default integer, that holds 
-!    the row indices of the lower triangular part of H in the sparse 
-!    co-ordinate storage scheme. It need not be allocated for any of the other 
+!   H%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices of the lower triangular part of H in the sparse
+!    co-ordinate storage scheme. It need not be allocated for any of the other
 !    three schemes.
 !
 !   H%col is a rank-one allocatable array variable of type default integer,
 !    that holds the column indices of the lower triangular part of H in either
-!    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not 
+!    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !    be allocated when the dense or diagonal storage schemes are used.
 !
-!   H%ptr is a rank-one allocatable array of dimension n+1 and type default 
-!    integer, that holds the starting position of each row of the lower 
-!    triangular part of H, as well as the total number of entries plus one, 
+!   H%ptr is a rank-one allocatable array of dimension n+1 and type default
+!    integer, that holds the starting position of each row of the lower
+!    triangular part of H, as well as the total number of entries plus one,
 !    in the sparse row-wise storage scheme. It need not be allocated when the
 !    other schemes are used.
 !
-!  J is scalar variable of type SMT_TYPE that holds the Jacobian matrix J. The 
+!  J is scalar variable of type SMT_TYPE that holds the Jacobian matrix J. The
 !   following components are used here:
 !
 !   J%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme 
+!    is used to indicate the storage scheme used. If the dense storage scheme
 !    is used, the first five components of J%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of J%type must 
-!    contain the string COORDINATE, for the sparse row-wise storage scheme, and 
-!    the first fourteen components of J%type must contain the string 
+!    For the sparse co-ordinate scheme, the first ten components of J%type must
+!    contain the string COORDINATE, for the sparse row-wise storage scheme, and
+!    the first fourteen components of J%type must contain the string
 !    SPARSE_BY_ROWS.
 !
-!    For convenience, the procedure SMT_put may be used to allocate sufficient 
-!    space and insert the required keyword into J%type. For example, if nlp is 
-!    of derived type packagename_problem_type and involves a Hessian we wish to 
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into J%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves a Hessian we wish to
 !    store using the co-ordinate scheme, we may simply
 !
 !         CALL SMT_put( nlp%J%type, 'COORDINATE' )
 !
-!    See the documentation for the galahad package SMT for further details on 
+!    See the documentation for the galahad package SMT for further details on
 !    the use of SMT_put.
 
-!   J%ne is a scalar variable of type default integer, that holds the number of 
-!    entries in J in the sparse co-ordinate storage scheme. It need not be set 
+!   J%ne is a scalar variable of type default integer, that holds the number of
+!    entries in J in the sparse co-ordinate storage scheme. It need not be set
 !    for any of the other two schemes.
 !
 !   J%val is a rank-one allocatable array of type default real, that holds
 !    the values of the entries of the Jacobian matrix J in any of the available
 !    storage schemes.
 !
-!   J%row is a rank-one allocatable array of type default integer, that holds 
+!   J%row is a rank-one allocatable array of type default integer, that holds
 !    the row indices of J in the sparse co-ordinate storage scheme. It need not
 !    be allocated for any of the other two schemes.
 !
 !   J%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of J in either the sparse co-ordinate, 
-!    or the sparse row-wise storage scheme. It need not be allocated when the 
+!    that holds the column indices of J in either the sparse co-ordinate,
+!    or the sparse row-wise storage scheme. It need not be allocated when the
 !    dense storage scheme is used.
 !
-!   J%ptr is a rank-one allocatable array of dimension n+1 and type default 
-!    integer, that holds the starting position of each row of J, as well as 
-!    the total number of entries plus one, in the sparse row-wise storage 
+!   J%ptr is a rank-one allocatable array of dimension n+1 and type default
+!    integer, that holds the starting position of each row of J, as well as
+!    the total number of entries plus one, in the sparse row-wise storage
 !    scheme. It need not be allocated when the other schemes are used.
 !
-!  G is a rank-one allocatable array of dimension n and type default real, 
-!   that holds the gradient g of the objective function. The j-th component of 
+!  G is a rank-one allocatable array of dimension n and type default real,
+!   that holds the gradient g of the objective function. The j-th component of
 !   G, j = 1,  ... ,  n, contains g_j.
 !
-!  f is a scalar variable of type default real, that holds the value of 
+!  f is a scalar variable of type default real, that holds the value of
 !   the objective function.
 !
-!  C is a rank-one allocatable array of dimension n and type default real, 
+!  C is a rank-one allocatable array of dimension n and type default real,
 !   that holds the constraint value c. The i-th component of C, i = 1, ... , m,
 !   contains g_j.
 !
 !  X is a rank-one allocatable array of dimension n and type default real, that
-!   holds the values x of the optimization variables. The j-th component of 
-!   X, j = 1, ... , n, contains x_j.  
+!   holds the values x of the optimization variables. The j-th component of
+!   X, j = 1, ... , n, contains x_j.
 !
-!  pname is a scalar variable of type default character and length 10, which 
-!   contains the ``name'' of the problem for printing. The default ``empty'' 
+!  pname is a scalar variable of type default character and length 10, which
+!   contains the ``name'' of the problem for printing. The default ``empty''
 !   string is provided.
 !
-!  VNAMES is a rank-one allocatable array of dimension n and type default 
-!   character and length 10, whose j-th entry contains the ``name'' of the j-th 
-!   variable for printing. This is only used  if ``debug''printing 
-!   control%print_level > 4) is requested, and will be ignored if the array is 
+!  VNAMES is a rank-one allocatable array of dimension n and type default
+!   character and length 10, whose j-th entry contains the ``name'' of the j-th
+!   variable for printing. This is only used  if ``debug''printing
+!   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
 ! control is a scalar variable of type TRU_control_type. See TRU_initialize
 !  for details
 !
-! inform is a scalar variable of type TRU_inform_type. On initial entry, 
+! inform is a scalar variable of type TRU_inform_type. On initial entry,
 !  inform%status should be set to 1. On exit, the following components will
 !  have been set:
 !
@@ -1062,85 +1062,85 @@
 !     0. The run was succesful
 !
 !    -1. An allocation error occurred. A message indicating the offending
-!        array is written on unit control%error, and the returned allocation 
+!        array is written on unit control%error, and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -2. A deallocation error occurred.  A message indicating the offending 
-!        array is written on unit control%error and the returned allocation 
+!    -2. A deallocation error occurred.  A message indicating the offending
+!        array is written on unit control%error and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains 
+!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains
 !        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS'
 !          or 'DIAGONAL' has been violated.
 !    -7. The objective function appears to be unbounded from below
 !    -9. The analysis phase of the factorization failed; the return status
-!        from the factorization package is given in the component 
+!        from the factorization package is given in the component
 !        inform%factor_status
 !   -10. The factorization failed; the return status from the factorization
 !        package is given in the component inform%factor_status.
-!   -11. The solution of a set of linear equations using factors from the 
+!   -11. The solution of a set of linear equations using factors from the
 !        factorization package failed; the return status from the factorization
 !        package is given in the component inform%factor_status.
 !   -16. The problem is so ill-conditioned that further progress is impossible.
 !   -18. Too many iterations have been performed. This may happen if
-!        control%maxit is too small, but may also be symptomatic of 
+!        control%maxit is too small, but may also be symptomatic of
 !        a badly scaled problem.
 !   -19. The CPU time limit has been reached. This may happen if
-!        control%cpu_time_limit is too small, but may also be symptomatic of 
+!        control%cpu_time_limit is too small, but may also be symptomatic of
 !        a badly scaled problem.
-!   -40. The user has forced termination of solver by removing the file named 
+!   -40. The user has forced termination of solver by removing the file named
 !        control%alive_file from unit unit control%alive_unit.
-! 
-!     2. The user should compute the objective function value f(x) and the 
-!        constraint function values c(x) at the point x indicated in nlp%X 
+!
+!     2. The user should compute the objective function value f(x) and the
+!        constraint function values c(x) at the point x indicated in nlp%X
 !        and then re-enter the subroutine. The required values should be set in
 !        nlp%f and nlp%C respectively, and data%eval_status should be set to 0.
-!        If the user is unable to evaluate f(x) and/or c(x)  - for instance, if 
-!        any of the functions is undefined at x - the user need not set nlp%f 
+!        If the user is unable to evaluate f(x) and/or c(x)  - for instance, if
+!        any of the functions is undefined at x - the user need not set nlp%f
 !        or nlp%C, but should then set data%eval_status to a non-zero value.
-!     3. The user should compute the gradient of the objective function 
+!     3. The user should compute the gradient of the objective function
 !        nabla_x f(x) at the point x indicated in nlp%X  and the Jacobian of
-!        the constraints nabla_x c(x) and then re-enter the subroutine. The 
+!        the constraints nabla_x c(x) and then re-enter the subroutine. The
 !        value of the i-th component of the gradient should be set in nlp%G(i),
 !        for i = 1, ..., n, while the nonzeros of the Jacobian should be set
-!        in nlp%J%val in the same order as in the storage scheme already 
-!        established in nlp%J,, and data%eval_status should be set to 0. If the 
+!        in nlp%J%val in the same order as in the storage scheme already
+!        established in nlp%J,, and data%eval_status should be set to 0. If the
 !        user is unable to evaluate any of the components of the gradient or
-!        Jacobian - for instance if a component of the gradient or Jacobian 
-!        is undefined at x - the user need not set nlp%G or nlp%J%val, but 
+!        Jacobian - for instance if a component of the gradient or Jacobian
+!        is undefined at x - the user need not set nlp%G or nlp%J%val, but
 !        should then set data%eval_status to a non-zero value.
-!     4. The user should compute the Hessian of the Lagrangian function 
+!     4. The user should compute the Hessian of the Lagrangian function
 !        nabla_xx f(x) - sum_i=1^m y_i c_i(x) at the point x indicated in nlp%X
 !        and y in nlp%Y and then re-enter the subroutine. The nonzeros of the
 !        Hessian should be set in nlp%H%val in the same order as in the storage
-!        scheme already established in nlp%H, and data%eval_status should be 
+!        scheme already established in nlp%H, and data%eval_status should be
 !        set to 0. If the user is unable to evaluate a component of the Hessian
-!        - for instance, if a component of the Hessian is undefined at x - the 
-!        user need not set nlp%H%val, but should then set data%eval_status to 
+!        - for instance, if a component of the Hessian is undefined at x - the
+!        user need not set nlp%H%val, but should then set data%eval_status to
 !        a non-zero value.
 !     5. The user should compute each of the gradient, Jacobian and Hessian
 !        as described in 3 and 4 above, and then re-enter the subroutine
-!        with data%eval_status set to 0. If the user is unable to evaluate 
-!        any of this data, nlp%G, nlp%J%val and nlp%H%val need not be set but 
+!        with data%eval_status set to 0. If the user is unable to evaluate
+!        any of this data, nlp%G, nlp%J%val and nlp%H%val need not be set but
 !        then data%eval_status should be set to a non-zero value.
-!     6. The user should compute the product 
+!     6. The user should compute the product
 !        ( nabla_xx f(x) - sum_i=1^m y_i c_i(x) ) v of the Hessian of the
-!        Lagrangian function nabla_xx f(x) - sum_i=1^m y_i c_i(x) at the point 
-!        x indicated in nlp%X with the vector v, and add the result to the 
-!        vector u and then re-enter the subroutine. The vectors u and v are 
-!        given in data%U and data%V respectively, the resulting vector u + 
-!        nabla_xx f(x)v should be set in data%U and  data%eval_status should 
-!        be set to 0. If the user is unable to evaluate the product - for 
-!        instance, if a component of the Hessian is undefined at x - the user 
-!        need not alter data%U, but should then set data%eval_status to a 
+!        Lagrangian function nabla_xx f(x) - sum_i=1^m y_i c_i(x) at the point
+!        x indicated in nlp%X with the vector v, and add the result to the
+!        vector u and then re-enter the subroutine. The vectors u and v are
+!        given in data%U and data%V respectively, the resulting vector u +
+!        nabla_xx f(x)v should be set in data%U and  data%eval_status should
+!        be set to 0. If the user is unable to evaluate the product - for
+!        instance, if a component of the Hessian is undefined at x - the user
+!        need not alter data%U, but should then set data%eval_status to a
 !        non-zero value.
-!    [7. The user should compute the product u = P(x)v of their preconditioner 
+!    [7. The user should compute the product u = P(x)v of their preconditioner
 !        P(x) at the point x indicated in nlp%X with the vector v and then
 !        re-enter the subroutine. The vectors v is given in data%V, the
-!        resulting vector u = P(x)v should be set in data%U and 
+!        resulting vector u = P(x)v should be set in data%U and
 !        data%eval_status should be set to 0. If the user is unable to evaluate
-!        the product - for instance, if a component of the preconditioner is 
-!        undefined at x - the user need not set data%U, but should then set 
+!        the product - for instance, if a component of the preconditioner is
+!        undefined at x - the user need not set data%U, but should then set
 !        data%eval_status to a non-zero value. *** IGNORE - NOT IMPLEMENTED ***]
 !
 !  alloc_status is a scalar variable of type default integer, that gives
@@ -1148,23 +1148,23 @@
 !   This will be 0 if status = 0.
 !
 !  bad_alloc is a scalar variable of type default character
-!   and length 80, that  gives the name of the last internal array 
+!   and length 80, that  gives the name of the last internal array
 !   for which there were allocation or deallocation errors.
-!   This will be the null string if status = 0. 
+!   This will be the null string if status = 0.
 !
-!  iter is a scalar variable of type default integer, that holds the 
+!  iter is a scalar variable of type default integer, that holds the
 !   number of iterations performed.
 !
 !  cg_iter is a scalar variable of type default integer, that gives the
 !   total number of conjugate-gradient iterations required.
 !
-!  factorization_status is a scalar variable of type default integer, that 
+!  factorization_status is a scalar variable of type default integer, that
 !   gives the return status from the matrix factorization.
 !
 !  factorization_integer is a scalar variable of type default integer,
 !   that gives the amount of integer storage used for the matrix factorization.
 !
-!  factorization_real is a scalar variable of type default integer, 
+!  factorization_real is a scalar variable of type default integer,
 !   that gives the amount of real storage used for the matrix factorization.
 !
 !  f_eval is a scalar variable of type default integer, that gives the
@@ -1180,7 +1180,7 @@
 !   value of the objective function at the best estimate of the solution found.
 !
 !  norm_g is a scalar variable of type default real, that holds the
-!   value of the norm of the objective function gradient at the best estimate 
+!   value of the norm of the objective function gradient at the best estimate
 !   of the solution found.
 !
 !  time is a scalar variable of type TRU_time_type whose components are used to
@@ -1239,39 +1239,39 @@
 !   required.
 !
 !  eval_GJ is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). If G is present, the components of 
-!   the gradient nabla_x f(x) of the objective function evaluated at x=X 
-!   must be returned in G. If GJ is present, the nonzeros of the Jacobian 
-!   nabla_x c(x) evaluated at x=X must be returned in J_val in the same 
-!   order as presented in nlp%J, and the status variable set to 0. 
-!   If the evaluation is impossible at x=X, status should be set to a 
-!   nonzero value. If eval_GJ is not present, FASTR_solve will return to the 
+!   given below (see the interface blocks). If G is present, the components of
+!   the gradient nabla_x f(x) of the objective function evaluated at x=X
+!   must be returned in G. If GJ is present, the nonzeros of the Jacobian
+!   nabla_x c(x) evaluated at x=X must be returned in J_val in the same
+!   order as presented in nlp%J, and the status variable set to 0.
+!   If the evaluation is impossible at x=X, status should be set to a
+!   nonzero value. If eval_GJ is not present, FASTR_solve will return to the
 !   user with inform%status = 3 or 5 each time an evaluation is required.
 !
 !  eval_HL is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the Hessian
-!   nabla_xx f(x) - sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated 
-!   at x=X and y=Y must be returned in H_val in the same order as presented in 
-!   nlp%H, and the status variable set to 0. If the evaluation is impossible 
-!   at X, status should be set to a nonzero value. If eval_HL is not present, 
-!   FASTR_solve will return to the user with inform%status = 4 or 5 each time 
+!   nabla_xx f(x) - sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
+!   at x=X and y=Y must be returned in H_val in the same order as presented in
+!   nlp%H, and the status variable set to 0. If the evaluation is impossible
+!   at X, status should be set to a nonzero value. If eval_HL is not present,
+!   FASTR_solve will return to the user with inform%status = 4 or 5 each time
 !   an evaluation is required.
 !
 !  eval_HLPROD is an optional subroutine which if present must have
-!   the arguments given below (see the interface blocks). The sum 
+!   the arguments given below (see the interface blocks). The sum
 !   u + nabla_xx ( f(x) - sum_i=1^m y_i c_i(x) ) v of the product of the Hessian
-!   nabla_xx f(x) + sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated 
+!   nabla_xx f(x) + sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
 !   at x=X and y=Y with the vector v=V and the vector u=U must be returned in U,
-!   and the status variable set to 0. If the evaluation is impossible at X, 
-!   status should be set to a nonzero value. If eval_HPROD is not present, 
-!   FASTR_solve will return to the user with inform%status = 6 each time an 
+!   and the status variable set to 0. If the evaluation is impossible at X,
+!   status should be set to a nonzero value. If eval_HPROD is not present,
+!   FASTR_solve will return to the user with inform%status = 6 each time an
 !   evaluation is required.
 !
 !  eval_PREC is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product u = P(x) v of the 
-!   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result 
+!   given below (see the interface blocks). The product u = P(x) v of the
+!   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result
 !   u must be retured in U, and the status variable set to 0. If the evaluation
-!   is impossible at X, status should be set to a nonzero value. If eval_PREC 
+!   is impossible at X, status should be set to a nonzero value. If eval_PREC
 !   is not present, TRU_solve will return to the user with inform%status = 7
 !   each time an evaluation is required.
 !
@@ -1289,7 +1289,7 @@
      OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD
 
 !----------------------------------
-!   I n t e r f a c e   B l o c k s 
+!   I n t e r f a c e   B l o c k s
 !----------------------------------
 
      INTERFACE
@@ -1311,7 +1311,7 @@
          TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
 
-       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f ) 
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f )
          USE GALAHAD_USERDATA_precision
          INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
@@ -1358,7 +1358,7 @@
 !PLPLOT  CHARACTER ( LEN = 30 ), PARAMETER :: ffilename = 'FASTR_filter.data'
 !PLPLOT  CHARACTER ( LEN = 80 ) :: tlabel
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -1402,7 +1402,7 @@
      data%control%CQP_control%SBLS_control%preconditioner = 2
 
      inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
-     inform%iter = 0 ; inform%factorizations = 0 ; inform%modifications = 0 
+     inform%iter = 0 ; inform%factorizations = 0 ; inform%modifications = 0
      inform%f_eval = 0 ; inform%g_eval = 0
 
      inform%obj = HUGE( one )
@@ -1465,15 +1465,15 @@
 
 !  basic single line of output per iteration
 
-     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1 
+     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1
 
 !  as per printi, but with additional timings for various operations
 
-     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2 
+     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2
 
 !  as per printm, but with checking of residuals, etc
 
-     data%set_printm = data%out > 0 .AND. data%control%print_level >= 3 
+     data%set_printm = data%out > 0 .AND. data%control%print_level >= 3
 
 !  as per printm but also with an indication of where in the code we are
 
@@ -1506,7 +1506,7 @@
        data%control%EQP_control%SBLS_control%print_level = 0
        data%control%EQP_control%GLTR_control%print_level = 0
      END IF
-     
+
      data%print_iteration_header = data%print_level > 0
      data%print_1st_header = .TRUE.
 
@@ -1564,15 +1564,15 @@
 !    | linear equal | linear inequal | nonlinear equal | nonlinear inequal |
 !    -----------------------------------------------------------------------
 !     ^              ^              ^ ^                 ^                   ^
-!     |              |            m_l |                 |                   | 
-!    m_le           m_li             m_ne              m_ni                 m 
+!     |              |            m_l |                 |                   |
+!    m_le           m_li             m_ne              m_ni                 m
 
 !    m_l = m_le + m_li
 !    m_ni = nlp%m - m_ni + 1
 !    m_ne = m_l + 1
 !    m_li = m_le + 1
 !    m_le = 1
-!    write(6,"( 6I8 )" ) m_le, m_li, m_l, m_ne, m_ni, nlp%m 
+!    write(6,"( 6I8 )" ) m_le, m_li, m_l, m_ne, m_ni, nlp%m
 
 !  set starting dual variables
 
@@ -1592,7 +1592,7 @@
      data%n_restoration = data%n + nlp%m
 
 !  determine how many nonzeros are required to store the matrix of gradients
-!  of the objective function and constraints, when the matrix is stored in 
+!  of the objective function and constraints, when the matrix is stored in
 !  "co-ordinate" format; allow space for any restoration phase
 
 !    CALL CDIMSJ( data%J_ne )
@@ -1600,23 +1600,23 @@
      CASE ( 'COORDINATE' )
        data%J_ne = nlp%J%ne
      CASE ( 'SPARSE_BY_ROWS' )
-       data%J_ne = nlp%J%ptr( nlp%m + 1 ) - 1 
-     CASE ( 'DENSE' ) 
+       data%J_ne = nlp%J%ptr( nlp%m + 1 ) - 1
+     CASE ( 'DENSE' )
        data%J_ne = nlp%m * nlp%n
      END SELECT
      data%J_ne_restoration = data%J_ne + nlp%m
 
 !  determine how many nonzeros are required to store the Hessian matrix of the
-!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate" 
+!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate"
 !  format; allow space for any restoration phase
- 
+
 !    CALL CDIMSH( data%H_ne )
      SELECT CASE ( SMT_get( nlp%H%type ) )
      CASE ( 'COORDINATE' )
        data%H_ne = nlp%H%ne
      CASE ( 'SPARSE_BY_ROWS' )
-       data%H_ne = nlp%H%ptr( nlp%m + 1 ) - 1 
-     CASE ( 'DENSE' ) 
+       data%H_ne = nlp%H%ptr( nlp%m + 1 ) - 1
+     CASE ( 'DENSE' )
        data%H_ne = ( nlp%n * ( nlp%n+ 1 ) ) / 2
      END SELECT
      data%H_ne_restoration = data%H_ne + nlp%m
@@ -1992,7 +1992,7 @@
      IF ( inform%status /= 0 ) GO TO 910
 
 !  set up space for the filter
-     
+
      CALL FILTER_initialize_filter( data%FILTER_data,                          &
                                     data%control%FILTER_control,               &
                                     inform%FILTER_inform )
@@ -2019,10 +2019,10 @@
      END IF
 
 !  evaluate the objective and general constraint function values
-   
+
      IF ( data%reverse_fc ) THEN
        data%branch = 2 ; inform%status = 2 ; RETURN
-     ELSE  
+     ELSE
        CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
      END IF
 
@@ -2037,7 +2037,7 @@
                                  nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
      data%pr_max = MAX( data%control%max_absolute_infeasibility,               &
                         data%control%max_relative_infeasibility                &
-                          * inform%primal_infeasibility ) 
+                          * inform%primal_infeasibility )
 
 !  record the primal infeasiblity stopping tolerance
 
@@ -2100,7 +2100,7 @@
            = nlp%J%col( : data%CQP_prob%A%ne )
        END IF
      CASE ( 'SPARSE_BY_ROWS' )
-       data%CQP_prob%A%ne = nlp%J%ptr( nlp%m + 1 ) - 1 
+       data%CQP_prob%A%ne = nlp%J%ptr( nlp%m + 1 ) - 1
        IF ( data%CQP_prob%A%ne > 0 ) THEN
          DO i = 1, nlp%m
            data%CQP_prob%A%row( nlp%J%ptr( i ) : nlp%J%ptr( i + 1 ) - 1 ) = i
@@ -2108,7 +2108,7 @@
          data%CQP_prob%A%col( : data%CQP_prob%A%ne )                           &
            = nlp%J%col( : data%CQP_prob%A%ne )
        END IF
-     CASE ( 'DENSE' ) 
+     CASE ( 'DENSE' )
        data%CQP_prob%A%ne = 0
        DO i = 1, nlp%m
          DO j = 1, nlp%n
@@ -2119,7 +2119,7 @@
        END DO
      END SELECT
 
-!  allow room for any extra entries required by the restoration phase 
+!  allow room for any extra entries required by the restoration phase
 
      DO i = 1, nlp%m
        data%CQP_prob%A%row( data%J_ne + i ) = i
@@ -2132,7 +2132,7 @@
         array_name = array_name, out = data%control%error )
      CALL SMT_put( data%CQP_prob%A%type, 'COORDINATE', inform%alloc_status )
 
-!  set up the structural data for the RQP Hessian 
+!  set up the structural data for the RQP Hessian
 
      IF ( data%control%primal_qp ) THEN
        data%CQP_prob%H%n = nlp%n ; data%CQP_prob%H%ne = nlp%n
@@ -2145,7 +2145,7 @@
        IF ( data%printi )                                                      &
          WRITE( data%out, "( A, ' dual qp not yet implemented ' )" ) prefix
        inform%status = GALAHAD_not_yet_implemented ; GO TO 990
-     END IF 
+     END IF
 
 !  set up the structural data for the EQP Jacobian
 
@@ -2155,7 +2155,7 @@
         array_name = array_name, out = data%control%error )
      CALL SMT_put( data%EQP_prob%A%type, 'COORDINATE', inform%alloc_status )
 
-!  set up the structural data for the EQP Hessian 
+!  set up the structural data for the EQP Hessian
 
      data%EQP_prob%n = data%n
      data%EQP_prob%H%n = data%n
@@ -2166,12 +2166,12 @@
        data%EQP_prob%H%row( : data%EQP_prob%H%ne ) = nlp%H%row
        data%EQP_prob%H%col( : data%EQP_prob%H%ne ) = nlp%H%col
      CASE ( 'SPARSE_BY_ROWS' )
-       data%EQP_prob%H%ne = nlp%H%ptr( nlp%m + 1 ) - 1 
+       data%EQP_prob%H%ne = nlp%H%ptr( nlp%m + 1 ) - 1
        DO i = 1, nlp%n
          data%EQP_prob%H%row( nlp%H%ptr( i ) : nlp%H%ptr( i + 1 ) - 1 ) = i
        END DO
        data%EQP_prob%H%col( : data%EQP_prob%H%ne ) = nlp%H%col
-     CASE ( 'DENSE' ) 
+     CASE ( 'DENSE' )
        data%EQP_prob%H%ne = 0
        DO i = 1, nlp%n
          DO j = 1, i
@@ -2182,7 +2182,7 @@
        END DO
      END SELECT
 
-!  allow room for any extra entries required by the restoration phase 
+!  allow room for any extra entries required by the restoration phase
 
      DO i = 1, nlp%m
        data%EQP_prob%H%row( data%H_ne + i ) = nlp%n + i
@@ -2208,7 +2208,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      M A I N     I T E R A T I O N 
+!                      M A I N     I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -2242,21 +2242,21 @@
 
        IF ( data%printd ) THEN
          l = 2
-         IF ( data%control%fulsol ) l = nlp%n 
+         IF ( data%control%fulsol ) l = nlp%n
          IF ( data%control%print_level >= 10 ) l = nlp%n
 
          WRITE( data%out, "( /, A, ' Variables: ', /, A, '                  ', &
         &     '              <------ Bounds ------> ', /, A,                   &
         &     '      # name          value      ',                             &
         &     ' Lower       Upper       Dual ' )" ) prefix, prefix, prefix
-         DO j = 1, 2 
-           IF ( j == 1 ) THEN 
-             ir = 1 ; ic = MIN( l, nlp%n ) 
-           ELSE 
+         DO j = 1, 2
+           IF ( j == 1 ) THEN
+             ir = 1 ; ic = MIN( l, nlp%n )
+           ELSE
              IF ( ic < nlp%n - l ) WRITE( data%out, 2010 ) prefix
              ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-           END IF 
-           DO i = ir, ic 
+           END IF
+           DO i = ir, ic
              WRITE( data%out, 2000 ) prefix, i, nlp%VNAMES( i ), nlp%X( i ),   &
                nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
            END DO
@@ -2271,14 +2271,14 @@
           &    '                 <------ Bounds ------> ', /, A,               &
           &    '      # name           value      ',                           &
           &    ' Lower       Upper    Multiplier' )" ) prefix, prefix, prefix
-           DO j = 1, 2 
-             IF ( j == 1 ) THEN 
-               ir = 1 ; ic = MIN( l, nlp%m ) 
-             ELSE 
+           DO j = 1, 2
+             IF ( j == 1 ) THEN
+               ir = 1 ; ic = MIN( l, nlp%m )
+             ELSE
                IF ( ic < nlp%m - l ) WRITE( data%out, 2010 ) prefix
                ir = MAX( ic + 1, nlp%m - ic + 1 ) ; ic = nlp%m
-             END IF 
-             DO i = ir, ic 
+             END IF
+             DO i = ir, ic
                WRITE( data%out, 2000 ) prefix, i, nlp%CNAMES( i ), nlp%C( i ), &
                  nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
              END DO
@@ -2292,12 +2292,12 @@
        IF ( data%new_gradient ) THEN
          IF ( data%reverse_gj ) THEN
            data%branch = 3 ; inform%status = 3 ; RETURN
-         ELSE  
+         ELSE
            CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%G, nlp%J%val )
          END IF
        END IF
 
-!  return from reverse communication to obtain the gradient, Jacobian and/or 
+!  return from reverse communication to obtain the gradient, Jacobian and/or
 !  Hessian
 
   130  CONTINUE
@@ -2343,7 +2343,7 @@
             &    /, A, '  Dual      convergence tolerance =', ES11.4,          &
             &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )      &
                  prefix, data%stop_p, prefix, data%stop_d, prefix, data%stop_c
-       END IF 
+       END IF
 
 !  -------------------------------------
 !  Print a summary of the last iteration
@@ -2425,7 +2425,7 @@
 !  Compute the solution to the regularized quadratic program (RQP)
 
 !      min  mu g^T d + 1/2 d^T d
-!      s.t. c_l - c <= A d <= c_u - c and x_l - x <= d <= x_u - x 
+!      s.t. c_l - c <= A d <= c_u - c and x_l - x <= d <= x_u - x
 
 !   perhaps by solving the dual
 
@@ -2437,10 +2437,10 @@
 
 !  set up the vector problem data
 
-         data%CQP_prob%new_problem_structure = .TRUE.     
+         data%CQP_prob%new_problem_structure = .TRUE.
          data%CQP_prob%n = data%n
          data%CQP_prob%m = nlp%m
-         data%CQP_prob%A%n = data%n 
+         data%CQP_prob%A%n = data%n
          data%CQP_prob%A%m = nlp%m
          data%CQP_prob%H%n = data%n
          data%CQP_prob%A%ne = data%J_ne
@@ -2460,7 +2460,7 @@
            data%CQP_prob%G( : nlp%n ) = data%mu * nlp%G( : nlp%n )
            data%CQP_prob%H%val( : nlp%n ) = one
          ELSE
-         END IF 
+         END IF
 
 !  if required, print a description of the problem
 
@@ -2552,7 +2552,7 @@
               inform%CQP_inform%status == GALAHAD_error_dual_infeasible .OR.   &
               inform%CQP_inform%status == GALAHAD_error_tiny_step .OR.         &
               inform%CQP_inform%status == GALAHAD_error_ill_conditioned ) THEN
-           SELECT CASE ( inform%CQP_inform%status ) 
+           SELECT CASE ( inform%CQP_inform%status )
            CASE ( GALAHAD_error_primal_infeasible )
              IF ( data%printi ) WRITE( data%out, "( A, '    * Exit from CQP',  &
             & ' - primal infeasible' )" ) prefix
@@ -2571,7 +2571,7 @@
            IF ( data%printt ) WRITE( data%out, "( A, '    * Exit from CQP',    &
           & ' unbounded from below' )" ) prefix
 
-!  ... or if an error occured 
+!  ... or if an error occured
 
 
          ELSE IF ( inform%CQP_inform%status /= GALAHAD_ok ) THEN
@@ -2616,7 +2616,7 @@
          IF ( data%printd ) THEN
            WRITE( data%out, "( /, A, ' RLP subproblem ' )" ) prefix
            WRITE( data%out, "( '      i  stat     X_l           X      ',      &
-          &                    '   X_u            G          Z' )" )      
+          &                    '   X_u            G          Z' )" )
            WRITE( data%out, "( ( 1X, 2I6, 5ES12.4 ) )" )                       &
            ( i, nlp%X_status( i ),                                             &
              data%CQP_prob%X_l( i ), data%CQP_prob%X( i ),                     &
@@ -2675,7 +2675,7 @@
 
          data%DY( : nlp%m ) = data%CQP_prob%Y( : nlp%m ) - nlp%Y( : nlp%m )
          data%DZ( : nlp%n ) = data%CQP_prob%Z( : nlp%n ) - nlp%Z( : nlp%n )
- 
+
 !  compute A^T dy
 
          data%ATDY( : nlp%n ) = data%DZ( : nlp%n )
@@ -2691,7 +2691,7 @@
 ! write(6,*) 'alpha', alpha
          IF ( alpha /= zero ) THEN
            alpha =                                                             &
-             DOT_PRODUCT( nlp%GL( : nlp%n ), data%ATDY( : nlp%n ) ) / alpha 
+             DOT_PRODUCT( nlp%GL( : nlp%n ), data%ATDY( : nlp%n ) ) / alpha
 
 !  update the multipliers
 
@@ -2700,7 +2700,7 @@
              nlp%Z( : nlp%n ) = nlp%Z( : nlp%n ) + alpha * data%DZ( : nlp%n )
              nlp%GL( : nlp%n ) = nlp%GL( : nlp%n ) - alpha * data%ATDY( : nlp%n)
 
-!  recompute the dual infeasibility and complementarity 
+!  recompute the dual infeasibility and complementarity
 
              inform%dual_infeasibility =                                       &
                OPT_dual_infeasibility( nlp%n, nlp%gL( : nlp%n ) )
@@ -2739,7 +2739,7 @@
 
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-!  find the least-squares multipliers by solving the equality-constrained 
+!  find the least-squares multipliers by solving the equality-constrained
 !  quadratic program
 
 !      min  g^T s + 1/2 s^T s
@@ -2781,14 +2781,14 @@
 !  set the right-hand sides for the active constraints
 
          data%EQP_prob%m = 0
-         DO i = 1, nlp%m 
+         DO i = 1, nlp%m
            IF ( nlp%C_status( i ) == - 1 ) THEN
              data%EQP_prob%m = data%EQP_prob%m + 1
              data%EQP_prob%C( data%EQP_prob%m ) = zero
 !            data%EQP_prob%C( data%EQP_prob%m ) = nlp%C( i ) - nlp%C_l( i )
              data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Y( i )
              nlp%C_status( i ) = - data%EQP_prob%m
-           ELSE IF ( nlp%C_status( i ) == 1 ) THEN 
+           ELSE IF ( nlp%C_status( i ) == 1 ) THEN
              data%EQP_prob%m = data%EQP_prob%m + 1
              data%EQP_prob%C( data%EQP_prob%m ) = zero
 !            data%EQP_prob%C( data%EQP_prob%m ) = nlp%C( i ) - nlp%C_u( i )
@@ -2805,7 +2805,7 @@
 !            data%EQP_prob%C( data%EQP_prob%m ) = nlp%X( i ) - nlp%X_l( i )
              data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
              nlp%X_status( i ) = - data%EQP_prob%m
-           ELSE IF ( nlp%X_status( i ) == 1 ) THEN 
+           ELSE IF ( nlp%X_status( i ) == 1 ) THEN
              data%EQP_prob%m = data%EQP_prob%m + 1
              data%EQP_prob%C( data%EQP_prob%m ) = zero
 !            data%EQP_prob%C( data%EQP_prob%m ) = nlp%X( i ) - nlp%X_u( i )
@@ -2851,7 +2851,7 @@
                END DO
              END IF
            END DO
-         CASE ( 'DENSE' ) 
+         CASE ( 'DENSE' )
            data%EQP_prob%A%ne = 0 ; l = 0
            DO i = 1, nlp%m
              ii = ABS( nlp%C_status( i ) )
@@ -2880,7 +2880,7 @@
 
 !  get rid of tiny entries
 
-     do i = 1, data%EQP_prob%A%ne 
+     do i = 1, data%EQP_prob%A%ne
        if(abs(data%EQP_prob%A%val( i )) <= 1.0D-14 ) then
 !      write(6,*) ' setting a(',i,')= ', data%EQP_prob%A%val( i ), 'to zero'
         data%EQP_prob%A%val( i )=zero
@@ -2973,7 +2973,7 @@
 !  spread the solution into the vectors (x_p,y_p,z_p,c_p)
 
          data%X_p( : nlp%n ) = data%EQP_prob%X( : nlp%n )
-         DO i = 1, nlp%m 
+         DO i = 1, nlp%m
            IF ( nlp%C_status( i ) == 0 ) THEN
              data%Y_p( i ) = zero
            ELSE
@@ -3000,7 +3000,7 @@
 
 !      END IF
 
-!  recompute the complementarity and, if necessary, the number of out-of-kilter 
+!  recompute the complementarity and, if necessary, the number of out-of-kilter
 !  multipliers
 
        IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
@@ -3019,7 +3019,7 @@
 
          IF ( complementary_slackness_ls <= data%stop_c ) THEN
            n_mult_wrong_sign_ls = 0
-           DO i = 1, nlp%m 
+           DO i = 1, nlp%m
              IF ( nlp%C_l( i ) /= nlp%C_u( i ) .AND.                           &
               ( ( nlp%C_status( i ) < 0 .AND. data%Y_p( i ) < - y_tiny ) .OR.  &
                 ( nlp%C_status( i ) > 0 .AND. data%Y_p( i ) > y_tiny ) ) )     &
@@ -3061,7 +3061,7 @@
 
        IF ( data%reverse_hl ) THEN
           data%branch = 4 ; inform%status = 4 ; RETURN
-       ELSE  
+       ELSE
           CALL eval_HL( data%eval_status, nlp%X, nlp%Y, userdata, nlp%H%val )
        END IF
 
@@ -3110,12 +3110,12 @@
 !  set the right-hand sides for the active constraints
 
        data%EQP_prob%m = 0
-       DO i = 1, nlp%m 
+       DO i = 1, nlp%m
          IF ( nlp%C_status( i ) < 0 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = nlp%C( i ) - nlp%C_l( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Y( i )
-         ELSE IF ( nlp%C_status( i ) > 0 ) THEN 
+         ELSE IF ( nlp%C_status( i ) > 0 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = nlp%C( i ) - nlp%C_u( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Y( i )
@@ -3126,7 +3126,7 @@
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = nlp%X( i ) - nlp%X_l( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
-         ELSE IF ( nlp%X_status( i ) > 0 ) THEN 
+         ELSE IF ( nlp%X_status( i ) > 0 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = nlp%X( i ) - nlp%X_u( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
@@ -3137,7 +3137,7 @@
 
        data%radius_eqp = hundred * data%norm_dlp
 
-!  find the step s (stored in data%EQP_prob%X) and Lagrange multiplier 
+!  find the step s (stored in data%EQP_prob%X) and Lagrange multiplier
 !  y (stored in data%EQP_prob%Y)
 
        IF ( data%printt ) WRITE( data%out, "( /, A, ' * Find the step -',      &
@@ -3161,7 +3161,7 @@
          inform%status = GALAHAD_error_qp_solve ; GO TO 990
        END IF
 
-!  compute the norm of the step and the slope for the objective and violated 
+!  compute the norm of the step and the slope for the objective and violated
 !  constraints
 
        data%norm_deqp = MAXVAL( ABS( data%EQP_prob%X( : data%EQP_prob%n ) ) )
@@ -3172,11 +3172,11 @@
          IF ( nlp%C( i ) <= nlp%C_l( i ) ) THEN
            data%dtjc_eqp = data%dtjc_eqp +                                     &
              data%EQP_prob%X( data%CQP_prob%A%col( l ) ) *                     &
-             ( nlp%C( i ) - nlp%C_l( i ) ) * data%CQP_prob%A%val( l ) 
+             ( nlp%C( i ) - nlp%C_l( i ) ) * data%CQP_prob%A%val( l )
          ELSE IF ( nlp%C( i ) >= nlp%C_u( i ) ) THEN
            data%dtjc_eqp = data%dtjc_eqp +                                     &
              data%EQP_prob%X( data%CQP_prob%A%col( l ) ) *                     &
-             ( nlp%C( i ) - nlp%C_u( i ) ) * data%CQP_prob%A%val( l ) 
+             ( nlp%C( i ) - nlp%C_u( i ) ) * data%CQP_prob%A%val( l )
          END IF
        END DO
        IF ( data%printm ) WRITE( data%out, "( A, ' d^Tg, d^TJc = ', 2ES12.4 )")&
@@ -3246,7 +3246,7 @@
 !                       STEP ACCEPTANCE OR REJECTION
 !  ----------------------------------------------------------------------------
 
-!  check to find the range of values [mu_new,mu] for which the active set for 
+!  check to find the range of values [mu_new,mu] for which the active set for
 !  the current RLP stays active
 
        data%mu_new = FASTR_mu_new( nlp%m, nlp%n, data%mu,                      &
@@ -3270,8 +3270,8 @@
        data%delta_l = - data%gtd
 
 !  record the required "decrease" delta_q in the "quadratic" model, that is
-!  to say at the Cauchy point, the smallest value of the quadratic model on 
-!  the line joining x to x + d_RLP. Only consider the case where there is 
+!  to say at the Cauchy point, the smallest value of the quadratic model on
+!  the line joining x to x + d_RLP. Only consider the case where there is
 !  decrease in the linear model (i,e g^T d_RLP < 0)
 
        IF ( data%gtd < zero ) THEN
@@ -3283,15 +3283,15 @@
            DO l = 1, data%H_ne
              i = data%EQP_prob%H%row( l ) ; j = data%EQP_prob%H%col( l )
              data%U( i ) = data%U( i ) +                                       &
-               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( j ) 
+               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( j )
              IF ( i /= j ) data%U( j ) = data%U( j ) +                         &
-               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( i ) 
+               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( i )
            END DO
          ELSE
            IF ( data%reverse_hlprod ) THEN
              data%V( : nlp%n ) = data%DX_trial_rlp( : nlp%n )
              data%branch = 5 ; inform%status = 6 ; RETURN
-           ELSE  
+           ELSE
              CALL eval_HLPROD( data%eval_status, nlp%X, nlp%Y, userdata,       &
                                data%U, data%DX_trial_rlp )
            END IF
@@ -3312,7 +3312,7 @@
            IF ( - data%gtd >= dthd ) THEN
              data%delta_q = - data%gtd - dthd
 
-!  ... or at a restricted Cauchy step 
+!  ... or at a restricted Cauchy step
 
            ELSE
              data%delta_q = half * data%gtd * ( data%gtd / dthd )
@@ -3329,7 +3329,7 @@
        IF ( data%norm_deqp > zero ) THEN
          data%step_eqp = one
          DO i = 1, nlp%n
-           dx = data%EQP_prob%X( i ) 
+           dx = data%EQP_prob%X( i )
            IF ( dx > epsmch ) THEN
              data%step_eqp =                                                   &
                MIN( data%step_eqp, ( nlp%X_u( i ) - nlp%X( i ) ) / dx )
@@ -3349,7 +3349,7 @@
 
            DO i = 1, nlp%m
              IF ( nlp%LINEAR( i ) ) THEN
-               dc = data%C_trial( i ) 
+               dc = data%C_trial( i )
                IF ( dc > epsmch ) THEN
                  data%step_eqp =                                               &
                    MIN( data%step_eqp, ( nlp%C_u( i ) - nlp%C( i ) ) / dc )
@@ -3407,14 +3407,14 @@
          END IF
 
 !  evaluate the objective and general constraint function values
-     
+
          IF ( data%reverse_fc ) THEN
            data%EQP_prob%X( : nlp%n ) = nlp%X( : nlp%n )     ! temporary copy
            data%EQP_prob%C( : nlp%m ) = nlp%C( : nlp%m )     ! temporary copy
            data%EQP_prob%f = nlp%f                           ! temporary copy
            nlp%X = data%X_trial
            data%branch = 6 ; inform%status = 2 ; RETURN
-         ELSE  
+         ELSE
            CALL eval_FC( data%eval_status, data%X_trial, userdata,             &
                          obj_trial, data%C_trial )
          END IF
@@ -3456,7 +3456,7 @@
 
 !  is the new point is acceptable to the filter and (f,c) ?
 
-         ELSE 
+         ELSE
            CALL FILTER_acceptable( obj_trial, primal_infeasibility_trial,      &
                                    data%FILTER_data,                           &
                                    data%control%FILTER_control,                &
@@ -3487,8 +3487,8 @@
                data%control%delta_feas * inform%primal_infeasibility ** 2
              END IF
 
-!  the new point is acceptable. Now check whether the predicted reduction of 
-!  the objective function is sufficiently positive and has been realized for 
+!  the new point is acceptable. Now check whether the predicted reduction of
+!  the objective function is sufficiently positive and has been realized for
 !  the true objective function
 
              IF ( delta_f >= data%control%eta_successful * delta_m             &
@@ -3512,7 +3512,7 @@
                      WRITE( data%out, "( A, '   - ', A3, ' step is',           &
                     &  ' very successful' )" ) prefix, data%d_name
                    END IF
-                 ELSE 
+                 ELSE
                    IF ( data%take_eqp_step ) THEN
                      WRITE( data%out, "( A, '   - ', A3, ' step is',           &
                     &  ' successful, stepsize =', ES11.4 )" )                  &
@@ -3552,8 +3552,8 @@
               &  ES10.4, ',', ES11.4, ')' )" )                                 &
                  prefix, data%d_name, primal_infeasibility_trial, obj_trial,   &
                  prefix, inform%primal_infeasibility, inform%obj
-           END IF  
-         END IF  
+           END IF
+         END IF
 
 !  try the RLP step after the EQP step
 
@@ -3593,22 +3593,22 @@
 !  * plot the current filter in green
 !PLPLOT  DO i = 1, data%FILTER_data%n_filter     !  loop over the current filter
 !PLPLOT    rect_x( 1 ) = LOG10( MIN( MAX( data%FILTER_data%filter( i )%v,      &
-!PLPLOT      data%v_mine ), data%v_maxe ) )                 ! set (v,0) entry 
+!PLPLOT      data%v_mine ), data%v_maxe ) )                 ! set (v,0) entry
 !PLPLOT    rect_y( 1 ) = FASTR_oe( data%FILTER_data%filter( i )%o, data%o_opt, &
-!PLPLOT                            data%o_minl, data%o_maxl ) 
+!PLPLOT                            data%o_minl, data%o_maxl )
 !!PLPLOT    rect_y( 1 ) = MIN( MAX( data%FILTER_data%filter( i )%o,            &
-!!PLPLOT                            data%o_min ), data%o_max 
-!PLPLOT    rect_x( 2 ) = rect_x( 1 ) ; rect_y( 4 ) = rect_y( 1 ) ! & create the 
+!!PLPLOT                            data%o_min ), data%o_max
+!PLPLOT    rect_x( 2 ) = rect_x( 1 ) ; rect_y( 4 ) = rect_y( 1 ) ! & create the
 !PLPLOT    rect_y( 2 ) = data%o_maxl ; rect_x( 3 ) = data%v_max   ! rest of the
 !PLPLOT    rect_y( 3 ) = data%o_maxl ; rect_x( 4 ) = data%v_max   ! filter
 !PLPLOT    CALL plcol0( 3 )                    !  green existing filter entry
-!PLPLOT    CALL plfill( rect_x(1 : rect_n ), rect_y( 1 : rect_n ) ) 
+!PLPLOT    CALL plfill( rect_x(1 : rect_n ), rect_y( 1 : rect_n ) )
 !PLPLOT  END DO
 !  * plot past successful points in blue
 !PLPLOT  CALL plcol0( 9 )              !  mark previous successes in blue
 !PLPLOT  DO i = 0, data%n_success - 1  !  loop over previous succeses
 !PLPLOT    rect_x( 1 ) = LOG10( MIN( MAX( data%success( i )%v, data%v_mine ),  &
-!PLPLOT                       data%v_maxe ) )                 ! set (v,0) entry 
+!PLPLOT                       data%v_maxe ) )                 ! set (v,0) entry
 !PLPLOT    rect_y( 1 ) = FASTR_oe( data%success( i )%o, data%o_opt,            &
 !PLPLOT                            data%o_minl, data%o_maxl )
 !!PLPLOT    rect_y( 1 ) = MIN( MAX(data%success( i )%o, data%o_min ),data%o_max)
@@ -3758,7 +3758,7 @@
 !           ELSE
 !           IF ( data%gtd < 0 ) THEN
 !               data%mu = data%control%rlp_radius_reduce * data%mu
-!           ELSE 
+!           ELSE
 !             data%restoration = .TRUE. ; GO TO 300
 !           END IF
 
@@ -3770,7 +3770,7 @@
 !              data%mu =                                                       &
 !                data%control%rlp_radius_reduce * MIN( data%mu_new, data%mu )
 !            END IF
-!          ELSE 
+!          ELSE
 !            data%restoration = .TRUE. ; GO TO 300
 !          END IF
 
@@ -3797,7 +3797,7 @@
          ELSE
            data%radius_eqp =                                                   &
            ( data%control%eqp_radius_reduce ** data%n_pr_max ) * data%radius_eqp
-         END IF         
+         END IF
          data%new_gradient = .FALSE.
        END IF
 
@@ -3809,7 +3809,7 @@
 
 !  compute the changes in multipliers and dual variables
 
-         DO i = 1, nlp%m 
+         DO i = 1, nlp%m
            IF ( nlp%C_status( i ) == 0 ) THEN
              data%DY( i ) = - nlp%Y( i )
            ELSE
@@ -3855,7 +3855,7 @@
          END IF
        END IF
 
-!  update the Lagrange multipliers; also compute the number of multipliers 
+!  update the Lagrange multipliers; also compute the number of multipliers
 !  with the wrong signs
 
        IF ( data%successful .OR. ( data%norm_deqp <= data%stop_p               &
@@ -3863,7 +3863,7 @@
          IF ( data%printt ) WRITE( data%out,                                   &
            "( /, A, ' * updating the Lagrange multipliers' )" ) prefix
          data%n_mult_wrong_sign = 0
-         DO i = 1, nlp%m 
+         DO i = 1, nlp%m
            IF ( nlp%C_status( i ) == 0 ) THEN
            ELSE
              IF ( nlp%C_l( i ) /= nlp%C_u( i ) .AND.                           &
@@ -4006,7 +4006,7 @@
            data%branch = 7 ; RETURN
          END IF
 
-         CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now ) 
+         CALL CPU_TIME( data%time_now ) ; CALL CLOCK_time( data%clock_now )
          inform%time%restoration =                                             &
            inform%time%restoration + data%time_now - data%time_record
          inform%time%clock_restoration =                                       &
@@ -4028,10 +4028,10 @@
              inform%iter - data%iter_restoration
 
 !  evaluate the objective and general constraint function values
-   
+
          IF ( data%reverse_fc ) THEN
            data%branch = 9 ; inform%status = 2 ; RETURN
-         ELSE  
+         ELSE
            CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
          END IF
        END IF
@@ -4091,22 +4091,22 @@
 !PLPLOT    rect_x( 1 ) = LOG10( MIN( MAX( data%FILTER_data%filter( i )%v,      &
 !PLPLOT                      data%v_mine ), data%v_maxe ) )    ! set (v,0) entry
 !PLPLOT    rect_y( 1 ) = FASTR_oe( data%FILTER_data%filter( i )%o, data%o_opt, &
-!PLPLOT                            data%o_minl, data%o_maxl ) 
+!PLPLOT                            data%o_minl, data%o_maxl )
 !!PLPLOT    rect_y( 1 ) = MIN( MAX( data%FILTER_data%filter( i )%o,            &
 !!PLPLOT                            data%o_min ), data%o_max )
-!PLPLOT    rect_x( 2 ) = rect_x( 1 ) ; rect_y( 4 ) = rect_y( 1 ) ! & create the 
+!PLPLOT    rect_x( 2 ) = rect_x( 1 ) ; rect_y( 4 ) = rect_y( 1 ) ! & create the
 !PLPLOT    rect_y( 2 ) = data%o_maxl ; rect_x( 3 ) = data%v_max   ! rest of the
 !PLPLOT    rect_y( 3 ) = data%o_maxl ; rect_x( 4 ) = data%v_max   ! filter
 !PLPLOT    CALL plcol0( 3 )                    !  green existing filter entry
-!PLPLOT    CALL plfill( rect_x(1 : rect_n ), rect_y( 1 : rect_n ) ) 
+!PLPLOT    CALL plfill( rect_x(1 : rect_n ), rect_y( 1 : rect_n ) )
 !PLPLOT  END DO
 !  * plot past successful points in blue
 !PLPLOT  CALL plcol0( 9 )              !  mark previous successes in blue
 !PLPLOT  DO i = 0, data%n_success - 1  !  loop over previous succeses
 !PLPLOT    rect_x( 1 ) = LOG10( MIN( MAX( data%success( i )%v, data%v_mine ),  &
-!PLPLOT                       data%v_maxe ) )                 ! set (v,0) entry 
+!PLPLOT                       data%v_maxe ) )                 ! set (v,0) entry
 !PLPLOT    rect_y( 1 ) = FASTR_oe( data%success( i )%o, data%o_opt,            &
-!PLPLOT                            data%o_minl, data%o_maxl ) 
+!PLPLOT                            data%o_minl, data%o_maxl )
 !!PLPLOT    rect_y( 1 ) = MIN( MAX(data%success( i )%o, data%o_min ),data%o_max)
 !PLPLOT    CALL plpoin( rect_x( 1 : 1 ), rect_y( 1 : 1 ), 17 )
 !PLPLOT  END DO
@@ -4114,7 +4114,7 @@
 !PLPLOT  rect_x( 1 ) = LOG10( MIN( MAX( inform%primal_infeasibility,           &
 !PLPLOT                data%v_mine ), data%v_maxe ) ) ! set current (v,o) entry
 !PLPLOT  rect_y( 1 ) = FASTR_oe( inform%obj, data%o_opt,                       &
-!PLPLOT                          data%o_minl, data%o_maxl ) 
+!PLPLOT                          data%o_minl, data%o_maxl )
 !!PLPLOT  rect_y( 1 ) = MIN( MAX( inform%obj, data%o_min ), data%o_max )
 !PLPLOT  IF ( inform%obj >= data%o_min .AND. inform%obj <= data%o_max ) THEN
 !PLPLOT    CALL plcol0( 1 )            !  red new point
@@ -4162,7 +4162,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    M A I N    I T E R A T I O N 
+!               E N D    O F    M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4185,21 +4185,21 @@
 !    WRITE( 44, "( ( 10I7 ) )" ) nlp%C_status
 
      l = 2
-     IF ( data%control%fulsol ) l = nlp%n 
+     IF ( data%control%fulsol ) l = nlp%n
      IF ( data%control%print_level >= 10 ) l = nlp%n
 
      WRITE( data%out, "( /, A, ' Solution: ', /, A, '                        ',&
     &           '        <------ Bounds ------> ', /, A,                       &
     &           '      # name          value   ',                              &
     &           '    Lower       Upper       Dual ' )" ) prefix, prefix, prefix
-     DO j = 1, 2 
-       IF ( j == 1 ) THEN 
-         ir = 1 ; ic = MIN( l, nlp%n ) 
-       ELSE 
+     DO j = 1, 2
+       IF ( j == 1 ) THEN
+         ir = 1 ; ic = MIN( l, nlp%n )
+       ELSE
          IF ( ic < nlp%n - l ) WRITE( data%out, 2010 ) prefix
          ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-       END IF 
-       DO i = ir, ic 
+       END IF
+       DO i = ir, ic
          WRITE( data%out, 2000 ) prefix, i, nlp%VNAMES( i ), nlp%X( i ),       &
            nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
        END DO
@@ -4214,14 +4214,14 @@
       &        '               <------ Bounds ------> ', /, A,                 &
       &        '      # name           value   ',                              &
       &        '    Lower       Upper    Multiplier' )" ) prefix, prefix, prefix
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, nlp%m ) 
-         ELSE 
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, nlp%m )
+         ELSE
            IF ( ic < nlp%m - l ) WRITE( data%out, 2010 ) prefix
            ir = MAX( ic + 1, nlp%m - ic + 1 ) ; ic = nlp%m
-         END IF 
-         DO i = ir, ic 
+         END IF
+         DO i = ir, ic
            WRITE( data%out, 2000 ) prefix, i, nlp%CNAMES( i ), nlp%C( i ),     &
              nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
          END DO
@@ -4232,7 +4232,7 @@
      inform%time%total = data%time_now - data%time_start
      inform%time%clock_total = data%clock_now - data%clock_start
 
-     IF ( nlp%m > 0 ) THEN ; max_y = MAXVAL( ABS( nlp%Y( : nlp%m ) ) ) ; 
+     IF ( nlp%m > 0 ) THEN ; max_y = MAXVAL( ABS( nlp%Y( : nlp%m ) ) ) ;
        ELSE ; max_y = zero ; END IF
 
      WRITE( data%out, "( /, A, ' Problem: ', 16X, A10,                         &
@@ -4297,7 +4297,7 @@
 
 !  non-executable statements
 
- 2000 FORMAT( A, I7, 1X, A10, 4ES12.4 ) 
+ 2000 FORMAT( A, I7, 1X, A10, 4ES12.4 )
  2010 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( /, A, '     i      X_l          X          X_u',                 &
                     '         Dx           Z')
@@ -4337,7 +4337,7 @@
      TYPE ( FASTR_data_type ), INTENT( INOUT ) :: data
      TYPE ( FASTR_control_type ), INTENT( IN ) :: control
      TYPE ( FASTR_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -4412,7 +4412,7 @@
 !       inform%status, inform%alloc_status, array_name = array_name,           &
 !       bad_alloc = inform%bad_alloc, out = control%error )
 !    IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
- 
+
 !    array_name = 'fastr: data%CQP_prob%H%col'
 !    CALL SPACE_dealloc_array( data%CQP_prob%H%col,                            &
 !       inform%status, inform%alloc_status, array_name = array_name,           &
@@ -4703,7 +4703,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
-!  check to find the range of values [mu_new,mu] for which the active set for 
+!  check to find the range of values [mu_new,mu] for which the active set for
 !  the current RLP stays active
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -4733,7 +4733,7 @@
 
      FASTR_mu_new = zero
      IF ( mu > zero ) THEN
-       DO i = 1, n 
+       DO i = 1, n
          IF ( X_l( i ) == X_u( i ) ) THEN
          ELSE IF ( X_status( i ) < 0 ) THEN
            IF ( DZ( i ) /= zero ) THEN
@@ -4779,12 +4779,12 @@
        END DO
 
        IF ( printt ) WRITE( out, "( /, A, ' * Active set unchanged on the',    &
-      &  ' interval [', ES8.2, ', ', ES8.2, ']' )" ) prefix, FASTR_mu_new, mu 
+      &  ' interval [', ES8.2, ', ', ES8.2, ']' )" ) prefix, FASTR_mu_new, mu
 
 !  give details about the change in status of the active set ...
 
        IF ( printw ) THEN
-         DO i = 1, n 
+         DO i = 1, n
            IF ( X_l( i ) == X_u( i ) ) THEN
            ELSE IF ( X_status( i ) < 0 ) THEN
              IF ( DZ( i ) /= zero ) THEN
@@ -4879,11 +4879,11 @@
 
 !  .. and about the value of mu for which there would be an active set change ..
 
-         DO i = 1, n 
+         DO i = 1, n
            IF ( X_l( i ) == X_u( i ) ) THEN
              WRITE( out, "( A, '  variable ', I0, ' is free' )" ) prefix, i
            ELSE IF ( X_status( i ) < 0 .AND. DZ( i ) /= zero ) THEN
-             WRITE( out, 2030 ) prefix, 'z', i, mu - Z( i ) / DZ( i ) 
+             WRITE( out, 2030 ) prefix, 'z', i, mu - Z( i ) / DZ( i )
            ELSE IF ( X_status( i ) > 0 .AND. DZ( i ) /= zero ) THEN
              WRITE( out, 2030 ) prefix, 'z', i, mu - Z( i ) / DZ( i )
            ELSE
@@ -4920,14 +4920,14 @@
          WRITE( out, "( /, A, ' variable', A, ':', /,A,'     i  <- x_l -> <-', &
         &  '         x           -> <- x_u -> <-         z           ->' )" )  &
            prefix, TRIM( STRING_pleural( n ) ), prefix
-         DO i = 1, n 
-           IF ( X_l( i ) == X_u( i ) ) THEN 
+         DO i = 1, n
+           IF ( X_l( i ) == X_u( i ) ) THEN
              st = 'F'
-           ELSE IF ( X_status( i ) < 0 ) THEN 
+           ELSE IF ( X_status( i ) < 0 ) THEN
              st = 'L'
            ELSE IF ( X_status( i ) > 0 ) THEN
               st = 'U'
-           ELSE ; 
+           ELSE ;
               st = ' '
            END IF
            WRITE( out, 2000 ) prefix, i, st, X_l( i ),                         &
@@ -4940,7 +4940,7 @@
         &  ' <-         y           ->' )" )                                   &
            prefix, TRIM( STRING_pleural( m ) ), prefix
          DO i = 1, m
-           IF ( C_l( i ) == C_u( i ) ) THEN 
+           IF ( C_l( i ) == C_u( i ) ) THEN
              st = 'E'
            ELSE IF ( C_status( i ) < 0 ) THEN
              st = 'L'
@@ -4957,7 +4957,7 @@
      RETURN
 
 !  non-executable statements
-     
+
 2000 FORMAT( A, I6, A1, 2ES10.2, ' ', A, ' mu *', ES9.2, 2ES10.2, ' ', A,      &
              ' mu *', ES9.2 )
 2010 FORMAT( A, ' variable ', I0, ' will change status' )
@@ -4976,61 +4976,61 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  FASTR_restoration, find a local minimizer of the infeasibility for a 
+!  FASTR_restoration, find a local minimizer of the infeasibility for a
 !  set of general constraints and simple bounds:
 !
 !    min 1/2||s||^2 such that c^l <= c(x) - c^s s <= c^u and x^l <= x <= x^u
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  See the preamble of FASTR_solve for details. But note 
+!  See the preamble of FASTR_solve for details. But note
 !
-!  stop_p is a scalar real variable that specifies the value below which 
+!  stop_p is a scalar real variable that specifies the value below which
 !   the primal infeasibility ||s|| is required to be
 !
-!  inform is a scalar variable of type TRU_inform_type. On initial entry, 
+!  inform is a scalar variable of type TRU_inform_type. On initial entry,
 !   inform%status should be set to 1. On exit, the following components will
 !   have been set:
 !
 !   status is a scalar variable of type default integer, that gives
 !    the exit status from the package. Additional possible values are:
 !
-!    12. The user should compute the constraint function values c(x) at the 
-!        point x indicated in nlp%X and then re-enter the subroutine. The 
+!    12. The user should compute the constraint function values c(x) at the
+!        point x indicated in nlp%X and then re-enter the subroutine. The
 !        required values should be set in nlp%C, and data%eval_status should be
-!        set to 0. If the user is unable to evaluate c(x)  - for instance, if 
+!        set to 0. If the user is unable to evaluate c(x)  - for instance, if
 !        any of the functions is undefined at x - the user need not set
 !        nlp%C, but should then set data%eval_status to a non-zero value.
-!    13. The user should compute the Jacobian of the constraints nabla_x c(x) 
-!        at the point x indicated in nlp%X  and then re-enter the subroutine. 
-!        The nonzeros of the Jacobian should be set in nlp%J%val in the same 
-!        order as in the storage scheme already established in nlp%J,, and 
+!    13. The user should compute the Jacobian of the constraints nabla_x c(x)
+!        at the point x indicated in nlp%X  and then re-enter the subroutine.
+!        The nonzeros of the Jacobian should be set in nlp%J%val in the same
+!        order as in the storage scheme already established in nlp%J,, and
 !        data%eval_status should be set to 0. If the user is unable to evaluate
 !        any of the components of the Jacobian - for instance if a component of
-!        the Jacobian is undefined at x - the user need not set nlp%J%val, but 
+!        the Jacobian is undefined at x - the user need not set nlp%J%val, but
 !        should then set data%eval_status to a non-zero value.
-!    14. The user should compute the Hessian of the objective-free Lagrangian 
+!    14. The user should compute the Hessian of the objective-free Lagrangian
 !        function - sum_i=1^m y_i c_i(x) at the point x indicated in nlp%X
 !        and y in nlp%Y and then re-enter the subroutine. The nonzeros of the
 !        Hessian should be set in nlp%H%val in the same order as in the storage
-!        scheme already established in nlp%H, and data%eval_status should be 
+!        scheme already established in nlp%H, and data%eval_status should be
 !        set to 0. If the user is unable to evaluate a component of the Hessian
-!        - for instance, if a component of the Hessian is undefined at x - the 
-!        user need not set nlp%H%val, but should then set data%eval_status to 
+!        - for instance, if a component of the Hessian is undefined at x - the
+!        user need not set nlp%H%val, but should then set data%eval_status to
 !        a non-zero value.
 !    15. The user should compute both the Jacobian and Hessian as described
 !        in 13 and 14 above, and then re-enter the subroutine with
-!        data%eval_status set to 0. If the user is unable to evaluate 
-!        any of this data nlp%J%val and nlp%H%val need not be set but 
+!        data%eval_status set to 0. If the user is unable to evaluate
+!        any of this data nlp%J%val and nlp%H%val need not be set but
 !        then data%eval_status should be set to a non-zero value.
-!    16. The user should compute the product 
+!    16. The user should compute the product
 !        ( - sum_i=1^m y_i c_i(x) ) v of the Hessian of the objective-free
-!        Lagrangian function - sum_i=1^m y_i c_i(x) at the point x indicated in 
-!        nlp%X with the vector v, and add the result to the vector u and then 
-!        re-enter the subroutine. The vectors u and v are given in data%U and 
-!        data%V respectively, the resulting vector u + nabla_xx f(x)v should be 
+!        Lagrangian function - sum_i=1^m y_i c_i(x) at the point x indicated in
+!        nlp%X with the vector v, and add the result to the vector u and then
+!        re-enter the subroutine. The vectors u and v are given in data%U and
+!        data%V respectively, the resulting vector u + nabla_xx f(x)v should be
 !        set in data%U and  data%eval_status should be set to 0. If the user is
-!        unable to evaluate the product - for instance, if a component of the 
+!        unable to evaluate the product - for instance, if a component of the
 !        Hessian is undefined at x - the user need not alter data%U, but
 !        should then set data%eval_status to a non-zero value.
 !
@@ -5049,7 +5049,7 @@
      OPTIONAL :: eval_FC, eval_GJ, eval_HL, eval_HLPROD
 
 !----------------------------------
-!   I n t e r f a c e   B l o c k s 
+!   I n t e r f a c e   B l o c k s
 !----------------------------------
 
      INTERFACE
@@ -5071,7 +5071,7 @@
          TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
 
-       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f ) 
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f )
          USE GALAHAD_USERDATA_precision
          INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
          REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
@@ -5106,7 +5106,7 @@
      CHARACTER ( LEN = 8 ) :: tr_active
      CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -5138,10 +5138,10 @@
      data%control = control
 
 !    inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
-!    inform%iter = 0 ; inform%factorizations = 0 ; inform%modifications = 0 
+!    inform%iter = 0 ; inform%factorizations = 0 ; inform%modifications = 0
 !    inform%f_eval = 0 ; inform%g_eval = 0
 
-     inform%obj_restoration = HUGE( one ) 
+     inform%obj_restoration = HUGE( one )
      inform%primal_infeasibility_rest = HUGE( one )
      inform%dual_infeasibility_rest = HUGE( one )
 
@@ -5216,7 +5216,7 @@
 
      CALL FILTER_initialize_filter( data%FILTER_restoration_data,              &
                                     data%control%FILTER_control,               &
-                                    inform%FILTER_restoration_inform )     
+                                    inform%FILTER_restoration_inform )
      IF ( inform%FILTER_restoration_inform%status /= 0 ) THEN
        inform%status = inform%FILTER_restoration_inform%status
        inform%alloc_status = inform%FILTER_restoration_inform%alloc_status
@@ -5227,10 +5227,10 @@
 !   &               /, A, ' Problem: ', 7X, A10 )" ) prefix, prefix, nlp%pname
 
 !  evaluate the general constraint function values
-   
+
 !    IF ( data%reverse_fc ) THEN
 !      data%branch_restoration = 2 ; inform%status = 12 ; RETURN
-!    ELSE  
+!    ELSE
 !      CALL eval_FC( data%eval_status, nlp%X, userdata, C = nlp%C )
 !    END IF
 
@@ -5294,7 +5294,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      M A I N     I T E R A T I O N 
+!                      M A I N     I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -5335,13 +5335,13 @@
 !                       COMPUTE DERIVATIVE VALUES
 !  ----------------------------------------------------------------------------
 
-!  evaluate the Jacobian of the general constraint functions, stored in 
+!  evaluate the Jacobian of the general constraint functions, stored in
 !  "co-ordinate" format
 
        IF ( data%new_gradient ) THEN
          IF ( data%reverse_gj ) THEN
            data%branch_restoration = 3 ; inform%status = 13 ; RETURN
-         ELSE  
+         ELSE
            CALL eval_GJ( data%eval_status, nlp%X, userdata, J_val = nlp%J%val )
          END IF
        END IF
@@ -5394,7 +5394,7 @@
             &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )      &
                  prefix, data%stop_p_rest, prefix, data%stop_d_rest, prefix,   &
                  data%stop_c_rest
-       END IF 
+       END IF
 
 !  -------------------------------------
 !  Print a summary of the last iteration
@@ -5495,14 +5495,14 @@
 !      min  mu ( 0  s )^T ( dx )  + 1/2 dx^T dx + 1/2 ds^T ds
 !                         ( ds )
 !
-!      s.t. c_l - c + c^s s <= A dx - c^s ds <= c_u - c + c^s s 
-!      and  x_l - x <= dx <= x_u - x 
+!      s.t. c_l - c + c^s s <= A dx - c^s ds <= c_u - c + c^s s
+!      and  x_l - x <= dx <= x_u - x
 
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 !  set up the vector problem data
 
-         data%CQP_prob%new_problem_structure = .TRUE.     
+         data%CQP_prob%new_problem_structure = .TRUE.
          data%CQP_prob%n = data%n_restoration
          data%CQP_prob%m = nlp%m
          data%CQP_prob%A%n = data%n_restoration
@@ -5536,7 +5536,7 @@
              data%mu * data%S( : nlp%m )
            data%CQP_prob%H%val( : data%n_restoration ) = one
          ELSE
-         END IF 
+         END IF
 
 !  if required, print a description of the problem
 
@@ -5626,7 +5626,7 @@
          IF ( inform%CQP_inform%status == GALAHAD_error_primal_infeasible .OR. &
               inform%CQP_inform%status == GALAHAD_error_dual_infeasible .OR.   &
               inform%CQP_inform%status == GALAHAD_error_tiny_step ) THEN
-           SELECT CASE ( inform%CQP_inform%status ) 
+           SELECT CASE ( inform%CQP_inform%status )
            CASE ( GALAHAD_error_primal_infeasible )
              IF ( data%printi ) WRITE( data%out, "( A, '    * Exit from CQP',  &
             & ' - primal infeasible' )" ) prefix
@@ -5642,7 +5642,7 @@
            IF ( data%printt ) WRITE( data%out, "( A, '    * Exit from CQP',    &
           & ' unbounded from below' )" ) prefix
 
-!  ... or if an error occured 
+!  ... or if an error occured
 
          ELSE IF ( inform%CQP_inform%status /= GALAHAD_ok ) THEN
            IF ( data%printi ) WRITE( data%out, "( A, ' ** CQP error exit,',    &
@@ -5751,7 +5751,7 @@
 
          data%DY( : nlp%m ) = data%CQP_prob%Y( : nlp%m ) - nlp%Y( : nlp%m )
          data%DZ( : nlp%n ) = data%CQP_prob%Z( : nlp%n ) - nlp%Z( : nlp%n )
- 
+
 !  compute ( A^T dy + dz )
 !          ( - c^s dy    )
 
@@ -5781,7 +5781,7 @@
                = data%GL( : data%n_restoration )                               &
                  - alpha * data%ATDY( : data%n_restoration )
 
-!  recompute the dual infeasibility and complementarity 
+!  recompute the dual infeasibility and complementarity
 
              inform%dual_infeasibility_rest =                                  &
                OPT_dual_infeasibility( data%n_restoration,                     &
@@ -5825,7 +5825,7 @@
 
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-!  find the least-squares multipliers by solving the equality-constrained 
+!  find the least-squares multipliers by solving the equality-constrained
 !  quadratic program
 
 !      min  ( 0  s )^T ( dx ) + 1/2 ( dx ds )^T ( I 0 ) ( dx )
@@ -5868,13 +5868,13 @@
 !  set the right-hand sides for the active constraints
 
        data%EQP_prob%m = 0
-       DO i = 1, nlp%m 
+       DO i = 1, nlp%m
          IF ( nlp%C_status( i ) == - 1 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = zero
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Y( i )
            nlp%C_status( i ) = - data%EQP_prob%m
-         ELSE IF ( nlp%C_status( i ) == 1 ) THEN 
+         ELSE IF ( nlp%C_status( i ) == 1 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = zero
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Y( i )
@@ -5889,7 +5889,7 @@
            data%EQP_prob%C( data%EQP_prob%m ) = zero
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
            nlp%X_status( i ) = - data%EQP_prob%m
-         ELSE IF ( nlp%X_status( i ) == 1 ) THEN 
+         ELSE IF ( nlp%X_status( i ) == 1 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = zero
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
@@ -5934,7 +5934,7 @@
              END DO
            END IF
          END DO
-       CASE ( 'DENSE' ) 
+       CASE ( 'DENSE' )
          data%EQP_prob%A%ne = 0 ; l = 0
          DO i = 1, nlp%m
            ii = ABS( nlp%C_status( i ) )
@@ -6055,7 +6055,7 @@
 
        data%X_p( : nlp%n ) = data%EQP_prob%X( : nlp%n )
        data%S_p( : nlp%m ) = data%EQP_prob%X( nlp%n + 1 : data%n_restoration )
-       DO i = 1, nlp%m 
+       DO i = 1, nlp%m
          IF ( nlp%C_status( i ) == 0 ) THEN
            data%Y_p( i ) = zero
          ELSE
@@ -6076,7 +6076,7 @@
            + data%CQP_prob%A%val( l ) * data%X_p( data%CQP_prob%A%col( l ) )
        END DO
 
-!  recompute the complementarity and, if necessary, the number of out-of-kilter 
+!  recompute the complementarity and, if necessary, the number of out-of-kilter
 !  multipliers
 
        IF ( inform%primal_infeasibility_rest <= data%stop_p_rest .AND.         &
@@ -6095,7 +6095,7 @@
 
          IF ( complementary_slackness_ls <= data%stop_c_rest ) THEN
            n_mult_wrong_sign_ls = 0
-           DO i = 1, nlp%m 
+           DO i = 1, nlp%m
              IF ( nlp%C_l( i ) /= nlp%C_u( i ) .AND.                           &
               ( ( nlp%C_status( i ) < 0 .AND. data%Y_p( i ) < - y_tiny ) .OR.  &
                 ( nlp%C_status( i ) > 0 .AND. data%Y_p( i ) > y_tiny ) ) )     &
@@ -6148,9 +6148,9 @@
 
        IF ( data%reverse_hl ) THEN
           data%branch_restoration = 4 ; inform%status = 4 ; RETURN
-       ELSE  
+       ELSE
           CALL eval_HL( data%eval_status, nlp%X, nlp%Y, userdata, nlp%H%val,   &
-                        no_f = .TRUE. ) 
+                        no_f = .TRUE. )
        END IF
 
 !  return from reverse communication to obtain the Hessian of the Lagrangian
@@ -6203,7 +6203,7 @@
        data%EQP_prob%m = 0
 !write(6,*) ' c,s 1', &
 ! nlp%C_l(1), nlp%C(1), nlp%C_scale(1) * data%S(1), nlp%C_u(1)
-       DO i = 1, nlp%m 
+       DO i = 1, nlp%m
          IF ( nlp%C_status( i ) < 0 ) THEN
 !write(6,*) ' c-s l', i, &
 ! nlp%C_l(i), nlp%C(i) - nlp%C_scale(i) * data%S(i), nlp%C_u(i)
@@ -6211,7 +6211,7 @@
            data%EQP_prob%C( data%EQP_prob%m )                                  &
              = nlp%C( i ) - nlp%C_scale( i ) * data%S( i ) - nlp%C_l( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Y( i )
-         ELSE IF ( nlp%C_status( i ) > 0 ) THEN 
+         ELSE IF ( nlp%C_status( i ) > 0 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
 !write(6,*) ' c-s u', i, &
 ! nlp%C_l(i), nlp%C(i) - nlp%C_scale(i) * data%S(i), nlp%C_u(i)
@@ -6225,7 +6225,7 @@
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = nlp%X( i ) - nlp%X_l( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
-         ELSE IF ( nlp%X_status( i ) > 0 ) THEN 
+         ELSE IF ( nlp%X_status( i ) > 0 ) THEN
            data%EQP_prob%m = data%EQP_prob%m + 1
            data%EQP_prob%C( data%EQP_prob%m ) = nlp%X( i ) - nlp%X_u( i )
            data%EQP_prob%Y( data%EQP_prob%m ) = data%CQP_prob%Z( i )
@@ -6238,7 +6238,7 @@
 
        data%radius_eqp = hundred * data%norm_dlp_restoration
 
-!  find the step s (stored in data%EQP_prob%X) and Lagrange multiplier 
+!  find the step s (stored in data%EQP_prob%X) and Lagrange multiplier
 !  y (stored in data%EQP_prob%Y)
 
        IF ( data%printt ) WRITE( data%out, "( /, A, ' * Find the step -',      &
@@ -6263,7 +6263,7 @@
          inform%status = GALAHAD_error_qp_solve ; GO TO 990
        END IF
 
-!  compute the norm of the step and the slope for the objective and violated 
+!  compute the norm of the step and the slope for the objective and violated
 !  constraints
 
        data%norm_deqp = MAXVAL( ABS( data%EQP_prob%X( : data%EQP_prob%n ) ) )
@@ -6275,11 +6275,11 @@
          IF ( nlp%C( i ) <= nlp%C_l( i ) ) THEN
            data%dtjc_eqp = data%dtjc_eqp +                                     &
              data%EQP_prob%X( data%CQP_prob%A%col( l ) ) *                     &
-             ( nlp%C( i ) - nlp%C_l( i ) ) * data%CQP_prob%A%val( l ) 
+             ( nlp%C( i ) - nlp%C_l( i ) ) * data%CQP_prob%A%val( l )
          ELSE IF ( nlp%C( i ) >= nlp%C_u( i ) ) THEN
            data%dtjc_eqp = data%dtjc_eqp +                                     &
              data%EQP_prob%X( data%CQP_prob%A%col( l ) ) *                     &
-             ( nlp%C( i ) - nlp%C_u( i ) ) * data%CQP_prob%A%val( l ) 
+             ( nlp%C( i ) - nlp%C_u( i ) ) * data%CQP_prob%A%val( l )
          END IF
        END DO
        IF ( data%printm ) WRITE( data%out, "( A, ' d^Tg, d^TJc = ', 2ES12.4 )")&
@@ -6347,7 +6347,7 @@
 !                       STEP ACCEPTANCE OR REJECTION
 !  ----------------------------------------------------------------------------
 
-!  check to find the range of values [mu_new,mu] for which the active set for 
+!  check to find the range of values [mu_new,mu] for which the active set for
 !  the current RLP stays active
 
        data%mu_new = FASTR_mu_new( nlp%m, nlp%n, data%mu,                      &
@@ -6373,8 +6373,8 @@
 !write(6,*) ' deqp, gtdeqp ', data%norm_deqp, data%gtd_eqp
 
 !  record the required "decrease" delta_q in the "quadratic" model, that is
-!  to say at the Cauchy point, the smallest value of the quadratic model on 
-!  the line joining x to x + d_RLP. Only consider the case where there is 
+!  to say at the Cauchy point, the smallest value of the quadratic model on
+!  the line joining x to x + d_RLP. Only consider the case where there is
 !  decrease in the linear model (i,e g^T d_RLP < 0)
 
 !      WRITE(6,*) ' gtd ', data%gtd
@@ -6387,17 +6387,17 @@
            DO l = 1, data%H_ne
              i = data%EQP_prob%H%row( l ) ; j = data%EQP_prob%H%col( l )
              data%U( i ) = data%U( i ) +                                       &
-               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( j ) 
+               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( j )
              IF ( i /= j ) data%U( j ) = data%U( j ) +                         &
-               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( i ) 
+               data%EQP_prob%H%val( l ) * data%DX_trial_rlp( i )
            END DO
          ELSE
            IF ( data%reverse_hlprod ) THEN
              data%V( : nlp%n ) = data%DX_trial_rlp( : nlp%n )
              data%branch_restoration = 5 ; inform%status = 16 ; RETURN
-           ELSE  
+           ELSE
              CALL eval_HLPROD( data%eval_status, nlp%X, nlp%Y, userdata,       &
-                               data%U, data%DX_trial_rlp, no_f = .TRUE. ) 
+                               data%U, data%DX_trial_rlp, no_f = .TRUE. )
 
            END IF
          END IF
@@ -6423,7 +6423,7 @@
            IF ( - data%gtd >= dthd ) THEN
              data%delta_q = - data%gtd - dthd
 
-!  ... or at a restricted Cauchy step 
+!  ... or at a restricted Cauchy step
 
            ELSE
              data%delta_q = half * data%gtd * ( data%gtd / dthd )
@@ -6440,7 +6440,7 @@
        IF ( data%norm_deqp > zero ) THEN
          data%step_eqp = one
          DO i = 1, nlp%n
-           dx = data%EQP_prob%X( i ) 
+           dx = data%EQP_prob%X( i )
 ! write(6,"( I7, 4ES12.4, 1X, I0 )")                                           &
 !  i, nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), dx, nlp%X_status( i )
            IF ( dx > epsmch ) THEN
@@ -6485,7 +6485,7 @@
            data%X_trial( : nlp%n ) =                                           &
              nlp%X( : nlp%n ) + data%step_eqp * data%EQP_prob%X( : nlp%n )
            data%step = data%norm_deqp * data%step_eqp
-        
+
 !  try the RLP step
 
          ELSE
@@ -6496,13 +6496,13 @@
          END IF
 
 !  evaluate the general constraint function values
-     
+
          IF ( data%reverse_fc ) THEN
            data%EQP_prob%X( : nlp%n ) = nlp%X( : nlp%n )     ! temporary copy
            data%EQP_prob%C( : nlp%m ) = nlp%C( : nlp%m )     ! temporary copy
            nlp%X = data%X_trial
            data%branch_restoration = 6 ; inform%status = 12 ; RETURN
-         ELSE  
+         ELSE
            CALL eval_FC( data%eval_status, data%X_trial, userdata,             &
                          C = data%C_trial )
          END IF
@@ -6529,7 +6529,7 @@
            ELSE
              data%S_trial( i ) = zero
            END IF
-         END DO 
+         END DO
 
 !  record the infeasibility
 
@@ -6554,7 +6554,7 @@
 
 !  is the new point is acceptable to the filter and (f,c) ?
 
-         ELSE 
+         ELSE
            CALL FILTER_acceptable( obj_trial, primal_infeasibility_trial,      &
                                       data%FILTER_restoration_data,            &
                                       data%control%FILTER_control,             &
@@ -6588,8 +6588,8 @@
   !              WRITE( data%out, "( ' - EQP stepsize =', ES11.4 )" ) data%step
              END IF
 
-!  the new point is acceptable. Now check whether the predicted reduction of 
-!  the objective function is sufficiently positive and has been realized for 
+!  the new point is acceptable. Now check whether the predicted reduction of
+!  the objective function is sufficiently positive and has been realized for
 !  the true objective function
 
              IF ( delta_f >= data%control%eta_successful * delta_m &
@@ -6613,7 +6613,7 @@
                      WRITE( data%out, "( A, '   - ', A3, ' step is very',      &
                     & ' successful' )" ) prefix, data%d_name
                    END IF
-                 ELSE 
+                 ELSE
                    IF ( data%take_eqp_step ) THEN
                      WRITE( data%out, "( A, '   - ', A3, ' step is ',          &
                     &  ' successful, stepsize =', ES11.4 )" )                  &
@@ -6654,8 +6654,8 @@
                  prefix, data%d_name, primal_infeasibility_trial, obj_trial,   &
                  prefix, inform%primal_infeasibility_rest,                     &
                  inform%obj_restoration
-           END IF  
-         END IF  
+           END IF
+         END IF
 
 !  try the RLP step after the EQP step
 
@@ -6741,7 +6741,7 @@
                data%mu =                                                       &
                  data%control%rlp_radius_reduce * MIN( data%mu_new, data%mu )
              END IF
-           ELSE 
+           ELSE
              data%restoration_restoration = .TRUE. ; GO TO 300
            END IF
 !          IF ( .NOT. data%new_point ) THEN
@@ -6788,7 +6788,7 @@
 
 !  compute the changes in multipliers and dual variables
 
-         DO i = 1, nlp%m 
+         DO i = 1, nlp%m
            IF ( nlp%C_status( i ) == 0 ) THEN
              data%DY( i ) = - nlp%Y( i )
            ELSE
@@ -6857,7 +6857,7 @@
        END IF
 
 !      IF ( data%control%multipliers /= 2 ) THEN
-!write(6,*) data%successful 
+!write(6,*) data%successful
 !write(6,*) data%norm_deqp <= data%stop_p_rest
 !write(6,*) primal_infeasibility_trial
 !write(6,*) data%stop_p_rest
@@ -6866,11 +6866,11 @@
            IF ( data%printt ) WRITE( data%out,                                 &
              "( /, A, ' * updating the Lagrange multipliers' )" ) prefix
 
-!  update the Lagrange multipliers; also compute the number of multipliers 
+!  update the Lagrange multipliers; also compute the number of multipliers
 !  with the wrong signs
 
            data%n_mult_wrong_sign = 0
-           DO i = 1, nlp%m 
+           DO i = 1, nlp%m
              IF ( nlp%C_status( i ) == 0 ) THEN
 !              nlp%Y( i ) = zero
              ELSE
@@ -6923,7 +6923,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    M A I N    I T E R A T I O N 
+!               E N D    O F    M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -6947,21 +6947,21 @@
 
      IF ( data%printd ) THEN
        l = 2
-       IF ( data%control%fulsol ) l = nlp%n 
+       IF ( data%control%fulsol ) l = nlp%n
        IF ( data%control%print_level >= 10 ) l = nlp%n
 
        WRITE( data%out, "( /, A, ' Solution: ', /, A, '                   ',   &
       &         '             <------ Bounds ------> ', /, A,                  &
       &         '      # name          value   ',                              &
       &         '    Lower       Upper       Dual ' )" ) prefix, prefix, prefix
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, nlp%n ) 
-         ELSE 
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, nlp%n )
+         ELSE
            IF ( ic < nlp%n - l ) WRITE( data%out, 2010 ) prefix
            ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-         END IF 
-         DO i = ir, ic 
+         END IF
+         DO i = ir, ic
            WRITE( data%out, 2000 ) prefix, i, nlp%VNAMES( i ), nlp%X( i ),     &
              nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
          END DO
@@ -6976,14 +6976,14 @@
         &      '               <------ Bounds ------> ', /, A,                 &
         &      '      # name           value   ',                              &
         &      '    Lower       Upper    Multiplier' )" ) prefix, prefix, prefix
-         DO j = 1, 2 
-           IF ( j == 1 ) THEN 
-             ir = 1 ; ic = MIN( l, nlp%m ) 
-           ELSE 
+         DO j = 1, 2
+           IF ( j == 1 ) THEN
+             ir = 1 ; ic = MIN( l, nlp%m )
+           ELSE
              IF ( ic < nlp%m - l ) WRITE( data%out, 2010 ) prefix
              ir = MAX( ic + 1, nlp%m - ic + 1 ) ; ic = nlp%m
-           END IF 
-           DO i = ir, ic 
+           END IF
+           DO i = ir, ic
              WRITE( data%out, 2000 ) prefix, i, nlp%CNAMES( i ), nlp%C( i ),   &
                nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
            END DO
@@ -6995,7 +6995,7 @@
      inform%time%total = data%time_now - data%time_start
      inform%time%clock_total = data%clock_now - data%clock_start
 
-     IF ( nlp%m > 0 ) THEN ; max_y = MAXVAL( ABS( nlp%Y( : nlp%m ) ) ) ; 
+     IF ( nlp%m > 0 ) THEN ; max_y = MAXVAL( ABS( nlp%Y( : nlp%m ) ) ) ;
        ELSE ; max_y = zero ; END IF
 
      IF ( data%printt ) WRITE( data%out, "( /, A, ' Problem: ', 16X, A10,      &
@@ -7043,7 +7043,7 @@
 
 !  non-executable statements
 
- 2000 FORMAT( A, I7, 1X, A10, 4ES12.4 ) 
+ 2000 FORMAT( A, I7, 1X, A10, 4ES12.4 )
  2010 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( /, A, '     i      X_l         X         X_u',                   &
                     '          Dx          Z')

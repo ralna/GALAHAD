@@ -17,7 +17,7 @@
         INTEGER ( KIND = ip_ ) :: nemin = 1 ! stream number diagnostic messages
         INTEGER ( KIND = ip_ ) :: print_level = 0 ! informational output used
         INTEGER ( KIND = ip_ ) :: row_full_thresh = 100 ! %threshold full row
-        INTEGER ( KIND = ip_ ) :: row_search = 10 ! Number of rows searched 
+        INTEGER ( KIND = ip_ ) :: row_search = 10 ! Number of rows searched
 !                                 for pivot with ord=6
       END TYPE mc68_control
 

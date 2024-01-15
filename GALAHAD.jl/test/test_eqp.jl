@@ -56,12 +56,12 @@ for d = 1:6
   # sparse co-ordinate storage
   if d == 1
     global st = 'C'
-  
+
     eqp_import( control, data, status, n, m,
                 "coordinate", H_ne, H_row, H_col, Cint[],
                 "coordinate", A_ne, A_row, A_col, Cint[] )
-  
-    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                   A_ne, A_val, c, x, y )
   end
 
@@ -69,11 +69,11 @@ for d = 1:6
   if d == 2
     global st = 'R'
 
-    eqp_import( control, data, status, n, m, 
+    eqp_import( control, data, status, n, m,
                 "sparse_by_rows", H_ne, Cint[], H_col, H_ptr,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-    
-    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                   A_ne, A_val, c, x, y )
   end
 
@@ -85,24 +85,24 @@ for d = 1:6
     A_dense_ne = 6  # number of elements of A
     H_dense = [1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
-  
+
     eqp_import( control, data, status, n, m,
                 "dense", H_ne, Cint[], Cint[], Cint[],
                 "dense", A_ne, Cint[], Cint[], Cint[] )
-  
-    eqp_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f,
                   A_dense_ne, A_dense, c, x, y )
   end
-  
+
   # diagonal
   if d == 4
     global st = 'L'
-    
+
     eqp_import( control, data, status, n, m,
                 "diagonal", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                   A_ne, A_val, c, x, y )
   end
 
@@ -110,11 +110,11 @@ for d = 1:6
   if d == 5
     global st = 'S'
 
-    eqp_import( control, data, status, n, m, 
+    eqp_import( control, data, status, n, m,
                 "scaled_identity", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                   A_ne, A_val, c, x, y )
   end
 
@@ -122,23 +122,23 @@ for d = 1:6
   if d == 6
     global st = 'I'
 
-    eqp_import( control, data, status, n, m, 
+    eqp_import( control, data, status, n, m,
                 "identity", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                   A_ne, A_val, c, x, y )
   end
 
   # zero
   if d == 7
     global st = 'Z'
-  
-    eqp_import( control, data, status, n, m, 
+
+    eqp_import( control, data, status, n, m,
                 "zero", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
+
+    eqp_solve_qp( data, status, n, m, H_ne, H_val, g, f,
                   A_ne, A_val, c, x, y )
   end
 
@@ -170,10 +170,10 @@ for d = 1:1
 
   # Initialize EQP
   eqp_initialize( data, control, status )
-  control.fdc_control.use_sls = true 
-  strcpy(control.fdc_control.symmetric_linear_solver, "sytr ") 
-  strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") 
-  strcpy(control.sbls_control.definite_linear_solver, "sytr ") 
+  control.fdc_control.use_sls = true
+  strcpy(control.fdc_control.symmetric_linear_solver, "sytr ")
+  strcpy(control.sbls_control.symmetric_linear_solver, "sytr ")
+  strcpy(control.sbls_control.definite_linear_solver, "sytr ")
 
   # Set user-defined control options
   control.f_indexing = true  # Fortran sparse matrix indexing
@@ -191,12 +191,12 @@ for d = 1:1
   # sparse co-ordinate storage
   if d == 1
     global st = 'W'
-  
+
     eqp_import( control, data, status, n, m,
                 "shifted_least_distance", H_ne, Cint[], Cint[], Cint[],
                 "coordinate", A_ne, A_row, A_col, Cint[] )
-  
-    eqp_solve_sldqp( data, status, n, m, w, x_0, g, f, 
+
+    eqp_solve_sldqp( data, status, n, m, w, x_0, g, f,
                      A_ne, A_val, c, x, y )
   end
 

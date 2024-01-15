@@ -59,8 +59,8 @@ for d = 1:7
                 "coordinate", H_ne, H_row, H_col, Cint[],
                 "coordinate", A_ne, A_row, A_col, Cint[] )
 
-    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -68,12 +68,12 @@ for d = 1:7
   if d == 2
     global st = 'R'
 
-    qpb_import( control, data, status, n, m, 
+    qpb_import( control, data, status, n, m,
                 "sparse_by_rows", H_ne, Cint[], H_col, H_ptr,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -85,16 +85,16 @@ for d = 1:7
     A_dense_ne = 6  # number of elements of A
     H_dense = Float64[1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
     A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
-    
+
     qpb_import( control, data, status, n, m,
                 "dense", H_ne, Cint[], Cint[], Cint[],
                 "dense", A_ne, Cint[], Cint[], Cint[] )
-  
-    qpb_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f, 
-                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+
+    qpb_solve_qp( data, status, n, m, H_dense_ne, H_dense, g, f,
+                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                   x, c, y, z, x_stat, c_stat )
   end
-  
+
   # diagonal
   if d == 4
     global st = 'L'
@@ -102,9 +102,9 @@ for d = 1:7
     qpb_import( control, data, status, n, m,
                 "diagonal", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -112,12 +112,12 @@ for d = 1:7
   if d == 5
     global st = 'S'
 
-    qpb_import( control, data, status, n, m, 
+    qpb_import( control, data, status, n, m,
                 "scaled_identity", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
-    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -125,12 +125,12 @@ for d = 1:7
   if d == 6
     global st = 'I'
 
-    qpb_import( control, data, status, n, m, 
+    qpb_import( control, data, status, n, m,
                 "identity", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 
@@ -138,12 +138,12 @@ for d = 1:7
   if d == 7
     global st = 'Z'
 
-    qpb_import( control, data, status, n, m, 
+    qpb_import( control, data, status, n, m,
                 "zero", H_ne, Cint[], Cint[], Cint[],
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    qpb_solve_qp( data, status, n, m, H_ne, H_val, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
 

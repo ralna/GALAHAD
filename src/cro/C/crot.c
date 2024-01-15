@@ -66,11 +66,11 @@ int main(void) {
     control.f_indexing = false; // C sparse matrix indexing
 
     // crossover the solution
-    cro_crossover_solution( &data, &control, &inform, 
-                            n, m, m_equal, 
-                            H_ne, H_val, H_col, H_ptr, 
-                            A_ne, A_val, A_col, A_ptr, 
-                            g, c_l, c_u, x_l, x_u, x, c, y, z, 
+    cro_crossover_solution( &data, &control, &inform,
+                            n, m, m_equal,
+                            H_ne, H_val, H_col, H_ptr,
+                            A_ne, A_val, A_col, A_ptr,
+                            g, c_l, c_u, x_l, x_u, x, c, y, z,
                             x_stat, c_stat );
 
     printf(" CRO_crossover exit status = %1i\n", inform.status);

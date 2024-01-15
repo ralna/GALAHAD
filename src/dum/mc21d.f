@@ -7,7 +7,7 @@
       SUBROUTINE MC21AD( )
       END
 
-      SUBROUTINE MC21BD( n, ICN, licn, IP, LENR, IPERM, numnz, 
+      SUBROUTINE MC21BD( n, ICN, licn, IP, LENR, IPERM, numnz,
      *                   PR, ARP, CV, OUT )
       USE GALAHAD_KINDS_double
       INTEGER ( KIND = ip_ ) :: licn, n, numnz

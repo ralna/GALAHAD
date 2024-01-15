@@ -6,19 +6,19 @@
 %    minimize || A x - b ||_2
 %    subject to ||x||_S <= radius
 %  Here ||x||_S^2 = x' * S * x; if S is not given, S=I and ||x||_S is
-%  thus taken to be the Euclidean (l_2-)norm sqrt(x' * x). 
+%  thus taken to be the Euclidean (l_2-)norm sqrt(x' * x).
 %  Advantage is taken of sparse A and S.
 %
 %  Simple usage -
 %
 %  to solve the least-squares trust-region subproblem in the Euclidean norm
-%   [ x, obj, inform ] 
+%   [ x, obj, inform ]
 %     = galahad_llst( A, b, radius, control, S )
 %
 %  Sophisticated usage -
 %
 %  to initialize data and control structures prior to solution
-%   [ control ] 
+%   [ control ]
 %     = galahad_llst( 'initial' )
 %
 %  to solve the problem using existing data structures
@@ -37,7 +37,7 @@
 %    control: a structure containing control parameters.
 %            The components are of the form control.value, where
 %            value is the name of the corresponding component of
-%            the derived type LLST_CONTROL as described in the 
+%            the derived type LLST_CONTROL as described in the
 %            manual for the fortran 90 package GALAHAD_LLST.
 %            See: http://galahad.rl.ac.uk/galahad-www/doc/llst.pdf
 %          S: the n by n symmetric, diagonally-dominant matrix S
@@ -51,8 +51,8 @@
 %   inform: a structure containing information parameters
 %           The components are of the form inform.value, where
 %           value is the name of the corresponding component of the
-%           derived type LLST_INFORM as described in the manual for 
-%           the fortran 90 package GALAHAD_LLST. 
+%           derived type LLST_INFORM as described in the manual for
+%           the fortran 90 package GALAHAD_LLST.
 %           See: http://galahad.rl.ac.uk/galahad-www/doc/llst.pdf
 %           Note that as the objective value is already available
 %           the component r_norm from LLST_inform is omitted.

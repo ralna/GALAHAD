@@ -21,7 +21,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_GLS_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !     -----------------------------------------
@@ -120,7 +120,7 @@
 
 ! Controls pivoting:  Number of columns searched.  Zero for Markowitz
 
-       INTEGER ( KIND = ip_ ) :: pivoting = 32768 
+       INTEGER ( KIND = ip_ ) :: pivoting = 32768
 
 ! Initially fill_in * ne space allocated for factors
 
@@ -130,7 +130,7 @@
 
        REAL ( KIND = rp_ ) :: multiplier = 2.0_rp_
 
-! if previously allocated internal workspace arrays are greater than reduce 
+! if previously allocated internal workspace arrays are greater than reduce
 ! times the currently required sizes, they are reset to current requirments  NEW
 
        REAL ( KIND = rp_ ) :: reduce = 2.0_rp_

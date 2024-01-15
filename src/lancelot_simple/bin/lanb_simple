@@ -21,4 +21,4 @@ if [ -x /bin/csh ]
   lanb_simple.csh $*
 else
   lanb_simple.sh $*
-fi 
+fi

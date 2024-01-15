@@ -26,28 +26,28 @@ int main(void) {
     int ne = 5; // Hesssian elements
     real_wp_ x[] = {1.,1.,1.}; // start from one
     real_wp_ infty = 1e20; // infinity
-    real_wp_ x_l[] = {-infty,-infty, 0.}; 
+    real_wp_ x_l[] = {-infty,-infty, 0.};
     real_wp_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
-    
+
     // Reverse-communication input/output
     int eval_status;
     real_wp_ f;
     real_wp_ g[n];
     real_wp_ u[n], v[n];
-    real_wp_ H_val[ne]; 
+    real_wp_ H_val[ne];
 
     // Set Hessian storage format, structure and problem bounds
-    trb_import( &control, &data, &status, n, x_l, x_u, 
+    trb_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, H_row, H_col, NULL );
 
     // Solve the problem
     while(true){ // reverse-communication loop
 
         // Call TRB_solve
-        trb_solve_reverse_with_mat( &data, &status, &eval_status, 
+        trb_solve_reverse_with_mat( &data, &status, &eval_status,
                                     n, x, f, g, ne, H_val, u, v );
 
         // Evaluate f(x) and its derivatives as required

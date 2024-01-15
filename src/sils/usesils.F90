@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USESILS_precision
-            
+
 !    -------------------------------------------------
 !    | CUTEst/AMPL interface to SILS, a method for   |
 !    | solving symmetric systems of linear equations |

@@ -365,7 +365,7 @@ struct eqp_control_type {
     /// \li 1  no preconditioner, i.e, the identity within full factorization
     /// \li 2  full factorization
     /// \li 3  band within full factorization
-    /// \li 4  diagonal using the barrier terms within full factorization 
+    /// \li 4  diagonal using the barrier terms within full factorization
     ///        (OBSOLETE)
     /// \li 5  optionally supplied diagonal, G = D
     int preconditioner;
@@ -415,7 +415,7 @@ struct eqp_control_type {
     real_wp_ radius;
 
     /// \brief
-    /// diagonal preconditioners will have diagonals no smaller than 
+    /// diagonal preconditioners will have diagonals no smaller than
     /// min_diagonal (OBSOLETE)
     real_wp_ min_diagonal;
 
@@ -442,7 +442,7 @@ struct eqp_control_type {
 
     /// \brief
     /// if .find_basis_by_transpose is true, implicit factorization precondition
-    /// will be based on a basis of A found by examining A's transpose 
+    /// will be based on a basis of A found by examining A's transpose
     /// (OBSOLETE)
     bool find_basis_by_transpose;
 
@@ -544,7 +544,7 @@ struct eqp_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 

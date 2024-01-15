@@ -19,7 +19,7 @@ X = [zeros(Cint, n_points) for i=1:n_dimen]  # points
 seed = Ref{Cint}()
 
 # Set a random seed
-lhs_get_seed(seed) 
+lhs_get_seed(seed)
 
 # Generate points
 lhs_ihs(n_dimen, n_points, seed, X, control, inform, data)

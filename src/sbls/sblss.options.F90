@@ -7,7 +7,7 @@
    TYPE ( SMT_type ) :: H, A, C
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
    TYPE ( SBLS_data_type ) :: data
-   TYPE ( SBLS_control_type ) :: control        
+   TYPE ( SBLS_control_type ) :: control
    TYPE ( SBLS_inform_type ) :: inform
    INTEGER ( KIND = ip_ ) :: s
    INTEGER ( KIND = ip_ ) :: n = 3, m = 2, h_ne = 4, a_ne = 4, c_ne = 1
@@ -18,9 +18,9 @@
    SOL( n + 1 : n + m ) = (/ 2.0_rp_, 1.0_rp_ /)  ! RHS b
 ! sparse co-ordinate storage format
    IF ( data_storage_type == 0 ) THEN
-   CALL SMT_put( H%type, 'COORDINATE', s )  ! Specify co-ordinate 
+   CALL SMT_put( H%type, 'COORDINATE', s )  ! Specify co-ordinate
    CALL SMT_put( A%type, 'COORDINATE', s )  ! storage for H, A and C
-   CALL SMT_put( C%type, 'COORDINATE', s )  
+   CALL SMT_put( C%type, 'COORDINATE', s )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    ALLOCATE( C%val( c_ne ), C%row( c_ne ), C%col( c_ne ) )
@@ -46,7 +46,7 @@
    H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
    A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! matrix A
    A%col = (/ 1, 2, 2, 3 /)
-   A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers  
+   A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers
    C%val = (/ 1.0_rp_ /)                         ! matrix C
    C%col = (/ 1 /)                              ! NB lower triangular
    C%ptr = (/ 1, 1, 2 /)                        ! Set row pointers
@@ -61,7 +61,7 @@
    H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_ /) ! H
    A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /) ! A
    C%val = (/ 0.0_rp_, 1.0_rp_, 0.0_rp_ /)                            ! C
-! problem data complete   
+! problem data complete
    END IF
    CALL SBLS_initialize( data, control )        ! Initialize control parameters
 !  control%print_level = 1

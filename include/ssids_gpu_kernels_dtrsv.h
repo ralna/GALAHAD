@@ -2,7 +2,7 @@
 Copyright (c) 2012-13, The Science and Technology Facilities Council (STFC)
 Copyright (c) 2012, NVIDIA
 Principal Author: Jonathan Hogg (STFC)
-Other Contributors: 
+Other Contributors:
    Christopher Munro (STFC)
    Philippe Vandermersch (NVIDIA)
 All rights reserved.
@@ -31,7 +31,7 @@ __inline__ __device__ T_ELEM loadVolatile(const volatile T_ELEM *const vptr)
    INV_AFTER and all subsequent rows */
 #define INV_AFTER 4
 
-/* 
+/*
  * Global memory variant parameters:
  * TRSV_NB_TASK is rows per thread block = numThreads.x
  * THREADSY_TASK is numThreads.y
@@ -49,7 +49,7 @@ unsigned int __inline__ __device__ getSM(void) {
   return output;
 }
 
-/** 
+/**
  * \brief Perform non-transpose solve with diagonal block.
  * \warning blkSize MUST be <= warpSize.
  * \tparam T_ELEM Underlying data type, e.g. double.
@@ -76,7 +76,7 @@ void __device__ dblkSolve(const volatile T_ELEM *const minus_a, const int lda, T
    }
 }
 
-/** 
+/**
  * \brief Perform transpose solve with diagonal block.
  * \tparam T_ELEM Underlying data type, e.g. double.
  * \tparam blkSize Block size.
@@ -177,7 +177,7 @@ void __device__ tocache_small(const int n, const unsigned int tid, const volatil
   }
 }
 
-/** 
+/**
  * \brief Wait until *sync >= col_to_wait.
  * \details Needs to be a separate function to force volatile onto *sync.
  * \warning Call __syncthreads().
@@ -198,7 +198,7 @@ void __device__ wait_until_ge(const int tid, const volatile int *const sync, con
   __syncthreads();
 }
 
-/** 
+/**
  * \brief Atomically increment next row counter and return old value to all
  *        threads.
  * \warning Contains a call to __syncthreads()
@@ -343,7 +343,7 @@ void __device__ invert(volatile T_ELEM *const a, volatile T_ELEM /*__shared__*/ 
   }
 }
 
-/** 
+/**
  * \brief Performs a solve through a precalulated matrix inverse
  * \details (so actually a triangular matrix-vector multiply)
  * \tparam T_ELEM underlying data type, e.g. double.
@@ -381,7 +381,7 @@ void __device__ slvinv(const volatile T_ELEM *a, volatile T_ELEM *xshared, T_ELE
   }
 }
 
-/** 
+/**
  * \brief Performs a solve through a transpose precalulated matrix inverse
  * \details (so actually a transpose triangular matrix-vector multiply)
  * \tparam T_ELEM underlying data type, e.g. double.
@@ -543,7 +543,7 @@ void __global__ trsv_lt_exec(const struct trsv_lookup *lookup, T_ELEM *xglobal, 
      } else {
        if (threadIdx.x<n%nb)
          soln[threadIdx.x] = xglobal[int(row*nb+threadIdx.x)];
-       else 
+       else
          soln[threadIdx.x] = 0;
      }
    }
@@ -661,7 +661,7 @@ void __global__ trsv_lt_exec(const struct trsv_lookup *lookup, T_ELEM *xglobal, 
 }
 
 
-/** 
+/**
  * \brief Performs batched trsv for Non-transposed Lower-triangular matrices
  * \details Requires trsv_init() to be called first to initialize sync[].
  * \tparam T_ELEM underlying data type, e.g. double.

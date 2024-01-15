@@ -28,9 +28,9 @@ MC64CD64 = $(MC64D64) $(HCLGD64)(hsl_mc64d_ciface.o)
 mc64: mc64_$(PRECIS)
 	@printf ' %-21s\n' "HSL MC64 routines ($(PRECIS) $(SUCC)"
 mc64_silent: mc64_$(PRECIS)
-mc64_single: $(MC64S) 
+mc64_single: $(MC64S)
 mc64_double: $(MC64D)
-mc64_single_64: $(MC64S64) 
+mc64_single_64: $(MC64S64)
 mc64_double_64: $(MC64D64)
 
 mc64_ciface: mc64_ciface_$(PRECIS)

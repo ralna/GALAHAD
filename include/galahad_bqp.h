@@ -275,7 +275,7 @@ struct bqp_control_type {
     int cg_maxit;
 
     /// \brief
-    /// the unit number to write generated SIF file describing the current 
+    /// the unit number to write generated SIF file describing the current
     /// problem
     int sif_file_device;
 
@@ -304,7 +304,7 @@ struct bqp_control_type {
     /// \brief
     /// the CG iteration will be stopped as soon as the current norm of the
     /// preconditioned gradient is smaller than
-    /// max( stop_cg_relative * initial preconditioned gradient, 
+    /// max( stop_cg_relative * initial preconditioned gradient,
     /// stop_cg_absolute)
     real_wp_ stop_cg_relative;
     /// see stop_cg_relative

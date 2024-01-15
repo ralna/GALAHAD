@@ -43,7 +43,7 @@
 
   \subsection psls_method Method and references
 
-  The basic preconditioners are described in detail in 
+  The basic preconditioners are described in detail in
 
   A. R. Conn, N. I. M. Gould and Ph. L. Toint (1992).
   LANCELOT. A fortran package for large-scale nonlinear optimization
@@ -363,8 +363,8 @@ struct psls_control_type {
     /// \brief
     /// the definite linear equation solver used when .preconditioner = 3,4.
     /// Possible choices are currently:
-    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso, 
-    /// mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr, 
+    /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, mumps, pardiso,
+    /// mkl_pardiso,pastix, wsmp, potr and pbtr, although only sils, potr,
     /// pbtr and,
     /// for OMP 4.0-compliant compilers, ssids are installed by default.
     char definite_linear_solver[31];

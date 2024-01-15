@@ -304,7 +304,7 @@
 !     SUBROUTINE FUNNEL_equality_read_specfile( control, device, alt_specname )
 !
 !!  Reads the content of a specification file, and performs the assignment
-!!  of values associated with given keywords to the corresponding control 
+!!  of values associated with given keywords to the corresponding control
 !!  parameters
 !
 !!  The default values as given by FUNNEL_equality_initialize could (roughly)

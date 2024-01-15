@@ -288,7 +288,7 @@
 !       In this case, the following must be set:
 !
 !       Ao%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', Ao%type )
-!       Ao%val( : )  the values of the components of A_o, stored column 
+!       Ao%val( : )  the values of the components of A_o, stored column
 !                    by column
 !       Ao%row( : )  the row indices of the components of A_o
 !       Ao%ptr( : )  pointers to the start of each column, and past the end of
@@ -309,7 +309,7 @@
 !       In this case, the following must be set:
 !
 !       Ao%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', Ao%type )
-!       Ao%val( : )  the values of the components of A_o, stored column by 
+!       Ao%val( : )  the values of the components of A_o, stored column by
 !                    column with each the entries in each column in order of
 !                    increasing row indicies.
 !
@@ -325,7 +325,7 @@
 !
 !   DB is a REAL array of length o, which must be set by the user to the
 !    value of the parameteric observations, db. The i-th component of DB,
-!    i = 1, ...., o should  contain the value of b_i. On exit, DB will most 
+!    i = 1, ...., o should  contain the value of b_i. On exit, DB will most
 !    likely have been reordered.
 !
 !   A is a structure of type SMT_type used to hold the matrix A.
@@ -2071,7 +2071,7 @@
           CALL SORT_inverse_permute( map%ao_ne, map%ao_map_inverse,            &
                                      X = prob%Ao%val )
 
-!  the row/column indices are in their original order. Compute the number of 
+!  the row/column indices are in their original order. Compute the number of
 !  entries in each column of A in IW, and renumber its rows
 
         ELSE

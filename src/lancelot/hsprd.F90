@@ -9,9 +9,9 @@
 !  February 1st 1995
 
    MODULE LANCELOT_HSPRD_precision
-            
+
 !  The elements of the array IUSED must be set to zero on entry; they will have
-!  been reset to zero on exit. 
+!  been reset to zero on exit.
 
      USE GALAHAD_KINDS_precision
 
@@ -83,7 +83,7 @@
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAGV
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: IVALJR
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAJC
-     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: IUSED 
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: IUSED
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LIST_elements
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : , : ) :: ISYMMH
 
@@ -361,7 +361,7 @@
              DO jcol = 1, nvarel
                pi = gi * P( IELVAR( lthvar + jcol ) )
                IF ( pi /= zero ) THEN
-!DIR$ IVDEP  
+!DIR$ IVDEP
                  DO irow = 1, nvarel
                    ijhess = ISYMMH( jcol, irow ) + ielhst
                    l = IELVAR( lthvar + irow )
@@ -375,7 +375,7 @@
 
 !  -------------------- Case 2. P is sparse ------------------------
 
-         IF ( skipg ) THEN 
+         IF ( skipg ) THEN
            DO j = nvar1, nvar2
 
 !  Consider each nonzero component of P separately
@@ -468,7 +468,7 @@
                      DO jcol = 1, nvarel
                        pi = gi * P( IELVAR( lthvar + jcol ) )
                        IF ( pi /= zero ) THEN
-!DIR$ IVDEP        
+!DIR$ IVDEP
                          DO irow = 1, nvarel
                            ijhess = ISYMMH( jcol, irow ) + ielhst
 
@@ -594,7 +594,7 @@
                    DO jcol = 1, nvarel
                      pi = gi * P( IELVAR( lthvar + jcol ) )
                      IF ( pi /= zero ) THEN
-!DIR$ IVDEP      
+!DIR$ IVDEP
                        DO irow = 1, nvarel
                          ijhess = ISYMMH( jcol, irow ) + ielhst
 

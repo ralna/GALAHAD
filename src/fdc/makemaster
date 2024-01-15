@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD FDC package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -25,13 +25,13 @@ DEPENDENCIES = make_sls_deps make_sls make_ma33 make_gls \
 
 DEPENDS = eqp lpb lsqp cqp dqp bqpb wcp
 
-#  auxiliary packages that the C interface to the current package depends 
+#  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_sls_deps make_ciface_sls \
                 make_ciface_uls_deps make_ciface_uls
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS = eqp_ciface lpb_ciface lsqp_ciface \
            cqp_ciface dqp_ciface bqpb_ciface \
@@ -42,7 +42,7 @@ CDEPENDS = eqp_ciface lpb_ciface lsqp_ciface \
 
 PYDEPENDENCIES = make_pyiface_sls make_pyiface_uls
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS = eqp_pyiface lpb_pyiface lsqp_pyiface \
             cqp_pyiface dqp_pyiface bqpb_pyiface \
@@ -61,11 +61,11 @@ TESTS = test_full
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -73,5 +73,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

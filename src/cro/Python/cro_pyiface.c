@@ -327,19 +327,19 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n", "m", "m_equal", "g", 
+    static char *kwlist[] = {"n", "m", "m_equal", "g",
                              "H_ne", "H_val", "H_col", "H_ptr",
                              "A_ne", "A_val", "A_col", "A_ptr",
                              "c_l", "c_u", "x_l", "x_u",
-                             "x", "c", "y", "z", "x_stat", "c_stat", 
+                             "x", "c", "y", "z", "x_stat", "c_stat",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiOOOiOOOOOOOOOOOOO|O", 
-                             kwlist, &n, &m, &m_equal, &py_g, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOiOOOiOOOOOOOOOOOOO|O",
+                             kwlist, &n, &m, &m_equal, &py_g,
                              &H_ne, &py_H_val, &py_H_col, &py_H_ptr,
                              &A_ne, &py_A_val, &py_A_col, &py_A_ptr,
                              &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                             &py_x, &py_c, &py_y, &py_z, 
+                             &py_x, &py_c, &py_y, &py_z,
                              &py_x_stat, &py_c_stat, &py_options))
         return NULL;
 
@@ -437,10 +437,10 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
         return NULL;
 
     // Call cro_crossover_solution
-    cro_crossover_solution(&data, &control, &inform, n, m, m_equal, 
+    cro_crossover_solution(&data, &control, &inform, n, m, m_equal,
                            H_ne, H_val, H_col, H_ptr,
                            A_ne, A_val, A_col, A_ptr,
-                           g, c_l, c_u, x_l, x_u, 
+                           g, c_l, c_u, x_l, x_u,
                            x, c, y, z, x_stat, c_stat);
 
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
@@ -450,7 +450,7 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
 
     for(int i = 0; i < n; i++) x_stat_long[i] = x_stat[i];
     for(int i = 0; i < m; i++) c_stat_long[i] = c_stat[i];
-    
+
     // Free allocated memory
     free(H_col);
     free(H_ptr);
@@ -472,8 +472,8 @@ static PyObject* py_cro_crossover_solution(PyObject *self, PyObject *args,
 
     // Return x, c, y, z, x_stat and c_stat
     PyObject *crossover_solution_return;
-    crossover_solution_return = Py_BuildValue("OOOOOOO", py_x, py_c, py_y, 
-                                              py_z, py_x_stat, py_c_stat, 
+    crossover_solution_return = Py_BuildValue("OOOOOOO", py_x, py_c, py_y,
+                                              py_z, py_x_stat, py_c_stat,
                                               py_inform);
     Py_INCREF(crossover_solution_return);
     return crossover_solution_return;
@@ -502,7 +502,7 @@ static PyObject* py_cro_terminate(PyObject *self){
 /* cro python module method table */
 static PyMethodDef cro_module_methods[] = {
     {"initialize", (PyCFunction) py_cro_initialize, METH_NOARGS,NULL},
-    {"crossover_solution", (PyCFunction) py_cro_crossover_solution, 
+    {"crossover_solution", (PyCFunction) py_cro_crossover_solution,
      METH_VARARGS, NULL},
     {"terminate", (PyCFunction) py_cro_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

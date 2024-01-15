@@ -996,7 +996,7 @@ struct nls_subproblem_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 
@@ -1107,7 +1107,7 @@ struct nls_inform_type {
     int alloc_status;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred
     char bad_alloc[81];
 

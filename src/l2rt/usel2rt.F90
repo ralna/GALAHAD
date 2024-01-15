@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USEL2RT_precision
-            
+
 !     ----------------------------------------------------
 !    | CUTEst/AMPL interface to L2RT, an iterative method |
 !    | for regularized linear least-two-norm problems     |

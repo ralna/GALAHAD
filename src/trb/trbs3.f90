@@ -21,7 +21,7 @@
    ALLOCATE( nlp%H%val( h_ne ), nlp%H%row( h_ne ), nlp%H%col( h_ne ) )
    nlp%H%row = (/ 1, 3, 2, 3, 3 /)              ! Hessian H
    nlp%H%col = (/ 1, 1, 2, 2, 3 /)              ! NB lower triangle
-! problem data complete   
+! problem data complete
    CALL TRB_initialize( data, control, inform ) ! Initialize control parameters
 !  control%hessian_available = .FALSE.          ! Hessian products will be used
 !  control%psls_control%preconditioner = - 3    ! Apply uesr's preconditioner

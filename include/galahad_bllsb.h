@@ -517,7 +517,7 @@ struct bllsb_control_type {
 
     /// \brief
     /// if .reduced_pounce_system is true, eliminate fixed variables when
-    /// solving the linear system required by the attempted pounce to 
+    /// solving the linear system required by the attempted pounce to
     /// the solution
     bool reduced_pounce_system;
 
@@ -838,8 +838,8 @@ void bllsb_import( struct bllsb_control_type *control,
 
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
-   used for the objective design matrix, \f$A_o\f$. It should be one of 
-   'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+   used for the objective design matrix, \f$A_o\f$. It should be one of
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns',
    'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
  @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
@@ -912,7 +912,7 @@ void bllsb_solve_blls( void **data,
                        real_wp_ w[] );
 
 /*!<
- Solve the constrained linear-least squares problem when the design matrix 
+ Solve the constrained linear-least squares problem when the design matrix
   \f$A_o\f$ is available.
 
  @param[in,out] data holds private internal data

@@ -546,7 +546,7 @@
 
       TYPE, PUBLIC :: PRESOLVE_control_type
 
-         INTEGER ( KIND = ip_ ) :: termination = REDUCED_SIZE   
+         INTEGER ( KIND = ip_ ) :: termination = REDUCED_SIZE
 
 !                   Determines the strategy for terminating the presolve
 !                   analysis.  Possible values are:
@@ -564,19 +564,19 @@
 !                         for early termination.
 !                   Default: REDUCED_SIZE
 
-         INTEGER ( KIND = ip_ ) :: max_nbr_transforms = DEF_MAX_NBR_TRANSF 
+         INTEGER ( KIND = ip_ ) :: max_nbr_transforms = DEF_MAX_NBR_TRANSF
 
 !                   The maximum number of problem transformations, cumulated
 !                   over all calls to PRESOLVE.
 !                   Default: 1000000
 
-         INTEGER ( KIND = ip_ ) :: max_nbr_passes = DEF_MAX_NBR_PASSES 
+         INTEGER ( KIND = ip_ ) :: max_nbr_passes = DEF_MAX_NBR_PASSES
 
 !                   The maximum number of analysis passes for problem analysis
 !                   during a single call of PRESOLVE_apply.
 !                   Default: 25
 
-         REAL ( KIND = rp_ ) :: c_accuracy = TEN ** ( - 6 )  
+         REAL ( KIND = rp_ ) :: c_accuracy = TEN ** ( - 6 )
 
 !                   The relative accuracy at which the general linear
 !                   constraints are satisfied at the exit of the solver.
@@ -585,7 +585,7 @@
 !                   Default: 10.**(-6) in double precision,
 !                            10.**(-4) in single precision.
 
-         REAL ( KIND = rp_ ) :: z_accuracy = TEN ** ( - 6 )  
+         REAL ( KIND = rp_ ) :: z_accuracy = TEN ** ( - 6 )
 
 !                   The relative accuracy at which the dual feasibility
 !                   constraints are satisfied at the exit of the solver.
@@ -594,26 +594,26 @@
 !                   Default: 10.**(-6) in double precision,
 !                            10.**(-4) in single precision.
 
-         REAL ( KIND = rp_ ) :: infinity = ten ** 19  
+         REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !                   The value beyond which a number is deemed equal to
 !                   plus infinity
 !                   (minus infinity being defined as its opposite)
 !                   Default: 10.**(19).
 
-         INTEGER ( KIND = ip_ ) :: out = DEF_WRITE_UNIT            
+         INTEGER ( KIND = ip_ ) :: out = DEF_WRITE_UNIT
 
 !                   The unit number associated with the device used for
 !                   printout.
 !                   Default: 6
 
-         INTEGER ( KIND = ip_ ) :: errout = DEF_WRITE_UNIT         
+         INTEGER ( KIND = ip_ ) :: errout = DEF_WRITE_UNIT
 
 !                   The unit number associated with the device used for
 !                   error ouput.
 !                   Default: 6
 
-         INTEGER ( KIND = ip_ ) :: print_level = DEF_PRINT_LEVEL  
+         INTEGER ( KIND = ip_ ) :: print_level = DEF_PRINT_LEVEL
 
 !                   The level of printout requested by the user. Can take
 !                   the values:
@@ -626,7 +626,7 @@
 !                   - CRAZY   : reports a completely silly amount of information
 !                   Default: SILENT
 
-         LOGICAL :: dual_transformations = .TRUE.     
+         LOGICAL :: dual_transformations = .TRUE.
 
 !                   .TRUE. if dual transformations of the problem are allowed.
 !                   Note that this implies that the reduced problem is solved
@@ -640,7 +640,7 @@
 !                   doubleton_columns_freq, z_accuracy, check_dual_feasibility.
 !                   Default: .TRUE.
 
-         LOGICAL :: redundant_xc = .TRUE.             
+         LOGICAL :: redundant_xc = .TRUE.
 
 !                   .TRUE. if the redundant variables and constraints (i.e.
 !                   variables that do not appear in the objective
@@ -649,7 +649,7 @@
 !                   constraints before other transformations are attempted.
 !                   Default: .TRUE.
 
-         INTEGER ( KIND = ip_ ) :: primal_constraints_freq = DEF_AN_PRIMAL_FREQ 
+         INTEGER ( KIND = ip_ ) :: primal_constraints_freq = DEF_AN_PRIMAL_FREQ
 
 !                   The frequency of primal constraints analysis in terms of
 !                   presolving passes.  A value of j = 2 indicates that primal
@@ -657,7 +657,7 @@
 !                   value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: dual_constraints_freq = DEF_AN_DUAL_FREQ     
+         INTEGER ( KIND = ip_ ) :: dual_constraints_freq = DEF_AN_DUAL_FREQ
 
 !                   The frequency of dual constraints analysis in terms of
 !                   presolving passes.  A value of j = 2 indicates that dual
@@ -665,7 +665,7 @@
 !                   value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: singleton_columns_freq = DEF_AN_SING_FREQ    
+         INTEGER ( KIND = ip_ ) :: singleton_columns_freq = DEF_AN_SING_FREQ
 
 !                   The frequency of singleton column analysis in terms of
 !                   presolving passes.  A value of j = 2 indicates that
@@ -673,7 +673,7 @@
 !                   A zero value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: doubleton_columns_freq = DEF_AN_DOUB_FREQ    
+         INTEGER ( KIND = ip_ ) :: doubleton_columns_freq = DEF_AN_DOUB_FREQ
 
 !                   The frequency of doubleton column analysis in terms of
 !                   presolving passes.  A value of j indicates that doubleton
@@ -681,7 +681,7 @@
 !                   value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: unc_variables_freq  = DEF_UNC_VARS_FREQ     
+         INTEGER ( KIND = ip_ ) :: unc_variables_freq  = DEF_UNC_VARS_FREQ
 
 !                   The frequency of the attempts to fix linearly unconstrained
 !                   variables, expressed in terms of presolving passes.  A
@@ -690,7 +690,7 @@
 !                   is ever made.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: dependent_variables_freq = DEF_DEP_COLS_FREQ 
+         INTEGER ( KIND = ip_ ) :: dependent_variables_freq = DEF_DEP_COLS_FREQ
 
 !                   The frequency of search for dependent variables in terms of
 !                   presolving passes.  A value of j = 2 indicates that
@@ -699,7 +699,7 @@
 !                   searched for.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: sparsify_rows_freq   = DEF_SPARSIFY_FREQ     
+         INTEGER ( KIND = ip_ ) :: sparsify_rows_freq   = DEF_SPARSIFY_FREQ
 
 !                   The frequency of the attempts to make A sparser in terms of
 !                   presolving passes.  A value of j = 2 indicates that attempts
@@ -707,7 +707,7 @@
 !                   that no attempt is ever made.
 !                   Default: 1
 
-         INTEGER ( KIND = ip_ ) :: max_fill = DEF_MAX_FILL     
+         INTEGER ( KIND = ip_ ) :: max_fill = DEF_MAX_FILL
 
 !                   The maximum percentage of fill in each row of A. Note that
 !                   this is a row-wise measure: globally fill never exceeds
@@ -716,19 +716,19 @@
 !                   no limit is put on row fill.
 !                   Default: -1 (no limit).
 
-         INTEGER ( KIND = ip_ ) :: transf_file_nbr = DEF_TRANSF_FILE_NBR  
+         INTEGER ( KIND = ip_ ) :: transf_file_nbr = DEF_TRANSF_FILE_NBR
 
 !                   The unit number to be associated with the file(s) used
 !                   for saving problem transformations on a disk file.
 !                   Default: 57
 
-         INTEGER ( KIND = ip_ ) :: transf_buffer_size = DEF_MAX_T_BUFFER 
+         INTEGER ( KIND = ip_ ) :: transf_buffer_size = DEF_MAX_T_BUFFER
 
 !                   The number of transformations that can be kept in memory
 !                   at once (that is without being saved on a disk file).
 !                   Default: 50000
 
-         INTEGER ( KIND = ip_ ) :: transf_file_status = KEEP    
+         INTEGER ( KIND = ip_ ) :: transf_file_status = KEEP
 
 !                   The exit status of the file where problem transformations
 !                   are saved:
@@ -737,7 +737,7 @@
 !                   Default: KEEP
 
          CHARACTER( LEN = 30 ) :: transf_file_name  = DEF_transf_file_name
-                                                
+
 
 !                   The name of the file (to be) used for storing
 !                   problem transformation on disk.
@@ -746,7 +746,7 @@
 !                         PRESOLVE following PRESOLVE_read_specfile. It can
 !                         then only be changed after calling PRESOLVE_terminate.
 
-         INTEGER ( KIND = ip_ ) :: y_sign = POSITIVE          
+         INTEGER ( KIND = ip_ ) :: y_sign = POSITIVE
 
 !                   Determines the convention of sign used for the multipliers
 !                   associated with the general linear constraints.
@@ -760,7 +760,7 @@
 !                                upper bounds constraints.
 !                   Default: POSITIVE.
 
-         INTEGER ( KIND = ip_ ) :: inactive_y = LEAVE_AS_IS   
+         INTEGER ( KIND = ip_ ) :: inactive_y = LEAVE_AS_IS
 
 !                   Determines whether or not the multipliers corresponding
 !                   to constraints that are inactive at the unreduced point
@@ -779,7 +779,7 @@
 !                                inequality constraints are left unaltered.
 !                   Default: LEAVE_AS_IS
 
-         INTEGER ( KIND = ip_ ) :: z_sign = POSITIVE            
+         INTEGER ( KIND = ip_ ) :: z_sign = POSITIVE
 
 !                   Determines the convention of sign used for the dual
 !                   variables associated with the bound constraints.
@@ -791,7 +791,7 @@
 !                                non-negative for active upper bounds.
 !                   Default: POSITIVE.
 
-         INTEGER ( KIND = ip_ ) :: inactive_z = LEAVE_AS_IS     
+         INTEGER ( KIND = ip_ ) :: inactive_z = LEAVE_AS_IS
 
 !                   Determines whether or not the dual variables corresponding
 !                   to bounds that are inactive at the unreduced point
@@ -810,7 +810,7 @@
 !                                bounds are left unaltered.
 !                   Default: LEAVE_AS_IS
 
-         INTEGER ( KIND = ip_ ) :: final_x_bounds = TIGHTEST     
+         INTEGER ( KIND = ip_ ) :: final_x_bounds = TIGHTEST
 
 !                   The type of final bounds on the variables returned by the
 !                   package.  This parameter can take the values:
@@ -832,7 +832,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         INTEGER ( KIND = ip_ ) :: final_z_bounds = TIGHTEST       
+         INTEGER ( KIND = ip_ ) :: final_z_bounds = TIGHTEST
 
 !                   The type of final bounds on the dual variables returned by
 !                   the package.  This parameter can take the values:
@@ -854,7 +854,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         INTEGER ( KIND = ip_ ) :: final_c_bounds = TIGHTEST       
+         INTEGER ( KIND = ip_ ) :: final_c_bounds = TIGHTEST
 
 !                   The type of final bounds on the constraints returned by the
 !                   package.  This parameter can take the values:
@@ -879,7 +879,7 @@
 !                   2) If different from TIGHTEST, its value must be identical
 !                      to that of control%final_x_bounds.
 
-         INTEGER ( KIND = ip_ ) :: final_y_bounds = TIGHTEST       
+         INTEGER ( KIND = ip_ ) :: final_y_bounds = TIGHTEST
 
 !                   The type of final bounds on the multipliers returned by the
 !                   package.  This parameter can take the values:
@@ -901,7 +901,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         INTEGER ( KIND = ip_ ) :: check_primal_feasibility = NONE  
+         INTEGER ( KIND = ip_ ) :: check_primal_feasibility = NONE
 
 !                   The level of feasibility check (on the values of x) at
 !                   the start of the restoration phase.  This parameter can
@@ -915,7 +915,7 @@
 !                             terminated if an incompatibilty is detected.
 !                   Default: NONE
 
-         INTEGER ( KIND = ip_ ) :: check_dual_feasibility = NONE   
+         INTEGER ( KIND = ip_ ) :: check_dual_feasibility = NONE
 
 !                   The level of dual feasibility check (on the values of x,
 !                   y and z) at the start of the restoration phase.
@@ -932,49 +932,49 @@
 !                   variables in the reduced problem.
 !                   Default: NONE
 
-         LOGICAL :: get_q = .TRUE.                      
+         LOGICAL :: get_q = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function must be reconstructed on RESTORE from the
 !                   (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_f = .TRUE.                     
+         LOGICAL :: get_f = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function's independent term is to be be reconstructed
 !                   on RESTORE from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_g = .TRUE.                     
+         LOGICAL :: get_g = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function's gradient must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_H = .TRUE.                     
+         LOGICAL :: get_H = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function's Hessian must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_A = .TRUE.                     
+         LOGICAL :: get_A = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the constraints'
 !                   coefficient matrix must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_x  = .TRUE.                     
+         LOGICAL :: get_x  = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the variables
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_x_bounds = .TRUE.              
+         LOGICAL :: get_x_bounds = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem variables must be reconstructed on RESTORE
@@ -982,14 +982,14 @@
 !                   This parameter is only relevant in the RESTORE mode.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_z = .TRUE.                      
+         LOGICAL :: get_z = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the dual variables
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_z_bounds = .TRUE.              
+         LOGICAL :: get_z_bounds = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem dual variables must be reconstructed on RESTORE
@@ -1002,14 +1002,14 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         LOGICAL :: get_c = .TRUE.                     
+         LOGICAL :: get_c = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the constraints
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_c_bounds= .TRUE.              
+         LOGICAL :: get_c_bounds= .TRUE.
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem constraints must be reconstructed on RESTORE
@@ -1017,14 +1017,14 @@
 !                   This parameter is only relevant in the RESTORE mode.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_y = .TRUE.                     
+         LOGICAL :: get_y = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the multipliers
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_y_bounds = .TRUE.              
+         LOGICAL :: get_y_bounds = .TRUE.
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem multipliers must be reconstructed on RESTORE
@@ -1037,7 +1037,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE)
 
-         REAL ( KIND = rp_ ) :: pivot_tol = TEN ** ( - 10 )  
+         REAL ( KIND = rp_ ) :: pivot_tol = TEN ** ( - 10 )
 
 !                   The relative pivot tolerance above which pivoting is
 !                   considered as numerically stable in transforming the
@@ -1047,7 +1047,7 @@
 !                   Default: 10.**(-10) in double precision,
 !                            10.**(-6)  in single precision.
 
-         REAL ( KIND = rp_ ) :: min_rel_improve = TEN ** ( - 10 ) 
+         REAL ( KIND = rp_ ) :: min_rel_improve = TEN ** ( - 10 )
 
 !                   The minimum relative improvement in the bounds on x, y
 !                   and z for a tighter bound on these quantities to be
@@ -1073,7 +1073,7 @@
 !                   Default: 10.**(-10) in double precision,
 !                            10.**(-6)  in single precision.
 
-         REAL ( KIND = rp_ ) :: max_growth_factor = TEN ** 8 
+         REAL ( KIND = rp_ ) :: max_growth_factor = TEN ** 8
 
 !                  The maximum growth factor (in absolute value) that is
 !                  accepted between the maximum data item in the original
@@ -1583,7 +1583,7 @@
          INTEGER ( KIND = ip_ ) :: rtm     ! the number of reapplied
                                            ! transformations from memory
 
-         INTEGER ( KIND = ip_ ) :: needs( 6, 10 )  ! the matrix 
+         INTEGER ( KIND = ip_ ) :: needs( 6, 10 )  ! the matrix
                                         ! of output dependence
                                         ! needs( i, j ) gives the index of the
                                         ! first transformation where the value
@@ -22719,7 +22719,7 @@ sli:     DO ii = 1, prob%m
        IF ( data%presolve_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) 
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
          data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
        ELSE
          data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1

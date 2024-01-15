@@ -31,7 +31,7 @@
           nlh = iai ; ulh = nnzh; mlh = nnzh
           CALL EXTEND_arrays( data%P%row, lirnh, ulh, nlh, mlh, buffer,       &
                               status, alloc_status )
-          IF ( status /= 0 ) THEN 
+          IF ( status /= 0 ) THEN
             bad_alloc = 'data%P%row' ; GO TO 990 ; END IF
           lirnh = nlh ; iai = lirnh
         END IF
@@ -130,7 +130,7 @@
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
-        
+
         array_name = 'spls: L_col_ptr'
         CALL SPACE_resize_array( n + 1, data%L_col_ptr,                     &
             inform%status, inform%alloc_status, array_name = array_name,       &
@@ -158,7 +158,7 @@
 !  Check to see if H contains a diagonal entry in each row
 
         data%IW( : n ) = 0
-        DO j = 1, nnzh        
+        DO j = 1, nnzh
          i = data%P%row( j )
          IF ( i == data%P%col( j ) ) data%IW( i ) = data%IW( i ) + 1
         END DO
@@ -195,7 +195,7 @@
 !  First count how many nonzeros there are in each column
 
         data%IW( : n ) = 0
-        DO j = 1, nnzh        
+        DO j = 1, nnzh
          i = data%P%row( j )
          IF ( i /= data%P%col( j ) ) data%IW( i ) = data%IW( i ) + 1
         END DO
@@ -209,7 +209,7 @@
 
 !  Finally copy the data into its correct position ...
 
-        DO j = 1, nnzh        
+        DO j = 1, nnzh
           i = data%P%row( j )
           IF ( i /= data%P%col( j ) ) THEN  ! off-diagonal term
             data%P%val( data%A_col_ptr( i ) ) = data%P%val( j )
@@ -220,7 +220,7 @@
           END IF
         END DO
 
-!   ... and reposition the starting addresses 
+!   ... and reposition the starting addresses
 
         data%A_col_ptr( 1 ) = 1
         DO i = 1, n
@@ -236,8 +236,8 @@
                     data%A_col_ptr, data%P%row( S%nextra + n + 1 : ntotal ),    &
                     data%P%val( n + 1 : S%nextra ), data%P%val( : n ),  &
                     data%L_col_ptr, data%P%row( n + 1 : S%nextra ),             &
-                    icfact, pertur, data%IW, data%DIAG, W )                            
-                                                                              
+                    icfact, pertur, data%IW, data%DIAG, W )
+
 !  - - - - - - - - - - - - - - - - - -
 !  A band preconditioner is to be used
 !  - - - - - - - - - - - - - - - - - -
@@ -256,4 +256,4 @@
 !  Allocate the arrays for the analysis phase
 
           S%liw = 1.2 * ( 2 * nnzh + 3 * n + 1 )
-       
+

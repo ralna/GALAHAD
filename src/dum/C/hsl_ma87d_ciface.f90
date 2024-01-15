@@ -18,7 +18,7 @@ module hsl_ma87_double_ciface
       f_ma87_get_n__          => ma87_get_n__
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                       ! *** 
+   integer, parameter :: longc_ = C_LONG                       ! ***
 
    ! Data type for user controls
    type, bind(C) :: ma87_control
@@ -42,7 +42,7 @@ module hsl_ma87_double_ciface
    !*************************************************
 
    ! data type for returning information to user.
-   type, bind(C) :: ma87_info 
+   type, bind(C) :: ma87_info
       real(dpc_)  :: detlog
       integer(ipc_)  :: flag
       integer(ipc_)  :: maxdepth

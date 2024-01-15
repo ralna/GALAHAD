@@ -5,7 +5,7 @@
    USE GALAHAD_BSC_precision
    IMPLICIT NONE
    TYPE ( BSC_data_type ) :: data
-   TYPE ( BSC_control_type ) :: control        
+   TYPE ( BSC_control_type ) :: control
    TYPE ( BSC_inform_type ) :: inform
    INTEGER ( KIND = ip_ ), PARAMETER :: m = 3, n = 4, a_ne = 6
    TYPE ( SMT_type ) :: A, S

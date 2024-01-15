@@ -89,7 +89,7 @@
 
         INTEGER ( KIND = ip_ ) :: itmin = 0
 
-!   the maximum number of iterations allowed once the trust-region boundary 
+!   the maximum number of iterations allowed once the trust-region boundary
 !   has been achieved (-ve = no bound)
 
         INTEGER ( KIND = ip_ ) :: itmax_beyond_boundary = - 1
@@ -101,7 +101,7 @@
         REAL ( KIND = rp_ ) :: stop_relative = epsmch
         REAL ( KIND = rp_ ) :: stop_absolute = zero
 
-!  the iteration stops successfully when the current decrease in the 
+!  the iteration stops successfully when the current decrease in the
 !   objective function is smaller than stop_f_relative * the overall decrease
 
         REAL ( KIND = rp_ ) :: stop_f_relative = epsmch
@@ -1225,7 +1225,7 @@
        c2 = ( gamma_2 / radius ) ** 2
 
 !  either estimate the larger root by replacing phi by the underestimator
-!  gamma_min^2 / ( lambda + lambda_min )^2 
+!  gamma_min^2 / ( lambda + lambda_min )^2
 
        IF ( .NOT. find_roots ) THEN
          IF ( lambda_1 < lambda_2 ) THEN
@@ -1256,7 +1256,7 @@
              A( 2 ) = mu ** 2 - c1 - c2
              A( 1 ) = - two * c2 * mu
              A( 0 ) = - c2 * mu ** 2
-           END IF 
+           END IF
 
 !  un-shifted case
 
@@ -1297,7 +1297,7 @@
          END IF
        END IF
 
-!  perform a few iterations of Newton's method, applied to 
+!  perform a few iterations of Newton's method, applied to
 !  ( phi(lambda) )^-1/2 = radiius^-1/2, to improve the root
 
        DO i = 1, 10
@@ -1345,8 +1345,8 @@
            status = 3
          ELSE
            lambda = ROOTS( 2 )
- 
-!  perform a few iterations of Newton's method, applied to 
+
+!  perform a few iterations of Newton's method, applied to
 !  ( phi(lambda) )^-1/2 = radiius^-1/2, to improve the root
 
 !          dlambda = zero

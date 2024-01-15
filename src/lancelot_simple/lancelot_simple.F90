@@ -5,7 +5,7 @@
 !-*--*-*-  G A L A H A D _ L A N C E L O T _ S I M P L E    M O D U L E  -*-*-*-
 
    MODULE LANCELOT_simple_precision
-            
+
       USE GALAHAD_KINDS_precision
       PRIVATE
       PUBLIC :: LANCELOT_simple

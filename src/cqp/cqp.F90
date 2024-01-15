@@ -8355,15 +8355,15 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !
-!  Compute the norms of the primal, dual and complementarity slacknesses 
+!  Compute the norms of the primal, dual and complementarity slacknesses
 !    res_primal      = || (  A x - SCALE_c * c ) ||
 !                      || (   y - y_l - y_u    ) ||_2
 !    res_dual        = || ( GRAD_L - z_l - z_u ) ||_2
 !    res_primal_dual = root( res_primal^2 + res_dual^2 )
 !    res_cs          =  | < z_l . ( x - x_l ) > +  < z_u . ( x_u - x ) > +
 !                         < y_l . ( c - c_l ) > +  < y_u . ( c_u - c ) > |
-!  and the value of the merit function 
-!    res_cs + tau res_primal_dual 
+!  and the value of the merit function
+!    res_cs + tau res_primal_dual
 !  where GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g - A(transpose) y
 !  is the gradient of the Lagrangian
 !
@@ -10017,7 +10017,7 @@
       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, indicator_type
       REAL ( KIND = rp_ ), INTENT( IN ) :: indicator_tol_p
       REAL ( KIND = rp_ ), INTENT( IN ) :: indicator_tol_pd
-      REAL ( KIND = rp_ ), INTENT( IN ) :: indicator_tol_tapia 
+      REAL ( KIND = rp_ ), INTENT( IN ) :: indicator_tol_tapia
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_last, Z_last
@@ -11401,7 +11401,7 @@
 !   For other values see, cqp_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in cqp_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -11432,7 +11432,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -11446,10 +11446,10 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -11459,10 +11459,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -11630,7 +11630,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -11644,10 +11644,10 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -11657,10 +11657,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are

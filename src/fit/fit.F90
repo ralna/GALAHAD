@@ -14,7 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FIT_precision
-            
+
 !      -------------------------------------------------
 !     |                                                 |
 !     | Fit polynomials to function and derivative data |

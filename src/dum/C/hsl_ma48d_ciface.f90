@@ -21,7 +21,7 @@ module hsl_ma48_double_ciface
       f_ma48_determinant            => ma48_determinant
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                     ! *** 
+   integer, parameter :: longc_ = C_LONG                     ! ***
 
    type, bind(C) :: ma48_control
       integer(ipc_) :: f_arrays

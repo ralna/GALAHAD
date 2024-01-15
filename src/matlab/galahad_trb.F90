@@ -511,7 +511,7 @@
             EXIT
           END SELECT
         END DO
- 
+
 !  Print details to Matlab window
 
 !       IF ( control%error > 0 ) CLOSE( control%error )

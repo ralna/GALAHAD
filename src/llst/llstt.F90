@@ -39,7 +39,7 @@
      A_dense%val( l + m + i ) = REAL( i, rp_ )
      A_dense%val( l + n ) = one
      l = l + n
-   END DO 
+   END DO
    S%m = n ; S%n = n ; S%ne = n        ! S = diag(1:n)**2
    ALLOCATE( S%row( S%ne ), S%col( S%ne ), S%val( S%ne ), S%ptr( n + 1 ) )
    DO i = 1, n

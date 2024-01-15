@@ -387,16 +387,16 @@ PyObject* rqs_make_inform_dict(const struct rqs_inform_type *inform){
                          PyUnicode_FromString(inform->bad_alloc));
 
     // include history arrays
-    //npy_intp hdim[] = {1000}; 
-    //PyArrayObject *py_lambda = 
+    //npy_intp hdim[] = {1000};
+    //PyArrayObject *py_lambda =
     //  (PyArrayObject*) PyArray_SimpleNew(1, hdim, NPY_DOUBLE);
-    //double *lambda = (double *) PyArray_DATA(py_lambda); 
-    //for(int i=0; i<1000; i++) lambda[i] = inform->history[i]->lambda;  
+    //double *lambda = (double *) PyArray_DATA(py_lambda);
+    //for(int i=0; i<1000; i++) lambda[i] = inform->history[i]->lambda;
     //PyDict_SetItemString(py_inform, "lambda", (PyObject *) py_lambda);
-    //PyArrayObject *py_x_norm = 
+    //PyArrayObject *py_x_norm =
     //  (PyArrayObject*) PyArray_SimpleNew(1, hdim, NPY_DOUBLE);
-    //double *x_norm = (double *) PyArray_DATA(py_x_norm); 
-    //for(int i=0; i<1000; i++) x_norm[i] = inform->history[i]->x_norm;  
+    //double *x_norm = (double *) PyArray_DATA(py_x_norm);
+    //for(int i=0; i<1000; i++) x_norm[i] = inform->history[i]->x_norm;
     //PyDict_SetItemString(py_inform, "x_norm", (PyObject *) py_x_norm);
 
     // Set time nested dictionary
@@ -444,7 +444,7 @@ static PyObject* py_rqs_load(PyObject *self, PyObject *args, PyObject *keywds){
     static char *kwlist[] = {"n","H_type","H_ne","H_row","H_col","H_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
                                     &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr,
                                     &py_options))
@@ -488,7 +488,7 @@ static PyObject* py_rqs_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call rqs_import
-    rqs_import(&control, &data, &status, n, 
+    rqs_import(&control, &data, &status, n,
                H_type, H_ne, H_row, H_col, H_ptr);
 
     // Free allocated memory
@@ -510,7 +510,7 @@ static PyObject* py_rqs_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   RQS_LOAD_M    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_rqs_load_m(PyObject *self, PyObject *args, 
+static PyObject* py_rqs_load_m(PyObject *self, PyObject *args,
                                PyObject *keywds){
     PyArrayObject *py_M_row, *py_M_col, *py_M_ptr;
     PyObject *py_options = NULL;
@@ -526,7 +526,7 @@ static PyObject* py_rqs_load_m(PyObject *self, PyObject *args,
     static char *kwlist[] = {"n","M_type","M_ne","M_row","M_col","M_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
                                     &M_type, &M_ne, &py_M_row,
                                     &py_M_col, &py_M_ptr,
                                     &py_options))
@@ -570,7 +570,7 @@ static PyObject* py_rqs_load_m(PyObject *self, PyObject *args,
         return NULL;
 
     // Call rqs_import
-    rqs_import_m(&data, &status, n, 
+    rqs_import_m(&data, &status, n,
                  M_type, M_ne, M_row, M_col, M_ptr);
 
     // Free allocated memory
@@ -592,7 +592,7 @@ static PyObject* py_rqs_load_m(PyObject *self, PyObject *args,
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   RQS_LOAD_A    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_rqs_load_a(PyObject *self, PyObject *args, 
+static PyObject* py_rqs_load_a(PyObject *self, PyObject *args,
                                PyObject *keywds){
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
     PyObject *py_options = NULL;
@@ -608,7 +608,7 @@ static PyObject* py_rqs_load_a(PyObject *self, PyObject *args,
     static char *kwlist[] = {"m","A_type","A_ne","A_row","A_col","A_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &m, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &m,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
                                     &py_options))
@@ -652,7 +652,7 @@ static PyObject* py_rqs_load_a(PyObject *self, PyObject *args,
         return NULL;
 
     // Call rqs_import
-    rqs_import_a(&data, &status, m, 
+    rqs_import_a(&data, &status, m,
                  A_type, A_ne, A_row, A_col, A_ptr);
 
     // Free allocated memory
@@ -689,9 +689,9 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args,
     static char *kwlist[] = {"n","power","weight","f","g","H_ne","H_val",
                              "M_ne","M_val","m","A_ne","A_val",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO|iOiiO", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO|iOiiO", kwlist,
                                     &n, &power, &weight, &f, &py_g,
-                                    &H_ne, &py_H_val, &M_ne, &py_M_val, 
+                                    &H_ne, &py_H_val, &M_ne, &py_M_val,
                                     &m, &A_ne, &py_A_val))
         return NULL;
 
@@ -720,10 +720,10 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args,
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
     npy_intp mdim[] = {m}; // size of y
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
-    PyArrayObject *py_y = 
+    PyArrayObject *py_y =
       (PyArrayObject *) PyArray_SimpleNew(1, mdim, NPY_DOUBLE);
     double *y = (double *) PyArray_DATA(py_y);
 
@@ -732,7 +732,7 @@ static PyObject* py_rqs_solve_problem(PyObject *self, PyObject *args,
                       M_ne, M_val, m, A_ne, A_val, y);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
     // for( int i = 0; i < m; i++) printf("y %f\n", y[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;

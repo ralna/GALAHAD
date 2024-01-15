@@ -90,9 +90,9 @@ module hsl_MA77_single
 
     logical :: action = .true.
     integer(ip_) :: bits = 32
-    integer(ip_) :: buffer_lpage(2) = 2**12 
+    integer(ip_) :: buffer_lpage(2) = 2**12
     integer(ip_) :: buffer_npage(2) = 1600
-    real(sp_) :: consist_tol = epsilon(one) 
+    real(sp_) :: consist_tol = epsilon(one)
     integer(long_) :: file_size = 2**21
     integer(ip_) :: infnorm = 0
     integer(ip_) :: maxit = 1
@@ -118,8 +118,8 @@ module hsl_MA77_single
 
   type MA77_info
     real (sp_) :: detlog = 0.0
-    integer(ip_) :: detsign = 1 
-    integer(ip_) :: flag = 0    
+    integer(ip_) :: detsign = 1
+    integer(ip_) :: flag = 0
     integer(ip_) :: iostat = 0
     integer(ip_) :: matrix_dup = 0
     integer(ip_) :: matrix_rank = 0
@@ -177,7 +177,7 @@ module hsl_MA77_single
     integer(ip_) :: maxfront
     integer(ip_) :: maxdepth
     integer(ip_) :: maxfrontb
-    integer(ip_) :: maxlen  
+    integer(ip_) :: maxlen
     integer(long_) :: maxstore
     integer(ip_) :: mvar
     integer(ip_) :: mmvar
@@ -195,7 +195,7 @@ module hsl_MA77_single
     integer(long_)  :: posfac
     integer(long_)  :: posint
     integer(long_)  :: rfree
-    integer(long_)  :: rtopmx 
+    integer(long_)  :: rtopmx
     integer(long_)  :: rtopdmx
     integer(ip_) :: scale = 0
     integer(ip_) :: status = 0
@@ -256,9 +256,9 @@ contains
 !            in the incoming element/row. Must be >= 0.
     integer(ip_), intent (in) :: list(nvar)
 !            incoming element/row.
-    type (MA77_keep), intent (inout) :: keep   
+    type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
-    type (MA77_info), intent (inout) :: info   
+    type (MA77_info), intent (inout) :: info
     call MA77_unavailable( info, control, 'ma77_input_vars' )
   end subroutine MA77_input_vars_single
 
@@ -302,7 +302,7 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-    real(sp_), intent(in), optional :: scale(:) 
+    real(sp_), intent(in), optional :: scale(:)
     integer(ip_) :: lx
     integer(ip_) :: nrhs
     real (sp_), intent(inout) :: x(lx,nrhs)
@@ -332,7 +332,7 @@ contains
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
     real(sp_), intent(in), optional :: scale(:)
-    integer(ip_), optional, intent (in) :: job 
+    integer(ip_), optional, intent (in) :: job
     call MA77_unavailable( info, control, 'ma77_solve' )
   end subroutine MA77_solve_single
 
@@ -340,7 +340,7 @@ contains
                                          keep, control, info, scale )
    USE GALAHAD_SYMBOLS
     integer(ip_), intent (in) :: nrhs
-    logical, intent(out) :: flag_out(nrhs) 
+    logical, intent(out) :: flag_out(nrhs)
     integer(ip_), intent (in) :: lx
     real (sp_), intent (inout) :: x(lx,2*nrhs)
     type (MA77_keep), intent (inout) :: keep
@@ -459,15 +459,15 @@ contains
    integer(ip_), intent(inout) :: rfile
    real(sp_), allocatable :: keep_array(:)
    integer(long_), intent(inout) :: size_array
-   integer(long_), intent(in) :: loc    
+   integer(long_), intent(in) :: loc
    integer(ip_), intent(in) :: length
    real(sp_), intent(in) :: write_array(:)
-   integer(ip_) :: flag   
+   integer(ip_) :: flag
    type (of01_rdata), intent(inout) :: data
-   integer(ip_), intent(in) :: lp      
+   integer(ip_), intent(in) :: lp
    integer(long_), intent(in) :: maxstore
-   integer(long_), intent(inout) :: used 
-   integer(long_), optional, intent(in) :: inactive 
+   integer(long_), intent(inout) :: used
+   integer(long_), optional, intent(in) :: inactive
    flag = GALAHAD_unavailable_option
   end subroutine MA77_write_real
 
@@ -478,13 +478,13 @@ contains
    integer(ip_), allocatable :: keep_array(:)
    integer(long_), intent(inout) :: size_array
    integer(long_), intent(in) :: loc
-   integer(ip_), intent(in) :: length  
+   integer(ip_), intent(in) :: length
    integer(ip_), intent(in) :: write_array(:)
-   integer(ip_) :: flag   
+   integer(ip_) :: flag
    type (of01_idata), intent(inout) :: data
-   integer(ip_), intent(in) :: lp      
-   integer(long_), intent(in) :: maxstore 
-   integer(long_), intent(inout) :: used  
+   integer(ip_), intent(in) :: lp
+   integer(long_), intent(in) :: maxstore
+   integer(long_), intent(inout) :: used
    flag = GALAHAD_unavailable_option
   end subroutine MA77_write_integer
 
@@ -523,7 +523,7 @@ contains
   &     '   $GALAHAD/src/makedefs/packages for details.' )" ) name
     info%flag = GALAHAD_unavailable_option
     info%detlog = 0.0
-    info%detsign = 1 
+    info%detsign = 1
     info%iostat = 0
     info%matrix_dup = 0
     info%matrix_rank = 0

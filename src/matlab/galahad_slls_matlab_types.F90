@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 4.1. July 13th, 2022
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_SLLS_MATLAB_TYPES
@@ -47,7 +47,7 @@
       TYPE, PUBLIC :: SLLS_time_pointer_type
         mwPointer :: pointer
         mwPointer :: total, analyse, factorize, solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: SLLS_pointer_type
         mwPointer :: pointer
@@ -55,7 +55,7 @@
         mwPointer :: iter, cg_iter, obj, norm_pg
         TYPE ( SLLS_time_pointer_type ) :: time_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  B L L S _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -99,73 +99,73 @@
         CASE( 'print_level' )
           CALL MATLAB_get_value( ps, 'print_level',                            &
                                  pc, SLLS_control%print_level )
-        CASE( 'start_print' )                                                  
+        CASE( 'start_print' )
           CALL MATLAB_get_value( ps, 'start_print',                            &
                                  pc, SLLS_control%start_print )
-        CASE( 'stop_print' )                                                    
+        CASE( 'stop_print' )
           CALL MATLAB_get_value( ps, 'stop_print',                             &
                                  pc, SLLS_control%stop_print )
-        CASE( 'print_gap' )                                                    
+        CASE( 'print_gap' )
           CALL MATLAB_get_value( ps, 'print_gap',                              &
                                  pc, SLLS_control%print_gap )
-        CASE( 'maxit' )                 
+        CASE( 'maxit' )
           CALL MATLAB_get_value( ps, 'maxit',                                  &
                                  pc, SLLS_control%maxit )
-        CASE( 'cold_start' )                                         
+        CASE( 'cold_start' )
           CALL MATLAB_get_value( ps, 'cold_start',                             &
                                  pc, SLLS_control%cold_start )
-        CASE( 'preconditioner' )                                         
+        CASE( 'preconditioner' )
           CALL MATLAB_get_value( ps, 'preconditioner',                         &
                                  pc, SLLS_control%preconditioner )
-        CASE( 'change_max' )                                         
+        CASE( 'change_max' )
           CALL MATLAB_get_value( ps, 'change_max',                             &
                                  pc, SLLS_control%change_max )
-        CASE( 'cg_maxit' )                                                    
+        CASE( 'cg_maxit' )
           CALL MATLAB_get_value( ps, 'cg_maxit',                               &
                                  pc, SLLS_control%cg_maxit )
-        CASE( 'arcsearch_max_steps' )                                         
+        CASE( 'arcsearch_max_steps' )
           CALL MATLAB_get_value( ps, 'arcsearch_max_steps',                    &
                                  pc, SLLS_control%arcsearch_max_steps )
-        CASE( 'weight' )                                                     
+        CASE( 'weight' )
           CALL MATLAB_get_value( ps, 'weight',                                 &
                                  pc, SLLS_control%weight )
-        CASE( 'stop_d' )                                                        
+        CASE( 'stop_d' )
           CALL MATLAB_get_value( ps, 'stop_d',                                 &
                                  pc, SLLS_control%stop_d )
-        CASE( 'stop_cg_relative' )                                         
+        CASE( 'stop_cg_relative' )
           CALL MATLAB_get_value( ps, 'stop_cg_relative',                       &
                                  pc, SLLS_control%stop_cg_relative )
-        CASE( 'stop_cg_absolute' )                                         
+        CASE( 'stop_cg_absolute' )
           CALL MATLAB_get_value( ps, 'stop_cg_absolute',                       &
                                  pc, SLLS_control%stop_cg_absolute )
-        CASE( 'alpha_max' )                                         
+        CASE( 'alpha_max' )
           CALL MATLAB_get_value( ps, 'alpha_max',                              &
                                  pc, SLLS_control%alpha_max )
-        CASE( 'alpha_initial' )                                         
+        CASE( 'alpha_initial' )
           CALL MATLAB_get_value( ps, 'alpha_initial',                          &
                                  pc, SLLS_control%alpha_initial )
-        CASE( 'alpha_reduction' )                                         
+        CASE( 'alpha_reduction' )
           CALL MATLAB_get_value( ps, 'alpha_reduction',                        &
                                  pc, SLLS_control%alpha_reduction )
-        CASE( 'arcsearch_acceptance_tol' )                                     
+        CASE( 'arcsearch_acceptance_tol' )
           CALL MATLAB_get_value( ps, 'arcsearch_acceptance_tol',               &
                                  pc, SLLS_control%arcsearch_acceptance_tol )
-        CASE( 'stabilisation_weight' )                                         
+        CASE( 'stabilisation_weight' )
           CALL MATLAB_get_value( ps, 'stabilisation_weight',                   &
                                  pc, SLLS_control%stabilisation_weight )
-        CASE( 'cpu_time_limit' )                                               
+        CASE( 'cpu_time_limit' )
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                                  pc, SLLS_control%cpu_time_limit )
-        CASE( 'direct_subproblem_solve' )       
+        CASE( 'direct_subproblem_solve' )
           CALL MATLAB_get_value( ps, 'direct_subproblem_solve',                &
                                  pc, SLLS_control%direct_subproblem_solve )
-        CASE( 'exact_arc_search' )                                         
+        CASE( 'exact_arc_search' )
           CALL MATLAB_get_value( ps, 'exact_arc_search',                       &
                                  pc, SLLS_control%exact_arc_search )
-        CASE( 'space_critical' )                                               
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, SLLS_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, SLLS_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, SLLS_control%deallocate_error_fatal )
         CASE( 'prefix' )
@@ -424,13 +424,13 @@
       CALL MATLAB_copy_to_ptr( SLLS_pointer%pointer,                           &
                                'bad_alloc', SLLS_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( SLLS_inform%factorization_status,               &
-                               mxGetPr( SLLS_pointer%factorization_status ) )   
+                               mxGetPr( SLLS_pointer%factorization_status ) )
       CALL MATLAB_copy_to_ptr( SLLS_inform%iter,                               &
-                               mxGetPr( SLLS_pointer%iter ) )             
+                               mxGetPr( SLLS_pointer%iter ) )
       CALL MATLAB_copy_to_ptr( SLLS_inform%cg_iter,                            &
-                               mxGetPr( SLLS_pointer%cg_iter ) )             
+                               mxGetPr( SLLS_pointer%cg_iter ) )
       CALL MATLAB_copy_to_ptr( SLLS_inform%obj,                                &
-                               mxGetPr( SLLS_pointer%obj ) )                    
+                               mxGetPr( SLLS_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( SLLS_inform%norm_pg,                            &
                                mxGetPr( SLLS_pointer%norm_pg ) )
 

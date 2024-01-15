@@ -5,17 +5,17 @@
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single
-#define spral_c_gemv  spral_c_sgemv 
-#define spral_c_trsv  spral_c_strsv 
-#define spral_c_syrk  spral_c_ssyrk 
-#define spral_c_trsm  spral_c_strsm 
+#define spral_c_gemv  spral_c_sgemv
+#define spral_c_trsv  spral_c_strsv
+#define spral_c_syrk  spral_c_ssyrk
+#define spral_c_trsm  spral_c_strsm
 #define spral_c_sytrf spral_c_ssytrf
 #define spral_c_potrf spral_c_spotrf
-#define spral_c_gemm  spral_c_sgemm 
-#define gemv  sgemv 
-#define trsv  strsv 
-#define syrk  ssyrk 
-#define trsm  strsm 
+#define spral_c_gemm  spral_c_sgemm
+#define gemv  sgemv
+#define trsv  strsv
+#define syrk  ssyrk
+#define trsm  strsm
 #define sytrf ssytrf
 #define potrf spotrf
 #define gemm  sgemm
@@ -24,20 +24,20 @@
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
 #define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_types_precision spral_ssids_types_double
-#define spral_c_gemv  spral_c_dgemv 
-#define spral_c_trsv  spral_c_dtrsv 
-#define spral_c_syrk  spral_c_dsyrk 
-#define spral_c_trsm  spral_c_dtrsm 
+#define spral_c_gemv  spral_c_dgemv
+#define spral_c_trsv  spral_c_dtrsv
+#define spral_c_syrk  spral_c_dsyrk
+#define spral_c_trsm  spral_c_dtrsm
 #define spral_c_sytrf spral_c_dsytrf
 #define spral_c_potrf spral_c_dpotrf
-#define spral_c_gemm  spral_c_dgemm 
-#define gemv  dgemv 
-#define trsv  dtrsv 
-#define syrk  dsyrk 
-#define trsm  dtrsm 
+#define spral_c_gemm  spral_c_dgemm
+#define gemv  dgemv
+#define trsv  dtrsv
+#define syrk  dsyrk
+#define trsm  dtrsm
 #define sytrf dsytrf
 #define potrf dpotrf
-#define gemm  dgemm 
+#define gemm  dgemm
 #endif
 
 !> \file

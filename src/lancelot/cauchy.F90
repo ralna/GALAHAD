@@ -9,7 +9,7 @@
 !  January 30th 1995
 
    MODULE LANCELOT_CAUCHY_precision
-            
+
      USE GALAHAD_KINDS_precision
      USE GALAHAD_SORT_precision, ONLY : SORT_heapsort_build,                   &
                                         SORT_heapsort_smallest

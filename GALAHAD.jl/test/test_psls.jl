@@ -16,7 +16,7 @@ dense_ne = n * ( n + 1 ) / 2  # number of elements of dense A
 
 row = Cint[1, 2, 2, 3, 3, 4, 5]  # A indices  values, NB lower triangle
 col = Cint[1, 1, 5, 2, 3, 3, 5]
-ptr = Cint[1, 2, 4, 6, 7, 8} 
+ptr = Cint[1, 2, 4, 6, 7, 8}
 val = Float64[2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0]
 dense = Float64[2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0, 0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0]
 st = ' '

@@ -16,25 +16,25 @@
  */
 
 /*! \mainpage GALAHAD C package llst
- 
+
   \section llst_intro Introduction
 
   \subsection llst_purpose Purpose
 
   Given a real \f$m\f$ by \f$n\f$ matrix \f$A\f$,
   a real \f$n\f$ by \f$n\f$ symmetric diagonally dominant matrix \f$S\f$
-  a real \f$m\f$ vector \f$b\f$ and a scalar \f$\Delta>0\f$, this package 
+  a real \f$m\f$ vector \f$b\f$ and a scalar \f$\Delta>0\f$, this package
   finds a <b> minimizer of the linear least-squares objective function
   \f$\| A x  - b \|_2\f$, where the vector \f$x\f$ is
   required to satisfy the constraint \f$\|x\|_S \leq  \Delta\f$,</b>
-  where the \f$S\f$-norm of \f$x\f$ is 
+  where the \f$S\f$-norm of \f$x\f$ is
   \f$\|x\|_S = \sqrt{x^T S x}\f$.
   This problem commonly occurs as a trust-region subproblem in nonlinear
-  least-squares calculations. The package may also be used to solve the 
+  least-squares calculations. The package may also be used to solve the
   related problem in which \f$x\f$ is  instead required to satisfy the
   <b>equality constraint \f$\|x\|_{S} = \Delta\f$</b>.
   The matrix \f$S\f$ need not be provided in the commonly-occurring
-  \f$\ell_2\f$-trust-region case for which \f$S = I\f$, 
+  \f$\ell_2\f$-trust-region case for which \f$S = I\f$,
   the \f$n\f$ by \f$n\f$   identity matrix.
 
   Factorization of matrices of the form
@@ -61,7 +61,7 @@
 
   \subsection llst_terminology Terminology
 
-  The required solution \f$x_*\f$ necessarily satisfies the 
+  The required solution \f$x_*\f$ necessarily satisfies the
   optimality condition \f$A^T A x_* + \lambda_* S x_* = A^T b\f$,
   where \f$\lambda_* \geq 0\f$ is a Lagrange
   multiplier corresponding to the constraint \f$\|x\|_S  \leq  \Delta\f$;
@@ -73,7 +73,7 @@
   The method is iterative, and proceeds in two phases.  Firstly,
   lower and upper bounds, \f$\lambda_L\f$ and
   \f$\lambda_U\f$, on \f$\lambda_*\f$ are computed using
-  Gershgorin's theorems and other eigenvalue bounds, including those that 
+  Gershgorin's theorems and other eigenvalue bounds, including those that
   may involve the Cholesky factorization of \f$S\f$. The first phase of
   the computation proceeds by progressively shrinking the bound interval
   \f$[\lambda_L,\lambda_U]\f$
@@ -81,19 +81,19 @@
   is found.  Here \f$x(\lambda)\f$ and its companion \f$y(\lambda)\f$ are
   defined to be a solution of
 \manonly
-  \f[\mbox{(2)}\;\;\; 
+  \f[\mbox{(2)}\;\;\;
   (A^T A  + \lambda S)x(\lambda) = A^T b;\f]
 \n
    (2)    (A^T A  + \lambda S)x(\lambda) = A^T b;
 \n
 \endmanonly
-  along the way the possibility that \f$\|x(0)\|_S \leq \Delta\f$ is examined, 
+  along the way the possibility that \f$\|x(0)\|_S \leq \Delta\f$ is examined,
   and if this transpires the process is terminated with \f$x_* = x(0)\f$.
   Once the terminating \f$\lambda\f$ from the first phase has
   been discovered, the second phase consists of applying Newton or
   higher-order iterations to the nonlinear ``secular'' equation
   \f$\|x(\lambda)\|_S = \Delta\f$ with the knowledge that such
-  iterations are both globally and ultimately rapidly convergent. 
+  iterations are both globally and ultimately rapidly convergent.
 
   The dominant cost is the requirement that we solve a sequence of linear
   systems (2). This may be rewritten as
@@ -107,7 +107,7 @@
 \endmanonly
   for some auxiliary vector \f$y(\lambda)\f$.
   In general a sparse symmetric, indefinite factorization of the
-  coefficient matrix \f$K(\lambda)\f$ of (3) is often preferred to a 
+  coefficient matrix \f$K(\lambda)\f$ of (3) is often preferred to a
   Cholesky factorization of that of (2).
 
   \subsection llst_references Reference
@@ -130,7 +130,7 @@
       by reading replacement values from a file
   - \link llst_import \endlink - set up problem data structures and fixed
       values
-  - \link llst_import_scaling \endlink (optional) - set up problem data 
+  - \link llst_import_scaling \endlink (optional) - set up problem data
       structures for \f$S\f$ if required
   - \link llst_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
@@ -260,7 +260,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_LLST_H 
+#ifndef GALAHAD_LLST_H
 #define GALAHAD_LLST_H
 
 // precision
@@ -362,7 +362,7 @@ struct llst_control_type {
     char prefix[31];
 
     /// \brief
-    /// control parameters for the symmetric factorization and related linear 
+    /// control parameters for the symmetric factorization and related linear
     /// solves
     /// (see sbls_c documentation)
     struct sbls_control_type sbls_control;
@@ -471,7 +471,7 @@ struct llst_inform_type {
     int len_history;
 
     /// \brief
-    /// corresponding value of the two-norm of the residual, 
+    /// corresponding value of the two-norm of the residual,
     /// \f$\|A x(\lambda) - b\|\f$
     real_wp_ r_norm;
 
@@ -513,7 +513,7 @@ struct llst_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    L L S T  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void llst_initialize( void **data, 
+void llst_initialize( void **data,
                      struct llst_control_type *control,
                      int *status );
 
@@ -522,7 +522,7 @@ void llst_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see llst_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -532,14 +532,14 @@ void llst_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    L L S T  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void llst_read_specfile( struct llst_control_type *control, 
+void llst_read_specfile( struct llst_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see llst_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -559,7 +559,7 @@ void llst_import( struct llst_control_type *control,
                  const int A_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see llst_control_type)
@@ -569,15 +569,15 @@ void llst_import( struct llst_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
@@ -629,7 +629,7 @@ void llst_import_scaling( struct llst_control_type *control,
                           const int S_ptr[] );
 
 /*!<
- Import the scaling matrix \f$S\f$ into internal storage prior to solution. 
+ Import the scaling matrix \f$S\f$ into internal storage prior to solution.
  Thus must have been preceeded by a call to llst_import.
 
  @param[in] control is a struct whose members provide control
@@ -640,22 +640,22 @@ void llst_import_scaling( struct llst_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
        'diagonal' has been violated.
 
  @param[in] n is a scalar variable of type int, that holds the number of
-    variables, i.e., the number of rows and columns of \f$S\f$. 
+    variables, i.e., the number of rows and columns of \f$S\f$.
     n must be positive.
 
  @param[in]  S_type is a one-dimensional array of type char that specifies the
@@ -693,7 +693,7 @@ void llst_reset_control( struct llst_control_type *control,
                          int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see llst_control_type)
@@ -738,7 +738,7 @@ void llst_solve_problem( void **data,
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 and m > 0 or requirement that A_type or
-       A_type contains its relevant string 'dense', 'coordinate', 
+       A_type contains its relevant string 'dense', 'coordinate',
        'sparse_by_rows' or 'diagonal' has been violated.
   \li -9. The analysis phase of the factorization failed; the return status
          from the factorization package is given in the component
@@ -748,7 +748,7 @@ void llst_solve_problem( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -15. The matrix \f$S\f$ does not appear to be strictly diagonally 
+  \li -15. The matrix \f$S\f$ does not appear to be strictly diagonally
            dominant.
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
@@ -784,7 +784,7 @@ void llst_solve_problem( void **data,
 
  @param[in] S_val is a one-dimensional array of size S_ne and type double,
     that holds the values of the entries of the scaling matrix
-    \f$S\f$ in any of the available storage schemes. 
+    \f$S\f$ in any of the available storage schemes.
     If S_val is NULL, \f$S\f$ will be taken to be the identity matrix.
 
 */
@@ -801,7 +801,7 @@ void llst_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see llst_inform_type) 
+              (see llst_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -811,8 +811,8 @@ void llst_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    L L S T  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void llst_terminate( void **data, 
-                     struct llst_control_type *control, 
+void llst_terminate( void **data,
+                     struct llst_control_type *control,
                      struct llst_inform_type *inform );
 
 /*!<
@@ -820,7 +820,7 @@ void llst_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see llst_control_type)
 
   @param[out] inform   is a struct containing output information

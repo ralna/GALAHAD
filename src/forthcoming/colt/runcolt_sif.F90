@@ -12,7 +12,7 @@
    USE GALAHAD_KINDS_precision
    USE GALAHAD_USECOLT_precision
 
-!  Main program for the SIF interface to COLT, a target least-squares 
+!  Main program for the SIF interface to COLT, a target least-squares
 !  algorithm for nonlinear programming
 
 !  Problem insif characteristics

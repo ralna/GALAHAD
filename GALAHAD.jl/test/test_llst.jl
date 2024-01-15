@@ -24,16 +24,16 @@ A_val[A_ne]
 l=0
 for( i=1 i <= m i++)
  A_ptr[i-1] = l+1
- A_row[l] = i 
- A_col[l] = i 
+ A_row[l] = i
+ A_col[l] = i
  A_val[l] = 1.0
  l++
- A_row[l] = i 
- A_col[l] = m+i  
+ A_row[l] = i
+ A_col[l] = m+i
  A_val[l] = i
  l++
- A_row[l] = i 
- A_col[l] = n  
+ A_row[l] = i
+ A_col[l] = n
  A_val[l] = 1.0
  l++
 ]
@@ -60,8 +60,8 @@ S_val = zeros(Float64, S_ne)
 
 # store S in sparse formats
 for i = 1:n
-  S_row[i] = i+1 
-  S_col[i] = i+1 
+  S_row[i] = i+1
+  S_col[i] = i+1
   S_ptr[i] = i+1
   S_val[i] = (i+1)*(i+1)
 end
@@ -80,7 +80,7 @@ for( i=1 i <= n i++)
 b = ones(Float64, m)  # observations
 
 # trust-region radius is one
-radius = 1.0 
+radius = 1.0
 
 # Set output storage
 x = zeros(Float64, n)  # solution
@@ -94,9 +94,9 @@ status = Ref{Cint}()
 for d = 1:4
   # Initialize LLST
   llst_initialize( data, control, status )
-  strcpy(control.definite_linear_solver, "potr ") 
-  strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") 
-  strcpy(control.sbls_control.definite_linear_solver, "potr ") 
+  strcpy(control.definite_linear_solver, "potr ")
+  strcpy(control.sbls_control.symmetric_linear_solver, "sytr ")
+  strcpy(control.sbls_control.definite_linear_solver, "potr ")
   # control.print_level = 1
 
   # Set user-defined control options
@@ -122,7 +122,7 @@ for d = 1:4
     # sparse by rows
     if d == 2
       global st = 'R'
-      
+
       llst_import( control, data, status, m, n,
                    "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
 
@@ -133,7 +133,7 @@ for d = 1:4
         llst_solve_problem( data, status, m, n, radius, A_ne, A_val, b, x, S_ne, S_val )
       end
     end
-    
+
     # dense
     if d == 3
       global st = 'D'
@@ -146,7 +146,7 @@ for d = 1:4
         llst_solve_problem( data, status, m, n, radius, A_dense_ne, A_dense_val, b, x, S_dense_ne, S_dense_val )
       end
     end
-    
+
     # diagonal
     if d == 4
       global st = 'I'

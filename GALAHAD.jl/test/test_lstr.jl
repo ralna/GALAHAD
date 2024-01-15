@@ -25,10 +25,10 @@ lstr_initialize( data, control, status )
 # resolve with a smaller radius ?
 for new_radius = 0:1
   if new_radius == 0  # original radius
-    radius[] = 1.0 
+    radius[] = 1.0
     status[] = 1
   else  # smaller radius
-    radius[] = 0.1 
+    radius[] = 0.1
     status[] = 5
   end
 

@@ -32,7 +32,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps make_ciface_sbls \
                 make_ciface_ir make_ciface_roots make_ciface_cro \
                 make_ciface_rpd
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS = cdqp fastr l1qp qp qpc
 
@@ -43,7 +43,7 @@ PYDEPENDENCIES = make_pyiface_sbls_deps make_pyiface_sbls make_pyiface_fdc \
                  make_pyiface_scu make_pyiface_fit make_pyiface_ir \
                  make_pyiface_cro make_pyiface_rpd
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS =
 

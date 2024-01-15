@@ -1,5 +1,5 @@
 /*
- * assign names for each single precision CUTEst routine using 
+ * assign names for each single precision CUTEst routine using
  * the C pre-processor
  *
  * Nick Gould for CUTEst

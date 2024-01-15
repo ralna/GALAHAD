@@ -45,15 +45,15 @@
        IF ( pass == 3 ) sigma = 0.0001_rp_
        IF ( pass == 4 ) THEN
          control%fraction_opt = 0.99_rp_
-       END IF      
+       END IF
        IF ( pass == 5 ) THEN
          control%fraction_opt = 0.99_rp_
          control%extra_vectors = 1
-       END IF      
+       END IF
        IF ( pass == 6 ) THEN
          control%fraction_opt = 0.99_rp_
          control%extra_vectors = 100
-       END IF      
+       END IF
        IF ( pass == 7 ) THEN
          control%fraction_opt = 0.99_rp_
          control%extra_vectors = 100
@@ -93,7 +93,7 @@
              END DO
            CASE ( 4 )                    ! Restart
               U = one
-           CASE DEFAULT      
+           CASE DEFAULT
               EXIT
            END SELECT
          END DO
@@ -117,7 +117,7 @@
              END DO
            CASE ( 4 )                    ! Restart
               U2 = one
-           CASE DEFAULT      
+           CASE DEFAULT
               EXIT
            END SELECT
          END DO
@@ -154,7 +154,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
         IF ( pass == 1 ) THEN
           CALL L2RT_solve( 0, nn, p, sigma, mu, X0, U0, V0, data, control,     &
                            inform )
@@ -175,7 +175,7 @@
           END DO
         CASE ( 4 )                    ! Restart
            U = one
-        CASE DEFAULT      
+        CASE DEFAULT
            EXIT
         END SELECT
       END DO
@@ -229,7 +229,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
         CALL L2RT_solve( m, n, p, sigma, mu, X, U, V, data, control, inform )
 
         SELECT CASE( inform%status )  ! Branch as a result of inform%status
@@ -245,7 +245,7 @@
           END DO
         CASE ( 4 )                    ! Restart
            U = one
-        CASE DEFAULT      
+        CASE DEFAULT
            EXIT
         END SELECT
       END DO

@@ -50,7 +50,7 @@
        nlp%f = ( nlp%X( 1 ) + nlp%X( 3 ) + p ) ** 2 +                          &
           ( nlp%X( 2 ) + nlp%X( 3 ) ) ** 2 + mag * COS( freq * nlp%X( 1 ) ) +  &
             nlp%X( 1 ) + nlp%X( 2 ) + nlp%X( 3 )
-     END IF 
+     END IF
      IF ( inform%status == 3 .OR. inform%status == 23 .OR.                     &
           inform%status == 35 .OR. inform%status == 235 ) THEN ! evaluate g
        nlp%G( 1 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p )                   &
@@ -58,14 +58,14 @@
        nlp%G( 2 ) = 2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) ) + 1.0_wp
        nlp%G( 3 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p )                   &
                       + 2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) ) + 1.0_wp
-     END IF 
+     END IF
      IF ( inform%status == 4 ) THEN ! evaluate H
        nlp%H%val( 1 ) = 2.0_wp - mag * freq * freq * COS( freq * nlp%X( 1 ) )
        nlp%H%val( 2 ) = 2.0_wp
        nlp%H%val( 3 ) = 2.0_wp
        nlp%H%val( 4 ) = 2.0_wp
        nlp%H%val( 5 ) = 4.0_wp
-     END IF 
+     END IF
      IF ( inform%status == 5 .OR. inform%status == 25 .OR.                     &
           inform%status == 35 .OR. inform%status == 235 ) THEN ! evaluate u = Hv
        data%U( 1 ) = data%U( 1 ) + ( 2.0_wp - mag * freq * freq *              &
@@ -73,7 +73,7 @@
        data%U( 2 ) = data%U( 2 ) + 2.0_wp * ( data%V( 2 ) + data%V( 3 ) )
        data%U( 3 ) = data%U( 3 ) + 2.0_wp * ( data%V( 1 ) + data%V( 2 )        &
                        + 2.0_wp * data%V( 3 ) )
-     END IF 
+     END IF
      data%eval_status = 0
    END DO
    CALL BGO_terminate( data, control, inform )  ! delete internal workspace

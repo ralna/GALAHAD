@@ -49,7 +49,7 @@
    DO data_storage_type = 1, 3
      CALL WCP_initialize( data, control, inform )
      X = 0.0_rp_ ; Y_l = 0.0_rp_ ; Y_u = 0.0_rp_
-     Z_l = 0.0_rp_ ; Z_u = 0.0_rp_ 
+     Z_l = 0.0_rp_ ; Z_u = 0.0_rp_
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'

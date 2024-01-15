@@ -80,7 +80,7 @@ int ldlt_nopiv_factor(int m, int n, precision_* a, int lda, precision_* work) {
 }
 
 /* Corresponding forward solve to ldlt_nopiv_factor() */
-void ldlt_nopiv_solve_fwd(int m, int n, precision_ const* a, int lda, 
+void ldlt_nopiv_solve_fwd(int m, int n, precision_ const* a, int lda,
    precision_ *x) {
    for(int j=0; j<n-1; j+=2) {
       for(int i=j+2; i<m; ++i)
@@ -95,7 +95,7 @@ void ldlt_nopiv_solve_fwd(int m, int n, precision_ const* a, int lda,
 }
 
 /* Corresponding diagonal solve to ldlt_nopiv_factor() */
-void ldlt_nopiv_solve_diag(int m, int n, precision_ const* a, int lda, 
+void ldlt_nopiv_solve_diag(int m, int n, precision_ const* a, int lda,
    precision_ *x) {
    for(int j=0; j<n-1; j+=2) {
       precision_ x1 = x[j];
@@ -111,7 +111,7 @@ void ldlt_nopiv_solve_diag(int m, int n, precision_ const* a, int lda,
 }
 
 /* Corresponding backward solve to ldlt_nopiv_factor() */
-void ldlt_nopiv_solve_bwd(int m, int n, precision_ const* a, int lda, 
+void ldlt_nopiv_solve_bwd(int m, int n, precision_ const* a, int lda,
   precision_ *x) {
    if(n%2!=0) {
       // n is odd, handle last column as 1x1 pivot

@@ -3,7 +3,7 @@
   USE GALAHAD_KINDS_precision
   USE GALAHAD_BARC_precision, ONLY: BARC_projection
   USE GALAHAD_RAND_precision
-  IMPLICIT NONE    
+  IMPLICIT NONE
   INTEGER ( KIND = ip_ ), PARAMETER :: n = 10000, n_prob = 10
   INTEGER ( KIND = ip_ ) :: i, prob, max_iter, iter
   REAL ( KIND = rp_ ) :: b, ts, te

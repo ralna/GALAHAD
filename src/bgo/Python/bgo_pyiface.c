@@ -277,14 +277,14 @@ static bool bgo_update_control(struct bgo_control_type *control,
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix, 
+                                  control->prefix,
                                   sizeof(control->prefix)))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file, 
+                                  control->alive_file,
                                   sizeof(control->alive_file)))
                 return false;
             continue;
@@ -579,7 +579,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
 
     // Create NumPy output array
     npy_intp ndim[] = {n}; // size of g
-    PyArrayObject *py_g = 
+    PyArrayObject *py_g =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *g = (double *) PyArray_DATA(py_g);
 

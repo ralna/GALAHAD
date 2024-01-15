@@ -4,7 +4,7 @@
 #  This version: 2021-05-28
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -42,11 +42,11 @@ CUTEST_EXAMPLE = ALLINIT.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -54,5 +54,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

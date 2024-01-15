@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       MODULE GALAHAD_AMD_precision
-            
+
 !  This module is based on
 
 !-------------------------------------------------------------------------

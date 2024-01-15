@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 19th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_PSLS_MATLAB_TYPES
@@ -47,7 +47,7 @@
       TYPE, PUBLIC :: PSLS_time_pointer_type
         mwPointer :: pointer
         mwPointer :: total, assemble, analyse, factorize, solve, update
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: PSLS_pointer_type
         mwPointer :: pointer
@@ -58,7 +58,7 @@
         mwPointer :: neg1, neg2, perturbed, fill_in_ratio, norm_residual
         TYPE ( PSLS_time_pointer_type ) :: time_pointer
         TYPE ( SLS_pointer_type ) :: SLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  S P L S _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-

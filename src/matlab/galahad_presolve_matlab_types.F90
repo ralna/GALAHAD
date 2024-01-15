@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 1st, 2011
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_PRESOLVE_MATLAB_TYPES
@@ -46,7 +46,7 @@
       TYPE, PUBLIC :: PRESOLVE_pointer_type
         mwPointer :: pointer
         mwPointer :: status, nbr_transforms, message
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !- P R E S O L V E _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E  -

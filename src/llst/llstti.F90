@@ -48,7 +48,7 @@
      A_dense_val( l + m + i ) = REAL( i, rp_ )
      A_dense_val( l + n ) = one
      l = l + n
-   END DO 
+   END DO
 
 ! S = diag(1:n)**2
    DO i = 1, n

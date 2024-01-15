@@ -26,10 +26,10 @@ int main(void) {
     int ne = 5; // Hesssian elements
     real_wp_ x[] = {1.,1.,1.}; // start from one
     real_wp_ infty = 1e20; // infinity
-    real_wp_ x_l[] = {-infty,-infty, 0.}; 
+    real_wp_ x_l[] = {-infty,-infty, 0.};
     real_wp_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "absent"; // specify Hessian-vector products
-    
+
     // Reverse-communication input/output
     int eval_status, nnz_u, nnz_v;
     real_wp_ f;
@@ -38,15 +38,15 @@ int main(void) {
     int index_nz_u[n], index_nz_v[n];
 
     // Set Hessian storage format, structure and problem bounds
-    trb_import( &control, &data, &status, n, x_l, x_u, 
+    trb_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, NULL, NULL, NULL );
 
     // Solve the problem
     while(true){ // reverse-communication loop
 
         // Call TRB_solve
-        trb_solve_reverse_without_mat( &data, &status, &eval_status, 
-                                       n, x, f, g, u, v, index_nz_v, &nnz_v, 
+        trb_solve_reverse_without_mat( &data, &status, &eval_status,
+                                       n, x, f, g, u, v, index_nz_v, &nnz_v,
                                        index_nz_u, nnz_u );
 
         // Evaluate f(x) and its derivatives as required

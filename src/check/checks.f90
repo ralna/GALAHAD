@@ -93,7 +93,7 @@ SUBROUTINE funH(status, X, Y, userdata, Hval)
   REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: Y
   REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  Hval(1) =  2.0_wp * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_wp*Y(2)*X(2)**2 )   
+  Hval(1) =  2.0_wp * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_wp*Y(2)*X(2)**2 )
   Hval(2) = -2.0_wp * Y(1) * X(2)
   Hval(3) = -6.0_wp * Y(1) * X(3)
   status = 0

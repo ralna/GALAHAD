@@ -147,7 +147,7 @@ void lhs_initialize( void **data,
 */
 
 //  *-*-*-*-*-*-*-*-*-   L H S _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
- 
+
 void lhs_read_specfile( struct lhs_control_type *control,
                         const char specfile[] );
 
@@ -198,20 +198,20 @@ void lhs_ihs( int n_dimen,
   Improved Distributed Hypercube Sampling,
   American Institute of Aeronautics and Astronautics Paper 2002-1274
 
-  @param[in] n_dimen is a scalar variable of type int that specifies 
+  @param[in] n_dimen is a scalar variable of type int that specifies
              the spatial dimension
- 
+
   @param[in] n_points is a scalar variable of type int that specifies
              the number of points to be generated
- 
-  @param[in,out] seed is a scalar variable of type int, that gives a seed 
+
+  @param[in,out] seed is a scalar variable of type int, that gives a seed
                  for the random number generator used
- 
-  @param[out] X is an array variable of type int with dimensions 
+
+  @param[out] X is an array variable of type int with dimensions
               [n_dimen][n_points] that gives the hyper-cube points
- 
+
   @param[in,out] control, inform, data - see lhs_initialize
- 
+
  *  ---------------------------------------------------------------------------
  */
 

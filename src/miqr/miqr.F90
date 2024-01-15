@@ -16,7 +16,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_MIQR_precision
-            
+
 !     ---------------------------------------------------
 !     |                                                 |
 !     | Given a real matrix A, compute a multilevel     |

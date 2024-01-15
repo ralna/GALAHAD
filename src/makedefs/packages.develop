@@ -29,7 +29,7 @@
 #                     absence of the HSL Archive
 #         29/Nov/2022 to remove details for remote ICFS as this is now part
 #                     of GALAHAD
-#         19/Dec/2022 all mention of specific versions of ma48 and ma57 have 
+#         19/Dec/2022 all mention of specific versions of ma48 and ma57 have
 #                     been removed
 
 # Set directories for optional packages
@@ -138,7 +138,7 @@ MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
 # ---------------- ULINEARSOLVER environment variable -------------------
 
 # The variable ULINEARSOLVER should be set to "ma48" if the user has access
-# to the HSL solver HSL_MA48 (version 3) and "gls" if the default solver 
+# to the HSL solver HSL_MA48 (version 3) and "gls" if the default solver
 # (which is based on MA33 from the HSL Archive) is to be used instead.
 
 # HSL_MA48 is only available as a commercial product (unless you are a

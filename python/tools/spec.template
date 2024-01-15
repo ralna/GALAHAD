@@ -10,7 +10,7 @@
 #  set variables if the first time through
 
     if self.packnamespec_used == 'no' :
-      
+
 #  integer (check-button) variables used with encodings
 
       self.packname_check_ivar1 = IntVar( )
@@ -264,7 +264,7 @@
       self.packnamespec_used = 'yes'
 
 #  setup the window frame
-    
+
     self.specwindow = Toplevel( self.root )
     self.specwindow.geometry( '+100+100' )
     self.specwindow.title( 'PACKAGENAME spec tool' )
@@ -289,7 +289,7 @@
                    self.packname_check_ivar6,
                    self.packname_check_ivar7,
                    self.packname_check_ivar8,
-                   self.packname_check_ivar9, 
+                   self.packname_check_ivar9,
                    self.packname_check_ivar10
                    ]
 
@@ -314,7 +314,7 @@
                               self.packname_check_ivar14,
                               self.packname_check_ivar15,
                               self.packname_check_ivar16,
-                              self.packname_check_ivar17, 
+                              self.packname_check_ivar17,
                               self.packname_check_ivar18,
                               self.packname_check_ivar19,
                               self.packname_check_ivar20
@@ -331,7 +331,7 @@
                                "ilvar19",
                                "ilvar20"
                                ] )
-    
+
     self.specwindow.varrstart = self.specwindow.varlstop
     self.specwindow.varrstop = len( self.check )
 
@@ -419,7 +419,7 @@
     self.specwindow.entrylblstart = self.specwindow.entrybrstop
     self.specwindow.entrylblstop = len( self.var )
 
-    self.var = self.var+[ 
+    self.var = self.var+[
                           self.packname_var_svar28,
                           self.packname_var_svar29,
                           self.packname_var_svar30,
@@ -441,7 +441,7 @@
     self.specwindow.entrylbrstart = self.specwindow.entrylblstop
     self.specwindow.entrylbrstop = len( self.var )
 
-#  Set the name and logo 
+#  Set the name and logo
 
     Label( self.specwindow, text="\nPACKAGENAME OPTIONS\n"
            ).pack( side=TOP, fill=BOTH )
@@ -525,7 +525,7 @@
                    variable=self.check[i],
                    text=self.checkstring[i]
                    ).pack( side=TOP, fill=BOTH )
-    
+
     self.specwindow.check.left.pack( side=LEFT, fill=BOTH )
     Label( self.specwindow.check, width=4,
            text="" ).pack( side=LEFT, fill=BOTH )
@@ -565,7 +565,7 @@
                    command=self.nofdgandexacthessian,
                    text=gradient
                    ).pack( side=LEFT, fill=BOTH )
-                                                 
+
     self.specwindow.gradient.pack( side=TOP, fill=BOTH )
     self.specwindow.ghcheck.left.pack( side=LEFT, fill=BOTH )
 
@@ -587,7 +587,7 @@
                    command=self.nofdgandexacthessian,
                    text=hessian
                    ).pack( side=LEFT, fill=BOTH )
-                                                 
+
     self.specwindow.hessian.pack( side=TOP, fill=BOTH )
     self.specwindow.ghcheck.right.pack( side=LEFT, fill=BOTH )
 
@@ -693,7 +693,7 @@
       elif solvers == 'ssvarc7' : label = "slvarc7"
       elif solvers == 'ssvarc8' : label = "slvarc8"
       elif solvers == 'ssvarc9' : label = "slvarc9"
-      elif solvers == 'ssvarc10' : label = "slvarc10" 
+      elif solvers == 'ssvarc10' : label = "slvarc10"
       if solvers == 'ssvarc1' :
         self.specwindow.bandsolver = Frame( self.specwindow.solver )
         Radiobutton( self.specwindow.bandsolver,
@@ -797,31 +797,31 @@
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Dismiss\nwindow", 
+            text="Dismiss\nwindow",
             command=self.specwindowdestroy
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Edit RUNPACKNAME.SPC\ndirectly", 
+            text="Edit RUNPACKNAME.SPC\ndirectly",
             command=self.editpacknamespec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Read existing\nvalues", 
+            text="Read existing\nvalues",
             command=self.readpacknamespec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Restore default\nvalues", 
+            text="Restore default\nvalues",
             command=self.restorepacknamedefaults
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
     Button( self.specwindow.buttons,
             pady=2,
-            text="Save current\nvalues", 
+            text="Save current\nvalues",
             command=self.writepacknamespec
             ).pack( side=LEFT, fill=BOTH  )
     self.spacer( )
@@ -922,11 +922,11 @@
     self.current_svarca = self.packname_default_svarca
     self.current_svarcb = self.packname_default_svarcb
     self.packnamesolversonoff( )
-  
+
 #  function to switch on and off semibandwidth/line-more vectors as appropriate
 #  ----------------------------------------------------------------------------
 
-  def packnamesolversonoff( self ): 
+  def packnamesolversonoff( self ):
     if self.packname_var_svarc.get( ) == 'ssvarc1' :
       self.packname_var_svarca.set( self.current_svarca )
     else:
@@ -944,7 +944,7 @@
 #  as finite-diffreence gradients
 #  ------------------------------
 
-  def nofdgandexacthessian( self ): 
+  def nofdgandexacthessian( self ):
     if self.packname_var_svarb.get( ) == 'ssvarb1' and \
        self.packname_var_svara.get( ) != 'ssvara1' :
       self.packname_var_svarb.set( 'ssvarb5' )
@@ -952,7 +952,7 @@
 #  function to read the current values to the spec file
 #  -----------------------------------------------------
 
-  def readpacknamespec( self ): 
+  def readpacknamespec( self ):
 
 #  open file and set header
 
@@ -977,10 +977,10 @@
 
 #  convert the line to lower case, and remove leading and trailing blanks
 
-      line = line.lower( ) 
+      line = line.lower( )
       line = line.strip( )
-      blank_start = line.find( ' ' ) 
-      
+      blank_start = line.find( ' ' )
+
       if blank_start != -1 :
         stringc = line[0:blank_start]
       else :
@@ -988,7 +988,7 @@
 
 #  look for string variables to set
 
-      blank_end = line.rfind( ' ' ) 
+      blank_end = line.rfind( ' ' )
       if blank_start == -1 :
         stringd = 'YES'
       else:
@@ -1069,7 +1069,7 @@
         continue
 
       if stringc == self.packname_string_svara :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == 'ssvara1' :
           self.packname_var_svara.set( 'ssvara1' )
         elif stringd == 'ssvara2' :
@@ -1078,7 +1078,7 @@
           self.packname_var_svara.set( 'ssvara3' )
         continue
       elif stringc ==  self.packname_string_svarb :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == 'ssvarb1':
           self.packname_var_svarb.set( 'ssvarb1' )
         elif stringd == 'ssvarb2':
@@ -1091,11 +1091,11 @@
           self.packname_var_svarb.set( 'ssvarb5' )
         continue
       elif stringc == self.packname_string_svarc :
-        stringd = stringd.lower( ) 
+        stringd = stringd.lower( )
         if stringd == 'ssvarc1':
           self.packname_var_svarc.set( 'ssvarc1' )
         elif stringd == 'ssvarc2':
-          self.packname_var_svarc.set( 'ssvarc2' ) 
+          self.packname_var_svarc.set( 'ssvarc2' )
         elif stringd == 'ssvarc3':
           self.packname_var_svarc.set( 'ssvarc3' )
         elif stringd == 'ssvarc5':
@@ -1233,7 +1233,7 @@
 #  function to write the current values to the spec file
 #  -----------------------------------------------------
 
-  def writepacknamespec( self ): 
+  def writepacknamespec( self ):
 
 #  open file and set header
 
@@ -1244,16 +1244,16 @@
     self.runpacknamespc.write( "BEGIN RUNPACKNAME SPECIFICATIONS\n" )
     self.writepacknamespecdummy( '', '' )
     self.writepacknamespecline_int( self.packname_check_ivar1,
-                            self.packname_default_ivar1, 
+                            self.packname_default_ivar1,
                             self.packname_string_ivar1 )
     self.writepacknamespecline_int( self.packname_check_ivar2,
-                            self.packname_default_ivar2, 
+                            self.packname_default_ivar2,
                             self.packname_string_ivar2 )
     self.writepacknamespecline_int( self.packname_check_ivar3,
                             self.packname_default_ivar3,
                             self.packname_string_ivar3 )
     self.writepacknamespecline_int( self.packname_check_ivar4,
-                            self.packname_default_ivar4, 
+                            self.packname_default_ivar4,
                             self.packname_string_ivar4 )
     self.writepacknamespecline_int( self.packname_check_ivar5,
                             self.packname_default_ivar5,
@@ -1262,31 +1262,31 @@
                             self.packname_default_ivar6,
                             self.packname_string_ivar6 )
     self.writepacknamespecline_int( self.packname_check_ivar7,
-                            self.packname_default_ivar7, 
+                            self.packname_default_ivar7,
                             self.packname_string_ivar7 )
     self.writepacknamespecline_int( self.packname_check_ivar8,
-                            self.packname_default_ivar8, 
+                            self.packname_default_ivar8,
                             self.packname_string_ivar8 )
     self.writepacknamespecline_int( self.packname_check_ivar9,
-                            self.packname_default_ivar9, 
+                            self.packname_default_ivar9,
                             self.packname_string_ivar9 )
     self.writepacknamespecline_int( self.packname_check_ivar10,
-                            self.packname_default_ivar10, 
+                            self.packname_default_ivar10,
                             self.packname_string_ivar10 )
     self.writepacknamespecline_int( self.packname_check_ivar11,
-                            self.packname_default_ivar11, 
+                            self.packname_default_ivar11,
                             self.packname_string_ivar11 )
     self.writepacknamespecline_int( self.packname_check_ivar12,
-                            self.packname_default_ivar12, 
+                            self.packname_default_ivar12,
                             self.packname_string_ivar12 )
     self.writepacknamespecline_int( self.packname_check_ivar13,
                             self.packname_default_ivar13,
                             self.packname_string_ivar13 )
     self.writepacknamespecline_int( self.packname_check_ivar14,
-                            self.packname_default_ivar14, 
+                            self.packname_default_ivar14,
                             self.packname_string_ivar14 )
     self.writepacknamespecline_int( self.packname_check_ivar15,
-                            self.packname_default_ivar15, 
+                            self.packname_default_ivar15,
                             self.packname_string_ivar15 )
     self.writepacknamespecline_stringval( self.packname_var_svar1,
                                   self.packname_default_svar1,
@@ -1364,7 +1364,7 @@
     self.writepacknamespecline_stringval( self.packname_var_svarca,
                                   self.packname_default_svarca,
                                   self.packname_string_svarca )
-    self.writepacknamespecline_stringval( self.packname_var_svarcb, 
+    self.writepacknamespecline_stringval( self.packname_var_svarcb,
                                   self.packname_default_svarcb,
                                   self.packname_string_svarcb )
     self.writepacknamespecline_stringval( self.packname_var_svar8,
@@ -1432,7 +1432,7 @@
     self.writepacknamespecline_stringval( self.packname_var_svar17,
                                   self.packname_default_svar17,
                                   self.packname_string_svar17 )
-    self.writepacknamespecline_stringval( self.packname_var_svar18, 
+    self.writepacknamespecline_stringval( self.packname_var_svar18,
                                   self.packname_default_svar18,
                                   self.packname_string_svar18 )
     self.writepacknamespecline_stringval( self.packname_var_svar19,
@@ -1484,19 +1484,19 @@
                                   self.packname_default_svar34,
                                   self.packname_string_svar34 )
     self.writepacknamespecline_int( self.packname_check_ivar16,
-                            self.packname_default_ivar16, 
+                            self.packname_default_ivar16,
                             self.packname_string_ivar16 )
     self.writepacknamespecline_int( self.packname_check_ivar17,
-                            self.packname_default_ivar17, 
+                            self.packname_default_ivar17,
                             self.packname_string_ivar17 )
     self.writepacknamespecline_int( self.packname_check_ivar18,
-                            self.packname_default_ivar18, 
+                            self.packname_default_ivar18,
                             self.packname_string_ivar18 )
     self.writepacknamespecline_int( self.packname_check_ivar19,
-                            self.packname_default_ivar19, 
+                            self.packname_default_ivar19,
                             self.packname_string_ivar19 )
     self.writepacknamespecline_int( self.packname_check_ivar20,
-                            self.packname_default_ivar20, 
+                            self.packname_default_ivar20,
                             self.packname_string_ivar20 )
 
 #  set footer and close file
@@ -1506,7 +1506,7 @@
 
 #  functions to produce various output lines
 
-  def writepacknamespecline_int( self, var, default, line ): 
+  def writepacknamespecline_int( self, var, default, line ):
     if var.get( ) == default :
       if self.packname_check_writeall.get( ) == 1 :
         if default == 0 :
@@ -1518,8 +1518,8 @@
         self.runpacknamespc.write( "   "+line.ljust( 50 )+"YES\n" )
       else :
         self.runpacknamespc.write( "   "+line.ljust( 50 )+"NO\n" )
-    
-  def writepacknamespecline_string( self, var, string, line ): 
+
+  def writepacknamespecline_string( self, var, string, line ):
     self.varget = var.get( )
     stringupper = string.upper( )
     if self.varget == string :
@@ -1528,7 +1528,7 @@
       if self.packname_check_writeall.get( ) == 1 :
         self.runpacknamespc.write( "!  "+line.ljust( 50 )+stringupper+"\n" )
 
-  def writepacknamespecline_stringval( self, var, default, line ): 
+  def writepacknamespecline_stringval( self, var, default, line ):
     self.varget = var.get( )
     if self.varget == default or self.varget == "" :
       if self.packname_check_writeall.get( ) == 1 :
@@ -1536,7 +1536,7 @@
     else :
       self.runpacknamespc.write( "   "+line.ljust( 50 )+self.varget+"\n" )
 
-  def writepacknamespecdummy( self, line1, line2 ): 
+  def writepacknamespecdummy( self, line1, line2 ):
     if self.packname_check_writeall.get( ) == 1 :
       self.runpacknamespc.write( "!  "+line1.ljust( 50 )+line2+"\n" )
 
@@ -1549,9 +1549,9 @@
     elif os.system( 'which acroread > /dev/null' ) == 0 :
       self.pdfread = 'acroread'
     else:
-      print 'error: no known pdf file reader' 
+      print 'error: no known pdf file reader'
       return
-    
+
     self.threads =[ ]
     self.t = threading.Thread( target=self.pdfreadpacknamethread )
     self.threads.append( self.t )

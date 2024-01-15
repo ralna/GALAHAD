@@ -7,7 +7,7 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( BQP_reverse_type ) :: reverse
    TYPE ( BQP_data_type ) :: data
-   TYPE ( BQP_control_type ) :: control        
+   TYPE ( BQP_control_type ) :: control
    TYPE ( BQP_inform_type ) :: inform
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: nflag, i, j, k, l
@@ -30,7 +30,7 @@
    PTR = (/ 1, 3, 5, 6 /)                      ! whole Hessian by rows
    ROW = (/ 1, 2, 1, 2, 3 /)                   ! for matrix-vector products
    VAL = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
-! problem data complete   
+! problem data complete
    CALL BQP_initialize( data, control, inform )  ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
 !  control%print_level = 1                    ! print one line/iteration
@@ -40,7 +40,7 @@
    nflag = 0 ; FLAG = 0
    inform%status = 1
 10 CONTINUE            ! Solve problem - reverse commmunication loop
-     CALL BQP_solve( p,  B_stat, data, control, inform, userdata, reverse )  
+     CALL BQP_solve( p,  B_stat, data, control, inform, userdata, reverse )
      SELECT CASE ( inform%status )
      CASE ( 0 )          !  Successful return
        WRITE( 6, "( ' BQP: ', I0, ' iterations  ', /,                          &

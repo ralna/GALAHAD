@@ -8,7 +8,7 @@
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( WCP_data_type ) :: data
-   TYPE ( WCP_control_type ) :: control        
+   TYPE ( WCP_control_type ) :: control
    TYPE ( WCP_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: i, n, m, a_ne, gradient_kind, data_storage_type
    INTEGER ( KIND = ip_ ) :: status, smt_stat
@@ -28,7 +28,7 @@
 
 !  tests for status = - 1 ... - 3
 
-   n = 3 ; m = 2 ; a_ne = 4 
+   n = 3 ; m = 2 ; a_ne = 4
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y_l( m ), p%Z_l( n ), p%Y_u( m ), p%Z_u( n ) )
@@ -50,7 +50,7 @@
      IF ( status == 2 ) CYCLE
      IF ( status == 3 ) CYCLE
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
      p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
@@ -59,7 +59,7 @@
 
      IF ( status == 1 ) THEN
        p%n = 0 ; p%m = - 1
-     ELSE IF ( status == 3 ) THEN 
+     ELSE IF ( status == 3 ) THEN
        DEALLOCATE( p%A%val )
        ALLOCATE( p%A%val( 1 ) )
      END IF
@@ -93,7 +93,7 @@
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%A%ne = a_ne
    p%X_l = (/ 0.0_rp_ /)
    p%X_u = (/ infty /)
    CALL WCP_initialize( data, control, info )
@@ -123,7 +123,7 @@
 
 !  tests for status = - 5 ... - 8
 
-   n = 3 ; m = 2 ; a_ne = 4 
+   n = 3 ; m = 2 ; a_ne = 4
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y_l( m ), p%Z_l( n ), p%Y_u( m ), p%Z_u( n ) )
@@ -155,7 +155,7 @@
      p%X = 0.0_rp_
      p%Y_l = 0.0_rp_ ; p%Z_l = 0.0_rp_ ; p%Y_u = 0.0_rp_ ; p%Z_u = 0.0_rp_
 
-     IF ( status == 5 ) THEN 
+     IF ( status == 5 ) THEN
        p%X_u( 1 ) = - 2.0_rp_
      ELSE IF ( status == 6 ) THEN
        p%new_problem_structure = .TRUE.
@@ -189,7 +189,7 @@
 !  =====================================
 
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
-   n = 3 ; m = 2 ; a_ne = 4 
+   n = 3 ; m = 2 ; a_ne = 4
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y_l( m ), p%Z_l( n ), p%Y_u( m ), p%Z_u( n ) )
@@ -270,7 +270,7 @@
 
    WRITE( 6, "( /, ' basic tests of options ', / )" )
 
-   n = 2 ; m = 1 ; a_ne = 2 
+   n = 2 ; m = 1 ; a_ne = 2
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y_l( m ), p%Z_l( n ), p%Y_u( m ), p%Z_u( n ) )
@@ -301,13 +301,13 @@
 !  test with new and existing data
 
    DO i = 0, 7
-     IF ( i == 1 ) THEN     
+     IF ( i == 1 ) THEN
        control%factor = - 1
-     ELSE IF ( i == 2 ) THEN     
+     ELSE IF ( i == 2 ) THEN
        control%factor = 1
-     ELSE IF ( i == 3 ) THEN     
+     ELSE IF ( i == 3 ) THEN
        control%max_col = 0
-     ELSE IF ( i == 4 ) THEN     
+     ELSE IF ( i == 4 ) THEN
        control%factor = 2
      ELSE IF ( i == 5 ) THEN
        control%just_feasible = .TRUE.
@@ -413,7 +413,7 @@
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%A%ne = a_ne
    p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - 100.0_rp_, - 100.0_rp_,             &
               4.0_rp_, 2.0_rp_, 6.0_rp_, - 100.0_rp_, - 100.0_rp_,             &
               - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
@@ -442,7 +442,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    p%gradient_kind = 1
 
@@ -490,7 +490,7 @@
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%A%ne = a_ne
    p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - 100.0_rp_, - 100.0_rp_,             &
               4.0_rp_, 2.0_rp_, 6.0_rp_, - 100.0_rp_, - 100.0_rp_,             &
               - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
@@ -519,7 +519,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL WCP_initialize( data, control, info )
    CALL WHICH_sls( control )
@@ -554,7 +554,7 @@
 
    CONTAINS
      SUBROUTINE WHICH_sls( control )
-     TYPE ( WCP_control_type ) :: control        
+     TYPE ( WCP_control_type ) :: control
 #include "galahad_sls_defaults.h"
      control%FDC_control%use_sls = use_sls
      control%FDC_control%symmetric_linear_solver = symmetric_linear_solver

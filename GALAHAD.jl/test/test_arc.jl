@@ -31,7 +31,7 @@ function hess(n, ne, x, hval, userdata)
 end
 
 # Dense Hessian
-function hess_dense(n, ne, x, hval, userdata) 
+function hess_dense(n, ne, x, hval, userdata)
   hval[1] = 2.0 - cos(x[1])
   hval[2] = 0.0
   hval[3] = 2.0
@@ -57,7 +57,7 @@ function prec(n, x, u, v, userdata)
   return 0
 end
 
- # Objective function 
+ # Objective function
 function fun_diag(n, x, f, userdata)
   p = userdata.p
   f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
@@ -79,7 +79,7 @@ function hess_diag(n, ne, x, hval, userdata)
   hval[2] = 2.0
   hval[3] = 2.0
   return 0
-end  
+end
 
 # Hessian-vector product
 function hessprod_diag(n, x, u, v, got_h, userdata)
@@ -133,7 +133,7 @@ for d = 1:5
   if d == 1
     global st = 'C'
 
-    arc_import( control, data, status, n, "coordinate", 
+    arc_import( control, data, status, n, "coordinate",
                 ne, H_row, H_col, Cint[] )
 
     arc_solve_with_mat( data, userdata, status,
@@ -141,11 +141,11 @@ for d = 1:5
   end
 
   # sparse by rows
-  if d == 2  
-  
+  if d == 2
+
     global st = 'R'
-  
-    arc_import( control, data, status, n, "sparse_by_rows", 
+
+    arc_import( control, data, status, n, "sparse_by_rows",
                 ne, Cint[], H_col, H_ptr)
 
     arc_solve_with_mat( data, userdata, status,
@@ -155,8 +155,8 @@ for d = 1:5
   # dense
   if d == 3
     global st = 'D'
-    
-    arc_import( control, data, status, n, "dense", 
+
+    arc_import( control, data, status, n, "dense",
                 ne, Cint[], Cint[], Cint[] )
 
     arc_solve_with_mat( data, userdata, status,
@@ -167,20 +167,20 @@ for d = 1:5
   if d == 4
     global st = 'I'
 
-    arc_import( control, data, status, n, "diagonal", 
+    arc_import( control, data, status, n, "diagonal",
                 ne, Cint[], Cint[], Cint[] )
 
-    arc_solve_with_mat( data, userdata, status, n, x, g, 
-                        ne, fun_diag, grad_diag, hess_diag, prec) 
+    arc_solve_with_mat( data, userdata, status, n, x, g,
+                        ne, fun_diag, grad_diag, hess_diag, prec)
   end
 
   # access by products
   if d == 5
     global st = 'P'
-  
-    arc_import( control, data, status, n, "absent", 
+
+    arc_import( control, data, status, n, "absent",
                 ne, Cint[], Cint[], Cint[] )
-  
+
     arc_solve_without_mat( data, userdata, status,
                            n, x, g, fun, grad, hessprod, prec )
   end
@@ -219,7 +219,7 @@ index_nz_v = zeros(Cint, n)
 H_val = zeros(Float64, ne)
 H_dense = zeros(Float64, n*(n+1)/2)
 H_diag = zeros(Float64, n)
- 
+
 for d = 1:5
 
   # Initialize ARC
@@ -236,11 +236,11 @@ for d = 1:5
   if d == 1
     global st = 'C'
 
-    arc_import( control, data, status, n, "coordinate", 
+    arc_import( control, data, status, n, "coordinate",
                 ne, H_row, H_col, Cint[] )
 
     while true  # reverse-communication loop
-      arc_solve_reverse_with_mat( data, status, eval_status, 
+      arc_solve_reverse_with_mat( data, status, eval_status,
                                   n, x, f, g, ne, H_val, u, v )
       if status[] == 0  # successful termination
         break
@@ -251,7 +251,7 @@ for d = 1:5
       elseif status[] == 3  # evaluate g
         eval_status = grad( n, x, g, userdata )
       elseif status[] == 4  # evaluate H
-        eval_status = hess( n, ne, x, H_val, userdata ) 
+        eval_status = hess( n, ne, x, H_val, userdata )
       elseif status[] == 6  # evaluate the product with P
         eval_status = prec( n, x, u, v, userdata )
       else
@@ -263,11 +263,11 @@ for d = 1:5
   if d == 2
     global st = 'R'
 
-    arc_import( control, data, status, n, "sparse_by_rows", ne, 
+    arc_import( control, data, status, n, "sparse_by_rows", ne,
                 Cint[], H_col, H_ptr)
 
     while true  # reverse-communication loop
-      arc_solve_reverse_with_mat( data, status, eval_status, 
+      arc_solve_reverse_with_mat( data, status, eval_status,
                                   n, x, f, g, ne, H_val, u, v )
       if status[] == 0  # successful termination
         break
@@ -278,7 +278,7 @@ for d = 1:5
       elseif status[] == 3  # evaluate g
         eval_status = grad( n, x, g, userdata )
       elseif status[] == 4  # evaluate H
-        eval_status = hess( n, ne, x, H_val, userdata ) 
+        eval_status = hess( n, ne, x, H_val, userdata )
       elseif status[] == 6  # evaluate the product with P
         eval_status = prec( n, x, u, v, userdata )
       else
@@ -290,11 +290,11 @@ for d = 1:5
   if d == 3
     global st = 'D'
 
-    arc_import( control, data, status, n, "dense", 
+    arc_import( control, data, status, n, "dense",
                 ne, Cint[], Cint[], Cint[] )
 
     while true  # reverse-communication loop
-      arc_solve_reverse_with_mat( data, status, eval_status, 
+      arc_solve_reverse_with_mat( data, status, eval_status,
                                   n, x, f, g, n*(n+1)/2, H_dense, u, v )
       if status[] == 0  # successful termination
         break
@@ -305,7 +305,7 @@ for d = 1:5
       elseif status[] == 3  # evaluate g
         eval_status = grad( n, x, g, userdata )
       elseif status[] == 4  # evaluate H
-        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, userdata ) 
+        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, userdata )
       elseif status[] == 6  # evaluate the product with P
         eval_status = prec( n, x, u, v, userdata )
       else
@@ -318,11 +318,11 @@ for d = 1:5
   if d == 4
     global st = 'I'
 
-    arc_import( control, data, status, n, "diagonal", 
+    arc_import( control, data, status, n, "diagonal",
                 ne, Cint[], Cint[], Cint[] )
 
     while true  # reverse-communication loop
-      arc_solve_reverse_with_mat( data, status, eval_status, 
+      arc_solve_reverse_with_mat( data, status, eval_status,
                                   n, x, f, g, n, H_diag, u, v )
       if status[] == 0  # successful termination
         break
@@ -333,7 +333,7 @@ for d = 1:5
       elseif status[] == 3  # evaluate g
         eval_status = grad_diag( n, x, g, userdata )
       elseif status[] == 4  # evaluate H
-        eval_status = hess_diag( n, n, x, H_diag, userdata ) 
+        eval_status = hess_diag( n, n, x, H_diag, userdata )
       elseif status[] == 6  # evaluate the product with P
         eval_status = prec( n, x, u, v, userdata )
       else
@@ -346,7 +346,7 @@ for d = 1:5
   if d == 5
     global st = 'P'
 
-    arc_import( control, data, status, n, "absent", 
+    arc_import( control, data, status, n, "absent",
                 ne, Cint[], Cint[], Cint[] )
 
     while true  # reverse-communication loop

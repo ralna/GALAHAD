@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USEMIQR_precision
-            
+
 !    -----------------------------------------------
 !    | CUTEst/AMPL interface to MIQR, a multilevel |
 !    | incomplete QR factorization package         |

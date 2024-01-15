@@ -4,7 +4,7 @@
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( FDH_data_type ) :: data
-   TYPE ( FDH_control_type ) :: control        
+   TYPE ( FDH_control_type ) :: control
    TYPE ( FDH_inform_type ) :: inform
 !  INTEGER, PARAMETER :: n = 5, nz = 9
    INTEGER :: n, nz
@@ -17,7 +17,7 @@
 !  REAL ( KIND = wp ) ::  H( nz )
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTERFACE
-     SUBROUTINE GRAD( status, X, userdata, G )   
+     SUBROUTINE GRAD( status, X, userdata, G )
      USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
@@ -41,7 +41,7 @@
    userdata%real( 1 ) = p                     ! Record the parameter, p
    STEPSIZE = 0.000001_wp
    X1 = 1.0_wp
-! estimate the Hessian at X1 by internal evaluation 
+! estimate the Hessian at X1 by internal evaluation
    CALL FDH_initialize( data, control, inform )
    CALL FDH_analyse( n, nz, ROW, DIAG, data, control, inform )
    write(6,*) ' status ', inform%status
@@ -65,7 +65,7 @@
      X2( i ) = REAL( i, wp )
    END DO
    CALL GRAD( status, X2( : n ), userdata, G( : n ) )
-10 CONTINUE  
+10 CONTINUE
    CALL FDH_estimate( n, nz, ROW, DIAG, X2, G, STEPSIZE, H,                    &
                       data, control, inform, userdata )
    IF ( inform%status == 0 ) THEN              ! Success
@@ -81,7 +81,7 @@
    CALL FDH_terminate( data, control, inform ) ! Delete internal workspace
    END PROGRAM GALAHAD_FDH_EXAMPLE
 ! internal subroutine to evaluate the gradient of the objective
-   SUBROUTINE GRAD( status, X, userdata, G )   
+   SUBROUTINE GRAD( status, X, userdata, G )
    USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status

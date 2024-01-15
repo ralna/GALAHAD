@@ -7,10 +7,10 @@
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QPC_data_type ) :: data
-   TYPE ( QPC_control_type ) :: control        
+   TYPE ( QPC_control_type ) :: control
    TYPE ( QPC_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: s
-   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4 
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER ( KIND = ip_ ) :: data_storage_type = 0
    INTEGER ( KIND = ip_ ), DIMENSION( m ) :: C_stat
    INTEGER ( KIND = ip_ ), DIMENSION( n ) :: B_stat
@@ -28,7 +28,7 @@
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_ ! start from zero
 ! sparse co-ordinate storage format
    IF ( data_storage_type == 0 ) THEN
-   CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate 
+   CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )  ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -49,7 +49,7 @@
    p%H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
    p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! Jacobian A
    p%A%col = (/ 1, 2, 2, 3 /)
-   p%A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers  
+   p%A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers
 ! dense storage format
    ELSE
    CALL SMT_put( p%H%type, 'DENSE', s )  ! Specify dense
@@ -58,7 +58,7 @@
    ALLOCATE( p%A%val( n * m ) )
    p%H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_ /)!Hessian
    p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)!Jacobian
-! problem data complete   
+! problem data complete
    END IF
    CALL QPC_initialize( data, control, info )    ! Initialize control parameters
    control%infinity = infinity                   ! Set infinity

@@ -45,7 +45,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE LANCELOT_precision
-            
+
 !  |------------------------------------------------------------------|
 !  |                                                                  |
 !  |  Find a local minimizer of a smooth (group partially separable)  |

@@ -28,9 +28,9 @@ MA87CD64 = $(MA87D64) $(HCLGD64)(hsl_ma87d_ciface.o)
 ma87: ma87_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA87 routines ($(PRECIS) $(SUCC)"
 ma87_silent: ma87_$(PRECIS)
-ma87_single: $(MA87S) 
+ma87_single: $(MA87S)
 ma87_double: $(MA87D)
-ma87_single_64: $(MA87S64) 
+ma87_single_64: $(MA87S64)
 ma87_double_64: $(MA87D64)
 
 ma87_ciface: ma87_ciface_$(PRECIS)

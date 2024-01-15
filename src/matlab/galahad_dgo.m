@@ -1,7 +1,7 @@
 % GALAHAD_DGO -
 %
-%  find an approximate bound-constrained global minimizer of a differentiable 
-%  objective function f(x) of n real variables x using a determinitic 
+%  find an approximate bound-constrained global minimizer of a differentiable
+%  objective function f(x) of n real variables x using a determinitic
 %  partition-and-bound trust-region method. Advantage may be taken of sparsity
 %  in the Hessian of f(x)
 %
@@ -71,7 +71,7 @@
 %    eval_hprod: a user-provided subroutine named eval_hprod.m for which
 %              [u,status] = eval_hprod(x,u,v)
 %            returns a vector of values of the sum u + H(x) v of the vector u
-%            and the product of the Hessian H(x) of objective function f at x 
+%            and the product of the Hessian H(x) of objective function f at x
 %            (if required) times the vector v as u
 %
 %  Optional Input -

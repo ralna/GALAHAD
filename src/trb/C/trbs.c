@@ -21,7 +21,7 @@ int main(void) {
     // Derived types
     void *data;
     struct trb_control_type control;
-    struct trb_inform_type inform;   
+    struct trb_inform_type inform;
 
     // Initialize TRB
     int status;
@@ -40,7 +40,7 @@ int main(void) {
     int ne = 5; // Hesssian elements
     real_wp_ x[] = {1,1,1}; // start from one
     real_wp_ infty = 1e20; // infinity
-    real_wp_ x_l[] = {-infty,-infty, 0.}; 
+    real_wp_ x_l[] = {-infty,-infty, 0.};
     real_wp_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
@@ -48,13 +48,13 @@ int main(void) {
 
     // Set storage
     real_wp_ g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
-    trb_import( &control, &data, &status, n, x_l, x_u, 
+    trb_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, H_row, H_col, NULL );
 
     // Call TRB_solve
-    trb_solve_with_mat( &data, &userdata, &status, 
+    trb_solve_with_mat( &data, &userdata, &status,
                         n, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
@@ -85,7 +85,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -106,7 +106,7 @@ int grad(int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess(int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess(int n, int ne, const real_wp_ x[], real_wp_ hval[],
          const void *userdata){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;

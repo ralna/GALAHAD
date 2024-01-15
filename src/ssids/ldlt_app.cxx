@@ -346,7 +346,7 @@ int check_threshold(int rfrom, int rto, int cfrom, int cto, T u, T* aval, int ld
  * 1x1  ( 0 ) stored as d = [ 0.0 0.0 ]
  */
 template <enum operation op, typename T>
-void apply_pivot(int m, int n, int from, const T *diag, const T *d, 
+void apply_pivot(int m, int n, int from, const T *diag, const T *d,
                  const T small, T* aval, int lda) {
    if(op==OP_N && from > m) return; // no-op
    if(op==OP_T && from > n) return; // no-op
@@ -365,7 +365,7 @@ void apply_pivot(int m, int n, int from, const T *diag, const T *d,
                // Handle zero pivots carefully
                for(int j=0; j<m; j++) {
                   T v = aval[i*lda+j];
-                  aval[i*lda+j] = 
+                  aval[i*lda+j] =
                      (fabs(v)<small) ? 0.0
                                      : std::numeric_limits<T>::infinity()*v;
                   // NB: *v above handles NaNs correctly
@@ -403,7 +403,7 @@ void apply_pivot(int m, int n, int from, const T *diag, const T *d,
                // Handle zero pivots carefully
                for(int j=from; j<n; j++) {
                   T v = aval[j*lda+i];
-                  aval[j*lda+i] = 
+                  aval[j*lda+i] =
                      (fabs(v)<small) ? 0.0 // *v handles NaNs
                                      : std::numeric_limits<T>::infinity()*v;
                   // NB: *v above handles NaNs correctly
@@ -1345,7 +1345,7 @@ private:
                // Store a copy for recovery in case of a failed column
                dblk.backup(backup);
                // Perform actual factorization
-               int nelim = dblk.template factor<Allocator>(next_elim, perm, d, 
+               int nelim = dblk.template factor<Allocator>(next_elim, perm, d,
                                                         options, work, alloc);
                if (nelim < 0) {
                  #pragma omp atomic write
@@ -1386,7 +1386,7 @@ private:
 #endif /* _OPENMP */
             }
          } } /* task/abort */
-         
+
          // Loop over off-diagonal blocks applying pivot
          for(int jblk = 0; jblk < blk; jblk++) {
             #pragma omp task                                          \
@@ -1413,7 +1413,7 @@ private:
                 cblk.apply_rperm_and_backup(backup);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                int blkpass = cblk.apply_pivot_app(dblk, options.u, 
+                int blkpass = cblk.apply_pivot_app(dblk, options.u,
                                                    options.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
@@ -1447,7 +1447,7 @@ private:
                 rblk.apply_cperm_and_backup(backup);
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
-                int blkpass = rblk.apply_pivot_app(dblk, options.u, 
+                int blkpass = rblk.apply_pivot_app(dblk, options.u,
                                                    options.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
@@ -1584,7 +1584,7 @@ private:
                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                     BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
                     BlockSpec jsrc(jblk, blk, m, n, cdata, a, lda, block_size);
-                    ublk.form_contrib(isrc, jsrc, work[thread_num], 
+                    ublk.form_contrib(isrc, jsrc, work[thread_num],
                                       beta, upd_ij, ldupd);
 #ifdef PROFILE
                     task.done();
@@ -1646,7 +1646,7 @@ private:
                // Init threshold check (non locking => task dependencies)
                cdata[blk].init_passed(nelim);
             }
-            
+
             // Loop over off-diagonal blocks applying pivot
             for(int jblk=0; jblk<blk; jblk++) {
                if(debug) printf("ApplyT(%d,%d)\n", blk, jblk);
@@ -1674,7 +1674,7 @@ private:
                rblk.apply_cperm_and_backup(backup);
                // Perform elimination and determine number of rows in block
                // passing a posteori threshold pivot test
-               int blkpass = rblk.apply_pivot_app(dblk, options.u, 
+               int blkpass = rblk.apply_pivot_app(dblk, options.u,
                                                   options.small);
                // Update column's passed pivot count
                cdata[blk].update_passed(blkpass);
@@ -1725,10 +1725,10 @@ private:
                T *upd2 = &upd[uoffset*(ldupd+1)];
                for(int jblk=nblk; jblk<mblk; ++jblk)
                for(int iblk=jblk; iblk<mblk; ++iblk) {
-                  T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
+                  T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                                     (iblk-nblk)*block_size];
                   {
-                     if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, 
+                     if(debug) printf("FormContrib(%d,%d,%d)\n", iblk,
                                       jblk, blk);
                      int thread_num = omp_get_thread_num();
                      BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda,block_size);
@@ -1849,7 +1849,7 @@ private:
 #endif /* _OPENMP */
             }
          } } /* task/abort */
-         
+
          // Loop over off-diagonal blocks applying pivot
          for (int jblk = 0; jblk < blk; jblk++) {
             #pragma omp task                                              \
@@ -1993,7 +1993,7 @@ private:
                    // Record block state as assuming we've done up to col blk
                    up_to_date[jblk*mblk+iblk] = blk;
                    // Perform update
-                   ublk.form_contrib(isrc, jsrc, work[thread_num], beta, 
+                   ublk.form_contrib(isrc, jsrc, work[thread_num], beta,
                                      upd_ij, ldupd);
 #ifdef PROFILE
                    task.done();
@@ -2064,7 +2064,7 @@ private:
          } catch(SingularError const&) {
             return Flag::ERROR_SINGULAR;
          }
-         
+
          // Loop over off-diagonal blocks applying pivot
          for(int jblk=0; jblk<blk; jblk++) {
             if(debug) printf("ApplyT(%d,%d)\n", blk, jblk);
@@ -2122,7 +2122,7 @@ private:
             T *upd2 = &upd[uoffset*(ldupd+1)];
             for(int jblk=nblk; jblk<mblk; ++jblk)
             for(int iblk=jblk; iblk<mblk; ++iblk) {
-            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
+            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                               (iblk-nblk)*block_size];
                if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
                int thread_num = omp_get_thread_num();
@@ -2237,7 +2237,7 @@ private:
          for(int iblk=jblk; iblk<mblk; ++iblk) {
             int progress = up_to_date[jblk*mblk+iblk];
             if(progress >= nelim_blk) progress = -1; // needs complete reset
-            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
+            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                               (iblk-nblk)*block_size];
             for(int kblk=progress+1; kblk<nelim_blk; ++kblk) {
                // NB: no need for isrc or jsrc dep as must be good already
@@ -2277,7 +2277,7 @@ private:
     *  \param lda leading dimension of a
     */
    static
-   void print_mat(int m, int n, const int *perm, 
+   void print_mat(int m, int n, const int *perm,
                   std::vector<bool> const& eliminated, const T *a, int lda) {
       for(int row=0; row<m; row++) {
          if(row < n)
@@ -2434,7 +2434,7 @@ public:
             // Diagonal part
             for(int iblk=jblk, ifail=jfail, iinsert=jinsert; iblk<nblk; ++iblk) {
                copy_failed_diag(
-                     get_ncol(iblk, n, block_size), 
+                     get_ncol(iblk, n, block_size),
                      get_ncol(jblk, n, block_size),
                      cdata[iblk], cdata[jblk],
                      &failed_diag[jinsert*nfail+ifail],
@@ -2448,7 +2448,7 @@ public:
             // Rectangular part
             // (be careful with blocks that contain both diag and rect parts)
             copy_failed_rect(
-                  get_nrow(nblk-1, m, block_size), 
+                  get_nrow(nblk-1, m, block_size),
                   get_ncol(jblk, n, block_size),
                   get_ncol(nblk-1, n, block_size), cdata[jblk],
                   failed_rect.data() + (jfail*(m-n)+(nblk-1)*block_size-n), m-n,
@@ -2492,7 +2492,7 @@ public:
                      );
             jinsert += cdata[jblk].nelim;
          }
-         
+
          // Store failed entries back to correct locations
          // Diagonal part
          for(int j=0; j<n; ++j)
@@ -2537,7 +2537,7 @@ size_t ldlt_app_factor_mem_required(int m, int n, int block_size) {
 }
 
 template<typename T, typename Allocator>
-int ldlt_app_factor(int m, int n, int* perm, T* a, int lda, T* d, T beta, 
+int ldlt_app_factor(int m, int n, int* perm, T* a, int lda, T* d, T beta,
                     T* upd, int ldupd, struct cpu_factor_options const& options,
                     std::vector<Workspace>& work, Allocator const& alloc) {
    // If we've got a tall and narrow node, adjust block size so each block
@@ -2571,7 +2571,7 @@ int ldlt_app_factor(int m, int n, int* perm, T* a, int lda, T* d, T beta,
 template int ldlt_app_factor<precision_, BuddyAllocator<precision_,std::allocator<precision_>>>(int, int, int*, precision_*, int, precision_*, precision_, precision_*, int, struct cpu_factor_options const&, std::vector<Workspace>&, BuddyAllocator<precision_,std::allocator<precision_>> const& alloc);
 
 template <typename T>
-void ldlt_app_solve_fwd(int m, int n, T const* l, int ldl, int nrhs, T* x, 
+void ldlt_app_solve_fwd(int m, int n, T const* l, int ldl, int nrhs, T* x,
                         int ldx) {
    precision_ one_val = 1.0;
    precision_ minus_one_val = - 1.0;
@@ -2580,14 +2580,14 @@ void ldlt_app_solve_fwd(int m, int n, T const* l, int ldl, int nrhs, T* x,
       if(m > n)
          gemv(OP_N, m-n, n, minus_one_val, &l[n], ldl, x, 1, one_val, &x[n], 1);
    } else {
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs, 
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_N, DIAG_UNIT, n, nrhs,
                 one_val, l, ldl, x, ldx);
       if(m > n)
-         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &l[n], 
+         host_gemm(OP_N, OP_N, m-n, nrhs, n, minus_one_val, &l[n],
                    ldl, x, ldx, one_val, &x[n], ldx);
    }
 }
-template void ldlt_app_solve_fwd<precision_>(int, int, precision_ const*, 
+template void ldlt_app_solve_fwd<precision_>(int, int, precision_ const*,
                                              int, int, precision_*, int);
 
 template <typename T>
@@ -2614,11 +2614,11 @@ void ldlt_app_solve_diag(int n, T const* d, int nrhs, T* x, int ldx) {
       }
    }
 }
-template void ldlt_app_solve_diag<precision_>(int, precision_ const*, int, 
+template void ldlt_app_solve_diag<precision_>(int, precision_ const*, int,
                                               precision_*, int);
 
 template <typename T>
-void ldlt_app_solve_bwd(int m, int n, T const* l, int ldl, int nrhs, T* x, 
+void ldlt_app_solve_bwd(int m, int n, T const* l, int ldl, int nrhs, T* x,
                         int ldx) {
    precision_ one_val = 1.0;
    precision_ minus_one_val = - 1.0;
@@ -2628,13 +2628,13 @@ void ldlt_app_solve_bwd(int m, int n, T const* l, int ldl, int nrhs, T* x,
       host_trsv(FILL_MODE_LWR, OP_T, DIAG_UNIT, n, l, ldl, x, 1);
    } else {
       if(m > n)
-         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl, 
+         host_gemm(OP_T, OP_N, n, nrhs, m-n, minus_one_val, &l[n], ldl,
                    &x[n], ldx, one_val, x, ldx);
-      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_UNIT, n, nrhs, 
+      host_trsm(SIDE_LEFT, FILL_MODE_LWR, OP_T, DIAG_UNIT, n, nrhs,
                 one_val, l, ldl, x, ldx);
    }
 }
-template void ldlt_app_solve_bwd<precision_>(int, int, precision_ const*, int, 
+template void ldlt_app_solve_bwd<precision_>(int, int, precision_ const*, int,
                                              int, precision_*, int);
 
 }}} /* namespaces spral::ssids::cpu */

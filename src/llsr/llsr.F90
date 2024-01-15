@@ -1504,7 +1504,7 @@
           IF ( p == two ) THEN
             inform%status = GALAHAD_ok
             GO TO 900
-          END IF 
+          END IF
 
 !  compute the target value ( lambda / sigma )^(1/(p-2))
 
@@ -1710,7 +1710,7 @@
 
           n_lambda = 0
 
-!  compute Taylor approximants of degree one; special (but frequent) case 
+!  compute Taylor approximants of degree one; special (but frequent) case
 !  when p = 3
 
           IF ( p == three ) THEN

@@ -52,24 +52,24 @@ for d = 1:3
 
     lpb_import( control, data, status, n, m,
                 "coordinate", A_ne, A_row, A_col, Cint[] )
-  
-    lpb_solve_lp( data, status, n, m, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    lpb_solve_lp( data, status, n, m, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
-  
+
   # sparse by rows
   if d == 2
     global st = 'R'
 
-    lpb_import( control, data, status, n, m, 
+    lpb_import( control, data, status, n, m,
                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr )
-  
-    lpb_solve_lp( data, status, n, m, g, f, 
-                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+
+    lpb_solve_lp( data, status, n, m, g, f,
+                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat )
   end
-  
+
   # dense
   if d == 3
     global st = 'D'
@@ -78,9 +78,9 @@ for d = 1:3
 
     lpb_import( control, data, status, n, m,
                 "dense", A_ne, Cint[], Cint[], Cint[] )
-  
-    lpb_solve_lp( data, status, n, m, g, f, 
-                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+
+    lpb_solve_lp( data, status, n, m, g, f,
+                  A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                   x, c, y, z, x_stat, c_stat )
   end
 

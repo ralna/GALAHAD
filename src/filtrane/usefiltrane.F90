@@ -4,7 +4,7 @@
 #include "cutest_routines.h"
 
    MODULE GALAHAD_USEFILTRANE_precision
-            
+
    USE GALAHAD_KINDS_precision
 
 !-------------------------------------------------------------------------------

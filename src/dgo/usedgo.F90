@@ -9,7 +9,7 @@
 !  July 3rd 2021
 
    MODULE GALAHAD_USEDGO_precision
-            
+
 !  This is the driver program for running DGO for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers

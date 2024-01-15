@@ -73,7 +73,7 @@ module hsl_ma77_single_ciface
 
       ! Controls used by ma77_solve_fredholm
       real(spc_) :: consist_tol
-      
+
       ! Padding for future growth
       integer(ipc_) :: ispare(5)
       integer(longc_) :: lspare(5)
@@ -115,7 +115,7 @@ module hsl_ma77_single_ciface
       integer(ipc_)  :: unit_restart
       integer(ipc_)  :: unused
       real(spc_)  :: usmall
-      
+
       ! Padding for future growth
       integer(ipc_) :: ispare(5)
       integer(longc_) :: lspare(5)

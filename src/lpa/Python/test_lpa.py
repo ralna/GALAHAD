@@ -45,7 +45,7 @@ z = np.array([0.0,0.0,0.0])
 # find optimum of lp
 #print("\n solve lp")
 x, c, y, z, x_stat, c_stat \
-  = lpa.solve_lp(n, m, f, g, A_ne, A_val, 
+  = lpa.solve_lp(n, m, f, g, A_ne, A_val,
                  c_l, c_u, x_l, x_u, x, y, z)
 print(" x:",x)
 print(" c:",c)

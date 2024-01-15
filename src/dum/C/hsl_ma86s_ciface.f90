@@ -17,7 +17,7 @@ module hsl_ma86_single_ciface
       f_ma86_get_n__       => ma86_get_n__
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                     ! *** 
+   integer, parameter :: longc_ = C_LONG                     ! ***
 
    ! Data type for user controls
    type, bind(C) :: ma86_control
@@ -45,7 +45,7 @@ module hsl_ma86_single_ciface
    !*************************************************
 
    ! data type for returning information to user.
-   type, bind(C) :: ma86_info 
+   type, bind(C) :: ma86_info
       real(spc_)  :: detlog
       integer(ipc_)  :: detsign
       integer(ipc_)  :: flag

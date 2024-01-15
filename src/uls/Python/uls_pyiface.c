@@ -383,7 +383,7 @@ static PyObject* py_uls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOOO|O", kwlist,
                                     &m, &n, &A_type, &A_ne, &py_A_row,
-                                    &py_A_col, &py_A_ptr, &py_A_val, 
+                                    &py_A_col, &py_A_ptr, &py_A_val,
                                     &py_options))
         return NULL;
 
@@ -471,7 +471,7 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args){
     // Call uls_solve_direct
     uls_solve_system(&data, &status, m, n, sol, trans);
     //for( int i = 0; i < n; i++) printf("x %f\n", sol[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;
@@ -527,7 +527,7 @@ static PyObject* py_uls_terminate(PyObject *self){
 /* uls python module method table */
 static PyMethodDef uls_module_methods[] = {
     {"initialize", (PyCFunction) py_uls_initialize, METH_VARARGS,NULL},
-    {"factorize_matrix", (PyCFunction) py_uls_factorize_matrix, 
+    {"factorize_matrix", (PyCFunction) py_uls_factorize_matrix,
       METH_VARARGS, NULL},
     {"solve_system", (PyCFunction) py_uls_solve_system, METH_VARARGS, NULL},
     {"information", (PyCFunction) py_uls_information, METH_NOARGS, NULL},

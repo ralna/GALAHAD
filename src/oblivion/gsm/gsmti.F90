@@ -18,7 +18,7 @@
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, G, U, V
    CHARACTER ( len = 1 ) :: st
 
-! problem data complete   
+! problem data complete
 
 !  =====================================
 !  basic test of various storage formats
@@ -28,7 +28,7 @@
 
    n = 3 ; ne = 5 ! dimensions
    ALLOCATE( X( n ), G( n ) )
-! problem data complete   
+! problem data complete
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 

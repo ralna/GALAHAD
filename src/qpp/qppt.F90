@@ -8,7 +8,7 @@
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_dimensions_type ) :: d
    TYPE ( QPP_map_type ) :: map
-   TYPE ( QPP_control_type ) :: control        
+   TYPE ( QPP_control_type ) :: control
    TYPE ( QPP_inform_type ) :: info
    TYPE ( QPT_problem_type ) :: p
    TYPE ( LMS_control_type ) :: LMS_control
@@ -22,7 +22,7 @@
    CHARACTER ( len = 10 ) :: sname
 
 !  GO TO 1
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ), X_orig( n ) )
@@ -66,7 +66,7 @@
      p%H%col = (/ 1, 2, 3, 1 /)
      p%H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
      p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
@@ -74,9 +74,9 @@
 
      IF ( status == 1 ) THEN
        p%n = 0 ; p%m = - 1
-     ELSE IF ( status == 4 ) THEN 
+     ELSE IF ( status == 4 ) THEN
        p%H%col( 1 ) = 2
-     ELSE IF ( status == 5 ) THEN 
+     ELSE IF ( status == 5 ) THEN
        p%X_u( 1 ) = - 2.0_rp_
      END IF
      IF ( status == 6 ) THEN
@@ -318,7 +318,7 @@
        CALL LMS_initialize( p%H_lm, LMS_control, LMS_inform )
        LMS_control%memory_length = 2
        LMS_control%method = 1
-       CALL LMS_setup( n, p%H_lm, LMS_control, LMS_inform )  
+       CALL LMS_setup( n, p%H_lm, LMS_control, LMS_inform )
        ALLOCATE( S( p%n ), Y( p%n ) )
        DO i = 1, p%n + 2
          S = 1.0_rp_
@@ -345,7 +345,7 @@
        CALL LMS_initialize( p%H_lm, LMS_control, LMS_inform )
        LMS_control%memory_length = 2
        LMS_control%method = 1
-       CALL LMS_setup( p%n + 1, p%H_lm, LMS_control, LMS_inform )  
+       CALL LMS_setup( p%n + 1, p%H_lm, LMS_control, LMS_inform )
        ALLOCATE( S( p%n + 1 ), Y( p%n + 1 ) )
        DO i = 1, p%n + 2
          S = 1.0_rp_
@@ -473,10 +473,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_rp_
    p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
-            0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /) 
+            0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /)
    p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
               4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
               - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
@@ -513,7 +513,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPP_initialize( map, control )
    control%infinity = infty
@@ -550,7 +550,7 @@
    CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col, p%A%ptr,    &
             p%X, p%C )
    CALL QPP_apply( map, info, p, get_A = .TRUE. )
-   WRITE( 6, 10 ) st, 1, sname, info%status 
+   WRITE( 6, 10 ) st, 1, sname, info%status
    CALL QPP_apply( map, info, p, get_H = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    CALL QPP_apply( map, info, p, get_x = .TRUE. )
@@ -618,7 +618,7 @@
    CONTAINS
 
    SUBROUTINE AX(  m, n, a_type, a_ne, A_val, A_row, A_col, A_ptr, X, C )
-    
+
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, a_ne
    CHARACTER, INTENT( IN ), DIMENSION( : ) :: a_type
    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) ::  A_row, A_col
@@ -651,7 +651,7 @@
      DO l = 1, a_ne
        i = A_row( l )
        C( i ) = C( i ) + A_val( l ) * X( A_col( l ) )
-     END DO 
+     END DO
    END IF
 
    RETURN

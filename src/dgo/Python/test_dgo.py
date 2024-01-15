@@ -34,7 +34,7 @@ dgo.load(n, x_l, x_u, H_type, H_ne, H_row, H_col, H_ptr, options=options)
 def eval_f(x):
     return (x[0] + x[2] + p)**2 + (x[1] + x[2])**2 + mag * np.cos(freq * x[0]) + x[0] + x[1] + x[2]
 def eval_g(x):
-    return np.array([2. * ( x[0] + x[2] + p ) 
+    return np.array([2. * ( x[0] + x[2] + p )
                      - mag * freq * np.sin(freq * x[0]) + 1.,
                      2. * ( x[1] + x[2] ) + 1.,
                      2. * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] ) + 1.])

@@ -36,10 +36,10 @@ for unit_m = 0:1
   # resolve with a larger weight ?
   for new_weight = 0:1
     if new_weight == 0
-      global weight = 1.0 
+      global weight = 1.0
       status[] = 1
     else
-      global weight = 10.0 
+      global weight = 10.0
       status[] = 6
     end
 

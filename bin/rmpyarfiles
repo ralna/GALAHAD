@@ -18,7 +18,7 @@ GREP=$2
 ARC=$3
 END=$#
 if [[ -e $ARC ]] ; then
- for i in $(seq 4 $END); do 
+ for i in $(seq 4 $END); do
    FILE=${!i}.o
 #   echo " removing file $FILE"
    [[  `$AR -t $ARC | $GREP -w $FILE` == $FILE  ]] && $AR -d $ARC $FILE

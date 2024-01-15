@@ -43,25 +43,25 @@
           inform%status == 25  .OR. inform%status == 235 ) THEN ! evaluate f
        nlp%f = ( 4.0_wp + p * x1 ** 2 + x1 ** 4 / 3.0_wp ) * x1 ** 2           &
                  + x1 * x2 + ( - 4.0_wp + 4.0_wp * x2 ** 2 ) * x2 ** 2
-     END IF 
+     END IF
      IF ( inform%status == 3 .OR. inform%status == 23 .OR.                     &
           inform%status == 35 .OR. inform%status == 235 ) THEN ! evaluate g
        nlp%G( 1 ) = ( 8.0_wp + 4.0_wp * p * x1 ** 2 + 2.0_wp * x1 ** 4 ) * x1  &
                     + x2
        nlp%G( 2 ) = x1 + ( - 8.0_wp + 16.0_wp * x2 ** 2 ) * x2
-     END IF 
+     END IF
      IF ( inform%status == 4 ) THEN ! evaluate H
        nlp%H%val( 1 ) = 8.0_wp + 12.0_wp * p * x1 ** 2 + 10.0_wp * x1 ** 4
        nlp%H%val( 2 ) = 1.0_wp
        nlp%H%val( 3 ) = - 8.0_wp + 48.0_wp * x2 * x2
-     END IF 
+     END IF
      IF ( inform%status == 5 .OR. inform%status == 25 .OR.                     &
           inform%status == 35 .OR. inform%status == 235 ) THEN ! evaluate u = Hv
        data%U( 1 ) = data%U( 1 ) + ( 8.0_wp + 12.0_wp * p * x1 ** 2            &
                        + 10.0_wp * x1 ** 4 ) * data%V( 1 ) + data%V( 2 )
        data%U( 2 ) = data%U( 2 ) + data%V( 1 )                                 &
                        + ( - 8.0_wp + 48.0_wp * x2 * x2 ) * data%V( 2 )
-     END IF 
+     END IF
      data%eval_status = 0
    END DO
    CALL DGO_terminate( data, control, inform )  ! delete internal workspace

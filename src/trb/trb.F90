@@ -2793,7 +2793,7 @@
            IF ( test_s ) THEN
              data%DX_svd( : nlp%n, : data%total_diffs ) =                      &
                data%DX_past( : nlp%n, : data%total_diffs )
-    
+
              CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,       &
                          nlp%n, data%S_svd, data%U_svd, 1_ip_, data%VT_svd,    &
                          1_ip_, data%WORK_svd, data%lwork_svd, info_svd )

@@ -1,7 +1,7 @@
 ! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BGO_interface_test
-   USE GALAHAD_USERDATA_precision            
+   USE GALAHAD_USERDATA_precision
    USE GALAHAD_BGO_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE

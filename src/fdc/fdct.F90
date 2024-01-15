@@ -10,7 +10,7 @@
    INTEGER ( KIND = ip_ ), ALLOCATABLE :: DEPEN( : )
    INTEGER ( KIND = ip_ ) :: n_depen
    TYPE ( FDC_data_type ) :: data
-   TYPE ( FDC_control_type ) :: control        
+   TYPE ( FDC_control_type ) :: control
    TYPE ( FDC_inform_type ) :: inform
    A_val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 2.0_rp_, -4.0_rp_, 6.0_rp_,  &
              -8.0_rp_, 5.0_rp_, 10.0_rp_ /)

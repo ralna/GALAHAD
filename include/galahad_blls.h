@@ -23,10 +23,10 @@
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>bound-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_2^2 \f], 
+  \f[\mbox{minimize}\;\; r(x) = q(x) + \frac{1}{2} \sigma \|x\|^2  \;\;\mbox{where}\;\; q(x) = \frac{1}{2} \| A_o x - b\|_2^2 \f],
 \manonly
   \n
-  minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2, 
+  minimize r(x) = q(x) + sigma ||x||^2, where q(x) := 1/2 || A x - b ||^2,
   \n
 \endmanonly
   subject to the simple bound constraints
@@ -323,9 +323,9 @@ struct blls_control_type {
     int sif_file_device;
 
     /// \brief
-    /// the value of the non-negative regularization weight sigma, i.e., the 
-    /// quadratic objective function q(x) will be regularized by adding 
-    /// 1/2 weight ||x||^2; any value smaller than zero will be regarded 
+    /// the value of the non-negative regularization weight sigma, i.e., the
+    /// quadratic objective function q(x) will be regularized by adding
+    /// 1/2 weight ||x||^2; any value smaller than zero will be regarded
     /// as zero.
     real_wp_ weight;
 
@@ -604,8 +604,8 @@ void blls_import( struct blls_control_type *control,
 
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
-   used for the objective design matrix, \f$A_o\f$. It should be one of 
-   'coordinate', 'sparse_by_rows', 'sparse_by_columns', 
+   used for the objective design matrix, \f$A_o\f$. It should be one of
+   'coordinate', 'sparse_by_rows', 'sparse_by_columns',
    'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
  @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
@@ -767,7 +767,7 @@ void blls_solve_given_a( void **data,
     entries in the design matrix \f$A_o\f$.
 
  @param[in] Ao_val is a one-dimensional array of size A_ne and type double,
-    that holds the values of the entries of the designmatrix \f$A_o\f$ 
+    that holds the values of the entries of the designmatrix \f$A_o\f$
     in any of the available storage schemes.
 
  @param[in] b is a one-dimensional array of size m and type double, that
@@ -887,7 +887,7 @@ void blls_solve_reverse_a_prod( void **data,
          a badly scaled problem.
 
  @param status (continued)
-  \li  2. The product \f$A_o v\f$ of the residual Jacobian \f$A_o\f$ 
+  \li  2. The product \f$A_o v\f$ of the residual Jacobian \f$A_o\f$
        with a given
        output vector \f$v\f$ is required from the user. The vector \f$v\f$
        will be  stored in v and the product \f$A_ov\f$ must be returned in p,

@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_CONVERT_precision
-            
+
      USE GALAHAD_KINDS_precision
 
 !      -------------------------------------------------------------------

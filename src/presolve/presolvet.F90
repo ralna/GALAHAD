@@ -78,8 +78,8 @@
      END IF
 ! problem data complete
 ! write the original formulation
-     CALL QPT_write_problem( 6, problem ) 
-! set the default PRESOLVE control parameters            
+     CALL QPT_write_problem( 6, problem )
+! set the default PRESOLVE control parameters
      CALL PRESOLVE_initialize( control, inform, data )
      IF ( inform%status /= 0 ) STOP
      control%print_level = - 1
@@ -89,9 +89,9 @@
      CALL PRESOLVE_apply( problem, control, inform, data )
      IF ( inform%status /= 0 ) STOP
 ! write the reduced problem
-     CALL QPT_write_problem( 6, problem ) 
+     CALL QPT_write_problem( 6, problem )
 ! solve the reduced problem
-   ! CALL QPSOLVER (unnecessary here, because the reduced problem has a 
+   ! CALL QPSOLVER (unnecessary here, because the reduced problem has a
    ! single feasible point in this example)
 ! restore the solved reduced problem to the original formulation
      CALL PRESOLVE_restore( problem, control, inform, data )

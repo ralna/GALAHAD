@@ -312,16 +312,16 @@ PyObject* llst_make_inform_dict(const struct llst_inform_type *inform){
                          PyUnicode_FromString(inform->bad_alloc));
 
     // include history arrays
-    //npy_intp hdim[] = {100}; 
-    //PyArrayObject *py_lambda = 
+    //npy_intp hdim[] = {100};
+    //PyArrayObject *py_lambda =
     //  (PyArrayObject*) PyArray_SimpleNew(1, hdim, NPY_DOUBLE);
-    //double *lambda = (double *) PyArray_DATA(py_lambda); 
-    //for(int i=0; i<100; i++) lambda[i] = inform->history[i]->lambda;  
+    //double *lambda = (double *) PyArray_DATA(py_lambda);
+    //for(int i=0; i<100; i++) lambda[i] = inform->history[i]->lambda;
     //PyDict_SetItemString(py_inform, "lambda", (PyObject *) py_lambda);
-    //PyArrayObject *py_x_norm = 
+    //PyArrayObject *py_x_norm =
     //  (PyArrayObject*) PyArray_SimpleNew(1, hdim, NPY_DOUBLE);
-    //double *x_norm = (double *) PyArray_DATA(py_x_norm); 
-    //for(int i=0; i<100; i++) x_norm[i] = inform->history[i]->x_norm;  
+    //double *x_norm = (double *) PyArray_DATA(py_x_norm);
+    //for(int i=0; i<100; i++) x_norm[i] = inform->history[i]->x_norm;
     //PyDict_SetItemString(py_inform, "x_norm", (PyObject *) py_x_norm);
 
     // Set time nested dictionary
@@ -371,7 +371,7 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
     static char *kwlist[] = {"m","n","A_type","A_ne","A_row","A_col","A_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O", kwlist, &m, &n, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iisiOOO|O", kwlist, &m, &n,
                                     &A_type, &A_ne, &py_A_row,
                                     &py_A_col, &py_A_ptr,
                                     &py_options))
@@ -415,7 +415,7 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call llst_import
-    llst_import(&control, &data, &status, m, n, 
+    llst_import(&control, &data, &status, m, n,
                 A_type, A_ne, A_row, A_col, A_ptr);
 
     // Free allocated memory
@@ -437,7 +437,7 @@ static PyObject* py_llst_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   LLST_LOAD_SCALING    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args, 
+static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
                                       PyObject *keywds){
     PyArrayObject *py_S_row, *py_S_col, *py_S_ptr;
     PyObject *py_options = NULL;
@@ -453,7 +453,7 @@ static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
     static char *kwlist[] = {"n","S_type","S_ne","S_row","S_col","S_ptr",
                              "options",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
                                     &S_type, &S_ne, &py_S_row,
                                     &py_S_col, &py_S_ptr,
                                     &py_options))
@@ -497,7 +497,7 @@ static PyObject* py_llst_load_scaling(PyObject *self, PyObject *args,
         return NULL;
 
     // Call llst_import
-    llst_import_scaling(&control, &data, &status, n, 
+    llst_import_scaling(&control, &data, &status, n,
                         S_type, S_ne, S_row, S_col, S_ptr);
 
     // Free allocated memory
@@ -534,8 +534,8 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
     static char *kwlist[] = {"m","n","radius","A_ne","A_val","b",
                              "S_ne","S_val",NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidiOO|iO", kwlist, 
-                                    &m, &n, &radius, &A_ne, &py_A_val, &py_b, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidiOO|iO", kwlist,
+                                    &m, &n, &radius, &A_ne, &py_A_val, &py_b,
                                     &S_ne, &py_S_val))
         return NULL;
 
@@ -556,7 +556,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
 
    // Create NumPy output arrays
     npy_intp ndim[] = {n}; // size of x
-    PyArrayObject *py_x = 
+    PyArrayObject *py_x =
       (PyArrayObject *) PyArray_SimpleNew(1, ndim, NPY_DOUBLE);
     double *x = (double *) PyArray_DATA(py_x);
 
@@ -564,7 +564,7 @@ static PyObject* py_llst_solve_problem(PyObject *self, PyObject *args,
     llst_solve_problem(&data, &status, m, n, radius, A_ne, A_val, b, x,
                        S_ne, S_val);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
-    
+
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
         return NULL;

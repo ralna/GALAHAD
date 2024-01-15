@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD LMS package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2023-05-11
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -30,7 +30,7 @@ DEPENDS = arc rpd tru
 
 CDEPENDENCIES = make_ciface_common make_ciface_rpd
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS = arc_ciface tru_ciface
 
@@ -39,7 +39,7 @@ CDEPENDS = arc_ciface tru_ciface
 
 PYDEPENDENCIES = make_pyiface_rpd
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS = arc_pyiface tru_ciface
 
@@ -56,11 +56,11 @@ TESTS = test_full
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -68,5 +68,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

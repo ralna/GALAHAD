@@ -27,7 +27,7 @@ int main(void) {
     real_wp_ x[] = {1.,1.,1.}; // start from one
     real_wp_ infty = 1e20; // infinity
     char H_type[] = "absent"; // specify Hessian-vector products
-    
+
     // Reverse-communication input/output
     int eval_status;
     real_wp_ f;
@@ -43,7 +43,7 @@ int main(void) {
     while(true){ // reverse-communication loop
 
         // Call TRU_solve
-        tru_solve_reverse_without_mat( &data, &status, &eval_status, 
+        tru_solve_reverse_without_mat( &data, &status, &eval_status,
                                        n, x, f, g, u, v );
 
         // Evaluate f(x) and its derivatives as required

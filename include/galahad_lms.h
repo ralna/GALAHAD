@@ -212,13 +212,13 @@ struct lms_inform_type {
     /// inform.alloc_status and inform.bad_alloc respectively.
     /// \li -3. One of the restrictions n > 0, delta > 0, lambda > 0 or
     /// s^T y > 0 has been violated and the update has been skipped.
-    /// \li -10. The matrix cannot be built from the current vectors 
-    /// {s_k} and {y_k} and values delta_k and lambda_k 
+    /// \li -10. The matrix cannot be built from the current vectors
+    /// {s_k} and {y_k} and values delta_k and lambda_k
     /// and the update has been skipped.
-    /// \li -31. A call to the function lhs_apply has been made without 
-    /// a prior call to lhs_form_shift or lhs_form with lambda 
-    /// specified when control.method = 4, or lhs_form_shift 
-    /// has been called when control.method = 3, or 
+    /// \li -31. A call to the function lhs_apply has been made without
+    /// a prior call to lhs_form_shift or lhs_form with lambda
+    /// specified when control.method = 4, or lhs_form_shift
+    /// has been called when control.method = 3, or
     /// lhs_change_method has been called after
     /// control.any_method = false was specified when calling lhs_setup.
     int status;
@@ -237,7 +237,7 @@ struct lms_inform_type {
     bool updates_skipped;
 
     /// \brief
-    /// the name of the array for which an allocation/deallocation error 
+    /// the name of the array for which an allocation/deallocation error
     /// occurred.
     char bad_alloc[81];
 

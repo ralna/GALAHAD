@@ -32,7 +32,7 @@ public:
    SingularError(int col)
    : std::runtime_error("Matrix is singular"), col(col)
    {}
-   
+
    int const col;
 };
 

@@ -22,9 +22,9 @@ int main(void) {
     int n_points = 2; // points required
     int X[n_dimen][n_points]; // points
     int seed;
-    
+
     // Set a random seed
-    lhs_get_seed(&seed);                             
+    lhs_get_seed(&seed);
 
     // Generate points
     lhs_ihs(n_dimen, n_points, &seed, (int**)X, &control, &inform, &data);

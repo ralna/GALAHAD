@@ -23,7 +23,7 @@ options['symmetric_linear_solver'] = "sytr "
 #print("options:", options)
 
 # load data (and optionally non-default options), and find dependent rows
-n_depen, depen, inform = fdc.find_dependent_rows(m, n, A_ptr, A_col, A_val, 
+n_depen, depen, inform = fdc.find_dependent_rows(m, n, A_ptr, A_col, A_val,
                                                  b, options)
 print("# dependent rows:", n_depen)
 print("these are:", depen[0:n_depen])

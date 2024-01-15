@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_USELSRT_precision
-            
+
 !     ---------------------------------------------
 !    | CUTEst/AMPL interface to LSRT, an iterative |
 !    | method for regularized linear least-squares |

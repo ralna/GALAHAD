@@ -20,7 +20,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
   args = get_default_args()
   push!(args, "-I$include_dir")
   push!(args, "-DGALAHAD_DOUBLE")
-  
+
   ctx = create_context(headers, args, options)
   build!(ctx, BUILDSTAGE_NO_PRINTING)
 

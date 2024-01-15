@@ -25,13 +25,13 @@
 
 !  Non-executable statements
 
-!2000 FORMAT( /, 
-!    *     ' We regret that the solution options that you have ', /, 
+!2000 FORMAT( /,
+!    *     ' We regret that the solution options that you have ', /,
 !    *     ' chosen are not all freely available with LANCELOT B.', //,
 !    *     ' If you have HSL (formerly the Harwell Subroutine',
 !    *     ' Library), this ', /,
 !    *     ' option may be enabled by replacing the dummy ', /,
-!    *     ' subroutines MA61I/MA61D with their HSL namesakes ', /, 
+!    *     ' subroutines MA61I/MA61D with their HSL namesakes ', /,
 !    *     ' and dependencies. See ', /,
 !    *     '   $GALAHAD/src/makedefs/packages for details.', //,
 !    *     ' *** EXECUTION TERMINATING *** ', / )
@@ -40,7 +40,7 @@
 
       END SUBROUTINE MA61I
 
-      SUBROUTINE MA61D ( A, IRN, ia, n, IK, IP, row, ncp, nucl, 
+      SUBROUTINE MA61D ( A, IRN, ia, n, IK, IP, row, ncp, nucl,
      *                   nual )
 
 !-----------------------------------------------
@@ -53,23 +53,23 @@
       INTEGER, INTENT( INOUT ), DIMENSION( ia ) :: IRN
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IK
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IP
-      REAL ( KIND = KIND( 1.0E+0 ) ), INTENT( INOUT ), 
+      REAL ( KIND = KIND( 1.0E+0 ) ), INTENT( INOUT ),
      *                                DIMENSION( ia ) :: A
 
-!  Dummy subroutine available with LANCELOT 
+!  Dummy subroutine available with LANCELOT
 
       WRITE ( 6, 2000 )
       STOP
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with LANCELOT B.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
      *     ' option may be enabled by replacing the dummy ', /,
-     *     ' subroutines MA61I/MA61D with their HSL namesakes ', /, 
+     *     ' subroutines MA61I/MA61D with their HSL namesakes ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )

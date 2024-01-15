@@ -23,7 +23,7 @@ int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], const voi
 int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void *);
 int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void *);
 int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void *);
-int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                   bool got_h, const void *);
 
 int main(void) {
@@ -63,41 +63,41 @@ int main(void) {
         //control.print_level = 1;
 
         // Start from 1.5
-        real_wp_ x[] = {1.5,1.5,1.5}; 
+        real_wp_ x[] = {1.5,1.5,1.5};
 
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
                 // control.print_level = 1;
-                tru_import( &control, &data, &status, n, "coordinate", 
+                tru_import( &control, &data, &status, n, "coordinate",
                             ne, H_row, H_col, NULL );
                 tru_solve_with_mat( &data, &userdata, &status,
                                     n, x, g, ne, fun, grad, hess, prec );
                 break;
-            case 2: // sparse by rows  
+            case 2: // sparse by rows
                 st = 'R';
-                tru_import( &control, &data, &status, n, "sparse_by_rows", 
+                tru_import( &control, &data, &status, n, "sparse_by_rows",
                            ne, NULL, H_col, H_ptr);
                 tru_solve_with_mat( &data, &userdata, &status,
                                     n, x, g, ne, fun, grad, hess, prec );
                 break;
             case 3: // dense
                 st = 'D';
-                tru_import( &control, &data, &status, n, "dense", 
+                tru_import( &control, &data, &status, n, "dense",
                             ne, NULL, NULL, NULL );
                 tru_solve_with_mat( &data, &userdata, &status,
                                     n, x, g, ne, fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
-                tru_import( &control, &data, &status, n, "diagonal", 
+                tru_import( &control, &data, &status, n, "diagonal",
                             ne, NULL, NULL, NULL );
-                tru_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                tru_solve_with_mat( &data, &userdata, &status, n, x, g,
                                     ne, fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
-                tru_import( &control, &data, &status, n, "absent", 
+                tru_import( &control, &data, &status, n, "absent",
                             ne, NULL, NULL, NULL );
                 tru_solve_without_mat( &data, &userdata, &status,
                                        n, x, g, fun, grad, hessprod, prec );
@@ -106,7 +106,7 @@ int main(void) {
         tru_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
+            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
             printf("%c: TRU_solve exit status = %1i\n", st, inform.status);
@@ -130,7 +130,7 @@ int main(void) {
     real_wp_ u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
     real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
- 
+
     for( int d=1; d <= 5; d++){
 
         // Initialize TRU
@@ -142,15 +142,15 @@ int main(void) {
         // control.maxit = 1;
 
         // Start from 1.5
-        real_wp_ x[] = {1.5,1.5,1.5}; 
+        real_wp_ x[] = {1.5,1.5,1.5};
 
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                tru_import( &control, &data, &status, n, "coordinate", 
+                tru_import( &control, &data, &status, n, "coordinate",
                             ne, H_row, H_col, NULL );
                 while(true){ // reverse-communication loop
-                    tru_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    tru_solve_reverse_with_mat( &data, &status, &eval_status,
                                                 n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -161,22 +161,22 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess( n, ne, x, H_val, &userdata ); 
+                        eval_status = hess( n, ne, x, H_val, &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                           status);
                         break;
                     }
                 }
                 break;
-            case 2: // sparse by rows  
+            case 2: // sparse by rows
                 st = 'R';
-                tru_import( &control, &data, &status, n, "sparse_by_rows", ne, 
+                tru_import( &control, &data, &status, n, "sparse_by_rows", ne,
                             NULL, H_col, H_ptr );
                 while(true){ // reverse-communication loop
-                    tru_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    tru_solve_reverse_with_mat( &data, &status, &eval_status,
                                                 n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -187,11 +187,11 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess( n, ne, x, H_val, &userdata ); 
+                        eval_status = hess( n, ne, x, H_val, &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                           status);
                         break;
                     }
@@ -199,10 +199,10 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                tru_import( &control, &data, &status, n, "dense", 
+                tru_import( &control, &data, &status, n, "dense",
                             ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
-                    tru_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    tru_solve_reverse_with_mat( &data, &status, &eval_status,
                                          n, x, f, g, n*(n+1)/2, H_dense, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -213,12 +213,12 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_dense( n, n*( n+1)/2, x, H_dense, 
-                                                 &userdata ); 
+                        eval_status = hess_dense( n, n*( n+1)/2, x, H_dense,
+                                                 &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                           status);
                         break;
                     }
@@ -226,10 +226,10 @@ int main(void) {
                 break;
             case 4: // diagonal
                 st = 'I';
-                tru_import( &control, &data, &status, n, "diagonal", 
+                tru_import( &control, &data, &status, n, "diagonal",
                            ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
-                    tru_solve_reverse_with_mat( &data, &status, &eval_status, 
+                    tru_solve_reverse_with_mat( &data, &status, &eval_status,
                                                 n, x, f, g, n, H_diag, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -240,11 +240,11 @@ int main(void) {
                     }else if(status == 3){ // evaluate g
                         eval_status = grad_diag( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
-                        eval_status = hess_diag( n, n, x, H_diag, &userdata ); 
+                        eval_status = hess_diag( n, n, x, H_diag, &userdata );
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                           status);
                         break;
                     }
@@ -252,7 +252,7 @@ int main(void) {
                 break;
             case 5: // access by products
                 st = 'P';
-                tru_import( &control, &data, &status, n, "absent", 
+                tru_import( &control, &data, &status, n, "absent",
                             ne, NULL, NULL, NULL );
                 while(true){ // reverse-communication loop
                     tru_solve_reverse_without_mat( &data, &status, &eval_status,
@@ -270,7 +270,7 @@ int main(void) {
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", 
+                        printf(" the value %1i of status should not occur\n",
                           status);
                         break;
                     }
@@ -280,7 +280,7 @@ int main(void) {
         tru_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
+            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
             printf("%c: TRU_solve exit status = %1i\n", st, inform.status);
@@ -298,7 +298,7 @@ int main(void) {
 
 }
 
-// Objective function 
+// Objective function
 int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -319,7 +319,7 @@ int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
           const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
@@ -330,8 +330,8 @@ int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
 }
 
 // Dense Hessian
-int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
-                const void *userdata ){ 
+int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+                const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 0.0;
     hval[2] = 2.0;
@@ -342,7 +342,7 @@ int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[],
 }
 
 // Hessian-vector product
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void *userdata ){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
@@ -351,7 +351,7 @@ int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
 }
 
 // Apply preconditioner
-int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
           const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
@@ -359,7 +359,7 @@ int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
    return 0;
 }
 
- // Objective function 
+ // Objective function
 int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
@@ -380,16 +380,16 @@ int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
 }
 
 // Hessian of the objective
-int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[], 
+int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[],
                const void *userdata ){
     hval[0] = -cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
     return 0;
-}  
+}
 
 // Hessian-vector product
-int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                   bool got_h, const void *userdata ){
     u[0] = u[0] + - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * v[1];

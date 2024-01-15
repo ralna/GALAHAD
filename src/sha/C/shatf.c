@@ -72,7 +72,7 @@ int main(void) {
         }
 
         // recover the matrix
-        sha_recover_matrix( &data, &status, ne, m, ls1, ls2, strans, 
+        sha_recover_matrix( &data, &status, ne, m, ls1, ls2, strans,
                             ly1, ly2, ytrans, val_est, order );
         //                  ly1, ly2, ytrans, val_est, NULL );
         //                  if the natural order is ok
