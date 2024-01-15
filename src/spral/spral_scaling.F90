@@ -1383,6 +1383,7 @@ contains
    integer(ip_) :: i,  k
    integer(long_) :: j
    integer(ip_) :: col, cptr, bestr
+   real :: ratio
    real(rp_) :: u, bestu, bestv
 
    real(rp_) :: eps ! minimum improvement
@@ -1430,12 +1431,13 @@ contains
       prev = unmatched
       nunchanged = nunchanged + 1
       ! Test if we satisfy termination conditions
+      ratio = real(minmn-unmatched)/real(minmn)
       if ((nunchanged                  .ge. options%max_unchanged(1)) .and. &
-         (real(minmn-unmatched)/minmn .ge. options%min_proportion(1))) exit
+         (ratio .ge. options%min_proportion(1))) exit
       if ((nunchanged                  .ge. options%max_unchanged(2)) .and. &
-         (real(minmn-unmatched)/minmn .ge. options%min_proportion(2))) exit
+         (ratio .ge. options%min_proportion(2))) exit
       if ((nunchanged                  .ge. options%max_unchanged(3)) .and. &
-         (real(minmn-unmatched)/minmn .ge. options%min_proportion(3))) exit
+         (ratio .ge. options%min_proportion(3))) exit
       ! Update epsilon scaling
       eps = min(1.0_rp_, eps+1.0_rp_/(n+1))
       ! Now iterate over all unmatched entries listed in next(1:tail)

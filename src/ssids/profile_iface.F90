@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 14:40 GMT.
 
 #include "spral_procedures.h"
 
@@ -93,7 +93,7 @@ contains
        f_regions(i)%ngpu = ngpus
        if (ngpus .gt. 0) then
           allocate(gpus(ngpus), stat=st)
-          gpus(:) = regions(i)%gpus
+          gpus(:) = int(regions(i)%gpus,kind=c_int)
           f_regions(i)%gpus = c_loc(gpus(1))
           nullify(gpus)
        end if
@@ -115,7 +115,7 @@ contains
     character(C_CHAR), dimension(200) :: cname
 
     mythread = -1 ! autodetect
-    if(present(thread)) mythread = thread
+    if(present(thread)) mythread = int(thread,kind=C_INT)
     call f2c_string(name, cname)
 
     profile_create_task%ctask = c_create_task(cname, mythread)
@@ -153,7 +153,7 @@ contains
     call f2c_string(type, ctype)
     call f2c_string(val, cval)
     mythread = -1 ! autodetect
-    if(present(thread)) mythread = thread
+    if(present(thread)) mythread = int(thread,kind=C_INT)
 
     call c_add_event(ctype, cval, mythread)
 

@@ -345,7 +345,7 @@ contains
     call cpu_copy_options_in(options, coptions)
     this%csubtree = &
         c_create_symbolic_subtree(n, sa, en, sptr, sparent, rptr, rlist, nptr, &
-        nlist, int(size(contrib_idx),kind=long_), contrib_idx, coptions)
+        nlist, int(size(contrib_idx),kind=ip_), contrib_idx, coptions)
   end function construct_cpu_symbolic_subtree
 
   subroutine symbolic_cleanup(this)

@@ -3075,7 +3075,7 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
    integer(ip_) :: ndiag ! number diagonal entries present
    integer(i4_) :: newtau ! number of entries in expanded storage
    integer(i4_) :: oldtau ! number of entries in symmetric storage
-   integer(ip_) :: rebase ! Added to ptr and row to get Fortran base
+   integer(i4_) :: rebase ! Added to ptr and row to get Fortran base
 
    rebase = 0
    if(present(cbase)) then
