@@ -1,4 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-16 AT 10:30 GMT.
+
+#ifdef SPRAL_64BIT_INTEGER
+#define SPRAL_KINDS_double spral_kinds_double_64
+#define SPRAL_KINDS_single spral_kinds_single_64
+#endif
 
 !-*-*-*-*-*-*-*-*-*-  S P R A L _ K I N D S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 

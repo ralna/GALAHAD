@@ -4,7 +4,7 @@
  *
  * Nick Gould for CUTEst
  * initial version, 2023-11-11
- * this version 2023-11-12
+ * this version 2024-01-16
  */
 
 #define ELFUN_r ELFUN
@@ -39,6 +39,9 @@
 #define CUTEST_cdh_r CUTEST_cdh
 #define CUTEST_cdh_threaded_r CUTEST_cdh_threaded
 #define CUTEST_cdh_threadsafe_r CUTEST_cdh_threadsafe
+#define CUTEST_cdhj_r CUTEST_cdhj
+#define CUTEST_cdhj_threaded_r CUTEST_cdhj_threaded
+#define CUTEST_cdhj_threadsafe_r CUTEST_cdhj_threadsafe
 #define CUTEST_cdimchp_r CUTEST_cdimchp
 #define CUTEST_cdimchp_threadsafe_r CUTEST_cdimchp_threadsafe
 #define CUTEST_cdimen_r CUTEST_cdimen

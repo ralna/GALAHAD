@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -1025,7 +1025,7 @@
                                prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,     &
                                prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,     &
                                prob%C, prob%f, prefix, dqp_control, inform,    &
-                               - 1, prob%gradient_kind,                        &
+                               - 1_ip_, prob%gradient_kind,                    &
                                nv, lbd, data%m_ref, dual_starting_point,       &
                                data%clock_total, data%cpu_total,               &
                                data%SBLS_data, data%SLS_data,                  &
@@ -1054,7 +1054,7 @@
                                prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,     &
                                prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,     &
                                prob%C, prob%f, prefix, dqp_control, inform,    &
-                               - 1, prob%gradient_kind,                        &
+                               - 1_ip_, prob%gradient_kind,                    &
                                nv, lbd, data%m_ref, dual_starting_point,       &
                                data%clock_total, data%cpu_total,               &
                                data%SBLS_data, data%SLS_data,                  &

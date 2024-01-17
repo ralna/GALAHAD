@@ -1088,7 +1088,7 @@
          inform%bad_alloc = 'sls: data%matrix_dense' ; GO TO 900 ; END IF
 
        IF ( data%m == data%n ) THEN  ! for LAPACK solvers
-         CALL SPACE_resize_array( data%n, 1, data%RHS,                         &
+         CALL SPACE_resize_array( data%n, 1_ip_, data%RHS,                     &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%RHS2' ; GO TO 900 ; END IF
@@ -2038,7 +2038,7 @@
          data%matrix%ne = matrix_ptr( m + 1 )
        END IF
 
-       CALL SPACE_resize_array( m + 1, data%matrix%ptr,                        &
+       CALL SPACE_resize_array( m + 1_ip_, data%matrix%ptr,                    &
               data%uls_inform%status, data%uls_inform%alloc_status )
        IF ( data%uls_inform%status /= 0 ) GO TO 900
 

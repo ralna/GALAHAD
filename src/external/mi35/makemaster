@@ -1,64 +1,11 @@
 #  Main body of the installation makefile for the MI35 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2023-05-18
+#  This version: 2024-01-17
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD HSL makefile definitions
 
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) $(OPENMP)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-#  Libraries used
-
-LIBS = $(HSL) $(LAPACK) $(BLAS)
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-HRMARFILES = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGS)
-HRMARFILED = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGD)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
-
-SUCC = precision version) compiled successfully
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
 #  sed scripts
 
@@ -72,21 +19,31 @@ MI35S = blas lapack $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_zb01i.o) \
 MI35D = blas lapack $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_zb01i.o) \
         $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) $(HLGD)(mc64d.o) \
         $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi35d.o)
+MI35S64 = blas lapack $(HLGS64)(hsl_mc34s.o) $(HLGS64)(hsl_zb01i.o) \
+        $(HLGS64)(hsl_mc68i.o) $(HLGS64)(hsl_mc69s.o) $(HLGS64)(mc64s.o) \
+        $(HLGS64)(hsl_mc64s.o) $(HLGS64)(hsl_mi35s.o)
+MI35D64 = blas lapack $(HLGD64)(hsl_mc34d.o) $(HLGD64)(hsl_zb01i.o) \
+        $(HLGD64)(hsl_mc68i.o) $(HLGD64)(hsl_mc69d.o) $(HLGD64)(mc64d.o) \
+        $(HLGD64)(hsl_mc64d.o) $(HLGD64)(hsl_mi35d.o)
 
 mi35: mi35_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI35 routines ($(PRECIS) $(SUCC)"
 mi35_silent: mi35_$(PRECIS)
 mi35_single: $(MI35S)
 mi35_double: $(MI35D)
+mi35_single_64: $(MI35S64)
+mi35_double_64: $(MI35D64)
 
 #  lapack packages
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  individual compilations
 

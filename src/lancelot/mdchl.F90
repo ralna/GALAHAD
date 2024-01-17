@@ -2988,7 +2988,7 @@
            IF ( in /= 0 ) IW( in, 1 ) = j
          END DO
          mcl = MAX( mcl, lcol )
-         pivt = FLOAT( iip ) / FLOAT( n )
+         pivt = REAL( iip ) / REAL( n )
 
 !  Give warning if available space is used too early
 
@@ -3004,7 +3004,7 @@
 
          ELSE
            IF ( change ) THEN
-             pfill = FLOAT( lrow - nz0 ) / FLOAT( nfill )
+             pfill = REAL( lrow - nz0 ) / REAL( nfill )
              IF ( pivt < 9.0E-1 ) THEN
                IF ( pfill > alfa * pivt + b1 ) THEN
                  IF ( pfill < alfa * pivt + b2 ) GO TO 240
@@ -3023,7 +3023,7 @@
   240  CONTINUE
        nr = n - iip
        lfull = nr * ( nr - 1 ) / 2
-       lfuldd = IFIX( dd * FLOAT( lfull ) )
+       lfuldd = IFIX( dd * REAL( lfull ) )
        IF ( lcol >= lfuldd .AND. nurl + lfull < iaj ) EXIT
      END DO
 

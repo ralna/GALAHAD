@@ -1,65 +1,30 @@
 #  Main body of the installation makefile for the MA33 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 11 IV 2006
+#  This version: 2024-01-17
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile definitions
 
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-#  Archive manipulation strings
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-HRMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
 #  compilation agenda
 
 ma33s = $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) $(HLGS)(ma33s.o)
 ma33d = $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) $(HLGD)(ma33d.o)
+ma33s64 = $(HLGS64)(mc13s.o) $(HLGS64)(mc20s.o) $(HLGS64)(mc21s.o) \
+          $(HLGS64)(ma33s.o)
+ma33d64 = $(HLGD64)(mc13d.o) $(HLGD64)(mc20d.o) $(HLGD64)(mc21d.o) \
+          $(HLGD64)(ma33d.o)
 
 RMA33S = $(OBJS)/ma33ss.o -L$(OBJS) $(LAPACK) $(BLAS)
 RMA33D = $(OBJD)/ma33ds.o -L$(OBJD) $(LAPACK) $(BLAS)
+RMA33S64 = $(OBJS64)/ma33ss.o -L$(OBJS64) $(LAPACK) $(BLAS)
+RMA33D64 = $(OBJD64)/ma33ds.o -L$(OBJD64) $(LAPACK) $(BLAS)
 
 RHSLMA33S = $(OBJS)/ma33ss.o -L$(OBJS) $(LAPACK) $(BLAS)
 RHSLMA33D = $(OBJD)/ma33ds.o -L$(OBJD) $(LAPACK) $(BLAS)
+RHSLMA33S64 = $(OBJS64)/ma33ss.o -L$(OBJS64) $(LAPACK) $(BLAS)
+RHSLMA33D64 = $(OBJD64)/ma33ds.o -L$(OBJD64) $(LAPACK) $(BLAS)
 
 SUCC = precision version) compiled successfully
 
@@ -75,6 +40,8 @@ ma33: ma33_$(PRECIS)
 ma33_silent: ma33_$(PRECIS)
 ma33_single: $(ma33s)
 ma33_double: $(ma33d)
+ma33_single_64: $(ma33s64)
+ma33_double_64: $(ma33d64)
 
 test_ma33s: $(ma33s) $(OBJS)/ma33tests.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma33 $(RMA33S)

@@ -516,7 +516,7 @@ contains
 
   ! Return top most element of tree containing u.
   ! Implements path compression to speed up subsequent searches.
-  integer function FIND(vforest, u)
+  integer(ip_) function FIND(vforest, u)
     implicit none
     integer(ip_), dimension(:), intent(inout) :: vforest
     integer(ip_), intent(in) :: u

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-29 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -1709,7 +1709,7 @@
          END IF
 
          array_name = 'blls: data%C_sbls%val'
-         CALL SPACE_resize_array( 1, data%C_sbls%val, inform%status,           &
+         CALL SPACE_resize_array( 1_ip_, data%C_sbls%val, inform%status,       &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -4797,7 +4797,7 @@
 
         IF ( data%n_a0 >= 1 ) THEN
           CALL eval_ASPROD( status, userdata, V = data%S, P = data%P,          &
-                            NZ_in = data%NZ_d, nz_in_start = 1,                &
+                            NZ_in = data%NZ_d, nz_in_start = 1_ip_,            &
                             nz_in_end = data%n_a0 )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900

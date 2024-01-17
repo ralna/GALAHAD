@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-09 AT 12:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -1655,7 +1655,7 @@
           CALL SORT_reorder_by_cols( data%n_sub, data%n_sub, data%p_ne,        &
                                      data%P_row, data%P_col, data%p_ne,        &
                                      data%P_colptr, data%n_sub + 1,            &
-                                     data%IW, data%mc61_liw, 0, 0, i )
+                                     data%IW, data%mc61_liw, 0_ip_, 0_ip_, i )
           IF ( i > 0 ) THEN
             write(6,"( ' error ', I0, ' from SORT_reorder_by_cols' )" ) i
             stop
@@ -1667,7 +1667,7 @@
 
           IF ( control%print_level <= 0 .OR. control%out <= 0 )                &
             data%mc61_ICNTL( 1 : 2 ) = - 1
-            CALL MC61A( 2, data%n_sub, data%mc61_lirn,                         &
+            CALL MC61A( 2_ip_, data%n_sub, data%mc61_lirn,                     &
                         data%P_row, data%P_colptr, data%PERM, data%mc61_liw,   &
                         data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,      &
                         inform%mc61_info, inform%mc61_rinfo )
@@ -2421,7 +2421,7 @@
         IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
         array_name = 'psls: data%D'
-        CALL SPACE_resize_array( 2, data%n_sub, data%D,                        &
+        CALL SPACE_resize_array( 2_ip_, data%n_sub, data%D,                    &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -3518,7 +3518,7 @@
           CALL SORT_reorder_by_cols( data%n_sub, data%n_sub, data%p_ne,        &
                                      data%P_row, data%P_col, data%p_ne,        &
                                      data%P_colptr, data%n_sub + 1,            &
-                                     data%IW, data%mc61_liw, 0, 0, i )
+                                     data%IW, data%mc61_liw, 0_ip_, 0_ip_, i )
           IF ( i > 0 ) THEN
             write(6,"( ' error ', I0, ' from SORT_reorder_by_cols' )" ) i
             stop
@@ -3530,7 +3530,7 @@
 
           IF ( control%print_level <= 0 .OR. control%out <= 0 )                &
             data%mc61_ICNTL( 1 : 2 ) = - 1
-          CALL MC61A( 2, data%n_sub, data%mc61_lirn,                           &
+          CALL MC61A( 2_ip_, data%n_sub, data%mc61_lirn,                       &
                       data%P_row, data%P_colptr, data%PERM, data%mc61_liw,     &
                       data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,        &
                       inform%mc61_info, inform%mc61_rinfo )

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MI28 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2023-05-18
+#  This version: 2024-01-17
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -15,9 +15,19 @@ MI28S = basics metis $(HLGS)(kb07i.o) $(HLGS)(mc61s.o) $(HLGS)(mc77s.o) \
 MI28D = basics metis $(HLGD)(kb07i.o) $(HLGD)(mc61d.o) $(HLGD)(mc77d.o) \
         $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) \
         $(HLGD)(mc64d.o) $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi28d.o)
+MI28S64 = basics metis $(HLGS64)(kb07i.o) $(HLGS64)(mc61s.o) \
+        $(HLGS64)(mc77s.o) $(HLGS64)(hsl_zb01i.o) \
+        $(HLGS64)(hsl_mc68i.o) $(HLGS64)(hsl_mc69s.o) \
+        $(HLGS64)(mc64s.o) $(HLGS64)(hsl_mc64s.o) $(HLGS64)(hsl_mi28s.o)
+MI28D64 = basics metis $(HLGD64)(kb07i.o) $(HLGD64)(mc61d.o) \
+        $(HLGD64)(mc77d.o) $(HLGD64)(hsl_zb01i.o) \
+        $(HLGD64)(hsl_mc68i.o) $(HLGD64)(hsl_mc69d.o) \
+        $(HLGD64)(mc64d.o) $(HLGD64)(hsl_mc64d.o) $(HLGD64)(hsl_mi28d.o)
 
 MI28CS = $(MI28S) $(HCLGS)(hsl_mi28s_ciface.o)
 MI28CD = $(MI28D) $(HCLGD)(hsl_mi28d_ciface.o)
+MI28CS64 = $(MI28S64) $(HCLGS64)(hsl_mi28s_ciface.o)
+MI28CD64 = $(MI28D64) $(HCLGD64)(hsl_mi28d_ciface.o)
 
 #  compilation agenda
 
@@ -26,28 +36,35 @@ mi28: mi28_$(PRECIS)
 mi28_silent: mi28_$(PRECIS)
 mi28_single: $(MI28S)
 mi28_double: $(MI28D)
+mi28_single_64: $(MI28S64)
+mi28_double_64: $(MI28D64)
 
 mi28_ciface: mi28_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI28 C routines ($(PRECIS) $(SUCC)"
 mi28_ciface_silent: mi28_ciface_$(PRECIS)
 mi28_ciface_single: $(MI28CS)
 mi28_ciface_double: $(MI28CD)
+mi28_ciface_single_64: $(MI28CS64)
+mi28_ciface_double_64: $(MI28CD64)
 
 #  lapack packages
 
 basics:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas.o lapack.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas.o lapack.o PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  hsl packages
 
 zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
+            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../zd11 )
 
 metis:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            metis_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            metis_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  required blas
 

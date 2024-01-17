@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -393,7 +393,7 @@
        LOGICAL :: direct_subproblem_solve, steepest_descent, w_eq_identity
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE
-       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
+       LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
        TYPE ( SMT_type ) :: Ao, H_sbls, AT_sbls, C_sbls
@@ -1742,7 +1742,7 @@
          END IF
 
          array_name = 'slls: data%C_sbls%val'
-         CALL SPACE_resize_array( 1, data%C_sbls%val, inform%status,           &
+         CALL SPACE_resize_array( 1_ip_, data%C_sbls%val, inform%status,       &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -3605,8 +3605,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
           END DO
         ELSE
           data%V( now_fixed ) = one ; NZ_in( 1 ) = now_fixed
-          CALL eval_ASPROD( status, userdata, data%V, data%P, NZ_in, 1, 1,     &
-                            data%NZ_out, nz_out_end )
+          CALL eval_ASPROD( status, userdata, data%V, data%P, NZ_in,           &
+                            1_ip_, 1_ip_, data%NZ_out, nz_out_end )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; RETURN
           END IF

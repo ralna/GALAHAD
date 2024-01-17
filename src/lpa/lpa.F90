@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -2562,7 +2562,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'lpa: BND'
-      CALL SPACE_resize_array( 2, kb, BND,                                     &
+      CALL SPACE_resize_array( 2_ip_, kb, BND,                                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error,                &
              exact_size = .TRUE. )
@@ -3658,7 +3658,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'lpa: BND'
-      CALL SPACE_resize_array( 2, kb, BND,                                     &
+      CALL SPACE_resize_array( 2_ip_, kb, BND,                                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error,                &
              exact_size = .TRUE. )

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MA48 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2023-07-01
+#  This version: 2024-01-17
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -13,8 +13,15 @@ MA48S = zd11 $(HLGS)(mc71s.o) $(HLGS)(hsl_zb01s.o) \
         $(HLGS)(hsl_zb01i.o) $(HLGS)(hsl_ma48s.o)
 MA48D = zd11 $(HLGD)(mc71d.o) $(HLGD)(hsl_zb01d.o) \
         $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_ma48d.o)
+MA48S64 = zd11 $(HLGS64)(mc71s.o) $(HLGS64)(hsl_zb01s.o) \
+        $(HLGS64)(hsl_zb01i.o) $(HLGS64)(hsl_ma48s.o)
+MA48D64 = zd11 $(HLGD64)(mc71d.o) $(HLGD64)(hsl_zb01d.o) \
+        $(HLGD64)(hsl_zb01i.o) $(HLGD64)(hsl_ma48d.o)
+
 MA48CS = $(MA48S) $(HCLGS)(hsl_ma48s_ciface.o)
 MA48CD = $(MA48D) $(HCLGD)(hsl_ma48d_ciface.o)
+MA48CS64 = $(MA48S64) $(HCLGS64)(hsl_ma48s_ciface.o)
+MA48CD64 = $(MA48D64) $(HCLGD64)(hsl_ma48d_ciface.o)
 
 #  compilation agenda
 
@@ -23,12 +30,16 @@ ma48: ma48_$(PRECIS)
 ma48_silent: ma48_$(PRECIS)
 ma48_single: $(MA48S)
 ma48_double: $(MA48D)
+ma48_single_64: $(MA48S64)
+ma48_double_64: $(MA48D64)
 
 ma48_ciface: ma48_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
 ma48_ciface_silent: ma48_ciface_$(PRECIS)
 ma48_ciface_single: $(MA48CS)
 ma48_ciface_double: $(MA48CD)
+ma48_ciface_single_64: $(MA48CS64)
+ma48_ciface_double_64: $(MA48CD64)
 
 ma48s = blas $(HLGS)(mc71s.o) \
         $(HLGS)(mc13s.o) $(HLGS)(mc21s.o)
@@ -36,15 +47,27 @@ ma48s = blas $(HLGS)(mc71s.o) \
 ma48d = blas $(HLGD)(mc71d.o) \
         $(HLGD)(mc13d.o) $(HLGD)(mc21d.o)
 #       $(HLGD)(ma50d.o) $(HLGD)(ma48d.o) # $(HLG)(btf.o)
+ma48s64 = blas $(HLGS64)(mc71s.o) \
+        $(HLGS64)(mc13s.o) $(HLGS64)(mc21s.o)
+#       $(HLGS64)(ma50s.o) $(HLGS64)(ma48s.o) # $(HLG64)(btf.o)
+ma48d64 = blas $(HLGD64)(mc71d.o) \
+        $(HLGD64)(mc13d.o) $(HLGD64)(mc21d.o)
+#       $(HLGD64)(ma50d.o) $(HLGD64)(ma48d.o) # $(HLG64)(btf.o)
 
 ma51s = $(ma48s) $(HLGS)(ma51s.o)
 ma51d = $(ma48d) $(HLGD)(ma51d.o)
+ma51s64 = $(ma48s64) $(HLGS64)(ma51s.o)
+ma51d64 = $(ma48d64) $(HLGD64)(ma51d.o)
 
 RMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(HSL) $(LAPACK) $(BLAS)
 RMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(HSL) $(LAPACK) $(BLAS)
+RMA48S64 = $(OBJS64)/ma48ss.o -L$(OBJS64) $(HSL) $(LAPACK) $(BLAS)
+RMA48D64 = $(OBJD64)/ma48ds.o -L$(OBJD64) $(HSL) $(LAPACK) $(BLAS)
 
 RHSLMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(HSL) $(LAPACK) $(BLAS)
 RHSLMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(HSL) $(LAPACK) $(BLAS)
+RHSLMA48S64 = $(OBJS64)/ma48ss.o -L$(OBJS64) $(HSL) $(LAPACK) $(BLAS)
+RHSLMA48D64 = $(OBJD64)/ma48ds.o -L$(OBJD64) $(HSL) $(LAPACK) $(BLAS)
 
 all: ma48
 test: test_ma
@@ -65,13 +88,15 @@ ma48ds: $(ma48d) $(OBJD)/ma48ds.o
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../general )
 
 #  hsl packages
 
 zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
+            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
+            PWD=$(PWD)/../../zd11 )
 
 #  main compilations
 

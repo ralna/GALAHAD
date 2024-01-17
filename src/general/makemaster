@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2023-05-18
+#  This version: 2024-01-17
 
 #  include standard GALAHAD makefile definitions
 
@@ -551,28 +551,16 @@ ssids:
 	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(PWD)/../ssids )
 
-ssidss.o: $(RLGS)(ssids_$(PRECIS).o)
+ssids.o: $(RLG)(ssids_$(PRECIS).o)
 
-$(RLGS)(ssids_$(PRECIS).o): ../dum/ssidss.F90
+$(RLG)(ssids_$(PRECIS).o): ../dum/ssidss.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
-	$(CP) ../dum/ssidss.F90 $(OBJ)/ssids.F90
+	$(CP) ../dum/ssids.F90 $(OBJ)/ssids.F90
 	cd $(OBJ); $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGS) ssids.F90
 	cd $(OBJ); $(RARR) ssids_$(PRECIS).o ; $(RM) ssids.F90 ssids_$(PRECIS).o
 	$(MVMODS)
 	$(RMARFILE) sls_$(PRECIS).o
 	$(RANLIB) $(RLGS)
-	@printf '[ OK ]\n'
-
-ssidsd.o: $(RLGD)(ssids_$(PRECIS).o)
-
-$(RLGD)(ssids_$(PRECIS).o): ../dum/ssidsd.F90
-	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsd_dum"
-	$(CP) ../dum/ssidsd.F90 $(OBJ)/ssids.F90
-	cd $(OBJ); $(FORTRAN) -o ssids_$(PRECIS).o $(FFLAGS) ssids.F90
-	cd $(OBJ); $(RARR) ssids_$(PRECIS).o ; $(RM) ssids.F90 ssids_$(PRECIS).o
-	$(MVMODS)
-	$(RMARFILE) sls_$(PRECIS).o
-	$(RANLIB) $(RLGD)
 	@printf '[ OK ]\n'
 
 ssids_ciface.o: $(CLG)(ssids_ciface.o)

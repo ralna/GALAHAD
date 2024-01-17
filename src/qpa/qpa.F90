@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -1415,7 +1415,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpa: data%RES_l'
-      CALL SPACE_resize_array( 1, data%dims%c_l_end, data%RES_l,               &
+      CALL SPACE_resize_array( 1_ip_, data%dims%c_l_end, data%RES_l,           &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -1933,7 +1933,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpa: data%DIAG'
-      CALL SPACE_resize_array( 2, K_n_max, data%DIAG, inform%status,           &
+      CALL SPACE_resize_array( 2_ip_, K_n_max, data%DIAG, inform%status,       &
              inform%alloc_status, array_name = array_name,                     &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -8157,7 +8157,7 @@
 ! Allocate temporary workspace
 
       array_name = 'qpa: data%D'
-      CALL SPACE_resize_array( 2, K%n, D, inform%status,                       &
+      CALL SPACE_resize_array( 2_ip_, K%n, D, inform%status,                   &
              inform%alloc_status, array_name = array_name,                     &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -9562,7 +9562,7 @@ main: DO
            WRITE( control%error, "( A, ' maximum, average column lengths: ',   &
           &   I0, ' & ', 0P, F0.1, /, A, ' number of columns longer than ',    &
           &   I0, ' is ', I0 )" ) prefix, max_len,                             &
-          float( ( Abycol_ptr( n_free + 1 ) - 1 ) ) / float( n_free ),         &
+          REAL( ( Abycol_ptr( n_free + 1 ) - 1 ) ) / REAL( n_free ),           &
           prefix, max_col,                                                     &
           COUNT( Abycol_ptr( 2 : n_free+1 ) - Abycol_ptr( : n_free ) > max_col )
       ELSE

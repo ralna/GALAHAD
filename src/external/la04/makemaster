@@ -1,57 +1,11 @@
 #  Main body of the installation makefile for the LA04 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 07 VIII 2019
+#  This version: 2024-01-17
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile definitions
 
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-#  Libraries used
-
-LIBS = $(HSL) $(LAPACK) $(BLAS)
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-SUCC = precision version) compiled successfully
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
 #  compilation agenda
 
@@ -62,6 +16,10 @@ la04_single: $(HLGS)(fa14s.o) $(HLGS)(fd15s.o) $(HLGS)(mc29s.o) \
                $(HLGS)(mc59s.o) $(HLGS)(la15s.o) $(HLGS)(la04s.o)
 la04_double: $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(mc29d.o) \
                $(HLGD)(mc59d.o) $(HLGD)(la15d.o) $(HLGD)(la04d.o)
+la04_single_64: $(HLGS64)(fa14s.o) $(HLGS64fd15s.o) $(HLGS64mc29s.o) \
+               $(HLGS64)(mc59s.o) $(HLGS64la15s.o) $(HLGS64la04s.o)
+la04_double_64: $(HLGD64)(fa14d.o) $(HLGD64fd15d.o) $(HLGD64mc29d.o) \
+               $(HLGD64)(mc59d.o) $(HLGD64(la15d.o) $(HLGD64la04d.o)
 
 #  individual compilations
 

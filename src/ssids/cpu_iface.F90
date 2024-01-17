@@ -1,10 +1,17 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-25 AT 11:10 GMT.
 
 #ifdef SPRAL_SINGLE
+#ifdef SPRAL_64BIT_INTEGER
+#define spral_kinds_precision spral_kinds_single_64
+#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single_64
+#define spral_ssids_inform_precision spral_ssids_inform_single_64
+#define spral_ssids_types_precision spral_ssids_types_single_64
+#else
 #define spral_kinds_precision spral_kinds_single
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single
+#endif
 #define spral_c_gemv  spral_c_sgemv
 #define spral_c_trsv  spral_c_strsv
 #define spral_c_syrk  spral_c_ssyrk
@@ -20,10 +27,17 @@
 #define potrf spotrf
 #define gemm  sgemm
 #else
+#ifdef SPRAL_64BIT_INTEGER
+#define spral_kinds_precision spral_kinds_double_64
+#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double_64
+#define spral_ssids_inform_precision spral_ssids_inform_double_64
+#define spral_ssids_types_precision spral_ssids_types_double_64
+#else
 #define spral_kinds_precision spral_kinds_double
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
 #define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_types_precision spral_ssids_types_double
+#endif
 #define spral_c_gemv  spral_c_dgemv
 #define spral_c_trsv  spral_c_dtrsv
 #define spral_c_syrk  spral_c_dsyrk

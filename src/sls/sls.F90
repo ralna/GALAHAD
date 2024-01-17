@@ -748,7 +748,8 @@
        INTEGER ( KIND = ip_ ) :: pardiso_mtype, mc61_lirn
        INTEGER ( KIND = ip_ ) :: mc61_liw, mc77_liw, mc77_ldw, sytr_lwork
        CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
-       LOGICAL :: must_be_definite, explicit_scaling, reordered
+       LOGICAL :: explicit_scaling, reordered
+       LOGICAL ( KIND = ip_ ) :: must_be_definite
        INTEGER ( KIND = ip_ ) :: set_res = - 1
        INTEGER ( KIND = ip_ ) :: set_res2 = - 1
        LOGICAL :: got_maps_scale = .FALSE.
@@ -797,7 +798,8 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
        REAL ( KIND = rp_ ), DIMENSION( 0 : 0 ) :: DIAG
-       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: LFLAG
+!      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: LFLAG
+       LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LFLAG
 
        TYPE ( ZD11_type ) :: matrix, matrix_scale
 
@@ -994,7 +996,7 @@
 !  check to see if HSL ordering packages are available
 
      control_mc68%lp = - 1
-     CALL MC68_order( 1, n_dummy, PTR, ROW, PERM, control_mc68, info_mc68 )
+     CALL MC68_order( 1_ip_, n_dummy, PTR, ROW, PERM, control_mc68, info_mc68 )
      hsl_available = info_mc68%flag >= 0
 
 !  check to see if the MeTiS ordering packages is available
@@ -2686,7 +2688,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, j, k, l, l1, l2, ordering, pardiso_solver
-     INTEGER( c_int ) :: pastix_info
+     INTEGER( ipc_ ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      LOGICAL :: mc6168_ordering
@@ -2829,7 +2831,7 @@
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%MAPS' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( matrix%n + 1, data%matrix%PTR,                 &
+       CALL SPACE_resize_array( matrix%n + 1_ip_, data%matrix%PTR,             &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%matrix%PTR' ; GO TO 900 ; END IF
@@ -3050,7 +3052,7 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%MRP' ; GO TO 900 ; END IF
-         CALL SPACE_resize_array( matrix%n + 1, data%INVP,                     &
+         CALL SPACE_resize_array( matrix%n + 1_ip_, data%INVP,                 &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%INVP' ; GO TO 900 ; END IF
@@ -3268,7 +3270,7 @@
 !  if the extended matrix has not yet been constructed, do so
 
 !      IF ( mc6168_ordering ) THEN
-!        CALL SPACE_resize_array( data%matrix%PTR( matrix%n + 1 ) - 1,         &
+!        CALL SPACE_resize_array( data%matrix%PTR( matrix%n + 1 ) - 1_ip_,     &
 !                   data%matrix%ROW, inform%status, inform%alloc_status )
 !        IF ( inform%status /= GALAHAD_ok ) THEN
 !          inform%bad_alloc = 'sls: data%matrix%ROW' ; GO TO 900 ; END IF
@@ -3281,11 +3283,11 @@
 
 !      ELSE
          data%matrix%ne = data%matrix_ne
-         CALL SPACE_resize_array( data%matrix_ne, 2, data%MAP,                 &
+         CALL SPACE_resize_array( data%matrix_ne, 2_ip_, data%MAP,             &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%MAP' ; GO TO 900 ; END IF
-         CALL SPACE_resize_array( matrix%n + 1, data%matrix%PTR,               &
+         CALL SPACE_resize_array( matrix%n + 1_ip_, data%matrix%PTR,           &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%matrix%PTR' ; GO TO 900 ; END IF
@@ -3429,7 +3431,7 @@
        DO i = 1, data%n
          l1 = data%matrix%PTR( i )
          l2 = data%matrix%PTR( i + 1 ) - 1
-         CALL MA77_input_vars( i, l2 - l1 + 1, data%matrix%ROW( l1 : l2 ),     &
+         CALL MA77_input_vars( i, l2 - l1 + 1_ip_, data%matrix%ROW( l1 : l2 ), &
                                data%ma77_keep, data%ma77_control,              &
                                data%ma77_info )
          CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
@@ -3451,7 +3453,7 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%MAPS' ; GO TO 900 ; END IF
-         CALL SPACE_resize_array( matrix%n + 1, data%matrix%PTR,               &
+         CALL SPACE_resize_array( matrix%n + 1_ip_, data%matrix%PTR,           &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%matrix%PTR' ; GO TO 900 ; END IF
@@ -3584,7 +3586,7 @@
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%matrix%VAL' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( matrix%n, 1, data%B2,                          &
+       CALL SPACE_resize_array( matrix%n, 1_ip_, data%B2,                      &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -3674,7 +3676,7 @@
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          IF ( mc6168_ordering ) THEN
            data%ma97_control%ordering = 0
-           CALL MA97_analyse( .FALSE., data%matrix%n,                          &
+           CALL MA97_analyse( .FALSE._ip_, data%matrix%n,                      &
                               data%matrix%PTR, data%matrix%COL,                &
                               data%ma97_akeep,                                 &
                               data%ma97_control, data%ma97_info,               &
@@ -3682,14 +3684,14 @@
          ELSE
            IF ( PRESENT( PERM ) ) THEN
              data%ma97_control%ordering = 0
-             CALL MA97_analyse( .FALSE., data%matrix%n,                        &
+             CALL MA97_analyse( .FALSE._ip_, data%matrix%n,                    &
                                 data%matrix%PTR, data%matrix%COL,              &
                                 data%ma97_akeep,                               &
                                 data%ma97_control, data%ma97_info,             &
                                 order = data%ORDER )
            ELSE
              data%ma97_control%ordering = - control%ordering
-             CALL MA97_analyse( .FALSE., data%matrix%n,                        &
+             CALL MA97_analyse( .FALSE._ip_, data%matrix%n,                    &
                                 data%matrix%PTR, data%matrix%COL,              &
                                 data%ma97_akeep,                               &
                                 data%ma97_control, data%ma97_info,             &
@@ -3749,7 +3751,7 @@
 
        CASE ( 'pardiso' )
 
-         CALL SPACE_resize_array( matrix%n, 1, data%X2,                        &
+         CALL SPACE_resize_array( matrix%n, 1_ip_, data%X2,                    &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
@@ -3793,11 +3795,12 @@
            data%pardiso_IPARM( 5 ) = 1
 
          CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
-         CALL PARDISO( data%pardiso_PT( 1 : 64 ), 1, 1, data%pardiso_mtype,    &
-                       11, data%matrix%n, data%matrix%VAL( 1 : data%ne ),      &
+         CALL PARDISO( data%pardiso_PT( 1 : 64 ), 1_ip_, 1_ip_,                &
+                       data%pardiso_mtype, 11_ip_,                             &
+                       data%matrix%n, data%matrix%VAL( 1 : data%ne ),          &
                        data%matrix%PTR( 1 : data%matrix%n + 1 ),               &
                        data%matrix%COL( 1 : data%ne ),                         &
-                       data%ORDER( 1 : data%matrix%n ), 1,                     &
+                       data%ORDER( 1 : data%matrix%n ), 1_ip_,                 &
                        data%pardiso_iparm( 1 : 64 ),                           &
                        control%print_level_solver,                             &
                        data%B2( 1 : matrix%n, 1 : 1 ),                         &
@@ -3829,7 +3832,7 @@
 
        CASE ( 'mkl_pardiso' )
 
-         CALL SPACE_resize_array( matrix%n, 1, data%X2,                        &
+         CALL SPACE_resize_array( matrix%n, 1_ip_, data%X2,                    &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
@@ -3849,11 +3852,11 @@
          IF ( control%ordering > 0 .OR. PRESENT( PERM ) )                      &
            data%mkl_pardiso_IPARM( 5 ) = 1
          CALL MKL_PARDISO_SOLVE(                                               &
-                       data%mkl_pardiso_PT, 1, 1, data%pardiso_mtype,          &
-                       11, data%matrix%n, data%matrix%VAL( 1 : data%ne ),      &
+                       data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,  &
+                       11_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),  &
                        data%matrix%PTR( 1 : data%matrix%n + 1 ),               &
                        data%matrix%COL( 1 : data%ne ),                         &
-                       data%ORDER( 1 : data%matrix%n ), 1,                     &
+                       data%ORDER( 1 : data%matrix%n ), 1_ip_,                 &
                        data%mkl_pardiso_IPARM, control%print_level_solver,     &
                        data%ddum, data%ddum, inform%pardiso_error )
          inform%mkl_pardiso_IPARM = data%mkl_pardiso_IPARM
@@ -3907,8 +3910,9 @@
                      data%DIAG( 0 : 0 ),                                       &
                      data%ORDER( 1 : data%matrix%n ),                          &
                      data%INVP( 1 : data%matrix%n ),                           &
-                     data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,    &
-                     data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),          &
+                     data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n,       &
+                     1_ip_, data%wsmp_AUX, 0_ip_,                              &
+                     data%MRP( 1 : data%matrix%n ),                            &
                      data%wsmp_IPARM, data%wsmp_DPARM )
          inform%wsmp_error = data%wsmp_iparm( 64 )
          IF ( inform%wsmp_error < 0 ) THEN
@@ -3942,8 +3946,9 @@
                      data%DIAG( 0 : 0 ),                                       &
                      data%ORDER( 1 : data%matrix%n ),                          &
                      data%INVP( 1 : data%matrix%n ),                           &
-                     data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,    &
-                     data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),          &
+                     data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n,       &
+                     1_ip_, data%wsmp_AUX, 0_ip_,                              &
+                     data%MRP( 1 : data%matrix%n ),                            &
                      data%wsmp_iparm, data%wsmp_DPARM )
          inform%wsmp_IPARM = data%wsmp_IPARM
          inform%wsmp_DPARM = data%wsmp_DPARM
@@ -4229,7 +4234,7 @@
          inform%semi_bandwidth = matrix%n - 1
        END SELECT
 !write(6,*) ' semi-bandwidth ', inform%semi_bandwidth
-       CALL SPACE_resize_array( inform%semi_bandwidth + 1, data%n,             &
+       CALL SPACE_resize_array( inform%semi_bandwidth + 1_ip_, data%n,         &
                                 data%matrix_dense,                             &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
@@ -4286,11 +4291,11 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, k, l, l1, l2, job, matrix_type
-     INTEGER( c_int ) :: pastix_info
+     INTEGER( ipc_ ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      REAL ( KIND = rp_ ) :: val
-     LOGICAL :: filexx
+     LOGICAL :: filexx, must_be_definite
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
 !    CHARACTER :: dumc( 20 )
@@ -4386,7 +4391,7 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%MAPS_scale' ; GO TO 900 ; END IF
-         CALL SPACE_resize_array( matrix%n + 1, data%matrix_scale%PTR,         &
+         CALL SPACE_resize_array( matrix%n + 1_ip_, data%matrix_scale%PTR,     &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%matrix_scale%PTR' ; GO TO 900 ; END IF
@@ -4580,7 +4585,7 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%SCALE' ; GO TO 900 ; END IF
-         CALL SPACE_resize_array( 1, data%matrix_scale%id,                     &
+         CALL SPACE_resize_array( 1_ip_, data%matrix_scale%id,                 &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%matrix_scale%id' ; GO TO 900 ; END IF
@@ -4593,7 +4598,7 @@
            data%mc64_control%sp = - 1
          END IF
          data%matrix_scale%id( 1 ) = 'S'
-         CALL MC64_MATCHING( 5, data%matrix_scale, data%mc64_control,          &
+         CALL MC64_MATCHING( 5_ip_, data%matrix_scale, data%mc64_control,      &
                              inform%mc64_info, data%mc64_PERM,                 &
                              data%SCALE )
          IF ( inform%mc64_info%flag /= 0 .AND.                                 &
@@ -4864,9 +4869,9 @@
        DO i = 1, data%n
          l1 = data%matrix%PTR( i )
          l2 = data%matrix%PTR( i + 1 ) - 1
-         CALL MA77_input_reals( i, l2 - l1 + 1, data%matrix%VAL( l1 : l2 ),    &
-                               data%ma77_keep, data%ma77_control,              &
-                               data%ma77_info )
+         CALL MA77_input_reals( i, l2 - l1 + 1_ip_,                            &
+                               data%matrix%VAL( l1 : l2 ), data%ma77_keep,     &
+                               data%ma77_control, data%ma77_info )
          CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
          IF ( inform%status /= GALAHAD_ok ) GO TO 800
        END DO
@@ -5084,8 +5089,9 @@
 !    WRITE( 77, * ) data%matrix%COL( : data%matrix%PTR( data%matrix%n + 1 ) )
 !    WRITE( 77, * ) data%matrix%VAL( : data%matrix%PTR( data%matrix%n + 1 ) )
 !    stop
+         must_be_definite = data%must_be_definite
          IF ( data%ssids_options%scaling == 0 ) THEN
-           CALL SSIDS_factor( data%must_be_definite, data%matrix%VAL,          &
+           CALL SSIDS_factor( must_be_definite, data%matrix%VAL,               &
                               data%ssids_akeep, data%ssids_fkeep,              &
                               data%ssids_options, data%ssids_inform,           &
                               ptr = data%matrix%PTR, row = data%matrix%COL )
@@ -5094,7 +5100,7 @@
                                     inform%status, inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) THEN
              inform%bad_alloc = 'sls: data%matrix%VAL' ; GO TO 800 ; END IF
-           CALL SSIDS_factor( data%must_be_definite, data%matrix%VAL,          &
+           CALL SSIDS_factor( must_be_definite, data%matrix%VAL,               &
                               data%ssids_akeep, data%ssids_fkeep,              &
                               data%ssids_options, data%ssids_inform,           &
                               scale = data%SCALE,                              &
@@ -5107,11 +5113,11 @@
        CASE ( 'pardiso' )
          CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-         CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 22,          &
-                       data%matrix%n, data%matrix%VAL( : data%ne ),            &
+         CALL PARDISO( data%pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,      &
+                       22_ip_, data%matrix%n, data%matrix%VAL( : data%ne ),    &
                        data%matrix%PTR( : data%matrix%n + 1 ),                 &
                        data%matrix%COL( : data%ne ),                           &
-                       data%ORDER( : data%matrix%n ), 1,                       &
+                       data%ORDER( : data%matrix%n ), 1_ip_,                   &
                        data%pardiso_IPARM( : 64 ),                             &
                        control%print_level_solver, data%B2( : matrix%n, : 1 ), &
                        data%X2( : matrix%n, : 1 ), inform%pardiso_error,       &
@@ -5148,11 +5154,11 @@
          data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          CALL MKL_PARDISO_SOLVE(                                               &
-                       data%mkl_pardiso_PT, 1, 1, data%pardiso_mtype,          &
-                       22, data%matrix%n, data%matrix%VAL( 1 : data%ne ),      &
+                       data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,  &
+                       22_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),  &
                        data%matrix%PTR( 1 : data%matrix%n + 1 ),               &
                        data%matrix%COL( 1 : data%ne ),                         &
-                       data%ORDER( 1 : data%matrix%n ), 1,                     &
+                       data%ORDER( 1 : data%matrix%n ), 1_ip_,                 &
                        data%mkl_pardiso_IPARM, control%print_level_solver,     &
                        data%ddum, data%ddum, inform%pardiso_error )
          inform%mkl_pardiso_IPARM = data%mkl_pardiso_IPARM
@@ -5200,8 +5206,9 @@
                      data%DIAG( 0 : 0 ),                                       &
                      data%ORDER( 1 : data%matrix%n ),                          &
                      data%INVP( 1 : data%matrix%n ),                           &
-                     data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,    &
-                     data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),          &
+                     data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n,       &
+                     1_ip_, data%wsmp_AUX, 0_ip_,                              &
+                     data%MRP( 1 : data%matrix%n ),                            &
                      data%wsmp_IPARM, data%wsmp_DPARM )
          inform%wsmp_IPARM = data%wsmp_IPARM
          inform%wsmp_DPARM = data%wsmp_DPARM
@@ -5222,7 +5229,7 @@
          IF ( data%wsmp_IPARM( 23 ) > 0 )                                      &
            inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long_ )
          IF ( data%wsmp_IPARM( 24 ) > 0 )                                      &
-           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long_ )
+           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long_)
          inform%negative_eigenvalues = data%wsmp_IPARM( 22 )
          inform%rank = data%matrix%n - data%wsmp_IPARM( 21 )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
@@ -5562,7 +5569,7 @@
 
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL PBTRF( 'L', data%n, inform%semi_bandwidth, data%matrix_dense,      &
-                   inform%semi_bandwidth + 1, inform%lapack_error )
+                   inform%semi_bandwidth + 1_ip_, inform%lapack_error )
 
        IF ( inform%lapack_error < 0 .AND. control%print_level > 0 .AND.        &
             control%out > 0 ) WRITE( control%out, "( A,                        &
@@ -6291,7 +6298,7 @@
 
 !  local variables
 
-     INTEGER( c_int ) :: pastix_info
+     INTEGER( ipc_ ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
@@ -6370,19 +6377,19 @@
 !  = MA77 =
 
      CASE ( 'ma77' )
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
-               inform%alloc_status )
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
+                                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
        data%X2( : data%n, 1 ) = X( : data%n )
        CALL SLS_copy_control_to_ma77( control, data%ma77_control )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( control%scaling == - 2 .OR. control%scaling == - 3 ) THEN
-         CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                  &
+         CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,              &
                           data%ma77_control, data%ma77_info,                   &
                           scale = data%SCALE )
        ELSE
-         CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                  &
+         CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,              &
                           data%ma77_control, data%ma77_info )
        END IF
        CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
@@ -6430,11 +6437,11 @@
 !  = PARDISO =
 
      CASE ( 'pardiso' )
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -6443,13 +6450,12 @@
        CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
        data%pardiso_IPARM( 6 ) = 1
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
-                     data%matrix%n, data%matrix%VAL( : data%ne ),              &
+       CALL PARDISO( data%pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,        &
+                     33_ip_, data%matrix%n, data%matrix%VAL( : data%ne ),      &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
-                     data%ORDER( : data%matrix%n ), 1,                         &
-                     data%pardiso_IPARM( : 64 ),                               &
-                     control%print_level_solver,                               &
+                     data%ORDER( : data%matrix%n ), 1_ip_,                     &
+                     data%pardiso_IPARM( : 64 ), control%print_level_solver,   &
                      data%X2( : data%matrix%n, : 1 ),                          &
                      data%B2( : data%matrix%n, : 1 ), inform%pardiso_error,    &
                      data%pardiso_DPARM( 1 : 64 ) )
@@ -6482,11 +6488,11 @@
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MKL_PARDISO_SOLVE(                                                 &
-                     data%mkl_pardiso_PT, 1, 1, data%pardiso_mtype,            &
-                     33, data%matrix%n, data%matrix%VAL( 1 : data%ne ),        &
+                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,    &
+                     33_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),    &
                      data%matrix%PTR( 1 : data%matrix%n + 1 ),                 &
                      data%matrix%COL( 1 : data%ne ),                           &
-                     data%ORDER( 1 : data%matrix%n ), 1,                       &
+                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                   &
                      data%mkl_pardiso_IPARM, control%print_level_solver,       &
                      data%B1( 1 : matrix%n ), X( 1 : matrix%n ),               &
                      inform%pardiso_error )
@@ -6509,7 +6515,7 @@
 
      CASE ( 'wsmp' )
 
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -6526,8 +6532,8 @@
                    data%DIAG( 0 : 0 ),                                         &
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
-                   data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,      &
-                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1_ip_,  &
+                   data%wsmp_AUX, 0_ip_, data%MRP( 1 : data%matrix%n ),        &
                    data%wsmp_IPARM, data%wsmp_DPARM )
 !write(6,*) ' solv threads used = ', data%wsmp_iparm( 33 )
        inform%wsmp_IPARM = data%wsmp_IPARM
@@ -6549,11 +6555,11 @@
 
      CASE ( 'pastix' )
 
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -6561,8 +6567,8 @@
        data%X2( : data%n, 1 ) = X( : data%n )
        data%B2( : data%n, 1 ) = X( : data%n )
 
-       CALL pastix_task_solve( data%pastix_data, 1, data%X2, data%spm%nexp,    &
-                               pastix_info )
+       CALL pastix_task_solve( data%pastix_data, 1_ip_, data%X2,               &
+                               data%spm%nexp, pastix_info )
 
        inform%pastix_info = INT( pastix_info )
        IF ( pastix_info == PASTIX_SUCCESS ) THEN
@@ -6573,9 +6579,9 @@
          inform%status = GALAHAD_error_pastix ; GO TO 900
        END IF
 
-       CALL pastix_task_refine( data%pastix_data, data%spm%nexp, 1, data%B2,   &
-                                data%spm%nexp, data%X2, data%spm%nexp,         &
-                                pastix_info )
+       CALL pastix_task_refine( data%pastix_data, data%spm%nexp, 1_ip_,        &
+                                data%B2, data%spm%nexp, data%X2,               &
+                                data%spm%nexp, pastix_info )
 
        inform%pastix_info = INT( pastix_info )
        IF ( pastix_info == PASTIX_SUCCESS ) THEN
@@ -6623,7 +6629,7 @@
 
      CASE ( 'potr', 'sytr', 'pbtr' )
 
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -6707,7 +6713,7 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i, lx, nrhs
-     INTEGER( c_int ) :: pastix_info
+     INTEGER( ipc_ ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
@@ -6856,8 +6862,8 @@
        CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
        data%pardiso_IPARM( 6 ) = 1
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
-                     data%matrix%n, data%matrix%VAL( : data%ne ),              &
+       CALL PARDISO( data%pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,        &
+                     33_ip_, data%matrix%n, data%matrix%VAL( : data%ne ),      &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
                      data%ORDER( : data%matrix%n ), nrhs,                      &
@@ -6892,8 +6898,8 @@
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MKL_PARDISO_SOLVE(                                                 &
-                     data%mkl_pardiso_PT, 1, 1, data%pardiso_mtype,            &
-                     33, data%matrix%n, data%matrix%VAL( 1 : data%ne ),        &
+                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,    &
+                     33_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),    &
                      data%matrix%PTR( 1 : data%matrix%n + 1 ),                 &
                      data%matrix%COL( 1 : data%ne ),                           &
                      data%ORDER( 1 : data%matrix%n ), nrhs,                    &
@@ -6932,7 +6938,7 @@
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
                    X( : data%matrix%n, : nrhs ), matrix%n, nrhs,               &
-                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%wsmp_AUX, 0_ip_, data%MRP( 1 : data%matrix%n ),        &
                    data%wsmp_IPARM, data%wsmp_DPARM )
 
        inform%wsmp_IPARM = data%wsmp_IPARM
@@ -6954,11 +6960,11 @@
      CASE ( 'pastix' )
 
        IF ( .TRUE. ) THEN ! fix as pastix can't handle multiple refinement
-         CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,           &
+         CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,       &
                  inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
-         CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,           &
+         CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,       &
                  inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -6968,7 +6974,7 @@
            data%X2( : data%n, 1 ) = X( : data%n, i )
            data%B2( : data%n, 1 ) = X( : data%n, i )
 
-           CALL pastix_task_solve( data%pastix_data, 1, data%X2,               &
+           CALL pastix_task_solve( data%pastix_data, 1_ip_, data%X2,           &
                                    data%spm%nexp, pastix_info )
 
            inform%pastix_info = INT( pastix_info )
@@ -6980,7 +6986,7 @@
              inform%status = GALAHAD_error_pastix ; GO TO 900
            END IF
 
-           CALL pastix_task_refine( data%pastix_data, data%spm%nexp, 1,        &
+           CALL pastix_task_refine( data%pastix_data, data%spm%nexp, 1_ip_,    &
                                     data%B2, data%spm%nexp, data%X2,           &
                                     data%spm%nexp, pastix_info )
 
@@ -7262,11 +7268,11 @@
 
      CASE ( 'pardiso' )
        IF ( data%n > 0 ) THEN
-         CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, - 1,         &
-                       data%matrix%n, data%matrix%VAL( : data%ne ),            &
+         CALL PARDISO( data%pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,      &
+                       - 1_ip_, data%matrix%n, data%matrix%VAL( : data%ne ),   &
                        data%matrix%PTR( : data%matrix%n + 1 ),                 &
                        data%matrix%COL( : data%ne ),                           &
-                       data%ORDER( : data%matrix%n ), 1,                       &
+                       data%ORDER( : data%matrix%n ), 1_ip_,                   &
                        data%pardiso_IPARM( : 64 ),                             &
                        control%print_level_solver,                             &
                        data%B2( : data%matrix%n, : 1 ),                        &
@@ -7294,10 +7300,10 @@
      CASE ( 'mkl_pardiso' )
        IF ( data%n > 0 ) THEN
          CALL SLS_copy_control_to_mkl_pardiso( control, data%mkl_pardiso_IPARM )
-         CALL MKL_PARDISO_SOLVE( data%mkl_pardiso_PT, 1, 1,                    &
-                                 data%pardiso_mtype, - 1, data%matrix%n,       &
+         CALL MKL_PARDISO_SOLVE( data%mkl_pardiso_PT, 1_ip_, 1_ip_,            &
+                                 data%pardiso_mtype, - 1_ip_, data%matrix%n,   &
                                  data%ddum, data%idum, data%idum, data%idum,   &
-                                 1, data%mkl_pardiso_IPARM,                    &
+                                 1_ip_, data%mkl_pardiso_IPARM,                &
                                  control%print_level_solver,                   &
                                  data%ddum, data%ddum, inform%pardiso_error )
 
@@ -7573,7 +7579,7 @@
            IF ( data%must_be_definite ) THEN
              inform%status = GALAHAD_error_access_pivots
            ELSE
-             CALL SPACE_resize_array( 2, data%n, data%D, inform%status,        &
+             CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,    &
                                       inform%alloc_status )
              IF ( inform%status /= GALAHAD_ok ) GO TO 900
              CALL MA77_enquire_indef( PIVOTS, data%D, data%ma77_keep,          &
@@ -7629,7 +7635,7 @@
                                       data%ma97_control, data%ma97_info, d = D )
            END IF
          ELSE
-           CALL SPACE_resize_array( 2, data%n, data%D, inform%status,          &
+           CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,      &
                                     inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            IF ( PRESENT( PIVOTS ) ) THEN
@@ -7675,7 +7681,7 @@
                                        d = D )
            END IF
          ELSE
-           CALL SPACE_resize_array( 2, data%n, data%D, inform%status,          &
+           CALL SPACE_resize_array( 2_ip_, data%n, data%D, inform%status,      &
                                     inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            IF ( PRESENT( PIVOTS ) ) THEN
@@ -8113,35 +8119,35 @@
          inform%status = 0
          GO TO 900
        END IF
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
-               inform%alloc_status )
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
+                                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
        data%X2( : data%n, 1 ) = X( : data%n )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( control%scaling == - 2 .OR. control%scaling == - 3 ) THEN
          IF ( part == 'L' .OR.                                                 &
               ( part == 'S' .AND. data%must_be_definite ) ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 1, scale = data%SCALE )
+                            job = 1_ip_, scale = data%SCALE )
          ELSE IF ( part == 'D' ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 2, scale = data%SCALE )
+                            job = 2_ip_, scale = data%SCALE )
          ELSE  IF ( part == 'U' ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 3, scale = data%SCALE )
+                            job = 3_ip_, scale = data%SCALE )
          ELSE
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 3, scale = data%SCALE )
+                            job = 3_ip_, scale = data%SCALE )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            X( : data%n ) = data%X2( : data%n, 1 )
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 3, scale = data%SCALE )
+                            job = 3_ip_, scale = data%SCALE )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
@@ -8164,22 +8170,22 @@
        ELSE
          IF ( part == 'L' .OR.                                                 &
               ( part == 'S' .AND. data%must_be_definite ) ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 1 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 1_ip_ )
          ELSE IF ( part == 'D' ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 2 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 2_ip_ )
          ELSE  IF ( part == 'U' ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 3 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 3_ip_ )
          ELSE
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 1 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 1_ip_ )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            X( : data%n ) = data%X2( : data%n, 1 )
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 2 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 2_ip_ )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
@@ -8209,16 +8215,16 @@
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( part == 'L' ) THEN
          CALL MA86_solve( X, data%ORDER, data%ma86_keep,                       &
-                          data%ma86_control, data%ma86_info, job = 1 )
+                          data%ma86_control, data%ma86_info, job = 1_ip_ )
        ELSE IF ( part == 'D' ) THEN
          CALL MA86_solve( X, data%ORDER, data%ma86_keep,                       &
-                          data%ma86_control, data%ma86_info, job = 2 )
+                          data%ma86_control, data%ma86_info, job = 2_ip_ )
        ELSE  IF ( part == 'U' ) THEN
          CALL MA86_solve( X, data%ORDER, data%ma86_keep,                       &
-                          data%ma86_control, data%ma86_info, job = 3 )
+                          data%ma86_control, data%ma86_info, job = 3_ip_ )
        ELSE
          CALL MA86_solve( X, data%ORDER, data%ma86_keep,                       &
-                          data%ma86_control, data%ma86_info, job = 1 )
+                          data%ma86_control, data%ma86_info, job = 1_ip_ )
          inform%ma86_info = data%ma86_info
          inform%status = data%ma86_info%flag
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -8227,7 +8233,7 @@
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          data%WORK( : data%n ) = X( : data%n )
          CALL MA86_solve( data%WORK( : data%n ), data%ORDER, data%ma86_keep,   &
-                          data%ma86_control, data%ma86_info, job = 2 )
+                          data%ma86_control, data%ma86_info, job = 2_ip_ )
          inform%ma86_info = data%ma86_info
          inform%status = data%ma86_info%flag
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -8261,10 +8267,10 @@
        END IF
        IF ( part == 'L' .OR. part == 'S') THEN
          CALL MA87_solve( X, data%ORDER, data%ma87_keep,                       &
-                          data%ma87_control, data%ma87_info, job = 1 )
+                          data%ma87_control, data%ma87_info, job = 1_ip_ )
        ELSE  IF ( part == 'U' ) THEN
          CALL MA87_solve( X, data%ORDER, data%ma87_keep,                       &
-                          data%ma87_control, data%ma87_info, job = 2 )
+                          data%ma87_control, data%ma87_info, job = 2_ip_ )
        END IF
        inform%ma87_info = data%ma87_info
        inform%status = data%ma87_info%flag
@@ -8275,21 +8281,21 @@
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( part == 'L' .OR. ( part == 'S' .AND. data%must_be_definite ) ) THEN
          CALL MA97_solve( X( : data%n ), data%ma97_akeep, data%ma97_fkeep,     &
-                          data%ma97_control, data%ma97_info, job = 1 )
+                          data%ma97_control, data%ma97_info, job = 1_ip_ )
        ELSE IF ( part == 'D' ) THEN
          IF ( data%must_be_definite ) THEN
            inform%status = 0
            GO TO 900
          ELSE
            CALL MA97_solve( X( : data%n ), data%ma97_akeep, data%ma97_fkeep,   &
-                            data%ma97_control, data%ma97_info, job = 2 )
+                            data%ma97_control, data%ma97_info, job = 2_ip_ )
          END IF
        ELSE  IF ( part == 'U' ) THEN
          CALL MA97_solve( X( : data%n ), data%ma97_akeep, data%ma97_fkeep,     &
-                          data%ma97_control, data%ma97_info, job = 3 )
+                          data%ma97_control, data%ma97_info, job = 3_ip_ )
        ELSE
          CALL MA97_solve( X( : data%n ), data%ma97_akeep, data%ma97_fkeep,     &
-                          data%ma97_control, data%ma97_info, job = 1 )
+                          data%ma97_control, data%ma97_info, job = 1_ip_ )
          CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          CALL SPACE_resize_array( data%n, data%WORK,                           &
@@ -8298,7 +8304,7 @@
          data%WORK( : data%n ) = X( : data%n )
          CALL MA97_solve( data%WORK( : data%n ), data%ma97_akeep,              &
                           data%ma97_fkeep,                                     &
-                          data%ma97_control, data%ma97_info, job = 2 )
+                          data%ma97_control, data%ma97_info, job = 2_ip_ )
          CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
@@ -8328,21 +8334,21 @@
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( part == 'L' .OR. ( part == 'S' .AND. data%must_be_definite ) ) THEN
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
-                           data%ssids_options, data%ssids_inform, job = 1 )
+                           data%ssids_options, data%ssids_inform, job = 1_ip_ )
        ELSE IF ( part == 'D' ) THEN
          IF ( data%must_be_definite ) THEN
            inform%status = 0
            GO TO 900
          ELSE
            CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,&
-                             data%ssids_options, data%ssids_inform, job = 2 )
+                           data%ssids_options, data%ssids_inform, job = 2_ip_ )
          END IF
        ELSE  IF ( part == 'U' ) THEN
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
-                           data%ssids_options, data%ssids_inform, job = 3 )
+                           data%ssids_options, data%ssids_inform, job = 3_ip_ )
        ELSE
          CALL SSIDS_solve( X( : data%n ), data%ssids_akeep, data%ssids_fkeep,  &
-                           data%ssids_options, data%ssids_inform, job = 1 )
+                           data%ssids_options, data%ssids_inform, job = 1_ip_ )
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          CALL SPACE_resize_array( data%n, data%WORK,                           &
@@ -8351,7 +8357,7 @@
          data%WORK( : data%n ) = X( : data%n )
          CALL SSIDS_solve( data%WORK( : data%n ), data%ssids_akeep,            &
                            data%ssids_fkeep,                                   &
-                           data%ssids_options, data%ssids_inform, job = 2 )
+                           data%ssids_options, data%ssids_inform, job = 2_ip_ )
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
@@ -8380,11 +8386,11 @@
          inform%status = 0
          GO TO 900
        END IF
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,             &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,             &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -8400,11 +8406,11 @@
          data%pardiso_IPARM( 26 ) = - 3
        END IF
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
-                     data%matrix%n, data%matrix%VAL( : data%ne ),              &
+       CALL PARDISO( data%pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,        &
+                     33_ip_, data%matrix%n, data%matrix%VAL( : data%ne ),      &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
-                     data%ORDER( : data%matrix%n ), 1,                         &
+                     data%ORDER( : data%matrix%n ), 1_ip_,                     &
                      data%pardiso_IPARM( : 64 ),                               &
                      control%print_level_solver,                               &
                      data%X2( : data%matrix%n, : 1 ),                          &
@@ -8448,11 +8454,11 @@
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MKL_PARDISO_SOLVE(                                                 &
-                     data%mkl_pardiso_PT, 1, 1, data%pardiso_mtype,            &
+                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,            &
                      phase, data%matrix%n, data%matrix%VAL( 1 : data%ne ),     &
                      data%matrix%PTR( 1 : data%matrix%n + 1 ),                 &
                      data%matrix%COL( 1 : data%ne ),                           &
-                     data%ORDER( 1 : data%matrix%n ), 1,                       &
+                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                       &
                      data%mkl_pardiso_IPARM, control%print_level_solver,       &
                      data%B1( 1 : data%n ), X( 1 : data%n ),                   &
                      inform%pardiso_error )
@@ -8499,8 +8505,8 @@
        data%wsmp_IPARM( 2 ) = 4
        data%wsmp_IPARM( 3 ) = 4
 
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
-               inform%alloc_status )
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
+                                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
        data%B2( : data%n, 1 ) = X( : data%n )
@@ -8512,8 +8518,8 @@
                    data%DIAG( 0 : 0 ),                                         &
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
-                   data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,      &
-                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1_ip_,  &
+                   data%wsmp_AUX, 0_ip_, data%MRP( 1 : data%matrix%n ),        &
                    data%wsmp_IPARM, data%wsmp_DPARM )
 
        inform%wsmp_IPARM = data%wsmp_IPARM
@@ -8816,26 +8822,26 @@
 !  = MA77 =
 
      CASE ( 'ma77' )
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
        data%X2( : data%n, 1 ) = X( : data%n )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( control%scaling == - 2 .OR. control%scaling == - 3 ) THEN
          IF ( data%must_be_definite ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 1, scale = data%SCALE )
+                            job = 1_ip_, scale = data%SCALE )
          ELSE
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 3, scale = data%SCALE )
+                            job = 3_ip_, scale = data%SCALE )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            X( : data%n ) = data%X2( : data%n, 1 )
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
                             data%ma77_control, data%ma77_info,                 &
-                            job = 3, scale = data%SCALE )
+                            job = 3_ip_, scale = data%SCALE )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
@@ -8857,16 +8863,16 @@
          END IF
        ELSE
          IF ( data%must_be_definite ) THEN
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 1 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 1_ip_ )
          ELSE
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 1 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 1_ip_ )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            X( : data%n ) = data%X2( : data%n, 1 )
-           CALL MA77_solve( 1, data%n, data%X2, data%ma77_keep,                &
-                            data%ma77_control, data%ma77_info, job = 2 )
+           CALL MA77_solve( 1_ip_, data%n, data%X2, data%ma77_keep,            &
+                            data%ma77_control, data%ma77_info, job = 2_ip_ )
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
@@ -8895,7 +8901,7 @@
      CASE ( 'ma86' )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MA86_solve( X, data%ORDER, data%ma86_keep,                         &
-                        data%ma86_control, data%ma86_info, job = 1 )
+                        data%ma86_control, data%ma86_info, job = 1_ip_ )
        inform%ma86_info = data%ma86_info
        inform%status = data%ma86_info%flag
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -8904,7 +8910,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
        data%WORK( : data%n ) = X( : data%n )
        CALL MA86_solve( data%WORK( : data%n ), data%ORDER, data%ma86_keep,     &
-                        data%ma86_control, data%ma86_info, job = 2 )
+                        data%ma86_control, data%ma86_info, job = 2_ip_ )
        inform%ma86_info = data%ma86_info
        inform%status = data%ma86_info%flag
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -8953,10 +8959,10 @@
        data%LFLAG( INDEX_x( : nnz_x ) ) = .FALSE.
 !      IF ( data%must_be_definite ) THEN
 !        CALL MA97_solve( X( : data%n ), data%ma97_akeep, data%ma97_fkeep,     &
-!                         data%ma97_control, data%ma97_info, job = 1 )
+!                         data%ma97_control, data%ma97_info, job = 1_ip_ )
 !      ELSE
 !        CALL MA97_solve( X( : data%n ), data%ma97_akeep, data%ma97_fkeep,     &
-!                         data%ma97_control, data%ma97_info, job = 1 )
+!                         data%ma97_control, data%ma97_info, job = 1_ip_ )
 !        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 !        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !        CALL SPACE_resize_array( data%n, data%WORK,                           &
@@ -8965,7 +8971,7 @@
 !        data%WORK( : data%n ) = X( : data%n )
 !        CALL MA97_solve( data%WORK( : data%n ), data%ma97_akeep,              &
 !                         data%ma97_fkeep,                                     &
-!                         data%ma97_control, data%ma97_info, job = 2 )
+!                         data%ma97_control, data%ma97_info, job = 2_ip_ )
 !        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 !        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !        DO i = 1, data%n
@@ -9003,11 +9009,11 @@
 !  = PARDISO =
 
      CASE ( 'pardiso' )
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -9016,11 +9022,11 @@
        data%pardiso_IPARM( 6 ) = 1
        data%pardiso_IPARM( 26 ) = 1
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
-                     data%matrix%n, data%matrix%VAL( : data%ne ),              &
+       CALL PARDISO( data%pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,        &
+                     33_ip_, data%matrix%n, data%matrix%VAL( : data%ne ),      &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
-                     data%ORDER( : data%matrix%n ), 1,                         &
+                     data%ORDER( : data%matrix%n ), 1_ip_,                     &
                      data%pardiso_IPARM( : 64 ),                               &
                      control%print_level_solver,                               &
                      data%X2( : data%matrix%n, : 1 ),                          &
@@ -9058,11 +9064,11 @@
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MKL_PARDISO_SOLVE(                                                 &
-                     data%mkl_pardiso_PT, 1, 1, data%pardiso_mtype,            &
-                     331, data%matrix%n, data%matrix%VAL( 1 : data%ne ),       &
+                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,            &
+                     331_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),       &
                      data%matrix%PTR( 1 : data%matrix%n + 1 ),                 &
                      data%matrix%COL( 1 : data%ne ),                           &
-                     data%ORDER( 1 : data%matrix%n ), 1,                       &
+                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                       &
                      data%mkl_pardiso_IPARM, control%print_level_solver,       &
                      data%B1( 1 : data%n ), X( 1 : data%n ),                   &
                      inform%pardiso_error )
@@ -9106,7 +9112,7 @@
        data%wsmp_IPARM( 2 ) = 4
        data%wsmp_IPARM( 3 ) = 4
 
-       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,             &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -9119,8 +9125,8 @@
                    data%DIAG( 0 : 0 ),                                         &
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
-                   data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,      &
-                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1_ip_,  &
+                   data%wsmp_AUX, 0_ip_, data%MRP( 1 : data%matrix%n ),        &
                    data%wsmp_IPARM, data%wsmp_DPARM )
 
        inform%wsmp_IPARM = data%wsmp_IPARM
@@ -9276,7 +9282,8 @@
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: i
-     LOGICAL, DIMENSION( 1 ) :: flag_out
+!    LOGICAL, DIMENSION( 1 ) :: flag_out
+     LOGICAL ( KIND = ip_ ), DIMENSION( 1 ) :: flag_out
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now
 
@@ -9384,7 +9391,7 @@
 !  = MA77 =
 
      CASE ( 'ma77' )
-       CALL SPACE_resize_array( data%n, 2, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 2_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
@@ -9392,11 +9399,11 @@
        CALL SLS_copy_control_to_ma77( control, data%ma77_control )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        IF ( control%scaling == - 2 .OR. control%scaling == - 3 ) THEN
-         CALL MA77_solve_fredholm( 1, flag_out, data%n, data%X2,               &
+         CALL MA77_solve_fredholm( 1_ip_, flag_out, data%n, data%X2,           &
                                    data%ma77_keep, data%ma77_control,          &
                                    data%ma77_info, scale = data%SCALE )
        ELSE
-         CALL MA77_solve_fredholm( 1, flag_out, data%n, data%X2,               &
+         CALL MA77_solve_fredholm( 1_ip_, flag_out, data%n, data%X2,           &
                                    data%ma77_keep, data%ma77_control,          &
                                    data%ma77_info )
        END IF
@@ -9426,14 +9433,14 @@
 !  = MA97 =
 
      CASE ( 'ma97' )
-       CALL SPACE_resize_array( data%n, 2, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 2_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
        data%X2( : data%n, 1 ) = X( : data%n )
        CALL SLS_copy_control_to_ma97( control, data%ma97_control )
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL MA97_solve_fredholm( 1, flag_out, data%X2, data%n,                 &
+       CALL MA97_solve_fredholm( 1_ip_, flag_out, data%X2, data%n,             &
                                  data%ma97_akeep, data%ma97_fkeep,             &
                                  data%ma97_control, data%ma97_info )
        inform%alternative = .NOT. flag_out( 1 )
@@ -9450,14 +9457,14 @@
      CASE ( 'ssids' )
        inform%status = GALAHAD_unavailable_option
        GO TO 900
-!      CALL SPACE_resize_array( data%n, 2, data%X2, inform%status,             &
+!      CALL SPACE_resize_array( data%n, 2_ip_, data%X2, inform%status,         &
 !              inform%alloc_status )
 !      IF ( inform%status /= GALAHAD_ok ) THEN
 !        inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
 !      data%X2( : data%n, 1 ) = X( : data%n )
 !      CALL SLS_copy_control_to_ssids( control, data%ssids_options )
 !      CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-!      CALL SSIDS_solve_fredholm( 1, flag_out, data%X2, data%n,                &
+!      CALL SSIDS_solve_fredholm( 1_ip_, flag_out, data%X2, data%n,            &
 !                                 data%ssids_akeep, data%ssids_fkeep,          &
 !                                 data%ssids_options, data%ssids_inform )
 !      inform%alternative = .NOT. flag_out( 1 )
@@ -9497,7 +9504,7 @@
 
      CASE ( 'potr', 'sytr', 'pbtr' )
 
-       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,             &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -10755,7 +10762,7 @@
          data%matrix%ne = matrix_ptr( n + 1 )
        END IF
 
-       CALL SPACE_resize_array( n + 1, data%matrix%ptr,                        &
+       CALL SPACE_resize_array( n + 1_ip_, data%matrix%ptr,                    &
               data%sls_inform%status, data%sls_inform%alloc_status )
        IF ( data%sls_inform%status /= 0 ) GO TO 900
 

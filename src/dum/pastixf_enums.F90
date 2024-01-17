@@ -7,8 +7,11 @@
    USE spmf_enums
    USE iso_c_binding, ONLY : c_double, c_int, c_ptr, c_int32_t, c_int64_t
 
-   INTEGER, PARAMETER :: pastix_int_t = c_int32_t
- ! INTEGER, PARAMETER :: pastix_int_t = c_int64_t
+#ifdef GALAHAD_64BIT_INTEGER
+  INTEGER, PARAMETER :: pastix_int_t = c_int64_t
+#else
+  INTEGER, PARAMETER :: pastix_int_t = c_int32_t
+#endif
    PUBLIC :: MPI_COMM_WORLD
 
    TYPE, BIND( C ) :: pastix_data_t

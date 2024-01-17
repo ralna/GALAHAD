@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -1338,7 +1338,7 @@
         CALL SMT_put( prob%H%type, 'SCALED_IDENTITY', i )
 !write(6,*) ' refine lp structure h_type ', SMT_get( prob%H%type )
         array_name = 'l1qp: prob%H%val'
-        CALL SPACE_resize_array( 1, prob%H%val,                                &
+        CALL SPACE_resize_array( 1_ip_, prob%H%val,                            &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -1845,8 +1845,8 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 - 1, prob%gradient_kind, prob%target_kind,    &
-                                 H_val = prob%H%val,                           &
+                                 - 1_ip_, prob%gradient_kind,                  &
+                                 prob%target_kind, H_val = prob%H%val,         &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
                                  C_stat = data%C_stat, B_Stat = data%X_stat )
@@ -1874,7 +1874,8 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 - 1, prob%gradient_kind, prob%target_kind,    &
+                                 - 1_ip_, prob%gradient_kind,                  &
+                                 prob%target_kind,                             &
                                  H_val = prob%H%val, G = prob%G,               &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -1905,7 +1906,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 0, prob%gradient_kind, prob%target_kind,      &
+                                 0_ip_, prob%gradient_kind, prob%target_kind,  &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
                                  C_stat = data%C_stat, B_Stat = data%X_stat )
@@ -1933,7 +1934,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 0, prob%gradient_kind, prob%target_kind,      &
+                                 0_ip_, prob%gradient_kind, prob%target_kind,  &
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -2687,7 +2688,8 @@ H_loop: DO i = 1, prob%n
                                  prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,   &
                                  prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,   &
                                  prob%C, prob%f, prefix, dqp_control,          &
-                                 inform%DQP_inform, - 1, prob%gradient_kind,   &
+                                 inform%DQP_inform,                            &
+                                 - 1_ip_, prob%gradient_kind,                  &
                                  nv, lbd, data%m_ref, dual_starting_point,     &
                                  data%clock_total, data%cpu_total,             &
                                  data%SBLS_data, data%SLS_data,                &
@@ -2717,7 +2719,8 @@ H_loop: DO i = 1, prob%n
                                  prob%A%col, prob%A%ptr, prob%C_l, prob%C_u,   &
                                  prob%X_l, prob%X_u, prob%X, prob%Y, prob%Z,   &
                                  prob%C, prob%f, prefix, dqp_control,          &
-                                 inform%DQP_inform, - 1, prob%gradient_kind,   &
+                                 inform%DQP_inform,                            &
+                                 - 1_ip_, prob%gradient_kind,                  &
                                  nv, lbd, data%m_ref, dual_starting_point,     &
                                  data%clock_total, data%cpu_total,             &
                                  data%SBLS_data, data%SLS_data,                &

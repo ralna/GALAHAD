@@ -27,6 +27,10 @@ module spral_ssids_anal_precision
             expand_pattern,  & ! Specialised half->full matrix conversion
             expand_matrix      ! Specialised half->full matrix conversion
 
+  interface print_atree
+     module procedure print_atree, print_atree_part
+  end interface print_atree
+
 contains
 
 !****************************************************************************
@@ -618,7 +622,8 @@ contains
        end if
     end do
     ! Calculate n * max(x_i/a_i) / sum(x_j/a_j)
-    calc_exec_alloc = (nregion+ngpu) * maxval(load_balance(:)) / total_balance
+    calc_exec_alloc &
+      = real(nregion+ngpu) * maxval(load_balance(:)) / total_balance
   end function calc_exec_alloc
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1052,7 +1057,7 @@ contains
     ! Generate dot file for assembly tree
     ! call print_atree(akeep%nnodes, akeep%sptr, akeep%sparent, akeep%rptr)
     if (.false.) & ! change .true. to debug
-    call print_atree_part(akeep%nnodes, akeep%sptr, akeep%sparent, akeep%rptr, &
+    call print_atree(akeep%nnodes, akeep%sptr, akeep%sparent, akeep%rptr, &
          akeep%topology, akeep%nparts, akeep%part, exec_loc)
 
     ! Construct symbolic subtrees

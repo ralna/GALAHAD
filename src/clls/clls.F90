@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-09-03 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -3483,7 +3483,7 @@
       CALL CHECKPOINT( inform%iter, time_record - time_start,                  &
          MAX( inform%primal_infeasibility,                                     &
          inform%dual_infeasibility, inform%complementary_slackness ),          &
-         inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+         inform%checkpointsIter, inform%checkpointsTime, 1_ip_, 16_ip_ )
       IF ( inform%primal_infeasibility <= stop_p .AND.                         &
            inform%dual_infeasibility <= stop_d .AND.                           &
            inform%complementary_slackness <= stop_c ) THEN
@@ -3721,7 +3721,7 @@
         CALL CHECKPOINT( inform%iter, time_record - time_start,                &
            MAX( inform%primal_infeasibility,                                   &
            inform%dual_infeasibility, inform%complementary_slackness ),        &
-           inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+           inform%checkpointsIter, inform%checkpointsTime, 1_ip_, 16_ip_ )
         IF ( primal_nonopt + dual_nonopt + cs_nonopt == 0 ) THEN
           inform%status = GALAHAD_ok ; GO TO 600
         END IF
@@ -5776,7 +5776,7 @@
                              MAX( inform%primal_infeasibility,                 &
                                  inform%dual_infeasibility, slknes ),          &
                              inform%checkpointsIter, inform%checkpointsTime,   &
-                             1, 16 )
+                             1_ip_, 16_ip_ )
 
 !  if optimal, compute the objective residual ...
 
@@ -6094,7 +6094,8 @@
         CALL CHECKPOINT( inform%iter, time_record - time_start,                &
                          MAX( inform%primal_infeasibility,                     &
                               inform%dual_infeasibility, slknes ),             &
-                         inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+                         inform%checkpointsIter, inform%checkpointsTime,       &
+                         1_ip_, 16_ip_ )
 
 !  test for optimality
 
@@ -8358,7 +8359,7 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: X_coef'
-      CALL SPACE_resize_array( 1, n, 0, order, X_coef,                         &
+      CALL SPACE_resize_array( 1_ip_, n, 0_ip_, order, X_coef,                 &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8366,15 +8367,15 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: C_coef'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, 0, order, C_coef, &
-             status, alloc_status, array_name = array_name,                    &
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, 0_ip_,            &
+             order, C_coef, status, alloc_status, array_name = array_name,     &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
              bad_alloc = bad_alloc, out = error )
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: Y_coef'
-      CALL SPACE_resize_array( 1, m, 0, order, Y_coef,                         &
+      CALL SPACE_resize_array( 1_ip_, m, 0_ip_, order, Y_coef,                 &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8383,7 +8384,7 @@
 
       array_name = 'clls: Y_l_coef'
       CALL SPACE_resize_array(                                                 &
-             dims%c_l_start, dims%c_l_end, 0, order, Y_l_coef,                 &
+             dims%c_l_start, dims%c_l_end, 0_ip_, order, Y_l_coef,             &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8392,7 +8393,7 @@
 
       array_name = 'clls: Y_u_coef'
       CALL SPACE_resize_array(                                                 &
-             dims%c_u_start, dims%c_u_end, 0, order, Y_u_coef,                 &
+             dims%c_u_start, dims%c_u_end, 0_ip_, order, Y_u_coef,             &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8401,7 +8402,7 @@
 
       array_name = 'clls: Z_l_coef'
       CALL SPACE_resize_array(                                                 &
-             dims%x_free + 1, dims%x_l_end, 0, order, Z_l_coef,                &
+             dims%x_free + 1, dims%x_l_end, 0_ip_, order, Z_l_coef,            &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8410,7 +8411,7 @@
 
       array_name = 'clls: Z_u_coef'
       CALL SPACE_resize_array(                                                 &
-             dims%x_u_start, n, 0, order, Z_u_coef,                            &
+             dims%x_u_start, n, 0_ip_, order, Z_u_coef,                        &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8418,7 +8419,7 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: BINOMIAL'
-      CALL SPACE_resize_array( 0, order - 1, order, BINOMIAL,                  &
+      CALL SPACE_resize_array( 0_ip_, order - 1_ip_, order, BINOMIAL,          &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8426,7 +8427,7 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: CS_coef'
-      CALL SPACE_resize_array( 0, 2 * order, CS_coef,                          &
+      CALL SPACE_resize_array( 0_ip_, 2 * order, CS_coef,                      &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8434,7 +8435,7 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: COEF'
-      CALL SPACE_resize_array( 0, 2 * order, COEF,                             &
+      CALL SPACE_resize_array( 0_ip_, 2 * order, COEF,                         &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8450,7 +8451,7 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: DX_zh'
-      CALL SPACE_resize_array( 1, n, DX_zh,                                    &
+      CALL SPACE_resize_array( 1_ip_, n, DX_zh,                                &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &
@@ -8466,7 +8467,7 @@
       IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'clls: DY_zh'
-      CALL SPACE_resize_array( 1, m, DY_zh,                                    &
+      CALL SPACE_resize_array( 1_ip_, m, DY_zh,                                &
              status, alloc_status, array_name = array_name,                    &
              deallocate_error_fatal = deallocate_error_fatal,                  &
              exact_size = space_critical,                                      &

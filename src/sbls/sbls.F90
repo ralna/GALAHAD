@@ -2366,7 +2366,7 @@
 
           IF ( SMT_get( A%type ) /= ' DENSE' ) THEN
             array_name = 'sbls: efactors%A_col_ptr'
-            CALL SPACE_resize_array( n + 1, efactors%A_col_ptr,                &
+            CALL SPACE_resize_array( n + 1_ip_, efactors%A_col_ptr,            &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -2404,7 +2404,7 @@
          &  ' maximum, average column lengths of A = ', I0, ', ', F0.1, /,     &
          &  A, ' number of columns of A longer than maxcol = ', I0,            &
          &     ' is ',  I0 )" ) prefix,                                        &
-            max_len, float( SUM( efactors%A_col_ptr( 2 : ) ) ) / float( n ),   &
+            max_len, REAL( SUM( efactors%A_col_ptr( 2 : ) ) ) / REAL( n ),     &
             prefix,                                                            &
             control%max_col, COUNT( efactors%A_col_ptr( 2 : ) > control%max_col)
 
@@ -2451,7 +2451,7 @@
 
           IF ( SMT_get( A%type ) == 'COORDINATE' ) THEN
             array_name = 'sbls: efactors%A_row_ptr'
-            CALL SPACE_resize_array( m + 1, efactors%A_row_ptr,                &
+            CALL SPACE_resize_array( m + 1_ip_, efactors%A_row_ptr,            &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -5681,7 +5681,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'sbls: efactors%Z'
-        CALL SPACE_resize_array( efactors%len_s_max, 1, efactors%Z,            &
+        CALL SPACE_resize_array( efactors%len_s_max, 1_ip_, efactors%Z,        &
            inform%status, inform%alloc_status, array_name = array_name,        &
            deallocate_error_fatal = control%deallocate_error_fatal,            &
            exact_size = .FALSE.,                                               &
@@ -7807,7 +7807,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'sbls: nfactors%SOL_perm'
-        CALL SPACE_resize_array( k_n, 1, nfactors%SOL_perm,                    &
+        CALL SPACE_resize_array( k_n, 1_ip_, nfactors%SOL_perm,                &
            inform%status, inform%alloc_status, array_name = array_name,        &
            deallocate_error_fatal = control%deallocate_error_fatal,            &
            exact_size = .TRUE.,                                                &

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-16 AT 13:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -1252,7 +1252,7 @@ contains
 !
 ! This code is adapted from MC64 v 1.6.0
 !
- integer function heap_pop(QLEN,N,Q,val,L)
+ integer(ip_) function heap_pop(QLEN,N,Q,val,L)
    implicit none
    integer(ip_), intent(inout) :: QLEN
    integer(ip_), intent(in) :: N

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -4576,7 +4576,7 @@
         CALL CPU_TIME( time_record  )
         CALL CHECKPOINT( inform%iter, time_record - time_start,                &
                          dual_g_norm, inform%checkpointsIter,                  &
-                         inform%checkpointsTime, 1, 16 )
+                         inform%checkpointsTime, 1_ip_, 16_ip_ )
 
         IF ( dual_g_norm <= stop_d .OR.                                        &
              ( no_change > 2 .AND. dual_g_norm <= stop_reasonable ) ) THEN
@@ -9919,7 +9919,7 @@
       IF ( inform%status /= 0 ) RETURN
 
       array_name = 'dqp: Y_l'
-      CALL SPACE_resize_array( 1, dims%c_l_end, Y_l,                           &
+      CALL SPACE_resize_array( 1_ip_, dims%c_l_end, Y_l,                       &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -9959,7 +9959,7 @@
       IF ( inform%status /= 0 ) RETURN
 
       array_name = 'dqp: YC_l'
-      CALL SPACE_resize_array( 1, dims%c_l_end, YC_l,                          &
+      CALL SPACE_resize_array( 1_ip_, dims%c_l_end, YC_l,                      &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -9991,7 +9991,7 @@
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
       array_name = 'dqp: GY_l'
-      CALL SPACE_resize_array( 1, dims%c_l_end, GY_l,                          &
+      CALL SPACE_resize_array( 1_ip_, dims%c_l_end, GY_l,                      &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -10071,7 +10071,7 @@
       IF ( inform%status /= 0 ) RETURN
 
       array_name = 'dqp: V_bnd'
-      CALL SPACE_resize_array( nv, 2, V_bnd,                                   &
+      CALL SPACE_resize_array( nv, 2_ip_, V_bnd,                               &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -10088,7 +10088,7 @@
         IF ( inform%status /= 0 ) RETURN
       ELSE
         array_name = 'dqp: G'
-        CALL SPACE_resize_array( 0, G,                                         &
+        CALL SPACE_resize_array( 0_ip_, G,                                     &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10100,7 +10100,7 @@
 
       IF ( diagonal_h ) THEN
         array_name = 'dqp: H_sbls%ptr'
-        CALL SPACE_resize_array( 0, H_sbls%ptr,                                &
+        CALL SPACE_resize_array( 0_ip_, H_sbls%ptr,                            &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10108,7 +10108,7 @@
         IF ( inform%status /= 0 ) RETURN
 
         array_name = 'dqp: H_sbls%col'
-        CALL SPACE_resize_array( 0, H_sbls%col,                                &
+        CALL SPACE_resize_array( 0_ip_, H_sbls%col,                            &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10117,7 +10117,7 @@
 
         IF ( scaled_identity_h ) THEN
           array_name = 'dqp: H_sbls%val'
-          CALL SPACE_resize_array( 1, H_sbls%val,                              &
+          CALL SPACE_resize_array( 1_ip_, H_sbls%val,                          &
                  inform%status, inform%alloc_status, array_name = array_name,  &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
                  exact_size = control%space_critical,                          &
@@ -10125,7 +10125,7 @@
           IF ( inform%status /= 0 ) RETURN
         ELSE IF ( identity_h ) THEN
           array_name = 'dqp: H_sbls%val'
-          CALL SPACE_resize_array( 0, H_sbls%val,                              &
+          CALL SPACE_resize_array( 0_ip_, H_sbls%val,                          &
                  inform%status, inform%alloc_status, array_name = array_name,  &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
                  exact_size = control%space_critical,                          &
@@ -10275,7 +10275,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
       ELSE
         array_name = 'dqp: CHANGES'
-        CALL SPACE_resize_array( 0, CHANGES,                                   &
+        CALL SPACE_resize_array( 0_ip_, CHANGES,                               &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10283,7 +10283,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'dqp: ACTIVE_list'
-        CALL SPACE_resize_array( 0, ACTIVE_list,                               &
+        CALL SPACE_resize_array( 0_ip_, ACTIVE_list,                           &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10291,7 +10291,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'dqp: ACTIVE_status'
-        CALL SPACE_resize_array( 0, ACTIVE_status,                             &
+        CALL SPACE_resize_array( 0_ip_, ACTIVE_status,                         &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10299,7 +10299,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'dqp: VECTOR'
-        CALL SPACE_resize_array( 0, VECTOR,                                    &
+        CALL SPACE_resize_array( 0_ip_, VECTOR,                                &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10307,7 +10307,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'dqp: SCU_mat%BD_col_start'
-        CALL SPACE_resize_array( 0, SCU_mat%BD_col_start,                      &
+        CALL SPACE_resize_array( 0_ip_, SCU_mat%BD_col_start,                  &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10315,7 +10315,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'dqp: SCU_mat%BD_val'
-        CALL SPACE_resize_array( 0, SCU_mat%BD_val, inform%status,             &
+        CALL SPACE_resize_array( 0_ip_, SCU_mat%BD_val, inform%status,         &
                inform%alloc_status, array_name = array_name,                   &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10323,7 +10323,7 @@
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
         array_name = 'dqp: SCU_mat%BD_row'
-        CALL SPACE_resize_array( 0, SCU_mat%BD_row, inform%status,             &
+        CALL SPACE_resize_array( 0_ip_, SCU_mat%BD_row, inform%status,         &
                inform%alloc_status, array_name = array_name,                   &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &

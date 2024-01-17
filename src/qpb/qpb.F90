@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -3131,7 +3131,8 @@
       data%len_hist = 0
 
       array_name = 'qpb: data%BINOMIAL'
-      CALL SPACE_resize_array( 0, data%deriv - 1, data%deriv, data%BINOMIAL,   &
+      CALL SPACE_resize_array( 0_ip_, data%deriv - 1_ip_,                      &
+             data%deriv, data%BINOMIAL,                                        &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3139,7 +3140,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%fit_mu'
-      CALL SPACE_resize_array( data%order + 1, data%fit_mu,                    &
+      CALL SPACE_resize_array( data%order + 1_ip_, data%fit_mu,                &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3147,7 +3148,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%fit_f'
-      CALL SPACE_resize_array( data%order + 1, data%fit_f,                     &
+      CALL SPACE_resize_array( data%order + 1_ip_, data%fit_f,                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3155,7 +3156,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%X_coef'
-      CALL SPACE_resize_array( 0, data%order, prob%n, data%X_coef,             &
+      CALL SPACE_resize_array( 0_ip_, data%order, prob%n, data%X_coef,         &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3163,7 +3164,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%C_coef'
-      CALL SPACE_resize_array( 0, data%order, data%dims%c_l_start,             &
+      CALL SPACE_resize_array( 0_ip_, data%order, data%dims%c_l_start,         &
              data%dims%c_u_end, data%C_coef,                                   &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -3172,7 +3173,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Y_coef'
-      CALL SPACE_resize_array( 0, data%order, prob%m, data%Y_coef,             &
+      CALL SPACE_resize_array( 0_ip_, data%order, prob%m, data%Y_coef,         &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3180,7 +3181,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Y_l_coef'
-      CALL SPACE_resize_array( 0, data%order, data%dims%c_l_start,             &
+      CALL SPACE_resize_array( 0_ip_, data%order, data%dims%c_l_start,         &
              data%dims%c_l_end, data%Y_l_coef,                                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -3189,7 +3190,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Y_u_coef'
-      CALL SPACE_resize_array( 0, data%order, data%dims%c_u_start,             &
+      CALL SPACE_resize_array( 0_ip_, data%order, data%dims%c_u_start,         &
              data%dims%c_u_end, data%Y_u_coef,                                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -3198,7 +3199,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Z_l_coef'
-      CALL SPACE_resize_array( 0, data%order, data%dims%x_free + 1,            &
+      CALL SPACE_resize_array( 0_ip_, data%order, data%dims%x_free + 1,        &
              data%dims%x_l_end, data%Z_l_coef,                                 &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -3207,7 +3208,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Z_u_coef'
-      CALL SPACE_resize_array( 0, data%order, data%dims%x_u_start,             &
+      CALL SPACE_resize_array( 0_ip_, data%order, data%dims%x_u_start,         &
              prob%n, data%Z_u_coef,                                            &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -3232,7 +3233,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%X_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, prob%n, data%X_hist,  &
+      CALL SPACE_resize_array( data%hist, 0_ip_,                               &
+             data%deriv, prob%n, data%X_hist,                                  &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3240,8 +3242,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%C_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, data%dims%c_l_start,  &
-             data%dims%c_u_end, data%C_hist,                                   &
+      CALL SPACE_resize_array( data%hist, 0_ip_, data%deriv,                   &
+             data%dims%c_l_start, data%dims%c_u_end, data%C_hist,              &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3249,7 +3251,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Y_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, prob%m, data%Y_hist,  &
+      CALL SPACE_resize_array( data%hist, 0_ip_,                               &
+             data%deriv, prob%m, data%Y_hist,                                  &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3257,8 +3260,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Y_l_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, data%dims%c_l_start,  &
-             data%dims%c_l_end, data%Y_l_hist,                                 &
+      CALL SPACE_resize_array( data%hist, 0_ip_, data%deriv,                   &
+             data%dims%c_l_start, data%dims%c_l_end, data%Y_l_hist,            &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3266,8 +3269,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Y_u_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, data%dims%c_u_start,  &
-             data%dims%c_u_end, data%Y_u_hist,                                 &
+      CALL SPACE_resize_array( data%hist, 0_ip_, data%deriv,                   &
+             data%dims%c_u_start, data%dims%c_u_end, data%Y_u_hist,            &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3275,8 +3278,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Z_l_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, data%dims%x_free + 1, &
-             data%dims%x_l_end, data%Z_l_hist,                                 &
+      CALL SPACE_resize_array( data%hist, 0_ip_, data%deriv,                   &
+             data%dims%x_free + 1, data%dims%x_l_end, data%Z_l_hist,           &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -3284,8 +3287,8 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'qpb: data%Z_u_hist'
-      CALL SPACE_resize_array( data%hist, 0, data%deriv, data%dims%x_u_start,  &
-             prob%n, data%Z_u_hist,                                            &
+      CALL SPACE_resize_array( data%hist, 0_ip_, data%deriv,                   &
+             data%dims%x_u_start, prob%n, data%Z_u_hist,                       &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-16 AT 10:30 GMT.
 
 #include "spral_procedures.h"
 
@@ -11,7 +11,7 @@
 !>
 !> As it depends on routines defined by module that use the type, it needs
 !> to be a seperate module to spral_ssids_contrib_precision.
-module spral_ssids_contrib_precision_free
+module spral_ssids_contrib_fsub_precision
   use spral_kinds_precision
   use spral_ssids_contrib_precision, only : contrib_type
   use spral_ssids_cpu_subtree_precision, only : cpu_free_contrib
@@ -34,12 +34,12 @@ contains
        stop -1
     end select
   end subroutine contrib_free
-end module spral_ssids_contrib_precision_free
+end module spral_ssids_contrib_fsub_precision
 
 ! The C prototype for the following routine is in contrib.h
 subroutine spral_ssids_contrib_free_precision(ccontrib) bind(C)
   use, intrinsic :: iso_c_binding
-  use spral_ssids_contrib_precision_free
+  use spral_ssids_contrib_fsub_precision
   implicit none
 
   type(C_PTR), value :: ccontrib

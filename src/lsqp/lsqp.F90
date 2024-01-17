@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -2035,7 +2035,7 @@
 
       ELSE
         array_name = 'lsqp: data%DELTA_cor'
-        CALL SPACE_resize_array( 0, data%DELTA_cor,                            &
+        CALL SPACE_resize_array( 0_ip_, data%DELTA_cor,                        &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2043,7 +2043,7 @@
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
         array_name = 'lsqp: data%DY_cor_l'
-        CALL SPACE_resize_array( 0, data%DY_cor_l,                             &
+        CALL SPACE_resize_array( 0_ip_, data%DY_cor_l,                         &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2053,7 +2053,7 @@
         dy_l_upper = 0
 
         array_name = 'lsqp: data%DY_cor_u'
-        CALL SPACE_resize_array( 0, data%DY_cor_u,                             &
+        CALL SPACE_resize_array( 0_ip_, data%DY_cor_u,                         &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2063,7 +2063,7 @@
         dy_u_upper = 0
 
         array_name = 'lsqp: data%DZ_cor_l'
-        CALL SPACE_resize_array( 0, data%DZ_cor_l,                             &
+        CALL SPACE_resize_array( 0_ip_, data%DZ_cor_l,                         &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2073,7 +2073,7 @@
         dz_l_upper = 0
 
         array_name = 'lsqp: data%DZ_cor_u'
-        CALL SPACE_resize_array( 0, data%DZ_cor_u,                             &
+        CALL SPACE_resize_array( 0_ip_, data%DZ_cor_u,                         &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &

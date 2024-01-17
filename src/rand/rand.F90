@@ -120,7 +120,8 @@
 !  Multiply by 1/(2**31-1)
 
          xhi = seed%ix / b16
-         x = FLOAT( xhi ) * rb16 + FLOAT( seed%ix - xhi * b16 )
+         x = REAL( xhi, KIND = rp_ ) * rb16                                    &
+               + REAL( seed%ix - xhi * b16, KIND = rp_ )
          IF ( positive ) THEN
             random = x * big
          ELSE

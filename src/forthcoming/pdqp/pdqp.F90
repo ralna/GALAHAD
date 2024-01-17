@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -789,15 +789,15 @@
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
-      CALL SPACE_resize_array( 0, data%C_null%ROW,                             &
+      CALL SPACE_resize_array( 0_ip_, data%C_null%ROW,                         &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
-      CALL SPACE_resize_array( 0, data%C_null%COL,                             &
+      CALL SPACE_resize_array( 0_ip_, data%C_null%COL,                         &
                                inform%status,inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
-      CALL SPACE_resize_array( 0, data%C_null%VAL,                             &
+      CALL SPACE_resize_array( 0_ip_, data%C_null%VAL,                         &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
 

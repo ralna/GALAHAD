@@ -4680,7 +4680,7 @@
 !  reduce the subdiagonals of the first new row of S to zero by applying
 !  plane-rotation matrices
 
-      CALL CRO_triangulate( m, 2, data%Q, data%R, data%W, status )
+      CALL CRO_triangulate( m, 2_ip_, data%Q, data%R, data%W, status )
       IF ( status < 0 ) THEN
         inform%inertia( 2 ) = inform%inertia( 2 ) + 1
         data%sign_determinant = - data%sign_determinant
@@ -4703,7 +4703,7 @@
 !  reduce the subdiagonals of the second new row of S to zero by applying
 !  plane-rotation matrices
 
-      CALL CRO_triangulate( mp1, 1, data%Q, data%R, data%W, status )
+      CALL CRO_triangulate( mp1, 1_ip_, data%Q, data%R, data%W, status )
       IF ( status < 0 ) THEN
         inform%inertia( 2 ) = inform%inertia( 2 ) + 1
         data%sign_determinant = - data%sign_determinant

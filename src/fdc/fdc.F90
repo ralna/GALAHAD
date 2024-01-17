@@ -917,7 +917,7 @@
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
       array_name = 'fdc: data%D'
-      CALL SPACE_resize_array( 2, data%K%n, data%D, inform%status,             &
+      CALL SPACE_resize_array( 2_ip_, data%K%n, data%D, inform%status,         &
              inform%alloc_status, array_name = array_name,                     &
              deallocate_error_fatal = data%control%deallocate_error_fatal,     &
              exact_size = data%control%space_critical,                         &

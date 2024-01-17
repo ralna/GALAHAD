@@ -686,7 +686,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL, POINTER, DIMENSION( : ) :: point
+     LOGICAL ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
@@ -1157,7 +1157,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL, POINTER, DIMENSION( : ) :: point
+     LOGICAL ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
@@ -2302,7 +2302,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL, ALLOCATABLE, DIMENSION( : ) :: array
+     LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
@@ -2773,7 +2773,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL, ALLOCATABLE, DIMENSION( : ) :: array
+     LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
@@ -3780,7 +3780,7 @@
 !  Dummy arguments
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL, POINTER, DIMENSION( : ) :: point
+     LOGICAL ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -4167,7 +4167,7 @@
 !  Dummy arguments
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL, ALLOCATABLE, DIMENSION( : ) :: array
+     LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
