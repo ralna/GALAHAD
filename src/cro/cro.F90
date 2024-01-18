@@ -1104,7 +1104,7 @@
           n_fixed = n_fixed + 1 ; i = i + 1
           data%X_inorder( j ) = - n_fixed
           data%X_free( i ) = j
-          X_stat( j ) = SIGN( 1, X_stat( j ) )
+          X_stat( j ) = SIGN( 1_ip_, X_stat( j ) )
         END IF
       END DO
 
@@ -1116,7 +1116,7 @@
           m_fixed = m_fixed + 1
           data%C_inorder( i ) = m_fixed
           data%C_fixed( m_fixed ) = i
-          C_stat( i ) = SIGN( 1, C_stat( i ) )
+          C_stat( i ) = SIGN( 1_ip_, C_stat( i ) )
         ELSE
           data%C_inorder( i ) = 0
         END IF
@@ -2303,9 +2303,9 @@
 !  record the change of status
 
         IF ( outgoing > 0 ) THEN
-          X_stat( outgoing ) = SIGN( 2, X_stat( outgoing ) )
+          X_stat( outgoing ) = SIGN( 2_ip_, X_stat( outgoing ) )
         ELSE
-          C_stat( - outgoing ) = SIGN( 2, C_stat( - outgoing ) )
+          C_stat( - outgoing ) = SIGN( 2_ip_, C_stat( - outgoing ) )
         END IF
 
 !  step to the new point

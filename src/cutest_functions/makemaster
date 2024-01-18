@@ -44,13 +44,10 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
 
-S$(PACKAGE) = $(DEPENDENCIES) $(CULGS)($(package).o)
-D$(PACKAGE) = $(DEPENDENCIES) $(CULGD)($(package).o)
-
-#  compilation and run agenda
-
-$(PACKAGE)OBJECTSS = $(S$(PACKAGE))
-$(PACKAGE)OBJECTSD = $(D$(PACKAGE))
+$(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(CULGS)($(package).o)
+$(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(CULGD)($(package).o)
+$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(CULGS64)($(package).o)
+$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(CULGD64)($(package).o)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -61,6 +58,8 @@ $(PACKAGE)OBJECTSD = $(D$(PACKAGE))
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
+$(package)_silent_single_64: $($(PACKAGE)OBJECTSS64)
+$(package)_silent_double_64: $($(PACKAGE)OBJECTSD64)
 
 #  package
 
@@ -70,6 +69,10 @@ $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(CULGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
 	$(RANLIB) $(CULGD)
+$(package)_single_64: $($(PACKAGE)OBJECTSS64)
+	$(RANLIB) $(CULGS64)
+$(package)_double_64: $($(PACKAGE)OBJECTSD64)
+	$(RANLIB) $(CULGD64)
 
 #  non-standard package compilation instructions
 

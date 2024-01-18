@@ -5,6 +5,8 @@
 
 SHELL = /bin/$(BINSHELL)
 
+#  shorthands for real precision and integer lengths control
+
 S32 = PRECIS=single
 D32 = PRECIS=double
 S64 = PRECIS=single_64 INTEGER=64bit

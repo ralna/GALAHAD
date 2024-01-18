@@ -118,7 +118,6 @@ mc71d.o: $(HLG)(mc71d.o)
 $(HLG)(mc71d.o): $(MA57)/mc71d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc71d"
 	$(CP) $(MA57)/mc71d.f $(OBJ)/mc71d.f90
-	echo "$(FORTRAN) -o mc71d.o $(FFLAGS77) mc71d.f90"
 	cd $(OBJ); $(FORTRAN) -o mc71d.o $(FFLAGS77) mc71d.f90
 	cd $(OBJ); $(HARR) mc71d.o ; $(RM) mc71d.f90 mc71d.o
 	@printf '[ OK ]\n'
