@@ -616,7 +616,7 @@
        &  ' maximum, average column lengths of A = ', I0, ', ', F0.1, /,       &
        &  A, ' number of columns of A longer than maxcol = ', I0,              &
        &     ' is ',  I0 )" ) prefix, inform%max_col_a,                        &
-          float( SUM( data%A_col_ptr( 2 : ) ) ) / float( n ), prefix,          &
+          REAL( SUM( data%A_col_ptr( 2 : ) ) ) / REAL( n ), prefix,            &
           max_col, inform%exceeds_max_col
 
 !  Exit if the column with the largest number of entries exceeds max_col

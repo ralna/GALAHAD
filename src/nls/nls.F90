@@ -2851,14 +2851,14 @@
              CALL mop_Ax( one, nlp%J, nlp%C( : nlp%m ),                        &
                         zero, nlp%G( : nlp%n ),                                &
                         out = data%out, error = data%control%error,            &
-                        print_level = 0, transpose = .TRUE. )
-!                       print_level = 1, transpose = .TRUE. )
+                        print_level = 0_ip_, transpose = .TRUE. )
+!                       print_level = 1_ip_, transpose = .TRUE. )
            ELSE
              CALL mop_Ax( one, nlp%J, W( : nlp%m ) * nlp%C( : nlp%m ),         &
                         zero, nlp%G( : nlp%n ),                                &
                         out = data%out, error = data%control%error,            &
-                        print_level = 0, transpose = .TRUE. )
-!                       print_level = 1, transpose = .TRUE. )
+                        print_level = 0_ip_, transpose = .TRUE. )
+!                       print_level = 1_ip_, transpose = .TRUE. )
            END IF
          ELSE
            IF ( data%reverse_jprod ) nlp%G( : nlp%n ) = data%U( : nlp%n )
@@ -3330,7 +3330,7 @@
        IF ( data%jacobian_available ) THEN
          CALL mop_Ax( one, nlp%J, data%tensor_model%X( : nlp%n ), zero,        &
                       data%JS( : nlp%m ), out = data%out,                      &
-                      error = data%control%error, print_level = 0,             &
+                      error = data%control%error, print_level = 0_ip_,         &
                       transpose = .FALSE. )
 
 !  if the Jacobian is unavailable, obtain a matrix-free product
@@ -3526,7 +3526,7 @@
            IF ( data%jacobian_available ) THEN
              CALL mop_Ax( one, nlp%J, data%tensor_model%X( : nlp%n ), zero,    &
                           data%JS( : nlp%m ), out = data%out,                  &
-                          error = data%control%error, print_level = 0,         &
+                          error = data%control%error, print_level = 0_ip_,     &
                           transpose = .FALSE. )
 
 !  if the Jacobian is unavailable, obtain a matrix-free product
@@ -3573,7 +3573,7 @@
              IF ( data%jacobian_available ) THEN
                CALL mop_Ax( one, nlp%J, data%subproblem_data%V( : nlp%m ), one,&
                             data%subproblem_data%U( : nlp%n ), out = data%out, &
-                            error = data%control%error, print_level = 0,       &
+                            error = data%control%error, print_level = 0_ip_,   &
                             transpose = .TRUE. )
              ELSE
                data%transpose = .TRUE.
@@ -3596,7 +3596,7 @@
              IF ( data%jacobian_available ) THEN
                CALL mop_Ax( one, nlp%J, data%subproblem_data%V( : nlp%n ), one,&
                             data%subproblem_data%U( : nlp%m ), out = data%out, &
-                            error = data%control%error, print_level = 0,       &
+                            error = data%control%error, print_level = 0_ip_,   &
                             transpose = .FALSE. )
              ELSE
                data%transpose = .FALSE.
@@ -3620,7 +3620,7 @@
            CALL mop_Ax( one, data%tensor_model%H,                              &
                         data%subproblem_data%V( : nlp%m ), one,                &
                         data%subproblem_data%U( : nlp%n ), out = data%out,     &
-                        error = data%control%error, print_level = 0,           &
+                        error = data%control%error, print_level = 0_ip_,       &
                         symmetric = .TRUE. )
 
 !  evaluate the scaled vector u = S(x) v
@@ -3673,7 +3673,7 @@
                           data%tensor_model%X( : nlp%n ),                      &
                           zero, data%subproblem_data%SX( : nlp%n ),            &
                           symmetric = .TRUE., out = data%out,                  &
-                          error = data%control%error, print_level = 0 )
+                          error = data%control%error, print_level = 0_ip_ )
              reg = half * inform%weight *                        &
                          DOT_PRODUCT( data%tensor_model%X( : nlp%n ),          &
                                       data%subproblem_data%SX( : nlp%n ) )
@@ -3885,7 +3885,7 @@
            IF ( data%subproblem_data%transpose ) THEN
              CALL mop_Ax( one, nlp%P, data%subproblem_data%V( : nlp%m ), one,  &
                           data%subproblem_data%U( : nlp%n ), out = data%out,   &
-                          error = data%control%error, print_level = 0,         &
+                          error = data%control%error, print_level = 0_ip_,     &
                           transpose = .FALSE. )
 
 !  compute u = u + P^T(x,s) v
@@ -3893,7 +3893,7 @@
            ELSE
              CALL mop_Ax( one, nlp%P, data%subproblem_data%V( : nlp%n ), one,  &
                           data%subproblem_data%U( : nlp%m ), out = data%out,   &
-                          error = data%control%error, print_level = 0,         &
+                          error = data%control%error, print_level = 0_ip_,     &
                           transpose = .TRUE. )
            END IF
 
@@ -3910,7 +3910,7 @@
                     data%S( : nlp%n ), zero,                                   &
                     data%subproblem_data%SX( : nlp%n ),                        &
                     symmetric = .TRUE., out = data%out,                        &
-                    error = data%control%error, print_level = 0 )
+                    error = data%control%error, print_level = 0_ip_ )
        data%subproblem_data%xtsx                                               &
          = DOT_PRODUCT( data%S( : nlp%n ), data%subproblem_data%SX( : nlp%n ) )
        data%s_norm = SQRT( data%subproblem_data%xtsx )
@@ -5863,7 +5863,7 @@
          CALL mop_Ax( one, stabilisation%matrix,                               &
                       nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),              &
                       symmetric = .TRUE., out = data%out,                      &
-                      error = data%control%error, print_level = 0 )
+                      error = data%control%error, print_level = 0_ip_ )
        END IF
      END IF
 
@@ -5976,7 +5976,7 @@
          IF ( data%jacobian_available ) THEN
            CALL mop_Ax( one, nlp%J, data%Y( : nlp%m ), zero, nlp%G( : nlp%n ), &
                         out = data%out, error = data%control%error,            &
-                        print_level = 0, transpose = .TRUE. )
+                        print_level = 0_ip_, transpose = .TRUE. )
          ELSE
            IF ( data%reverse_jprod ) nlp%G( : nlp%n ) = data%U( : nlp%n )
          END IF
@@ -6797,7 +6797,7 @@
            CALL mop_Ax( one, stabilisation%matrix,                             &
                         data%V( : nlp%n ), zero, data%SV( : nlp%n ),           &
                         symmetric = .TRUE., out = data%out,                    &
-                        error = data%control%error, print_level = 0 )
+                        error = data%control%error, print_level = 0_ip_ )
          END IF
        END IF
 
@@ -6874,7 +6874,7 @@
              IF ( data%jacobian_available ) THEN
                CALL mop_Ax( one, nlp%J, data%W( : nlp%n ), zero,               &
                             data%V( : nlp%m ), out = data%out,                 &
-                            error = data%control%error, print_level = 0,       &
+                            error = data%control%error, print_level = 0_ip_,   &
                             transpose = .FALSE. )
 
 !  if the Jacobian is unavailable, obtain a matrix-free product
@@ -6943,12 +6943,12 @@
              IF ( data%w_eq_identity ) THEN
                CALL mop_Ax( one, nlp%J, data%V( : nlp%m ), zero,               &
                             data%U( : nlp%n ), out = data%out,                 &
-                            error = data%control%error, print_level = 0,       &
+                            error = data%control%error, print_level = 0_ip_,   &
                             transpose = .TRUE. )
              ELSE
                CALL mop_Ax( one, nlp%J, W( : nlp%m ) * data%V( : nlp%m ),      &
                             zero, data%U( : nlp%n ), out = data%out,           &
-                            error = data%control%error, print_level = 0,       &
+                            error = data%control%error, print_level = 0_ip_,   &
                             transpose = .TRUE. )
              END IF
 
@@ -7005,7 +7005,7 @@
            IF ( data%hessian_available ) THEN
              CALL mop_Ax( one, nlp%H, data%W( : nlp%n ), one,                  &
                           data%U( : nlp%n ), data%out, data%control%error,     &
-                          0, symmetric = .TRUE. )
+                          0_ip_, symmetric = .TRUE. )
 
 !  if the Hessian is unavailable, obtain a matrix-free product
 
@@ -7128,7 +7128,7 @@
 
 !   CALL mop_Ax( one, nlp%J,  data%S( : nlp%n ), zero,                         &
 !                data%V( : nlp%m ), out = data%out,                            &
-!                error = data%control%error, print_level = 0,                  &
+!                error = data%control%error, print_level = 0_ip_,              &
 !                transpose = .FALSE. )
 !   data%U( : nlp%n ) = zero
 !   CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),                       &
@@ -7220,7 +7220,7 @@
            CALL mop_Ax( one, stabilisation%matrix,                             &
                         nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),            &
                         symmetric = .TRUE., out = data%out,                    &
-                        error = data%control%error, print_level = 0 )
+                        error = data%control%error, print_level = 0_ip_ )
          END IF
        END IF
 !      write(6,*) ' ftrial after ', data%f_trial
@@ -7534,7 +7534,7 @@
              CALL mop_Ax( one, stabilisation%matrix,                           &
                           nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),          &
                           symmetric = .TRUE., out = data%out,                  &
-                          error = data%control%error, print_level = 0 )
+                          error = data%control%error, print_level = 0_ip_ )
            END IF
          END IF
        END IF

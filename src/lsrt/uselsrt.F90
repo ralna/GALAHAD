@@ -298,7 +298,8 @@
 
       CALL CUTEST_csetup_r( cutest_status, input, out, io_buffer,              &
                             n, m, prob%X, prob%X_l, prob%X_u, prob%Y,          &
-                           prob%C_l, prob%C_u, EQUATN, LINEAR, 0, 0, 0 )
+                            prob%C_l, prob%C_u, EQUATN, LINEAR,                &
+                            0_ip_, 0_ip_, 0_ip_ )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( LINEAR )
 
@@ -991,7 +992,7 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
             write(6,*) ' norm R^-1 w  ', TWO_NORM( W( : n_used ) )
           CASE ( mi35_preconditioner, mi35_with_c_preconditioner )
             RHS( : n_used ) = W( : n_used )
-            CALL mi35_solve( .FALSE., m, keep_mi35, RHS, W, info_mi35 )
+            CALL mi35_solve( .FALSE._ip_, m, keep_mi35, RHS, W, info_mi35 )
           CASE DEFAULT
           END SELECT
 
@@ -1046,7 +1047,7 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
             CALL MIQR_apply( W, .TRUE., MIQR_data, MIQR_inform )
           CASE ( mi35_preconditioner, mi35_with_c_preconditioner )
             RHS( : n_used ) = W( : n_used )
-            CALL mi35_solve( .TRUE., m, keep_mi35, RHS, W, info_mi35 )
+            CALL mi35_solve( .TRUE._ip_, m, keep_mi35, RHS, W, info_mi35 )
           CASE DEFAULT
           END SELECT
 
@@ -1085,7 +1086,8 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
               W( : A_ls%n ) = V( : A_ls%n )
               RHS( : A_ls%n ) = W( : A_ls%n )
 
-              CALL mi35_solve( .TRUE., A_ls%n, keep_mi35, RHS, W, info_mi35 )
+              CALL mi35_solve( .TRUE._ip_, A_ls%n, keep_mi35, RHS,             &
+                               W, info_mi35 )
 
               DO j = 1, A_ls%n
                 val = W( j )
@@ -1108,7 +1110,8 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
               END DO
               RHS( : A_ls%n ) = W( : A_ls%n )
 
-              CALL mi35_solve( .FALSE., A_ls%n, keep_mi35, RHS, W, info_mi35 )
+              CALL mi35_solve( .FALSE._ip_, A_ls%n, keep_mi35, RHS,            &
+                               W, info_mi35 )
 
               V( : A_ls%n ) = V( : A_ls%n ) + W( : A_ls%n )
 
@@ -1126,7 +1129,8 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
               x_norm = SQRT( DOT_PRODUCT( X( : A_ls%n ) , X( : A_ls%n ) ) )
               RHS( : A_ls%n ) = X( : A_ls%n )
 
-              CALL mi35_solve( .TRUE., A_ls%n, keep_mi35, RHS, X, info_mi35 )
+              CALL mi35_solve( .TRUE._ip_, A_ls%n, keep_mi35, RHS,             &
+                               X, info_mi35 )
 
 !  Compute the residuals for checking
 

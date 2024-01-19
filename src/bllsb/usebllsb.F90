@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-28 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 12:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -210,7 +210,7 @@
 
       CALL CUTEST_csetup_r( cutest_status, input, out,                         &
                             io_buffer, n, m, X, X_l, X_u, Y, C_l, C_u,         &
-                            EQUATN, LINEAR, 0, 0, 0 )
+                            EQUATN, LINEAR, 0_ip_, 0_ip_, 0_ip_ )
       DEALLOCATE( Y, LINEAR, STAT = alloc_stat )
 
 !  count the number of slack variables, and set problem dimensions

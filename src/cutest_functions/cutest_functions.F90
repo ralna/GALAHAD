@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 07:20 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -223,7 +223,7 @@
        CALL CUTEST_csetup_r( cutest_status, control%input, control%error,      &
                              control%io_buffer, n, m,                          &
                              nlp%X, nlp%X_l, nlp%X_u, Y, C_l, C_u,             &
-                             nlp%EQUATION, nlp%LINEAR, 0, l_order, 0)
+                             nlp%EQUATION, nlp%LINEAR, 0_ip_, l_order, 0_ip_ )
        IF ( cutest_status /= 0 ) GO TO 930
 
        nlp%m_a = 0
@@ -557,7 +557,7 @@
          IF ( inform%status /= 0 ) THEN
            inform%bad_alloc = 'nlp%Go%col' ; GO TO 910 ; END IF
          lg = nnzg
-         CALL CUTEST_cisgrp_r( cutest_status, n, 0, nnzg, lg,                  &
+         CALL CUTEST_cisgrp_r( cutest_status, n, 0_ip_, nnzg, lg,              &
                              userdata%integer( indg + 1 : indg + nnzg ) )
          nlp%Go%ind( : nnzg ) = userdata%integer( indg + 1 : indg + nnzg )
          CALL SPACE_resize_array( nnzg, nlp%Go%val, inform%status,       &
@@ -824,13 +824,13 @@
           inform%bad_alloc = 'nlp%J%val' ; GO TO 910
        END IF
 
-       CALL SPACE_resize_array( 0, nlp%Ax, inform%status,                      &
+       CALL SPACE_resize_array( 0_ip_, nlp%Ax, inform%status,                  &
                                 inform%alloc_status )
        IF ( inform%status /= 0 ) THEN
           inform%bad_alloc = 'nlp%Ax' ; GO TO 910
        END IF
 
-       CALL SPACE_resize_array( 0, nlp%Y_a, inform%status,                     &
+       CALL SPACE_resize_array( 0_ip_, nlp%Y_a, inform%status,                 &
                                 inform%alloc_status )
        IF ( inform%status /= 0 ) THEN
           inform%bad_alloc = 'nlp%Ax' ; GO TO 910
@@ -1250,7 +1250,7 @@
 
      lg = nnzg
      indg = userdata%integer( loc_indg )
-     CALL CUTEST_cisgr_r( status, n, 0, X, nnzg, lg, G,                        &
+     CALL CUTEST_cisgr_r( status, n, 0_ip_, X, nnzg, lg, G,                    &
                           userdata%integer( indg + 1 : indg + nnzg ) )
 
      RETURN

@@ -2359,7 +2359,7 @@
               inform%x_norm = TWO_NORM( X )
               x_norm2( 0 ) = inform%x_norm ** 2
             ELSE
-              CALL mop_AX( one, M, X, zero, data%Y( : n ), 0,                  &
+              CALL mop_AX( one, M, X, zero, data%Y( : n ), 0_ip_,                  &
                            symmetric = .TRUE. )
               x_norm2( 0 ) = DOT_PRODUCT( X, data%Y( : n ) )
               IF ( x_norm2( 0 ) < zero ) THEN
@@ -2656,7 +2656,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
           beta = - one
-          CALL TRS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL TRS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = - 1)
 
@@ -2685,7 +2685,7 @@
             IF ( unit_m ) THEN
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Z( : n ) )
             ELSE
-              CALL mop_AX( one, M, data%Z( : n ), zero, data%Y( : n ), 0,      &
+              CALL mop_AX( one, M, data%Z( : n ), zero, data%Y( : n ), 0_ip_,      &
                            symmetric = .TRUE. )
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Y( : n ) )
             END IF
@@ -2896,7 +2896,8 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = - 0.666
 
                 beta = - twothirds
-                CALL TRS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                CALL TRS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),               &
+                                    pi_beta( : 2 ) )
 
 !  compute the "quadratic Taylor approximaton" step (beta = - 0.666)
 
@@ -3008,7 +3009,7 @@
                   u_norm = TWO_NORM( data%U( : n ) )
                 ELSE
                   CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),     &
-                               0, symmetric = .TRUE. )
+                               0_ip_, symmetric = .TRUE. )
                   u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                   IF ( u_norm < zero ) THEN
                     IF ( printd ) WRITE( out, "( A, ' ||u||_M^2 =',            &
@@ -3034,7 +3035,7 @@
                   data%U( : n ) = data%U( : n ) / u_norm
                 ELSE
                   CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),     &
-                               0, symmetric = .TRUE. )
+                               0_ip_, symmetric = .TRUE. )
                   u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                   IF ( u_norm < zero ) THEN
                     IF ( printd ) WRITE( out, "( A, ' ||u||_M^2 =',            &
@@ -3085,7 +3086,7 @@
                   u_norm = TWO_NORM( data%U( : n ) )
                 ELSE
                   CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),     &
-                               0, symmetric = .TRUE. )
+                               0_ip_, symmetric = .TRUE. )
                   u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                   IF ( u_norm < zero ) THEN
                     IF ( printd ) WRITE( out, "( A, ' ||u||_M^2 =',            &
@@ -3229,7 +3230,7 @@
             ELSE
 !             CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),         &
               CALL mop_AX( one, M, X, zero, data%Y( : n ),                     &
-                           0, symmetric = .TRUE. )
+                           0_ip_, symmetric = .TRUE. )
               utx = DOT_PRODUCT( data%U( : n ), data%Y( : n ) ) / radius
             END IF
             distx = ( radius - inform%x_norm ) * ( ( radius + inform%x_norm )  &
@@ -3728,7 +3729,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
         beta = - one
-        CALL TRS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+        CALL TRS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = - 1)
 
@@ -4486,7 +4487,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 2
 
             beta = two
-            CALL TRS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL TRS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = 2)
 
@@ -4508,7 +4509,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 1
 
             beta = one
-            CALL TRS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL TRS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = 1)
 
@@ -4522,7 +4523,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
             beta = - one
-            CALL TRS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL TRS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = -1)
 
@@ -4620,7 +4621,7 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 2
 
               beta = two
-              CALL TRS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+              CALL TRS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 2)
 
@@ -4642,7 +4643,7 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 1
 
               beta = one
-              CALL TRS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+              CALL TRS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 1)
 
@@ -4665,8 +4666,8 @@
 !  their derivatives when beta = - 0.4
 
               beta = - point4
-              CALL TRS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-              CALL TRS_theta_derivs( 3, beta, lambda, sigma,                   &
+              CALL TRS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+              CALL TRS_theta_derivs( 3_ip_, beta, lambda, sigma,               &
                                      theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximaton" step (beta = - 0.4)

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-01-19 AT 16:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -1222,7 +1222,7 @@
        END IF
      ELSE
        array_name = 'bgo: data%P'
-       CALL SPACE_resize_pointer( 1, data%P, inform%status,                    &
+       CALL SPACE_resize_pointer( 1_ip_, data%P, inform%status,                &
               inform%alloc_status, point_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1230,7 +1230,7 @@
        IF ( inform%status /= 0 ) GO TO 980
 
        array_name = 'bgo: data%U'
-       CALL SPACE_resize_pointer( 1, data%U, inform%status,                    &
+       CALL SPACE_resize_pointer( 1_ip_, data%U, inform%status,                &
               inform%alloc_status, point_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1238,7 +1238,7 @@
        IF ( inform%status /= 0 ) GO TO 980
 
        array_name = 'bgo: data%V'
-       CALL SPACE_resize_pointer( 1, data%V, inform%status,                    &
+       CALL SPACE_resize_pointer( 1_ip_, data%V, inform%status,                &
               inform%alloc_status, point_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &

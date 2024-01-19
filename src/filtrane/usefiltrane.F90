@@ -141,7 +141,7 @@
 
 ! Read the specfile for RUNFILTRANE.
 
-    CALL SPECFILE_read( ispec, algo_name, specs, 7, ierrout )
+    CALL SPECFILE_read( ispec, algo_name, specs, 7_ip_, ierrout )
 
 ! Interpret the result
 

@@ -42,10 +42,10 @@ DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(CULGD)(use$(package)_double.o) \
                  $(OBJD)/run$(package)_sif_double.o
 SRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
                    $(CULGS64)(use$(package)_single_64.o) \
-                   $(OBJS64)/run$(package)_sif_single.o
+                   $(OBJS64)/run$(package)_sif_single_64.o
 DRUN$(PACKAGE)64 = $(CUTEST_TESTS) $(TESTDEPS) \
                    $(CULGD64)(use$(package)_double_64.o) \
-                   $(OBJD64)/run$(package)_sif_double.o
+                   $(OBJD64)/run$(package)_sif_double_64.o
 
 #  qplib packages
 
@@ -54,9 +54,9 @@ SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
 DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) \
                    $(OBJD)/in$(package)_double.o
 SQPLIB$(PACKAGE)64 = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJS64)/in$(package)_single.o
+                   $(OBJS64)/in$(package)_single_64.o
 DQPLIB$(PACKAGE)64 = $(QPLIB_TESTS) $(TESTDEPS) \
-                   $(OBJD64)/in$(package)_double.o
+                   $(OBJD64)/in$(package)_double_64.o
 #  rb package
 
 SRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJS)/run$(package)_rb_single.o
@@ -426,18 +426,18 @@ $(package)_cutest_addon_single: $(CULGS)(use$(package)_single.o) \
                                 $(OBJS)/run$(package)_sif_single.o
 $(package)_cutest_addon_double: $(CULGD)(use$(package)_double.o) \
                                 $(OBJD)/run$(package)_sif_double.o
-$(package)_cutest_addon_single_64: $(CULGS64)(use$(package)_single.o) \
-                                $(OBJS64)/run$(package)_sif_single.o
-$(package)_cutest_addon_double_64: $(CULGD64)(use$(package)_double.o) \
-                                $(OBJD64)/run$(package)_sif_double.o
+$(package)_cutest_addon_single_64: $(CULGS64)(use$(package)_single_64.o) \
+                                $(OBJS64)/run$(package)_sif_single_64.o
+$(package)_cutest_addon_double_64: $(CULGD64)(use$(package)_double_64.o) \
+                                $(OBJD64)/run$(package)_sif_double_64.o
 
 #  process package add-ons for AMPL
 
 $(package)_ampl_addon: $(package)_ampl_addon_$(PRECIS)
 $(package)_ampl_addon_single: $(CULGS)(use$(package)_single.o)
 $(package)_ampl_addon_double: $(CULGD)(use$(package)_double.o)
-$(package)_ampl_addon_single_64: $(CULGS64)(use$(package)_single.o)
-$(package)_ampl_addon_double_64: $(CULGD64)(use$(package)_double.o)
+$(package)_ampl_addon_single_64: $(CULGS64)(use$(package)_single_64.o)
+$(package)_ampl_addon_double_64: $(CULGD64)(use$(package)_double_64.o)
 
 #  process package for QPLIB
 
@@ -465,8 +465,8 @@ $(package)_qplib_silent_double_64: $($(PACKAGE)OBJECTSD_QPLIB64)
 $(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
 $(package)_qplib_addon_single: $(OBJS)/in$(package)_single.o
 $(package)_qplib_addon_double: $(OBJD)/in$(package)_double.o
-$(package)_qplib_addon_single_64: $(OBJS64)/in$(package)_single.o
-$(package)_qplib_addon_double_64: $(OBJD64)/in$(package)_double.o
+$(package)_qplib_addon_single_64: $(OBJS64)/in$(package)_single_64.o
+$(package)_qplib_addon_double_64: $(OBJD64)/in$(package)_double_64.o
 
 #  process package for RB
 

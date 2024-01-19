@@ -2332,7 +2332,7 @@
               inform%x_norm = TWO_NORM( X )
               x_norm2( 0 ) = inform%x_norm ** 2
             ELSE
-              CALL mop_AX( one, M, X, zero, data%Y( : n ), 0,                  &
+              CALL mop_AX( one, M, X, zero, data%Y( : n ), 0_ip_,              &
                            symmetric = .TRUE., m_matrix = n, n_matrix = n )
               x_norm2( 0 ) = DOT_PRODUCT( X, data%Y( : n ) )
               IF ( x_norm2( 0 ) < zero ) GO TO 930
@@ -2346,7 +2346,7 @@
               inform%obj                                                       &
                 = inform%obj_regularized - half * sigma * inform%x_norm ** 2
               IF (  printi ) THEN
-                CALL mop_AX( one, H, X, zero, data%Y( : n ), 0,                &
+                CALL mop_AX( one, H, X, zero, data%Y( : n ), 0_ip_,            &
                              symmetric = .TRUE., m_matrix = n, n_matrix = n )
                 WRITE( out, "( A, ' est, true reg obj values =',               &
                &               2ES21.13 )" ) prefix, inform%obj_regularized,   &
@@ -2635,7 +2635,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 2
 
             beta = two
-            CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = 2)
 
@@ -2657,7 +2657,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 1
 
             beta = one
-            CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = 1)
 
@@ -2671,7 +2671,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
             beta = - one
-            CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = -1)
 
@@ -2698,9 +2698,9 @@
 !  their first derivatives when beta = p-2
 
             beta = pm2
-            CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
-            CALL RQS_theta_derivs( 1, beta / pm2, lambda, sigma,               &
-                                     theta_beta( : 1 )  )
+            CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL RQS_theta_derivs( 1_ip_, beta / pm2, lambda, sigma,           &
+                                   theta_beta( : 1 )  )
 
 !  compute the "linear Taylor approximation" correction (for beta = p-2)
 
@@ -2716,8 +2716,8 @@
 !  their first derivatives when beta = (p-2)/2
 
             beta = pm2 / two
-            CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
-            CALL RQS_theta_derivs( 1, beta / pm2, lambda, sigma,               &
+            CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL RQS_theta_derivs( 1_ip_, beta / pm2, lambda, sigma,           &
                                    theta_beta( : 1 )  )
 
 !  compute the "linear Taylor approximation" correction (for beta = (p-2)/2)
@@ -2734,8 +2734,8 @@
 !  their first derivatives when beta = max(2-p,-1)
 
             beta = max( - pm2, - one )
-            CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
-            CALL RQS_theta_derivs( 1, beta / pm2, lambda, sigma,               &
+            CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+            CALL RQS_theta_derivs( 1_ip_, beta / pm2, lambda, sigma,           &
                                    theta_beta( : 1 )  )
 
 !  compute the "linear Taylor approximation" correction (for beta = max(2-p,-1))
@@ -2771,7 +2771,7 @@
             IF ( unit_m ) THEN
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Z( : n ) )
             ELSE
-              CALL mop_AX( one, M, data%Z( : n ), zero, data%Y( : n ), 0,      &
+              CALL mop_AX( one, M, data%Z( : n ), zero, data%Y( : n ), 0_ip_,  &
                            symmetric = .TRUE., m_matrix = n, n_matrix = n )
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Y( : n ) )
             END IF
@@ -2905,7 +2905,8 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 2
 
                 beta = two
-                CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),               &
+                                    pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 2)
 
@@ -2927,7 +2928,8 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 1
 
                 beta = one
-                CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+                CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),               &
+                                    pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 1)
 
@@ -2950,8 +2952,9 @@
 !  their derivatives when beta = - 0.4
 
                 beta = - point4
-                CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-                CALL RQS_theta_derivs( 3, beta, lambda, sigma,                 &
+                CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),               &
+                                    pi_beta( : 3 ) )
+                CALL RQS_theta_derivs( 3_ip_, beta, lambda, sigma,             &
                                        theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximaton" step (beta = - 0.4)
@@ -2979,8 +2982,9 @@
 !  their derivatives when beta = p-2
 
                 beta = pm2
-                CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-                CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,           &
+                CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),               &
+                                    pi_beta( : 3 ) )
+                CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,       &
                                        theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta = p-2)
@@ -3005,8 +3009,9 @@
 !  their derivatives when beta = (p-2)/2
 
                 beta = pm2 / two
-                CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-                CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,           &
+                CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),               &
+                                    pi_beta( : 3 ) )
+                CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,       &
                                        theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta = (p-2)/2)
@@ -3031,8 +3036,9 @@
 !  their derivatives when beta = max(2-p,-0.4)
 
                 beta = max( - pm2, - point4 )
-                CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-                CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,           &
+                CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),               &
+                                    pi_beta( : 3 ) )
+                CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,       &
                                        theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta=max(2-p,-0.4))
@@ -3101,7 +3107,8 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 2
 
                   beta = two
-                  CALL RQS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                  CALL RQS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),             &
+                                      pi_beta( : 2 ) )
 
 !  compute the "quadratic Taylor approximaton" step (beta = 2)
 
@@ -3124,7 +3131,8 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 1
 
                   beta = one
-                  CALL RQS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+                  CALL RQS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),             &
+                                      pi_beta( : 2 ) )
 
 !  compute the "quadratic Taylor approximaton" step (beta = 1)
 
@@ -3148,8 +3156,9 @@
 !  their derivatives when beta = - 0.666
 
                   beta = - twothirds
-                  CALL RQS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
-                  CALL RQS_theta_derivs( 2, beta, lambda, sigma,               &
+                  CALL RQS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),             &
+                                      pi_beta( : 2 ) )
+                  CALL RQS_theta_derivs( 2_ip_, beta, lambda, sigma,           &
                                          theta_beta( : 2 )  )
 
 !  compute the "quadratic Taylor approximaton" step (beta = - 0.666)
@@ -3178,8 +3187,9 @@
 !  their derivatives when beta = p-2
 
                   beta = pm2
-                  CALL RQS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
-                  CALL RQS_theta_derivs( 2, beta / pm2, lambda, sigma,         &
+                  CALL RQS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),             &
+                                      pi_beta( : 2 ) )
+                  CALL RQS_theta_derivs( 2_ip_, beta / pm2, lambda, sigma,     &
                                          theta_beta( : 2 )  )
 
 !  compute the "quadratic Taylor approximation" correction (for beta = p-2)
@@ -3204,8 +3214,9 @@
 !  their derivatives when beta = (p-2)/2
 
                   beta = pm2 / two
-                  CALL RQS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
-                  CALL RQS_theta_derivs( 2, beta / pm2, lambda, sigma,         &
+                  CALL RQS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),             &
+                                      pi_beta( : 2 ) )
+                  CALL RQS_theta_derivs( 2_ip_, beta / pm2, lambda, sigma,     &
                                          theta_beta( : 2 )  )
 
 !  compute the "quadratic Taylor approximation" correction (for beta = (p-2)/2)
@@ -3230,8 +3241,9 @@
 !  their derivatives when beta = max(2-p,-0.666)
 
                   beta = max( - pm2, - twothirds )
-                  CALL RQS_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
-                  CALL RQS_theta_derivs( 2, beta / pm2, lambda, sigma,         &
+                  CALL RQS_pi_derivs( 2_ip_, beta, x_norm2( : 2 ),             &
+                                      pi_beta( : 2 ) )
+                  CALL RQS_theta_derivs( 2_ip_, beta / pm2, lambda, sigma,     &
                                          theta_beta( : 2 )  )
 
 !  compute the "quadratic Taylor approximation" correction
@@ -3265,8 +3277,8 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 2
 
                     beta = two
-                    CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ),               &
-                                         pi_beta( : 3 ) )
+                    CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),           &
+                                        pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 2)
 
@@ -3291,7 +3303,8 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 1
 
                     beta = one
-                    CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ))
+                    CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),           &
+                                        pi_beta( : 3 ))
 
 !  compute the "cubic Taylor approximaton" step (beta = 1)
 
@@ -3317,8 +3330,9 @@
 !  their derivatives when beta = - 0.4
 
                     beta = - point4
-                    CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ))
-                    CALL RQS_theta_derivs( 3, beta, lambda, sigma,             &
+                    CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),           &
+                                        pi_beta( : 3 ))
+                    CALL RQS_theta_derivs( 3_ip_, beta, lambda, sigma,         &
                                            theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximaton" step (beta = - 0.4)
@@ -3349,8 +3363,9 @@
 !  their derivatives when beta = p-2
 
                     beta = pm2
-                    CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ))
-                    CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,       &
+                    CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),           &
+                                        pi_beta( : 3 ))
+                    CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,   &
                                            theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta = p-2)
@@ -3378,8 +3393,9 @@
 !  their derivatives when beta = (p-2)/2
 
                     beta = pm2 / two
-                    CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ))
-                    CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,       &
+                    CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),           &
+                                        pi_beta( : 3 ))
+                    CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,   &
                                            theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta = (p-2)/2)
@@ -3407,8 +3423,9 @@
 !  their derivatives when beta = max(2-p,-0.4)
 
                     beta = max( - pm2, - point4 )
-                    CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ))
-                    CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,       &
+                    CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ),           &
+                                        pi_beta( : 3 ))
+                    CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,   &
                                            theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta=max(2-p,-0.4))
@@ -3507,8 +3524,9 @@
                 IF ( unit_m ) THEN
                   u_norm = TWO_NORM( data%U( : n ) )
                 ELSE
-                  CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ), 0,  &
-                               symmetric = .TRUE., m_matrix = n, n_matrix = n )
+                  CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),     &
+                               0_ip_, symmetric = .TRUE.,                      &
+                               m_matrix = n, n_matrix = n )
                   u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                   IF ( u_norm < zero ) GO TO 930
                   u_norm = SQRT( u_norm )
@@ -3527,8 +3545,9 @@
                   u_norm = TWO_NORM( data%U( : n ) )
                   data%U( : n ) = data%U( : n ) / u_norm
                 ELSE
-                  CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ), 0,  &
-                               symmetric = .TRUE., m_matrix = n, n_matrix = n )
+                  CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),     &
+                               0_ip_, symmetric = .TRUE.,                      &
+                               m_matrix = n, n_matrix = n )
                   u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                   IF ( u_norm < zero ) GO TO 930
                   u_norm = SQRT( u_norm )
@@ -3577,8 +3596,9 @@
                 IF ( unit_m ) THEN
                   u_norm = TWO_NORM( data%U( : n ) )
                 ELSE
-                  CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ), 0,  &
-                               symmetric = .TRUE., m_matrix = n, n_matrix = n )
+                  CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),     &
+                               0_ip_, symmetric = .TRUE.,                      &
+                               m_matrix = n, n_matrix = n )
                   u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                   IF ( u_norm < zero ) GO TO 930
                   u_norm = SQRT( u_norm )
@@ -3724,8 +3744,9 @@
               IF ( unit_m ) THEN
                 u_norm = TWO_NORM( data%U( : n ) )
               ELSE
-                CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ), 0,  &
-                             symmetric = .TRUE., m_matrix = n, n_matrix = n )
+                CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),       &
+                             0_ip_, symmetric = .TRUE.,                        &
+                             m_matrix = n, n_matrix = n )
                 u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                 IF ( u_norm < zero ) GO TO 930
                 u_norm = SQRT( u_norm )
@@ -3744,8 +3765,9 @@
                 u_norm = TWO_NORM( data%U( : n ) )
                 data%U( : n ) = data%U( : n ) / u_norm
               ELSE
-                CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ), 0,    &
-                             symmetric = .TRUE., m_matrix = n, n_matrix = n )
+                CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),       &
+                             0_ip_, symmetric = .TRUE.,                        &
+                             m_matrix = n, n_matrix = n )
                 u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                 IF ( u_norm < zero ) GO TO 930
                 u_norm = SQRT( u_norm )
@@ -3782,8 +3804,9 @@
               IF ( unit_m ) THEN
                 u_norm = TWO_NORM( data%U( : n ) )
               ELSE
-                CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ), 0,    &
-                             symmetric = .TRUE., m_matrix = n, n_matrix = n )
+                CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),       &
+                             0_ip_, symmetric = .TRUE.,                        &
+                             m_matrix = n, n_matrix = n )
                 u_norm = DOT_PRODUCT( data%U( : n ), data%Y( : n ) )
                 IF ( u_norm < zero ) GO TO 930
                 u_norm = SQRT( u_norm )
@@ -3801,7 +3824,7 @@
               ELSE
 !               CALL mop_AX( one, M, data%U( : n ), zero, data%Y( : n ),       &
                 CALL mop_AX( one, M, X, zero, data%Y( : n ),                   &
-                             0, symmetric = .TRUE. )
+                             0_ip_, symmetric = .TRUE. )
                 utx = DOT_PRODUCT( data%U( : n ), data%Y( : n ) ) / target
               END IF
               distx = ( target - inform%x_norm ) * ( ( target + inform%x_norm )&
@@ -3855,7 +3878,7 @@
       inform%obj = f + half * DOT_PRODUCT( C, X ) - half * lambda * target ** 2
       inform%obj_regularized = inform%obj + ( lambda / p ) * target ** 2
       IF (  printi ) THEN
-        CALL mop_AX( one, H, X, zero, data%Y( : n ), 0,                        &
+        CALL mop_AX( one, H, X, zero, data%Y( : n ), 0_ip_,                    &
                      symmetric = .TRUE., m_matrix = n, n_matrix = n )
         WRITE( out, "( A, ' est, true reg obj values =', 2ES21.13 )" )         &
           prefix, inform%obj_regularized, f + DOT_PRODUCT( C, X ) +            &
@@ -4406,7 +4429,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 2
 
           beta = two
-          CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = 2)
 
@@ -4428,7 +4451,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = 1
 
           beta = one
-          CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = 1)
 
@@ -4442,7 +4465,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
           beta = - one
-          CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = -1)
 
@@ -4469,8 +4492,8 @@
 !  their first derivatives when beta = p-2
 
           beta = pm2
-          CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
-          CALL RQS_theta_derivs( 1, beta / pm2, lambda, sigma,                 &
+          CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL RQS_theta_derivs( 1_ip_, beta / pm2, lambda, sigma,             &
                                  theta_beta( : 1 )  )
 
 !  compute the "linear Taylor approximation" correction (for beta = p-2)
@@ -4487,8 +4510,8 @@
 !  their first derivatives when beta = (p-2)/2
 
           beta = pm2 / two
-          CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
-          CALL RQS_theta_derivs( 1, beta / pm2, lambda, sigma,                 &
+          CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL RQS_theta_derivs( 1_ip_, beta / pm2, lambda, sigma,             &
                                  theta_beta( : 1 )  )
 
 !  compute the "linear Taylor approximation" correction (for beta = (p-2)/2)
@@ -4505,8 +4528,8 @@
 !  their first derivatives when beta = max(2-p,-1)
 
           beta = max( - pm2, - one )
-          CALL RQS_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
-          CALL RQS_theta_derivs( 1, beta / pm2, lambda, sigma,                 &
+          CALL RQS_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL RQS_theta_derivs( 1_ip_, beta / pm2, lambda, sigma,             &
                                  theta_beta( : 1 ) )
 
 !  compute the "linear Taylor approximation" correction (for beta = max(2-p,-1))
@@ -4548,7 +4571,7 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 2
 
             beta = two
-            CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+            CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 2)
 
@@ -4570,7 +4593,7 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = 1
 
             beta = one
-            CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+            CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
 
 !  compute the "cubic Taylor approximaton" step (beta = 1)
 
@@ -4593,8 +4616,8 @@
 !  their derivatives when beta = - 0.4
 
             beta = - point4
-            CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-            CALL RQS_theta_derivs( 3, beta, lambda, sigma,                     &
+            CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+            CALL RQS_theta_derivs( 3_ip_, beta, lambda, sigma,                 &
                                    theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximaton" step (beta = - 0.4)
@@ -4622,8 +4645,8 @@
 !  their derivatives when beta = p-2
 
             beta = pm2
-            CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-            CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,               &
+            CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+            CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,           &
                                    theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta = p-2)
@@ -4648,8 +4671,8 @@
 !  their derivatives when beta = (p-2)/2
 
             beta = pm2 / two
-            CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-            CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,               &
+            CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+            CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,           &
                                    theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta = (p-2)/2)
@@ -4674,8 +4697,8 @@
 !  their derivatives when beta = max(2-p,-0.4)
 
             beta = max( - pm2, - point4 )
-            CALL RQS_pi_derivs( 3, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
-            CALL RQS_theta_derivs( 3, beta / pm2, lambda, sigma,               &
+            CALL RQS_pi_derivs( 3_ip_, beta, x_norm2( : 3 ), pi_beta( : 3 ) )
+            CALL RQS_theta_derivs( 3_ip_, beta / pm2, lambda, sigma,           &
                                    theta_beta( : 3 )  )
 
 !  compute the "cubic Taylor approximation" correction (for beta=max(2-p,-0.4))

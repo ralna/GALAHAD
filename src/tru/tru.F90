@@ -1945,7 +1945,7 @@
 
        IF ( test_s ) THEN
          array_name = 'tru: data%U_svd'
-         CALL SPACE_resize_array( 1, 1, data%U_svd, inform%status,             &
+         CALL SPACE_resize_array( 1_ip_, 1_ip_, data%U_svd, inform%status,     &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1953,7 +1953,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'tru: data%VT_svd'
-         CALL SPACE_resize_array( 1, 1, data%VT_svd, inform%status,            &
+         CALL SPACE_resize_array( 1_ip_, 1_ip_, data%VT_svd, inform%status,    &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1970,7 +1970,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'tru: data%WORK_svd'
-         CALL SPACE_resize_array( 1, data%WORK_svd, inform%status,             &
+         CALL SPACE_resize_array( 1_ip_, data%WORK_svd, inform%status,         &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -2562,7 +2562,7 @@
                IF ( data%control%hessian_available ) THEN
                  CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), zero,             &
                               data%U( : nlp%n ), data%out, data%control%error, &
-                              0, symmetric = .TRUE. )
+                              0_ip_, symmetric = .TRUE. )
 
 !  if the Hessian is unavailable, obtain a matrix-free product
 
@@ -2591,7 +2591,7 @@
              CASE ( bfgs_hessian_model, sr1_hessian_model )
                CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), zero,               &
                             data%U( : nlp%n ), data%out, data%control%error,   &
-                            0, symmetric = .TRUE. )
+                            0_ip_, symmetric = .TRUE. )
              END SELECT
 
 !  a traditional radius update strategy will be used
@@ -3020,7 +3020,7 @@
              IF ( data%control%hessian_available ) THEN
                CALL mop_Ax( one, nlp%H, data%V( : nlp%n ), zero,               &
                             data%U( : nlp%n ), data%out, data%control%error,   &
-                            0, symmetric = .TRUE. )
+                            0_ip_, symmetric = .TRUE. )
                data%V( : nlp%n ) = data%U( : nlp%n )
 
 !  if the Hessian is unavailable, obtain a matrix-free product
@@ -3055,7 +3055,7 @@
 !write(6,"('v=', 3ES12.4)" ) data%V( : nlp%n )
              CALL mop_Ax( one, nlp%H, data%V( : nlp%n ), zero,                 &
                           data%U( : nlp%n ), data%out, data%control%error,     &
-                          0, symmetric = .TRUE. )
+                          0_ip_, symmetric = .TRUE. )
 !write(6,"('u=', 3ES12.4)" ) data%U( : nlp%n )
                data%V( : nlp%n ) = data%U( : nlp%n )
            END SELECT
@@ -3536,7 +3536,7 @@
            IF ( data%control%hessian_available ) THEN
              CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), one,                  &
                           data%U( : nlp%n ), data%out, data%control%error,     &
-                          0, symmetric = .TRUE. )
+                          0_ip_, symmetric = .TRUE. )
 
 !  if necessary, return to the user to obtain the model Hessian product with s
 
@@ -3573,7 +3573,7 @@
            data%U( : nlp%n ) = nlp%G( : nlp%n )
            CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), one,                    &
                         data%U( : nlp%n ), data%out, data%control%error,       &
-                        0, symmetric = .TRUE. )
+                        0_ip_, symmetric = .TRUE. )
          END SELECT
        END IF
 

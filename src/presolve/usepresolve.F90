@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 13:10 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -105,6 +105,7 @@
 
       INTEGER ( KIND = ip_ ) :: ifiledevice = 51
       INTEGER ( KIND = ip_ ) :: pfiledevice = 53
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 6
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .TRUE.
       CHARACTER ( LEN = 30 ) :: ifilename = 'INITIAL.SIF'
@@ -153,7 +154,8 @@
 
       CALL CUTEST_csetup_r( cutest_status, input, out, io_buffer,              &
                             n, m, prob%X, prob%X_l, prob%X_u, prob%Y,          &
-                            prob%C_l, prob%C_u, EQUATN, LINEAR, 0, 0, 0 )
+                            prob%C_l, prob%C_u, EQUATN, LINEAR,                &
+                            0_ip_, 0_ip_, 0_ip_ )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( LINEAR )
 
@@ -388,7 +390,7 @@
 
 !   Read the specfile
 
-        CALL SPECFILE_read( inputd, algo_name, specs, 6, errout )
+        CALL SPECFILE_read( inputd, algo_name, specs, lspec, errout )
 
 !   Interpret the result
 

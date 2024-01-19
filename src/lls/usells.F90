@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 12:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -142,7 +142,7 @@
 
 !  Allocate suitable arrays
 
-      ALLOCATE( X0( n ), prob%X_l( n ), prob%X_u( n ),                     &
+      ALLOCATE( X0( n ), prob%X_l( n ), prob%X_u( n ),                         &
                 VNAME( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'X', alloc_stat ; STOP
@@ -159,7 +159,8 @@
 
       CALL CUTEST_csetup_r( cutest_status, input, out, io_buffer,              &
                             n, m, X0, prob%X_l, prob%X_u, prob%Y,              &
-                            prob%C_l, prob%C_u, EQUATN, LINEAR, 0, 0, 0 )
+                            prob%C_l, prob%C_u, EQUATN, LINEAR,                &
+                            0_ip_, 0_ip_, 0_ip_ )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( LINEAR )
 

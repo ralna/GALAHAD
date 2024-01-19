@@ -14514,7 +14514,7 @@ lic:  DO
 !===============================================================================
 !===============================================================================
 
-      INTEGER FUNCTION PRESOLVE_H_row_s( j )
+      INTEGER ( KIND = ip_ ) FUNCTION PRESOLVE_H_row_s( j )
 
 !     Compute the size of row j of H, given H_str( j ).
 

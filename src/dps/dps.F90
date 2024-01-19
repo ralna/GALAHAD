@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 14:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -1178,7 +1178,7 @@
       IF ( inform%status /= 0 ) GO TO 910
 
       array_name = 'dps: data%B'
-      CALL SPACE_resize_array( 2, n, data%B,                                   &
+      CALL SPACE_resize_array( 2_ip_, n, data%B,                               &
           inform%status, inform%alloc_status, array_name = array_name,         &
           deallocate_error_fatal = control%deallocate_error_fatal,             &
           exact_size = control%space_critical,                                 &

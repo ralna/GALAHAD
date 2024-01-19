@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -37,6 +37,7 @@
                         SPACE_resize_integerlu_pointer,                        &
                         SPACE_resize_integer2_pointer,                         &
                         SPACE_resize_logical_pointer,                          &
+                        SPACE_resize_logical64_pointer,                        &
                         SPACE_resize_character_pointer,                        &
                         SPACE_resize_character2_pointer
      END INTERFACE SPACE_resize_pointer
@@ -60,6 +61,7 @@
                         SPACE_resize_integerlu_array,                          &
                         SPACE_resize_integer2_array,                           &
                         SPACE_resize_logical_array,                            &
+                        SPACE_resize_logical64_array,                          &
                         SPACE_resize_character_array,                          &
                         SPACE_resize_character2_array
      END INTERFACE SPACE_resize_array
@@ -87,6 +89,7 @@
                         SPACE_dealloc_integer_pointer,                         &
                         SPACE_dealloc_integer2_pointer,                        &
                         SPACE_dealloc_logical_pointer,                         &
+                        SPACE_dealloc_logical64_pointer,                       &
                         SPACE_dealloc_character_pointer,                       &
                         SPACE_dealloc_character2_pointer
      END INTERFACE SPACE_dealloc_pointer
@@ -99,6 +102,7 @@
                         SPACE_dealloc_integer_array,                           &
                         SPACE_dealloc_integer2_array,                          &
                         SPACE_dealloc_logical_array,                           &
+                        SPACE_dealloc_logical64_array,                         &
                         SPACE_dealloc_character_array,                         &
                         SPACE_dealloc_character2_array
      END INTERFACE SPACE_dealloc_array
@@ -686,7 +690,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     LOGICAL ( KIND = i4_ ), POINTER, DIMENSION( : ) :: point
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
@@ -761,6 +765,98 @@
 !  End of SPACE_resize_logical_pointer
 
      END SUBROUTINE SPACE_resize_logical_pointer
+
+! S P A C E _ R E S I Z E _ L O G I C A L 6 4 _ P O I N T E R  S U B R O U T INE
+
+     SUBROUTINE SPACE_resize_logical64_pointer( len, point, status,            &
+                                       alloc_status, deallocate_error_fatal,   &
+                                       point_name, exact_size, bad_alloc, out )
+
+!  Ensure that the logical pointer array "point" is of length at least len.
+
+!  If exact_size is prsent and true, point is reallocated to be of size len.
+!  Otherwise point is only reallocated if its length is currently smaller
+!  than len
+
+!  Dummy arguments
+
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     LOGICAL ( KIND = i8_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
+     LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
+     CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
+     CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
+
+!  Local variable
+
+     LOGICAL :: reallocate
+
+!  Check to see if a reallocation (or initial allocation) is needed
+
+     status = GALAHAD_ok ; alloc_status = 0 ; reallocate = .TRUE.
+     IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
+     IF ( ASSOCIATED( point ) ) THEN
+       IF ( PRESENT( exact_size ) ) THEN
+         IF ( exact_size ) THEN
+           IF ( SIZE( point ) /= len ) THEN
+             CALL SPACE_dealloc_pointer( point, status, alloc_status,          &
+                                         point_name, bad_alloc, out )
+           ELSE ; reallocate = .FALSE.
+           END IF
+         ELSE
+           IF ( SIZE( point ) < len ) THEN
+             CALL SPACE_dealloc_pointer( point, status, alloc_status,          &
+                                         point_name, bad_alloc, out )
+           ELSE ; reallocate = .FALSE.
+           END IF
+         END IF
+       ELSE
+         IF ( SIZE( point ) < len ) THEN
+           CALL SPACE_dealloc_pointer( point, status, alloc_status,            &
+                                       point_name, bad_alloc, out )
+          ELSE ; reallocate = .FALSE.
+          END IF
+       END IF
+     END IF
+
+!  If a deallocation error occured, return if desired
+
+     IF ( PRESENT( deallocate_error_fatal ) ) THEN
+       IF ( deallocate_error_fatal .AND. alloc_status /= 0 ) THEN
+         status = GALAHAD_error_deallocate ; RETURN
+       END IF
+     ELSE
+       IF ( alloc_status /= 0 ) THEN
+         status = GALAHAD_error_deallocate ; RETURN
+       END IF
+     END IF
+
+!  Reallocate point to be of length len, checking for error returns
+
+     IF ( reallocate ) ALLOCATE( point( len ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
+       status = GALAHAD_error_allocate
+       IF ( PRESENT( bad_alloc ) .AND. PRESENT( point_name ) )                 &
+         bad_alloc = point_name
+       IF ( PRESENT( out ) ) THEN
+         IF ( PRESENT( point_name ) ) THEN
+           IF ( out > 0 ) WRITE( out, 2900 ) TRIM( point_name ), alloc_status
+         ELSE
+           IF ( out > 0 ) WRITE( out, 2910 ) alloc_status
+         END IF
+       END IF
+     END IF
+     RETURN
+
+!  Non-executable statements
+
+2900 FORMAT( ' ** Allocation error for ', A, /, '     status = ', I6 )
+2910 FORMAT( ' ** Allocation error status = ', I6 )
+
+!  End of SPACE_resize_logical64_pointer
+
+     END SUBROUTINE SPACE_resize_logical64_pointer
 
 ! -*- S P A C E _ R E S I Z E _ C H A R A C T E R _ P O I N T E R  SUBROUTINE -
 
@@ -2302,7 +2398,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     LOGICAL ( KIND = i4_ ), ALLOCATABLE, DIMENSION( : ) :: array
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
@@ -2377,6 +2473,97 @@
 !  End of SPACE_resize_logical_array
 
      END SUBROUTINE SPACE_resize_logical_array
+
+! - S P A C E _ R E S I Z E _ L O G I C A L 6 4 _ A R R A Y  S U B R O U T I N E
+
+     SUBROUTINE SPACE_resize_logical64_array( len, array, status, alloc_status,&
+       deallocate_error_fatal, array_name, exact_size, bad_alloc, out )
+
+!  Ensure that the logical allocatable array "array" is of length at least len.
+
+!  If exact_size is prsent and true, array is reallocated to be of size len.
+!  Otherwise array is only reallocated if its length is currently smaller
+!  than len
+
+!  Dummy arguments
+
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     LOGICAL ( KIND = i8_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
+     LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
+     CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
+     CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
+
+!  Local variable
+
+     LOGICAL :: reallocate
+
+!  Check to see if a reallocation (or initial allocation) is needed
+
+     status = GALAHAD_ok ; alloc_status = 0 ; reallocate = .TRUE.
+     IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
+     IF ( ALLOCATED( array ) ) THEN
+       IF ( PRESENT( exact_size ) ) THEN
+         IF ( exact_size ) THEN
+           IF ( SIZE( array ) /= len ) THEN
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
+                                       array_name, bad_alloc, out )
+           ELSE ; reallocate = .FALSE.
+           END IF
+         ELSE
+           IF ( SIZE( array ) < len ) THEN
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
+                                       array_name, bad_alloc, out )
+           ELSE ; reallocate = .FALSE.
+           END IF
+         END IF
+       ELSE
+         IF ( SIZE( array ) < len ) THEN
+           CALL SPACE_dealloc_array( array, status, alloc_status,             &
+                                     array_name, bad_alloc, out )
+          ELSE ; reallocate = .FALSE.
+          END IF
+       END IF
+     END IF
+
+!  If a deallocation error occured, return if desired
+
+     IF ( PRESENT( deallocate_error_fatal ) ) THEN
+       IF ( deallocate_error_fatal .AND. alloc_status /= 0 ) THEN
+         status = GALAHAD_error_deallocate ; RETURN
+       END IF
+     ELSE
+       IF ( alloc_status /= 0 ) THEN
+         status = GALAHAD_error_deallocate ; RETURN
+       END IF
+     END IF
+
+!  Reallocate array to be of length len, checking for error returns
+
+     IF ( reallocate ) ALLOCATE( array( len ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
+       status = GALAHAD_error_allocate
+       IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )                 &
+         bad_alloc = array_name
+       IF ( PRESENT( out ) ) THEN
+         IF ( PRESENT( array_name ) ) THEN
+           IF ( out > 0 ) WRITE( out, 2900 ) TRIM( array_name ), alloc_status
+         ELSE
+           IF ( out > 0 ) WRITE( out, 2910 ) alloc_status
+         END IF
+       END IF
+     END IF
+     RETURN
+
+!  Non-executable statements
+
+2900 FORMAT( ' ** Allocation error for ', A, /, '     status = ', I6 )
+2910 FORMAT( ' ** Allocation error status = ', I6 )
+
+!  End of SPACE_resize_logical64_array
+
+     END SUBROUTINE SPACE_resize_logical64_array
 
 ! - S P A C E _ R E S I Z E _ C H A R A C T E R _ A R R A Y  S U B R O U T I N E
 
@@ -3780,7 +3967,7 @@
 !  Dummy arguments
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     LOGICAL ( KIND = i4_ ), POINTER, DIMENSION( : ) :: point
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -3812,6 +3999,49 @@
 !  End of subroutine SPACE_dealloc_logical_pointer
 
      END SUBROUTINE SPACE_dealloc_logical_pointer
+
+!-  S P A C E _ D E A L L O C _ L O G I C A L 6 4 _ P O I N T E R   SUBROUTINE -
+
+     SUBROUTINE SPACE_dealloc_logical64_pointer( point, status, alloc_status,  &
+                                                 point_name, bad_alloc, out )
+
+!  Deallocate the logical pointer array "point"
+
+!  Dummy arguments
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     LOGICAL ( KIND = i8_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
+     CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
+     CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
+
+     status = GALAHAD_ok ; alloc_status = 0
+     IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
+     IF ( ASSOCIATED( point ) ) THEN
+       DEALLOCATE( point, STAT = alloc_status )
+       IF ( alloc_status /= 0 ) THEN
+         status = GALAHAD_error_deallocate
+         IF ( PRESENT( bad_alloc ) .AND. PRESENT( point_name ) )               &
+           bad_alloc = point_name
+         IF ( PRESENT( out ) ) THEN
+           IF ( PRESENT( point_name ) ) THEN
+             IF ( out > 0 ) WRITE( out, 2900 ) TRIM( point_name ), alloc_status
+           ELSE
+             IF ( out > 0 ) WRITE( out, 2910 ) alloc_status
+           END IF
+         END IF
+       END IF
+     END IF
+     RETURN
+
+!  Non-executable statements
+
+2900 FORMAT( ' ** Deallocation error for ', A, /, '     status = ', I6 )
+2910 FORMAT( ' ** Deallocation error status = ', I6 )
+
+!  End of subroutine SPACE_dealloc_logical64_pointer
+
+     END SUBROUTINE SPACE_dealloc_logical64_pointer
 
 !-  S P A C E _ D E A L L O C _ C H A R A C T E R  _ P O I N T E R  SUBROUTINE -
 
@@ -4167,7 +4397,7 @@
 !  Dummy arguments
 
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     LOGICAL ( KIND = i4_ ), ALLOCATABLE, DIMENSION( : ) :: array
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -4199,6 +4429,49 @@
 !  End of subroutine SPACE_dealloc_logical_array
 
      END SUBROUTINE SPACE_dealloc_logical_array
+
+!-*-  S P A C E _ D E A L L O C _ L O G I C A L 6 4 _ A R R A Y   SUBROUTINE -*-
+
+     SUBROUTINE SPACE_dealloc_logical64_array( array, status, alloc_status,    &
+                                               array_name, bad_alloc, out )
+
+!  Deallocate the logical allocatable array "array"
+
+!  Dummy arguments
+
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     LOGICAL ( KIND = i8_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
+     CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
+     CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
+
+     status = GALAHAD_ok ; alloc_status = 0
+     IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
+     IF ( ALLOCATED( array) ) THEN
+       DEALLOCATE( array, STAT = alloc_status )
+       IF ( alloc_status /= 0 ) THEN
+         status = GALAHAD_error_deallocate
+         IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )               &
+           bad_alloc = array_name
+         IF ( PRESENT( out ) ) THEN
+           IF ( PRESENT( array_name ) ) THEN
+             IF ( out > 0 ) WRITE( out, 2900 ) TRIM( array_name ), alloc_status
+           ELSE
+             IF ( out > 0 ) WRITE( out, 2910 ) alloc_status
+           END IF
+         END IF
+       END IF
+     END IF
+     RETURN
+
+!  Non-executable statements
+
+2900 FORMAT( ' ** Deallocation error for ', A, /, '     status = ', I6 )
+2910 FORMAT( ' ** Deallocation error status = ', I6 )
+
+!  End of subroutine SPACE_dealloc_logical64_array
+
+     END SUBROUTINE SPACE_dealloc_logical64_array
 
 !-  S P A C E _ D E A L L O C _ C H A R A C T E R  _ A R R A Y  SUBROUTINE  -*
 

@@ -1,10 +1,10 @@
 /*
- * assign names for each single precision CUTEst routine using
+ * assign names for each single precision CUTEst routine using 
  * the C pre-processor
  *
  * Nick Gould for CUTEst
  * initial version, 2023-11-11
- * this version 2023-11-12
+ * this version 2024-01-16
  */
 
 #define ELFUN_r ELFUN_s
@@ -39,6 +39,9 @@
 #define CUTEST_cdh_r CUTEST_cdh_s
 #define CUTEST_cdh_threaded_r CUTEST_cdh_threaded_s
 #define CUTEST_cdh_threadsafe_r CUTEST_cdh_threadsafe_s
+#define CUTEST_cdhj_r CUTEST_cdhj_s
+#define CUTEST_cdhj_threaded_r CUTEST_cdhj_threaded_s
+#define CUTEST_cdhj_threadsafe_r CUTEST_cdhj_threadsafe_s
 #define CUTEST_cdimchp_r CUTEST_cdimchp_s
 #define CUTEST_cdimchp_threadsafe_r CUTEST_cdimchp_threadsafe_s
 #define CUTEST_cdimen_r CUTEST_cdimen_s

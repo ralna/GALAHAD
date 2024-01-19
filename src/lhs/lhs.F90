@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -767,7 +767,7 @@
       CHARACTER ( LEN = 5 ) zone
       CHARACTER ( LEN = 8 ) :: today
       CHARACTER ( LEN = 10 ) :: time
-      INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: values
+      INTEGER ( KIND = i4_ ), DIMENSION( 8 ) :: values
 
       CALL DATE_AND_TIME( today, time, zone, values )
 

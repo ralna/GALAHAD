@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 16:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -1749,7 +1749,7 @@
      IF ( inform%status /= 0 ) GO TO 980
 
      array_name = 'trb: data%BND'
-     CALL SPACE_resize_array( nlp%n, 2, data%BND, inform%status,               &
+     CALL SPACE_resize_array( nlp%n, 2_ip_, data%BND, inform%status,           &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1758,7 +1758,7 @@
 
      IF ( data%control%more_toraldo > 0 ) THEN
        array_name = 'trb: data%BND_radius'
-       CALL SPACE_resize_array( nlp%n, 2, data%BND_radius, inform%status,      &
+       CALL SPACE_resize_array( nlp%n, 2_ip_, data%BND_radius, inform%status,  &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -1834,7 +1834,7 @@
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
      ELSE
-       CALL SPACE_resize_array( 1, data%FIX, inform%status,                    &
+       CALL SPACE_resize_array( 1_ip_, data%FIX, inform%status,                &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -2091,7 +2091,7 @@
        data%H_by_cols%ne = data%h_ne
        IF ( SMT_get( nlp%H%type ) /= 'DIAGONAL' ) THEN
          array_name = 'trb: data%MAP'
-         CALL SPACE_resize_array( data%h_ne, 2, data%MAP,                      &
+         CALL SPACE_resize_array( data%h_ne, 2_ip_, data%MAP,                  &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -2403,7 +2403,7 @@
 
        IF ( test_s ) THEN
          array_name = 'tru: data%U_svd'
-         CALL SPACE_resize_array( 1, 1, data%U_svd, inform%status,             &
+         CALL SPACE_resize_array( 1_ip_, 1_ip_, data%U_svd, inform%status,     &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -2411,7 +2411,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'tru: data%VT_svd'
-         CALL SPACE_resize_array( 1, 1, data%VT_svd, inform%status,            &
+         CALL SPACE_resize_array( 1_ip_, 1_ip_, data%VT_svd, inform%status,    &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -2428,7 +2428,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'tru: data%WORK_svd'
-         CALL SPACE_resize_array( 1, data%WORK_svd, inform%status,             &
+         CALL SPACE_resize_array( 1_ip_, data%WORK_svd, inform%status,         &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -2437,7 +2437,7 @@
 
          CALL GESVD( 'N', 'N', nlp%n, data%max_diffs, data%DX_svd,             &
                       nlp%n, data%S_svd, data%U_svd, 1_ip_, data%VT_svd,       &
-                      1_ip_, data%WORK_svd, - 1, info_svd )
+                      1_ip_, data%WORK_svd, - 1_ip_, info_svd )
          data%lwork_svd = INT( data%WORK_svd( 1 ) )
 
          array_name = 'tru: data%WORK_svd'
@@ -3167,7 +3167,7 @@
                  data%V( : nlp%n ) = data%U( : nlp%n )
                  CALL mop_Ax( one, nlp%H,  data%V( : nlp%n ), zero,            &
                               data%U( : nlp%n ), data%out, data%control%error, &
-                              0, symmetric = .TRUE. )
+                              0_ip_, symmetric = .TRUE. )
                  data%V( : nlp%n ) = data%U( : nlp%n )
 
 !  if the Hessian is unavailable, obtain a matrix-free product
@@ -4878,7 +4878,7 @@
            IF ( data%control%hessian_available ) THEN
              CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), one,                  &
                           data%U( : nlp%n ), data%out, data%control%error,     &
-                          0, symmetric = .TRUE. )
+                          0_ip_, symmetric = .TRUE. )
 
 !  if necessary, return to the user to obtain the model Hessian product with s
 
@@ -4915,7 +4915,7 @@
 !          data%U( : nlp%n ) = nlp%G( : nlp%n )
 !          CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), one,                    &
 !                       data%U( : nlp%n ), data%out, data%control%error,       &
-!                       0, symmetric = .TRUE. )
+!                       0_ip_, symmetric = .TRUE. )
          END SELECT
        END IF
 

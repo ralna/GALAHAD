@@ -1468,7 +1468,7 @@
             inform%x_norm = TWO_NORM( X )
             x_norm2( 0 ) = inform%x_norm ** 2
           ELSE
-            CALL mop_AX( one, S, X, zero, data%Y( : n ), 0,                    &
+            CALL mop_AX( one, S, X, zero, data%Y( : n ), 0_ip_,                &
                          symmetric = .TRUE. )
             x_norm2( 0 ) = DOT_PRODUCT( X, data%Y( : n ) )
             IF ( x_norm2( 0 ) < zero ) GO TO 930
@@ -1688,7 +1688,7 @@
 !  compute pi_beta = ||x||^beta and its first derivative when beta = - 1
 
           beta = - one
-          CALL LLST_pi_derivs( 1, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
+          CALL LLST_pi_derivs( 1_ip_, beta, x_norm2( : 1 ), pi_beta( : 1 ) )
 
 !  compute the Newton correction (for beta = - 1)
 
@@ -1706,7 +1706,7 @@
             IF ( unit_s ) THEN
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Z( : n ) )
             ELSE
-              CALL mop_AX( one, S, data%Z( : n ), zero, data%Y( : n ), 0,      &
+              CALL mop_AX( one, S, data%Z( : n ), zero, data%Y( : n ), 0_ip_,  &
                            symmetric = .TRUE. )
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Y( : n ) )
             END IF
@@ -1829,7 +1829,7 @@
 !  compute pi_beta = ||x||^beta and its derivatives when beta = - 0.666
 
               beta = - twothirds
-              CALL LLST_pi_derivs( 2, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
+              CALL LLST_pi_derivs( 2_ip_, beta, x_norm2( : 2 ), pi_beta( : 2 ) )
 
 !  compute the "quadratic Taylor approximaton" step (beta = - 0.666)
 

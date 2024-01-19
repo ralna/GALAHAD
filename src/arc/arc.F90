@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 16:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -1951,7 +1951,7 @@
 
        IF ( test_s ) THEN
          array_name = 'tru: data%U_svd'
-         CALL SPACE_resize_array( 1, 1, data%U_svd, inform%status,             &
+         CALL SPACE_resize_array( 1_ip_, 1_ip_, data%U_svd, inform%status,     &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1959,7 +1959,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'tru: data%VT_svd'
-         CALL SPACE_resize_array( 1, 1, data%VT_svd, inform%status,            &
+         CALL SPACE_resize_array( 1_ip_, 1_ip_, data%VT_svd, inform%status,    &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1976,7 +1976,7 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          array_name = 'tru: data%WORK_svd'
-         CALL SPACE_resize_array( 1, data%WORK_svd, inform%status,             &
+         CALL SPACE_resize_array( 1_ip_, data%WORK_svd, inform%status,         &
                 inform%alloc_status, array_name = array_name,                  &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
                 exact_size = control%space_critical,                           &
@@ -1984,8 +1984,8 @@
          IF ( inform%status /= 0 ) GO TO 980
 
          CALL GESVD( 'N', 'N', nlp%n, data%max_diffs, data%DX_svd,             &
-                      nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,        &
-                      data%WORK_svd, - 1, info_svd )
+                      nlp%n, data%S_svd, data%U_svd, 1_ip_, data%VT_svd,       &
+                      1_ip_, data%WORK_svd, - 1_ip_, info_svd )
          data%lwork_svd = INT( data%WORK_svd( 1 ) )
 
          array_name = 'tru: data%WORK_svd'
@@ -2340,8 +2340,8 @@
                data%DX_past( : nlp%n, : data%total_diffs )
 
              CALL GESVD( 'N', 'N', nlp%n, data%total_diffs, data%DX_svd,       &
-                         nlp%n, data%S_svd, data%U_svd, 1, data%VT_svd, 1,     &
-                         data%WORK_svd, data%lwork_svd, info_svd )
+                         nlp%n, data%S_svd, data%U_svd, 1_ip_, data%VT_svd,    &
+                         1_ip_, data%WORK_svd, data%lwork_svd, info_svd )
 
 !            write(6,"( ' sigma (info=', I0, '):', /, 7( ES9.2 :, ' ' ) )" )   &
 !              info_svd, data%S_svd( : data%total_diffs )
@@ -2813,7 +2813,7 @@
              IF ( data%control%hessian_available ) THEN
                CALL mop_Ax( one, nlp%H,  data%V( : nlp%n ), zero,              &
                             data%U( : nlp%n ), data%out, data%control%error,   &
-                            0, symmetric = .TRUE. )
+                            0_ip_, symmetric = .TRUE. )
 !              DO l = 1, nlp%H%ne
 !                i = nlp%H%row( l ) ; j = nlp%H%col( l ) ; val = nlp%H%val( l )
 !                data%U( i ) = data%U( i ) + val * data%V( j )
@@ -3319,7 +3319,7 @@
            IF ( data%control%hessian_available ) THEN
              CALL mop_Ax( one, nlp%H,  data%S( : nlp%n ), one,                 &
                           data%U( : nlp%n ), data%out, data%control%error,     &
-                          0, symmetric = .TRUE. )
+                          0_ip_, symmetric = .TRUE. )
 
 !  if necessary, return to the user to obtain the model Hessian product with s
 
