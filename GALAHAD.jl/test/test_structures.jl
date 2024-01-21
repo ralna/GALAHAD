@@ -1,3 +1,5 @@
+using GALAHAD
+
 # Structures for arc
 Ref{arc_control_type{Float32}}()
 Ref{arc_control_type{Float64}}()
