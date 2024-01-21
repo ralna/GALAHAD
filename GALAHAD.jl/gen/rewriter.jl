@@ -102,7 +102,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
 
-    isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "")
+    isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\n\n")
     test = read("../test/test_structures.jl", String)
     structures = structures * "\n"
     write("../test/test_structures.jl", test * structures)
