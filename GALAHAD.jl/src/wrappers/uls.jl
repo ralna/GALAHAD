@@ -1,6 +1,6 @@
 export uls_control_type
 
-mutable struct uls_control_type{T}
+struct uls_control_type{T}
   f_indexing::Bool
   error::Cint
   warning::Cint
@@ -27,13 +27,11 @@ mutable struct uls_control_type{T}
   acceptable_residual_relative::T
   acceptable_residual_absolute::T
   prefix::NTuple{31,Cchar}
-
-  uls_control_type{T}() where T = new()
 end
 
 export uls_inform_type
 
-mutable struct uls_inform_type{T}
+struct uls_inform_type{T}
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
@@ -57,24 +55,13 @@ mutable struct uls_inform_type{T}
   ma48_finfo::ma48_finfo{T}
   ma48_sinfo::ma48_sinfo
   lapack_error::Cint
-
-  function uls_inform_type{T}() where T
-    type = new()
-    type.gls_ainfo_type = gls_ainfo_type{T}()
-    type.gls_finfo_type = gls_finfo_type{T}()
-    type.gls_sinfo_type = gls_sinfo_type()
-    type.ma48_ainfo = ma48_ainfo{T}()
-    type.ma48_finfo = ma48_finfo{T}()
-    type.ma48_sinfo = ma48_sinfo()
-    return type
-  end
 end
 
 export uls_initialize_s
 
 function uls_initialize_s(solver, data, control, status)
   @ccall libgalahad_single.uls_initialize_s(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{uls_control_type{Float32}},
+                                            control::Ptr{uls_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -82,28 +69,28 @@ export uls_initialize
 
 function uls_initialize(solver, data, control, status)
   @ccall libgalahad_double.uls_initialize(solver::Ptr{Cchar}, data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{uls_control_type{Float64}},
+                                          control::Ptr{uls_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
 export uls_read_specfile_s
 
 function uls_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.uls_read_specfile_s(control::Ref{uls_control_type{Float32}},
+  @ccall libgalahad_single.uls_read_specfile_s(control::Ptr{uls_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 export uls_read_specfile
 
 function uls_read_specfile(control, specfile)
-  @ccall libgalahad_double.uls_read_specfile(control::Ref{uls_control_type{Float64}},
+  @ccall libgalahad_double.uls_read_specfile(control::Ptr{uls_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
 export uls_factorize_matrix_s
 
 function uls_factorize_matrix_s(control, data, status, m, n, type, ne, val, row, col, ptr)
-  @ccall libgalahad_single.uls_factorize_matrix_s(control::Ref{uls_control_type{Float32}},
+  @ccall libgalahad_single.uls_factorize_matrix_s(control::Ptr{uls_control_type{Float32}},
                                                   data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                   m::Cint, n::Cint, type::Ptr{Cchar},
                                                   ne::Cint, val::Ptr{Float32},
@@ -114,18 +101,17 @@ end
 export uls_factorize_matrix
 
 function uls_factorize_matrix(control, data, status, m, n, type, ne, val, row, col, ptr)
-  @ccall libgalahad_double.uls_factorize_matrix(control::Ref{uls_control_type{Float64}},
+  @ccall libgalahad_double.uls_factorize_matrix(control::Ptr{uls_control_type{Float64}},
                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 m::Cint, n::Cint, type::Ptr{Cchar},
-                                                ne::Cint, val::Ptr{Float64},
-                                                row::Ptr{Cint}, col::Ptr{Cint},
-                                                ptr::Ptr{Cint})::Cvoid
+                                                ne::Cint, val::Ptr{Float64}, row::Ptr{Cint},
+                                                col::Ptr{Cint}, ptr::Ptr{Cint})::Cvoid
 end
 
 export uls_reset_control_s
 
 function uls_reset_control_s(control, data, status)
-  @ccall libgalahad_single.uls_reset_control_s(control::Ref{uls_control_type{Float32}},
+  @ccall libgalahad_single.uls_reset_control_s(control::Ptr{uls_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -133,7 +119,7 @@ end
 export uls_reset_control
 
 function uls_reset_control(control, data, status)
-  @ccall libgalahad_double.uls_reset_control(control::Ref{uls_control_type{Float64}},
+  @ccall libgalahad_double.uls_reset_control(control::Ptr{uls_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
@@ -158,7 +144,7 @@ export uls_information_s
 
 function uls_information_s(data, inform, status)
   @ccall libgalahad_single.uls_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ref{uls_inform_type{Float32}},
+                                             inform::Ptr{uls_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -166,7 +152,7 @@ export uls_information
 
 function uls_information(data, inform, status)
   @ccall libgalahad_double.uls_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ref{uls_inform_type{Float64}},
+                                           inform::Ptr{uls_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
@@ -174,14 +160,14 @@ export uls_terminate_s
 
 function uls_terminate_s(data, control, inform)
   @ccall libgalahad_single.uls_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{uls_control_type{Float32}},
-                                           inform::Ref{uls_inform_type{Float32}})::Cvoid
+                                           control::Ptr{uls_control_type{Float32}},
+                                           inform::Ptr{uls_inform_type{Float32}})::Cvoid
 end
 
 export uls_terminate
 
 function uls_terminate(data, control, inform)
   @ccall libgalahad_double.uls_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ref{uls_control_type{Float64}},
-                                         inform::Ref{uls_inform_type{Float64}})::Cvoid
+                                         control::Ptr{uls_control_type{Float64}},
+                                         inform::Ptr{uls_inform_type{Float64}})::Cvoid
 end

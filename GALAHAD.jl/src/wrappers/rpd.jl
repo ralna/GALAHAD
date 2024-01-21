@@ -1,6 +1,6 @@
 export rpd_control_type
 
-mutable struct rpd_control_type
+struct rpd_control_type
   f_indexing::Bool
   qplib::Cint
   error::Cint
@@ -8,28 +8,24 @@ mutable struct rpd_control_type
   print_level::Cint
   space_critical::Bool
   deallocate_error_fatal::Bool
-
-  rpd_control_type() = new()
 end
 
 export rpd_inform_type
 
-mutable struct rpd_inform_type
+struct rpd_inform_type
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
   io_status::Cint
   line::Cint
   p_type::NTuple{4,Cchar}
-
-  rpd_inform_type() = new()
 end
 
 export rpd_initialize_s
 
 function rpd_initialize_s(data, control, status)
   @ccall libgalahad_single.rpd_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{rpd_control_type},
+                                            control::Ptr{rpd_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -37,16 +33,16 @@ export rpd_initialize
 
 function rpd_initialize(data, control, status)
   @ccall libgalahad_double.rpd_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{rpd_control_type},
+                                          control::Ptr{rpd_control_type},
                                           status::Ptr{Cint})::Cvoid
 end
 
 export rpd_get_stats_s
 
 function rpd_get_stats_s(qplib_file, qplib_file_len, control, data, status, p_type, n, m,
-                       h_ne, a_ne, h_c_ne)
+                         h_ne, a_ne, h_c_ne)
   @ccall libgalahad_single.rpd_get_stats_s(qplib_file::Ptr{Cchar}, qplib_file_len::Cint,
-                                           control::Ref{rpd_control_type},
+                                           control::Ptr{rpd_control_type},
                                            data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                            p_type::Ptr{Cchar}, n::Ptr{Cint}, m::Ptr{Cint},
                                            h_ne::Ptr{Cint}, a_ne::Ptr{Cint},
@@ -56,9 +52,9 @@ end
 export rpd_get_stats
 
 function rpd_get_stats(qplib_file, qplib_file_len, control, data, status, p_type, n, m,
-                     h_ne, a_ne, h_c_ne)
+                       h_ne, a_ne, h_c_ne)
   @ccall libgalahad_double.rpd_get_stats(qplib_file::Ptr{Cchar}, qplib_file_len::Cint,
-                                         control::Ref{rpd_control_type},
+                                         control::Ptr{rpd_control_type},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                          p_type::Ptr{Cchar}, n::Ptr{Cint}, m::Ptr{Cint},
                                          h_ne::Ptr{Cint}, a_ne::Ptr{Cint},
@@ -166,9 +162,8 @@ export rpd_get_h_c
 
 function rpd_get_h_c(data, status, h_c_ne, h_c_ptr, h_c_row, h_c_col, h_c_val)
   @ccall libgalahad_double.rpd_get_h_c(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                       h_c_ne::Cint, h_c_ptr::Ptr{Cint},
-                                       h_c_row::Ptr{Cint}, h_c_col::Ptr{Cint},
-                                       h_c_val::Ptr{Float64})::Cvoid
+                                       h_c_ne::Cint, h_c_ptr::Ptr{Cint}, h_c_row::Ptr{Cint},
+                                       h_c_col::Ptr{Cint}, h_c_val::Ptr{Float64})::Cvoid
 end
 
 export rpd_get_x_type_s
@@ -181,8 +176,8 @@ end
 export rpd_get_x_type
 
 function rpd_get_x_type(data, status, n, x_type)
-  @ccall libgalahad_double.rpd_get_x_type(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                          n::Cint, x_type::Ptr{Cint})::Cvoid
+  @ccall libgalahad_double.rpd_get_x_type(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
+                                          x_type::Ptr{Cint})::Cvoid
 end
 
 export rpd_get_x_s
@@ -231,7 +226,7 @@ export rpd_information_s
 
 function rpd_information_s(data, inform, status)
   @ccall libgalahad_single.rpd_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ref{rpd_inform_type},
+                                             inform::Ptr{rpd_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -239,7 +234,7 @@ export rpd_information
 
 function rpd_information(data, inform, status)
   @ccall libgalahad_double.rpd_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ref{rpd_inform_type},
+                                           inform::Ptr{rpd_inform_type},
                                            status::Ptr{Cint})::Cvoid
 end
 
@@ -247,14 +242,14 @@ export rpd_terminate_s
 
 function rpd_terminate_s(data, control, inform)
   @ccall libgalahad_single.rpd_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{rpd_control_type},
-                                           inform::Ref{rpd_inform_type})::Cvoid
+                                           control::Ptr{rpd_control_type},
+                                           inform::Ptr{rpd_inform_type})::Cvoid
 end
 
 export rpd_terminate
 
 function rpd_terminate(data, control, inform)
   @ccall libgalahad_double.rpd_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ref{rpd_control_type},
-                                         inform::Ref{rpd_inform_type})::Cvoid
+                                         control::Ptr{rpd_control_type},
+                                         inform::Ptr{rpd_inform_type})::Cvoid
 end

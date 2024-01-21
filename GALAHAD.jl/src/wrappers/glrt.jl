@@ -1,6 +1,6 @@
 export glrt_control_type
 
-mutable struct glrt_control_type{T}
+struct glrt_control_type{T}
   f_indexing::Bool
   error::Cint
   out::Cint
@@ -22,13 +22,11 @@ mutable struct glrt_control_type{T}
   print_ritz_values::Bool
   ritz_file_name::NTuple{31,Cchar}
   prefix::NTuple{31,Cchar}
-
-  glrt_control_type{T}() where T = new()
 end
 
 export glrt_inform_type
 
-mutable struct glrt_inform_type{T}
+struct glrt_inform_type{T}
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
@@ -41,15 +39,13 @@ mutable struct glrt_inform_type{T}
   leftmost::T
   negative_curvature::Bool
   hard_case::Bool
-
-  glrt_inform_type{T}() where T = new()
 end
 
 export glrt_initialize_s
 
 function glrt_initialize_s(data, control, status)
   @ccall libgalahad_single.glrt_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ref{glrt_control_type{Float32}},
+                                             control::Ptr{glrt_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -57,28 +53,28 @@ export glrt_initialize
 
 function glrt_initialize(data, control, status)
   @ccall libgalahad_double.glrt_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{glrt_control_type{Float64}},
+                                           control::Ptr{glrt_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
 export glrt_read_specfile_s
 
 function glrt_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.glrt_read_specfile_s(control::Ref{glrt_control_type{Float32}},
+  @ccall libgalahad_single.glrt_read_specfile_s(control::Ptr{glrt_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 export glrt_read_specfile
 
 function glrt_read_specfile(control, specfile)
-  @ccall libgalahad_double.glrt_read_specfile(control::Ref{glrt_control_type{Float64}},
+  @ccall libgalahad_double.glrt_read_specfile(control::Ptr{glrt_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
 export glrt_import_control_s
 
 function glrt_import_control_s(control, data, status)
-  @ccall libgalahad_single.glrt_import_control_s(control::Ref{glrt_control_type{Float32}},
+  @ccall libgalahad_single.glrt_import_control_s(control::Ptr{glrt_control_type{Float32}},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -86,7 +82,7 @@ end
 export glrt_import_control
 
 function glrt_import_control(control, data, status)
-  @ccall libgalahad_double.glrt_import_control(control::Ref{glrt_control_type{Float64}},
+  @ccall libgalahad_double.glrt_import_control(control::Ptr{glrt_control_type{Float64}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -113,7 +109,7 @@ export glrt_information_s
 
 function glrt_information_s(data, inform, status)
   @ccall libgalahad_single.glrt_information_s(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ref{glrt_inform_type{Float32}},
+                                              inform::Ptr{glrt_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
@@ -121,7 +117,7 @@ export glrt_information
 
 function glrt_information(data, inform, status)
   @ccall libgalahad_double.glrt_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ref{glrt_inform_type{Float64}},
+                                            inform::Ptr{glrt_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -129,14 +125,14 @@ export glrt_terminate_s
 
 function glrt_terminate_s(data, control, inform)
   @ccall libgalahad_single.glrt_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{glrt_control_type{Float32}},
-                                            inform::Ref{glrt_inform_type{Float32}})::Cvoid
+                                            control::Ptr{glrt_control_type{Float32}},
+                                            inform::Ptr{glrt_inform_type{Float32}})::Cvoid
 end
 
 export glrt_terminate
 
 function glrt_terminate(data, control, inform)
   @ccall libgalahad_double.glrt_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{glrt_control_type{Float64}},
-                                          inform::Ref{glrt_inform_type{Float64}})::Cvoid
+                                          control::Ptr{glrt_control_type{Float64}},
+                                          inform::Ptr{glrt_inform_type{Float64}})::Cvoid
 end

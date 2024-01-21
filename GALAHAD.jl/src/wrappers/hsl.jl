@@ -1,6 +1,6 @@
 export ma48_control
 
-mutable struct ma48_control{T}
+struct ma48_control{T}
   f_arrays::Cint
   multiplier::T
   u::T
@@ -21,13 +21,11 @@ mutable struct ma48_control{T}
   diagonal_pivoting::Cint
   fill_in::Cint
   switch_mode::Cint
-
-  ma48_control{T}() where T = new()
 end
 
 export ma48_ainfo
 
-mutable struct ma48_ainfo{T}
+struct ma48_ainfo{T}
   ops::T
   flag::Cint
   more::Cint
@@ -45,13 +43,11 @@ mutable struct ma48_ainfo{T}
   lblock::Cint
   sblock::Cint
   tblock::Clong
-
-  ma48_ainfo{T}() where T = new()
 end
 
 export ma48_finfo
 
-mutable struct ma48_finfo{T}
+struct ma48_finfo{T}
   ops::T
   flag::Cint
   more::Cint
@@ -61,23 +57,19 @@ mutable struct ma48_finfo{T}
   drop::Clong
   rank::Cint
   stat::Cint
-
-  ma48_finfo{T}() where T = new()
 end
 
 export ma48_sinfo
 
-mutable struct ma48_sinfo
+struct ma48_sinfo
   flag::Cint
   more::Cint
   stat::Cint
-
-  ma48_sinfo() = new()
 end
 
 export ma57_control
 
-mutable struct ma57_control{T}
+struct ma57_control{T}
   f_arrays::Cint
   multiplier::T
   reduce::T
@@ -106,13 +98,11 @@ mutable struct ma57_control{T}
   rank_deficient::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
-
-  ma57_control{T}() where T = new()
 end
 
 export ma57_ainfo
 
-mutable struct ma57_ainfo{T}
+struct ma57_ainfo{T}
   opsa::T
   opse::T
   flag::Cint
@@ -132,13 +122,11 @@ mutable struct ma57_ainfo{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
-
-  ma57_ainfo{T}() where T = new()
 end
 
 export ma57_finfo
 
-mutable struct ma57_finfo{T}
+struct ma57_finfo{T}
   opsa::T
   opse::T
   opsb::T
@@ -167,13 +155,11 @@ mutable struct ma57_finfo{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
-
-  ma57_finfo{T}() where T = new()
 end
 
 export ma57_sinfo
 
-mutable struct ma57_sinfo{T}
+struct ma57_sinfo{T}
   cond::T
   cond2::T
   berr::T
@@ -183,13 +169,11 @@ mutable struct ma57_sinfo{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
-
-  ma57_sinfo{T}() where T = new()
 end
 
 export ma77_control
 
-mutable struct ma77_control{T}
+struct ma77_control{T}
   f_arrays::Cint
   print_level::Cint
   unit_diagnostics::Cint
@@ -219,13 +203,11 @@ mutable struct ma77_control{T}
   ispare::NTuple{5,Cint}
   lspare::NTuple{5,Clong}
   rspare::NTuple{5,T}
-
-  ma77_control{T}() where T = new()
 end
 
 export ma77_info
 
-mutable struct ma77_info{T}
+struct ma77_info{T}
   detlog::T
   detsign::Cint
   flag::Cint
@@ -260,13 +242,11 @@ mutable struct ma77_info{T}
   ispare::NTuple{5,Cint}
   lspare::NTuple{5,Clong}
   rspare::NTuple{5,T}
-
-  ma77_info{T}() where T = new()
 end
 
 export ma86_control
 
-mutable struct ma86_control{T}
+struct ma86_control{T}
   f_arrays::Cint
   diagnostics_level::Cint
   unit_diagnostics::Cint
@@ -282,13 +262,11 @@ mutable struct ma86_control{T}
   u::T
   umin::T
   scaling::Cint
-
-  ma86_control{T}() where T = new()
 end
 
 export ma86_info
 
-mutable struct ma86_info{T}
+struct ma86_info{T}
   detlog::T
   detsign::Cint
   flag::Cint
@@ -305,13 +283,11 @@ mutable struct ma86_info{T}
   pool_size::Cint
   stat::Cint
   usmall::T
-
-  ma86_info{T}() where T = new()
 end
 
 export ma87_control
 
-mutable struct ma87_control{T}
+struct ma87_control{T}
   f_arrays::Cint
   diagnostics_level::Cint
   unit_diagnostics::Cint
@@ -323,13 +299,11 @@ mutable struct ma87_control{T}
   diag_zero_minus::T
   diag_zero_plus::T
   unused::NTuple{40,Cchar}
-
-  ma87_control{T}() where T = new()
 end
 
 export ma87_info
 
-mutable struct ma87_info{T}
+struct ma87_info{T}
   detlog::T
   flag::Cint
   maxdepth::Cint
@@ -340,13 +314,11 @@ mutable struct ma87_info{T}
   stat::Cint
   num_zero::Cint
   unused::NTuple{40,Cchar}
-
-  ma87_info{T}() where T = new()
 end
 
 export ma97_control
 
-mutable struct ma97_control{T}
+struct ma97_control{T}
   f_arrays::Cint
   action::Cint
   nemin::Cint
@@ -366,13 +338,11 @@ mutable struct ma97_control{T}
   consist_tol::T
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
-
-  ma97_control{T}() where T = new()
 end
 
 export ma97_info
 
-mutable struct ma97_info{T}
+struct ma97_info{T}
   flag::Cint
   flag68::Cint
   flag77::Cint
@@ -392,37 +362,31 @@ mutable struct ma97_info{T}
   stat::Cint
   ispare::NTuple{5,Cint}
   rspare::NTuple{10,T}
-
-  ma97_info{T}() where T = new()
 end
 
 export mc64_control
 
-mutable struct mc64_control
+struct mc64_control
   f_arrays::Cint
   lp::Cint
   wp::Cint
   sp::Cint
   ldiag::Cint
   checking::Cint
-
-  mc64_control() = new()
 end
 
 export mc64_info
 
-mutable struct mc64_info
+struct mc64_info
   flag::Cint
   more::Cint
   strucrank::Cint
   stat::Cint
-
-  mc64_info() = new()
 end
 
 export mc68_control
 
-mutable struct mc68_control
+struct mc68_control
   f_array_in::Cint
   f_array_out::Cint
   min_l_workspace::Cint
@@ -433,13 +397,11 @@ mutable struct mc68_control
   print_level::Cint
   row_full_thresh::Cint
   row_search::Cint
-
-  mc68_control() = new()
 end
 
 export mc68_info
 
-mutable struct mc68_info
+struct mc68_info
   flag::Cint
   iostat::Cint
   stat::Cint
@@ -450,13 +412,11 @@ mutable struct mc68_info
   l_workspace::Clong
   zb01_info::Cint
   n_dense_rows::Cint
-
-  mc68_info() = new()
 end
 
 export mi20_control
 
-mutable struct mi20_control{T}
+struct mi20_control{T}
   f_arrays::Cint
   aggressive::Cint
   c_fail::Cint
@@ -480,13 +440,11 @@ mutable struct mi20_control{T}
   print::Cint
   error::Cint
   one_pass_coarsen::Cint
-
-  mi20_control{T}() where T = new()
 end
 
 export mi20_solve_control
 
-mutable struct mi20_solve_control{T}
+struct mi20_solve_control{T}
   abs_tol::T
   breakdown_tol::T
   gmres_restart::Cint
@@ -495,13 +453,11 @@ mutable struct mi20_solve_control{T}
   max_its::Cint
   preconditioner_side::Cint
   rel_tol::T
-
-  mi20_solve_control{T}() where T = new()
 end
 
 export mi20_info
 
-mutable struct mi20_info{T}
+struct mi20_info{T}
   flag::Cint
   clevels::Cint
   cpoints::Cint
@@ -510,13 +466,11 @@ mutable struct mi20_info{T}
   getrf_info::Cint
   iterations::Cint
   residual::T
-
-  mi20_info{T}() where T = new()
 end
 
 export mi28_control
 
-mutable struct mi28_control{T}
+struct mi28_control{T}
   f_arrays::Cint
   alpha::T
   check::Bool
@@ -532,13 +486,11 @@ mutable struct mi28_control{T}
   tau2::T
   unit_error::Cint
   unit_warning::Cint
-
-  mi28_control{T}() where T = new()
 end
 
 export mi28_info
 
-mutable struct mi28_info{T}
+struct mi28_info{T}
   band_after::Cint
   band_before::Cint
   dup::Cint
@@ -555,6 +507,4 @@ mutable struct mi28_info{T}
   size_r::Clong
   stat::Cint
   alpha::T
-
-  mi28_info{T}() where T = new()
 end

@@ -40,8 +40,8 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
 
   path = options["general"]["output_file_path"]
 
-  format_file(path, YASStyle())
   rewrite!(path, name, optimized)
+  format_file(path, YASStyle(), indent=2)
 
   # Generate a symbolic link for the Julia wrappers
   if (name ≠ "hsl") && (name ≠ "ssids")
@@ -60,6 +60,9 @@ end
 function main(name::String="all"; optimized::Bool=true)
   haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH") || error("The environment variable JULIA_GALAHAD_LIBRARY_PATH is not defined.")
   galahad = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
+
+  # Regenerate test_structures.jl
+  (name == "all") && optimized && isfile("../test/test_structures.jl") && rm("../test/test_structures.jl")
 
   (name == "all" || name == "arc")      && wrapper("arc", ["$galahad/galahad_arc.h"], optimized)
   (name == "all" || name == "bgo")      && wrapper("bgo", ["$galahad/galahad_bgo.h"], optimized)
