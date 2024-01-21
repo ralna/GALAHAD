@@ -2,8 +2,6 @@ libgalahad_src += files('dlp.F90')
 
 galahad_binaries += [['indlp', files('indlp.F90')]]
 
-libgalahad_c_src += files('C/dlp_ciface.F90')
-
 libgalahad_cutest_src += files('usedlp.F90')
 
 galahad_cutest_binaries += [['rundlp_sif', files('rundlp_sif.F90')]]
