@@ -10,7 +10,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
   @info "Wrapping $name"
 
   cd(@__DIR__)
-  include_dir = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
+  include_dir = joinpath(ENV["GALAHAD"], "include")
 
   options = load_options(joinpath(@__DIR__, "galahad.toml"))
   options["general"]["library_name"] = "libgalahad_double"
@@ -58,8 +58,8 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
 end
 
 function main(name::String="all"; optimized::Bool=true)
-  haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH") || error("The environment variable JULIA_GALAHAD_LIBRARY_PATH is not defined.")
-  galahad = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
+  haskey(ENV, "GALAHAD") || error("The environment variable GALAHAD is not defined.")
+  galahad = joinpath(ENV["GALAHAD"], "include")
 
   # Regenerate test_structures.jl
   (name == "all") && optimized && isfile("../test/test_structures.jl") && rm("../test/test_structures.jl")
