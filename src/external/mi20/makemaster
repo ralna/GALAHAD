@@ -54,10 +54,10 @@ ma48:
 
 blas.o: $(BLG)(blas.o)
 
-$(BLG)(blas.o): ../lapack/blas.f
+$(BLG)(blas.o): ../lapack/blas.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas"
-	$(CP) ../lapack/blas.f $(OBJ)/blas.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS77) blas.f90
+	$(CP) ../lapack/blas.f90 $(OBJ)/blas.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) blas.f90
 	cd $(OBJ); $(BARR) blas.o ; $(RM) blas.f90 blas.o
 	$(RANLIB) $(BLG)
 	@printf '[ OK ]\n'
@@ -66,10 +66,10 @@ $(BLG)(blas.o): ../lapack/blas.f
 
 lapack.o: $(BLG)(lapack.o)
 
-$(BLG)(lapack.o): ../lapack/lapack.f
+$(BLG)(lapack.o): ../lapack/lapack.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack"
-	$(CP) ../lapack/lapack.f $(OBJ)/lapack.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS77) lapack.f90
+	$(CP) ../lapack/lapack.f90 $(OBJ)/lapack.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) lapack.f90
 	cd $(OBJ); $(LARR) lapack.o ; $(RM) lapack.f90 lapack.o
 	$(RANLIB) $(LLG)
 	@printf '[ OK ]\n'
