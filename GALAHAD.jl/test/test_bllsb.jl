@@ -95,6 +95,7 @@ function test_bllsb()
                        sigma, x_l, x_u, x, r, z, x_stat, w)
     end
 
+    # sparse by columns
     if d == 3
       st = "SC"
       Ao_ne = 7 # objective Jacobian elements

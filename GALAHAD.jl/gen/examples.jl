@@ -38,17 +38,18 @@ function examples(package::String, example::String)
   text = replace(text, "}   #" => "]  #")
   for var in ("A_val", "A_dense", "b", "c", "c_l", "c_u", "x_l", "x_u", "y_l", "y_u", "z_l", "z_u", "g", "x_0",
               "w", "x", "y", "z", "val", "dense", "rhs", "rhst", "sol", "H_val", "H_dense", "C_val",
-              "C_dense", "H_diag", "C_diag", "H_scid", "C_scid", "Ao_val")
+              "C_dense", "H_diag", "C_diag", "H_scid", "C_scid", "Ao_val", "r")
     text = replace(text, "real_wp_ $var[] = {" => "$var = Float64[")
   end
-  for var in ("f", "power", "weight", "shift", "radius", "half_radius", "x_l", "x_u")
+  for var in ("f", "power", "weight", "shift", "radius", "half_radius", "x_l", "x_u", "sigma")
     text = replace(text, "real_wp_ $var =" => "$var =")
   end
-  for var in ("n", "ne", "m", "A_ne", "A_dense_ne", "H_ne", "H_dense_ne", "C_dense_ne", "C_ne", "dense_ne")
+  for var in ("n", "ne", "m", "A_ne", "A_dense_ne", "H_ne", "H_dense_ne", "C_dense_ne",
+              "C_ne", "dense_ne", "o", "Ao_ne", "Ao_ptr_ne", "A_ptr_ne")
     text = replace(text, "int $var =" => "$var =")
   end
   for var in ("A_row", "A_col", "A_ptr", "row", "col", "ptr", "c_stat", "x_stat", "H_row", "H_col", "H_ptr",
-              "C_row", "C_col", "C_ptr", "Ao_col", "Ao_ptr")
+              "C_row", "C_col", "C_ptr", "Ao_col", "Ao_ptr", "Ao_row")
     text = replace(text, "int $var[] = {" => "$var = Cint[")
   end
   for val in ("1", "3", "5", "6", "7", "n", "n+m")
@@ -62,6 +63,7 @@ function examples(package::String, example::String)
   for val in ("c", "g", "u", "v", "x", "r", "vector", "h_vector", "error")
     text = replace(text, "real_wp_ $val[n]" => "$val = zeros(Float64, n)")
     text = replace(text, "real_wp_ $val[m]" => "$val = zeros(Float64, m)")
+    text = replace(text, "real_wp_ $val[o]" => "$val = zeros(Float64, o)")
   end
   for val in ("x_stat", "c_stat", "index_nz_u", "index_nz_v", "depen")
     text = replace(text, "int $val[n]" => "$val = zeros(Cint, n)")
