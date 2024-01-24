@@ -1,9 +1,8 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 4 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc64_single_ciface
-   use GALAHAD_KINDS_single
+   use GALAHAD_KINDS
    use hsl_mc64_single, only:                &
       f_mc64_control       => mc64_control,  &
       f_mc64_info          => mc64_info,     &

@@ -3,7 +3,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 4 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc64_double_ciface
-   use GALAHAD_KINDS_double
+   use GALAHAD_KINDS
    use hsl_mc64_double, only:                &
       f_mc64_control       => mc64_control,  &
       f_mc64_info          => mc64_info,     &
