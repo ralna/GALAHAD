@@ -144,12 +144,13 @@ blas: $(BLG)(blas_$(PRECIS).o)
 
 blas.o: $(BLG)(blas_$(PRECIS).o)
 
-$(BLG)(blas_$(PRECIS).o): ../lapack/blas.f
+$(BLG)(blas_$(PRECIS).o): ../lapack/blas.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas  "
-	$(CP) ../lapack/blas.f $(OBJ)/blas.f90
-	cd $(OBJ); $(FORTRAN) -o blas_$(PRECIS).o $(FFLAGS77) blas.f90
+	$(CP) ../lapack/blas.f90 $(OBJ)/blas.f90
+	cd $(OBJ); $(FORTRAN) -o blas_$(PRECIS).o $(FFLAGS) blas.f90
 	cd $(OBJ); $(BARR) blas_$(PRECIS).o ; $(RM) blas.f90 blas_$(PRECIS).o
 	$(RANLIB) $(BLG)
+	$(RMARFILES) blas_interface
 	@printf '[ OK ]\n'
 
 #  lapack packages
@@ -160,14 +161,15 @@ lapack: $(LLG)(lapack_$(PRECIS).o)
 
 lapack.o: $(LLG)(lapack_$(PRECIS).o)
 
-$(LLG)(lapack_$(PRECIS).o): ../lapack/lapack.f
+$(LLG)(lapack_$(PRECIS).o): ../lapack/lapack.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack"
-	$(CAT) ../lapack/lapack.f ../lapack/$(IEEECK)ieeeck.f > \
+	$(CAT) ../lapack/lapack.f90 ../lapack/$(IEEECK)ieeeck.f90 > \
           $(OBJ)/lapack.f90
-	cd $(OBJ); $(FORTRAN) -o lapack_$(PRECIS).o $(FFLAGS77) lapack.f90
+	cd $(OBJ); $(FORTRAN) -o lapack_$(PRECIS).o $(FFLAGS) lapack.f90
 	cd $(OBJ); $(LARR) lapack_$(PRECIS).o ; \
           $(RM) lapack.f90 lapack_$(PRECIS).o
 	$(RANLIB) $(LLG)
+	$(RMARFILES) lapack_interface
 	@printf '[ OK ]\n'
 
 #  dummy package
@@ -575,6 +577,23 @@ $(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.F90
 	$(CRMARFILE) sls_ciface_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
+
+#  utility
+
+create: create_blas create_lapack
+
+create_blas:
+	$(FORTRAN) -o rebuild_blas -DBLAS rebuild.F90
+	./rebuild_blas < blas_original.f90 > blas.f90
+	$(MV) galahad_blas.h $(GALAHAD)/include/
+	$(RM) ./build_blas
+
+create_lapack:
+	$(FORTRAN) -o rebuild_lapack rebuild.F90
+	./rebuild_lapack < lapack_original.f90 > lapack.f90
+	$(MV) galahad_lapack.h $(GALAHAD)/include/
+	$(RM) ./build_lapack
+
 
 #  book keeping
 

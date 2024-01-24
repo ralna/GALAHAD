@@ -94,8 +94,8 @@
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
     TYPE, PUBLIC :: SCU_inform_type
-      INTEGER ( KIND = ip_ ) :: alloc_status
-      INTEGER ( KIND = ip_ ), DIMENSION( 3 ) :: inertia
+      INTEGER ( KIND = ip_ ) :: alloc_status = 0
+      INTEGER ( KIND = ip_ ), DIMENSION( 3 ) :: inertia = (/ 0, 0, 0 /)
     END TYPE SCU_inform_type
 
     TYPE, PUBLIC, EXTENDS( SCU_inform_type ) :: SCU_info_type

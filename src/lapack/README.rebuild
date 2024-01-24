@@ -1,0 +1,41 @@
+---------------
+For maintainers
+---------------
+
+How to rebuild BLAS and LAPACK following updates to the refereence versions.
+
+1. Mechanically replace the existing blas_original.f and lapack_interface.f
+   files with updated versions so that the main procedures mentioned
+   in blas_interface.F90 and lapack_interfac.F90, plus all of their
+   dependencies, are present.
+
+2. Apply the NAG polish tools as follows:
+
+nagfor =epolish -align_right_continuation -noblank_line_after_decls -fixed -indent=2 -indent_continuation=2 -keep_blank_lines -kwcase=U -margin=7 -norenumber -width=73 -alter_comments -delete_all_comments -dcfuns -case:comp=lowercase,intr=UPPERCASE,proc=UPPERCASE,constr=UPPERCASE,var=lowercase blas_original.f -o blas_original.f90
+
+nagfor =epolish -align_right_continuation -noblank_line_after_decls -fixed -indent=2 -indent_continuation=2 -keep_blank_lines -kwcase=U -margin=7 -norenumber -width=73 -alter_comments -delete_all_comments -dcfuns -case:comp=lowercase,intr=UPPERCASE,proc=UPPERCASE,constr=UPPERCASE,var=lowercase lapack_original.f -o lapack_original.f90
+
+nagfor =epolish -align_right_continuation -noblank_line_after_decls -fixed -indent=2 -indent_continuation=2 -keep_blank_lines -kwcase=U -margin=7 -norenumber -width=73 -alter_comments -delete_all_comments -dcfuns -case:comp=lowercase,intr=UPPERCASE,proc=UPPERCASE,constr=UPPERCASE,var=lowercase ieeeck_original.f -o ieeeck.f90
+
+nagfor =epolish -align_right_continuation -noblank_line_after_decls -fixed -indent=2 -indent_continuation=2 -keep_blank_lines -kwcase=U -margin=7 -norenumber -width=73 -alter_comments -delete_all_comments -dcfuns -case:comp=lowercase,intr=UPPERCASE,proc=UPPERCASE,constr=UPPERCASE,var=lowercase noieeeck_original.f -o noieeeck.f90
+
+   This will convert the files to modern fortran style, removing comments
+   and highlighting (capitalizing) keywords and procedure names. It also
+   provides sufficient line length wriggle-room to accomodate applied 
+   additional 64bit integer suffices (such as _64) to subroutines/functions
+
+3. Run the previously-generated blas_original.f90 and lapack_original.f90 
+   files through the rebuild script by applying make as follows:
+
+   make -f $GALAHAD/makefiles/pc64.lnx.gfo create
+
+   Replace pc64.lnx.gfo above with whatever is your prefered GALAHAD
+   architecture file (e.g., examine "ls $GALAHAD/makefiles/")
+
+Nick Gould
+for GALAHAD productions
+January 23rd 2024
+
+
+
+     
