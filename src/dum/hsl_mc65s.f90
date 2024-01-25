@@ -2,8 +2,6 @@
 
 #include "galahad_hsl.h"
 
-#include "galahad_hsl.h"
-
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 6 5   M O D U L E  -*-*-*-
 
    module hsl_mc65_single

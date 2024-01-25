@@ -178,7 +178,7 @@ libgalahad_f_double_src = []
 # Fortran files that contain programs
 galahad_binaries = []
 
-# Header files
+# Header files to install
 galahad_headers = []
 
 # Fortran files for the C interfaces
@@ -205,10 +205,10 @@ galahad_tests = []
 galahad_c_examples = []
 galahad_c_tests = []
 
-# Python files for the Python interfaces
+# Python tests for the Python interfaces
 galahad_python_tests = []
 
-# Headers and Fortran modules
+# Folders that contain headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
                       include_directories('src/ampl')] + libhsl_modules
@@ -253,8 +253,6 @@ extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
 
 # 64 bits integer
 if galahad_int64
-#  extra_args_single += '-DGALAHAD_64BIT_INTEGER'
-#  extra_args_double += '-DGALAHAD_64BIT_INTEGER'
   extra_args_single += ['-DGALAHAD_64BIT_INTEGER', '-DSPRAL_64BIT_INTEGER']
   extra_args_double += ['-DGALAHAD_64BIT_INTEGER', '-DSPRAL_64BIT_INTEGER']
 endif

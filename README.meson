@@ -41,7 +41,6 @@ Currently supported options with their default value:
 * `-Dlibhsl_path=[]`: additional directories to search for the HSL library;
 * `-Dlibcutest_path=[]`: additional directories to search for the CUTEST library;
 * `-Dlibwsmp_path=[]`: additional directories to search for the WSMP library;
-* `-Dlibumfpack_path=[]`: additional directories to search for the UMFPACK library;
 * `-Dlibpardiso_path=[]`: additional directories to search for the PARDISO library;
 * `-Dlibspmf_path=[]`: additional directories to search for the SPMF library;
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
@@ -191,3 +190,31 @@ add a line `'galahad_abcd.h'` so that this new header can be installed.
 
 When we do a new release of GALAHAD, we should update the `version`
 (line 4) of the main `meson.build`.
+
+## Variables defined in meson.build files
+
+- `libgalahad_single_deps`: dependencies for single precision;
+- `libgalahad_double_deps`: dependencies for double precision;
+- `libgalahad_deps`: dependencies for both precision;
+- `libgalahad_single_src`: Fortran files *.F90 or *.f90 for single precision;
+- `libgalahad_double_src`: Fortran files *.F90 or *.f90 for double precision;
+- `libgalahad_src`: Fortran files *.F90 or *.f90 for both precision;
+- `libgalahad_f_single_src`: Fortran files *.f for single precision;
+- `libgalahad_f_double_src`: Fortran files *.f for double precision;
+- `libgalahad_f_src`: Fortran files *.f for both precision;
+- `galahad_binaries`: Fortran files that contain programs;
+- `galahad_headers`: Header files to install;
+- `libgalahad_c_single_src`: Fortran files for the C interfaces in single precision;
+- `libgalahad_c_double_src`: Fortran files for the C interfaces in double precision;
+- `libgalahad_c_src`: Fortran files for the C interfaces in both precision;
+- `libgalahad_python_src`: C files for the Python interfaces;
+- `libgalahad_cutest_src`: Fortran files related to the CUTEst interfaces;
+- `galahad_cutest_binaries`: Fortran files that contain CUTEst programs;
+- `libgalahad_cpp_src`: C++ files required by GALAHAD;
+- `libgalahad_cc_src`: C files required by GALAHAD;
+- `galahad_examples`: Fortran examples;
+- `galahad_tests`: Fortran tests;
+- `galahad_c_examples`: C examples for the C interfaces;
+- `galahad_c_tests`: C tests for the C interfaces;
+- `galahad_python_tests`: Python tests for the Python interfaces;
+- `libgalahad_include`: Folders that contain headers and Fortran modules.
