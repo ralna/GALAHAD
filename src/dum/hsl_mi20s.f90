@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-25 AT 09:30 GMT.
+
+#include "galahad_hsl.h"
 
 #include "galahad_hsl.h"
 
