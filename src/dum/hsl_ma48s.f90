@@ -230,7 +230,7 @@ contains
   subroutine ma48_special_rows_and_cols_single(factors,rank,rows,cols,         &
                                                control,info)
       type(ma48_factors), intent(in) :: factors
-      integer:: rank,info
+      integer(ip_) :: rank,info
       integer(ip_), dimension(factors%m) :: rows
       integer(ip_), dimension(factors%n) :: cols
       type(ma48_control), intent(in) :: control
