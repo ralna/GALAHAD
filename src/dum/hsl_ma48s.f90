@@ -77,15 +77,15 @@ module hsl_ma48_single
       integer(ip_) :: mp     ! Unit for monitor output
       integer(ip_) :: ldiag  ! Controls level of diagnostic output
       integer(ip_) :: btf    ! Minimum block size for BTF ... >=N to avoid
-      logical :: struct ! Control to abort if structurally singular
+      logical(lp_) :: struct ! Control to abort if structurally singular
       integer(ip_) :: maxit ! Maximum number of iterations
       integer(ip_) :: factor_blocking ! Level 3 blocking in factorize
       integer(ip_) :: solve_blas ! Switch for using Level 1 or 2 BLAS in solve.
       integer(ip_) :: pivoting  ! Controls pivoting:
 !                 Number of columns searched.  Zero for Markowitz
-      logical :: diagonal_pivoting  ! Set to 0 for diagonal pivoting
+      logical(lp_) :: diagonal_pivoting  ! Set to 0 for diagonal pivoting
       integer(ip_) :: fill_in ! Initially fill_in * ne space for factors
-      logical :: switch_mode ! Whether to switch to slow when fast mode
+      logical(lp_) :: switch_mode ! Whether to switch to slow when fast mode
 !               given unsuitable pivot sequence.
    end type ma48_control
 
@@ -204,7 +204,7 @@ contains
       real(sp_), optional :: error
       integer icntl(20),info(20),job,m,n,stat
       real(sp_) cntl(10),err(3)
-      logical trans48
+      logical(lp_) trans48
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
            "( ' We regret that the solution options that you have ', /,        &

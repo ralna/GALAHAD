@@ -31,8 +31,8 @@
     type (zd11_type), intent (in) :: MATRIX1
     type (zd11_type), intent (inout) :: MATRIX2
     integer (kind = ip_), intent (out) :: info
-    logical, intent (in), optional :: merge
-    logical, intent (in), optional :: pattern
+    logical(lp_), intent (in), optional :: merge
+    logical(lp_), intent (in), optional :: pattern
     integer (kind = ip_), optional, intent (out) :: stat
     info = GALAHAD_unavailable_option
     end subroutine MC65_matrix_transpose

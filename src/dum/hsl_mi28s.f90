@@ -45,12 +45,12 @@
 
   type mi28_control
     real(sp_) :: alpha = zero
-    logical :: check = .true.
+    logical(lp_) :: check = .true.
     integer(ip_) :: iorder = 6
     integer(ip_) :: iscale = 1
     real(sp_) :: lowalpha = alpham
     integer(ip_) :: maxshift = 3
-    logical :: rrt = .false.
+    logical(lp_) :: rrt = .false.
     real(sp_) :: shift_factor = sfact
     real(sp_) :: shift_factor2 = sfact2
     real(sp_) :: small = 10.0_sp_**(-20)
@@ -115,7 +115,7 @@
   end subroutine mi28_precondition_single
 
   subroutine mi28_solve_single(trans, n, keep, z, y, info)
-    logical, intent(in) :: trans
+    logical(lp_), intent(in) :: trans
     integer(ip_),  intent(in) :: n
     type(mi28_keep), intent(inout) :: keep
     real(sp_), intent(in) :: z(n)

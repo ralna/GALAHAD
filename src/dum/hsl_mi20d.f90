@@ -37,9 +37,9 @@
        integer(ip_) :: print_level = 1
        integer(ip_) :: print = 6
        integer(ip_) :: error = 6
-       logical :: one_pass_coarsen = .false.
+       logical(lp_) :: one_pass_coarsen = .false.
 !      real(kind=dp_) ::  tol = -one
-!      logical ::  tol_relative = .true.
+!      logical(lp_) ::  tol_relative = .true.
      end type mi20_control
 
      type mi20_info
@@ -57,20 +57,20 @@
      end type mi20_info
 
      type mi20_keep
-       logical :: new_preconditioner = .true.
+       logical(lp_) :: new_preconditioner = .true.
        integer(ip_) :: clevels = 0
        real(kind=dp_), dimension(:,:), allocatable :: lapack_factors
        integer(ip_),  dimension(:), allocatable :: lapack_pivots
        integer(ip_) :: st_method
-       logical :: lapack_data = .false.
+       logical(lp_) :: lapack_data = .false.
        integer(ip_) :: ma48_data = 0
        type(ma48_factors) :: ma48_factors
        type(ma48_control) :: ma48_cntrl
        type(zd11_type) :: ma48_matrix
-       logical :: ma48_matrix_exists = .false.
+       logical(lp_) :: ma48_matrix_exists = .false.
        integer(ip_) :: dsolve_level = -1
        integer(ip_) :: max_its = 0
-       logical :: zd11_internal_conversion = .false.
+       logical(lp_) :: zd11_internal_conversion = .false.
        type( zd11_type ) :: A
      end type mi20_keep
 

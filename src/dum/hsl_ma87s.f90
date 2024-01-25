@@ -235,7 +235,7 @@ module hsl_MA87_single
          ! holds block cols of L
       type(lmap_type), dimension(:), allocatable :: lmap
          ! holds mapping from matrix values into lfact
-      logical, dimension(:), allocatable :: zero_flag
+      logical(lp_), dimension(:), allocatable :: zero_flag
          ! true if variable i was in range [diag_zero, 0.0] upon pivoting
    end type ma87_keep
 
@@ -265,7 +265,7 @@ module hsl_MA87_single
    type taskstack
       integer(ip_) :: max_pool_size = 0 ! max. number of tasks that are in
          ! the task pool at any one time during the factorization.
-      logical :: abort = .false.   ! true if we have aborted
+      logical(lp_) :: abort = .false.   ! true if we have aborted
       integer(ip_) :: active ! Number of active threads
          ! (number of tasks in execution)
       type(dagtask), dimension(:,:), allocatable :: ctasks ! local task stacks.

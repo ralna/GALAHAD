@@ -88,7 +88,7 @@ module hsl_MA77_single
 
   type MA77_control
 
-    logical :: action = .true.
+    logical(lp_) :: action = .true.
     integer(ip_) :: bits = 32
     integer(ip_) :: buffer_lpage(2) = 2**12
     integer(ip_) :: buffer_npage(2) = 1600
@@ -158,7 +158,7 @@ module hsl_MA77_single
 
   type MA77_keep
     integer(long_) :: dfree
-    logical :: element_input
+    logical(lp_) :: element_input
     integer(long_) :: file_size
     integer(ip_) :: flag = 0
     integer(long_) :: ifree
@@ -191,7 +191,7 @@ module hsl_MA77_single
     integer(ip_) :: nsup
     integer(ip_) :: ntwo
     integer(ip_) :: null
-    logical :: pos_def
+    logical(lp_) :: pos_def
     integer(long_)  :: posfac
     integer(long_)  :: posint
     integer(long_)  :: rfree
@@ -286,7 +286,7 @@ contains
 
   subroutine MA77_factor_single(pos_def,keep,control,info,scale)
     USE GALAHAD_SYMBOLS
-    logical :: pos_def
+    logical(lp_) :: pos_def
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
@@ -298,7 +298,7 @@ contains
      lx,x,scale)
     USE GALAHAD_SYMBOLS
     integer(ip_), parameter :: nb_default = 150
-    logical, intent (in) :: pos_def
+    logical(lp_), intent (in) :: pos_def
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
@@ -340,7 +340,7 @@ contains
                                          keep, control, info, scale )
    USE GALAHAD_SYMBOLS
     integer(ip_), intent (in) :: nrhs
-    logical, intent(out) :: flag_out(nrhs)
+    logical(lp_), intent(out) :: flag_out(nrhs)
     integer(ip_), intent (in) :: lx
     real (sp_), intent (inout) :: x(lx,2*nrhs)
     type (MA77_keep), intent (inout) :: keep
@@ -351,7 +351,7 @@ contains
   end subroutine MA77_solve_fredholm_single
 
   subroutine MA77_lmultiply_single(trans,k,lx,x,ly,y,keep,control,info,scale)
-    logical, intent (in) :: trans
+    logical(lp_), intent (in) :: trans
     integer(ip_), intent (in) :: k
     integer(ip_), intent (in) :: lx, ly
     real (sp_), intent (inout) :: x(lx,k) ! On entry, x must

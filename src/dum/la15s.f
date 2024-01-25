@@ -24,7 +24,7 @@
       USE GALAHAD_KINDS_single
       REAL :: g
       INTEGER ( KIND = ip_ ) :: ia, n
-      LOGICAL ( KIND = ip_ ) :: trans
+      LOGICAL ( KIND = lp_ ) :: trans
       REAL :: A( ia ), B( n ), W( n )
       INTEGER ( KIND = ip_ ) :: IND( ia, 2 ),IP( n, 2 ), IW( n, 4 )
       INTEGER ( KIND = ip_ ) :: ICNTL( 3 )

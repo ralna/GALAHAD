@@ -749,7 +749,7 @@
        INTEGER ( KIND = ip_ ) :: mc61_liw, mc77_liw, mc77_ldw, sytr_lwork
        CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
        LOGICAL :: explicit_scaling, reordered
-       LOGICAL ( KIND = ip_ ) :: must_be_definite
+       LOGICAL ( KIND = lp_ ) :: must_be_definite
        INTEGER ( KIND = ip_ ) :: set_res = - 1
        INTEGER ( KIND = ip_ ) :: set_res2 = - 1
        LOGICAL :: got_maps_scale = .FALSE.
@@ -799,7 +799,7 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
        REAL ( KIND = rp_ ), DIMENSION( 0 : 0 ) :: DIAG
 !      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: LFLAG
-       LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LFLAG
+       LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: LFLAG
 
        TYPE ( ZD11_type ) :: matrix, matrix_scale
 
@@ -9283,7 +9283,7 @@
 
      INTEGER ( KIND = ip_ ) :: i
 !    LOGICAL, DIMENSION( 1 ) :: flag_out
-     LOGICAL ( KIND = ip_ ), DIMENSION( 1 ) :: flag_out
+     LOGICAL ( KIND = lp_ ), DIMENSION( 1 ) :: flag_out
      REAL :: time, time_now
      REAL ( KIND = rp_ ) :: clock, clock_now
 

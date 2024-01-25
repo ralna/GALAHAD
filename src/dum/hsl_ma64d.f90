@@ -8,7 +8,7 @@
         integer(ip_) :: p_thresh=32
         real (dp_) :: small=tiny(0.0_dp_)
         real (dp_) :: static=0.0_dp_
-        logical :: twos=.false.
+        logical(lp_) :: twos=.false.
         real (dp_) :: u=0.1_dp_
         real (dp_) :: umin=1.0_dp_
       end type ma64_control

@@ -686,7 +686,7 @@
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cutest_status
-   LOGICAL ( KIND = ip_ ), INTENT( IN ) :: goth
+   LOGICAL ( KIND = lp_ ), INTENT( IN ) :: goth
    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, VECTOR
    REAL ( KIND = rp_ ), INTENT( IN ) :: y0
    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y

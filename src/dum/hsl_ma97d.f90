@@ -80,7 +80,7 @@ module hsl_MA97_double
   end interface ma97_get_nz__
 
   type MA97_control ! The scalar control of this type controls the action
-    logical :: action = .true. ! pos_def = .false. only.
+    logical(lp_) :: action = .true. ! pos_def = .false. only.
     real(dp_) :: consist_tol = epsilon(one)
     integer(long_) :: factor_min = 20000000
     integer(ip_) :: nemin = nemin_default
@@ -89,9 +89,9 @@ module hsl_MA97_double
     integer(ip_) :: print_level = 0 ! Controls diagnostic printing
     integer(ip_) :: scaling = 0 ! controls use of scaling.
     real(dp_) :: small = tiny(one) ! Minimum pivot size
-    logical :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
+    logical(lp_) :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
     integer(long_) :: solve_min = 100000 ! Minimum value of info%num_factor
-    logical :: solve_mf = .false. ! Do we use s/n (false) or m/f (true) solve?
+    logical(lp_) :: solve_mf = .false. ! Do we use s/n (false) or m/f (true) solve?
     real(dp_) :: u = 0.01 ! Initial relative pivot threshold
     integer(ip_) :: unit_diagnostics = 6 ! unit for diagnostic printing.
     integer(ip_) :: unit_error = 6 ! unit number for error messages
@@ -133,7 +133,7 @@ contains
 
   subroutine MA97_analyse_double(check, n, ptr, row, akeep,                    &
                                  control, info, order)
-   logical, intent(in) :: check
+   logical(lp_), intent(in) :: check
    integer(ip_),  intent(in) :: n
    integer(ip_),  intent(in) :: row(:), ptr(:)
    type (MA97_akeep), intent (out) :: akeep
@@ -156,7 +156,7 @@ contains
 
   subroutine analyse_double(check, n, ptr, row, akeep,                         &
                                  control, info, order, val)
-   logical, intent(in) :: check
+   logical(lp_), intent(in) :: check
    integer(ip_),  intent(in) :: n
    integer(ip_),  intent(in) :: row(:), ptr(:)
    type (MA97_akeep), intent (out) :: akeep
@@ -337,7 +337,7 @@ contains
   subroutine MA97_solve_fredholm_double( nrhs, flag_out, x, ldx,               &
                                          akeep, fkeep, control, info )
    integer(ip_),  intent(in) :: nrhs
-   logical, intent(out) :: flag_out(nrhs)
+   logical(lp_), intent(out) :: flag_out(nrhs)
    integer(ip_),  intent(in) :: ldx
    real(dp_), dimension(ldx,2*nrhs), intent(inout) :: x
    type(ma97_akeep), intent(in) :: akeep
@@ -359,7 +359,7 @@ contains
 
   subroutine ma97_lmultiply_one_double(trans, x1, y1, akeep, fkeep,            &
                                        control, info)
-     logical, intent(in) :: trans
+     logical(lp_), intent(in) :: trans
      real(dp_), dimension(:), intent(in) :: x1
      real(dp_), dimension(:), intent(out) :: y1
      type(ma97_akeep), intent(in) :: akeep
@@ -381,7 +381,7 @@ contains
 
   subroutine ma97_lmultiply_mult_double(trans, k, x, ldx, y, ldy,              &
                                         akeep, fkeep, control, info)
-     logical, intent(in) :: trans
+     logical(lp_), intent(in) :: trans
      integer(ip_),  intent(in) :: k
      integer(ip_),  intent(in) :: ldx
      real(dp_), dimension(ldx,k), intent(in) :: x
@@ -476,7 +476,7 @@ contains
    integer(ip_),  intent(in) :: bindex(:)
    real(dp_), intent(in) :: b(:)
    integer(ip_),  intent(in) :: order(:)
-   logical, intent(inout), dimension(:) :: lflag
+   logical(lp_), intent(inout), dimension(:) :: lflag
    integer(ip_),  intent(out) :: nxi
    integer(ip_),  intent(out) :: xindex(:)
    real(dp_), intent(inout) :: x(:)

@@ -38,14 +38,16 @@ MODULE GALAHAD_KINDS
   INTEGER, PARAMETER :: dpc_ = C_DOUBLE
   INTEGER, PARAMETER :: longc_ = C_INT64_T
 
-!  integer kinds
+!  integer and logical kinds (replace the latter in fortran 2023)
 
 #ifdef GALAHAD_64BIT_INTEGER
   INTEGER, PARAMETER :: ip_ = INT64
   INTEGER, PARAMETER :: ipc_ = C_INT64_T
+  INTEGER, PARAMETER :: lp_ = INT64
 #else
   INTEGER, PARAMETER :: ip_ = INT32
   INTEGER, PARAMETER :: ipc_ = C_INT32_T
+  INTEGER, PARAMETER :: lp_ = INT32
 #endif
 
 END MODULE GALAHAD_KINDS

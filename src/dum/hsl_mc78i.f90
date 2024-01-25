@@ -18,17 +18,17 @@ module hsl_mc78_integer
 
       integer(ip_) :: unit_error = 6
       integer(ip_) :: unit_warning = 6
-      logical :: ssa_abort = .false. ! If .true., then return with an error if
-         ! an assembled matrix is detected as symbolically singular (we do
+      logical(lp_) :: ssa_abort = .false. ! If .true., then return with an error
+         ! if an assembled matrix is detected as symbolically singular (we do
          ! not garuntee to detect _all_ symbolically singular matrices).
          ! If .false., then a warning is raised instead.
-      logical :: svar = .false. ! If .true. then supervariables are used in
-         ! the assembled case, otherwise they are not. Supervaraibles are
+      logical(lp_) :: svar = .false. ! If .true. then supervariables are used
+         ! in the assembled case, otherwise they are not. Supervaraibles are
          ! always used in the elemental case.
-      logical :: sort = .false. ! If .true. then entries within each supernode's
-         ! row lists are sorted. Otherwise they might not be.
-      logical :: lopt = .false. ! If .true. then variable ordering is optimized
-         ! for cache locality. Otherwise it is not.
+      logical(lp_) :: sort = .false. ! If .true. then entries within each
+         ! supernode's row lists are sorted. Otherwise they might not be.
+      logical(lp_) :: lopt = .false. ! If .true. then variable ordering is
+         ! optimized for cache locality. Otherwise it is not.
    end type mc78_control
 
    integer(ip_), parameter :: MC78_ERROR_ALLOC = -1

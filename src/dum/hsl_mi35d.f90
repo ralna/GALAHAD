@@ -37,7 +37,7 @@
       integer(ip_) :: limit_C = -1
       real(dp_) :: lowalpha = alpham
       integer(ip_) :: maxshift = 3
-      logical :: rrt = .false.
+      logical(lp_) :: rrt = .false.
       real(dp_) :: shift_factor = sfact
       real(dp_) :: shift_factor2 = sfact2
       real(dp_) :: small = 10.0_dp_**(-20)
@@ -189,7 +189,7 @@
 !****************************************************************************
 
     subroutine mi35_solve( trans, n, keep, z, y, info )
-    logical, intent(in) :: trans
+    logical(lp_), intent(in) :: trans
     integer(ip_),  intent(in) :: n
     type(mi35_keep), intent(inout) :: keep
     real(dp_), intent(in) :: z(n)

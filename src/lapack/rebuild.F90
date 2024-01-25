@@ -6,19 +6,21 @@
 !  integer and real types, and changing procedure names
 
    PROGRAM BUILD
+     IMPLICIT NONE
      INTEGER, PARAMETER :: input = 5      ! for original file
      INTEGER, PARAMETER :: out = 6        ! for preprocessed file 
      INTEGER, PARAMETER :: hout = 25      ! for generated preprocessor header
      INTEGER, PARAMETER :: scratch = 26   ! for intermediate workings
      INTEGER, PARAMETER :: max_line = 400 ! maximum line length
-     CHARACTER ( len = 80 ) :: in_line
-     CHARACTER ( len = max_line ) :: line
+     CHARACTER ( len = 80 ) :: new_line
+     CHARACTER ( len = max_line ) :: in_line, line
      CHARACTER ( len = 8 ) :: date
      CHARACTER ( len = 10 ) :: time
      CHARACTER ( len = 6 ) :: sub( 1000 )
      CHARACTER ( len = 6 ) :: fun( 1000 )
      CHARACTER ( len = 4 ) :: suff64( 4 ) = (/ '64  ', '__64', '    ', '_64 ' /)
-     INTEGER :: i, ib, j, k, l, lend, nsub, nfun, lost, nz, nz2
+     INTEGER :: i, ib, j, k, l, l_end, l_new, l_next, line_max
+     INTEGER :: nsub, nfun, lost, nz, nz2
      LOGICAL :: proc, proc_end, external_line
 
 #ifdef BLAS
@@ -39,15 +41,15 @@
 
 !  read the input file
 
-     j = 0
      DO
-       j = j + 1
+
 !  read the next line, exiting the loop once the end of file is reached 
 !  or a read error occurs
 
-       READ( input, "( A80 )", end = 100, err = 100 ) in_line
-       IF ( in_line( 1 : 1 ) == '*' ) CYCLE
-       l_end = LEN_TRIM( in_line )
+       new_line = REPEAT( ' ', 80 )
+       READ( input, "( A80 )", end = 100, err = 100 ) new_line
+       IF ( new_line( 1 : 1 ) == '*' ) CYCLE
+       l_end = LEN_TRIM( new_line )
 
 !  hunt for and record procedure key words
 
@@ -56,44 +58,44 @@
 !  key word is subroutine
 
          IF ( l + 15 <= l_end ) THEN
-           IF ( in_line( l : l + 15 ) == '      SUBROUTINE' ) THEN
+           IF ( new_line( l : l + 15 ) == '      SUBROUTINE' ) THEN
              DO i = l + 16, l_end
-               IF ( in_line( i + 1 : i + 1 ) == '(' ) EXIT
+               IF ( new_line( i + 1 : i + 1 ) == '(' ) EXIT
              END DO
              nsub = nsub + 1
              sub( nsub ) = '      '
-             sub( nsub ) = in_line( l + 17 : i )
+             sub( nsub ) = new_line( l + 17 : i )
            END IF
          END IF
 
 !  key word is recursive subroutine
 
          IF ( l + 19 <= l_end ) THEN
-           IF ( in_line( l : l + 19 ) == 'RECURSIVE SUBROUTINE' ) THEN
+           IF ( new_line( l : l + 19 ) == 'RECURSIVE SUBROUTINE' ) THEN
              DO i = l + 20, l_end
-               IF ( in_line( i + 1 : i + 1 ) == '(' ) EXIT
+               IF ( new_line( i + 1 : i + 1 ) == '(' ) EXIT
              END DO
              nsub = nsub + 1
              sub( nsub ) = '      '
-             sub( nsub ) = in_line( l + 21 : i )
+             sub( nsub ) = new_line( l + 21 : i )
            END IF
          END IF
 
 !  key word is function
 
          IF ( l + 9 <= l_end ) THEN
-           IF ( in_line( l : l + 9 ) == 'L FUNCTION' .OR.                     &
-                in_line( l : l + 9 ) == 'N FUNCTION' ) THEN
+           IF ( new_line( l : l + 9 ) == 'L FUNCTION' .OR.                     &
+                new_line( l : l + 9 ) == 'N FUNCTION' ) THEN
              DO i = l + 10, l_end
-               IF ( in_line( i + 1 : i + 1 ) == '(' ) EXIT
+               IF ( new_line( i + 1 : i + 1 ) == '(' ) EXIT
              END DO
 
 !  record procedure name
 
-!            IF ( in_line( l + 11 : i ) /= 'IEECHK' ) THEN
+!            IF ( new_line( l + 11 : i ) /= 'IEECHK' ) THEN
              nfun = nfun + 1
              fun( nfun ) = '      '
-             fun( nfun ) = in_line( l + 11 : i )
+             fun( nfun ) = new_line( l + 11 : i )
 !            END IF
            END IF
          END IF
@@ -164,17 +166,47 @@
 
 !  read the input file
 
-     j = 0 ; proc = .FALSE. ; proc_end = .FALSE. ; external_line = .FALSE.
+     l_new = 0 ; proc = .FALSE. ; proc_end = .FALSE. ; external_line = .FALSE.
+     in_line = REPEAT( ' ', max_line )
      DO
-       j = j + 1
 
 !  read the next line, exiting the loop once the end of file is reached 
 !  or a read error occurs
 
-       READ( input, "( A80 )", end = 200, err = 200 ) in_line
-       IF ( in_line( 1 : 1 ) == '*' ) CYCLE
+       new_line = REPEAT( ' ', 80 ) 
+       READ( input, "( A80 )", end = 200, err = 200 ) new_line
+       IF ( new_line( 1 : 1 ) == '*' ) CYCLE
+       l_end = LEN_TRIM( new_line )
+
+!  amalgamate continuation lines
+
+       IF ( new_line( l_end : l_end ) == '&' ) THEN
+         new_line( l_end : l_end ) = ' '
+         IF ( l_new == 0 ) THEN
+           l_end = LEN_TRIM( new_line ) + 1
+           in_line = REPEAT( ' ', max_line ) 
+           in_line( 1 : l_end ) = new_line( 1 : l_end )
+         ELSE
+           new_line = ADJUSTL( new_line )
+           l_end = LEN_TRIM( new_line ) + 1
+           in_line( l_new + 1 : l_new + l_end ) = new_line( 1 : l_end )
+         END IF
+         l_new = l_new + l_end
+         CYCLE
+       ELSE
+         IF ( l_new == 0 ) THEN
+           in_line = REPEAT( ' ', max_line ) 
+           in_line( 1 : l_end ) = new_line( 1 : l_end )
+         ELSE
+           new_line = ADJUSTL( new_line )
+           l_end = LEN_TRIM( new_line )
+           in_line( l_new + 1 : l_new + l_end ) = new_line( 1 : l_end )
+         END IF
+         l_end = l_new + l_end ; l_new = 0
+       END IF
+!      write(6,*) ' ... ', in_line( 1 : l_end )
+
        nz = - 1
-       l_end = LEN_TRIM( in_line )
 
 !  transform the line to accommodate multi-precision symbols, and
 !  to replace archaic fortran 77 functions
@@ -444,8 +476,6 @@
          END IF
        END DO
 
-!      write(6,*) line( 1 : l_end )
-
 !  hunt for key words
 
        DO l = 1, l_end
@@ -537,8 +567,15 @@
 !            IF ( line( k : k ) == ' ' .OR.                                    &
              IF ( ( line( k : k ) == ' ' .AND. line( k-1 : k-1 ) /= "'" ) .OR. &
                   line( k : k ) == ',' ) THEN
-               WRITE( out, "( A, A, ' &' )" )                                  &
-                 REPEAT( ' ', nz ), TRIM( line( 1 : k ) )
+               IF ( line( k : k ) == ',' ) THEN
+                 WRITE( out, "( A, A, A, '&' )" )                              &
+                   REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                   &
+                   REPEAT( ' ', 79 - nz - k )
+               ELSE
+                 WRITE( out, "( A, A, A, ' &' )" )                             &
+                   REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                   &
+                   REPEAT( ' ', 79 - nz - k )
+               END IF
                nz = MIN( nz + 2, nz2 ) 
                EXIT
              END IF

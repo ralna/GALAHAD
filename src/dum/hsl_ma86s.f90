@@ -114,7 +114,7 @@ module hsl_MA86_single
       integer(ip_) :: sa              ! posn of the first entry of the
          ! block blk within the array that holds the block column of L
          ! that blk belongs to.
-      logical :: touched ! is this the first time block is touched
+      logical(lp_) :: touched ! is this the first time block is touched
       integer(ip_) :: sa_new          ! posn of the first entry of the
          ! block blk within the array that holds the block column of L
          ! that blk belongs to, after delays have been allowed for.
@@ -172,7 +172,7 @@ module hsl_MA86_single
    end type thread_info
 
    type lfactor
-      logical :: use_new ! set to .true. for the current
+      logical(lp_) :: use_new ! set to .true. for the current
         ! block col if lcol_new being used rather than lcol
       integer(ip_) :: blkn_new ! number of columns in lcol_new
       integer(long_) :: dblk      ! identifier of diagonal block in block col.
@@ -203,7 +203,7 @@ module hsl_MA86_single
    end type slv_count_type
 
    type MA86_control
-      logical :: action          = .true. ! Do we keep
+      logical(lp_) :: action          = .true. ! Do we keep
          ! going even if matrix is singular (abort if .false.)
       integer(ip_) :: diagnostics_level = 0      ! Controls diagnostic printing.
          ! Possible values are:
@@ -304,7 +304,7 @@ module hsl_MA86_single
    type taskstack
       integer(ip_) :: max_pool_size = 0 ! max. number of tasks that are in
          ! the task pool at any one time during the factorization.
-      logical :: abort = .false.   ! true if we have aborted
+      logical(lp_) :: abort = .false.   ! true if we have aborted
       integer(ip_) :: active ! Number of active threads
          ! (number of tasks in execution)
       type(dagtask), dimension(:,:), allocatable :: ctasks ! local task stacks.

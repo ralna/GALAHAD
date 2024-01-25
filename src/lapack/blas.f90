@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-23 AT 16:37 GMT
+! THIS VERSION: GALAHAD 4.3 - 2024-01-25 AT 15:32 GMT
 
 #include "galahad_blas.h"
 
@@ -27,9 +27,8 @@
             END IF
             mp1 = m + 1
             DO i = mp1, n, 6
-              dtemp = dtemp + DABS(dx(i)) + DABS(dx(i+1)) +                &
-                DABS(dx(i+2)) + DABS(dx(i+3)) + DABS(dx(i+4)) +            &
-                DABS(dx(i+5))
+              dtemp = dtemp + DABS(dx(i)) + DABS(dx(i+1)) + DABS(dx(i+2)) +    &
+                DABS(dx(i+3)) + DABS(dx(i+4)) + DABS(dx(i+5))
             END DO
           ELSE
             nincx = n*incx
@@ -51,7 +50,7 @@
           IF (n<=0) RETURN
           IF (da==0.0_r8_) RETURN
           IF (incx==1 .AND. incy==1) THEN
-            m = MOD(n, 4)
+            m = MOD(n, 4_ip_)
             IF (m/=0) THEN
               DO i = 1, m
                 dy(i) = dy(i) + da*dx(i)
@@ -149,7 +148,7 @@
             END IF
             mp1 = m + 1
             DO i = mp1, n, 5
-              dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) +              &
+              dtemp = dtemp + dx(i)*dy(i) + dx(i+1)*dy(i+1) +                  &
                 dx(i+2)*dy(i+2) + dx(i+3)*dy(i+3) + dx(i+4)*dy(i+4)
             END DO
           ELSE
@@ -167,7 +166,7 @@
           RETURN
         END FUNCTION
 
-        SUBROUTINE DGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb,   &
+        SUBROUTINE DGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb,       &
           beta, c, ldc)
           USE GALAHAD_KINDS
           REAL(r8_) :: alpha, beta
@@ -196,11 +195,11 @@
             nrowb = n
           END IF
           info = 0
-          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa,                      &
-            'C')) .AND. (.NOT. LSAME(transa,'T'))) THEN
+          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa, 'C')) .AND. (.NOT.       &
+            LSAME(transa,'T'))) THEN
             info = 1
-          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb,                 &
-              'C')) .AND. (.NOT. LSAME(transb,'T'))) THEN
+          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb, 'C')) .AND.         &
+            (.NOT. LSAME(transb,'T'))) THEN
             info = 2
           ELSE IF (m<0) THEN
             info = 3
@@ -219,7 +218,7 @@
             CALL XERBLA('DGEMM ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. ( &
+          IF ((m==0) .OR. (n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (     &
             beta==one))) RETURN
           IF (alpha==zero) THEN
             IF (beta==zero) THEN
@@ -309,8 +308,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y,     &
-          incy)
+        SUBROUTINE DGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
           USE GALAHAD_KINDS
           REAL(r8_) :: alpha, beta
           INTEGER(ip_) :: incx, incy, lda, m, n
@@ -325,7 +323,7 @@
           EXTERNAL :: XERBLA
           INTRINSIC :: MAX
           info = 0
-          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') .AND.    &
+          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') .AND.        &
             .NOT. LSAME(trans,'C')) THEN
             info = 1
           ELSE IF (m<0) THEN
@@ -343,8 +341,8 @@
             CALL XERBLA('DGEMV ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta==         &
-            one))) RETURN
+          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta== one)))      &
+            RETURN
           IF (LSAME(trans,'N')) THEN
             lenx = n
             leny = m
@@ -633,7 +631,7 @@
           INTRINSIC :: MOD
           IF (n<=0) RETURN
           IF (incx==1 .AND. incy==1) THEN
-            m = MOD(n, 3)
+            m = MOD(n, 3_ip_)
             IF (m/=0) THEN
               DO i = 1, m
                 dtemp = dx(i)
@@ -670,7 +668,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DSYMM(side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, &
+        SUBROUTINE DSYMM(side, uplo, m, n, alpha, a, lda, b, ldb, beta, c,     &
           ldc)
           USE GALAHAD_KINDS
           REAL(r8_) :: alpha, beta
@@ -712,8 +710,8 @@
             CALL XERBLA('DSYMM ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta==         &
-            one))) RETURN
+          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta== one)))      &
+            RETURN
           IF (alpha==zero) THEN
             IF (beta==zero) THEN
               DO j = 1, n
@@ -749,7 +747,7 @@
               END DO
             ELSE
               DO j = 1, n
-                DO i = m, 1, -1
+                DO i = m, 1_ip_, -1_ip_
                   temp1 = alpha*b(i, j)
                   temp2 = zero
                   DO k = i + 1, m
@@ -1126,8 +1124,8 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DSYR2K(uplo, trans, n, k, alpha, a, lda, b, ldb, beta,  &
-          c, ldc)
+        SUBROUTINE DSYR2K(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c,   &
+          ldc)
           USE GALAHAD_KINDS
           REAL(r8_) :: alpha, beta
           INTEGER(ip_) :: k, lda, ldb, ldc, n
@@ -1151,8 +1149,8 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans,      &
-              'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans, 'T'))    &
+            .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
             info = 3
@@ -1169,8 +1167,8 @@
             CALL XERBLA('DSYR2K', info)
             RETURN
           END IF
-          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta==       &
-            one))) RETURN
+          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta== one)))    &
+            RETURN
           IF (alpha==zero) THEN
             IF (upper) THEN
               IF (beta==zero) THEN
@@ -1309,8 +1307,8 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans,      &
-              'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans, 'T'))    &
+            .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
             info = 3
@@ -1325,8 +1323,8 @@
             CALL XERBLA('DSYRK ', info)
             RETURN
           END IF
-          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta==       &
-            one))) RETURN
+          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta== one)))    &
+            RETURN
           IF (alpha==zero) THEN
             IF (upper) THEN
               IF (beta==zero) THEN
@@ -1452,8 +1450,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -1481,12 +1479,12 @@
             IF (LSAME(uplo,'U')) THEN
               kplus1 = k + 1
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     l = kplus1 - j
                     IF (nounit) x(j) = x(j)/a(kplus1, j)
                     temp = x(j)
-                    DO i = j - 1, MAX(1, j-k), -1
+                    DO i = j - 1, MAX(1, j-k), -1_ip_
                       x(i) = x(i) - temp*a(l+i, j)
                     END DO
                   END IF
@@ -1494,14 +1492,14 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   kx = kx - incx
                   IF (x(jx)/=zero) THEN
                     ix = kx
                     l = kplus1 - j
                     IF (nounit) x(jx) = x(jx)/a(kplus1, j)
                     temp = x(jx)
-                    DO i = j - 1, MAX(1, j-k), -1
+                    DO i = j - 1, MAX(1, j-k), -1_ip_
                       x(ix) = x(ix) - temp*a(l+i, j)
                       ix = ix - incx
                     END DO
@@ -1570,10 +1568,10 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   l = 1 - j
-                  DO i = MIN(n, j+k), j + 1, -1
+                  DO i = MIN(n, j+k), j + 1, -1_ip_
                     temp = temp - a(l+i, j)*x(i)
                   END DO
                   IF (nounit) temp = temp/a(1, j)
@@ -1582,11 +1580,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = kx
                   l = 1 - j
-                  DO i = MIN(n, j+k), j + 1, -1
+                  DO i = MIN(n, j+k), j + 1, -1_ip_
                     temp = temp - a(l+i, j)*x(ix)
                     ix = ix - incx
                   END DO
@@ -1617,8 +1615,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -1673,11 +1671,11 @@
             ELSE
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     temp = x(j)
                     k = kk
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(i) = x(i) + temp*ap(k)
                       k = k - 1
                     END DO
@@ -1688,11 +1686,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     temp = x(jx)
                     ix = kx
-                    DO k = kk, kk - (n-(j+1)), -1
+                    DO k = kk, kk - (n-(j+1)), -1_ip_
                       x(ix) = x(ix) + temp*ap(k)
                       ix = ix - incx
                     END DO
@@ -1707,11 +1705,11 @@
             IF (LSAME(uplo,'U')) THEN
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   IF (nounit) temp = temp*ap(kk)
                   k = kk - 1
-                  DO i = j - 1, 1, -1
+                  DO i = j - 1, 1_ip_, -1_ip_
                     temp = temp + ap(k)*x(i)
                     k = k - 1
                   END DO
@@ -1720,11 +1718,11 @@
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = jx
                   IF (nounit) temp = temp*ap(kk)
-                  DO k = kk - 1, kk - j + 1, -1
+                  DO k = kk - 1, kk - j + 1, -1_ip_
                     ix = ix - incx
                     temp = temp + ap(k)*x(ix)
                   END DO
@@ -1783,8 +1781,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -1808,12 +1806,12 @@
             IF (LSAME(uplo,'U')) THEN
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     IF (nounit) x(j) = x(j)/ap(kk)
                     temp = x(j)
                     k = kk - 1
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       x(i) = x(i) - temp*ap(k)
                       k = k - 1
                     END DO
@@ -1822,12 +1820,12 @@
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     IF (nounit) x(jx) = x(jx)/ap(kk)
                     temp = x(jx)
                     ix = jx
-                    DO k = kk - 1, kk - j + 1, -1
+                    DO k = kk - 1, kk - j + 1, -1_ip_
                       ix = ix - incx
                       x(ix) = x(ix) - temp*ap(k)
                     END DO
@@ -1901,10 +1899,10 @@
             ELSE
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   k = kk
-                  DO i = n, j + 1, -1
+                  DO i = n, j + 1, -1_ip_
                     temp = temp - ap(k)*x(i)
                     k = k - 1
                   END DO
@@ -1915,10 +1913,10 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = kx
-                  DO k = kk, kk - (n-(j+1)), -1
+                  DO k = kk, kk - (n-(j+1)), -1_ip_
                     temp = temp - ap(k)*x(ix)
                     ix = ix - incx
                   END DO
@@ -1933,7 +1931,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DTRMM(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+        SUBROUTINE DTRMM(side, uplo, transa, diag, m, n, alpha, a, lda, b,     &
           ldb)
           USE GALAHAD_KINDS
           REAL(r8_) :: alpha
@@ -1962,11 +1960,11 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,    &
-              'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,        &
+            'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,        &
-              'N'))) THEN
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, 'N')))     &
+            THEN
             info = 4
           ELSE IF (m<0) THEN
             info = 5
@@ -2007,7 +2005,7 @@
                 END DO
               ELSE
                 DO j = 1, n
-                  DO k = m, 1, -1
+                  DO k = m, 1_ip_, -1_ip_
                     IF (b(k,j)/=zero) THEN
                       temp = alpha*b(k, j)
                       b(k, j) = temp
@@ -2022,7 +2020,7 @@
             ELSE
               IF (upper) THEN
                 DO j = 1, n
-                  DO i = m, 1, -1
+                  DO i = m, 1_ip_, -1_ip_
                     temp = b(i, j)
                     IF (nounit) temp = temp*a(i, i)
                     DO k = 1, i - 1
@@ -2047,7 +2045,7 @@
           ELSE
             IF (LSAME(transa,'N')) THEN
               IF (upper) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = alpha
                   IF (nounit) temp = temp*a(j, j)
                   DO i = 1, m
@@ -2099,7 +2097,7 @@
                   END IF
                 END DO
               ELSE
-                DO k = n, 1, -1
+                DO k = n, 1_ip_, -1_ip_
                   DO j = k + 1, n
                     IF (a(j,k)/=zero) THEN
                       temp = alpha*a(j, k)
@@ -2139,8 +2137,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -2191,10 +2189,10 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     temp = x(j)
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(i) = x(i) + temp*a(i, j)
                     END DO
                     IF (nounit) x(j) = x(j)*a(j, j)
@@ -2203,11 +2201,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     temp = x(jx)
                     ix = kx
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(ix) = x(ix) + temp*a(i, j)
                       ix = ix - incx
                     END DO
@@ -2220,21 +2218,21 @@
           ELSE
             IF (LSAME(uplo,'U')) THEN
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   IF (nounit) temp = temp*a(j, j)
-                  DO i = j - 1, 1, -1
+                  DO i = j - 1, 1_ip_, -1_ip_
                     temp = temp + a(i, j)*x(i)
                   END DO
                   x(j) = temp
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = jx
                   IF (nounit) temp = temp*a(j, j)
-                  DO i = j - 1, 1, -1
+                  DO i = j - 1, 1_ip_, -1_ip_
                     ix = ix - incx
                     temp = temp + a(i, j)*x(ix)
                   END DO
@@ -2271,7 +2269,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+        SUBROUTINE DTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b,     &
           ldb)
           USE GALAHAD_KINDS
           REAL(r8_) :: alpha
@@ -2300,11 +2298,11 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,    &
-              'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,        &
+            'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,        &
-              'N'))) THEN
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, 'N')))     &
+            THEN
             info = 4
           ELSE IF (m<0) THEN
             info = 5
@@ -2337,7 +2335,7 @@
                       b(i, j) = alpha*b(i, j)
                     END DO
                   END IF
-                  DO k = m, 1, -1
+                  DO k = m, 1_ip_, -1_ip_
                     IF (b(k,j)/=zero) THEN
                       IF (nounit) b(k, j) = b(k, j)/a(k, k)
                       DO i = 1, k - 1
@@ -2377,7 +2375,7 @@
                 END DO
               ELSE
                 DO j = 1, n
-                  DO i = m, 1, -1
+                  DO i = m, 1_ip_, -1_ip_
                     temp = alpha*b(i, j)
                     DO k = i + 1, m
                       temp = temp - a(k, i)*b(k, j)
@@ -2412,7 +2410,7 @@
                   END IF
                 END DO
               ELSE
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (alpha/=one) THEN
                     DO i = 1, m
                       b(i, j) = alpha*b(i, j)
@@ -2435,7 +2433,7 @@
               END IF
             ELSE
               IF (upper) THEN
-                DO k = n, 1, -1
+                DO k = n, 1_ip_, -1_ip_
                   IF (nounit) THEN
                     temp = one/a(k, k)
                     DO i = 1, m
@@ -2501,8 +2499,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -2527,23 +2525,23 @@
           IF (LSAME(trans,'N')) THEN
             IF (LSAME(uplo,'U')) THEN
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     IF (nounit) x(j) = x(j)/a(j, j)
                     temp = x(j)
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       x(i) = x(i) - temp*a(i, j)
                     END DO
                   END IF
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     IF (nounit) x(jx) = x(jx)/a(j, j)
                     temp = x(jx)
                     ix = jx
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       ix = ix - incx
                       x(ix) = x(ix) - temp*a(i, j)
                     END DO
@@ -2605,9 +2603,9 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
-                  DO i = n, j + 1, -1
+                  DO i = n, j + 1, -1_ip_
                     temp = temp - a(i, j)*x(i)
                   END DO
                   IF (nounit) temp = temp/a(j, j)
@@ -2616,10 +2614,10 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = kx
-                  DO i = n, j + 1, -1
+                  DO i = n, j + 1, -1_ip_
                     temp = temp - a(i, j)*x(ix)
                     ix = ix - incx
                   END DO
@@ -2755,9 +2753,9 @@
             IF (inta>=97 .AND. inta<=122) inta = inta - 32
             IF (intb>=97 .AND. intb<=122) intb = intb - 32
           ELSE IF (zcode==233 .OR. zcode==169) THEN
-            IF (inta>=129 .AND. inta<=137 .OR. inta>=145 .AND. inta<=153   &
+            IF (inta>=129 .AND. inta<=137 .OR. inta>=145 .AND. inta<=153       &
               .OR. inta>=162 .AND. inta<=169) inta = inta + 64
-            IF (intb>=129 .AND. intb<=137 .OR. intb>=145 .AND. intb<=153   &
+            IF (intb>=129 .AND. intb<=137 .OR. intb>=145 .AND. intb<=153       &
               .OR. intb>=162 .AND. intb<=169) intb = intb + 64
           ELSE IF (zcode==218 .OR. zcode==250) THEN
             IF (inta>=225 .AND. inta<=250) inta = inta - 32
@@ -2789,7 +2787,7 @@
             END IF
             mp1 = m + 1
             DO i = mp1, n, 6
-              stemp = stemp + ABS(sx(i)) + ABS(sx(i+1)) + ABS(sx(i+2)) +   &
+              stemp = stemp + ABS(sx(i)) + ABS(sx(i+1)) + ABS(sx(i+2)) +       &
                 ABS(sx(i+3)) + ABS(sx(i+4)) + ABS(sx(i+5))
             END DO
           ELSE
@@ -2812,7 +2810,7 @@
           IF (n<=0) RETURN
           IF (sa==0.0) RETURN
           IF (incx==1 .AND. incy==1) THEN
-            m = MOD(n, 4)
+            m = MOD(n, 4_ip_)
             IF (m/=0) THEN
               DO i = 1, m
                 sy(i) = sy(i) + sa*sx(i)
@@ -2902,7 +2900,7 @@
             END IF
             mp1 = m + 1
             DO i = mp1, n, 5
-              stemp = stemp + sx(i)*sy(i) + sx(i+1)*sy(i+1) +              &
+              stemp = stemp + sx(i)*sy(i) + sx(i+1)*sy(i+1) +                  &
                 sx(i+2)*sy(i+2) + sx(i+3)*sy(i+3) + sx(i+4)*sy(i+4)
             END DO
           ELSE
@@ -2920,7 +2918,7 @@
           RETURN
         END FUNCTION
 
-        SUBROUTINE SGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb,   &
+        SUBROUTINE SGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb,       &
           beta, c, ldc)
           USE GALAHAD_KINDS
           REAL(r4_) :: alpha, beta
@@ -2949,11 +2947,11 @@
             nrowb = n
           END IF
           info = 0
-          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa,                      &
-            'C')) .AND. (.NOT. LSAME(transa,'T'))) THEN
+          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa, 'C')) .AND. (.NOT.       &
+            LSAME(transa,'T'))) THEN
             info = 1
-          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb,                 &
-              'C')) .AND. (.NOT. LSAME(transb,'T'))) THEN
+          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb, 'C')) .AND.         &
+            (.NOT. LSAME(transb,'T'))) THEN
             info = 2
           ELSE IF (m<0) THEN
             info = 3
@@ -2972,7 +2970,7 @@
             CALL XERBLA('SGEMM ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. ( &
+          IF ((m==0) .OR. (n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (     &
             beta==one))) RETURN
           IF (alpha==zero) THEN
             IF (beta==zero) THEN
@@ -3062,8 +3060,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y,     &
-          incy)
+        SUBROUTINE SGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
           USE GALAHAD_KINDS
           REAL(r4_) :: alpha, beta
           INTEGER(ip_) :: incx, incy, lda, m, n
@@ -3078,7 +3075,7 @@
           EXTERNAL :: XERBLA
           INTRINSIC :: MAX
           info = 0
-          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') .AND.    &
+          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') .AND.        &
             .NOT. LSAME(trans,'C')) THEN
             info = 1
           ELSE IF (m<0) THEN
@@ -3096,8 +3093,8 @@
             CALL XERBLA('SGEMV ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta==         &
-            one))) RETURN
+          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta== one)))      &
+            RETURN
           IF (LSAME(trans,'N')) THEN
             lenx = n
             leny = m
@@ -3386,7 +3383,7 @@
           INTRINSIC :: MOD
           IF (n<=0) RETURN
           IF (incx==1 .AND. incy==1) THEN
-            m = MOD(n, 3)
+            m = MOD(n, 3_ip_)
             IF (m/=0) THEN
               DO i = 1, m
                 stemp = sx(i)
@@ -3423,7 +3420,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SSYMM(side, uplo, m, n, alpha, a, lda, b, ldb, beta, c, &
+        SUBROUTINE SSYMM(side, uplo, m, n, alpha, a, lda, b, ldb, beta, c,     &
           ldc)
           USE GALAHAD_KINDS
           REAL(r4_) :: alpha, beta
@@ -3465,8 +3462,8 @@
             CALL XERBLA('SSYMM ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta==         &
-            one))) RETURN
+          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta== one)))      &
+            RETURN
           IF (alpha==zero) THEN
             IF (beta==zero) THEN
               DO j = 1, n
@@ -3502,7 +3499,7 @@
               END DO
             ELSE
               DO j = 1, n
-                DO i = m, 1, -1
+                DO i = m, 1_ip_, -1_ip_
                   temp1 = alpha*b(i, j)
                   temp2 = zero
                   DO k = i + 1, m
@@ -3879,8 +3876,8 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SSYR2K(uplo, trans, n, k, alpha, a, lda, b, ldb, beta,  &
-          c, ldc)
+        SUBROUTINE SSYR2K(uplo, trans, n, k, alpha, a, lda, b, ldb, beta, c,   &
+          ldc)
           USE GALAHAD_KINDS
           REAL(r4_) :: alpha, beta
           INTEGER(ip_) :: k, lda, ldb, ldc, n
@@ -3904,8 +3901,8 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans,      &
-              'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans, 'T'))    &
+            .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
             info = 3
@@ -3922,8 +3919,8 @@
             CALL XERBLA('SSYR2K', info)
             RETURN
           END IF
-          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta==       &
-            one))) RETURN
+          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta== one)))    &
+            RETURN
           IF (alpha==zero) THEN
             IF (upper) THEN
               IF (beta==zero) THEN
@@ -4062,8 +4059,8 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans,      &
-              'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. LSAME(trans, 'T'))    &
+            .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
             info = 3
@@ -4078,8 +4075,8 @@
             CALL XERBLA('SSYRK ', info)
             RETURN
           END IF
-          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta==       &
-            one))) RETURN
+          IF ((n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (beta== one)))    &
+            RETURN
           IF (alpha==zero) THEN
             IF (upper) THEN
               IF (beta==zero) THEN
@@ -4205,8 +4202,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -4234,12 +4231,12 @@
             IF (LSAME(uplo,'U')) THEN
               kplus1 = k + 1
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     l = kplus1 - j
                     IF (nounit) x(j) = x(j)/a(kplus1, j)
                     temp = x(j)
-                    DO i = j - 1, MAX(1, j-k), -1
+                    DO i = j - 1, MAX(1, j-k), -1_ip_
                       x(i) = x(i) - temp*a(l+i, j)
                     END DO
                   END IF
@@ -4247,14 +4244,14 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   kx = kx - incx
                   IF (x(jx)/=zero) THEN
                     ix = kx
                     l = kplus1 - j
                     IF (nounit) x(jx) = x(jx)/a(kplus1, j)
                     temp = x(jx)
-                    DO i = j - 1, MAX(1, j-k), -1
+                    DO i = j - 1, MAX(1, j-k), -1_ip_
                       x(ix) = x(ix) - temp*a(l+i, j)
                       ix = ix - incx
                     END DO
@@ -4323,10 +4320,10 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   l = 1 - j
-                  DO i = MIN(n, j+k), j + 1, -1
+                  DO i = MIN(n, j+k), j + 1, -1_ip_
                     temp = temp - a(l+i, j)*x(i)
                   END DO
                   IF (nounit) temp = temp/a(1, j)
@@ -4335,11 +4332,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = kx
                   l = 1 - j
-                  DO i = MIN(n, j+k), j + 1, -1
+                  DO i = MIN(n, j+k), j + 1, -1_ip_
                     temp = temp - a(l+i, j)*x(ix)
                     ix = ix - incx
                   END DO
@@ -4370,8 +4367,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -4426,11 +4423,11 @@
             ELSE
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     temp = x(j)
                     k = kk
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(i) = x(i) + temp*ap(k)
                       k = k - 1
                     END DO
@@ -4441,11 +4438,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     temp = x(jx)
                     ix = kx
-                    DO k = kk, kk - (n-(j+1)), -1
+                    DO k = kk, kk - (n-(j+1)), -1_ip_
                       x(ix) = x(ix) + temp*ap(k)
                       ix = ix - incx
                     END DO
@@ -4460,11 +4457,11 @@
             IF (LSAME(uplo,'U')) THEN
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   IF (nounit) temp = temp*ap(kk)
                   k = kk - 1
-                  DO i = j - 1, 1, -1
+                  DO i = j - 1, 1_ip_, -1_ip_
                     temp = temp + ap(k)*x(i)
                     k = k - 1
                   END DO
@@ -4473,11 +4470,11 @@
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = jx
                   IF (nounit) temp = temp*ap(kk)
-                  DO k = kk - 1, kk - j + 1, -1
+                  DO k = kk - 1, kk - j + 1, -1_ip_
                     ix = ix - incx
                     temp = temp + ap(k)*x(ix)
                   END DO
@@ -4536,8 +4533,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -4561,12 +4558,12 @@
             IF (LSAME(uplo,'U')) THEN
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     IF (nounit) x(j) = x(j)/ap(kk)
                     temp = x(j)
                     k = kk - 1
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       x(i) = x(i) - temp*ap(k)
                       k = k - 1
                     END DO
@@ -4575,12 +4572,12 @@
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     IF (nounit) x(jx) = x(jx)/ap(kk)
                     temp = x(jx)
                     ix = jx
-                    DO k = kk - 1, kk - j + 1, -1
+                    DO k = kk - 1, kk - j + 1, -1_ip_
                       ix = ix - incx
                       x(ix) = x(ix) - temp*ap(k)
                     END DO
@@ -4654,10 +4651,10 @@
             ELSE
               kk = (n*(n+1))/2
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   k = kk
-                  DO i = n, j + 1, -1
+                  DO i = n, j + 1, -1_ip_
                     temp = temp - ap(k)*x(i)
                     k = k - 1
                   END DO
@@ -4668,10 +4665,10 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = kx
-                  DO k = kk, kk - (n-(j+1)), -1
+                  DO k = kk, kk - (n-(j+1)), -1_ip_
                     temp = temp - ap(k)*x(ix)
                     ix = ix - incx
                   END DO
@@ -4686,7 +4683,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE STRMM(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+        SUBROUTINE STRMM(side, uplo, transa, diag, m, n, alpha, a, lda, b,     &
           ldb)
           USE GALAHAD_KINDS
           REAL(r4_) :: alpha
@@ -4715,11 +4712,11 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,    &
-              'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,        &
+            'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,        &
-              'N'))) THEN
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, 'N')))     &
+            THEN
             info = 4
           ELSE IF (m<0) THEN
             info = 5
@@ -4760,7 +4757,7 @@
                 END DO
               ELSE
                 DO j = 1, n
-                  DO k = m, 1, -1
+                  DO k = m, 1_ip_, -1_ip_
                     IF (b(k,j)/=zero) THEN
                       temp = alpha*b(k, j)
                       b(k, j) = temp
@@ -4775,7 +4772,7 @@
             ELSE
               IF (upper) THEN
                 DO j = 1, n
-                  DO i = m, 1, -1
+                  DO i = m, 1_ip_, -1_ip_
                     temp = b(i, j)
                     IF (nounit) temp = temp*a(i, i)
                     DO k = 1, i - 1
@@ -4800,7 +4797,7 @@
           ELSE
             IF (LSAME(transa,'N')) THEN
               IF (upper) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = alpha
                   IF (nounit) temp = temp*a(j, j)
                   DO i = 1, m
@@ -4852,7 +4849,7 @@
                   END IF
                 END DO
               ELSE
-                DO k = n, 1, -1
+                DO k = n, 1_ip_, -1_ip_
                   DO j = k + 1, n
                     IF (a(j,k)/=zero) THEN
                       temp = alpha*a(j, k)
@@ -4892,8 +4889,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -4944,10 +4941,10 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     temp = x(j)
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(i) = x(i) + temp*a(i, j)
                     END DO
                     IF (nounit) x(j) = x(j)*a(j, j)
@@ -4956,11 +4953,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     temp = x(jx)
                     ix = kx
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(ix) = x(ix) + temp*a(i, j)
                       ix = ix - incx
                     END DO
@@ -4973,21 +4970,21 @@
           ELSE
             IF (LSAME(uplo,'U')) THEN
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   IF (nounit) temp = temp*a(j, j)
-                  DO i = j - 1, 1, -1
+                  DO i = j - 1, 1_ip_, -1_ip_
                     temp = temp + a(i, j)*x(i)
                   END DO
                   x(j) = temp
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = jx
                   IF (nounit) temp = temp*a(j, j)
-                  DO i = j - 1, 1, -1
+                  DO i = j - 1, 1_ip_, -1_ip_
                     ix = ix - incx
                     temp = temp + a(i, j)*x(ix)
                   END DO
@@ -5024,7 +5021,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE STRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+        SUBROUTINE STRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b,     &
           ldb)
           USE GALAHAD_KINDS
           REAL(r4_) :: alpha
@@ -5053,11 +5050,11 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,    &
-              'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,        &
+            'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,        &
-              'N'))) THEN
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, 'N')))     &
+            THEN
             info = 4
           ELSE IF (m<0) THEN
             info = 5
@@ -5090,7 +5087,7 @@
                       b(i, j) = alpha*b(i, j)
                     END DO
                   END IF
-                  DO k = m, 1, -1
+                  DO k = m, 1_ip_, -1_ip_
                     IF (b(k,j)/=zero) THEN
                       IF (nounit) b(k, j) = b(k, j)/a(k, k)
                       DO i = 1, k - 1
@@ -5130,7 +5127,7 @@
                 END DO
               ELSE
                 DO j = 1, n
-                  DO i = m, 1, -1
+                  DO i = m, 1_ip_, -1_ip_
                     temp = alpha*b(i, j)
                     DO k = i + 1, m
                       temp = temp - a(k, i)*b(k, j)
@@ -5165,7 +5162,7 @@
                   END IF
                 END DO
               ELSE
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (alpha/=one) THEN
                     DO i = 1, m
                       b(i, j) = alpha*b(i, j)
@@ -5188,7 +5185,7 @@
               END IF
             ELSE
               IF (upper) THEN
-                DO k = n, 1, -1
+                DO k = n, 1_ip_, -1_ip_
                   IF (nounit) THEN
                     temp = one/a(k, k)
                     DO i = 1, m
@@ -5254,8 +5251,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -5280,23 +5277,23 @@
           IF (LSAME(trans,'N')) THEN
             IF (LSAME(uplo,'U')) THEN
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     IF (nounit) x(j) = x(j)/a(j, j)
                     temp = x(j)
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       x(i) = x(i) - temp*a(i, j)
                     END DO
                   END IF
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     IF (nounit) x(jx) = x(jx)/a(j, j)
                     temp = x(jx)
                     ix = jx
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       ix = ix - incx
                       x(ix) = x(ix) - temp*a(i, j)
                     END DO
@@ -5358,9 +5355,9 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
-                  DO i = n, j + 1, -1
+                  DO i = n, j + 1, -1_ip_
                     temp = temp - a(i, j)*x(i)
                   END DO
                   IF (nounit) temp = temp/a(j, j)
@@ -5369,10 +5366,10 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = kx
-                  DO i = n, j + 1, -1
+                  DO i = n, j + 1, -1_ip_
                     temp = temp - a(i, j)*x(ix)
                     ix = ix - incx
                   END DO
@@ -5393,8 +5390,8 @@
           INTRINSIC :: LEN_TRIM
           WRITE (*, FMT=9999) srname(1:LEN_TRIM(srname)), info
           STOP
- 9999     FORMAT (' ** On entry to ', A, ' parameter number ', I2,         &
-            ' had ', 'an illegal value')
+ 9999     FORMAT (' ** On entry to ', A, ' parameter number ', I2, ' had ',    &
+   'an illegal value')
         END SUBROUTINE
 
         SUBROUTINE ZCOPY(n, zx, incx, zy, incy)
@@ -5471,7 +5468,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE ZGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb,   &
+        SUBROUTINE ZGEMM(transa, transb, m, n, k, alpha, a, lda, b, ldb,       &
           beta, c, ldc)
           USE GALAHAD_KINDS
           COMPLEX(c8_) :: alpha, beta
@@ -5504,11 +5501,11 @@
             nrowb = n
           END IF
           info = 0
-          IF ((.NOT. nota) .AND. (.NOT. conja) .AND. (.NOT. LSAME(transa,  &
+          IF ((.NOT. nota) .AND. (.NOT. conja) .AND. (.NOT. LSAME(transa,      &
             'T'))) THEN
             info = 1
-          ELSE IF ((.NOT. notb) .AND. (.NOT. conjb) .AND. (.NOT. LSAME(    &
-              transb,'T'))) THEN
+          ELSE IF ((.NOT. notb) .AND. (.NOT. conjb) .AND. (.NOT. LSAME(        &
+            transb,'T'))) THEN
             info = 2
           ELSE IF (m<0) THEN
             info = 3
@@ -5527,7 +5524,7 @@
             CALL XERBLA('ZGEMM ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. ( &
+          IF ((m==0) .OR. (n==0) .OR. (((alpha==zero) .OR. (k==0)) .AND. (     &
             beta==one))) RETURN
           IF (alpha==zero) THEN
             IF (beta==zero) THEN
@@ -5695,8 +5692,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE ZGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y,     &
-          incy)
+        SUBROUTINE ZGEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
           USE GALAHAD_KINDS
           COMPLEX(c8_) :: alpha, beta
           INTEGER(ip_) :: incx, incy, lda, m, n
@@ -5714,7 +5710,7 @@
           EXTERNAL :: XERBLA
           INTRINSIC :: DCONJG, MAX
           info = 0
-          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') .AND.    &
+          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') .AND.        &
             .NOT. LSAME(trans,'C')) THEN
             info = 1
           ELSE IF (m<0) THEN
@@ -5732,8 +5728,8 @@
             CALL XERBLA('ZGEMV ', info)
             RETURN
           END IF
-          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta==         &
-            one))) RETURN
+          IF ((m==0) .OR. (n==0) .OR. ((alpha==zero) .AND. (beta== one)))      &
+            RETURN
           noconj = LSAME(trans, 'T')
           IF (LSAME(trans,'N')) THEN
             lenx = n
@@ -6115,7 +6111,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE ZTRMM(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+        SUBROUTINE ZTRMM(side, uplo, transa, diag, m, n, alpha, a, lda, b,     &
           ldb)
           USE GALAHAD_KINDS
           COMPLEX(c8_) :: alpha
@@ -6147,11 +6143,11 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,    &
-              'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,        &
+            'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,        &
-              'N'))) THEN
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, 'N')))     &
+            THEN
             info = 4
           ELSE IF (m<0) THEN
             info = 5
@@ -6192,7 +6188,7 @@
                 END DO
               ELSE
                 DO j = 1, n
-                  DO k = m, 1, -1
+                  DO k = m, 1_ip_, -1_ip_
                     IF (b(k,j)/=zero) THEN
                       temp = alpha*b(k, j)
                       b(k, j) = temp
@@ -6207,7 +6203,7 @@
             ELSE
               IF (upper) THEN
                 DO j = 1, n
-                  DO i = m, 1, -1
+                  DO i = m, 1_ip_, -1_ip_
                     temp = b(i, j)
                     IF (noconj) THEN
                       IF (nounit) temp = temp*a(i, i)
@@ -6246,7 +6242,7 @@
           ELSE
             IF (LSAME(transa,'N')) THEN
               IF (upper) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = alpha
                   IF (nounit) temp = temp*a(j, j)
                   DO i = 1, m
@@ -6308,7 +6304,7 @@
                   END IF
                 END DO
               ELSE
-                DO k = n, 1, -1
+                DO k = n, 1_ip_, -1_ip_
                   DO j = k + 1, n
                     IF (a(j,k)/=zero) THEN
                       IF (noconj) THEN
@@ -6358,8 +6354,8 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')     &
-              .AND. .NOT. LSAME(trans,'C')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+            .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
           ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) THEN
             info = 3
@@ -6411,10 +6407,10 @@
               END IF
             ELSE
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(j)/=zero) THEN
                     temp = x(j)
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(i) = x(i) + temp*a(i, j)
                     END DO
                     IF (nounit) x(j) = x(j)*a(j, j)
@@ -6423,11 +6419,11 @@
               ELSE
                 kx = kx + (n-1)*incx
                 jx = kx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (x(jx)/=zero) THEN
                     temp = x(jx)
                     ix = kx
-                    DO i = n, j + 1, -1
+                    DO i = n, j + 1, -1_ip_
                       x(ix) = x(ix) + temp*a(i, j)
                       ix = ix - incx
                     END DO
@@ -6440,16 +6436,16 @@
           ELSE
             IF (LSAME(uplo,'U')) THEN
               IF (incx==1) THEN
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(j)
                   IF (noconj) THEN
                     IF (nounit) temp = temp*a(j, j)
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       temp = temp + a(i, j)*x(i)
                     END DO
                   ELSE
                     IF (nounit) temp = temp*DCONJG(a(j,j))
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       temp = temp + DCONJG(a(i,j))*x(i)
                     END DO
                   END IF
@@ -6457,18 +6453,18 @@
                 END DO
               ELSE
                 jx = kx + (n-1)*incx
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   temp = x(jx)
                   ix = jx
                   IF (noconj) THEN
                     IF (nounit) temp = temp*a(j, j)
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       ix = ix - incx
                       temp = temp + a(i, j)*x(ix)
                     END DO
                   ELSE
                     IF (nounit) temp = temp*DCONJG(a(j,j))
-                    DO i = j - 1, 1, -1
+                    DO i = j - 1, 1_ip_, -1_ip_
                       ix = ix - incx
                       temp = temp + DCONJG(a(i,j))*x(ix)
                     END DO
@@ -6521,7 +6517,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE ZTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+        SUBROUTINE ZTRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b,     &
           ldb)
           USE GALAHAD_KINDS
           COMPLEX(c8_) :: alpha
@@ -6553,11 +6549,11 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,    &
-              'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. LSAME(transa,        &
+            'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,        &
-              'N'))) THEN
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, 'N')))     &
+            THEN
             info = 4
           ELSE IF (m<0) THEN
             info = 5
@@ -6590,7 +6586,7 @@
                       b(i, j) = alpha*b(i, j)
                     END DO
                   END IF
-                  DO k = m, 1, -1
+                  DO k = m, 1_ip_, -1_ip_
                     IF (b(k,j)/=zero) THEN
                       IF (nounit) b(k, j) = b(k, j)/a(k, k)
                       DO i = 1, k - 1
@@ -6637,7 +6633,7 @@
                 END DO
               ELSE
                 DO j = 1, n
-                  DO i = m, 1, -1
+                  DO i = m, 1_ip_, -1_ip_
                     temp = alpha*b(i, j)
                     IF (noconj) THEN
                       DO k = i + 1, m
@@ -6679,7 +6675,7 @@
                   END IF
                 END DO
               ELSE
-                DO j = n, 1, -1
+                DO j = n, 1_ip_, -1_ip_
                   IF (alpha/=one) THEN
                     DO i = 1, m
                       b(i, j) = alpha*b(i, j)
@@ -6702,7 +6698,7 @@
               END IF
             ELSE
               IF (upper) THEN
-                DO k = n, 1, -1
+                DO k = n, 1_ip_, -1_ip_
                   IF (nounit) THEN
                     IF (noconj) THEN
                       temp = one/a(k, k)

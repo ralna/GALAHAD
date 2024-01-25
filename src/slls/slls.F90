@@ -393,7 +393,7 @@
        LOGICAL :: direct_subproblem_solve, steepest_descent, w_eq_identity
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE
-       LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
+       LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
        TYPE ( SMT_type ) :: Ao, H_sbls, AT_sbls, C_sbls
