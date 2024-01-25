@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-24 AT 15:55 GMT.
 
+#include "galahad_hsl.h"
+
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 6 5   M O D U L E  -*-*-*-
 
    module hsl_mc65_double
