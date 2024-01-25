@@ -1,15 +1,29 @@
 ! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:00 GMT.
 
 #ifdef SPRAL_SINGLE
+#ifdef SPRAL_64BIT_INTEGER
+#define SPRAL_KINDS_precision SPRAL_KINDS_single_64
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64
+#define SPRAL_SSIDS_types_precision spral_ssids_types_single_64
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_single_64
+#else
 #define SPRAL_KINDS_precision SPRAL_KINDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_single
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
+#endif
+#else
+#ifdef SPRAL_64BIT_INTEGER
+#define SPRAL_KINDS_precision SPRAL_KINDS_double_64
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface_64
+#define SPRAL_SSIDS_types_precision spral_ssids_types_double_64
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_double_64
 #else
 #define SPRAL_KINDS_precision SPRAL_KINDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #define SPRAL_SSIDS_types_precision spral_ssids_types_double
 #define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
+#endif
 #endif
 
 #include "galahad_cfunctions.h"
