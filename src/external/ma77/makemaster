@@ -49,13 +49,11 @@ ma77_ciface_double_64: $(MA77CD64)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

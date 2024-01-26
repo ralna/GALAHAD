@@ -995,7 +995,7 @@
 
 !  Set the stopping tolerance
 
-     stop_tol = ne * point1
+     stop_tol = REAL( ne, KIND = rp_ ) * point1
 
 !  Initialise for accumulation of sums and products
 

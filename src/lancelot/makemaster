@@ -1,22 +1,18 @@
 #  Main body of the LANCELOT B installation makefile under GALAHAD
 
 #  N. Gould and Ph. L. Toint.
-#  This version: 2024-01-09
+#  This version: 2024-01-26
 
 SHELL = /bin/$(BINSHELL)
 
-ifeq "$(PRECIS)" "single"
- ifeq "$(INTEGER)" "64bit"
-   DPREC = -DGALAHAD_SINGLE -DGALAHAD_64BIT_INTEGER
- else
-   DPREC = -DGALAHAD_SINGLE
- endif
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DGALAHAD_SINGLE -DGALAHAD_64BIT_INTEGER
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DGALAHAD_DOUBLE -DGALAHAD_64BIT_INTEGER
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DGALAHAD_SINGLE
 else
- ifeq "$(INTEGER)" "64bit"
-   DPREC = -DGALAHAD_DOUBLE -DGALAHAD_64BIT_INTEGER
- else
-   DPREC = -DGALAHAD_DOUBLE
-  endif
+  DPREC = -DGALAHAD_DOUBLE
 endif
 
 ifeq "$(LINEARSOLVER)" "ma57"
@@ -580,52 +576,40 @@ lancelot_simpledt_64: $(OBJECTSD64) $(OBJD64)/lancelot_simplet_double_64.o
 
 extend:
 	( cd ../extend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            extend_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../extend )
+            extend_silent PRECIS=$(PRECIS) PWD=$(PWD)/../extend )
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basic_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 linearsolver:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            linearsolver_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 sils:
 	( cd ../sils ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sils_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../sils )
+            sils_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sils )
 scu:
 	( cd ../scu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            scu_silent  PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(GALAHAD)/src/scu )
+            scu_silent  PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scu )
 band:
 	( cd ../band ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            band_silent  PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(GALAHAD)/src/band )
+            band_silent  PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/band )
 rand:
 	( cd ../rand ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            rand.o PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-           PWD=$(PWD)/../rand )
+            rand.o PRECIS=$(PRECIS) PWD=$(PWD)/../rand )
 copyright:
 	( cd ../copyright ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../copyright )
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../copyright )
 ma57:
 	( cd ../external/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma57_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../external/ma57 )
+            ma57_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
 ma61:
 	( cd ../external/ma61 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma61_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../external/ma61 )
+            ma61_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma61 )
 ad02:
 	( cd ../external/ad02 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ad02_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../external/ad02 )
+            ad02_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ad02 )
 icfs:
 	( cd ../icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            icfs_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../icfs )
+            icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../icfs )
 
 #  constituent packages
 

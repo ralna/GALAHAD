@@ -36,7 +36,7 @@ wsmp_single: $(WSMPS)
 	$(RANLIB) $(WLGS)
 wsmp_double: $(WSMPD)
 	$(RANLIB) $(WLGD)
-wsmp_single_64: $(WSMPS)
+wsmp_single_64: $(WSMPS64)
 	$(RANLIB) $(WLGS64)
 wsmp_double_64: $(WSMPD64)
 	$(RANLIB) $(WLGD64)
@@ -64,33 +64,27 @@ wsmpst: $(WSMPST)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 symbols:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            symbols_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            dummy_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 blas_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 lapack_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

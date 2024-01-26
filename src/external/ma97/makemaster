@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MA97 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-14
+#  This version: 2024-01-26
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -57,16 +57,13 @@ ma97_ciface_double_64: $(MA97CD64)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 mc64:
 	( cd ../mc64 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            mc64_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../mc64 )
+            mc64_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mc64 )
 
 #  individual compilations
 

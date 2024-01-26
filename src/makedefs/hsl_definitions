@@ -1,26 +1,26 @@
 #  Standard GALAHAD HSL makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-12
+#  This version: 2024-01-26
 
 SHELL = /bin/$(BINSHELL)
 
-ifeq "$(PRECIS)" "single"
- ifeq "$(INTEGER)" "64bit"
-   DPREC = -DGALAHAD_SINGLE -DGALAHAD_64BIT_INTEGER
-   HSL_PRECIS = s
- else
-   DPREC = -DGALAHAD_SINGLE
-   HSL_PRECIS = s
- endif
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DGALAHAD_SINGLE -DGALAHAD_64BIT_INTEGER
+  HSL_PRECIS = s
+  INTEGER = 64bit
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DGALAHAD_DOUBLE -DGALAHAD_64BIT_INTEGER
+  HSL_PRECIS = d
+  INTEGER = 64bit
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DGALAHAD_SINGLE
+  HSL_PRECIS = s
+  INTEGER = 32bit
 else
- ifeq "$(INTEGER)" "64bit"
-   DPREC = -DGALAHAD_DOUBLE -DGALAHAD_64BIT_INTEGER
-   HSL_PRECIS = d
- else
-   DPREC = -DGALAHAD_DOUBLE
-   HSL_PRECIS = d
-  endif
+  DPREC = -DGALAHAD_DOUBLE
+  HSL_PRECIS = d
+  INTEGER = 32bit
 endif
 
 #  compiler flags

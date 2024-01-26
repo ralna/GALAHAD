@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MC64 packages
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-14
+#  This version: 2024-01-26
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -45,15 +45,13 @@ mc64_ciface_double_64: $(MC64CD64)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  hsl packages
 
 zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../zd11 )
+            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
 
 #  individual compilations
 

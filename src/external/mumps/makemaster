@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MUMPS stub
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-01-12
+#  This version: 2024-01-26
 
 #  include standard GALAHAD makefile definitions
 
@@ -63,33 +63,27 @@ mumpsst: $(MUMPSST)
 
 blas:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 lapack:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 symbols:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            symbols_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 dummy:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            dummy_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 blas_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 lapack_interface:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lapack_interface_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  individual compilations
 

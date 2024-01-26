@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-26 AT 10:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -1253,7 +1253,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     LOGICAL ( KIND = lp_ ), POINTER, DIMENSION( : ) :: point
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
@@ -2960,7 +2960,7 @@
 
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: array
      INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name

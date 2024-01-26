@@ -9,7 +9,7 @@
 
       SUBROUTINE LA15A( A, IND, nzero, ia, n, IP, IW, W, g, u,
      &                  ICNTL, CNTL, KEEP )
-      USE GALAHAD_KINDS_single
+      USE GALAHAD_KINDS
       REAL :: g, U
       INTEGER ( KIND = ip_ ) :: ia, n, nzero
       REAL :: A( ia ),W( n )
@@ -21,7 +21,7 @@
 
       SUBROUTINE LA15B( A, IND, ia, n, IP, IW, W, g, B,
      &                  trans, ICNTL, KEEP )
-      USE GALAHAD_KINDS_single
+      USE GALAHAD_KINDS
       REAL :: g
       INTEGER ( KIND = ip_ ) :: ia, n
       LOGICAL ( KIND = lp_ ) :: trans
@@ -33,7 +33,7 @@
 
       SUBROUTINE LA15C( A, IND, ia, n, IP, IW, W, g, u, mm,
      &                  ICNTL, CNTL, KEEP )
-      USE GALAHAD_KINDS_single
+      USE GALAHAD_KINDS
       REAL :: g, u
       INTEGER ( KIND = ip_ ) :: ia, mm, n
       REAL :: A( ia ),W( n )

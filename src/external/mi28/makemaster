@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the MI28 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2024-01-17
+#  This version: 2024-01-26
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -51,20 +51,17 @@ mi28_ciface_double_64: $(MI28CD64)
 
 basics:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            blas.o lapack.o PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            blas.o lapack.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  hsl packages
 
 zd11:
 	( cd ../../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../zd11 )
+            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../zd11 )
 
 metis:
 	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            metis_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../../general )
+            metis_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
 
 #  required blas
 

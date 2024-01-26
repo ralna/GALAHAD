@@ -122,7 +122,7 @@
 
 !    WRITE(6, "( ' s ', 5ES12.4 )" ) S
 !    WRITE(6, "( '    ig     d_f         d_m     GXEQX  radius')" )
-     md = prered / ng
+     md = prered / REAL( ng, KIND = rp_ )
      DO ig = 1, ng
 
 !  First, compute the changes in the i-th model and element

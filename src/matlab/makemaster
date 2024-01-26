@@ -259,25 +259,19 @@ allgo_double: basic_double bgo dgo ugo
 
 smt:
 	( cd ../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../zd11 )
+            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../zd11 )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            smt_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            smt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 basic_single:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basic_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ssids_dum PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            ssids_dum PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 basic_double:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basic_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            $(SSIDS)_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            $(SSIDS)_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
 #  arc
 
@@ -1189,7 +1183,7 @@ $(MLG)(galahad_lsrt_matlab_types.o): galahad_lsrt_matlab_types.F90
 	( cd ../lsrt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      lsrt_silent PRECIS=double PWD=$(PWD)/../lsrt )
 	( cd ../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     mop_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) PWD=$(PWD)/../mop )
+                     mop_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mop )
 	@printf ' %-9s %-15s\t' "Compiling" "galahad_lsrt_matlab_types"
 	$(CP) galahad_lsrt_matlab_types.F90 $(OBJ)/galahad_lsrt_matlab_types.F90
 	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_lsrt_matlab_types.F90
@@ -1208,8 +1202,7 @@ $(MLG)(galahad_lstr_matlab_types.o): galahad_lstr_matlab_types.F90
 	( cd ../lstr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      lstr_silent PRECIS=double PWD=$(PWD)/../lstr )
 	( cd ../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     mop_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-                     PWD=$(PWD)/../mop )
+                     mop_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mop )
 	@printf ' %-9s %-15s\t' "Compiling" "galahad_lstr_matlab_types"
 	$(CP) galahad_lstr_matlab_types.F90 $(OBJ)/galahad_lstr_matlab_types.F90
 	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_lstr_matlab_types.F90
@@ -1228,8 +1221,7 @@ $(MLG)(galahad_l2rt_matlab_types.o): galahad_l2rt_matlab_types.F90
 	( cd ../l2rt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      l2rt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../l2rt )
 	( cd ../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     mop_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-                     PWD=$(PWD)/../mop )
+                     mop_silent PRECIS=$(PRECIS) PWD=$(PWD)/../mop )
 	@printf ' %-9s %-15s\t' "Compiling" "galahad_l2rt_matlab_types"
 	$(CP) galahad_l2rt_matlab_types.F90 $(OBJ)/galahad_l2rt_matlab_types.F90
 	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_l2rt_matlab_types.F90

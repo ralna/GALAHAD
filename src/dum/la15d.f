@@ -9,7 +9,7 @@
 
       SUBROUTINE LA15AD( A, IND, nzero, ia, n, IP, IW, W, g, u,
      &                   ICNTL, CNTL, KEEP )
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
       DOUBLE PRECISION :: g, U
       INTEGER ( KIND = ip_ ) :: ia, n, nzero
       DOUBLE PRECISION :: A( ia ),W( n )
@@ -21,7 +21,7 @@
 
       SUBROUTINE LA15BD( A, IND, ia, n, IP, IW, W, g, B,
      &                   trans, ICNTL, KEEP )
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
       DOUBLE PRECISION :: g
       INTEGER ( KIND = ip_ ) :: ia, n
       LOGICAL ( KIND = lp_ ) :: trans
@@ -33,7 +33,7 @@
 
       SUBROUTINE LA15CD( A, IND, ia, n, IP, IW, W, g, u, mm,
      &                   ICNTL, CNTL, KEEP )
-      USE GALAHAD_KINDS_double
+      USE GALAHAD_KINDS
       DOUBLE PRECISION :: g, u
       INTEGER ( KIND = ip_ ) :: ia, mm, n
       DOUBLE PRECISION :: A( ia ),W( n )

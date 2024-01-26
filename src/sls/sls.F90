@@ -3676,7 +3676,7 @@
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          IF ( mc6168_ordering ) THEN
            data%ma97_control%ordering = 0
-           CALL MA97_analyse( .FALSE._ip_, data%matrix%n,                      &
+           CALL MA97_analyse( .FALSE._lp_, data%matrix%n,                      &
                               data%matrix%PTR, data%matrix%COL,                &
                               data%ma97_akeep,                                 &
                               data%ma97_control, data%ma97_info,               &
@@ -3684,14 +3684,14 @@
          ELSE
            IF ( PRESENT( PERM ) ) THEN
              data%ma97_control%ordering = 0
-             CALL MA97_analyse( .FALSE._ip_, data%matrix%n,                    &
+             CALL MA97_analyse( .FALSE._lp_, data%matrix%n,                    &
                                 data%matrix%PTR, data%matrix%COL,              &
                                 data%ma97_akeep,                               &
                                 data%ma97_control, data%ma97_info,             &
                                 order = data%ORDER )
            ELSE
              data%ma97_control%ordering = - control%ordering
-             CALL MA97_analyse( .FALSE._ip_, data%matrix%n,                    &
+             CALL MA97_analyse( .FALSE._lp_, data%matrix%n,                    &
                                 data%matrix%PTR, data%matrix%COL,              &
                                 data%ma97_akeep,                               &
                                 data%ma97_control, data%ma97_info,             &

@@ -3,22 +3,18 @@
 #  available under a BSD licence as part of GALAHAD
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-12
+#  This version: 2024-01-26
 
 SHELL = /bin/$(BINSHELL)
 
-ifeq "$(PRECIS)" "single"
- ifeq "$(INTEGER)" "64bit"
-   DPREC = -DSPRAL_SINGLE  -DSPRAL_64BIT_INTEGER
- else
-   DPREC = -DSPRAL_SINGLE
- endif
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DSPRAL_SINGLE -DSPRAL_64BIT_INTEGER
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DSPRAL_DOUBLE -DSPRAL_64BIT_INTEGER
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DSPRAL_SINGLE
 else
- ifeq "$(INTEGER)" "64bit"
-   DPREC = -DSPRAL_DOUBLE  -DSPRAL_64BIT_INTEGER
- else
-   DPREC = -DSPRAL_DOUBLE
- endif
+  DPREC = -DSPRAL_DOUBLE
 endif
 
 ifeq "$(HWLOC)" "un"
@@ -521,12 +517,10 @@ ssidsdt_64_cuda_valgrind: $(SSIDSDT64)
 
 extend:
 	( cd ../extend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            extend_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../extend )
+            extend_silent PRECIS=$(PRECIS) PWD=$(PWD)/../extend )
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basic_silent PRECIS=$(PRECIS) INTEGER=$(INTEGER) \
-            PWD=$(PWD)/../general )
+            basic_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
 #  individual compilations
 
