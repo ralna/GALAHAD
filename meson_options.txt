@@ -93,6 +93,11 @@ option('libampl',
        value : 'ampl',
        description : 'AMPL library against which to link')
 
+option('libhwloc',
+       type : 'string',
+       value : 'hwloc',
+       description : 'HWLOC library against which to link')
+
 option('libblas_path',
        type : 'array',
        value : [],
@@ -152,6 +157,16 @@ option('libampl_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the AMPL library library')
+
+option('libhwloc_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directory to search for the HWLOC library')
+
+option('libhwloc_include',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the HWLOC header files')
 
 option('libhsl_modules',
        type : 'array',
