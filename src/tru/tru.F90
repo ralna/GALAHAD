@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-26 AT 19:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -2738,7 +2738,8 @@
 !           ( inform%iter - 1 ) + inform%DPS_inform%factorizations )/inform%iter
 !          inform%factorization_max =                                          &
 !            MAX( inform%factorization_max, inform%DPS_inform%factorizations )
-           inform%factorization_average = data%it_succ / inform%iter
+           inform%factorization_average =                                      &
+              REAL( data%it_succ, KIND = rp_ ) / REAL( inform%iter, KIND = rp_ )
            inform%factorization_max =                                          &
              MAX( inform%factorization_max, facts_this_solve )
            inform%max_entries_factors = MAX( inform%max_entries_factors,       &
@@ -2901,7 +2902,8 @@
 !          inform%factorization_max =                                          &
 !            MAX( inform%factorization_max, inform%TRS_inform%factorizations )
            inform%factorization_average =                                      &
-             inform%TRS_inform%factorizations / inform%iter
+             REAL( inform%TRS_inform%factorizations, KIND = rp_ ) /            &
+             REAL( inform%iter, KIND = rp_ )
            inform%factorization_max =                                          &
              MAX( inform%factorization_max, facts_this_solve )
            inform%max_entries_factors = MAX( inform%max_entries_factors,       &

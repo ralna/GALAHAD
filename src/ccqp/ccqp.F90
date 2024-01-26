@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-26 AT 19:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -4087,7 +4087,7 @@
       CALL CHECKPOINT( inform%iter, time_record - time_start,                  &
          MAX( inform%primal_infeasibility,                                     &
          inform%dual_infeasibility, inform%complementary_slackness ),          &
-         inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+         inform%checkpointsIter, inform%checkpointsTime, 1_ip_, 16_ip_ )
       IF ( inform%primal_infeasibility <= stop_p .AND.                         &
            inform%dual_infeasibility <= stop_d .AND.                           &
            inform%complementary_slackness <= stop_c ) THEN
@@ -4355,7 +4355,7 @@
         CALL CHECKPOINT( inform%iter, time_record - time_start,                &
            MAX( inform%primal_infeasibility,                                   &
            inform%dual_infeasibility, inform%complementary_slackness ),        &
-           inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+           inform%checkpointsIter, inform%checkpointsTime, 1_ip_, 16_ip_ )
         IF ( primal_nonopt + dual_nonopt + cs_nonopt == 0 ) THEN
           inform%status = GALAHAD_ok ; GO TO 600
         END IF
@@ -6586,7 +6586,7 @@
             CALL CHECKPOINT( inform%iter, time_record - time_start,            &
                MAX( inform%primal_infeasibility,                               &
                inform%dual_infeasibility, slknes ),                            &
-               inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+               inform%checkpointsIter, inform%checkpointsTime, 1_ip_, 16_ip_ )
 
 !  if optimal, compute the objective function value
 
@@ -6976,7 +6976,7 @@
         CALL CHECKPOINT( inform%iter, time_record - time_start,                &
            MAX( inform%primal_infeasibility,                                   &
            inform%dual_infeasibility, slknes ),                                &
-           inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+           inform%checkpointsIter, inform%checkpointsTime, 1_ip_, 16_ip_ )
 
 !  test for optimality
 
