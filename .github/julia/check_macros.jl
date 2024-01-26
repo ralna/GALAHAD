@@ -20,6 +20,10 @@ function append_macros!(macros::Dict{String,String}, path::String)
 end
 
 global n = 0
+excluded_files = ["blas_original.f", "blas_original.f90",
+                  "lapack_original.f", "lapack_original.f90",
+                  "ieeeck_original.f", "noieeeck_original.f"]
+
 macros = Dict{String,String}()
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
@@ -28,10 +32,14 @@ append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack
 # Check the number of characters
 for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
   for file in files
+    file_extension(file) ∈ ("f", "f90", "F90") || continue
+    (file ∈ excluded_files) && continue
     path = joinpath(root, file)
     code = read(path, String)
     lines = split(code, '\n')
     for (i, line) in enumerate(lines)
+      startswith(line |> strip, "!") && continue
+      startswith(line |> strip, "C") && (file_extension(file) == "f") && continue
       if (file_extension(file) == "f") && (length(line) > 72)
         println("Line $i in the file $file has more than 72 characters.")
         global n = n+1
