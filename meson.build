@@ -93,6 +93,7 @@ libpastix_name = get_option('libpastix')
 libampl_name = get_option('libampl')
 libcutest_single_name = get_option('libcutest_single')
 libcutest_double_name = get_option('libcutest_double')
+libhwloc_name = get_option('libhwloc')
 
 libmumps_path = get_option('libmumps_path')
 libblas_path = get_option('libblas_path')
@@ -106,9 +107,11 @@ libpastix_path = get_option('libpastix_path')
 libampl_path = get_option('libampl_path')
 libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
+libhwloc_path = get_option('libhwloc_path')
 
 libmetis_version = get_option('libmetis_version')
 
+libhwloc_include = get_option('libhwloc_include')
 libcutest_single_modules = get_option('libcutest_single_modules')
 libcutest_double_modules = get_option('libcutest_double_modules')
 libhsl_modules = get_option('libhsl_modules')
@@ -127,7 +130,9 @@ libpastix = fc.find_library(libpastix_name, dirs : libpastix_path, required : fa
 libsmumps = fc.find_library('smumps', dirs : libmumps_path, required : false)
 libdmumps = fc.find_library('dmumps', dirs : libmumps_path, required : false)
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
+libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false)
 lm = cc.find_library('m', required : false)
+libmpi = dependency('mpi', language : 'fortran', required : false)
 
 # OpenMP
 if fc.get_id() == 'nvidia_hpc'
@@ -155,9 +160,6 @@ elif cxx.get_id() == 'intel' or cxx.get_id() == 'intel-llvm'
 elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'cpp')
 endif
-
-libmpi = dependency('mpi', language : 'fortran', required : false)
-libhwloc = dependency('hwloc', required : false)
 
 libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]
@@ -211,7 +213,7 @@ galahad_python_tests = []
 # Folders that contain headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
-                      include_directories('src/ampl')] + libhsl_modules
+                      include_directories('src/ampl')] + libhsl_modules + libhwloc_include
 
 libgalahad_single_include = libgalahad_include + libcutest_single_modules
 libgalahad_double_include = libgalahad_include + libcutest_double_modules
@@ -223,7 +225,8 @@ else
 endif
 
 # HWLOC
-if libhwloc.found()
+has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
+if libhwloc.found() and has_hwloch
   add_global_arguments('-DSPRAL_HAVE_HWLOC', language : 'cpp')
 else
   add_global_arguments('-DSPRAL_NO_HWLOC', language : 'cpp')

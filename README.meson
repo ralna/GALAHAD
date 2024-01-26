@@ -35,6 +35,7 @@ Currently supported options with their default value:
 * `-Dlibspmf=spmf`: SPMF library against which to link;
 * `-Dlibpastix=pastix`: PASTIX library against which to link;
 * `-Dlibampl=ampl`: AMPL library against which to link;
+* `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
 * `-Dlibmetis_path=[]`: additional directories to search for the METIS library;
@@ -46,6 +47,8 @@ Currently supported options with their default value:
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
+* `-Dlibhwloc_path=[]`: Additional directory to search for the HWLOC library;
+* `-Dlibhwloc_include=[]`: Additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
 * `-Dlibmetis_version=5`: version of the METIS library;
 * `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer.
