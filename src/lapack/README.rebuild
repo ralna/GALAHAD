@@ -4,9 +4,9 @@ For maintainers
 
 How to rebuild BLAS and LAPACK following updates to the refereence versions.
 
-1. Mechanically replace the existing blas_original.f and lapack_interface.f
+1. Mechanically replace the existing blas_original.f and lapack_original.f
    files with updated versions so that the main procedures mentioned
-   in blas_interface.F90 and lapack_interfac.F90, plus all of their
+   in blas_interface.F90 and lapack_interface.F90, plus all of their
    dependencies, are present.
 
 2. Apply the NAG polish tools as follows:
@@ -35,7 +35,3 @@ nagfor =epolish -align_right_continuation -noblank_line_after_decls -fixed -inde
 Nick Gould
 for GALAHAD productions
 January 23rd 2024
-
-
-
-     
