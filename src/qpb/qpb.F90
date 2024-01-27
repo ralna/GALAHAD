@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -4495,7 +4495,8 @@
                             Y_u( dims%c_u_start : dims%c_u_end ) )
 
       IF ( nbnds > 0 ) THEN
-        norm_c = ten ** ( 2 * ( NINT( LOG10( norm_c / nbnds ) ) / 2  ) )
+        norm_c = ten ** ( 2 * ( NINT( LOG10( norm_c                           &
+                                  / REAL( nbnds, KIND = rp_ ) ) ) / 2  ) )
       ELSE
         norm_c = zero
       END IF

@@ -475,7 +475,8 @@
        CONTROL%maxla = HUGE( 0 )
        CONTROL%maxliw = HUGE( 0 )
        CONTROL%pivoting = 1
-       CONTROL%thresh = 50 ; CONTROL%CNTL( 2 ) = CONTROL%thresh / 100.0_rp_
+       CONTROL%thresh = 50
+       CONTROL%CNTL( 2 ) = REAL( CONTROL%thresh, KIND = rp_ ) / 100.0_rp_
        CONTROL%ordering = 3
        CONTROL%scaling = 0
      END IF
@@ -543,7 +544,7 @@
 !  Transfer CONTROL parameters
 
      CNTL( 1 ) = CONTROL%u
-     CNTL( 2 ) = CONTROL%thresh / 100.0_rp_
+     CNTL( 2 ) = REAL( CONTROL%thresh, KIND = rp_ ) / 100.0_rp_
      CNTL( 3 ) = CONTROL%tolerance
      CNTL( 4 : 5 ) = CONTROL%CNTL( 4 : 5 )
      ICNTL( 1 ) = CONTROL%lp
@@ -767,7 +768,7 @@
        CASE ( 2 ) ; CNTL( 1 ) = - CONTROL%u
        CASE ( 3 ) ; CNTL( 1 ) = 0.0_rp_
      END SELECT
-     CNTL( 2 ) = CONTROL%thresh / 100.0_rp_
+     CNTL( 2 ) = REAL( CONTROL%thresh, KIND = rp_ ) / 100.0_rp_
      CNTL( 3 ) = CONTROL%tolerance
      CNTL( 4 : 5 ) = CONTROL%CNTL( 4 : 5 )
      ICNTL( 1 ) = CONTROL%lp

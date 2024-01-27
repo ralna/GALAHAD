@@ -2944,100 +2944,100 @@
 
      END SUBROUTINE SPACE_resize_integer_carray
 
-!  - S P A C E _ R E S I Z E _ L O G I C A L _ C A R R A Y  S U B R O U T I N E
-
-     SUBROUTINE SPACE_resize_logical_carray( len, array, status, alloc_status, &
-       deallocate_error_fatal, array_name, exact_size, bad_alloc, out )
-
-!  Ensure that the logical allocatable c-style array "array" is of length at
-!  least len.
-
-!  If exact_size is prsent and true, array is reallocated to be of size len.
-!  Otherwise array is only reallocated if its length is currently smaller
-!  than len
-
-!  Dummy arguments
-
-     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
-     LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER ( KIND = ip_ ), OPTIONAL :: out
-     LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
-     CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
-     CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
-
-!  Local variable
-
-     LOGICAL :: reallocate
-
-!  Check to see if a reallocation (or initial allocation) is needed
-
-     status = GALAHAD_ok ; alloc_status = 0 ; reallocate = .TRUE.
-     IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ALLOCATED( array ) ) THEN
-       IF ( PRESENT( exact_size ) ) THEN
-         IF ( exact_size ) THEN
-           IF ( LBOUND( array, 1 ) /= 0 .OR.                                   &
-                UBOUND( array, 1 ) /= len - 1 ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,            &
-                                       array_name, bad_alloc, out )
-           ELSE ; reallocate = .FALSE.
-           END IF
-         ELSE
-           IF ( LBOUND( array, 1 ) /= 0 .OR.                                   &
-                UBOUND( array, 1 ) < len - 1 ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,            &
-                                       array_name, bad_alloc, out )
-           ELSE ; reallocate = .FALSE.
-           END IF
-         END IF
-       ELSE
-         IF ( LBOUND( array, 1 ) /= 0 .OR.                                     &
-              UBOUND( array, 1 ) < len - 1 ) THEN
-           CALL SPACE_dealloc_array( array, status, alloc_status,              &
-                                     array_name, bad_alloc, out )
-          ELSE ; reallocate = .FALSE.
-          END IF
-       END IF
-     END IF
-
-!  If a deallocation error occured, return if desired
-
-     IF ( PRESENT( deallocate_error_fatal ) ) THEN
-       IF ( deallocate_error_fatal .AND. alloc_status /= 0 ) THEN
-         status = GALAHAD_error_deallocate ; RETURN
-       END IF
-     ELSE
-       IF ( alloc_status /= 0 ) THEN
-         status = GALAHAD_error_deallocate ; RETURN
-       END IF
-     END IF
-
-!  Reallocate array to be of length len, checking for error returns
-
-     IF ( reallocate ) ALLOCATE( array( 0 : len - 1 ), STAT = alloc_status )
-     IF ( alloc_status /= 0 ) THEN
-       status = GALAHAD_error_allocate
-       IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )                 &
-         bad_alloc = array_name
-       IF ( PRESENT( out ) ) THEN
-         IF ( PRESENT( array_name ) ) THEN
-           IF ( out > 0 ) WRITE( out, 2900 ) TRIM( array_name ), alloc_status
-         ELSE
-           IF ( out > 0 ) WRITE( out, 2910 ) alloc_status
-         END IF
-       END IF
-     END IF
-     RETURN
-
-!  Non-executable statements
-
-2900 FORMAT( ' ** Allocation error for ', A, /, '     status = ', I6 )
-2910 FORMAT( ' ** Allocation error status = ', I6 )
-
-!  End of SPACE_resize_logical_carray
-
-     END SUBROUTINE SPACE_resize_logical_carray
+!!$! -S P A C E _ R E S I Z E _ L O G I C A L _ C A R R A Y  S U B R O U T I N E
+!!$
+!!$   SUBROUTINE SPACE_resize_logical_carray( len, array, status, alloc_status,&
+!!$       deallocate_error_fatal, array_name, exact_size, bad_alloc, out )
+!!$
+!!$!  Ensure that the logical allocatable c-style array "array" is of length at
+!!$!  least len.
+!!$
+!!$!  If exact_size is prsent and true, array is reallocated to be of size len.
+!!$!  Otherwise array is only reallocated if its length is currently smaller
+!!$!  than len
+!!$
+!!$!  Dummy arguments
+!!$
+!!$     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+!!$     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+!!$     LOGICAL ( KIND = lp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+!!$     INTEGER ( KIND = ip_ ), OPTIONAL :: out
+!!$     LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
+!!$     CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
+!!$     CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
+!!$
+!!$!  Local variable
+!!$
+!!$     LOGICAL :: reallocate
+!!$
+!!$!  Check to see if a reallocation (or initial allocation) is needed
+!!$
+!!$     status = GALAHAD_ok ; alloc_status = 0 ; reallocate = .TRUE.
+!!$     IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
+!!$     IF ( ALLOCATED( array ) ) THEN
+!!$       IF ( PRESENT( exact_size ) ) THEN
+!!$         IF ( exact_size ) THEN
+!!$           IF ( LBOUND( array, 1 ) /= 0 .OR.                                &
+!!$                UBOUND( array, 1 ) /= len - 1 ) THEN
+!!$             CALL SPACE_dealloc_array( array, status, alloc_status,         &
+!!$                                       array_name, bad_alloc, out )
+!!$           ELSE ; reallocate = .FALSE.
+!!$           END IF
+!!$         ELSE
+!!$           IF ( LBOUND( array, 1 ) /= 0 .OR.                                &
+!!$                UBOUND( array, 1 ) < len - 1 ) THEN
+!!$             CALL SPACE_dealloc_array( array, status, alloc_status,         &
+!!$                                       array_name, bad_alloc, out )
+!!$           ELSE ; reallocate = .FALSE.
+!!$           END IF
+!!$         END IF
+!!$       ELSE
+!!$         IF ( LBOUND( array, 1 ) /= 0 .OR.                                  &
+!!$              UBOUND( array, 1 ) < len - 1 ) THEN
+!!$           CALL SPACE_dealloc_array( array, status, alloc_status,           &
+!!$                                     array_name, bad_alloc, out )
+!!$          ELSE ; reallocate = .FALSE.
+!!$          END IF
+!!$       END IF
+!!$     END IF
+!!$
+!!$!  If a deallocation error occured, return if desired
+!!$
+!!$     IF ( PRESENT( deallocate_error_fatal ) ) THEN
+!!$       IF ( deallocate_error_fatal .AND. alloc_status /= 0 ) THEN
+!!$         status = GALAHAD_error_deallocate ; RETURN
+!!$       END IF
+!!$     ELSE
+!!$       IF ( alloc_status /= 0 ) THEN
+!!$         status = GALAHAD_error_deallocate ; RETURN
+!!$       END IF
+!!$     END IF
+!!$
+!!$!  Reallocate array to be of length len, checking for error returns
+!!$
+!!$     IF ( reallocate ) ALLOCATE( array( 0 : len - 1 ), STAT = alloc_status )
+!!$     IF ( alloc_status /= 0 ) THEN
+!!$       status = GALAHAD_error_allocate
+!!$       IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )              &
+!!$         bad_alloc = array_name
+!!$       IF ( PRESENT( out ) ) THEN
+!!$         IF ( PRESENT( array_name ) ) THEN
+!!$           IF ( out > 0 ) WRITE( out, 2900 ) TRIM( array_name ), alloc_status
+!!$         ELSE
+!!$           IF ( out > 0 ) WRITE( out, 2910 ) alloc_status
+!!$         END IF
+!!$       END IF
+!!$     END IF
+!!$     RETURN
+!!$
+!!$!  Non-executable statements
+!!$
+!!$2900 FORMAT( ' ** Allocation error for ', A, /, '     status = ', I6 )
+!!$2910 FORMAT( ' ** Allocation error status = ', I6 )
+!!$
+!!$!  End of SPACE_resize_logical_carray
+!!$
+!!$     END SUBROUTINE SPACE_resize_logical_carray
 
 !-  S P A C E _ e x t e n d _ a r r a y _ i n t e g e r  S U B R O U T I N E -
 

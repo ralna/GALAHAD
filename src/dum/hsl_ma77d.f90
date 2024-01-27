@@ -1,26 +1,18 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 13:30 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 7 7   M O D U L E  -*-*-*-
 
 module hsl_MA77_double
 
    use GALAHAD_KINDS
-!  use hsl_ma54_double
-!  use hsl_ma64_double
    use hsl_of01_double, of01_rdata => of01_data
-   use hsl_of01_integer,  of01_idata => of01_data
+   use hsl_of01_integer, of01_idata => of01_data
 
   implicit none
 
-  integer(ip_),  parameter, private  :: wp = kind(0.0d0)
   real (dp_), parameter, private :: one = 1.0_dp_
   real (dp_), parameter, private :: zero = 0.0_dp_
-  real (dp_), parameter, private :: half = 0.5_dp_
   integer(ip_), parameter, private :: nemin_default = 8
-  integer(ip_), parameter, private :: lup1 = huge(0_ip_)/8
-  integer(ip_), parameter, private :: nb54_default = 150
-  integer(ip_), parameter, private :: nb64_default = 120
-  integer(ip_), parameter, private :: nbi_default = 40
 
   interface MA77_open
       module procedure MA77_open_double

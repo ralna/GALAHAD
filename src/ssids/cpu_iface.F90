@@ -6,13 +6,6 @@
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single_64
 #define spral_ssids_inform_precision spral_ssids_inform_single_64
 #define spral_ssids_types_precision spral_ssids_types_single_64
-#define spral_c_gemv  spral_c_sgemv_64
-#define spral_c_trsv  spral_c_strsv_64
-#define spral_c_syrk  spral_c_ssyrk_64
-#define spral_c_trsm  spral_c_strsm_64
-#define spral_c_sytrf spral_c_ssytrf_64
-#define spral_c_potrf spral_c_spotrf_64
-#define spral_c_gemm  spral_c_sgemm_64
 #define gemv  sgemv_64
 #define trsv  strsv_64
 #define syrk  ssyrk_64
@@ -25,13 +18,6 @@
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single
-#define spral_c_gemv  spral_c_sgemv
-#define spral_c_trsv  spral_c_strsv
-#define spral_c_syrk  spral_c_ssyrk
-#define spral_c_trsm  spral_c_strsm
-#define spral_c_sytrf spral_c_ssytrf
-#define spral_c_potrf spral_c_spotrf
-#define spral_c_gemm  spral_c_sgemm
 #define gemv  sgemv
 #define trsv  strsv
 #define syrk  ssyrk
@@ -40,19 +26,19 @@
 #define potrf spotrf
 #define gemm  sgemm
 #endif
+#define spral_c_gemv  spral_c_sgemv
+#define spral_c_trsv  spral_c_strsv
+#define spral_c_syrk  spral_c_ssyrk
+#define spral_c_trsm  spral_c_strsm
+#define spral_c_sytrf spral_c_ssytrf
+#define spral_c_potrf spral_c_spotrf
+#define spral_c_gemm  spral_c_sgemm
 #else
 #ifdef SPRAL_64BIT_INTEGER
 #define spral_kinds_precision spral_kinds_double_64
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double_64
 #define spral_ssids_inform_precision spral_ssids_inform_double_64
 #define spral_ssids_types_precision spral_ssids_types_double_64
-#define spral_c_gemv  spral_c_dgemv_64
-#define spral_c_trsv  spral_c_dtrsv_64
-#define spral_c_syrk  spral_c_dsyrk_64
-#define spral_c_trsm  spral_c_dtrsm_64
-#define spral_c_sytrf spral_c_dsytrf_64
-#define spral_c_potrf spral_c_dpotrf_64
-#define spral_c_gemm  spral_c_dgemm_64
 #define gemv  dgemv_64
 #define trsv  dtrsv_64
 #define syrk  dsyrk_64
@@ -65,13 +51,6 @@
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
 #define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_types_precision spral_ssids_types_double
-#define spral_c_gemv  spral_c_dgemv
-#define spral_c_trsv  spral_c_dtrsv
-#define spral_c_syrk  spral_c_dsyrk
-#define spral_c_trsm  spral_c_dtrsm
-#define spral_c_sytrf spral_c_dsytrf
-#define spral_c_potrf spral_c_dpotrf
-#define spral_c_gemm  spral_c_dgemm
 #define gemv  dgemv
 #define trsv  dtrsv
 #define syrk  dsyrk
@@ -80,6 +59,13 @@
 #define potrf dpotrf
 #define gemm  dgemm
 #endif
+#define spral_c_gemv  spral_c_dgemv
+#define spral_c_trsv  spral_c_dtrsv
+#define spral_c_syrk  spral_c_dsyrk
+#define spral_c_trsm  spral_c_dtrsm
+#define spral_c_sytrf spral_c_dsytrf
+#define spral_c_potrf spral_c_dpotrf
+#define spral_c_gemm  spral_c_dgemm
 #endif
 
 !> \file

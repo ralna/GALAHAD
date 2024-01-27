@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1415,7 +1415,7 @@
           u = base ** i
           DO k = 0, nn - 1
             D( k ) = D( k ) * u
-            A( k ) = D( k ) * ( nn - k )
+            A( k ) = D( k ) * REAL( nn - k, KIND = rp_ )
           END DO
           D( nn ) = D( nn ) * u
 
@@ -1423,7 +1423,7 @@
 
         z0 = zero
         afz0 = ABS( D( nn ) )
-        afzmin = afz0 * nn * 16.0_rp_ * epsmch
+        afzmin = afz0 * REAL( nn, KIND = rp_ ) * 16.0_rp_ * epsmch
 
 ! Test for roots at the origin
 
@@ -1440,7 +1440,7 @@
           DO k = 0, nn - 1
             u = ABS( D( K ) )
             IF ( u == zero ) EXIT
-            u = LOG( afz0 / u ) / ( nn - k )
+            u = LOG( afz0 / u ) / REAL( nn - k, KIND = rp_ )
             r0 = MIN( u, r0 )
           END DO
           r0 = EXP( r0 ) / 2

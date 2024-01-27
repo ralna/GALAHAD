@@ -157,8 +157,9 @@
      INTERFACE XERBLA
 
        SUBROUTINE XERBLA( srname, info )
+       USE GALAHAD_KINDS
        CHARACTER ( LEN = * ) :: srname
-       INTEGER :: info
+       INTEGER ( KIND = ip_ ) :: info
        END SUBROUTINE XERBLA
 
      END INTERFACE XERBLA

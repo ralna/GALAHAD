@@ -29,8 +29,8 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SPECFILE_precision
-      USE GALAHAD_LAPACK_interface, ONLY : ILAENV, POTRF, POTRS, SYTRF, SYTRS
-      USE GALAHAD_BLAS_interface, ONLY : LSAME, XERBLA, SWAP, GEMV, TRSV, GER
+      USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF, SYTRS
+      USE GALAHAD_BLAS_interface, ONLY : SWAP, GEMV, TRSV, GER
       USE GALAHAD_LMT_precision, LMS_control_type => LMT_control_type,         &
                                  LMS_time_type => LMT_time_type,               &
                                  LMS_inform_type => LMT_inform_type,           &
@@ -293,8 +293,8 @@
       REAL ( KIND = rp_ ) :: clock_start, clock_now
       CHARACTER ( LEN = 6 ) :: method
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ) :: ILAENV
-      EXTERNAL :: ILAENV
+      INTEGER ( KIND = ip_ ) :: LAENV
+      EXTERNAL :: LAENV
 
 !  prefix for all output
 
@@ -326,8 +326,8 @@
       SELECT CASE( control%method )
       CASE ( 2 )
         method = 'SR1   '
-        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                         &
-                     - 1_ip_, - 1_ip_, - 1_ip_ )
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                          &
+                    - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = data%len_c * nb
         len2_qp = 1 ; len2_qp_perm = 1
       CASE ( 3 )
@@ -335,8 +335,8 @@
       CASE ( 4 )
         method = 'ISBFGS'
         data%len_c = 2 * data%m ; len2_qp_perm = 1
-        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                         &
-                     - 1_ip_, - 1_ip_, - 1_ip_ )
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                          &
+                    - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = data%len_c * nb
       CASE DEFAULT
         method = 'BFGS  '
@@ -347,8 +347,8 @@
       IF ( data%any_method ) THEN
         method = 'ANY   '
         data%len_c = 2 * data%m
-        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                         &
-                     - 1_ip_, - 1_ip_, - 1_ip_ )
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                          &
+                    - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = MAX( data%len_c * nb, data%lwork )
       END IF
 
@@ -1852,14 +1852,9 @@
       LOGICAL :: upper
       INTEGER ( KIND = ip_ ) :: j, k, kp
       REAL ( KIND = rp_ ) :: ak, akm1, akm1k, bk, bkm1, denom
-      LOGICAL :: LSAME
-      EXTERNAL :: LSAME, XERBLA
 
       info = 0
-      upper = LSAME( uplo, 'U' )
-      IF ( .NOT. upper .AND. .NOT. LSAME( uplo, 'L' ) ) THEN
-        info = - 1
-      ELSE IF ( n < 0 ) THEN
+      IF ( n < 0 ) THEN
         info = - 2
       ELSE IF ( nrhs < 0 ) THEN
         info = - 3
@@ -1867,11 +1862,16 @@
         info = - 5
       ELSE IF ( ldb < MAX( 1, n ) ) THEN
         info = - 8
+      ELSE
+        IF ( uplo == 'U' .OR. uplo == 'u' ) THEN
+          upper = .TRUE.
+        ELSE IF ( uplo == 'L' .OR. uplo == 'l' ) THEN
+          upper = .FALSE.
+        ELSE
+          info = - 1
+        END IF
       END IF
-      IF ( info /= 0 ) THEN
-        CALL XERBLA( 'DSYTRS', - info )
-        RETURN
-      END IF
+      IF ( info /= 0 ) RETURN
 
 !  quick return if possible
 

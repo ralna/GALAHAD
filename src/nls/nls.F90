@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -3927,7 +3927,8 @@
            = data%total_facts + data%subproblem_data%total_facts
          inform%factorization_max = MAX( inform%factorization_max,             &
            inform%subproblem_inform%RQS_inform%factorizations )
-         inform%factorization_average =  data%total_facts / inform%iter
+         inform%factorization_average =  REAL( data%total_facts, KIND = rp_ )  &
+                                            / REAL( inform%iter, KIND = rp_ )
        END IF
 
 !  ============================================================================
@@ -6720,7 +6721,8 @@
          IF ( inform%RQS_inform%hard_case ) data%hard = 'h'
          facts_this_solve = inform%RQS_inform%factorizations - facts_this_solve
          inform%factorization_average =                                        &
-           inform%RQS_inform%factorizations / inform%iter
+           REAL( inform%RQS_inform%factorizations, KIND = rp_ )                &
+             / REAL( inform%iter, KIND = rp_ )
          inform%factorization_max =                                            &
            MAX( inform%factorization_max, facts_this_solve )
          inform%max_entries_factors = MAX( inform%max_entries_factors,         &

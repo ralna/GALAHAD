@@ -502,7 +502,7 @@ contains
                 r = rcptr(j)
                 if ((abs(options%values) .eq. 3) .and. symmetric) then
                    nzrow(r) = nzrow(r) + 1
-                   if (r .eq. c) val(j) = max(100, 10*(k+nzrow(r)-1))
+                   if (r .eq. c) val(j) = real(max(100, 10*(k+nzrow(r)-1)),rp_)
                 end if
              end do
           else
@@ -511,7 +511,7 @@ contains
                 r = rcptr(j)
                 if ((abs(options%values) .eq. 3) .and. symmetric) then
                    nzrow(r) = nzrow(r) + 1
-                   if (r .eq. c) val(j) = max(100, 10*(k+nzrow(r)-1))
+                   if (r .eq. c) val(j) = real(max(100, 10*(k+nzrow(r)-1)),rp_)
                 end if
              end do
           end if

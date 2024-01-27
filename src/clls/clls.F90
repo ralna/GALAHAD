@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -2595,7 +2595,7 @@
       REAL ( KIND = rp_ ) :: one_plus_2_sigma_mu, two_sigma_mu2, two_sigma_mu
       REAL ( KIND = rp_ ) :: opt_alpha_guarantee, opt_merit_guarantee
       REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, two_mu
-
+      REAL ( KIND = rp_ ) :: rnbnds, rnbnds_x, rnbnds_c
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
       LOGICAL :: maxpiv, guarantee, optimal, present_weight
@@ -3316,6 +3316,9 @@
 !  find the max-norm of the residual
 
       nbnds = nbnds_x + nbnds_c
+      rnbnds_x = REAL( nbnds_x, KIND = rp_ )
+      rnbnds_c = REAL( nbnds_c, KIND = rp_ )
+      rnbnds = REAL( nbnds, KIND = rp_ )
       IF ( printi .AND. use_scale_c .AND. m > 0 .AND.                          &
            dims%c_l_start <= dims%c_u_end )                                    &
         WRITE( out, "( A, '  largest/smallest scale factor', 2ES11.4 )" )      &
@@ -3391,13 +3394,13 @@
 !  record the slackness and the deviation from the central path
 
       IF ( nbnds_x > 0 ) THEN
-        slknes_x = slknes_x / nbnds_x
+        slknes_x = slknes_x / rnbnds_x
       ELSE
         slknes_x = zero
       END IF
 
       IF ( nbnds_c > 0 ) THEN
-        slknes_c = slknes_c / nbnds_c
+        slknes_c = slknes_c / rnbnds_c
       ELSE
         slknes_c = zero
       END IF
@@ -3408,7 +3411,7 @@
         ELSE
           gamma_f = one
         END IF
-        slknes = slknes / nbnds
+        slknes = slknes / rnbnds
         gamma_c = control%gamma_c * slkmin / slknes
       ELSE
         gamma_f = zero ; slknes = zero ; gamma_c = zero
@@ -5399,7 +5402,7 @@
 
 !  record the initial slope along the search arc
 
-          slope = - ( merit - mu * nbnds )
+          slope = - ( merit - mu * rnbnds )
 
 !  define an interval [alhpa_l,alpha_u] containing the required stepsize
 
@@ -5493,11 +5496,11 @@
 !  record the initial slope along the search arc
 
         IF ( arc == 'ZP' ) THEN
-          slope = - two * ( merit - mu * nbnds ) + tau * res_primal_dual
+          slope = - two * ( merit - mu * rnbnds ) + tau * res_primal_dual
         ELSE IF ( puiseux ) THEN
-          slope = - two * ( merit - mu * nbnds )
+          slope = - two * ( merit - mu * rnbnds )
         ELSE
-          slope = - ( merit - mu * nbnds )
+          slope = - ( merit - mu * rnbnds )
         END IF
         IF ( printw ) WRITE( out, "( A, '  value and slope = ', 1P, 2D12.4)")  &
           prefix, merit, slope
@@ -5754,7 +5757,7 @@
                                 Y_u( dims%c_u_start : dims%c_u_end ) )
 
           IF ( nbnds > 0 ) THEN
-            slknes = slknes / nbnds
+            slknes = slknes / rnbnds
           ELSE
             slknes = zero
           END IF
@@ -6071,18 +6074,18 @@
                      MAXVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
 
         IF ( nbnds_x > 0 ) THEN
-          slknes_x = slknes_x / nbnds_x
+          slknes_x = slknes_x / rnbnds_x
         ELSE
           slknes_x = zero
         END IF
 
         IF ( nbnds_c > 0 ) THEN
-          slknes_c = slknes_c / nbnds_c
+          slknes_c = slknes_c / rnbnds_c
         ELSE
           slknes_c = zero
         END IF
         IF ( nbnds > 0 ) THEN
-          slknes = slknes / nbnds
+          slknes = slknes / rnbnds
           inform%complementary_slackness = slknes
         ELSE
           slknes = zero

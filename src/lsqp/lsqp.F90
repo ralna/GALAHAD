@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -2968,7 +2968,7 @@
       REAL ( KIND = rp_ ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, slknes_req
       REAL ( KIND = rp_ ) :: slkmin_x, slkmin_c, merit_best, reduce_infeas
       REAL ( KIND = rp_ ) :: prfeas, dufeas, p_min, p_max, d_min, d_max
-      REAL ( KIND = rp_ ) :: step, one_minus_alpha
+      REAL ( KIND = rp_ ) :: step, one_minus_alpha, rnbnds, rnbnds_x, rnbnds_c
       REAL ( KIND = rp_ ) :: pmax_cor, pivot_tol, relative_pivot_tol, balance
 !     REAL ( KIND = rp_ ) :: errorc, errorg
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
@@ -3455,6 +3455,9 @@
 !  Find the max-norm of the residual
 
       nbnds = nbnds_x + nbnds_c
+      rnbnds_x = REAL( nbnds_x, KIND = rp_ )
+      rnbnds_c = REAL( nbnds_c, KIND = rp_ )
+      rnbnds = REAL( nbnds, KIND = rp_ )
       IF ( printi .AND. m > 0 .AND. dims%c_l_start <= dims%c_u_end )           &
         WRITE( out, "( A, ' largest/smallest scale factor ', 2ES12.4 )" )      &
           prefix, MAXVAL( SCALE_C ), MINVAL( SCALE_C )
@@ -3557,19 +3560,19 @@
 !  Record the slackness and the deviation from the central path
 
       IF ( nbnds_x > 0 ) THEN
-        slknes_x = slknes_x / nbnds_x
+        slknes_x = slknes_x / rnbnds_x
       ELSE
         slknes_x = zero
       END IF
 
       IF ( nbnds_c > 0 ) THEN
-        slknes_c = slknes_c / nbnds_c
+        slknes_c = slknes_c / rnbnds_c
       ELSE
         slknes_c = zero
       END IF
 
       IF ( nbnds > 0 ) THEN
-        gamma_f = gamma_f0 * slknes ; slknes = slknes / nbnds
+        gamma_f = gamma_f0 * slknes ; slknes = slknes / rnbnds
         gamma_b = gamma_b0 * slkmin / slknes
       ELSE
         gamma_f = zero ; slknes = zero ; gamma_b = zero
@@ -3784,10 +3787,10 @@
         IF ( inform%feasible .AND. Hessian_kind == 0 .AND.                     &
              gradient_kind == 0 ) THEN
           IF ( inform%potential < control%potential_unbounded *                &
-               ( ( dims%x_l_end - dims%x_free ) +                              &
-               ( n -  dims%x_u_start + 1 ) +                                   &
-               ( dims%c_l_end - dims%c_l_start + 1 ) +                         &
-               ( dims%c_u_end - dims%c_u_start + 1 ) ) ) THEN
+             REAL( ( dims%x_l_end - dims%x_free ) +                            &
+                   ( n -  dims%x_u_start + 1 ) +                               &
+                   ( dims%c_l_end - dims%c_l_start + 1 ) +                     &
+                   ( dims%c_u_end - dims%c_u_start + 1 ), KIND = rp_ ) ) THEN
             inform%status = GALAHAD_error_no_center ; GO TO 600
           END IF
 
@@ -4653,7 +4656,7 @@
 !  Record the slope along the search direction
 ! ::::::::::::::::::::::::::::::::::::::::::::
 
-          slope = - ( merit - mu * nbnds )
+          slope = - ( merit - mu * rnbnds )
           IF ( printt ) WRITE( out, "( A, '  Value and slope = ', 1P, 2D12.4)")&
             prefix, merit, slope
 
@@ -4899,18 +4902,18 @@
                      MAXVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
 
         IF ( nbnds_x > 0 ) THEN
-          slknes_x = slknes_x / nbnds_x
+          slknes_x = slknes_x / rnbnds_x
         ELSE
           slknes_x = zero
         END IF
 
         IF ( nbnds_c > 0 ) THEN
-          slknes_c = slknes_c / nbnds_c
+          slknes_c = slknes_c / rnbnds_c
         ELSE
           slknes_c = zero
         END IF
         IF ( nbnds > 0 ) THEN
-          slknes = slknes / nbnds
+          slknes = slknes / rnbnds
           slknes_req = slknes
         ELSE
           slknes = zero
@@ -6201,13 +6204,14 @@
 !  Local variables
 
       REAL ( KIND = rp_ ) :: compc, compl, compq, coef0, coef1, coef2
-      REAL ( KIND = rp_ ) :: coef0_f, coef1_f, coef2_f
+      REAL ( KIND = rp_ ) :: coef0_f, coef1_f, coef2_f, rnbnds
       REAL ( KIND = rp_ ) :: root1, root2, tol, alpha, alp, nu_gamma_f
 
       alpha_max_b = infinity ; alpha_max_f = infinity
       inform%status = GALAHAD_ok
       IF ( nbnds == 0 ) RETURN
       tol = epsmch ** 0.75
+      rnbnds = REAL( nbnds, KIND = rp_ )
 
 !  ================================================
 !             part to compute alpha_max_b
@@ -6250,8 +6254,9 @@
 
 !  Scale these coefficients
 
-      compc = - gamma_b * coef0_f / nbnds ; compl = - gamma_b * coef1_f / nbnds
-      compq = - gamma_b * coef2_f / nbnds
+      compc = - gamma_b * coef0_f / rnbnds
+      compl = - gamma_b * coef1_f / rnbnds
+      compq = - gamma_b * coef2_f / rnbnds
 !     write(6,"( ' gamma_b ', ES12.4, I6 )" ) gamma_b, nbnds
 !     write( 6, "( 3ES10.2 )" )  compq, compl, compc
 

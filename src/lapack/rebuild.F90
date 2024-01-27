@@ -93,9 +93,11 @@
 !  record procedure name
 
 !            IF ( new_line( l + 11 : i ) /= 'IEECHK' ) THEN
-             nfun = nfun + 1
-             fun( nfun ) = '      '
-             fun( nfun ) = new_line( l + 11 : i )
+!            IF ( new_line( l + 11 : i ) /= 'XERBLA' .AND.                     &
+!                 new_line( l + 11 : i ) /= 'LSAME' ) THEN
+               nfun = nfun + 1
+               fun( nfun ) = '      '
+               fun( nfun ) = new_line( l + 11 : i )
 !            END IF
            END IF
          END IF

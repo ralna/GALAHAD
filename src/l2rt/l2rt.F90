@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-01-27 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -1082,17 +1082,17 @@
 !  Record statistics about the number of inner iterations performed
 
           IF ( INFORM%biters > 0 ) THEN
-            rbiters = INFORM%biters
+            rbiters = REAL( inform%biters, KIND = rp_ )
             inform%biters = inform%biters + 1
             inform%biter_min = MIN( inform%biter_min, data%biter )
             inform%biter_max = MAX( inform%biter_max, data%biter )
             inform%biter_mean = ( rbiters / ( rbiters + one ) ) *              &
-              ( inform%biter_mean + data%biter / rbiters )
+              ( inform%biter_mean + REAL( data%biter, KIND = rp_ ) / rbiters )
           ELSE
             inform%biters = 1
             inform%biter_min = data%biter
             inform%biter_max = data%biter
-            inform%biter_mean = data%biter
+            inform%biter_mean = REAL( data%biter, KIND = rp_ )
           END IF
 
 !  Compute the norms ||r_k|| and ||A^T r_k||

@@ -406,7 +406,7 @@
 
      data%C = F
      DO kp1 = 1, nm1
-       rkp1 = kp1
+       rkp1 = REAL( kp1, KIND = rp_ )
        c_last = data%C( kp1 )
        DO jp1 = kp1 + 1, n
          IF ( POINTS( jp1 ) == POINTS( jp1 - kp1 ) ) THEN
@@ -660,14 +660,14 @@
            data%A( 0, k ) = data%B( 0, k )
            DO j = 1, k - 1
              data%A( j, k ) = two * data%B( j - 1 , k ) +                      &
-                            ( two * j + one ) * data%B( j , k )
+                    ( two * REAL( j, KIND = rp_ ) + one ) * data%B( j , k )
            END DO
            data%A( k, k ) = two * data%B( k - 1, k )
          ELSE
            k = i / 2 + 1
            DO j = 0, k - 2
              data%B( j, k ) = two * ( data%A( j, k - 1 ) +                     &
-                              ( j + one ) * data%A( j + 1, k - 1 ) )
+                     ( REAL( j, KIND = rp_ ) + one ) * data%A( j + 1, k - 1 ) )
            END DO
            data%B( k - 1, k ) = two * data%A( k - 1, k - 1 )
          END IF

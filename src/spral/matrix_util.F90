@@ -676,12 +676,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
 
    ! Local variables
    integer(ip_) :: col ! current column
-   integer(ip_) :: i
-   integer(ip_) :: idiag
-   integer(ip_) :: idup
-   integer(ip_) :: ioor
-   integer(ip_) :: j
-   integer(ip_) :: k
+   integer(ip_) :: i, idiag, idup, ioor, j, k
    integer(ip_) :: nout ! output unit (set to -1 if nout not present)
    integer(ip_) :: st ! stat parameter
    integer(ip_) :: minidx
@@ -741,7 +736,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
       allocate(map(2*ptr_in(n+1)-2),stat=st)
       k = 1 ! insert location
       do col = 1, n
-         ptr_out(col) = k
+         ptr_out(col) = INT( k, KIND = i4_ )
          if(ptr_in(col+1).lt.ptr_in(col)) then
             flag = ERROR_PTR_MONO
             call print_matrix_flag(context,nout,flag)
@@ -760,7 +755,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
                cycle
             endif
             row_out(k) = row_in(i)
-            map(k) = multiplier*i
+            map(k) = INT( multiplier * i, KIND = i4_ )
             k = k + 1
          end do
          ! Sort entries into order
@@ -794,7 +789,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
                   dup%next => duphead
                   duphead => dup
                   dup%src = map(i)
-                  dup%dest = k-1
+                  dup%dest = INT( k - 1, KIND = i4_ )
                   cycle
                endif
                if(row_out(i).eq.col) idiag = idiag + 1
@@ -809,14 +804,14 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
             return
          endif
       end do
-      ptr_out(n+1) = k
-      lmap = k-1
+      ptr_out(n+1) = INT( k, KIND = i4_ )
+      lmap = INT( k - 1, KIND = i4_ )
    elseif(present(val_out)) then
       allocate(val_out(ptr_in(n+1)-1),stat=st)
       if(st.ne.0) goto 100
       k = 1 ! insert location
       do col = 1, n
-         ptr_out(col) = k
+         ptr_out(col) = INT( k, KIND = i4_ )
          if(ptr_in(col+1).lt.ptr_in(col)) then
             flag = ERROR_PTR_MONO
             call print_matrix_flag(context,nout,flag)
@@ -836,7 +831,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
                   cycle
                endif
                row_out(k) = row_in(i)
-               val_out(k) = multiplier*val_in(i)
+               val_out(k) = REAL( multiplier, KIND = rp_ ) * val_in(i)
                k = k + 1
             end do
          case default
@@ -891,11 +886,11 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
             return
          endif
       end do
-      ptr_out(n+1) = k
+      ptr_out(n+1) = INT( k, KIND = i4_ )
    else ! pattern only
       k = 1 ! insert location
       do col = 1, n
-         ptr_out(col) = k
+         ptr_out(col) = INT( k, KIND = i4_ )
          if(ptr_in(col+1).lt.ptr_in(col)) then
             flag = ERROR_PTR_MONO
             call print_matrix_flag(context,nout,flag)
@@ -951,7 +946,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
             return
          end if
       end do
-      ptr_out(n+1) = k
+      ptr_out(n+1) = INT( k, KIND = i4_ )
    endif
 
    if(present(map)) then
@@ -1220,7 +1215,7 @@ subroutine clean_cscl_oop_main(context, multiplier, matrix_type, m, n, &
                   cycle
                endif
                row_out(kk) = row_in(ii)
-               val_out(kk) = multiplier*val_in(ii)
+               val_out(kk) =  REAL( multiplier, KIND = rp_ ) * val_in(ii)
                kk = kk + 1
             end do
          case default
@@ -1441,12 +1436,7 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
 
    ! Local variables
    character(50)  :: context  ! Procedure name (used when printing).
-   integer(ip_) :: i
-   integer(ip_) :: idiag
-   integer(ip_) :: idup
-   integer(ip_) :: ioor
-   integer(ip_) :: j
-   integer(ip_) :: l
+   integer(ip_) :: i, idiag, idup, ioor, j, l
    integer(i4_) :: k, l1, l2
    integer(i4_) :: ne_new
    integer(ip_) :: nout ! output unit (set to -1 if lp not present)
@@ -1585,12 +1575,12 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
                k=ptr_out(j)
                ptr_out(j) = k+1
                row_out(k) = i
-               map(k) = l
+               map(k) = INT( l, KIND = i4_ )
             else
                k=ptr_out(i)
                ptr_out(i) = k+1
                row_out(k) = j
-               map(k) = -l
+               map(k) = INT( -l, KIND = i4_ )
             end if
          end do
 
@@ -1603,12 +1593,12 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
                k=ptr_out(j)
                ptr_out(j) = k+1
                row_out(k) = i
-               map(k) = l
+               map(k) = INT( l, KIND = i4_ )
             else
                k=ptr_out(i)
                ptr_out(i) = k+1
                row_out(k) = j
-               map(k) = l
+               map(k) = INT( l, KIND = i4_ )
             end if
          end do
       case default
@@ -1619,7 +1609,7 @@ subroutine convert_coord_to_cscl_ptr32_precision(matrix_type, m, n, ne, row,   &
             k=ptr_out(j)
             ptr_out(j) = k+1
             row_out(k) = i
-            map(k) = l
+            map(k) = INT( l, KIND = i4_ )
          end do
       end select
    elseif(present(val_out)) then
@@ -2684,8 +2674,8 @@ subroutine sort32( array, n, map, val )
    real(rp_), dimension(n), optional, intent(inout) :: val ! Apply same
       ! permutation to val
 
-   integer(ip_) :: i
-   integer(ip_) :: temp
+   integer(ip_) :: i, temp
+   integer(i4_) :: temp4
    real(rp_) :: vtemp
    integer(ip_) :: root
 
@@ -2718,9 +2708,9 @@ subroutine sort32( array, n, map, val )
          val(i) = vtemp
       endif
       if(present(map)) then
-         temp = map(1)
+         temp4 = map(1)
          map(1) = map(i)
-         map(i) = temp
+         map(i) = temp4
       endif
       call pushdown32(1_ip_,i-1_ip_, array, val=val, map=map)
    end do
@@ -3101,7 +3091,7 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
       end do
    end do
 
-   newtau = 2*oldtau - ndiag
+   newtau = 2*oldtau - INT( ndiag, KIND = i4_ )
    ! ipkp1 points to position  after end of column being currently processed
    ipkp1 = oldtau + 1
    ! ckp1 points to position  after end of same column in expanded structure
@@ -3136,7 +3126,7 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
       ! column j in expanded form
       ptr(j) = jstart - rebase
       ! set ckp1 for next column
-      ckp1 = ckp1 - iw(j)
+      ckp1 = ckp1 - INT( iw(j), KIND = i4_ )
       ! reset iw(j) to number of entries in lower triangle of column.
       iw(j) = lenk
    end do
@@ -3146,7 +3136,7 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
    ! elements a(j,i) are put in position.
    do j = n,1,-1
       i1 = ptr(j) + rebase
-      i2 = ptr(j) + iw(j) - 1 + rebase
+      i2 = ptr(j) + INT( iw(j), KIND = i4_ ) - 1 + rebase
       ! run down column in order
       ! note that i is always greater than or equal to j
       if (present(a)) then

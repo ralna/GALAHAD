@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 16:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -1119,7 +1119,7 @@
       INTEGER ( KIND = ip_ ) :: dz_l_lower, dz_l_upper, dz_u_lower, dz_u_upper
       REAL :: time_start, time_record, time_now
       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = rp_ ) :: fixed_sum, av_bnd
+      REAL ( KIND = rp_ ) :: av_bnd, fixed_sum
       LOGICAL :: printi, remap_freed, reset_bnd, implicit
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2692,6 +2692,7 @@
       REAL ( KIND = rp_ ) :: bound_average, bound_length, perturb_max, alpha_est
       REAL ( KIND = rp_ ) :: perturb_x, perturb_c, perturb_y, perturb_z, max_r
       REAL ( KIND = rp_ ) :: mu_l, mu_u, max_xr, max_cr, perturbation_small
+      REAL ( KIND = rp_ ) :: rnbnds, rnbnds_x, rnbnds_c
 !     REAL ( KIND = rp_ ) :: old_merit, min_mu, nu
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: set_printp, printt, printi, printp, printe, printd, printw
@@ -3857,6 +3858,9 @@
 !  Find the max-norm of the residual
 
       nbnds = nbnds_x + nbnds_c
+      rnbnds_x = REAL( nbnds_x, KIND = rp_ )
+      rnbnds_c = REAL( nbnds_c, KIND = rp_ )
+      rnbnds = REAL( nbnds, KIND = rp_ )
       IF ( printi .AND. m > 0 .AND. dims%c_l_start <= dims%c_u_end )           &
         WRITE( out, "( A, ' largest/smallest scale factor ', 2ES12.4 )" )      &
           prefix, MAXVAL( SCALE_C ), MINVAL( SCALE_C )
@@ -3941,19 +3945,19 @@
 !  Record the slackness and the deviation from the central path
 
       IF ( nbnds_x > 0 ) THEN
-        slknes_x = slknes_x / nbnds_x
+        slknes_x = slknes_x / rnbnds_x
       ELSE
         slknes_x = zero
       END IF
 
       IF ( nbnds_c > 0 ) THEN
-        slknes_c = slknes_c / nbnds_c
+        slknes_c = slknes_c / rnbnds_c
       ELSE
         slknes_c = zero
       END IF
 
       IF ( nbnds > 0 ) THEN
-        slknes = slknes / nbnds
+        slknes = slknes / rnbnds
       ELSE
         slknes = zero
       END IF
@@ -5288,19 +5292,19 @@
                          MAXVAL( DIST_Y_u( dims%c_u_start : dims%c_u_end ) ) )
 
             IF ( nbnds_x > 0 ) THEN
-              slknes_x = slknes_x / nbnds_x
+              slknes_x = slknes_x / rnbnds_x
             ELSE
               slknes_x = zero
             END IF
 
             IF ( nbnds_c > 0 ) THEN
-              slknes_c = slknes_c / nbnds_c
+              slknes_c = slknes_c / rnbnds_c
             ELSE
               slknes_c = zero
             END IF
 
             IF ( nbnds > 0 ) THEN
-              slknes = slknes / nbnds
+              slknes = slknes / rnbnds
             ELSE
               slknes = zero
             END IF

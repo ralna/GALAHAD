@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -4651,26 +4651,26 @@
 
       IF ( control%qpb_or_qpa .OR. control%no_qpb ) THEN
         IF( control%rho_g <= zero ) THEN
-          prob%rho_g = 2 * prob%m
+          prob%rho_g = REAL( 2 * prob%m, KIND = rp_ )
         ELSE
           prob%rho_g = control%rho_g
         END IF
 
         IF( control%rho_b <= zero ) THEN
-          prob%rho_b = 2 * prob%n
+          prob%rho_b = REAL( 2 * prob%n, KIND = rp_ )
         ELSE
           prob%rho_b = control%rho_b
         END IF
       ELSE
         IF( control%rho_g <= zero ) THEN
-          prob%rho_g = prob%m
+          prob%rho_g = REAL( prob%m, KIND = rp_ )
           prob%rho_g = two * MAX( prob%rho_g, MAXVAL( ABS( prob%Y ) ) )
         ELSE
           prob%rho_g = control%rho_g
         END IF
 
         IF( control%rho_b <= zero ) THEN
-          prob%rho_b = prob%n
+          prob%rho_b = REAL( prob%n, KIND = rp_ )
           prob%rho_b = two * MAX( prob%rho_b, MAXVAL( ABS( prob%Z ) ) )
         ELSE
           prob%rho_b = control%rho_b

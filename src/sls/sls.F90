@@ -55,7 +55,7 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
-     USE GALAHAD_LAPACK_interface, ONLY : ILAENV, POTRF, POTRS, SYTRF, SYTRS,  &
+     USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF, SYTRS,   &
                                           PBTRF, PBTRS ! , SYEV
      USE HSL_ZD11_precision
      USE HSL_MA57_precision
@@ -2694,8 +2694,8 @@
      LOGICAL :: mc6168_ordering
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
-     INTEGER ( KIND = ip_ ) :: ILAENV
-     EXTERNAL :: ILAENV
+     INTEGER ( KIND = ip_ ) :: LAENV
+     EXTERNAL :: LAENV
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -4171,8 +4171,8 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          data%sytr_lwork =                                                     &
-           data%n * ILAENV( 1_ip_, 'DSYTRF', 'L', data%n,                      &
-                            - 1_ip_, - 1_ip_, - 1_ip_ )
+           data%n * LAENV( 1_ip_, 'DSYTRF', 'L', data%n,                       &
+                           - 1_ip_, - 1_ip_, - 1_ip_ )
          CALL SPACE_resize_array( data%sytr_lwork, data%WORK,                  &
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900

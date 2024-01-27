@@ -100,12 +100,12 @@ module hsl_MA86_double
    end interface MA86_get_n__
 
    type block_type
-      integer(ip_) :: bcol            ! block column that blk belongs to
-      integer(ip_) :: blkm            ! height of block (number of rows in blk)
-      integer(ip_) :: blkn            ! width of block (number of columns in blk)
-      integer(long_) :: dblk      ! id of the block on the diagonal within the
+      integer(ip_) :: bcol ! block column that blk belongs to
+      integer(ip_) :: blkm ! height of block (number of rows in blk)
+      integer(ip_) :: blkn ! width of block (number of columns in blk)
+      integer(long_) :: dblk ! id of the block on the diagonal within the
          ! block column to which blk belongs
-      integer(ip_) :: dep_initial     ! initial dependency count for block,
+      integer(ip_) :: dep_initial ! initial dependency count for block,
          ! In indef case, countdown occurs in bcol on a block column basis
       integer(long_) :: id        ! The block identitifier (ie, its number blk)
       integer(long_) :: last_blk  ! id of the last block within the
@@ -151,24 +151,24 @@ module hsl_MA86_double
    end type node_type
 
    type thread_info
-      integer(ip_) :: num_delay     = 0 ! number of delayed pivots
-      integer(long_) :: num_flops = 0 ! number of floating point operations
+      integer(ip_) :: num_delay    = 0 ! number of delayed pivots
+      integer(long_) :: num_flops  = 0 ! number of floating point operations
       integer(long_) :: num_factor = 0 ! number of entries in factors
-      integer(ip_) :: num_neg       = 0 ! number of negative pivots in the real
+      integer(ip_) :: num_neg      = 0 ! number of negative pivots in the real
                                    ! or complex Hermitian case.
       integer(ip_) :: num_nothresh  = 0 ! number of pivots not satisfying
         ! pivot threshold test with control%u
       integer(ip_) :: num_perturbed = 0 ! number of perturbed pivots
-      integer(ip_) :: num_two       = 0 ! number of 2x2 pivots
+      integer(ip_) :: num_two = 0 ! number of 2x2 pivots
       integer(ip_) :: num_zero_pivots  = 0 ! number of zero pivots
-      real (dp_) :: usmall      = -one ! Set to zero if num_perturbed > 0.
+      real (dp_) :: usmall = -one ! Set to zero if num_perturbed > 0.
          ! Otherwise, if q < p, it holds the value of cntl%umin that
          ! would have led to a greater value of q and if q = p, it holds
          ! the smallest relative pivot value of the chosen pivots.
-      real(dp_) :: detlog       = zero ! logarithm of abs value of det A
-      integer(ip_) :: detsign       = 1 ! in the real or complex Hermitian case,
-                                   ! holds sign of determinant or 0 if A is
-                                   ! singular
+      real(dp_) :: detlog = zero ! logarithm of abs value of det A
+      integer(ip_) :: detsign = 1 ! in the real or complex Hermitian case,
+                                  ! holds sign of determinant or 0 if A is
+                                  ! singular
    end type thread_info
 
    type lfactor
@@ -572,20 +572,6 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    integer(ip_),  intent(in) :: nrhs  ! number of right-hand sides (maybe = 0)
    integer(ip_),  intent(in) :: ldr  ! leading extent of rhs
    real(dp_), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data.
-      ! Overwritten by partial solution (forward substitution performed).
-
-   ! local derived types
-   type(dagtask) :: task ! see description of derived type
-   type(taskstack) :: stack ! see description of derived type
-
-   ! local arrays
-   real(dp_), dimension(:), allocatable :: detlog ! per thread sum of log pivot
-   integer(ip_),  dimension(:), allocatable ::  invp ! holds inverse ordering
-   integer(ip_),  dimension(:), allocatable ::  map ! allocated to have size n
-     ! used in copying entries of user's matrix a into factor storage
-     ! (keep%fact).
-   real(dp_), dimension(:,:), allocatable ::  rhs_local ! Local right-hand
-     ! side arrays. allocated to have size (nrhs*ldr,0:total_threads)
 
 end subroutine factorize_posdef
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -807,8 +807,9 @@
 
 !  exit if the number of newly-independent columns is small
 
-          IF ( data%level( level )%order <=                                    &
-                data%control%tol_level * data%level( level )%n ) EXIT
+          IF ( REAL( data%level( level )%order, KIND = rp_ ) <=                &
+                 data%control%tol_level *                                      &
+                   REAL( data%level( level )%n, KIND = rp_ ) ) EXIT
 
 !  exit if the remaining number of unprocessed columns is small
 

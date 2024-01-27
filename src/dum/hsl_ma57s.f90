@@ -162,8 +162,6 @@ contains
    subroutine ma57_initialize(factors,control)
       type(ma57_factors), intent(out), optional :: factors
       type(ma57_control), intent(out), optional :: control
-      integer icntl(20),stat
-      real(sp_) cntl(5)
 
 !  Dummy subroutine available with GALAHAD
 

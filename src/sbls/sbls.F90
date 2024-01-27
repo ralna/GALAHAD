@@ -49,7 +49,7 @@
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_norm
       USE GALAHAD_BLAS_interface, ONLY : GEMV
-      USE GALAHAD_LAPACK_interface, ONLY : ILAENV, POTRF, POTRS, SYTRF, SYTRS
+      USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF, SYTRS
 
       IMPLICIT NONE
 
@@ -2104,8 +2104,8 @@
       LOGICAL :: printi, resize, use_schur_complement
       LOGICAL :: fail_if_not_sc, numerical_pivoting
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ) :: ILAENV
-      EXTERNAL :: ILAENV
+      INTEGER ( KIND = ip_ ) :: LAENV
+      EXTERNAL :: LAENV
 
 !     REAL ( KIND = rp_ ) :: DD(2,A%m+A%n)
 
@@ -4415,8 +4415,8 @@
 !  set up space for the Bunch-Kaufman factorization of S
 
         np1 = H_lm%n_restriction + 1 ; npm = n + m
-        nb = ILAENV( 1_ip_, 'DSYTRF', 'L', efactors%len_s_max,                 &
-                     - 1_ip_, - 1_ip_, - 1_ip_ )
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', efactors%len_s_max,                  &
+                    - 1_ip_, - 1_ip_, - 1_ip_ )
 
         array_name = 'sbls: efactors%IPIV'
         CALL SPACE_resize_array( efactors%len_s_max, efactors%IPIV,            &

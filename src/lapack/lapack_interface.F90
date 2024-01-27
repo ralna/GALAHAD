@@ -26,7 +26,7 @@
 
 !  parameter selection envionment
 
-      INTERFACE ILAENV
+      INTERFACE LAENV
 
           FUNCTION ILAENV( ispec, name, opts, n1, n2, n3, n4 )
           USE GALAHAD_KINDS
@@ -35,7 +35,7 @@
           CHARACTER ( LEN = * ) :: name, opts
           END FUNCTION ILAENV
 
-      END INTERFACE ILAENV
+      END INTERFACE LAENV
 
 !  LU factorization
 

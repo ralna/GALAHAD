@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -4409,7 +4409,7 @@
       END IF
       tmp = MAX( s%a_max, s%h_max, s%x_max, s%z_max, s%g_max, s%c_max, s%y_max )
       s%max_growth = control%max_growth_factor * tmp
-      s%ACCURACY   = tmp * itmp * EPSMACH
+      s%ACCURACY   = tmp * REAL( itmp, KIND = rp_ ) * EPSMACH
 
       IF ( s%level >= DETAILS ) THEN
          WRITE( s%out, * ) '   setting problem dependent parameters'
@@ -12382,7 +12382,8 @@ rlit:    DO it = 1, prob%m
 
                   ELSE
 
-                     IF ( s%A_row_s( io ) + nfills > s%max_fill_prop * ns ) THEN
+                     IF ( REAL( s%A_row_s( io ) + nfills, KIND = rp_ ) >       &
+                          s%max_fill_prop * REAL( ns, KIND = rp_ ) ) THEN
                         IF ( s%level >= DEBUG ) WRITE( s%out, * )              &
                            '    too many fills in sparse A: skipping pivoting'
                         EXIT
@@ -20617,7 +20618,7 @@ sli:     DO ii = 1, prob%m
          END IF
       END IF
       IF ( control%max_fill >= 0 ) THEN
-         s%max_fill_prop = HUNDRED + control%max_fill
+         s%max_fill_prop = HUNDRED + REAL( control%max_fill, KIND = rp_ )
          s%max_fill_prop = s%max_fill_prop / HUNDRED
       ELSE
          s%max_fill_prop = s%INFINITY

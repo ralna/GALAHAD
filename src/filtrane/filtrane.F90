@@ -3617,8 +3617,7 @@
 !  Test for convergence.
 !------------------------------------------------------------------------------
 
-     sqrtn = problem%n
-     sqrtn = SQRT( sqrtn )
+     sqrtn = SQRT( REAL( problem%n, KIND = rp_ ) )
      IF ( control%stop_on_prec_g ) THEN
         IF ( control%stop_on_g_max ) THEN
            IF ( s%g_norminf <= control%g_accuracy   ) THEN
@@ -3655,7 +3654,7 @@
 
 !  Ensure that the margin is small enough.
 
-     rp = s%p
+     rp = REAL( s%p, KIND = rp_ )
      control%gamma_f = MIN( control%gamma_f,  HALF / SQRT( rp ) )
 
 !  Compute the norm of the current iterate.
@@ -3804,8 +3803,7 @@
 !             Make sure the absolute requested precision on the subproblem is
 !             not much higher than the final precision required for the problem.
 
-              sqrtn = problem%n
-              sqrtn = SQRT( sqrtn )
+              sqrtn = SQRT( REAL( problem%n, KIND = rp_ ) )
               s%GLTR_control%stop_absolute = SQRT( EPSMACH )
               IF ( control%stop_on_prec_g .OR. control%prec_used == NONE ) THEN
                  IF ( control%stop_on_g_max ) THEN
@@ -4555,7 +4553,7 @@
               IF ( s%vote( i ) == NEWTON ) n_Newton = n_Newton + 1
            END DO
            IF ( n_votes >= control%model_inertia ) THEN
-              IF (  n_Newton > HALF * control%model_inertia ) THEN
+              IF ( n_Newton > control%model_inertia / 2 ) THEN
                  IF ( s%level >= ACTION ) WRITE( s%out, 1140 ) n_Newton, n_votes
                  s%model_used = NEWTON
               ELSE
@@ -4911,8 +4909,7 @@
 
 !       -----------------------------------------------------------------------
 
-        sqrtn = problem%n
-        sqrtn = SQRT( sqrtn )
+        sqrtn = SQRT( REAL( problem%n, KIND = rp_ ) )
         IF ( control%stop_on_prec_g ) THEN
            IF ( control%stop_on_g_max ) THEN
               IF ( s%g_norminf  <= control%g_accuracy ) THEN
@@ -7056,8 +7053,7 @@
       s%r( 1:s%p ) = ABS( s%theta( 1:s%p ) )
       IF ( control%margin_type /= FIXED ) THEN
          marginc = control%gamma_f * cnorm
-         sqrtp = s%p
-         sqrtp = SQRT( sqrtp )
+         sqrtp = SQRT( REAL( s%p, KIND = rp_ ) )
       END IF
 
 !     Select the active filter.

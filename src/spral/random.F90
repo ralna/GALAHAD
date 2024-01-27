@@ -42,7 +42,7 @@ contains
   !
   ! Get random seed
   !
-  integer function random_get_seed(state)
+  integer(ip_) function random_get_seed(state)
     implicit none
     type(random_state), intent(in) :: state
 
@@ -96,7 +96,7 @@ contains
     type(random_state), intent(inout) :: state
     integer(i8_), intent(in) :: n
 
-    if (n .le. 0_i8_) then
+    if (n <= 0_i8_) then
        random_integer64 = n
        return
     end if
@@ -105,7 +105,8 @@ contains
     state%x = int(mod(a*state%x+c, m))
 
     ! Take modulo n for return value
-    random_integer64 = int(state%x * (real(n,rp_)/real(m,rp_)), long_) + 1
+    random_integer64 = int( state%x *                                          &
+                            int( real(n,rp_) / real(m,rp_), ip_ ), long_ ) + 1
   end function random_integer64
 
   !

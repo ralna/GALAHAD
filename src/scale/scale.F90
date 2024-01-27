@@ -1414,7 +1414,7 @@
 
 !  compute the stopping tolerance
 
-      stop_tol = control%stop_tol * ne
+      stop_tol = control%stop_tol * REAL( ne, KIND = rp_ )
 
 !  --------------
 !  main iteration
@@ -1908,7 +1908,7 @@
 
 !  set the stopping tolerance
 
-      stop_tol = a_ne * control%stop_tol
+      stop_tol = REAL( a_ne, KIND = rp_ ) * control%stop_tol
 
 !  set initial values
 

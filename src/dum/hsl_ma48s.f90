@@ -152,10 +152,6 @@ contains
       integer(ip_),  intent(in), optional :: perm(matrix%m+matrix%n) ! Init perm
       integer(ip_),  intent(in), optional :: lastcol(matrix%n) ! last cols
 
-      integer(ip_),  allocatable :: iwork(:)
-      integer(ip_) :: i,job,k,la,lkeep,m,n,ne,stat,icntl(20),info(20)
-      real(sp_):: rinfo(10),cntl(10)
-
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
            "( ' We regret that the solution options that you have ', /,        &
      &     ' chosen are not all freely available with GALAHAD.', /,            &
@@ -202,9 +198,6 @@ contains
       integer(ip_),  optional, intent(in) :: trans
       real(sp_), optional :: resid(2)
       real(sp_), optional :: error
-      integer icntl(20),info(20),job,m,n,stat
-      real(sp_) cntl(10),err(3)
-      logical(lp_) trans48
 
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
            "( ' We regret that the solution options that you have ', /,        &

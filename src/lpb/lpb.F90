@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -2643,6 +2643,7 @@
       REAL ( KIND = rp_ ) :: one_plus_2_sigma_mu, two_sigma_mu2, two_sigma_mu
       REAL ( KIND = rp_ ) :: opt_alpha_guarantee, opt_merit_guarantee
       REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, two_mu
+      REAL ( KIND = rp_ ) :: rnbnds, rnbnds_x, rnbnds_c
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
       LOGICAL :: maxpiv, stat_required, guarantee, unbounded
@@ -3249,6 +3250,9 @@
 !  find the max-norm of the residual
 
       nbnds = nbnds_x + nbnds_c
+      rnbnds_x = REAL( nbnds_x, KIND = rp_ )
+      rnbnds_c = REAL( nbnds_c, KIND = rp_ )
+      rnbnds = REAL( nbnds, KIND = rp_ )
       IF ( printi .AND. use_scale_c .AND. m > 0 .AND.                          &
            dims%c_l_start <= dims%c_u_end )                                    &
         WRITE( out, "( A, '  largest/smallest scale factor', 2ES11.4 )" )      &
@@ -3324,13 +3328,13 @@
 !  record the slackness and the deviation from the central path
 
       IF ( nbnds_x > 0 ) THEN
-        slknes_x = slknes_x / nbnds_x
+        slknes_x = slknes_x / rnbnds_x
       ELSE
         slknes_x = zero
       END IF
 
       IF ( nbnds_c > 0 ) THEN
-        slknes_c = slknes_c / nbnds_c
+        slknes_c = slknes_c / rnbnds_c
       ELSE
         slknes_c = zero
       END IF
@@ -3341,7 +3345,7 @@
         ELSE
           gamma_f = one
         END IF
-        slknes = slknes / nbnds
+        slknes = slknes / rnbnds
         gamma_c = control%gamma_c * slkmin / slknes
       ELSE
         gamma_f = zero ; slknes = zero ; gamma_c = zero
@@ -3712,10 +3716,10 @@
 
         IF ( inform%feasible .AND. gradient_kind == 0 ) THEN
           IF ( inform%potential < control%potential_unbounded *                &
-               ( ( dims%x_l_end - dims%x_free ) +                              &
-               ( n -  dims%x_u_start + 1 ) +                                   &
-               ( dims%c_l_end - dims%c_l_start + 1 ) +                         &
-               ( dims%c_u_end - dims%c_u_start + 1 ) ) ) THEN
+             REAL( ( dims%x_l_end - dims%x_free ) +                            &
+                   ( n -  dims%x_u_start + 1 ) +                               &
+                   ( dims%c_l_end - dims%c_l_start + 1 ) +                     &
+                   ( dims%c_u_end - dims%c_u_start + 1 ), KIND = rp_ ) ) THEN
             inform%status = GALAHAD_error_no_center ; GO TO 600
           END IF
 
@@ -5480,7 +5484,7 @@
 
 !  record the initial slope along the search arc
 
-          slope = - ( merit - mu * nbnds )
+          slope = - ( merit - mu * rnbnds )
 
 !  define an interval [alhpa_l,alpha_u] containing the required stepsize
 
@@ -5575,11 +5579,11 @@
 !  record the initial slope along the search arc
 
         IF ( arc == 'ZP' ) THEN
-          slope = - two * ( merit - mu * nbnds ) + tau * res_primal_dual
+          slope = - two * ( merit - mu * rnbnds ) + tau * res_primal_dual
         ELSE IF ( puiseux ) THEN
-          slope = - two * ( merit - mu * nbnds )
+          slope = - two * ( merit - mu * rnbnds )
         ELSE
-          slope = - ( merit - mu * nbnds )
+          slope = - ( merit - mu * rnbnds )
         END IF
         IF ( printw ) WRITE( out, "( A, '  value and slope = ', 1P, 2D12.4)")  &
           prefix, merit, slope
@@ -5828,7 +5832,7 @@
                                 Y_u( dims%c_u_start : dims%c_u_end ) )
 
           IF ( nbnds > 0 ) THEN
-            slknes = slknes / nbnds
+            slknes = slknes / rnbnds
           ELSE
             slknes = zero
           END IF
@@ -6128,18 +6132,18 @@ END DO
                      MAXVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
 
         IF ( nbnds_x > 0 ) THEN
-          slknes_x = slknes_x / nbnds_x
+          slknes_x = slknes_x / rnbnds_x
         ELSE
           slknes_x = zero
         END IF
 
         IF ( nbnds_c > 0 ) THEN
-          slknes_c = slknes_c / nbnds_c
+          slknes_c = slknes_c / rnbnds_c
         ELSE
           slknes_c = zero
         END IF
         IF ( nbnds > 0 ) THEN
-          slknes = slknes / nbnds
+          slknes = slknes / rnbnds
           inform%complementary_slackness = slknes
         ELSE
           slknes = zero
@@ -7707,7 +7711,7 @@ END DO
 !  ... and both (x-x_l)_i(z_l)_i - (gamma_c / nbds) * comp >= 0 and
 !               (x-x_u)_i(z_u)_i - (gamma_c / nbds) * comp >= 0
 
-        scomp = comp * gamma_c / nbnds
+        scomp = comp * gamma_c / REAL( nbnds, KIND = rp_ )
 
         DO i = dims%x_free + 1, dims%x_u_start - 1
           IF ( ( X( i ) - X_l( i ) ) * Z_l( i ) < scomp ) THEN
@@ -7946,7 +7950,7 @@ END DO
 
 !  Local variables
 
-      REAL ( KIND = rp_ ) :: compc, compl, compq, coef0, coef1, coef2
+      REAL ( KIND = rp_ ) :: compc, compl, compq, coef0, coef1, coef2, rnbnds
       REAL ( KIND = rp_ ) :: coef0_f, coef1_f, coef2_f, root1, root2, tol
       REAL ( KIND = rp_ ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
 
@@ -7957,6 +7961,7 @@ END DO
         RETURN
       END IF
       tol = epsmch ** 0.75
+      rnbnds = REAL( nbnds, KIND = rp_ )
 
 !  ================================================
 !             part to compute alpha_max_b
@@ -7993,8 +7998,9 @@ END DO
 
 !  Scale these coefficients
 
-      compc = - gamma_c * coef0_f / nbnds ; compl = - gamma_c * coef1_f / nbnds
-      compq = - gamma_c * coef2_f / nbnds
+      compc = - gamma_c * coef0_f / rnbnds
+      compl = - gamma_c * coef1_f / rnbnds
+      compq = - gamma_c * coef2_f / rnbnds
 
 !  Compute the coefficients for the quadratic expression
 !  for the individual complementarity

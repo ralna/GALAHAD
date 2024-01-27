@@ -44,7 +44,7 @@
       USE GALAHAD_SLS_precision
       USE GALAHAD_IR_precision
       USE GALAHAD_MOP_precision, ONLY: mop_AX
-      USE GALAHAD_LAPACK_interface, ONLY : ILAENV, SYEV, SYGV
+      USE GALAHAD_LAPACK_interface, ONLY : LAENV, SYEV, SYGV
 
       IMPLICIT NONE
 
@@ -861,8 +861,8 @@
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       LOGICAL :: new_q
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ) :: ILAENV
-      EXTERNAL :: ILAENV
+      INTEGER ( KIND = ip_ ) :: LAENV
+      EXTERNAL :: LAENV
 
 !  prefix for all output
 
@@ -1018,7 +1018,7 @@
 
 !  allocate workspace
 
-          nb = ILAENV( 1_ip_, 'DSYTRD', 'L', n, - 1_ip_, - 1_ip_, - 1_ip_ )
+          nb = LAENV( 1_ip_, 'DSYTRD', 'L', n, - 1_ip_, - 1_ip_, - 1_ip_ )
           lwork = MAX( 1, 3 * n - 1, ( nb + 2 ) * n )
 
           array_name = 'trs: work'
@@ -3136,7 +3136,8 @@
               ELSE
                 lambda = MIN( lambda_l + theta_g * width,                      &
                            MAX( lambda_l, lambda_s_l + theta_ii *              &
-                             ( width_rel ** ( two * n_invit - gamma_eps ) ) ) )
+                             ( width_rel ** ( two *                            &
+                               REAL( n_invit, KIND = rp_ ) - gamma_eps ) ) ) )
               END IF
 
 !  end of potential hard case. If no inverse iteration was applied,
