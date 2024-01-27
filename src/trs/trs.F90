@@ -862,7 +862,6 @@
       LOGICAL :: new_q
       CHARACTER ( LEN = 80 ) :: array_name
       INTEGER ( KIND = ip_ ) :: LAENV
-      EXTERNAL :: LAENV
 
 !  prefix for all output
 

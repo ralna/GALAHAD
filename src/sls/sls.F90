@@ -2695,7 +2695,6 @@
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
      INTEGER ( KIND = ip_ ) :: LAENV
-     EXTERNAL :: LAENV
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix

@@ -2105,7 +2105,6 @@
       LOGICAL :: fail_if_not_sc, numerical_pivoting
       CHARACTER ( LEN = 80 ) :: array_name
       INTEGER ( KIND = ip_ ) :: LAENV
-      EXTERNAL :: LAENV
 
 !     REAL ( KIND = rp_ ) :: DD(2,A%m+A%n)
 
