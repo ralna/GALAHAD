@@ -24,6 +24,19 @@
 !   I n t e r f a c e  B l o c k s
 !---------------------------------
 
+!  parameter selection envionment
+
+      INTERFACE ILAENV
+
+          FUNCTION ILAENV( ispec, name, opts, n1, n2, n3, n4 )
+          USE GALAHAD_KINDS
+          INTEGER ( KIND = ip_) :: ILAENV
+          INTEGER ( KIND = ip_) :: ispec, n1, n2, n3, n4
+          CHARACTER ( LEN = * ) :: name, opts
+          END FUNCTION ILAENV
+
+      END INTERFACE ILAENV
+
 !  LU factorization
 
       INTERFACE GETRF

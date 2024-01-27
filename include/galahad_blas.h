@@ -6,7 +6,6 @@
 #define DDOT   DDOT64
 #define DNRM2  DNRM264
 #define DZNRM2 DZNRM264
-#define LSAME  LSAME64
 #define SASUM  SASUM64
 #define SDOT   SDOT64
 #define SNRM2  SNRM264
@@ -54,7 +53,6 @@
 #define STRMV  STRMV64
 #define STRSM  STRSM64
 #define STRSV  STRSV64
-#define XERBLA XERBLA64
 #define ZCOPY  ZCOPY64
 #define ZDSCAL ZDSCAL64
 #define ZGEMM  ZGEMM64
@@ -73,7 +71,6 @@
 #define DDOT   DDOT__64
 #define DNRM2  DNRM2__64
 #define DZNRM2 DZNRM2__64
-#define LSAME  LSAME__64
 #define SASUM  SASUM__64
 #define SDOT   SDOT__64
 #define SNRM2  SNRM2__64
@@ -121,7 +118,6 @@
 #define STRMV  STRMV__64
 #define STRSM  STRSM__64
 #define STRSV  STRSV__64
-#define XERBLA XERBLA__64
 #define ZCOPY  ZCOPY__64
 #define ZDSCAL ZDSCAL__64
 #define ZGEMM  ZGEMM__64
@@ -140,7 +136,6 @@
 #define DDOT   DDOT
 #define DNRM2  DNRM2
 #define DZNRM2 DZNRM2
-#define LSAME  LSAME
 #define SASUM  SASUM
 #define SDOT   SDOT
 #define SNRM2  SNRM2
@@ -188,7 +183,6 @@
 #define STRMV  STRMV
 #define STRSM  STRSM
 #define STRSV  STRSV
-#define XERBLA XERBLA
 #define ZCOPY  ZCOPY
 #define ZDSCAL ZDSCAL
 #define ZGEMM  ZGEMM
@@ -207,7 +201,6 @@
 #define DDOT   DDOT_64
 #define DNRM2  DNRM2_64
 #define DZNRM2 DZNRM2_64
-#define LSAME  LSAME_64
 #define SASUM  SASUM_64
 #define SDOT   SDOT_64
 #define SNRM2  SNRM2_64
@@ -255,7 +248,6 @@
 #define STRMV  STRMV_64
 #define STRSM  STRSM_64
 #define STRSV  STRSV_64
-#define XERBLA XERBLA_64
 #define ZCOPY  ZCOPY_64
 #define ZDSCAL ZDSCAL_64
 #define ZGEMM  ZGEMM_64

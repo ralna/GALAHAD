@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 07:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -49,7 +49,7 @@
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY: TWO_norm
       USE GALAHAD_BLAS_interface, ONLY : GEMV
-      USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS
+      USE GALAHAD_LAPACK_interface, ONLY : ILAENV, POTRF, POTRS, SYTRF, SYTRS
 
       IMPLICIT NONE
 

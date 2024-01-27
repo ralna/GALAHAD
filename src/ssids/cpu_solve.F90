@@ -3,15 +3,29 @@
 #include "spral_procedures.h"
 
 #ifdef SPRAL_SINGLE
+#ifdef SPRAL_64BIT_INTEGER
+#define trsm strsm_64
+#define trsv strsv_64
+#define gemm sgemm_64
+#define gemv sgemv_64
+#else
 #define trsm strsm
 #define trsv strsv
 #define gemm sgemm
 #define gemv sgemv
+#endif
+#else
+#ifdef SPRAL_64BIT_INTEGER
+#define trsm dtrsm_64
+#define trsv dtrsv_64
+#define gemm dgemm_64
+#define gemv dgemv_64
 #else
 #define trsm dtrsm
 #define trsv dtrsv
 #define gemm dgemm
 #define gemv dgemv
+#endif
 #endif
 
 ! This module provides a way of doing solve on CPU using GPU data structures

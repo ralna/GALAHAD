@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-02 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_blas.h"
@@ -42,7 +42,7 @@
        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
        END FUNCTION DNRM2
 
-     END INTERFACE
+     END INTERFACE NRM2
 
 !  compute plane rotation
 
@@ -120,6 +120,8 @@
 
      END INTERFACE SCAL
 
+!  index of element having maximum absolute value
+
      INTERFACE IAMAX
 
        FUNCTION ISAMAX( n, X, incx )
@@ -137,6 +139,29 @@
        END FUNCTION IDAMAX
 
      END INTERFACE IAMAX
+
+!  case comparison
+
+     INTERFACE LSAME
+
+       FUNCTION LSAME( ca, cb )
+       USE GALAHAD_KINDS
+       LOGICAL :: LSAME
+       CHARACTER :: ca, cb
+       END FUNCTION LSAME
+
+     END INTERFACE LSAME
+
+!  error handler
+
+     INTERFACE XERBLA
+
+       SUBROUTINE XERBLA( srname, info )
+       CHARACTER ( LEN = * ) :: srname
+       INTEGER :: info
+       END SUBROUTINE XERBLA
+
+     END INTERFACE XERBLA
 
 !  triangular solve
 

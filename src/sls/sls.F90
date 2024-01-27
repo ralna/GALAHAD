@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 07:30 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -55,8 +55,8 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
-     USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,   &
-                                          PBTRS ! , SYEV
+     USE GALAHAD_LAPACK_interface, ONLY : ILAENV, POTRF, POTRS, SYTRF, SYTRS,  &
+                                          PBTRF, PBTRS ! , SYEV
      USE HSL_ZD11_precision
      USE HSL_MA57_precision
      USE HSL_MA77_precision

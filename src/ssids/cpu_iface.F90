@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-25 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 09:10 GMT.
 
 #ifdef SPRAL_SINGLE
 #ifdef SPRAL_64BIT_INTEGER
@@ -6,12 +6,25 @@
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single_64
 #define spral_ssids_inform_precision spral_ssids_inform_single_64
 #define spral_ssids_types_precision spral_ssids_types_single_64
+#define spral_c_gemv  spral_c_sgemv_64
+#define spral_c_trsv  spral_c_strsv_64
+#define spral_c_syrk  spral_c_ssyrk_64
+#define spral_c_trsm  spral_c_strsm_64
+#define spral_c_sytrf spral_c_ssytrf_64
+#define spral_c_potrf spral_c_spotrf_64
+#define spral_c_gemm  spral_c_sgemm_64
+#define gemv  sgemv_64
+#define trsv  strsv_64
+#define syrk  ssyrk_64
+#define trsm  strsm_64
+#define sytrf ssytrf_64
+#define potrf spotrf_64
+#define gemm  sgemm_64
 #else
 #define spral_kinds_precision spral_kinds_single
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
 #define spral_ssids_inform_precision spral_ssids_inform_single
 #define spral_ssids_types_precision spral_ssids_types_single
-#endif
 #define spral_c_gemv  spral_c_sgemv
 #define spral_c_trsv  spral_c_strsv
 #define spral_c_syrk  spral_c_ssyrk
@@ -26,18 +39,32 @@
 #define sytrf ssytrf
 #define potrf spotrf
 #define gemm  sgemm
+#endif
 #else
 #ifdef SPRAL_64BIT_INTEGER
 #define spral_kinds_precision spral_kinds_double_64
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double_64
 #define spral_ssids_inform_precision spral_ssids_inform_double_64
 #define spral_ssids_types_precision spral_ssids_types_double_64
+#define spral_c_gemv  spral_c_dgemv_64
+#define spral_c_trsv  spral_c_dtrsv_64
+#define spral_c_syrk  spral_c_dsyrk_64
+#define spral_c_trsm  spral_c_dtrsm_64
+#define spral_c_sytrf spral_c_dsytrf_64
+#define spral_c_potrf spral_c_dpotrf_64
+#define spral_c_gemm  spral_c_dgemm_64
+#define gemv  dgemv_64
+#define trsv  dtrsv_64
+#define syrk  dsyrk_64
+#define trsm  dtrsm_64
+#define sytrf dsytrf_64
+#define potrf dpotrf_64
+#define gemm  dgemm_64
 #else
 #define spral_kinds_precision spral_kinds_double
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
 #define spral_ssids_inform_precision spral_ssids_inform_double
 #define spral_ssids_types_precision spral_ssids_types_double
-#endif
 #define spral_c_gemv  spral_c_dgemv
 #define spral_c_trsv  spral_c_dtrsv
 #define spral_c_syrk  spral_c_dsyrk
@@ -52,6 +79,7 @@
 #define sytrf dsytrf
 #define potrf dpotrf
 #define gemm  dgemm
+#endif
 #endif
 
 !> \file

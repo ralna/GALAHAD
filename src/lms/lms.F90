@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 07:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -29,12 +29,12 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_precision
       USE GALAHAD_SPECFILE_precision
-      USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS
-      USE GALAHAD_BLAS_interface, ONLY : SWAP, GEMV, TRSV, GER
+      USE GALAHAD_LAPACK_interface, ONLY : ILAENV, POTRF, POTRS, SYTRF, SYTRS
+      USE GALAHAD_BLAS_interface, ONLY : LSAME, XERBLA, SWAP, GEMV, TRSV, GER
       USE GALAHAD_LMT_precision, LMS_control_type => LMT_control_type,         &
-                              LMS_time_type => LMT_time_type,                  &
-                              LMS_inform_type => LMT_inform_type,              &
-                              LMS_data_type => LMT_data_type
+                                 LMS_time_type => LMT_time_type,               &
+                                 LMS_inform_type => LMT_inform_type,           &
+                                 LMS_data_type => LMT_data_type
 
       IMPLICIT NONE
 
