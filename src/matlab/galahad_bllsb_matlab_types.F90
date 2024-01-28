@@ -204,7 +204,7 @@
                                  pc, BLLSB_control%remove_dependencies )
         CASE( 'treat_zero_bounds_as_general' )
           CALL MATLAB_get_value( ps,'treat_zero_bounds_as_general',            &
-                                 pc, BLLSB_control%treat_zero_bounds_as_general )
+                                 pc, BLLSB_control%treat_zero_bounds_as_general)
         CASE( 'just_feasible' )
           CALL MATLAB_get_value( ps, 'just_feasible',                          &
                                  pc, BLLSB_control%just_feasible )

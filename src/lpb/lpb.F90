@@ -1787,8 +1787,8 @@
         inform%nfacts = 1
 
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR. &
-             ( control%clock_time_limit >= zero .AND.                          &
+             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit )     &
+            .OR. ( control%clock_time_limit >= zero .AND.                      &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
           IF ( control%error > 0 .AND. control%print_level > 0 )               &

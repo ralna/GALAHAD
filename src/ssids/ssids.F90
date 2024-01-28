@@ -172,8 +172,8 @@ contains
     integer(ip_) :: flag         ! error flag for metis
 
     integer(ip_), dimension(:), allocatable :: order2
-    integer(long_), dimension(:), allocatable :: ptr2 ! col ptrs for expanded mat
-    integer(ip_), dimension(:), allocatable :: row2 ! row indices for expanded matrix
+    integer(long_), dimension(:), allocatable :: ptr2 ! col ptrs and row indices
+    integer(ip_), dimension(:), allocatable :: row2   ! for the expanded matrix
 
     ! The following are only used for matching-based orderings
     real(rp_), dimension(:), allocatable :: val_clean ! cleaned values if
@@ -200,7 +200,8 @@ contains
 
     ! Print status on entry
     call options%print_summary_analyse(context)
-    if ((options%print_level .ge. 1) .and. (options%unit_diagnostics .ge. 0)) then
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,'(a,i15)') &
             ' n                         =  ',n
     end if
@@ -530,8 +531,8 @@ contains
     type(numa_region), dimension(:), optional, intent(in) :: topology
       ! user specified topology
 
-    integer(long_), dimension(:), allocatable :: ptr2 ! col ptrs for expanded mat
-    integer(ip_), dimension(:), allocatable :: row2 ! row indices for expanded matrix
+    integer(long_), dimension(:), allocatable :: ptr2 ! col ptrs and row indices
+    integer(ip_), dimension(:), allocatable :: row2   ! for the expanded matrix
     integer(ip_), dimension(:), allocatable :: order2 ! pivot order
 
     integer(ip_) :: mo_flag
@@ -563,7 +564,8 @@ contains
 
     ! Output status on entry
     call options%print_summary_analyse(context)
-    if ((options%print_level .ge. 1) .and. (options%unit_diagnostics .ge. 0)) then
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,'(a,i15)') &
             ' n                         =  ', n
        write (options%unit_diagnostics,'(a,i15)') &
@@ -619,9 +621,9 @@ contains
             lmap=akeep%lmap, map=akeep%map,                                    &
             noor=inform%matrix_outrange,  ndup=inform%matrix_dup)
     else
-       call convert_coord_to_cscl(SPRAL_MATRIX_REAL_SYM_INDEF, n, n, ne, row,   &
-            col, akeep%ptr, akeep%row, mu_flag, lmap=akeep%lmap, map=akeep%map, &
-            noor=inform%matrix_outrange,  ndup=inform%matrix_dup)
+       call convert_coord_to_cscl(SPRAL_MATRIX_REAL_SYM_INDEF, n, n, ne, row,  &
+            col, akeep%ptr, akeep%row, mu_flag, lmap=akeep%lmap, map=akeep%map,&
+            noor=inform%matrix_outrange, ndup=inform%matrix_dup)
     end if
 
     ! Check for errors
@@ -848,7 +850,8 @@ contains
     end if
 
     ! Immediate return if analyse detected singularity and options%action=false
-    if ((.not. options%action) .and. (akeep%n .ne. akeep%inform%matrix_rank)) then
+    if ((.not. options%action) .and. &
+        (akeep%n .ne. akeep%inform%matrix_rank)) then
        inform%flag = SSIDS_ERROR_SINGULAR
        goto 100
     end if
@@ -1077,26 +1080,26 @@ contains
        write (options%unit_diagnostics,'(/a)') &
             ' Completed factorisation with:'
        write (options%unit_diagnostics, &
-            '(a,3(/a,i12),2(/a,es12.4),5(/a,i12))') &
-            ' information parameters (inform%) :', &
-            ' flag                   Error flag                               = ',&
-            inform%flag, &
-            ' maxfront               Maximum frontsize                        = ',&
-            inform%maxfront, &
-           ' maxsupernode           Maximum supernode size                   = ',&
-            inform%maxsupernode, &
-            ' num_factor             Number of entries in L                   = ',&
-            real(inform%num_factor), &
-            ' num_flops              Number of flops performed                = ',&
-            real(inform%num_flops), &
-            ' num_two                Number of 2x2 pivots used                = ',&
-            inform%num_two, &
-            ' num_delay              Number of delayed eliminations           = ',&
-            inform%num_delay, &
-            ' rank                   Computed rank                            = ',&
-            inform%matrix_rank, &
-            ' num_neg                Computed number of negative eigenvalues  = ',&
-            inform%num_neg
+         '(a,3(/a,i12),2(/a,es12.4),5(/a,i12))') &
+         ' information parameters (inform%) :', &
+         ' flag                   Error flag                               = ',&
+         inform%flag, &
+         ' maxfront               Maximum frontsize                        = ',&
+         inform%maxfront, &
+         ' maxsupernode           Maximum supernode size                   = ',&
+         inform%maxsupernode, &
+         ' num_factor             Number of entries in L                   = ',&
+         real(inform%num_factor), &
+         ' num_flops              Number of flops performed                = ',&
+         real(inform%num_flops), &
+         ' num_two                Number of 2x2 pivots used                = ',&
+         inform%num_two, &
+         ' num_delay              Number of delayed eliminations           = ',&
+         inform%num_delay, &
+         ' rank                   Computed rank                            = ',&
+         inform%matrix_rank, &
+         ' num_neg                Computed number of negative eigenvalues  = ',&
+          inform%num_neg
     end if
 
     ! Normal return just drops through
@@ -1179,7 +1182,8 @@ contains
     inform%flag = SSIDS_SUCCESS
 
     ! Perform appropriate printing
-    if ((options%print_level .ge. 1) .and. (options%unit_diagnostics .ge. 0)) then
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,'(//a)') &
             ' Entering ssids_solve with:'
        write (options%unit_diagnostics,'(a,4(/a,i12),(/a,i12))') &
@@ -1243,7 +1247,8 @@ contains
     ! Set local_job
     local_job = 0
     if (present(job)) then
-       if ((job .lt. SSIDS_SOLVE_JOB_FWD) .or. (job .gt. SSIDS_SOLVE_JOB_DIAG_BWD)) &
+       if ((job .lt. SSIDS_SOLVE_JOB_FWD) .or. &
+           (job .gt. SSIDS_SOLVE_JOB_DIAG_BWD)) &
             inform%flag = SSIDS_ERROR_JOB_OOR
        if (fkeep%pos_def .and. (job .eq. SSIDS_SOLVE_JOB_DIAG)) &
             inform%flag = SSIDS_ERROR_JOB_OOR

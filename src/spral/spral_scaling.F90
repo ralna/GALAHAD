@@ -680,8 +680,8 @@ contains
        end if
     end if
 
-    if ((.not. sym) .or. (inform%matched .eq. n)) then ! Unsymmetric or symmetric and full rank
-       ! Note that in this case m=n
+    if ((.not. sym) .or. (inform%matched .eq. n)) then 
+       ! Unsymmetric or symmetric and full rank. Note that in this case m=n
        rscaling(1:m) = dualu(1:m)
        cscaling(1:n) = dualv(1:n) - cmax(1:n)
        call match_postproc(m, n, ptr, row, val, rscaling, cscaling, &

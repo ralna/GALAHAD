@@ -996,7 +996,8 @@
              inform%status = GALAHAD_ok
              inform%alloc_status = data%gls_finfo%stat
              inform%more_info = data%gls_finfo%more
-             inform%entries_in_factors = INT( data%gls_finfo%size_factor, long_ )
+             inform%entries_in_factors                                         &
+              = INT( data%gls_finfo%size_factor, long_ )
              inform%workspace_factors                                          &
                = INT( data%gls_finfo%len_factorize, long_ )
              inform%entries_dropped = data%gls_finfo%drop

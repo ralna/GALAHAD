@@ -885,8 +885,10 @@
      control%QPB_control%LSQP_control%SBLS_control%definite_linear_solver      &
        = definite_linear_solver
      control%QPC_control%FDC_control%use_sls = use_sls
-     control%QPC_control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
-     control%QPC_control%QPA_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPC_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%QPC_control%QPA_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
      control%QPC_control%QPB_control%FDC_control%use_sls = use_sls
      control%QPC_control%QPB_control%FDC_control%symmetric_linear_solver       &
        = symmetric_linear_solver
@@ -895,12 +897,12 @@
      control%QPC_control%QPB_control%SBLS_control%definite_linear_solver       &
        = definite_linear_solver
      control%QPC_control%QPB_control%LSQP_control%FDC_control%use_sls = use_sls
-     control%QPC_control%QPB_control%LSQP_control%FDC_control%symmetric_linear_solver      &
-       = symmetric_linear_solver
-     control%QPC_control%QPB_control%LSQP_control%SBLS_control%symmetric_linear_solver     &
-       = symmetric_linear_solver
-     control%QPC_control%QPB_control%LSQP_control%SBLS_control%definite_linear_solver      &
-       = definite_linear_solver
+     control%QPC_control%QPB_control%LSQP_control&
+       &%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPC_control%QPB_control%LSQP_control&
+       &%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%QPC_control%QPB_control%LSQP_control&
+       &%SBLS_control%definite_linear_solver = definite_linear_solver
      control%QPC_control%CQP_control%FDC_control%use_sls = use_sls
      control%QPC_control%CQP_control%FDC_control%symmetric_linear_solver       &
        = symmetric_linear_solver

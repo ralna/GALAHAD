@@ -2306,8 +2306,8 @@
                                        data%segment, data%n_free, data%FREE,   &
                                        data%search_data, userdata,             &
                                        data%f_new, data%alpha_new,             &
-                                       Ao_ptr = data%Ao%ptr,                     &
-                                       Ao_row = data%Ao%row,                     &
+                                       Ao_ptr = data%Ao%ptr,                   &
+                                       Ao_row = data%Ao%row,                   &
                                        Ao_val = data%Ao%val )
 
 !  ... or products via the user's subroutine or reverse communication ...
@@ -2380,8 +2380,8 @@
                                          data%n_free, data%FREE,               &
                                          data%search_data, userdata,           &
                                          data%f_new, data%alpha_new,           &
-                                         Ao_ptr = data%Ao%ptr,                   &
-                                         Ao_row = data%Ao%row,                   &
+                                         Ao_ptr = data%Ao%ptr,                 &
+                                         Ao_row = data%Ao%row,                 &
                                          Ao_val = data%Ao%val )
 
 !  ... or products via the user's subroutine or reverse communication
@@ -2572,21 +2572,21 @@
 !  Deallocate all remaining allocated arrays
 
      array_name = 'slls: data%Ao%ptr'
-     CALL SPACE_dealloc_array( data%Ao%ptr,                                     &
+     CALL SPACE_dealloc_array( data%Ao%ptr,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
      array_name = 'slls: data%Ao%col'
-     CALL SPACE_dealloc_array( data%Ao%col,                                     &
+     CALL SPACE_dealloc_array( data%Ao%col,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
      array_name = 'slls: data%Ao%val'
-     CALL SPACE_dealloc_array( data%Ao%val,                                     &
+     CALL SPACE_dealloc_array( data%Ao%val,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -3818,7 +3818,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  check to see if A has been provided
 
-      IF ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND. PRESENT( Ao_val ) ) THEN
+      IF ( PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND.                     &
+           PRESENT( Ao_val ) ) THEN
         data%present_a = .TRUE. ; data%reverse = .FALSE.
       ELSE
         data%present_a = .FALSE.
@@ -4182,7 +4183,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  check that it is possible to access A in some way
 
-      data%present_a = PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND.           &
+      data%present_a = PRESENT( Ao_ptr ) .AND. PRESENT( Ao_row ) .AND.         &
                        PRESENT( Ao_val )
       data%present_afprod = PRESENT( eval_AFPROD )
       data%reverse_afprod = .NOT. ( data%present_a .OR. data%present_afprod )

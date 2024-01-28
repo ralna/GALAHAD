@@ -651,7 +651,7 @@
       CALL MATLAB_copy_to_ptr( REAL( BQPB_inform%time%clock_preprocess, wp ),  &
                       mxGetPr( BQPB_pointer%time_pointer%clock_preprocess ) )
       CALL MATLAB_copy_to_ptr( REAL( BQPB_inform%time%clock_find_dependent,wp),&
-                      mxGetPr( BQPB_pointer%time_pointer%clock_find_dependent ) )
+                      mxGetPr( BQPB_pointer%time_pointer%clock_find_dependent) )
       CALL MATLAB_copy_to_ptr( REAL( BQPB_inform%time%clock_analyse, wp ),     &
                       mxGetPr( BQPB_pointer%time_pointer%clock_analyse ) )
       CALL MATLAB_copy_to_ptr( REAL( BQPB_inform%time%clock_factorize, wp ),   &

@@ -343,7 +343,7 @@
       DEALLOCATE( IW )
       ALLOCATE( prob%A%row( 0 ), prob%H%row( 0 ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, "( ' whoa there - allocate error ', i6 )" ) alloc_stat ; STOP
+        WRITE( out, "( ' stop - allocate error ', i6 )" ) alloc_stat ; STOP
       END IF
 
       prob%new_problem_structure = .TRUE.

@@ -47,7 +47,8 @@ module spral_ssids_akeep_precision
          ! nodes(node)%lcol( nlist(2,j) ) = val( nlist(1,j) )
      integer(long_), dimension(:), allocatable :: nptr ! Entries into nlist for
          ! nodes of the assembly tree. Has length nnodes+1
-      integer(ip_), dimension(:), allocatable :: rlist ! rlist(rptr(i):rptr(i+1)-1)
+      integer(ip_), dimension(:), allocatable :: rlist 
+         ! rlist(rptr(i):rptr(i+1)-1)
          ! contains the row indices for node i of the assembly tree.
          ! At each node, the list
          ! is in elimination order. Allocated within mc78_analyse.

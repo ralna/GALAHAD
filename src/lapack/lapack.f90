@@ -1,15 +1,15 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-25 AT 15:32 GMT
+! THIS VERSION: GALAHAD 4.3 - 2024-01-28 AT 10:43 GMT
 
 #include "galahad_lapack.h"
 
 ! Reference lapack, see http://www.netlib.org/lapack/explore-html/
 
-        SUBROUTINE DBDSQR(uplo, n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu,     &
+        SUBROUTINE DBDSQR(uplo, n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu,  &
           c, ldc, work, info)
           USE GALAHAD_KINDS
           CHARACTER :: uplo
           INTEGER(ip_) :: info, ldc, ldu, ldvt, n, ncc, ncvt, nru
-          REAL(r8_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),          &
+          REAL(r8_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),       &
             work(*)
           REAL(r8_) :: zero
           PARAMETER (zero=0.0_r8_)
@@ -28,15 +28,15 @@
           INTEGER(ip_) :: maxitr
           PARAMETER (maxitr=6)
           LOGICAL :: lower, rotate
-          INTEGER(ip_) :: i, idir, isub, iter, iterdivn, j, ll, lll, m,        &
+          INTEGER(ip_) :: i, idir, isub, iter, iterdivn, j, ll, lll, m,     &
             maxitdivn, nm1, nm12, nm13, oldll, oldm
-          REAL(r8_) :: abse, abss, cosl, cosr, cs, eps, f, g, h, mu, oldcs,    &
-            oldsn, r, shift, sigmn, sigmx, sinl, sinr, sll, smax, smin, sminl, &
-            sminoa, sn, thresh, tol, tolmul, unfl
+          REAL(r8_) :: abse, abss, cosl, cosr, cs, eps, f, g, h, mu, oldcs,  &
+            oldsn, r, shift, sigmn, sigmx, sinl, sinr, sll, smax, smin,     &
+            sminl, sminoa, sn, thresh, tol, tolmul, unfl
           LOGICAL :: LSAME
           REAL(r8_) :: DLAMCH
           EXTERNAL :: LSAME, DLAMCH
-          EXTERNAL :: DLARTG, DLAS2, DLASQ1, DLASR, DLASV2,                    &
+          EXTERNAL :: DLARTG, DLAS2, DLASQ1, DLASR, DLASV2,                  &
             DROT, DSCAL, DSWAP, XERBLA
           INTRINSIC :: ABS, DBLE, MAX, MIN, SIGN, SQRT
           info = 0
@@ -51,12 +51,12 @@
             info = -4
           ELSE IF (ncc<0) THEN
             info = -5
-          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,       &
+          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,    &
             n))) THEN
             info = -9
           ELSE IF (ldu<MAX(1,nru)) THEN
             info = -11
-          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))      &
+          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))   &
             THEN
             info = -13
           END IF
@@ -87,9 +87,9 @@
               work(i) = cs
               work(nm1+i) = sn
             END DO
-            IF (nru>0) CALL DLASR('R', 'V', 'F', nru, n, work(1), work(n),     &
+            IF (nru>0) CALL DLASR('R', 'V', 'F', nru, n, work(1), work(n),  &
               u, ldu)
-            IF (ncc>0) CALL DLASR('L', 'V', 'F', n, ncc, work(1), work(n),     &
+            IF (ncc>0) CALL DLASR('L', 'V', 'F', n, ncc, work(1), work(n),  &
               c, ldc)
           END IF
           tolmul = MAX(ten, MIN(hndrd,eps**meigth))
@@ -153,16 +153,16 @@
  90       CONTINUE
           ll = ll + 1
           IF (ll==m-1) THEN
-            CALL DLASV2(d(m-1), e(m-1), d(m), sigmn, sigmx, sinr, cosr,        &
+            CALL DLASV2(d(m-1), e(m-1), d(m), sigmn, sigmx, sinr, cosr,     &
               sinl, cosl)
             d(m-1) = sigmx
             e(m-1) = zero
             d(m) = sigmn
-            IF (ncvt>0) CALL DROT(ncvt, vt(m-1,1), ldvt, vt(m,1), ldvt,        &
+            IF (ncvt>0) CALL DROT(ncvt, vt(m-1,1), ldvt, vt(m,1), ldvt,     &
               cosr, sinr)
-            IF (nru>0) CALL DROT(nru, u(1,m-1), 1_ip_, u(1,m), 1_ip_, cosl,    &
+            IF (nru>0) CALL DROT(nru, u(1,m-1), 1_ip_, u(1,m), 1_ip_, cosl,  &
               sinl)
-            IF (ncc>0) CALL DROT(ncc, c(m-1,1), ldc, c(m,1), ldc, cosl,        &
+            IF (ncc>0) CALL DROT(ncc, c(m-1,1), ldc, c(m,1), ldc, cosl,     &
               sinl)
             m = m - 2
             GO TO 60
@@ -175,7 +175,7 @@
             END IF
           END IF
           IF (idir==1) THEN
-            IF (ABS(e(m-1))<=ABS(tol)*ABS(d(m)) .OR. (tol<zero .AND. ABS(e     &
+            IF (ABS(e(m-1))<=ABS(tol)*ABS(d(m)) .OR. (tol<zero .AND. ABS(e  &
               (m-1))<=thresh)) THEN
               e(m-1) = zero
               GO TO 60
@@ -193,7 +193,7 @@
               END DO
             END IF
           ELSE
-            IF (ABS(e(ll))<=ABS(tol)*ABS(d(ll)) .OR. (tol<zero .AND. ABS(      &
+            IF (ABS(e(ll))<=ABS(tol)*ABS(d(ll)) .OR. (tol<zero .AND. ABS(   &
               e(ll))<=thresh)) THEN
               e(ll) = zero
               GO TO 60
@@ -244,11 +244,11 @@
               h = d(m)*cs
               d(m) = h*oldcs
               e(m-1) = h*oldsn
-              IF (ncvt>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),     &
+              IF (ncvt>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),  &
                 work(n), vt(ll,1), ldvt)
-              IF (nru>0) CALL DLASR('R', 'V', 'F', nru, m-ll+1,                &
+              IF (nru>0) CALL DLASR('R', 'V', 'F', nru, m-ll+1,             &
                 work(nm12+1), work(nm13+1), u(1,ll), ldu)
-              IF (ncc>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncc,                &
+              IF (ncc>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncc,             &
                 work(nm12+1), work(nm13+1), c(ll,1), ldc)
               IF (ABS(e(m-1))<=thresh) e(m-1) = zero
             ELSE
@@ -266,11 +266,11 @@
               h = d(ll)*cs
               d(ll) = h*oldcs
               e(ll) = h*oldsn
-              IF (ncvt>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncvt,              &
+              IF (ncvt>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncvt,           &
                 work(nm12+1), work(nm13+1), vt(ll,1), ldvt)
-              IF (nru>0) CALL DLASR('R', 'V', 'B', nru, m-ll+1, work(1),       &
+              IF (nru>0) CALL DLASR('R', 'V', 'B', nru, m-ll+1, work(1),    &
                 work(n), u(1,ll), ldu)
-              IF (ncc>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncc, work(1),       &
+              IF (ncc>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncc, work(1),    &
                 work(n), c(ll,1), ldc)
               IF (ABS(e(ll))<=thresh) e(ll) = zero
             END IF
@@ -299,11 +299,11 @@
                 work(i-ll+1+nm13) = sinl
               END DO
               e(m-1) = f
-              IF (ncvt>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),     &
+              IF (ncvt>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),  &
                 work(n), vt(ll,1), ldvt)
-              IF (nru>0) CALL DLASR('R', 'V', 'F', nru, m-ll+1,                &
+              IF (nru>0) CALL DLASR('R', 'V', 'F', nru, m-ll+1,             &
                 work(nm12+1), work(nm13+1), u(1,ll), ldu)
-              IF (ncc>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncc,                &
+              IF (ncc>0) CALL DLASR('L', 'V', 'F', m-ll+1, ncc,             &
                 work(nm12+1), work(nm13+1), c(ll,1), ldc)
               IF (ABS(e(m-1))<=thresh) e(m-1) = zero
             ELSE
@@ -331,11 +331,11 @@
               END DO
               e(ll) = f
               IF (ABS(e(ll))<=thresh) e(ll) = zero
-              IF (ncvt>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncvt,              &
+              IF (ncvt>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncvt,           &
                 work(nm12+1), work(nm13+1), vt(ll,1), ldvt)
-              IF (nru>0) CALL DLASR('R', 'V', 'B', nru, m-ll+1, work(1),       &
+              IF (nru>0) CALL DLASR('R', 'V', 'B', nru, m-ll+1, work(1),    &
                 work(n), u(1,ll), ldu)
-              IF (ncc>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncc, work(1),       &
+              IF (ncc>0) CALL DLASR('L', 'V', 'B', m-ll+1, ncc, work(1),    &
                 work(n), c(ll,1), ldc)
             END IF
           END IF
@@ -359,9 +359,9 @@
             IF (isub/=n+1-i) THEN
               d(isub) = d(n+1-i)
               d(n+1-i) = smin
-              IF (ncvt>0) CALL DSWAP(ncvt, vt(isub,1), ldvt, vt(n+1-i,1),      &
+              IF (ncvt>0) CALL DSWAP(ncvt, vt(isub,1), ldvt, vt(n+1-i,1),   &
                 ldvt)
-              IF (nru>0) CALL DSWAP(nru, u(1,isub), 1_ip_, u(1,n+1-i),         &
+              IF (nru>0) CALL DSWAP(nru, u(1,isub), 1_ip_, u(1,n+1-i),      &
                 1_ip_)
               IF (ncc>0) CALL DSWAP(ncc, c(isub,1), ldc, c(n+1-i,1), ldc)
             END IF
@@ -420,15 +420,15 @@
               CALL DLARFG(m-i+1, a(i,i), a(MIN(i+1,m),i), 1_ip_, tauq(i))
               d(i) = a(i, i)
               a(i, i) = one
-              IF (i<n) CALL DLARF('Left', m-i+1, n-i, a(i,i), 1_ip_,           &
+              IF (i<n) CALL DLARF('Left', m-i+1, n-i, a(i,i), 1_ip_,        &
                 tauq(i), a(i,i+1), lda, work)
               a(i, i) = d(i)
               IF (i<n) THEN
                 CALL DLARFG(n-i, a(i,i+1), a(i,MIN(i+2,n)), lda, taup(i))
                 e(i) = a(i, i+1)
                 a(i, i+1) = one
-                CALL DLARF('Right', m-i, n-i, a(i,i+1), lda, taup(i), a(i+1,   &
-                  i+1), lda, work)
+                CALL DLARF('Right', m-i, n-i, a(i,i+1), lda, taup(i),       &
+                  a(i+1,i+1), lda, work)
                 a(i, i+1) = e(i)
               ELSE
                 taup(i) = zero
@@ -439,14 +439,14 @@
               CALL DLARFG(n-i+1, a(i,i), a(i,MIN(i+1,n)), lda, taup(i))
               d(i) = a(i, i)
               a(i, i) = one
-              IF (i<m) CALL DLARF('Right', m-i, n-i+1, a(i,i), lda, taup(i),   &
-                a(i+1,i), lda, work)
+              IF (i<m) CALL DLARF('Right', m-i, n-i+1, a(i,i), lda,         &
+                taup(i), a(i+1,i), lda, work)
               a(i, i) = d(i)
               IF (i<m) THEN
                 CALL DLARFG(m-i, a(i+1,i), a(MIN(i+2,m),i), 1_ip_, tauq(i))
                 e(i) = a(i+1, i)
                 a(i+1, i) = one
-                CALL DLARF('Left', m-i, n-i, a(i+1,i), 1_ip_, tauq(i),         &
+                CALL DLARF('Left', m-i, n-i, a(i+1,i), 1_ip_, tauq(i),      &
                   a(i+1,i+1), lda, work)
                 a(i+1, i) = e(i)
               ELSE
@@ -457,14 +457,15 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGEBRD(m, n, a, lda, d, e, tauq, taup, work, lwork, info)
+        SUBROUTINE DGEBRD(m, n, a, lda, d, e, tauq, taup, work, lwork,      &
+          info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, lwork, m, n
           REAL(r8_) :: a(lda, *), d(*), e(*), taup(*), tauq(*), work(*)
           REAL(r8_) :: one
           PARAMETER (one=1.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, iinfo, j, ldwrkx, ldwrky, lwkopt, minmn, nb,      &
+          INTEGER(ip_) :: i, iinfo, j, ldwrkx, ldwrky, lwkopt, minmn, nb,   &
             nbmin, nx, ws
           EXTERNAL :: DGEBD2, DGEMM, DLABRD, XERBLA
           INTRINSIC :: DBLE, MAX, MIN
@@ -516,14 +517,14 @@
             nx = minmn
           END IF
           DO i = 1, minmn - nx, nb
-            CALL DLABRD(m-i+1, n-i+1, nb, a(i,i), lda, d(i), e(i), tauq(i),    &
+            CALL DLABRD(m-i+1, n-i+1, nb, a(i,i), lda, d(i), e(i), tauq(i),  &
               taup(i), work, ldwrkx, work(ldwrkx*nb+1), ldwrky)
-            CALL DGEMM('No transpose', 'Transpose', m-i-nb+1, n-i-nb+1, nb,    &
-              -one, a(i+nb,i), lda, work(ldwrkx*nb+nb+1), ldwrky, one, a(i+nb, &
+            CALL DGEMM('No transpose', 'Transpose', m-i-nb+1, n-i-nb+1, nb,  &
+              -one, a(i+nb,i), lda, work(ldwrkx*nb+nb+1), ldwrky, one,      &
+              a(i+nb,i+nb), lda)
+            CALL DGEMM('No transpose', 'No transpose', m-i-nb+1, n-i-nb+1,  &
+              nb, -one, work(nb+1), ldwrkx, a(i,i+nb), lda, one, a(i+nb,     &
               i+nb), lda)
-            CALL DGEMM('No transpose', 'No transpose', m-i-nb+1, n-i-nb+1,     &
-              nb, -one, work(nb+1), ldwrkx, a(i,i+nb), lda, one, a(i+nb,i+nb), &
-              lda)
             IF (m>=n) THEN
               DO j = i, i + nb - 1
                 a(j, j) = d(j)
@@ -536,7 +537,7 @@
               END DO
             END IF
           END DO
-          CALL DGEBD2(m-i+1, n-i+1, a(i,i), lda, d(i), e(i), tauq(i),          &
+          CALL DGEBD2(m-i+1, n-i+1, a(i,i), lda, d(i), e(i), tauq(i),       &
             taup(i), work, iinfo)
           work(1) = ws
           RETURN
@@ -570,9 +571,9 @@
             CALL DLARFG(ihi-i, a(i+1,i), a(MIN(i+2,n),i), 1_ip_, tau(i))
             aii = a(i+1, i)
             a(i+1, i) = one
-            CALL DLARF('Right', ihi, ihi-i, a(i+1,i), 1_ip_, tau(i), a(1,      &
+            CALL DLARF('Right', ihi, ihi-i, a(i+1,i), 1_ip_, tau(i), a(1,    &
               i+1), lda, work)
-            CALL DLARF('Left', ihi-i, n-i, a(i+1,i), 1_ip_, tau(i), a(i+1,     &
+            CALL DLARF('Left', ihi-i, n-i, a(i+1,i), 1_ip_, tau(i), a(i+1,   &
               i+1), lda, work)
             a(i+1, i) = aii
           END DO
@@ -588,10 +589,10 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin,  &
             nh, nx
           REAL(r8_) :: ei
-          EXTERNAL :: DAXPY, DGEHD2, DGEMM, DLAHR2, DLARFB,                    &
+          EXTERNAL :: DAXPY, DGEHD2, DGEMM, DLAHR2, DLARFB,                  &
             DTRMM, XERBLA
           INTRINSIC :: MAX, MIN
           INTEGER(ip_) :: ILAENV
@@ -637,7 +638,7 @@
             nx = MAX(nb, ILAENV(3_ip_,'DGEHRD',' ',n,ilo,ihi,-1_ip_))
             IF (nx<nh) THEN
               IF (lwork<n*nb+tsize) THEN
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGEHRD',' ',n,ilo,ihi,        &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGEHRD',' ',n,ilo,ihi,      &
                   -1_ip_))
                 IF (lwork>=(n*nbmin+tsize)) THEN
                   nb = (lwork-tsize)/n
@@ -654,21 +655,21 @@
             iwt = 1 + n*nb
             DO i = ilo, ihi - 1 - nx, nb
               ib = MIN(nb, ihi-i)
-              CALL DLAHR2(ihi, i, ib, a(1,i), lda, tau(i), work(iwt), ldt,     &
+              CALL DLAHR2(ihi, i, ib, a(1,i), lda, tau(i), work(iwt), ldt,  &
                 work, ldwork)
               ei = a(i+ib, i+ib-1)
               a(i+ib, i+ib-1) = one
-              CALL DGEMM('No transpose', 'Transpose', ihi, ihi-i-ib+1, ib,     &
+              CALL DGEMM('No transpose', 'Transpose', ihi, ihi-i-ib+1, ib,  &
                 -one, work, ldwork, a(i+ib,i), lda, one, a(1,i+ib), lda)
               a(i+ib, i+ib-1) = ei
-              CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', i, ib-1,       &
+              CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', i, ib-1,    &
                 one, a(i+1,i), lda, work, ldwork)
               DO j = 0, ib - 2
-                CALL DAXPY(i, -one, work(ldwork*j+1), 1_ip_, a(1,i+j+1),       &
+                CALL DAXPY(i, -one, work(ldwork*j+1), 1_ip_, a(1,i+j+1),    &
                   1_ip_)
               END DO
-              CALL DLARFB('Left', 'Transpose', 'Forward', 'Columnwise',        &
-                ihi-i, n-i-ib+1, ib, a(i+1,i), lda, work(iwt), ldt, a(i+1,     &
+              CALL DLARFB('Left', 'Transpose', 'Forward', 'Columnwise',     &
+                ihi-i, n-i-ib+1, ib, a(i+1,i), lda, work(iwt), ldt, a(i+1,   &
                 i+ib), lda, work, ldwork)
             END DO
           END IF
@@ -705,8 +706,8 @@
             IF (i<m) THEN
               aii = a(i, i)
               a(i, i) = one
-              CALL DLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,i),   &
-                lda, work)
+              CALL DLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,    &
+                i), lda, work)
               a(i, i) = aii
             END IF
           END DO
@@ -718,7 +719,7 @@
           INTEGER(ip_) :: info, lda, lwork, m, n
           REAL(r8_) :: a(lda, *), tau(*), work(*)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,  &
             nx
           EXTERNAL :: DGELQ2, DLARFB, DLARFT, XERBLA
           INTRINSIC :: MAX, MIN
@@ -759,7 +760,7 @@
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = lwork/ldwork
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGELQF',' ',m,n,-1_ip_,       &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGELQF',' ',m,n,-1_ip_,     &
                   -1_ip_))
               END IF
             END IF
@@ -769,23 +770,23 @@
               ib = MIN(k-i+1, nb)
               CALL DGELQ2(ib, n-i+1, a(i,i), lda, tau(i), work, iinfo)
               IF (i+ib<=m) THEN
-                CALL DLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,      &
+                CALL DLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,   &
                   tau(i), work, ldwork)
-                CALL DLARFB('Right', 'No transpose', 'Forward', 'Rowwise',     &
-                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),   &
+                CALL DLARFB('Right', 'No transpose', 'Forward', 'Rowwise',  &
+                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),&
                   lda, work(ib+1), ldwork)
               END IF
             END DO
           ELSE
             i = 1
           END IF
-          IF (i<=k) CALL DGELQ2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,       &
+          IF (i<=k) CALL DGELQ2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
           work(1) = iws
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork,       &
+        SUBROUTINE DGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork,    &
           info)
           USE GALAHAD_KINDS
           CHARACTER :: trans
@@ -801,7 +802,7 @@
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
           EXTERNAL :: LSAME, ILAENV, DLABAD, DLAMCH, DLANGE
-          EXTERNAL :: DGELQF, DGEQRF, DLASCL, DLASET,                          &
+          EXTERNAL :: DGELQF, DGEQRF, DLASCL, DLASET,                       &
             DORMLQ, DORMQR, DTRTRS, XERBLA
           INTRINSIC :: DBLE, MAX, MIN
           info = 0
@@ -859,10 +860,12 @@
           anrm = DLANGE('M', m, n, a, lda, rwork)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL DLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -873,28 +876,28 @@
           bnrm = DLANGE('M', brow, nrhs, b, ldb, rwork)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, brow, nrhs, b, ldb,   &
-              info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, brow, nrhs, b,     &
+              ldb, info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, brow, nrhs, b, ldb,   &
-              info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, brow, nrhs, b,     &
+              ldb, info)
             ibscl = 2
           END IF
           IF (m>=n) THEN
             CALL DGEQRF(m, n, a, lda, work(1), work(mn+1), lwork-mn, info)
             IF (.NOT. tpsd) THEN
-              CALL DORMQR('Left', 'Transpose', m, nrhs, n, a, lda, work(1),    &
+              CALL DORMQR('Left', 'Transpose', m, nrhs, n, a, lda, work(1),  &
                 b, ldb, work(mn+1), lwork-mn, info)
-              CALL DTRTRS('Upper', 'No transpose', 'Non-unit', n, nrhs, a,     &
+              CALL DTRTRS('Upper', 'No transpose', 'Non-unit', n, nrhs, a,  &
                 lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
               END IF
               scllen = n
             ELSE
-              CALL DTRTRS('Upper', 'Transpose', 'Non-unit', n, nrhs, a, lda,   &
-                b, ldb, info)
+              CALL DTRTRS('Upper', 'Transpose', 'Non-unit', n, nrhs, a,     &
+                lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
               END IF
@@ -903,14 +906,14 @@
                   b(i, j) = zero
                 END DO
               END DO
-              CALL DORMQR('Left', 'No transpose', m, nrhs, n, a, lda,          &
+              CALL DORMQR('Left', 'No transpose', m, nrhs, n, a, lda,       &
                 work(1), b, ldb, work(mn+1), lwork-mn, info)
               scllen = m
             END IF
           ELSE
             CALL DGELQF(m, n, a, lda, work(1), work(mn+1), lwork-mn, info)
             IF (.NOT. tpsd) THEN
-              CALL DTRTRS('Lower', 'No transpose', 'Non-unit', m, nrhs, a,     &
+              CALL DTRTRS('Lower', 'No transpose', 'Non-unit', m, nrhs, a,  &
                 lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
@@ -920,14 +923,14 @@
                   b(i, j) = zero
                 END DO
               END DO
-              CALL DORMLQ('Left', 'Transpose', n, nrhs, m, a, lda, work(1),    &
+              CALL DORMLQ('Left', 'Transpose', n, nrhs, m, a, lda, work(1),  &
                 b, ldb, work(mn+1), lwork-mn, info)
               scllen = n
             ELSE
-              CALL DORMLQ('Left', 'No transpose', n, nrhs, m, a, lda,          &
+              CALL DORMLQ('Left', 'No transpose', n, nrhs, m, a, lda,       &
                 work(1), b, ldb, work(mn+1), lwork-mn, info)
-              CALL DTRTRS('Lower', 'Transpose', 'Non-unit', m, nrhs, a, lda,   &
-                b, ldb, info)
+              CALL DTRTRS('Lower', 'Transpose', 'Non-unit', m, nrhs, a,     &
+                lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
               END IF
@@ -935,17 +938,17 @@
             END IF
           END IF
           IF (iascl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, scllen, nrhs, b,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, scllen, nrhs, b,   &
               ldb, info)
           ELSE IF (iascl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, scllen, nrhs, b,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, scllen, nrhs, b,   &
               ldb, info)
           END IF
           IF (ibscl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, scllen, nrhs, b,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, scllen, nrhs, b,   &
               ldb, info)
           ELSE IF (ibscl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, scllen, nrhs, b,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, scllen, nrhs, b,   &
               ldb, info)
           END IF
  50       CONTINUE
@@ -953,7 +956,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGELSD(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,    &
+        SUBROUTINE DGELSD(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,  &
           lwork, iwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, ldb, lwork, m, n, nrhs, rank
@@ -963,12 +966,12 @@
           REAL(r8_) :: zero, one, two
           PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: iascl, ibscl, ie, il, itau, itaup, itauq, ldwork,    &
-            liwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork,      &
+          INTEGER(ip_) :: iascl, ibscl, ie, il, itau, itaup, itauq, ldwork,  &
+            liwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork,   &
             smlsiz, wlalsd
           REAL(r8_) :: anrm, bignum, bnrm, eps, sfmin, smlnum
-          EXTERNAL :: DGEBRD, DGELQF, DGEQRF, DLABAD,                          &
-            DLACPY, DLALSD, DLASCL, DLASET, DORMBR, DORMLQ,                    &
+          EXTERNAL :: DGEBRD, DGELQF, DGEQRF, DLABAD,                       &
+            DLACPY, DLALSD, DLASCL, DLASET, DORMBR, DORMLQ,                 &
             DORMQR, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
@@ -994,24 +997,25 @@
           minwrk = 1
           liwork = 1
           minmn = MAX(1, minmn)
-          nlvl = MAX(INT(LOG(DBLE(minmn)/DBLE(smlsiz+1))/LOG(two))+1, 0_ip_)
+          nlvl = MAX(INT(LOG(DBLE(minmn)/DBLE(smlsiz+1))/LOG(two))+1,       &
+            0_ip_)
           IF (info==0) THEN
             maxwrk = 0
             liwork = 3*minmn*nlvl + 11*minmn
             mm = m
             IF (m>=n .AND. m>=mnthr) THEN
               mm = n
-              maxwrk = MAX(maxwrk, n+n*ILAENV(1_ip_,'DGEQRF',' ',m,n,-1_ip_,   &
-                -1_ip_))
-              maxwrk = MAX(maxwrk, n+nrhs*ILAENV(1_ip_,'DORMQR','LT',m,nrhs,   &
-                n, -1_ip_))
+              maxwrk = MAX(maxwrk, n+n*ILAENV(1_ip_,'DGEQRF',' ',m,n,        &
+                -1_ip_,-1_ip_))
+              maxwrk = MAX(maxwrk, n+nrhs*ILAENV(1_ip_,'DORMQR','LT',m,      &
+                nrhs,n, -1_ip_))
             END IF
             IF (m>=n) THEN
-              maxwrk = MAX(maxwrk, 3*n+(mm+n)*ILAENV(1_ip_,'DGEBRD',' ',mm,    &
+              maxwrk = MAX(maxwrk, 3*n+(mm+n)*ILAENV(1_ip_,'DGEBRD',' ',mm,  &
                 n, -1_ip_,-1_ip_))
-              maxwrk = MAX(maxwrk, 3*n+nrhs*ILAENV(1_ip_,'DORMBR','QLT',mm,    &
+              maxwrk = MAX(maxwrk, 3*n+nrhs*ILAENV(1_ip_,'DORMBR','QLT',mm,  &
                 nrhs,n,-1_ip_))
-              maxwrk = MAX(maxwrk, 3*n+(n-1)*ILAENV(1_ip_,'DORMBR','PLN',n,    &
+              maxwrk = MAX(maxwrk, 3*n+(n-1)*ILAENV(1_ip_,'DORMBR','PLN',n,  &
                 nrhs,n,-1_ip_))
               wlalsd = 9*n + 2*n*smlsiz + 8*n*nlvl + n*nrhs + (smlsiz+1)**2
               maxwrk = MAX(maxwrk, 3*n+wlalsd)
@@ -1020,29 +1024,29 @@
             IF (n>m) THEN
               wlalsd = 9*m + 2*m*smlsiz + 8*m*nlvl + m*nrhs + (smlsiz+1)**2
               IF (n>=mnthr) THEN
-                maxwrk = m + m*ILAENV(1_ip_, 'DGELQF', ' ', m, n, -1_ip_,      &
+                maxwrk = m + m*ILAENV(1_ip_, 'DGELQF', ' ', m, n, -1_ip_,   &
                   -1_ip_)
-                maxwrk = MAX(maxwrk, m*m+4*m+2*m*ILAENV(1_ip_,'DGEBRD',' ',    &
+                maxwrk = MAX(maxwrk, m*m+4*m+2*m*ILAENV(1_ip_,'DGEBRD',' ',  &
                   m,m ,-1_ip_,-1_ip_))
-                maxwrk = MAX(maxwrk, m*m+4*m+nrhs*ILAENV(1_ip_,'DORMBR',       &
+                maxwrk = MAX(maxwrk, m*m+4*m+nrhs*ILAENV(1_ip_,'DORMBR',     &
                   'QLT', m,nrhs,m,-1_ip_))
-                maxwrk = MAX(maxwrk, m*m+4*m+(m-1)*ILAENV(1_ip_,'DORMBR',      &
+                maxwrk = MAX(maxwrk, m*m+4*m+(m-1)*ILAENV(1_ip_,'DORMBR',    &
                   'PLN' ,m,nrhs,m,-1_ip_))
                 IF (nrhs>1) THEN
                   maxwrk = MAX(maxwrk, m*m+m+m*nrhs)
                 ELSE
                   maxwrk = MAX(maxwrk, m*m+2*m)
                 END IF
-                maxwrk = MAX(maxwrk, m+nrhs*ILAENV(1_ip_,'DORMLQ','LT',n,      &
+                maxwrk = MAX(maxwrk, m+nrhs*ILAENV(1_ip_,'DORMLQ','LT',n,    &
                   nrhs, m,-1_ip_))
                 maxwrk = MAX(maxwrk, m*m+4*m+wlalsd)
                 maxwrk = MAX(maxwrk, 4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m))
               ELSE
-                maxwrk = 3*m + (n+m)*ILAENV(1_ip_, 'DGEBRD', ' ', m, n,        &
+                maxwrk = 3*m + (n+m)*ILAENV(1_ip_, 'DGEBRD', ' ', m, n,     &
                   -1_ip_, -1_ip_ )
-                maxwrk = MAX(maxwrk, 3*m+nrhs*ILAENV(1_ip_,'DORMBR','QLT',m,   &
-                  nrhs,n,-1_ip_))
-                maxwrk = MAX(maxwrk, 3*m+m*ILAENV(1_ip_,'DORMBR','PLN',n,      &
+                maxwrk = MAX(maxwrk, 3*m+nrhs*ILAENV(1_ip_,'DORMBR','QLT',   &
+                  m, nrhs,n,-1_ip_))
+                maxwrk = MAX(maxwrk, 3*m+m*ILAENV(1_ip_,'DORMBR','PLN',n,    &
                   nrhs, m,-1_ip_))
                 maxwrk = MAX(maxwrk, 3*m+wlalsd)
               END IF
@@ -1073,10 +1077,12 @@
           anrm = DLANGE('M', m, n, a, lda, work)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL DLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -1087,11 +1093,11 @@
           bnrm = DLANGE('M', m, nrhs, b, ldb, work)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,   &
               info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,   &
               info)
             ibscl = 2
           END IF
@@ -1102,9 +1108,9 @@
               mm = n
               itau = 1
               nwork = itau + n
-              CALL DGEQRF(m, n, a, lda, work(itau), work(nwork),               &
+              CALL DGEQRF(m, n, a, lda, work(itau), work(nwork),            &
                 lwork-nwork+1, info)
-              CALL DORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,    &
+              CALL DORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,  &
                 work(nwork), lwork-nwork+1, info)
               IF (n>1) THEN
                 CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
@@ -1114,25 +1120,25 @@
             itauq = ie + n
             itaup = itauq + n
             nwork = itaup + n
-            CALL DGEBRD(mm, n, a, lda, s, work(ie), work(itauq),               &
+            CALL DGEBRD(mm, n, a, lda, s, work(ie), work(itauq),            &
               work(itaup), work(nwork), lwork-nwork+1, info)
-            CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,    &
+            CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
-            CALL DLALSD('U', smlsiz, n, nrhs, s, work(ie), b, ldb, rcond,      &
+            CALL DLALSD('U', smlsiz, n, nrhs, s, work(ie), b, ldb, rcond,   &
               rank, work(nwork), iwork, info)
             IF (info/=0) THEN
               GO TO 10
             END IF
-            CALL DORMBR('P', 'L', 'N', n, nrhs, n, a, lda, work(itaup), b,     &
+            CALL DORMBR('P', 'L', 'N', n, nrhs, n, a, lda, work(itaup), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
-          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m,       &
+          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m,    &
             wlalsd)) THEN
             ldwork = m
-            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),                 &
+            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),               &
               m*lda+m+m*nrhs,4*m+m*lda+wlalsd)) ldwork = lda
             itau = 1
             nwork = m + 1
-            CALL DGELQF(m, n, a, lda, work(itau), work(nwork),                 &
+            CALL DGELQF(m, n, a, lda, work(itau), work(nwork),              &
               lwork-nwork+1, info)
             il = nwork
             CALL DLACPY('L', m, m, a, lda, work(il), ldwork)
@@ -1141,54 +1147,54 @@
             itauq = ie + m
             itaup = itauq + m
             nwork = itaup + m
-            CALL DGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),      &
+            CALL DGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),   &
               work(itaup), work(nwork), lwork-nwork+1, info)
-            CALL DORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,           &
+            CALL DORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,        &
               work(itauq), b, ldb, work(nwork), lwork-nwork+1, info)
-            CALL DLALSD('U', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,      &
+            CALL DLALSD('U', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,   &
               rank, work(nwork), iwork, info)
             IF (info/=0) THEN
               GO TO 10
             END IF
-            CALL DORMBR('P', 'L', 'N', m, nrhs, m, work(il), ldwork,           &
+            CALL DORMBR('P', 'L', 'N', m, nrhs, m, work(il), ldwork,        &
               work(itaup), b, ldb, work(nwork), lwork-nwork+1, info)
             CALL DLASET('F', n-m, nrhs, zero, zero, b(m+1,1), ldb)
             nwork = itau + m
-            CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,      &
+            CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,   &
               work(nwork), lwork-nwork+1, info)
           ELSE
             ie = 1
             itauq = ie + m
             itaup = itauq + m
             nwork = itaup + m
-            CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq), work(itaup),   &
-              work(nwork), lwork-nwork+1, info)
-            CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,     &
+            CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),             &
+              work(itaup), work(nwork), lwork-nwork+1, info)
+            CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
-            CALL DLALSD('L', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,      &
+            CALL DLALSD('L', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,   &
               rank, work(nwork), iwork, info)
             IF (info/=0) THEN
               GO TO 10
             END IF
-            CALL DORMBR('P', 'L', 'N', n, nrhs, m, a, lda, work(itaup), b,     &
+            CALL DORMBR('P', 'L', 'N', n, nrhs, m, a, lda, work(itaup), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
           END IF
           IF (iascl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,   &
               info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           ELSE IF (iascl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,   &
               info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           END IF
           IF (ibscl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,   &
               info)
           ELSE IF (ibscl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,   &
               info)
           END IF
  10       CONTINUE
@@ -1197,7 +1203,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,    &
+        SUBROUTINE DGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,  &
           lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, ldb, lwork, m, n, nrhs, rank
@@ -1206,15 +1212,15 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: bdspac, bl, chunk, i, iascl, ibscl, ie, il, itau,    &
-            itaup, itauq, iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm,     &
+          INTEGER(ip_) :: bdspac, bl, chunk, i, iascl, ibscl, ie, il, itau,  &
+            itaup, itauq, iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm,  &
             mnthr
-          INTEGER(ip_) :: lwork_dgeqrf, lwork_dormqr, lwork_dgebrd,            &
+          INTEGER(ip_) :: lwork_dgeqrf, lwork_dormqr, lwork_dgebrd,         &
             lwork_dormbr, lwork_dorgbr, lwork_dormlq, lwork_dgelqf
           REAL(r8_) :: anrm, bignum, bnrm, eps, sfmin, smlnum, thr
           REAL(r8_) :: dum(1)
-          EXTERNAL :: DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM,                    &
-            DGEMV, DGEQRF, DLABAD, DLACPY, DLASCL, DLASET,                     &
+          EXTERNAL :: DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM,                  &
+            DGEMV, DGEQRF, DLABAD, DLACPY, DLASCL, DLASET,                  &
             DORGBR, DORMBR, DORMLQ, DORMQR, DRSCL, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
@@ -1244,7 +1250,7 @@
               IF (m>=n .AND. m>=mnthr) THEN
                 CALL DGEQRF(m, n, a, lda, dum(1), dum(1), -1_ip_, info)
                 lwork_dgeqrf = dum(1)
-                CALL DORMQR('L', 'T', m, nrhs, n, a, lda, dum(1), b, ldb,      &
+                CALL DORMQR('L', 'T', m, nrhs, n, a, lda, dum(1), b, ldb,   &
                   dum(1), -1_ip_, info)
                 lwork_dormqr = dum(1)
                 mm = n
@@ -1253,13 +1259,13 @@
               END IF
               IF (m>=n) THEN
                 bdspac = MAX(1, 5*n)
-                CALL DGEBRD(mm, n, a, lda, s, dum(1), dum(1), dum(1),          &
+                CALL DGEBRD(mm, n, a, lda, s, dum(1), dum(1), dum(1),       &
                   dum(1), -1_ip_, info)
                 lwork_dgebrd = dum(1)
-                CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, dum(1), b,     &
+                CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, dum(1), b,  &
                   ldb, dum(1), -1_ip_, info)
                 lwork_dormbr = dum(1)
-                CALL DORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,      &
+                CALL DORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,   &
                   info)
                 lwork_dorgbr = dum(1)
                 maxwrk = MAX(maxwrk, 3*n+lwork_dgebrd)
@@ -1276,16 +1282,16 @@
                 IF (n>=mnthr) THEN
                   CALL DGELQF(m, n, a, lda, dum(1), dum(1), -1_ip_, info)
                   lwork_dgelqf = dum(1)
-                  CALL DGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1),         &
+                  CALL DGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
                   lwork_dgebrd = dum(1)
-                  CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, dum(1), b,    &
+                  CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, dum(1), b,  &
                     ldb, dum(1), -1_ip_, info)
                   lwork_dormbr = dum(1)
-                  CALL DORGBR('P', m, m, m, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL DORGBR('P', m, m, m, a, lda, dum(1), dum(1), -1_ip_,  &
                     info)
                   lwork_dorgbr = dum(1)
-                  CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, dum(1), b, ldb,    &
+                  CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, dum(1), b, ldb,  &
                     dum(1), -1_ip_, info)
                   lwork_dormlq = dum(1)
                   maxwrk = m + lwork_dgelqf
@@ -1300,13 +1306,13 @@
                   END IF
                   maxwrk = MAX(maxwrk, m+lwork_dormlq)
                 ELSE
-                  CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),         &
+                  CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
                   lwork_dgebrd = dum(1)
-                  CALL DORMBR('Q', 'L', 'T', m, nrhs, m, a, lda, dum(1), b,    &
+                  CALL DORMBR('Q', 'L', 'T', m, nrhs, m, a, lda, dum(1), b,  &
                     ldb, dum(1), -1_ip_, info)
                   lwork_dormbr = dum(1)
-                  CALL DORGBR('P', m, n, m, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL DORGBR('P', m, n, m, a, lda, dum(1), dum(1), -1_ip_,  &
                     info)
                   lwork_dorgbr = dum(1)
                   maxwrk = 3*m + lwork_dgebrd
@@ -1339,10 +1345,12 @@
           anrm = DLANGE('M', m, n, a, lda, work)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL DLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -1353,11 +1361,11 @@
           bnrm = DLANGE('M', m, nrhs, b, ldb, work)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,   &
               info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,   &
               info)
             ibscl = 2
           END IF
@@ -1367,9 +1375,9 @@
               mm = n
               itau = 1
               iwork = itau + n
-              CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),               &
+              CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),            &
                 lwork-iwork+1, info)
-              CALL DORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,    &
+              CALL DORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,  &
                 work(iwork), lwork-iwork+1, info)
               IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
             END IF
@@ -1377,14 +1385,14 @@
             itauq = ie + n
             itaup = itauq + n
             iwork = itaup + n
-            CALL DGEBRD(mm, n, a, lda, s, work(ie), work(itauq),               &
+            CALL DGEBRD(mm, n, a, lda, s, work(ie), work(itauq),            &
               work(itaup), work(iwork), lwork-iwork+1, info)
-            CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,    &
+            CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(iwork), lwork-iwork+1, info)
-            CALL DORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),        &
+            CALL DORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),     &
               lwork-iwork+1, info)
             iwork = ie + n
-            CALL DBDSQR('U', n, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,      &
+            CALL DBDSQR('U', n, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,   &
               1_ip_, b, ldb, work(iwork), info)
             IF (info/=0) GO TO 70
             thr = MAX(rcond*s(1), sfmin)
@@ -1399,30 +1407,30 @@
               END IF
             END DO
             IF (lwork>=ldb*nrhs .AND. nrhs>1) THEN
-              CALL DGEMM('T', 'N', n, nrhs, n, one, a, lda, b, ldb, zero,      &
+              CALL DGEMM('T', 'N', n, nrhs, n, one, a, lda, b, ldb, zero,   &
                 work, ldb)
               CALL DLACPY('G', n, nrhs, work, ldb, b, ldb)
             ELSE IF (nrhs>1) THEN
               chunk = lwork/n
               DO i = 1, nrhs, chunk
                 bl = MIN(nrhs-i+1, chunk)
-                CALL DGEMM('T', 'N', n, bl, n, one, a, lda, b(1,i), ldb,       &
+                CALL DGEMM('T', 'N', n, bl, n, one, a, lda, b(1,i), ldb,    &
                   zero, work, n)
                 CALL DLACPY('G', n, bl, work, n, b(1,i), ldb)
               END DO
             ELSE
-              CALL DGEMV('T', n, n, one, a, lda, b, 1_ip_, zero, work,         &
+              CALL DGEMV('T', n, n, one, a, lda, b, 1_ip_, zero, work,      &
                 1_ip_)
               CALL DCOPY(n, work, 1_ip_, b, 1_ip_)
             END IF
-          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m))      &
+          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m))   &
             THEN
             ldwork = m
-            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),                 &
+            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),               &
               m*lda+m+m*nrhs)) ldwork = lda
             itau = 1
             iwork = m + 1
-            CALL DGELQF(m, n, a, lda, work(itau), work(iwork),                 &
+            CALL DGELQF(m, n, a, lda, work(itau), work(iwork),              &
               lwork-iwork+1, info)
             il = iwork
             CALL DLACPY('L', m, m, a, lda, work(il), ldwork)
@@ -1431,14 +1439,14 @@
             itauq = ie + m
             itaup = itauq + m
             iwork = itaup + m
-            CALL DGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),      &
+            CALL DGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),   &
               work(itaup), work(iwork), lwork-iwork+1, info)
-            CALL DORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,           &
+            CALL DORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,        &
               work(itauq), b, ldb, work(iwork), lwork-iwork+1, info)
-            CALL DORGBR('P', m, m, m, work(il), ldwork, work(itaup),           &
+            CALL DORGBR('P', m, m, m, work(il), ldwork, work(itaup),        &
               work(iwork), lwork-iwork+1, info)
             iwork = ie + m
-            CALL DBDSQR('U', m, m, 0_ip_, nrhs, s, work(ie), work(il),         &
+            CALL DBDSQR('U', m, m, 0_ip_, nrhs, s, work(ie), work(il),      &
               ldwork, a, lda, b, ldb, work(iwork), info)
             IF (info/=0) GO TO 70
             thr = MAX(rcond*s(1), sfmin)
@@ -1454,39 +1462,39 @@
             END DO
             iwork = ie
             IF (lwork>=ldb*nrhs+iwork-1 .AND. nrhs>1) THEN
-              CALL DGEMM('T', 'N', m, nrhs, m, one, work(il), ldwork, b,       &
+              CALL DGEMM('T', 'N', m, nrhs, m, one, work(il), ldwork, b,    &
                 ldb, zero, work(iwork), ldb)
               CALL DLACPY('G', m, nrhs, work(iwork), ldb, b, ldb)
             ELSE IF (nrhs>1) THEN
               chunk = (lwork-iwork+1)/m
               DO i = 1, nrhs, chunk
                 bl = MIN(nrhs-i+1, chunk)
-                CALL DGEMM('T', 'N', m, bl, m, one, work(il), ldwork, b(1,     &
+                CALL DGEMM('T', 'N', m, bl, m, one, work(il), ldwork, b(1,   &
                   i), ldb, zero, work(iwork), m)
                 CALL DLACPY('G', m, bl, work(iwork), m, b(1,i), ldb)
               END DO
             ELSE
-              CALL DGEMV('T', m, m, one, work(il), ldwork, b(1,1), 1_ip_,      &
+              CALL DGEMV('T', m, m, one, work(il), ldwork, b(1,1), 1_ip_,   &
                 zero, work(iwork), 1_ip_)
               CALL DCOPY(m, work(iwork), 1_ip_, b(1,1), 1_ip_)
             END IF
             CALL DLASET('F', n-m, nrhs, zero, zero, b(m+1,1), ldb)
             iwork = itau + m
-            CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,      &
+            CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,   &
               work(iwork), lwork-iwork+1, info)
           ELSE
             ie = 1
             itauq = ie + m
             itaup = itauq + m
             iwork = itaup + m
-            CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq), work(itaup),   &
-              work(iwork), lwork-iwork+1, info)
-            CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,     &
+            CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),             &
+              work(itaup), work(iwork), lwork-iwork+1, info)
+            CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(iwork), lwork-iwork+1, info)
-            CALL DORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),        &
+            CALL DORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),     &
               lwork-iwork+1, info)
             iwork = ie + m
-            CALL DBDSQR('L', m, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,      &
+            CALL DBDSQR('L', m, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,   &
               1_ip_, b, ldb, work(iwork), info)
             IF (info/=0) GO TO 70
             thr = MAX(rcond*s(1), sfmin)
@@ -1501,39 +1509,39 @@
               END IF
             END DO
             IF (lwork>=ldb*nrhs .AND. nrhs>1) THEN
-              CALL DGEMM('T', 'N', n, nrhs, m, one, a, lda, b, ldb, zero,      &
+              CALL DGEMM('T', 'N', n, nrhs, m, one, a, lda, b, ldb, zero,   &
                 work, ldb)
               CALL DLACPY('F', n, nrhs, work, ldb, b, ldb)
             ELSE IF (nrhs>1) THEN
               chunk = lwork/n
               DO i = 1, nrhs, chunk
                 bl = MIN(nrhs-i+1, chunk)
-                CALL DGEMM('T', 'N', n, bl, m, one, a, lda, b(1,i), ldb,       &
+                CALL DGEMM('T', 'N', n, bl, m, one, a, lda, b(1,i), ldb,    &
                   zero, work, n)
                 CALL DLACPY('F', n, bl, work, n, b(1,i), ldb)
               END DO
             ELSE
-              CALL DGEMV('T', m, n, one, a, lda, b, 1_ip_, zero, work,         &
+              CALL DGEMV('T', m, n, one, a, lda, b, 1_ip_, zero, work,      &
                 1_ip_)
               CALL DCOPY(n, work, 1_ip_, b, 1_ip_)
             END IF
           END IF
           IF (iascl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,   &
               info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           ELSE IF (iascl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,   &
               info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           END IF
           IF (ibscl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,   &
               info)
           ELSE IF (ibscl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,   &
               info)
           END IF
  70       CONTINUE
@@ -1541,7 +1549,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank,       &
+        SUBROUTINE DGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank,    &
           work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, ldb, lwork, m, n, nrhs, rank
@@ -1553,15 +1561,16 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, iascl, ibscl, ismax, ismin, j, lwkmin, lwkopt,    &
+          INTEGER(ip_) :: i, iascl, ibscl, ismax, ismin, j, lwkmin, lwkopt,  &
             mn, nb, nb1, nb2, nb3, nb4
-          REAL(r8_) :: anrm, bignum, bnrm, c1, c2, s1, s2, smax, smaxpr,       &
+          REAL(r8_) :: anrm, bignum, bnrm, c1, c2, s1, s2, smax, smaxpr,    &
             smin, sminpr, smlnum, wsize
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
           EXTERNAL :: ILAENV, DLAMCH, DLANGE
-          EXTERNAL :: DCOPY, DGEQP3, DLABAD, DLAIC1, DLASCL,                   &
-            DLASET, DORMQR, DORMRZ, DTRSM, DTZRZF, XERBLA
+          EXTERNAL :: DCOPY, DGEQP3, DLABAD, DLAIC1,                        &
+            DLASCL, DLASET, DORMQR, DORMRZ, DTRSM, DTZRZF,                  &
+            XERBLA
           INTRINSIC :: ABS, MAX, MIN
           mn = MIN(m, n)
           ismin = mn + 1
@@ -1613,10 +1622,12 @@
           anrm = DLANGE('M', m, n, a, lda, work)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL DLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -1626,15 +1637,15 @@
           bnrm = DLANGE('M', m, nrhs, b, ldb, work)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,   &
               info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,   &
               info)
             ibscl = 2
           END IF
-          CALL DGEQP3(m, n, a, lda, jpvt, work(1), work(mn+1), lwork-mn,       &
+          CALL DGEQP3(m, n, a, lda, jpvt, work(1), work(mn+1), lwork-mn,    &
             info)
           wsize = mn + work(mn+1)
           work(ismin) = one
@@ -1651,9 +1662,9 @@
  10       CONTINUE
           IF (rank<mn) THEN
             i = rank + 1
-            CALL DLAIC1(imin, rank, work(ismin), smin, a(1,i), a(i,i),         &
+            CALL DLAIC1(imin, rank, work(ismin), smin, a(1,i), a(i,i),      &
               sminpr, s1, c1)
-            CALL DLAIC1(imax, rank, work(ismax), smax, a(1,i), a(i,i),         &
+            CALL DLAIC1(imax, rank, work(ismax), smax, a(1,i), a(i,i),      &
               smaxpr, s2, c2)
             IF (smaxpr*rcond<=sminpr) THEN
               DO i = 1, rank
@@ -1668,12 +1679,12 @@
               GO TO 10
             END IF
           END IF
-          IF (rank<n) CALL DTZRZF(rank, n, a, lda, work(mn+1), work(2*mn+1),   &
-            lwork-2*mn, info)
-          CALL DORMQR('Left', 'Transpose', m, nrhs, mn, a, lda, work(1), b,    &
+          IF (rank<n) CALL DTZRZF(rank, n, a, lda, work(mn+1),              &
+            work(2*mn+1), lwork-2*mn, info)
+          CALL DORMQR('Left', 'Transpose', m, nrhs, mn, a, lda, work(1), b,  &
             ldb, work(2*mn+1), lwork-2*mn, info)
           wsize = MAX(wsize, 2*mn+work(2*mn+1))
-          CALL DTRSM('Left', 'Upper', 'No transpose', 'Non-unit', rank,        &
+          CALL DTRSM('Left', 'Upper', 'No transpose', 'Non-unit', rank,     &
             nrhs, one, a, lda, b, ldb)
           DO j = 1, nrhs
             DO i = rank + 1, n
@@ -1681,7 +1692,7 @@
             END DO
           END DO
           IF (rank<n) THEN
-            CALL DORMRZ('Left', 'Transpose', n, nrhs, rank, n-rank, a, lda,    &
+            CALL DORMRZ('Left', 'Transpose', n, nrhs, rank, n-rank, a, lda,  &
               work(mn+1), b, ldb, work(2*mn+1), lwork-2*mn, info)
           END IF
           DO j = 1, nrhs
@@ -1691,21 +1702,21 @@
             CALL DCOPY(n, work(1), 1_ip_, b(1,j), 1_ip_)
           END DO
           IF (iascl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,   &
               info)
-            CALL DLASCL('U', 0_ip_, 0_ip_, smlnum, anrm, rank, rank, a, lda,   &
-              info)
+            CALL DLASCL('U', 0_ip_, 0_ip_, smlnum, anrm, rank, rank, a,     &
+              lda, info)
           ELSE IF (iascl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,   &
               info)
-            CALL DLASCL('U', 0_ip_, 0_ip_, bignum, anrm, rank, rank, a, lda,   &
-              info)
+            CALL DLASCL('U', 0_ip_, 0_ip_, bignum, anrm, rank, rank, a,     &
+              lda, info)
           END IF
           IF (ibscl==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,   &
               info)
           ELSE IF (ibscl==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,      &
+            CALL DLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,   &
               info)
           END IF
  70       CONTINUE
@@ -1721,10 +1732,10 @@
           INTEGER(ip_) :: inb, inbmin, ixover
           PARAMETER (inb=1, inbmin=2, ixover=3)
           LOGICAL :: lquery
-          INTEGER(ip_) :: fjb, iws, j, jb, lwkopt, minmn, minws, na, nb,       &
+          INTEGER(ip_) :: fjb, iws, j, jb, lwkopt, minmn, minws, na, nb,    &
             nbmin, nfxd, nx, sm, sminmn, sn, topbmn
-          EXTERNAL :: DGEQRF, DLAQP2, DLAQPS, DORMQR, DSWAP,                   &
-            XERBLA
+          EXTERNAL :: DGEQRF, DLAQP2, DLAQPS, DORMQR,                       &
+            DSWAP, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DNRM2
           EXTERNAL :: ILAENV, DNRM2
@@ -1780,7 +1791,7 @@
             CALL DGEQRF(m, na, a, lda, tau, work, lwork, info)
             iws = MAX(iws, INT(work(1)))
             IF (na<n) THEN
-              CALL DORMQR('Left', 'Transpose', m, n-na, na, a, lda, tau,       &
+              CALL DORMQR('Left', 'Transpose', m, n-na, na, a, lda, tau,    &
                 a(1,na+1), lda, work, lwork, info)
               iws = MAX(iws, INT(work(1)))
             END IF
@@ -1793,14 +1804,14 @@
             nbmin = 2
             nx = 0
             IF ((nb>1) .AND. (nb<sminmn)) THEN
-              nx = MAX(0_ip_, ILAENV(ixover,'DGEQRF',' ',sm,sn,-1_ip_,         &
+              nx = MAX(0_ip_, ILAENV(ixover,'DGEQRF',' ',sm,sn,-1_ip_,       &
                 -1_ip_))
               IF (nx<sminmn) THEN
                 minws = 2*sn + (sn+1)*nb
                 iws = MAX(iws, minws)
                 IF (lwork<minws) THEN
                   nb = (lwork-2*sn)/(sn+1)
-                  nbmin = MAX(2_ip_, ILAENV(inbmin,'DGEQRF',' ',sm,sn,         &
+                  nbmin = MAX(2_ip_, ILAENV(inbmin,'DGEQRF',' ',sm,sn,       &
                     -1_ip_,-1_ip_))
                 END IF
               END IF
@@ -1815,8 +1826,8 @@
  30           CONTINUE
               IF (j<=topbmn) THEN
                 jb = MIN(nb, topbmn-j+1)
-                CALL DLAQPS(m, n-j+1, j-1, jb, fjb, a(1,j), lda, jpvt(j),      &
-                  tau(j), work(j), work(n+j), work(2*n+1), work(2*n+jb+1),     &
+                CALL DLAQPS(m, n-j+1, j-1, jb, fjb, a(1,j), lda, jpvt(j),   &
+                  tau(j), work(j), work(n+j), work(2*n+1), work(2*n+jb+1),  &
                   n-j+1)
                 j = j + fjb
                 GO TO 30
@@ -1824,7 +1835,7 @@
             ELSE
               j = nfxd + 1
             END IF
-            IF (j<=minmn) CALL DLAQP2(m, n-j+1, j-1, a(1,j), lda, jpvt(j),     &
+            IF (j<=minmn) CALL DLAQP2(m, n-j+1, j-1, a(1,j), lda, jpvt(j),  &
               tau(j), work(j), work(n+j), work(2*n+1))
           END IF
           work(1) = iws
@@ -1859,7 +1870,7 @@
             IF (i<n) THEN
               aii = a(i, i)
               a(i, i) = one
-              CALL DLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,       &
+              CALL DLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,     &
                 i+1), lda, work)
               a(i, i) = aii
             END IF
@@ -1872,7 +1883,7 @@
           INTEGER(ip_) :: info, lda, lwork, m, n
           REAL(r8_) :: a(lda, *), tau(*), work(*)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,  &
             nx
           EXTERNAL :: DGEQR2, DLARFB, DLARFT, XERBLA
           INTRINSIC :: MAX, MIN
@@ -1913,7 +1924,7 @@
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = lwork/ldwork
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGEQRF',' ',m,n,-1_ip_,       &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGEQRF',' ',m,n,-1_ip_,     &
                   -1_ip_))
               END IF
             END IF
@@ -1923,23 +1934,23 @@
               ib = MIN(k-i+1, nb)
               CALL DGEQR2(m-i+1, ib, a(i,i), lda, tau(i), work, iinfo)
               IF (i+ib<=n) THEN
-                CALL DLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i), lda,   &
-                  tau(i), work, ldwork)
-                CALL DLARFB('Left', 'Transpose', 'Forward', 'Columnwise',      &
-                  m-i+1, n-i-ib+1, ib, a(i,i), lda, work, ldwork, a(i,i+ib),   &
+                CALL DLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i),     &
+                  lda, tau(i), work, ldwork)
+                CALL DLARFB('Left', 'Transpose', 'Forward', 'Columnwise',   &
+                  m-i+1, n-i-ib+1, ib, a(i,i), lda, work, ldwork, a(i,i+ib),&
                   lda, work(ib+1), ldwork)
               END IF
             END DO
           ELSE
             i = 1
           END IF
-          IF (i<=k) CALL DGEQR2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,       &
+          IF (i<=k) CALL DGEQR2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
           work(1) = iws
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,      &
+        SUBROUTINE DGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,   &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: jobu, jobvt
@@ -1947,19 +1958,19 @@
           REAL(r8_) :: a(lda, *), s(*), u(ldu, *), vt(ldvt, *), work(*)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
-          LOGICAL :: lquery, wntua, wntuas, wntun, wntuo, wntus, wntva,        &
+          LOGICAL :: lquery, wntua, wntuas, wntun, wntuo, wntus, wntva,     &
             wntvas, wntvn, wntvo, wntvs
-          INTEGER(ip_) :: bdspac, blk, chunk, i, ie, ierr, ir, iscl, itau,     &
-            itaup, itauq, iu, iwork, ldwrkr, ldwrku, maxwrk, minmn, minwrk,    &
+          INTEGER(ip_) :: bdspac, blk, chunk, i, ie, ierr, ir, iscl, itau,  &
+            itaup, itauq, iu, iwork, ldwrkr, ldwrku, maxwrk, minmn, minwrk, &
             mnthr, ncu, ncvt, nru, nrvt, wrkbl
-          INTEGER(ip_) :: lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m,        &
-            lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q, lwork_dgelqf,        &
+          INTEGER(ip_) :: lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m,     &
+            lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q, lwork_dgelqf,     &
             lwork_dorglq_n, lwork_dorglq_m
           REAL(r8_) :: anrm, bignum, eps, smlnum
           REAL(r8_) :: dum(1)
-          EXTERNAL :: DBDSQR, DGEBRD, DGELQF, DGEMM, DGEQRF,                   &
-            DLACPY, DLASCL, DLASET, DORGBR, DORGLQ, DORGQR,                    &
-            DORMBR, XERBLA
+          EXTERNAL :: DBDSQR, DGEBRD, DGELQF, DGEMM,                        &
+            DGEQRF, DLACPY, DLASCL, DLASET, DORGBR, DORGLQ,                 &
+            DORGQR, DORMBR, XERBLA
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
@@ -1980,7 +1991,7 @@
           lquery = (lwork==-1)
           IF (.NOT. (wntua .OR. wntus .OR. wntuo .OR. wntun)) THEN
             info = -1
-          ELSE IF (.NOT. (wntva .OR. wntvs .OR. wntvo .OR. wntvn) .OR.         &
+          ELSE IF (.NOT. (wntva .OR. wntvs .OR. wntvo .OR. wntvn) .OR.      &
             (wntvo .AND. wntuo)) THEN
             info = -2
           ELSE IF (m<0) THEN
@@ -1991,7 +2002,7 @@
             info = -6
           ELSE IF (ldu<1 .OR. (wntuas .AND. ldu<m)) THEN
             info = -9
-          ELSE IF (ldvt<1 .OR. (wntva .AND. ldvt<n) .OR. (wntvs .AND.          &
+          ELSE IF (ldvt<1 .OR. (wntva .AND. ldvt<n) .OR. (wntvs .AND.       &
             ldvt<minmn)) THEN
             info = -11
           END IF
@@ -1999,7 +2010,7 @@
             minwrk = 1
             maxwrk = 1
             IF (m>=n .AND. minmn>0) THEN
-              mnthr = ILAENV(6_ip_, 'DGESVD', jobu//jobvt, m, n, 0_ip_,        &
+              mnthr = ILAENV(6_ip_, 'DGESVD', jobu//jobvt, m, n, 0_ip_,     &
                 0_ip_)
               bdspac = 5*n
               CALL DGEQRF(m, n, a, lda, dum(1), dum(1), -1_ip_, ierr)
@@ -2008,20 +2019,20 @@
               lwork_dorgqr_n = INT(dum(1))
               CALL DORGQR(m, m, n, a, lda, dum(1), dum(1), -1_ip_, ierr)
               lwork_dorgqr_m = INT(dum(1))
-              CALL DGEBRD(n, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),     &
+              CALL DGEBRD(n, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),  &
                 -1_ip_, ierr)
               lwork_dgebrd = INT(dum(1))
-              CALL DORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,        &
+              CALL DORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,     &
                 ierr)
               lwork_dorgbr_p = INT(dum(1))
-              CALL DORGBR('Q', n, n, n, a, lda, dum(1), dum(1), -1_ip_,        &
+              CALL DORGBR('Q', n, n, n, a, lda, dum(1), dum(1), -1_ip_,     &
                 ierr)
               lwork_dorgbr_q = INT(dum(1))
               IF (m>=mnthr) THEN
                 IF (wntun) THEN
                   maxwrk = n + lwork_dgeqrf
                   maxwrk = MAX(maxwrk, 3*n+lwork_dgebrd)
-                  IF (wntvo .OR. wntvas) maxwrk = MAX(maxwrk,                  &
+                  IF (wntvo .OR. wntvas) maxwrk = MAX(maxwrk,               &
                     3*n+lwork_dorgbr_p)
                   maxwrk = MAX(maxwrk, bdspac)
                   minwrk = MAX(4*n, bdspac)
@@ -2096,18 +2107,18 @@
                   minwrk = MAX(3*n+m, bdspac)
                 END IF
               ELSE
-                CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),   &
-                  -1_ip_, ierr)
+                CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),        &
+                  dum(1), -1_ip_, ierr)
                 lwork_dgebrd = INT(dum(1))
                 maxwrk = 3*n + lwork_dgebrd
                 IF (wntus .OR. wntuo) THEN
-                  CALL DORGBR('Q', m, n, n, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL DORGBR('Q', m, n, n, a, lda, dum(1), dum(1), -1_ip_,  &
                     ierr)
                   lwork_dorgbr_q = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*n+lwork_dorgbr_q)
                 END IF
                 IF (wntua) THEN
-                  CALL DORGBR('Q', m, m, n, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL DORGBR('Q', m, m, n, a, lda, dum(1), dum(1), -1_ip_,  &
                     ierr)
                   lwork_dorgbr_q = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*n+lwork_dorgbr_q)
@@ -2119,7 +2130,7 @@
                 minwrk = MAX(3*n+m, bdspac)
               END IF
             ELSE IF (minmn>0) THEN
-              mnthr = ILAENV(6_ip_, 'DGESVD', jobu//jobvt, m, n, 0_ip_,        &
+              mnthr = ILAENV(6_ip_, 'DGESVD', jobu//jobvt, m, n, 0_ip_,     &
                 0_ip_)
               bdspac = 5*m
               CALL DGELQF(m, n, a, lda, dum(1), dum(1), -1_ip_, ierr)
@@ -2128,7 +2139,7 @@
               lwork_dorglq_n = INT(dum(1))
               CALL DORGLQ(m, n, m, a, lda, dum(1), dum(1), -1_ip_, ierr)
               lwork_dorglq_m = INT(dum(1))
-              CALL DGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1), dum(1),     &
+              CALL DGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1), dum(1),  &
                 -1_ip_, ierr)
               lwork_dgebrd = INT(dum(1))
               CALL DORGBR('P', m, m, m, a, n, dum(1), dum(1), -1_ip_, ierr)
@@ -2139,7 +2150,7 @@
                 IF (wntvn) THEN
                   maxwrk = m + lwork_dgelqf
                   maxwrk = MAX(maxwrk, 3*m+lwork_dgebrd)
-                  IF (wntuo .OR. wntuas) maxwrk = MAX(maxwrk,                  &
+                  IF (wntuo .OR. wntuas) maxwrk = MAX(maxwrk,               &
                     3*m+lwork_dorgbr_q)
                   maxwrk = MAX(maxwrk, bdspac)
                   minwrk = MAX(4*m, bdspac)
@@ -2214,18 +2225,18 @@
                   minwrk = MAX(3*m+n, bdspac)
                 END IF
               ELSE
-                CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),   &
-                  -1_ip_, ierr)
+                CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),        &
+                  dum(1), -1_ip_, ierr)
                 lwork_dgebrd = INT(dum(1))
                 maxwrk = 3*m + lwork_dgebrd
                 IF (wntvs .OR. wntvo) THEN
-                  CALL DORGBR('P', m, n, m, a, n, dum(1), dum(1), -1_ip_,      &
+                  CALL DORGBR('P', m, n, m, a, n, dum(1), dum(1), -1_ip_,   &
                     ierr)
                   lwork_dorgbr_p = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*m+lwork_dorgbr_p)
                 END IF
                 IF (wntva) THEN
-                  CALL DORGBR('P', n, n, m, a, n, dum(1), dum(1), -1_ip_,      &
+                  CALL DORGBR('P', n, n, m, a, n, dum(1), dum(1), -1_ip_,   &
                     ierr)
                   lwork_dorgbr_p = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*m+lwork_dorgbr_p)
@@ -2259,17 +2270,19 @@
           iscl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
             iscl = 1
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, ierr)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              ierr)
           ELSE IF (anrm>bignum) THEN
             iscl = 1
-            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, ierr)
+            CALL DLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              ierr)
           END IF
           IF (m>=n) THEN
             IF (m>=mnthr) THEN
               IF (wntun) THEN
                 itau = 1
                 iwork = itau + n
-                CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),             &
+                CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),          &
                   lwork-iwork+1, ierr)
                 IF (n>1) THEN
                   CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
@@ -2278,17 +2291,17 @@
                 itauq = ie + n
                 itaup = itauq + n
                 iwork = itaup + n
-                CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),            &
+                CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),         &
                   work(itaup), work(iwork), lwork-iwork+1, ierr)
                 ncvt = 0
                 IF (wntvo .OR. wntvas) THEN
-                  CALL DORGBR('P', n, n, n, a, lda, work(itaup),               &
+                  CALL DORGBR('P', n, n, n, a, lda, work(itaup),            &
                     work(iwork), lwork-iwork+1, ierr)
                   ncvt = n
                 END IF
                 iwork = ie + n
-                CALL DBDSQR('U', n, ncvt, 0_ip_, 0_ip_, s, work(ie), a, lda,   &
-                  dum, 1_ip_, dum, 1_ip_, work(iwork), info)
+                CALL DBDSQR('U', n, ncvt, 0_ip_, 0_ip_, s, work(ie), a,     &
+                  lda, dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                 IF (wntvas) CALL DLACPY('F', n, n, a, lda, vt, ldvt)
               ELSE IF (wntuo .AND. wntvn) THEN
                 IF (lwork>=n*n+MAX(4*n,bdspac)) THEN
@@ -2305,30 +2318,31 @@
                   END IF
                   itau = ir + ldwrkr*n
                   iwork = itau + n
-                  CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL DLACPY('U', n, n, a, lda, work(ir), ldwrkr)
-                  CALL DLASET('L', n-1, n-1, zero, zero, work(ir+1), ldwrkr)
-                  CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),        &
+                  CALL DLASET('L', n-1, n-1, zero, zero, work(ir+1),        &
+                    ldwrkr)
+                  CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL DGEBRD(n, n, work(ir), ldwrkr, s, work(ie),             &
-                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,      &
+                  CALL DGEBRD(n, n, work(ir), ldwrkr, s, work(ie),          &
+                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,   &
                     ierr)
-                  CALL DORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),     &
+                  CALL DORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),  &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL DBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,       &
+                  CALL DBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,    &
                     1_ip_, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
                   iu = ie + n
                   DO i = 1, m, ldwrku
                     chunk = MIN(m-i+1, ldwrku)
-                    CALL DGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,        &
+                    CALL DGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,     &
                       work(ir), ldwrkr, zero, work(iu), ldwrku)
-                    CALL DLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),       &
+                    CALL DLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),    &
                       lda)
                   END DO
                 ELSE
@@ -2336,12 +2350,12 @@
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),          &
+                  CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL DORGBR('Q', m, n, n, a, lda, work(itauq),               &
+                  CALL DORGBR('Q', m, n, n, a, lda, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL DBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,       &
+                  CALL DBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,    &
                     1_ip_, a, lda, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntuo .AND. wntvas) THEN
@@ -2359,58 +2373,58 @@
                   END IF
                   itau = ir + ldwrkr*n
                   iwork = itau + n
-                  CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL DLACPY('U', n, n, a, lda, vt, ldvt)
-                  IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,1),     &
+                  IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,1),  &
                     ldvt)
-                  CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),        &
+                  CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),        &
+                  CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),     &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
                   CALL DLACPY('L', n, n, vt, ldvt, work(ir), ldwrkr)
-                  CALL DORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),     &
+                  CALL DORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),  &
                     work(iwork), lwork-iwork+1, ierr)
-                  CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),             &
+                  CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),          &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,      &
+                  CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,   &
                     work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
                   iu = ie + n
                   DO i = 1, m, ldwrku
                     chunk = MIN(m-i+1, ldwrku)
-                    CALL DGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,        &
+                    CALL DGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,     &
                       work(ir), ldwrkr, zero, work(iu), ldwrku)
-                    CALL DLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),       &
+                    CALL DLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),    &
                       lda)
                   END DO
                 ELSE
                   itau = 1
                   iwork = itau + n
-                  CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL DLACPY('U', n, n, a, lda, vt, ldvt)
-                  IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,1),     &
+                  IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,1),  &
                     ldvt)
-                  CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),        &
+                  CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),        &
+                  CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),     &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL DORMBR('Q', 'R', 'N', m, n, n, vt, ldvt, work(itauq),   &
-                    a, lda, work(iwork), lwork-iwork+1, ierr)
-                  CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),             &
+                  CALL DORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,             &
+                    work(itauq), a, lda, work(iwork), lwork-iwork+1, ierr)
+                  CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),          &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt, a,   &
-                    lda, dum, 1_ip_, work(iwork), info)
+                  CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,   &
+                    a, lda, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntus) THEN
                 IF (wntvn) THEN
@@ -2423,34 +2437,34 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, work(ir), ldwrkr)
-                    CALL DLASET('L', n-1, n-1, zero, zero, work(ir+1),         &
+                    CALL DLASET('L', n-1, n-1, zero, zero, work(ir+1),      &
                       ldwrkr)
-                    CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),      &
+                    CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(n, n, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', n, n, n, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,     &
+                    CALL DBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,  &
                       1_ip_, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, n, one, a, lda, work(ir),       &
+                    CALL DGEMM('N', 'N', m, n, n, one, a, lda, work(ir),    &
                       ldwrkr, zero, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, n, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, n, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -2459,12 +2473,12 @@
                     IF (n>1) THEN
                       CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,     &
+                    CALL DBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,  &
                       1_ip_, u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvo) THEN
@@ -2485,39 +2499,40 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
-                    CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),      &
+                    CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DLACPY('U', n, n, work(iu), ldwrku, work(ir),         &
+                    CALL DLACPY('U', n, n, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', n, n, n, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),    &
-                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, n, one, a, lda, work(iu),       &
+                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),  &
+                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL DGEMM('N', 'N', m, n, n, one, a, lda, work(iu),    &
                       ldwrku, zero, u, ldu)
                     CALL DLACPY('F', n, n, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, n, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, n, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -2526,15 +2541,15 @@
                     IF (n>1) THEN
                       CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, a, lda, work(itaup),             &
+                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', n, n, n, a, lda, work(itaup),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda, u,   &
-                      ldu, dum, 1_ip_, work(iwork), info)
+                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda,   &
+                      u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvas) THEN
                   IF (lwork>=n*n+MAX(4*n,bdspac)) THEN
@@ -2546,53 +2561,53 @@
                     END IF
                     itau = iu + ldwrku*n
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
-                    CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),      &
+                    CALL DORGQR(m, n, n, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL DLACPY('U', n, n, work(iu), ldwrku, vt, ldvt)
-                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,  &
                       work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, n, one, a, lda, work(iu),       &
+                    CALL DGEMM('N', 'N', m, n, n, one, a, lda, work(iu),    &
                       ldwrku, zero, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, n, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, n, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, vt, ldvt)
-                    IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,1),   &
-                      ldvt)
+                    IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,    &
+                      1), ldvt)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),      &
+                    CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),   &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,              &
+                    CALL DORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,           &
                       work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -2607,36 +2622,36 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
                     CALL DLACPY('U', n, n, a, lda, work(ir), ldwrkr)
-                    CALL DLASET('L', n-1, n-1, zero, zero, work(ir+1),         &
+                    CALL DLASET('L', n-1, n-1, zero, zero, work(ir+1),      &
                       ldwrkr)
-                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(n, n, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', n, n, n, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,     &
+                    CALL DBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,  &
                       1_ip_, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, n, one, u, ldu, work(ir),       &
+                    CALL DGEMM('N', 'N', m, n, n, one, u, ldu, work(ir),    &
                       ldwrkr, zero, a, lda)
                     CALL DLACPY('F', m, n, a, lda, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -2645,12 +2660,12 @@
                     IF (n>1) THEN
                       CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,     &
+                    CALL DBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,  &
                       1_ip_, u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvo) THEN
@@ -2671,41 +2686,42 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DLACPY('U', n, n, work(iu), ldwrku, work(ir),         &
+                    CALL DLACPY('U', n, n, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', n, n, n, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),    &
-                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),       &
+                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),  &
+                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL DGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),    &
                       ldwrku, zero, a, lda)
                     CALL DLACPY('F', m, n, a, lda, u, ldu)
                     CALL DLACPY('F', n, n, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -2714,15 +2730,15 @@
                     IF (n>1) THEN
                       CALL DLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, a, lda, work(itaup),             &
+                    CALL DORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', n, n, n, a, lda, work(itaup),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda, u,   &
-                      ldu, dum, 1_ip_, work(iwork), info)
+                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda,   &
+                      u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvas) THEN
                   IF (lwork>=n*n+MAX(n+m,4*n,bdspac)) THEN
@@ -2734,55 +2750,55 @@
                     END IF
                     itau = iu + ldwrku*n
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL DLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL DLACPY('U', n, n, work(iu), ldwrku, vt, ldvt)
-                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL DORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,  &
                       work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),       &
+                    CALL DGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),    &
                       ldwrku, zero, a, lda)
                     CALL DLACPY('F', m, n, a, lda, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, n, a, lda, u, ldu)
-                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL DORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', n, n, a, lda, vt, ldvt)
-                    IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,1),   &
-                      ldvt)
+                    IF (n>1) CALL DLASET('L', n-1, n-1, zero, zero, vt(2,    &
+                      1), ldvt)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),      &
+                    CALL DGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),   &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,              &
+                    CALL DORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,           &
                       work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -2792,26 +2808,26 @@
               itauq = ie + n
               itaup = itauq + n
               iwork = itaup + n
-              CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),              &
+              CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),           &
                 work(itaup), work(iwork), lwork-iwork+1, ierr)
               IF (wntuas) THEN
                 CALL DLACPY('L', m, n, a, lda, u, ldu)
                 IF (wntus) ncu = n
                 IF (wntua) ncu = m
-                CALL DORGBR('Q', m, ncu, n, u, ldu, work(itauq),               &
+                CALL DORGBR('Q', m, ncu, n, u, ldu, work(itauq),            &
                   work(iwork), lwork-iwork+1, ierr)
               END IF
               IF (wntvas) THEN
                 CALL DLACPY('U', n, n, a, lda, vt, ldvt)
-                CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),               &
+                CALL DORGBR('P', n, n, n, vt, ldvt, work(itaup),            &
                   work(iwork), lwork-iwork+1, ierr)
               END IF
               IF (wntuo) THEN
-                CALL DORGBR('Q', m, n, n, a, lda, work(itauq), work(iwork),    &
+                CALL DORGBR('Q', m, n, n, a, lda, work(itauq), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               IF (wntvo) THEN
-                CALL DORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),    &
+                CALL DORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               iwork = ie + n
@@ -2820,14 +2836,14 @@
               IF (wntvas .OR. wntvo) ncvt = n
               IF (wntvn) ncvt = 0
               IF ((.NOT. wntuo) .AND. (.NOT. wntvo)) THEN
-                CALL DBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  u, ldu, dum, 1_ip_, work(iwork), info)
+                CALL DBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE IF ((.NOT. wntuo) .AND. wntvo) THEN
-                CALL DBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), a, lda,     &
+                CALL DBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), a, lda,  &
                   u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE
-                CALL DBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  a, lda, dum, 1_ip_, work(iwork), info)
+                CALL DBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, a, lda, dum, 1_ip_, work(iwork), info)
               END IF
             END IF
           ELSE
@@ -2835,23 +2851,23 @@
               IF (wntvn) THEN
                 itau = 1
                 iwork = itau + m
-                CALL DGELQF(m, n, a, lda, work(itau), work(iwork),             &
+                CALL DGELQF(m, n, a, lda, work(itau), work(iwork),          &
                   lwork-iwork+1, ierr)
                 CALL DLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
                 ie = 1
                 itauq = ie + m
                 itaup = itauq + m
                 iwork = itaup + m
-                CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),            &
+                CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),         &
                   work(itaup), work(iwork), lwork-iwork+1, ierr)
                 IF (wntuo .OR. wntuas) THEN
-                  CALL DORGBR('Q', m, m, m, a, lda, work(itauq),               &
+                  CALL DORGBR('Q', m, m, m, a, lda, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                 END IF
                 iwork = ie + m
                 nru = 0
                 IF (wntuo .OR. wntuas) nru = m
-                CALL DBDSQR('U', m, 0_ip_, nru, 0_ip_, s, work(ie), dum,       &
+                CALL DBDSQR('U', m, 0_ip_, nru, 0_ip_, s, work(ie), dum,    &
                   1_ip_, a, lda, dum, 1_ip_, work(iwork), info)
                 IF (wntuas) CALL DLACPY('F', m, m, a, lda, u, ldu)
               ELSE IF (wntvo .AND. wntun) THEN
@@ -2872,30 +2888,30 @@
                   END IF
                   itau = ir + ldwrkr*m
                   iwork = itau + m
-                  CALL DGELQF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL DGELQF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL DLACPY('L', m, m, a, lda, work(ir), ldwrkr)
-                  CALL DLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),      &
+                  CALL DLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),   &
                     ldwrkr)
-                  CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),        &
+                  CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL DGEBRD(m, m, work(ir), ldwrkr, s, work(ie),             &
-                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,      &
+                  CALL DGEBRD(m, m, work(ir), ldwrkr, s, work(ie),          &
+                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,   &
                     ierr)
-                  CALL DORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),     &
+                  CALL DORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),  &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL DBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),            &
-                    work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),     &
+                  CALL DBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),         &
+                    work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),  &
                     info)
                   iu = ie + m
                   DO i = 1, n, chunk
                     blk = MIN(n-i+1, chunk)
-                    CALL DGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,     &
+                    CALL DGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,  &
                       a(1,i), lda, zero, work(iu), ldwrku)
                     CALL DLACPY('F', m, blk, work(iu), ldwrku, a(1,i), lda)
                   END DO
@@ -2904,12 +2920,12 @@
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),          &
+                  CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL DORGBR('P', m, n, m, a, lda, work(itaup),               &
+                  CALL DORGBR('P', m, n, m, a, lda, work(itaup),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL DBDSQR('L', m, n, 0_ip_, 0_ip_, s, work(ie), a, lda,    &
+                  CALL DBDSQR('L', m, n, 0_ip_, 0_ip_, s, work(ie), a, lda,  &
                     dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntvo .AND. wntuas) THEN
@@ -2930,54 +2946,54 @@
                   END IF
                   itau = ir + ldwrkr*m
                   iwork = itau + m
-                  CALL DGELQF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL DGELQF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL DLACPY('L', m, m, a, lda, u, ldu)
                   CALL DLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
-                  CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),        &
+                  CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),          &
+                  CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
                   CALL DLACPY('U', m, m, u, ldu, work(ir), ldwrkr)
-                  CALL DORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),     &
+                  CALL DORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),  &
                     work(iwork), lwork-iwork+1, ierr)
-                  CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),               &
+                  CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(ir),      &
+                  CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(ir),   &
                     ldwrkr, u, ldu, dum, 1_ip_, work(iwork), info)
                   iu = ie + m
                   DO i = 1, n, chunk
                     blk = MIN(n-i+1, chunk)
-                    CALL DGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,     &
+                    CALL DGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,  &
                       a(1,i), lda, zero, work(iu), ldwrku)
                     CALL DLACPY('F', m, blk, work(iu), ldwrku, a(1,i), lda)
                   END DO
                 ELSE
                   itau = 1
                   iwork = itau + m
-                  CALL DGELQF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL DGELQF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL DLACPY('L', m, m, a, lda, u, ldu)
                   CALL DLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
-                  CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),        &
+                  CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),          &
+                  CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL DORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),     &
+                  CALL DORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),  &
                     a, lda, work(iwork), lwork-iwork+1, ierr)
-                  CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),               &
+                  CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), a, lda, u,     &
+                  CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), a, lda, u,  &
                     ldu, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntvs) THEN
@@ -2991,47 +3007,48 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, work(ir), ldwrkr)
-                    CALL DLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),    &
+                    CALL DLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),  &
                       ldwrkr)
-                    CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),      &
+                    CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(m, m, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', m, m, m, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),          &
-                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),   &
+                    CALL DBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),       &
+                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),&
                       info)
-                    CALL DGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr, a,    &
+                    CALL DGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr, a,  &
                       lda, zero, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL DLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
+                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,      &
+                    CALL DBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,   &
                       ldvt, dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuo) THEN
@@ -3052,53 +3069,55 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
-                    CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),      &
+                    CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DLACPY('L', m, m, work(iu), ldwrku, work(ir),         &
+                    CALL DLACPY('L', m, m, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL DORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', m, m, m, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
-                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,    &
+                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
+                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,  &
                       lda, zero, vt, ldvt)
                     CALL DLACPY('F', m, m, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL DLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, a, lda, work(itauq),             &
+                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL DORGBR('Q', m, m, m, a, lda, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       a, lda, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuas) THEN
@@ -3111,37 +3130,37 @@
                     END IF
                     itau = iu + ldwrku*m
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
-                    CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),      &
+                    CALL DORGLQ(m, n, m, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL DLACPY('L', m, m, work(iu), ldwrku, u, ldu)
-                    CALL DORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL DORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
+                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
                       ldwrku, u, ldu, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,    &
+                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,  &
                       lda, zero, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, u, ldu)
                     CALL DLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
@@ -3149,14 +3168,15 @@
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL DORMBR('P', 'L', 'T', m, n, m, u, ldu,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -3171,49 +3191,50 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
                     CALL DLACPY('L', m, m, a, lda, work(ir), ldwrkr)
-                    CALL DLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),    &
+                    CALL DLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),  &
                       ldwrkr)
-                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(m, m, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', m, m, m, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),          &
-                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),   &
+                    CALL DBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),       &
+                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),&
                       info)
-                    CALL DGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr, vt,   &
-                      ldvt, zero, a, lda)
+                    CALL DGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr,    &
+                      vt, ldvt, zero, a, lda)
                     CALL DLACPY('F', m, n, a, lda, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL DLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
+                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,      &
+                    CALL DBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,   &
                       ldvt, dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuo) THEN
@@ -3234,55 +3255,57 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL DLACPY('L', m, m, work(iu), ldwrku, work(ir),         &
+                    CALL DLACPY('L', m, m, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL DORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', m, m, m, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
-                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, vt,   &
-                      ldvt, zero, a, lda)
+                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
+                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku,    &
+                      vt, ldvt, zero, a, lda)
                     CALL DLACPY('F', m, n, a, lda, vt, ldvt)
                     CALL DLACPY('F', m, m, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL DLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, a, lda, work(itauq),             &
+                    CALL DORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL DORGBR('Q', m, m, m, a, lda, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       a, lda, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuas) THEN
@@ -3295,39 +3318,39 @@
                     END IF
                     itau = iu + ldwrku*m
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL DLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL DGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL DLACPY('L', m, m, work(iu), ldwrku, u, ldu)
-                    CALL DORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL DORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
+                    CALL DBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
                       ldwrku, u, ldu, dum, 1_ip_, work(iwork), info)
-                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, vt,   &
-                      ldvt, zero, a, lda)
+                    CALL DGEMM('N', 'N', m, n, m, one, work(iu), ldwrku,    &
+                      vt, ldvt, zero, a, lda)
                     CALL DLACPY('F', m, n, a, lda, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL DGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL DORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL DLACPY('L', m, m, a, lda, u, ldu)
                     CALL DLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
@@ -3335,14 +3358,15 @@
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),        &
+                    CALL DGEBRD(m, m, u, ldu, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL DORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL DORMBR('P', 'L', 'T', m, n, m, u, ldu,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL DORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL DBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -3352,26 +3376,26 @@
               itauq = ie + m
               itaup = itauq + m
               iwork = itaup + m
-              CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),              &
+              CALL DGEBRD(m, n, a, lda, s, work(ie), work(itauq),           &
                 work(itaup), work(iwork), lwork-iwork+1, ierr)
               IF (wntuas) THEN
                 CALL DLACPY('L', m, m, a, lda, u, ldu)
-                CALL DORGBR('Q', m, m, n, u, ldu, work(itauq), work(iwork),    &
+                CALL DORGBR('Q', m, m, n, u, ldu, work(itauq), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               IF (wntvas) THEN
                 CALL DLACPY('U', m, n, a, lda, vt, ldvt)
                 IF (wntva) nrvt = n
                 IF (wntvs) nrvt = m
-                CALL DORGBR('P', nrvt, n, m, vt, ldvt, work(itaup),            &
+                CALL DORGBR('P', nrvt, n, m, vt, ldvt, work(itaup),         &
                   work(iwork), lwork-iwork+1, ierr)
               END IF
               IF (wntuo) THEN
-                CALL DORGBR('Q', m, m, n, a, lda, work(itauq), work(iwork),    &
+                CALL DORGBR('Q', m, m, n, a, lda, work(itauq), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               IF (wntvo) THEN
-                CALL DORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),    &
+                CALL DORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               iwork = ie + m
@@ -3380,14 +3404,14 @@
               IF (wntvas .OR. wntvo) ncvt = n
               IF (wntvn) ncvt = 0
               IF ((.NOT. wntuo) .AND. (.NOT. wntvo)) THEN
-                CALL DBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  u, ldu, dum, 1_ip_, work(iwork), info)
+                CALL DBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE IF ((.NOT. wntuo) .AND. wntvo) THEN
-                CALL DBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), a, lda,     &
+                CALL DBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), a, lda,  &
                   u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE
-                CALL DBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  a, lda, dum, 1_ip_, work(iwork), info)
+                CALL DBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, a, lda, dum, 1_ip_, work(iwork), info)
               END IF
             END IF
           END IF
@@ -3404,13 +3428,13 @@
             END IF
           END IF
           IF (iscl==1) THEN
-            IF (anrm>bignum) CALL DLASCL('G', 0_ip_, 0_ip_, bignum, anrm,      &
+            IF (anrm>bignum) CALL DLASCL('G', 0_ip_, 0_ip_, bignum, anrm,   &
               minmn, 1_ip_, s, minmn, ierr)
-            IF (info/=0 .AND. anrm>bignum) CALL DLASCL('G', 0_ip_, 0_ip_,      &
+            IF (info/=0 .AND. anrm>bignum) CALL DLASCL('G', 0_ip_, 0_ip_,   &
               bignum, anrm, minmn-1, 1_ip_, work(2), minmn, ierr)
-            IF (anrm<smlnum) CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, anrm,      &
+            IF (anrm<smlnum) CALL DLASCL('G', 0_ip_, 0_ip_, smlnum, anrm,   &
               minmn, 1_ip_, s, minmn, ierr)
-            IF (info/=0 .AND. anrm<smlnum) CALL DLASCL('G', 0_ip_, 0_ip_,      &
+            IF (info/=0 .AND. anrm<smlnum) CALL DLASCL('G', 0_ip_, 0_ip_,   &
               smlnum, anrm, minmn-1, 1_ip_, work(2), minmn, ierr)
           END IF
           work(1) = maxwrk
@@ -3463,7 +3487,7 @@
               info = j
             END IF
             IF (j<MIN(m,n)) THEN
-              CALL DGER(m-j, n-j, -one, a(j+1,j), 1_ip_, a(j,j+1), lda,        &
+              CALL DGER(m-j, n-j, -one, a(j+1,j), 1_ip_, a(j,j+1), lda,     &
                 a(j+1,j+1), lda)
             END IF
           END DO
@@ -3508,13 +3532,13 @@
               END DO
               CALL DLASWP(j-1, a, lda, j, j+jb-1, ipiv, 1_ip_)
               IF (j+jb<=n) THEN
-                CALL DLASWP(n-j-jb+1, a(1,j+jb), lda, j, j+jb-1, ipiv,         &
+                CALL DLASWP(n-j-jb+1, a(1,j+jb), lda, j, j+jb-1, ipiv,      &
                   1_ip_)
-                CALL DTRSM('Left', 'Lower', 'No transpose', 'Unit', jb,        &
+                CALL DTRSM('Left', 'Lower', 'No transpose', 'Unit', jb,     &
                   n-j-jb+1, one, a(j,j), lda, a(j,j+jb), lda)
                 IF (j+jb<=m) THEN
-                  CALL DGEMM('No transpose', 'No transpose', m-j-jb+1,         &
-                    n-j-jb+1, jb, -one, a(j+jb,j), lda, a(j,j+jb), lda, one,   &
+                  CALL DGEMM('No transpose', 'No transpose', m-j-jb+1,      &
+                    n-j-jb+1, jb, -one, a(j+jb,j), lda, a(j,j+jb), lda, one,&
                     a(j+jb,j+jb), lda)
                 END IF
               END IF
@@ -3579,9 +3603,9 @@
             CALL DGETRF2(m, n1, a, lda, ipiv, iinfo)
             IF (info==0 .AND. iinfo>0) info = iinfo
             CALL DLASWP(n2, a(1,n1+1), lda, 1_ip_, n1, ipiv, 1_ip_)
-            CALL DTRSM('L', 'L', 'N', 'U', n1, n2, one, a, lda, a(1,n1+1),     &
+            CALL DTRSM('L', 'L', 'N', 'U', n1, n2, one, a, lda, a(1,n1+1),  &
               lda)
-            CALL DGEMM('N', 'N', m-n1, n2, n1, -one, a(n1+1,1), lda, a(1,      &
+            CALL DGEMM('N', 'N', m-n1, n2, n1, -one, a(n1+1,1), lda, a(1,    &
               n1+1), lda, one, a(n1+1,n1+1), lda)
             CALL DGETRF2(m-n1, n2, a(n1+1,n1+1), lda, ipiv(n1+1), iinfo)
             IF (info==0 .AND. iinfo>0) info = iinfo + n1
@@ -3608,7 +3632,7 @@
           INTRINSIC :: MAX
           info = 0
           notran = LSAME(trans, 'N')
-          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT.            &
+          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT.         &
             LSAME(trans,'C')) THEN
             info = -1
           ELSE IF (n<0) THEN
@@ -3627,21 +3651,21 @@
           IF (n==0 .OR. nrhs==0) RETURN
           IF (notran) THEN
             CALL DLASWP(nrhs, b, ldb, 1_ip_, n, ipiv, 1_ip_)
-            CALL DTRSM('Left', 'Lower', 'No transpose', 'Unit', n, nrhs,       &
+            CALL DTRSM('Left', 'Lower', 'No transpose', 'Unit', n, nrhs,    &
               one, a, lda, b, ldb)
-            CALL DTRSM('Left', 'Upper', 'No transpose', 'Non-unit', n, nrhs,   &
-              one, a, lda, b, ldb)
+            CALL DTRSM('Left', 'Upper', 'No transpose', 'Non-unit', n,      &
+              nrhs, one, a, lda, b, ldb)
           ELSE
-            CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,      &
+            CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,   &
               one, a, lda, b, ldb)
-            CALL DTRSM('Left', 'Lower', 'Transpose', 'Unit', n, nrhs, one,     &
+            CALL DTRSM('Left', 'Lower', 'Transpose', 'Unit', n, nrhs, one,  &
               a, lda, b, ldb)
             CALL DLASWP(nrhs, b, ldb, 1_ip_, n, ipiv, -1_ip_)
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DHSEQR(job, compz, n, ilo, ihi, h, ldh, wr, wi, z, ldz,     &
+        SUBROUTINE DHSEQR(job, compz, n, ilo, ihi, h, ldh, wr, wi, z, ldz,  &
           work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: ihi, ilo, info, ldh, ldz, lwork, n
@@ -3659,7 +3683,8 @@
           INTEGER(ip_) :: ILAENV
           LOGICAL :: LSAME
           EXTERNAL :: ILAENV, LSAME
-          EXTERNAL :: DLACPY, DLAHQR, DLAQR0, DLASET, XERBLA
+          EXTERNAL :: DLACPY, DLAHQR, DLAQR0, DLASET,                       &
+            XERBLA
           INTRINSIC :: DBLE, MAX, MIN
           wantt = LSAME(job, 'S')
           initz = LSAME(compz, 'I')
@@ -3690,8 +3715,8 @@
           ELSE IF (n==0) THEN
             RETURN
           ELSE IF (lquery) THEN
-            CALL DLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi,   &
-              z, ldz, work, lwork, info)
+            CALL DLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,     &
+              ihi, z, ldz, work, lwork, info)
             work(1) = MAX(DBLE(MAX(1,n)), work(1))
             RETURN
           ELSE
@@ -3709,32 +3734,32 @@
               wi(ilo) = zero
               RETURN
             END IF
-            nmin = ILAENV(12_ip_, 'DHSEQR', job(:1)//compz(:1), n, ilo, ihi,   &
-              lwork)
+            nmin = ILAENV(12_ip_, 'DHSEQR', job(:1)//compz(:1), n, ilo,     &
+              ihi, lwork)
             nmin = MAX(ntiny, nmin)
             IF (n>nmin) THEN
-              CALL DLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,      &
+              CALL DLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,   &
                 ihi, z, ldz, work, lwork, info)
             ELSE
-              CALL DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,      &
+              CALL DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,   &
                 ihi, z, ldz, info)
               IF (info>0) THEN
                 kbot = info
                 IF (n>=nl) THEN
-                  CALL DLAQR0(wantt, wantz, n, ilo, kbot, h, ldh, wr, wi,      &
+                  CALL DLAQR0(wantt, wantz, n, ilo, kbot, h, ldh, wr, wi,   &
                     ilo, ihi, z, ldz, work, lwork, info)
                 ELSE
                   CALL DLACPY('A', n, n, h, ldh, hl, nl)
                   hl(n+1, n) = zero
                   CALL DLASET('A', nl, nl-n, zero, zero, hl(1,n+1), nl)
-                  CALL DLAQR0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi,     &
+                  CALL DLAQR0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi,  &
                     ilo, ihi, z, ldz, workl, nl, info)
-                  IF (wantt .OR. info/=0) CALL DLACPY('A', n, n, hl, nl, h,    &
+                  IF (wantt .OR. info/=0) CALL DLACPY('A', n, n, hl, nl, h,  &
                     ldh)
                 END IF
               END IF
             END IF
-            IF ((wantt .OR. info/=0) .AND. n>2) CALL DLASET('L', n-2, n-2,     &
+            IF ((wantt .OR. info/=0) .AND. n>2) CALL DLASET('L', n-2, n-2,  &
               zero, zero, h(3,1), ldh)
             work(1) = MAX(DBLE(MAX(1,n)), work(1))
           END IF
@@ -3760,11 +3785,11 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLABRD(m, n, nb, a, lda, d, e, tauq, taup, x, ldx, y,       &
+        SUBROUTINE DLABRD(m, n, nb, a, lda, d, e, tauq, taup, x, ldx, y,    &
           ldy)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: lda, ldx, ldy, m, n, nb
-          REAL(r8_) :: a(lda, *), d(*), e(*), taup(*), tauq(*), x(ldx, *),     &
+          REAL(r8_) :: a(lda, *), d(*), e(*), taup(*), tauq(*), x(ldx, *),  &
             y(ldy, *)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
@@ -3774,83 +3799,83 @@
           IF (m<=0 .OR. n<=0) RETURN
           IF (m>=n) THEN
             DO i = 1, nb
-              CALL DGEMV('No transpose', m-i+1, i-1, -one, a(i,1), lda, y(i,   &
-                1), ldy, one, a(i,i), 1_ip_)
-              CALL DGEMV('No transpose', m-i+1, i-1, -one, x(i,1), ldx, a(1,   &
-                i), 1_ip_, one, a(i,i), 1_ip_)
+              CALL DGEMV('No transpose', m-i+1, i-1, -one, a(i,1), lda,     &
+                y(i,1), ldy, one, a(i,i), 1_ip_)
+              CALL DGEMV('No transpose', m-i+1, i-1, -one, x(i,1), ldx,     &
+                a(1,i), 1_ip_, one, a(i,i), 1_ip_)
               CALL DLARFG(m-i+1, a(i,i), a(MIN(i+1,m),i), 1_ip_, tauq(i))
               d(i) = a(i, i)
               IF (i<n) THEN
                 a(i, i) = one
-                CALL DGEMV('Transpose', m-i+1, n-i, one, a(i,i+1), lda, a(i,   &
-                  i), 1_ip_, zero, y(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', m-i+1, i-1, one, a(i,1), lda, a(i,     &
+                CALL DGEMV('Transpose', m-i+1, n-i, one, a(i,i+1), lda,     &
+                  a(i,i), 1_ip_, zero, y(i+1,i), 1_ip_)
+                CALL DGEMV('Transpose', m-i+1, i-1, one, a(i,1), lda, a(i,   &
                   i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL DGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,      &
+                CALL DGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,   &
                   y(1,i), 1_ip_, one, y(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', m-i+1, i-1, one, x(i,1), ldx, a(i,     &
+                CALL DGEMV('Transpose', m-i+1, i-1, one, x(i,1), ldx, a(i,   &
                   i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL DGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, y(1,    &
+                CALL DGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, y(1,  &
                   i), 1_ip_, one, y(i+1,i), 1_ip_)
                 CALL DSCAL(n-i, tauq(i), y(i+1,i), 1_ip_)
-                CALL DGEMV('No transpose', n-i, i, -one, y(i+1,1), ldy, a(i,   &
-                  1), lda, one, a(i,i+1), lda)
-                CALL DGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, x(i,    &
+                CALL DGEMV('No transpose', n-i, i, -one, y(i+1,1), ldy,     &
+                  a(i,1), lda, one, a(i,i+1), lda)
+                CALL DGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, x(i,  &
                   1), ldx, one, a(i,i+1), lda)
                 CALL DLARFG(n-i, a(i,i+1), a(i,MIN(i+2,n)), lda, taup(i))
                 e(i) = a(i, i+1)
                 a(i, i+1) = one
-                CALL DGEMV('No transpose', m-i, n-i, one, a(i+1,i+1), lda,     &
+                CALL DGEMV('No transpose', m-i, n-i, one, a(i+1,i+1), lda,  &
                   a(i,i+1), lda, zero, x(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', n-i, i, one, y(i+1,1), ldy, a(i,       &
+                CALL DGEMV('Transpose', n-i, i, one, y(i+1,1), ldy, a(i,     &
                   i+1), lda, zero, x(1,i), 1_ip_)
-                CALL DGEMV('No transpose', m-i, i, -one, a(i+1,1), lda, x(1,   &
-                  i), 1_ip_, one, x(i+1,i), 1_ip_)
-                CALL DGEMV('No transpose', i-1, n-i, one, a(1,i+1), lda,       &
+                CALL DGEMV('No transpose', m-i, i, -one, a(i+1,1), lda,     &
+                  x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
+                CALL DGEMV('No transpose', i-1, n-i, one, a(1,i+1), lda,    &
                   a(i,i+1), lda, zero, x(1,i), 1_ip_)
-                CALL DGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,      &
+                CALL DGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,   &
                   x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
                 CALL DSCAL(m-i, taup(i), x(i+1,i), 1_ip_)
               END IF
             END DO
           ELSE
             DO i = 1, nb
-              CALL DGEMV('No transpose', n-i+1, i-1, -one, y(i,1), ldy, a(i,   &
-                1), lda, one, a(i,i), lda)
-              CALL DGEMV('Transpose', i-1, n-i+1, -one, a(1,i), lda, x(i,1),   &
-                ldx, one, a(i,i), lda)
+              CALL DGEMV('No transpose', n-i+1, i-1, -one, y(i,1), ldy,     &
+                a(i,1), lda, one, a(i,i), lda)
+              CALL DGEMV('Transpose', i-1, n-i+1, -one, a(1,i), lda, x(i,    &
+                1), ldx, one, a(i,i), lda)
               CALL DLARFG(n-i+1, a(i,i), a(i,MIN(i+1,n)), lda, taup(i))
               d(i) = a(i, i)
               IF (i<m) THEN
                 a(i, i) = one
-                CALL DGEMV('No transpose', m-i, n-i+1, one, a(i+1,i), lda,     &
+                CALL DGEMV('No transpose', m-i, n-i+1, one, a(i+1,i), lda,  &
                   a(i,i), lda, zero, x(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', n-i+1, i-1, one, y(i,1), ldy, a(i,     &
+                CALL DGEMV('Transpose', n-i+1, i-1, one, y(i,1), ldy, a(i,   &
                   i), lda, zero, x(1,i), 1_ip_)
-                CALL DGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,      &
+                CALL DGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,   &
                   x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
-                CALL DGEMV('No transpose', i-1, n-i+1, one, a(1,i), lda,       &
+                CALL DGEMV('No transpose', i-1, n-i+1, one, a(1,i), lda,    &
                   a(i,i), lda, zero, x(1,i), 1_ip_)
-                CALL DGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,      &
+                CALL DGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,   &
                   x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
                 CALL DSCAL(m-i, taup(i), x(i+1,i), 1_ip_)
-                CALL DGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,      &
+                CALL DGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,   &
                   y(i,1), ldy, one, a(i+1,i), 1_ip_)
-                CALL DGEMV('No transpose', m-i, i, -one, x(i+1,1), ldx, a(1,   &
-                  i), 1_ip_, one, a(i+1,i), 1_ip_)
+                CALL DGEMV('No transpose', m-i, i, -one, x(i+1,1), ldx,     &
+                  a(1,i), 1_ip_, one, a(i+1,i), 1_ip_)
                 CALL DLARFG(m-i, a(i+1,i), a(MIN(i+2,m),i), 1_ip_, tauq(i))
                 e(i) = a(i+1, i)
                 a(i+1, i) = one
-                CALL DGEMV('Transpose', m-i, n-i, one, a(i+1,i+1), lda,        &
+                CALL DGEMV('Transpose', m-i, n-i, one, a(i+1,i+1), lda,     &
                   a(i+1,i), 1_ip_, zero, y(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', m-i, i-1, one, a(i+1,1), lda, a(i+1,   &
-                  i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL DGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,      &
+                CALL DGEMV('Transpose', m-i, i-1, one, a(i+1,1), lda,       &
+                  a(i+1,i), 1_ip_, zero, y(1,i), 1_ip_)
+                CALL DGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,   &
                   y(1,i), 1_ip_, one, y(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', m-i, i, one, x(i+1,1), ldx, a(i+1,     &
+                CALL DGEMV('Transpose', m-i, i, one, x(i+1,1), ldx, a(i+1,   &
                   i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL DGEMV('Transpose', i, n-i, -one, a(1,i+1), lda, y(1,i),   &
-                  1_ip_, one, y(i+1,i), 1_ip_)
+                CALL DGEMV('Transpose', i, n-i, -one, a(1,i+1), lda, y(1,    &
+                  i), 1_ip_, one, y(i+1,i), 1_ip_)
                 CALL DSCAL(n-i, tauq(i), y(i+1,i), 1_ip_)
               END IF
             END DO
@@ -4034,15 +4059,15 @@
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=40)
           REAL(r8_) :: zero, one, two, three, four, eight
-          PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_,    &
+          PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_,  &
             four=4.0_r8_, eight=8.0_r8_)
           REAL(r8_) :: DLAMCH
           EXTERNAL :: DLAMCH
           REAL(r8_) :: dscale(3), zscale(3)
           LOGICAL :: scale
           INTEGER(ip_) :: i, iter, niter
-          REAL(r8_) :: a, b, base, c, ddf, df, eps, erretm, eta, f, fc,        &
-            sclfac, sclinv, small1, small2, sminv1, sminv2, temp, temp1,       &
+          REAL(r8_) :: a, b, base, c, ddf, df, eps, erretm, eta, f, fc,     &
+            sclfac, sclinv, small1, small2, sminv1, sminv2, temp, temp1,    &
             temp2, temp3, temp4, lbd, ubd
           INTRINSIC :: ABS, INT, LOG, MAX, MIN, SQRT
           info = 0
@@ -4087,7 +4112,7 @@
             IF (d(1)==tau .OR. d(2)==tau .OR. d(3)==tau) THEN
               tau = zero
             ELSE
-              temp = finit + tau*z(1)/(d(1)*(d(1)-tau)) +                      &
+              temp = finit + tau*z(1)/(d(1)*(d(1)-tau)) +                   &
                 tau*z(2)/(d(2)*(d(2)-tau)) + tau*z(3)/(d(3)*(d(3)-tau))
               IF (temp<=zero) THEN
                 lbd = tau
@@ -4199,7 +4224,7 @@
             END DO
             f = finit + tau*fc
             erretm = eight*(ABS(finit)+ABS(tau)*erretm) + ABS(tau)*df
-            IF ((ABS(f)<=four*eps*erretm) .OR. ((ubd-                          &
+            IF ((ABS(f)<=four*eps*erretm) .OR. ((ubd-                       &
               lbd)<=four*eps*ABS(tau))) GO TO 60
             IF (f<=zero) THEN
               lbd = tau
@@ -4301,12 +4326,12 @@
           INTEGER(ip_) :: ldd, ldx
           PARAMETER (ldd=4, ldx=2)
           INTEGER(ip_) :: ierr, j2, j3, j4, k, nd
-          REAL(r8_) :: cs, dnorm, eps, scale, smlnum, sn, t11, t22, t33,       &
+          REAL(r8_) :: cs, dnorm, eps, scale, smlnum, sn, t11, t22, t33,    &
             tau, tau1, tau2, temp, thresh, wi1, wi2, wr1, wr2, xnorm
           REAL(r8_) :: d(ldd, 4_ip_), u(3), u1(3), u2(3), x(ldx, 2_ip_)
           REAL(r8_) :: DLAMCH, DLANGE
           EXTERNAL :: DLAMCH, DLANGE
-          EXTERNAL :: DLACPY, DLANV2, DLARFG, DLARFX,                          &
+          EXTERNAL :: DLACPY, DLANV2, DLARFG, DLARFX,                       &
             DLARTG, DLASY2, DROT
           INTRINSIC :: ABS, MAX
           info = 0
@@ -4319,7 +4344,7 @@
             t11 = t(j1, j1)
             t22 = t(j2, j2)
             CALL DLARTG(t(j1,j2), t22-t11, cs, sn, temp)
-            IF (j3<=n) CALL DROT(n-j1-1, t(j1,j3), ldt, t(j2,j3), ldt, cs,     &
+            IF (j3<=n) CALL DROT(n-j1-1, t(j1,j3), ldt, t(j2,j3), ldt, cs,  &
               sn)
             CALL DROT(j1-1, t(1,j1), 1_ip_, t(1,j2), 1_ip_, cs, sn)
             t(j1, j1) = t22
@@ -4334,7 +4359,7 @@
             eps = DLAMCH('P')
             smlnum = DLAMCH('S')/eps
             thresh = MAX(ten*eps*dnorm, smlnum)
-            CALL DLASY2(.FALSE., .FALSE., -1_ip_, n1, n2, d, ldd, d(n1+1,      &
+            CALL DLASY2(.FALSE., .FALSE., -1_ip_, n1, n2, d, ldd, d(n1+1,    &
               n1+1), ldd, d(1,n1+1), ldd, scale, x, ldx, xnorm, ierr)
             k = n1 + n1 + n2 - 3
             GO TO (10, 20, 30) k
@@ -4347,8 +4372,8 @@
             t11 = t(j1, j1)
             CALL DLARFX('L', 3_ip_, 3_ip_, u, tau, d, ldd, work)
             CALL DLARFX('R', 3_ip_, 3_ip_, u, tau, d, ldd, work)
-            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(3,3)- t11))>thresh) GO TO    &
-              50
+            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(3,3)- t11))>thresh) GO    &
+              TO 50
             CALL DLARFX('L', 3_ip_, n-j1+1, u, tau, t(j1,j1), ldt, work)
             CALL DLARFX('R', j2, 3_ip_, u, tau, t(1,j1), ldt, work)
             t(j3, j1) = zero
@@ -4367,8 +4392,8 @@
             t33 = t(j3, j3)
             CALL DLARFX('L', 3_ip_, 3_ip_, u, tau, d, ldd, work)
             CALL DLARFX('R', 3_ip_, 3_ip_, u, tau, d, ldd, work)
-            IF (MAX(ABS(d(2,1)),ABS(d(3,1)),ABS(d(1,1)- t33))>thresh) GO TO    &
-              50
+            IF (MAX(ABS(d(2,1)),ABS(d(3,1)),ABS(d(1,1)- t33))>thresh) GO    &
+              TO 50
             CALL DLARFX('R', j3, 3_ip_, u, tau, t(1,j1), ldt, work)
             CALL DLARFX('L', 3_ip_, n-j1, u, tau, t(j1,j2), ldt, work)
             t(j1, j1) = t33
@@ -4394,7 +4419,7 @@
             CALL DLARFX('R', 4_ip_, 3_ip_, u1, tau1, d, ldd, work)
             CALL DLARFX('L', 3_ip_, 4_ip_, u2, tau2, d(2,1), ldd, work)
             CALL DLARFX('R', 4_ip_, 3_ip_, u2, tau2, d(1,2), ldd, work)
-            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(4,1)),ABS( d(4,              &
+            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(4,1)),ABS( d(4,            &
               2)))>thresh) GO TO 50
             CALL DLARFX('L', 3_ip_, n-j1+1, u1, tau1, t(j1,j1), ldt, work)
             CALL DLARFX('R', j4, 3_ip_, u1, tau1, t(1,j1), ldt, work)
@@ -4410,22 +4435,22 @@
             END IF
  40         CONTINUE
             IF (n2==2) THEN
-              CALL DLANV2(t(j1,j1), t(j1,j2), t(j2,j1), t(j2,j2), wr1, wi1,    &
+              CALL DLANV2(t(j1,j1), t(j1,j2), t(j2,j1), t(j2,j2), wr1, wi1,  &
                 wr2, wi2, cs, sn)
               CALL DROT(n-j1-1, t(j1,j1+2), ldt, t(j2,j1+2), ldt, cs, sn)
               CALL DROT(j1-1, t(1,j1), 1_ip_, t(1,j2), 1_ip_, cs, sn)
-              IF (wantq) CALL DROT(n, q(1,j1), 1_ip_, q(1,j2), 1_ip_, cs,      &
+              IF (wantq) CALL DROT(n, q(1,j1), 1_ip_, q(1,j2), 1_ip_, cs,   &
                 sn)
             END IF
             IF (n1==2) THEN
               j3 = j1 + n2
               j4 = j3 + 1
-              CALL DLANV2(t(j3,j3), t(j3,j4), t(j4,j3), t(j4,j4), wr1, wi1,    &
+              CALL DLANV2(t(j3,j3), t(j3,j4), t(j4,j3), t(j4,j4), wr1, wi1,  &
                 wr2, wi2, cs, sn)
-              IF (j3+2<=n) CALL DROT(n-j3-1, t(j3,j3+2), ldt, t(j4,j3+2),      &
+              IF (j3+2<=n) CALL DROT(n-j3-1, t(j3,j3+2), ldt, t(j4,j3+2),   &
                 ldt, cs, sn)
               CALL DROT(j3-1, t(1,j3), 1_ip_, t(1,j4), 1_ip_, cs, sn)
-              IF (wantq) CALL DROT(n, q(1,j3), 1_ip_, q(1,j4), 1_ip_, cs,      &
+              IF (wantq) CALL DROT(n, q(1,j3), 1_ip_, q(1,j4), 1_ip_, cs,   &
                 sn)
             END IF
           END IF
@@ -4435,7 +4460,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,     &
+        SUBROUTINE DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,  &
           ihiz, z, ldz, info)
           USE GALAHAD_KINDS
           IMPLICIT NONE
@@ -4448,10 +4473,10 @@
           PARAMETER (dat1=3.0_r8_/4.0_r8_, dat2=-0.4375_r8_)
           INTEGER(ip_) :: kexsh
           PARAMETER (kexsh=10)
-          REAL(r8_) :: aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22,      &
-            rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmax, safmin, smlnum, sn,     &
+          REAL(r8_) :: aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22,   &
+            rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmax, safmin, smlnum, sn,  &
             sum, t1, t2, t3, tr, tst, ulp, v2, v3
-          INTEGER(ip_) :: i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz,       &
+          INTEGER(ip_) :: i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz,    &
             kdefl
           REAL(r8_) :: v(3)
           REAL(r8_) :: DLAMCH
@@ -4570,7 +4595,7 @@
               h21s = h(m+1, m)
               s = ABS(h(m,m)-rt2r) + ABS(rt2i) + ABS(h21s)
               h21s = h(m+1, m)/s
-              v(1) = h21s*h(m, m+1) + (h(m,m)-rt1r)*((h(m, m)-rt2r)/s) -       &
+              v(1) = h21s*h(m, m+1) + (h(m,m)-rt1r)*((h(m, m)-rt2r)/s) -    &
                 rt1i*(rt2i/s)
               v(2) = h21s*(h(m,m)+h(m+1,m+1)-rt1r-rt2r)
               v(3) = h21s*h(m+2, m+1)
@@ -4579,7 +4604,7 @@
               v(2) = v(2)/s
               v(3) = v(3)/s
               IF (m==l) GO TO 60
-              IF (ABS(h(m,m-1))*(ABS(v(2))+ABS(v(3)))<=ulp*ABS(v(1))*(ABS(     &
+              IF (ABS(h(m,m-1))*(ABS(v(2))+ABS(v(3)))<=ulp*ABS(v(1))*(ABS(  &
                 h(m-1,m-1))+ABS(h(m,m))+ABS(h(m+1,m+1)))) GO TO 60
             END DO
  60         CONTINUE
@@ -4647,10 +4672,10 @@
             wr(i) = h(i, i)
             wi(i) = zero
           ELSE IF (l==i-1) THEN
-            CALL DLANV2(h(i-1,i-1), h(i-1,i), h(i,i-1), h(i,i), wr(i-1),       &
+            CALL DLANV2(h(i-1,i-1), h(i-1,i), h(i,i-1), h(i,i), wr(i-1),    &
               wi(i-1), wr(i), wi(i), cs, sn)
             IF (wantt) THEN
-              IF (i2>i) CALL DROT(i2-i, h(i-1,i+1), ldh, h(i,i+1), ldh, cs,    &
+              IF (i2>i) CALL DROT(i2-i, h(i-1,i+1), ldh, h(i,i+1), ldh, cs,  &
                 sn)
               CALL DROT(i-i1-1, h(i1,i-1), 1_ip_, h(i1,i), 1_ip_, cs, sn)
             END IF
@@ -4673,50 +4698,51 @@
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           INTEGER(ip_) :: i
           REAL(r8_) :: ei
-          EXTERNAL :: DAXPY, DCOPY, DGEMM, DGEMV, DLACPY,                      &
+          EXTERNAL :: DAXPY, DCOPY, DGEMM, DGEMV, DLACPY,                   &
             DLARFG, DSCAL, DTRMM, DTRMV
           INTRINSIC :: MIN
           IF (n<=1) RETURN
           DO i = 1, nb
             IF (i>1) THEN
-              CALL DGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy,        &
+              CALL DGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy,     &
                 a(k+i-1,1), lda, one, a(k+1,i), 1_ip_)
               CALL DCOPY(i-1, a(k+1,i), 1_ip_, t(1,nb), 1_ip_)
-              CALL DTRMV('Lower', 'Transpose', 'UNIT', i-1, a(k+1,1), lda,     &
+              CALL DTRMV('Lower', 'Transpose', 'UNIT', i-1, a(k+1,1), lda,  &
                 t(1,nb), 1_ip_)
-              CALL DGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda,        &
+              CALL DGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda,     &
                 a(k+i,i), 1_ip_, one, t(1,nb), 1_ip_)
-              CALL DTRMV('Upper', 'Transpose', 'NON-UNIT', i-1, t, ldt, t(1,   &
-                nb), 1_ip_)
-              CALL DGEMV('NO TRANSPOSE', n-k-i+1, i-1, -one, a(k+i,1), lda,    &
+              CALL DTRMV('Upper', 'Transpose', 'NON-UNIT', i-1, t, ldt,     &
+                t(1,nb), 1_ip_)
+              CALL DGEMV('NO TRANSPOSE', n-k-i+1, i-1, -one, a(k+i,1), lda,  &
                 t(1,nb), 1_ip_, one, a(k+i,i), 1_ip_)
-              CALL DTRMV('Lower', 'NO TRANSPOSE', 'UNIT', i-1, a(k+1,1),       &
+              CALL DTRMV('Lower', 'NO TRANSPOSE', 'UNIT', i-1, a(k+1,1),    &
                 lda, t(1,nb), 1_ip_)
               CALL DAXPY(i-1, -one, t(1,nb), 1_ip_, a(k+1,i), 1_ip_)
               a(k+i-1, i-1) = ei
             END IF
-            CALL DLARFG(n-k-i+1, a(k+i,i), a(MIN(k+i+1,n),i), 1_ip_, tau(i))
+            CALL DLARFG(n-k-i+1, a(k+i,i), a(MIN(k+i+1,n),i), 1_ip_,        &
+              tau(i))
             ei = a(k+i, i)
             a(k+i, i) = one
-            CALL DGEMV('NO TRANSPOSE', n-k, n-k-i+1, one, a(k+1,i+1), lda,     &
+            CALL DGEMV('NO TRANSPOSE', n-k, n-k-i+1, one, a(k+1,i+1), lda,  &
               a(k+i,i), 1_ip_, zero, y(k+1,i), 1_ip_)
-            CALL DGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda, a(k+i,   &
-              i), 1_ip_, zero, t(1,i), 1_ip_)
-            CALL DGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy, t(1,     &
+            CALL DGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda,       &
+              a(k+i,i), 1_ip_, zero, t(1,i), 1_ip_)
+            CALL DGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy, t(1,   &
               i), 1_ip_, one, y(k+1,i), 1_ip_)
             CALL DSCAL(n-k, tau(i), y(k+1,i), 1_ip_)
             CALL DSCAL(i-1, -tau(i), t(1,i), 1_ip_)
-            CALL DTRMV('Upper', 'No Transpose', 'NON-UNIT', i-1, t, ldt,       &
+            CALL DTRMV('Upper', 'No Transpose', 'NON-UNIT', i-1, t, ldt,    &
               t(1,i), 1_ip_)
             t(i, i) = tau(i)
           END DO
           a(k+nb, nb) = ei
           CALL DLACPY('ALL', k, nb, a(1,2), lda, y, ldy)
-          CALL DTRMM('RIGHT', 'Lower', 'NO TRANSPOSE', 'UNIT', k, nb, one,     &
+          CALL DTRMM('RIGHT', 'Lower', 'NO TRANSPOSE', 'UNIT', k, nb, one,  &
             a(k+1,1), lda, y, ldy)
-          IF (n>k+nb) CALL DGEMM('NO TRANSPOSE', 'NO TRANSPOSE', k, nb,        &
+          IF (n>k+nb) CALL DGEMM('NO TRANSPOSE', 'NO TRANSPOSE', k, nb,     &
             n-k-nb, one, a(1,2+nb), lda, a(k+1+nb,1), lda, one, y, ldy)
-          CALL DTRMM('RIGHT', 'Upper', 'NO TRANSPOSE', 'NON-UNIT', k, nb,      &
+          CALL DTRMM('RIGHT', 'Upper', 'NO TRANSPOSE', 'NON-UNIT', k, nb,   &
             one, t, ldt, y, ldy)
           RETURN
         END SUBROUTINE
@@ -4730,8 +4756,8 @@
           PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_)
           REAL(r8_) :: half, four
           PARAMETER (half=0.5_r8_, four=4.0_r8_)
-          REAL(r8_) :: absalp, absest, absgam, alpha, b, cosine, eps, norma,   &
-            s1, s2, sine, t, test, tmp, zeta1, zeta2
+          REAL(r8_) :: absalp, absest, absgam, alpha, b, cosine, eps,       &
+            norma, s1, s2, sine, t, test, tmp, zeta1, zeta2
           INTRINSIC :: ABS, MAX, SIGN, SQRT
           REAL(r8_) :: DDOT, DLAMCH
           EXTERNAL :: DDOT, DLAMCH
@@ -4867,7 +4893,7 @@
             ELSE
               zeta1 = alpha/absest
               zeta2 = gamma/absest
-              norma = MAX(one+zeta1*zeta1+ABS(zeta1*zeta2),                    &
+              norma = MAX(one+zeta1*zeta1+ABS(zeta1*zeta2),                 &
                 ABS(zeta1*zeta2)+zeta2*zeta2)
               test = one + two*(zeta1-zeta2)*(zeta1+zeta2)
               IF (test>=zero) THEN
@@ -4905,21 +4931,21 @@
           RETURN
         END FUNCTION
 
-        SUBROUTINE DLALS0(icompq, nl, nr, sqre, nrhs, b, ldb, bx, ldbx,        &
-          perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl, difr, z,  &
+        SUBROUTINE DLALS0(icompq, nl, nr, sqre, nrhs, b, ldb, bx, ldbx,     &
+          perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl, difr, z,&
           k, c, s, work, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: givptr, icompq, info, k, ldb, ldbx, ldgcol,          &
+          INTEGER(ip_) :: givptr, icompq, info, k, ldb, ldbx, ldgcol,       &
             ldgnum, nl, nr, nrhs, sqre
           REAL(r8_) :: c, s
           INTEGER(ip_) :: givcol(ldgcol, *), perm(*)
-          REAL(r8_) :: b(ldb, *), bx(ldbx, *), difl(*), difr(ldgnum, *),       &
+          REAL(r8_) :: b(ldb, *), bx(ldbx, *), difl(*), difr(ldgnum, *),    &
             givnum(ldgnum, *), poles(ldgnum, *), work(*), z(*)
           REAL(r8_) :: one, zero, negone
           PARAMETER (one=1.0_r8_, zero=0.0_r8_, negone=-1.0_r8_)
           INTEGER(ip_) :: i, j, m, n, nlp1
           REAL(r8_) :: diflj, difrj, dj, dsigj, dsigjp, temp
-          EXTERNAL :: DCOPY, DGEMV, DLACPY, DLASCL, DROT,                      &
+          EXTERNAL :: DCOPY, DGEMV, DLACPY, DLASCL, DROT,                   &
             DSCAL, XERBLA
           REAL(r8_) :: DLAMC3, DNRM2
           EXTERNAL :: DLAMC3, DNRM2
@@ -4957,7 +4983,7 @@
           nlp1 = nl + 1
           IF (icompq==0) THEN
             DO i = 1, givptr
-              CALL DROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),    &
+              CALL DROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),  &
                 ldb, givnum(i,2), givnum(i,1))
             END DO
             CALL DCOPY(nrhs, b(nlp1,1), ldb, bx(1,1), ldbx)
@@ -4987,7 +5013,7 @@
                   IF ((z(i)==zero) .OR. (poles(i,2)==zero)) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = poles(i, 2_ip_)*z(i)/(DLAMC3(poles(i, 2_ip_),    &
+                    work(i) = poles(i, 2_ip_)*z(i)/(DLAMC3(poles(i, 2_ip_),  &
                       dsigj)-diflj)/(poles(i,2)+dj)
                   END IF
                 END DO
@@ -4995,19 +5021,19 @@
                   IF ((z(i)==zero) .OR. (poles(i,2)==zero)) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = poles(i, 2_ip_)*z(i)/(DLAMC3(poles(i, 2_ip_),    &
+                    work(i) = poles(i, 2_ip_)*z(i)/(DLAMC3(poles(i, 2_ip_),  &
                       dsigjp)+difrj)/(poles(i,2)+dj)
                   END IF
                 END DO
                 work(1) = negone
                 temp = DNRM2(k, work, 1_ip_)
-                CALL DGEMV('T', k, nrhs, one, bx, ldbx, work, 1_ip_, zero,     &
+                CALL DGEMV('T', k, nrhs, one, bx, ldbx, work, 1_ip_, zero,  &
                   b(j,1), ldb)
-                CALL DLASCL('G', 0_ip_, 0_ip_, temp, one, 1_ip_, nrhs, b(j,    &
+                CALL DLASCL('G', 0_ip_, 0_ip_, temp, one, 1_ip_, nrhs, b(j,  &
                   1), ldb, info)
               END DO
             END IF
-            IF (k<MAX(m,n)) CALL DLACPY('A', n-k, nrhs, bx(k+1,1), ldbx,       &
+            IF (k<MAX(m,n)) CALL DLACPY('A', n-k, nrhs, bx(k+1,1), ldbx,    &
               b(k+1,1), ldb)
           ELSE
             IF (k==1) THEN
@@ -5024,19 +5050,19 @@
                   IF (z(j)==zero) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = z(j)/(DLAMC3(dsigj,-poles(i+1, 2_ip_))-difr(i,   &
-                      1))/(dsigj+poles(i,1))/difr(i, 2_ip_)
+                    work(i) = z(j)/(DLAMC3(dsigj,-poles(i+1,                &
+                      2_ip_))-difr(i,1))/(dsigj+poles(i,1))/difr(i, 2_ip_)
                   END IF
                 END DO
                 DO i = j + 1, k
                   IF (z(j)==zero) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = z(j)/(DLAMC3(dsigj,-poles(i,                     &
+                    work(i) = z(j)/(DLAMC3(dsigj,-poles(i,                  &
                       2_ip_))-difl(i))/(dsigj+poles(i,1))/difr(i, 2_ip_)
                   END IF
                 END DO
-                CALL DGEMV('T', k, nrhs, one, b, ldb, work, 1_ip_, zero,       &
+                CALL DGEMV('T', k, nrhs, one, b, ldb, work, 1_ip_, zero,    &
                   bx(j,1), ldbx)
               END DO
             END IF
@@ -5044,7 +5070,7 @@
               CALL DCOPY(nrhs, b(m,1), ldb, bx(m,1), ldbx)
               CALL DROT(nrhs, bx(1,1), ldbx, bx(m,1), ldbx, c, s)
             END IF
-            IF (k<MAX(m,n)) CALL DLACPY('A', n-k, nrhs, b(k+1,1), ldb,         &
+            IF (k<MAX(m,n)) CALL DLACPY('A', n-k, nrhs, b(k+1,1), ldb,      &
               bx(k+1,1), ldbx)
             CALL DCOPY(nrhs, bx(1,1), ldbx, b(nlp1,1), ldb)
             IF (sqre==1) THEN
@@ -5054,27 +5080,27 @@
               CALL DCOPY(nrhs, bx(i,1), ldbx, b(perm(i),1), ldb)
             END DO
             DO i = givptr, 1_ip_, -1_ip_
-              CALL DROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),    &
+              CALL DROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),  &
                 ldb, givnum(i,2), -givnum(i,1))
             END DO
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLALSA(icompq, smlsiz, n, nrhs, b, ldb, bx, ldbx, u, ldu,   &
-          vt, k, difl, difr, z, poles, givptr, givcol, ldgcol, perm, givnum,   &
-          c, s, work, iwork, info)
+        SUBROUTINE DLALSA(icompq, smlsiz, n, nrhs, b, ldb, bx, ldbx, u,     &
+          ldu, vt, k, difl, difr, z, poles, givptr, givcol, ldgcol, perm,   &
+          givnum, c, s, work, iwork, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: icompq, info, ldb, ldbx, ldgcol, ldu, n, nrhs,       &
+          INTEGER(ip_) :: icompq, info, ldb, ldbx, ldgcol, ldu, n, nrhs,    &
             smlsiz
-          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),        &
+          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),     &
             perm(ldgcol, *)
-          REAL(r8_) :: b(ldb, *), bx(ldbx, *), c(*), difl(ldu, *), difr(ldu,   &
-            *), givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *), vt(ldu, *),    &
-            work(*), z(ldu, *)
+          REAL(r8_) :: b(ldb, *), bx(ldbx, *), c(*), difl(ldu, *),          &
+            difr(ldu, *), givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *),   &
+            vt(ldu, *), work(*), z(ldu, *)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
-          INTEGER(ip_) :: i, i1, ic, im1, inode, j, lf, ll, lvl, lvl2, nd,     &
+          INTEGER(ip_) :: i, i1, ic, im1, inode, j, lf, ll, lvl, lvl2, nd,  &
             ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqre
           EXTERNAL :: DCOPY, DGEMM, DLALS0, DLASDT, XERBLA
           info = 0
@@ -5102,8 +5128,8 @@
           inode = 1
           ndiml = inode + n
           ndimr = ndiml + n
-          CALL DLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml), iwork(ndimr),   &
-            smlsiz)
+          CALL DLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml),              &
+            iwork(ndimr), smlsiz)
           IF (icompq==1) THEN
             GO TO 50
           END IF
@@ -5115,10 +5141,10 @@
             nr = iwork(ndimr+i1)
             nlf = ic - nl
             nrf = ic + 1
-            CALL DGEMM('T', 'N', nl, nrhs, nl, one, u(nlf,1), ldu, b(nlf,1),   &
-              ldb, zero, bx(nlf,1), ldbx)
-            CALL DGEMM('T', 'N', nr, nrhs, nr, one, u(nrf,1), ldu, b(nrf,1),   &
-              ldb, zero, bx(nrf,1), ldbx)
+            CALL DGEMM('T', 'N', nl, nrhs, nl, one, u(nlf,1), ldu, b(nlf,    &
+              1), ldb, zero, bx(nlf,1), ldbx)
+            CALL DGEMM('T', 'N', nr, nrhs, nr, one, u(nrf,1), ldu, b(nrf,    &
+              1), ldb, zero, bx(nrf,1), ldbx)
           END DO
           DO i = 1, nd
             ic = iwork(inode+i-1)
@@ -5143,10 +5169,11 @@
               nlf = ic - nl
               nrf = ic + 1
               j = j - 1
-              CALL DLALS0(icompq, nl, nr, sqre, nrhs, bx(nlf,1), ldbx,         &
-                b(nlf,1), ldb, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2),     &
-                ldgcol, givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,lvl), &
-                difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work, info)
+              CALL DLALS0(icompq, nl, nr, sqre, nrhs, bx(nlf,1), ldbx,      &
+                b(nlf,1), ldb, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2),  &
+                ldgcol, givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,    &
+                lvl), difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work,   &
+                info)
             END DO
           END DO
           GO TO 90
@@ -5174,10 +5201,11 @@
                 sqre = 1
               END IF
               j = j + 1
-              CALL DLALS0(icompq, nl, nr, sqre, nrhs, b(nlf,1), ldb, bx(nlf,   &
-                1), ldbx, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2), ldgcol,  &
-                givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,lvl),         &
-                difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work, info)
+              CALL DLALS0(icompq, nl, nr, sqre, nrhs, b(nlf,1), ldb,        &
+                bx(nlf,1), ldbx, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2),&
+                ldgcol, givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,    &
+                lvl), difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work,   &
+                info)
             END DO
           END DO
           ndb1 = (nd+1)/2
@@ -5194,16 +5222,16 @@
             END IF
             nlf = ic - nl
             nrf = ic + 1
-            CALL DGEMM('T', 'N', nlp1, nrhs, nlp1, one, vt(nlf,1), ldu,        &
+            CALL DGEMM('T', 'N', nlp1, nrhs, nlp1, one, vt(nlf,1), ldu,     &
               b(nlf,1), ldb, zero, bx(nlf,1), ldbx)
-            CALL DGEMM('T', 'N', nrp1, nrhs, nrp1, one, vt(nrf,1), ldu,        &
+            CALL DGEMM('T', 'N', nrp1, nrhs, nrp1, one, vt(nrf,1), ldu,     &
               b(nrf,1), ldb, zero, bx(nrf,1), ldbx)
           END DO
  90       CONTINUE
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLALSD(uplo, smlsiz, n, nrhs, d, e, b, ldb, rcond, rank,    &
+        SUBROUTINE DLALSD(uplo, smlsiz, n, nrhs, d, e, b, ldb, rcond, rank,  &
           work, iwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: uplo
@@ -5213,15 +5241,15 @@
           REAL(r8_) :: b(ldb, *), d(*), e(*), work(*)
           REAL(r8_) :: zero, one, two
           PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_)
-          INTEGER(ip_) :: bx, bxst, c, difl, difr, givcol, givnum, givptr,     &
-            i, icmpq1, icmpq2, iwk, j, k, nlvl, nm1, nsize, nsub, nwork, perm, &
-            poles, s, sizei, smlszp, sqre, st, st1, u, vt, z
+          INTEGER(ip_) :: bx, bxst, c, difl, difr, givcol, givnum, givptr,  &
+            i, icmpq1, icmpq2, iwk, j, k, nlvl, nm1, nsize, nsub, nwork,    &
+            perm, poles, s, sizei, smlszp, sqre, st, st1, u, vt, z
           REAL(r8_) :: cs, eps, orgnrm, r, rcnd, sn, tol
           INTEGER(ip_) :: IDAMAX
           REAL(r8_) :: DLAMCH, DLANST
           EXTERNAL :: IDAMAX, DLAMCH, DLANST
-          EXTERNAL :: DCOPY, DGEMM, DLACPY, DLALSA, DLARTG,                    &
-            DLASCL, DLASDA, DLASDQ, DLASET, DLASRT, DROT,                      &
+          EXTERNAL :: DCOPY, DGEMM, DLACPY, DLALSA, DLARTG,                  &
+            DLASCL, DLASDA, DLASDQ, DLASET, DLASRT, DROT,                   &
             XERBLA
           INTRINSIC :: ABS, DBLE, INT, LOG, SIGN
           info = 0
@@ -5250,8 +5278,8 @@
               CALL DLASET('A', 1_ip_, nrhs, zero, zero, b, ldb)
             ELSE
               rank = 1
-              CALL DLASCL('G', 0_ip_, 0_ip_, d(1), one, 1_ip_, nrhs, b, ldb,   &
-                info)
+              CALL DLASCL('G', 0_ip_, 0_ip_, d(1), one, 1_ip_, nrhs, b,     &
+                ldb, info)
               d(1) = ABS(d(1))
             END IF
             RETURN
@@ -5286,12 +5314,12 @@
             RETURN
           END IF
           CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, 1_ip_, d, n, info)
-          CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, nm1, 1_ip_, e, nm1,      &
+          CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, nm1, 1_ip_, e, nm1,   &
             info)
           IF (n<=smlsiz) THEN
             nwork = 1 + n*n
             CALL DLASET('A', n, n, zero, one, work, n)
-            CALL DLASDQ('U', 0_ip_, n, n, 0_ip_, nrhs, d, e, work, n, work,    &
+            CALL DLASDQ('U', 0_ip_, n, n, 0_ip_, nrhs, d, e, work, n, work,  &
               n, b, ldb, work(nwork), info)
             IF (info/=0) THEN
               RETURN
@@ -5301,18 +5329,18 @@
               IF (d(i)<=tol) THEN
                 CALL DLASET('A', 1_ip_, nrhs, zero, zero, b(i,1), ldb)
               ELSE
-                CALL DLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs, b(i,    &
+                CALL DLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs, b(i,  &
                   1), ldb, info)
                 rank = rank + 1
               END IF
             END DO
-            CALL DGEMM('T', 'N', n, nrhs, n, one, work, n, b, ldb, zero,       &
+            CALL DGEMM('T', 'N', n, nrhs, n, one, work, n, b, ldb, zero,    &
               work(nwork), n)
             CALL DLACPY('A', n, nrhs, work(nwork), n, b, ldb)
-            CALL DLASCL('G', 0_ip_, 0_ip_, one, orgnrm, n, 1_ip_, d, n,        &
+            CALL DLASCL('G', 0_ip_, 0_ip_, one, orgnrm, n, 1_ip_, d, n,     &
               info)
             CALL DLASRT('D', n, d, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb,    &
               info)
             RETURN
           END IF
@@ -5368,30 +5396,31 @@
                 CALL DCOPY(nrhs, b(st,1), ldb, work(bx+st1), n)
               ELSE IF (nsize<=smlsiz) THEN
                 CALL DLASET('A', nsize, nsize, zero, one, work(vt+st1), n)
-                CALL DLASDQ('U', 0_ip_, nsize, nsize, 0_ip_, nrhs, d(st),      &
-                  e(st), work(vt+st1), n, work(nwork), n, b(st,1), ldb,        &
+                CALL DLASDQ('U', 0_ip_, nsize, nsize, 0_ip_, nrhs, d(st),   &
+                  e(st), work(vt+st1), n, work(nwork), n, b(st,1), ldb,     &
                   work(nwork), info)
                 IF (info/=0) THEN
                   RETURN
                 END IF
-                CALL DLACPY('A', nsize, nrhs, b(st,1), ldb, work(bx+st1), n)
+                CALL DLACPY('A', nsize, nrhs, b(st,1), ldb, work(bx+st1),   &
+                  n)
               ELSE
-                CALL DLASDA(icmpq1, smlsiz, nsize, sqre, d(st), e(st),         &
-                  work(u+st1), n, work(vt+st1), iwork(k+st1), work(difl+st1),  &
-                  work(difr+st1), work(z+st1), work(poles+st1),                &
-                  iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1),    &
-                  work(givnum+st1), work(c+st1), work(s+st1), work(nwork),     &
+                CALL DLASDA(icmpq1, smlsiz, nsize, sqre, d(st), e(st),      &
+                  work(u+st1), n, work(vt+st1), iwork(k+st1), work(difl+st1),&
+                  work(difr+st1), work(z+st1), work(poles+st1),             &
+                  iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1), &
+                  work(givnum+st1), work(c+st1), work(s+st1), work(nwork),  &
                   iwork(iwk), info)
                 IF (info/=0) THEN
                   RETURN
                 END IF
                 bxst = bx + st1
-                CALL DLALSA(icmpq2, smlsiz, nsize, nrhs, b(st,1), ldb,         &
-                  work(bxst), n, work(u+st1), n, work(vt+st1), iwork(k+st1),   &
-                  work(difl+st1), work(difr+st1), work(z+st1),                 &
-                  work(poles+st1), iwork(givptr+st1), iwork(givcol+st1), n,    &
-                  iwork(perm+st1), work(givnum+st1), work(c+st1), work(s+st1), &
-                  work(nwork), iwork(iwk), info)
+                CALL DLALSA(icmpq2, smlsiz, nsize, nrhs, b(st,1), ldb,      &
+                  work(bxst), n, work(u+st1), n, work(vt+st1), iwork(k+st1),&
+                  work(difl+st1), work(difr+st1), work(z+st1),              &
+                  work(poles+st1), iwork(givptr+st1), iwork(givcol+st1), n, &
+                  iwork(perm+st1), work(givnum+st1), work(c+st1),           &
+                  work(s+st1), work(nwork), iwork(iwk), info)
                 IF (info/=0) THEN
                   RETURN
                 END IF
@@ -5405,7 +5434,7 @@
               CALL DLASET('A', 1_ip_, nrhs, zero, zero, work(bx+i-1), n)
             ELSE
               rank = rank + 1
-              CALL DLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs,           &
+              CALL DLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs,        &
                 work(bx+i-1), n, info)
             END IF
             d(i) = ABS(d(i))
@@ -5419,14 +5448,14 @@
             IF (nsize==1) THEN
               CALL DCOPY(nrhs, work(bxst), n, b(st,1), ldb)
             ELSE IF (nsize<=smlsiz) THEN
-              CALL DGEMM('T', 'N', nsize, nrhs, nsize, one, work(vt+st1), n,   &
-                work(bxst), n, zero, b(st,1), ldb)
+              CALL DGEMM('T', 'N', nsize, nrhs, nsize, one, work(vt+st1),   &
+                n, work(bxst), n, zero, b(st,1), ldb)
             ELSE
-              CALL DLALSA(icmpq2, smlsiz, nsize, nrhs, work(bxst), n, b(st,    &
-                1), ldb, work(u+st1), n, work(vt+st1), iwork(k+st1),           &
-                work(difl+st1), work(difr+st1), work(z+st1), work(poles+st1),  &
-                iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1),      &
-                work(givnum+st1), work(c+st1), work(s+st1), work(nwork),       &
+              CALL DLALSA(icmpq2, smlsiz, nsize, nrhs, work(bxst), n, b(st,  &
+                1), ldb, work(u+st1), n, work(vt+st1), iwork(k+st1),        &
+                work(difl+st1), work(difr+st1), work(z+st1), work(poles+st1),&
+                iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1),   &
+                work(givnum+st1), work(c+st1), work(s+st1), work(nwork),    &
                 iwork(iwk), info)
               IF (info/=0) THEN
                 RETURN
@@ -5435,7 +5464,8 @@
           END DO
           CALL DLASCL('G', 0_ip_, 0_ip_, one, orgnrm, n, 1_ip_, d, n, info)
           CALL DLASRT('D', n, d, info)
-          CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb, info)
+          CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb,      &
+            info)
           RETURN
         END SUBROUTINE
 
@@ -5447,7 +5477,7 @@
           REAL(r8_) :: rnd, eps, sfmin, small, rmach
           LOGICAL :: LSAME
           EXTERNAL :: LSAME
-          INTRINSIC :: DIGITS, EPSILON, HUGE, MAXEXPONENT, MINEXPONENT,        &
+          INTRINSIC :: DIGITS, EPSILON, HUGE, MAXEXPONENT, MINEXPONENT,     &
             RADIX, TINY
           rnd = one
           IF (one==rnd) THEN
@@ -5630,7 +5660,8 @@
               sum = ABS(e(i))
               IF (anorm<sum .OR. DISNAN(sum)) anorm = sum
             END DO
-          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,'I')) THEN
+          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,'I'))     &
+            THEN
             IF (n==1) THEN
               anorm = ABS(d(1))
             ELSE
@@ -5690,7 +5721,7 @@
                 END DO
               END DO
             END IF
-          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR.              &
+          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR.           &
             (norm=='1')) THEN
             value = zero
             IF (LSAME(uplo,'U')) THEN
@@ -5757,7 +5788,7 @@
           PARAMETER (zero=0.0_r8_, half=0.5_r8_, one=1.0_r8_, two=2.0_r8_)
           REAL(r8_) :: multpl
           PARAMETER (multpl=4.0_r8_)
-          REAL(r8_) :: aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab, sac,    &
+          REAL(r8_) :: aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab, sac,  &
             scale, sigma, sn1, tau, temp, z, safmin, safmn2, safmx2
           INTEGER(ip_) :: count
           REAL(r8_) :: DLAMCH, DLAPY2
@@ -5944,7 +5975,7 @@
               vn2(pvt) = vn2(i)
             END IF
             IF (offpi<m) THEN
-              CALL DLARFG(m-offpi+1, a(offpi,i), a(offpi+1,i), 1_ip_,          &
+              CALL DLARFG(m-offpi+1, a(offpi,i), a(offpi+1,i), 1_ip_,       &
                 tau(i))
             ELSE
               CALL DLARFG(1_ip_, a(m,i), a(m,i), 1_ip_, tau(i))
@@ -5952,7 +5983,7 @@
             IF (i<n) THEN
               aii = a(offpi, i)
               a(offpi, i) = one
-              CALL DLARF('Left', m-offpi+1, n-i, a(offpi,i), 1_ip_, tau(i),    &
+              CALL DLARF('Left', m-offpi+1, n-i, a(offpi,i), 1_ip_, tau(i),  &
                 a(offpi,i+1), lda, work(1))
               a(offpi, i) = aii
             END IF
@@ -5978,12 +6009,13 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLAQPS(m, n, offset, nb, kb, a, lda, jpvt, tau, vn1, vn2,   &
-          auxv, f, ldf)
+        SUBROUTINE DLAQPS(m, n, offset, nb, kb, a, lda, jpvt, tau, vn1,     &
+          vn2, auxv, f, ldf)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: kb, lda, ldf, m, n, nb, offset
           INTEGER(ip_) :: jpvt(*)
-          REAL(r8_) :: a(lda, *), auxv(*), f(ldf, *), tau(*), vn1(*), vn2(*)
+          REAL(r8_) :: a(lda, *), auxv(*), f(ldf, *), tau(*), vn1(*),       &
+            vn2(*)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           INTEGER(ip_) :: itemp, j, k, lastrk, lsticc, pvt, rk
@@ -6012,7 +6044,7 @@
               vn2(pvt) = vn2(k)
             END IF
             IF (k>1) THEN
-              CALL DGEMV('No transpose', m-rk+1, k-1, -one, a(rk,1), lda,      &
+              CALL DGEMV('No transpose', m-rk+1, k-1, -one, a(rk,1), lda,   &
                 f(k,1), ldf, one, a(rk,k), 1_ip_)
             END IF
             IF (rk<m) THEN
@@ -6023,20 +6055,20 @@
             akk = a(rk, k)
             a(rk, k) = one
             IF (k<n) THEN
-              CALL DGEMV('Transpose', m-rk+1, n-k, tau(k), a(rk,k+1), lda,     &
+              CALL DGEMV('Transpose', m-rk+1, n-k, tau(k), a(rk,k+1), lda,  &
                 a(rk,k), 1_ip_, zero, f(k+1,k), 1_ip_)
             END IF
             DO j = 1, k
               f(j, k) = zero
             END DO
             IF (k>1) THEN
-              CALL DGEMV('Transpose', m-rk+1, k-1, -tau(k), a(rk,1), lda,      &
+              CALL DGEMV('Transpose', m-rk+1, k-1, -tau(k), a(rk,1), lda,   &
                 a(rk,k), 1_ip_, zero, auxv(1), 1_ip_)
-              CALL DGEMV('No transpose', n, k-1, one, f(1,1), ldf, auxv(1),    &
+              CALL DGEMV('No transpose', n, k-1, one, f(1,1), ldf, auxv(1),  &
                 1_ip_, one, f(1,k), 1_ip_)
             END IF
             IF (k<n) THEN
-              CALL DGEMV('No transpose', n-k, k, -one, f(k+1,1), ldf, a(rk,    &
+              CALL DGEMV('No transpose', n-k, k, -one, f(k+1,1), ldf, a(rk,  &
                 1), lda, one, a(rk,k+1), lda)
             END IF
             IF (rk<lastrk) THEN
@@ -6060,7 +6092,7 @@
           kb = k
           rk = offset + kb
           IF (kb<MIN(n,m-offset)) THEN
-            CALL DGEMM('No transpose', 'Transpose', m-rk, n-kb, kb, -one,      &
+            CALL DGEMM('No transpose', 'Transpose', m-rk, n-kb, kb, -one,   &
               a(rk+1,1), lda, f(kb+1,1), ldf, one, a(rk+1,kb+1), lda)
           END IF
  40       CONTINUE
@@ -6074,7 +6106,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,     &
+        SUBROUTINE DLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,  &
           ihiz, z, ldz, work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: ihi, ihiz, ilo, iloz, info, ldh, ldz, lwork, n
@@ -6091,15 +6123,15 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           REAL(r8_) :: aa, bb, cc, cs, dd, sn, ss, swap
-          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,     &
-            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,     &
+          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,  &
+            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,  &
             nho, nibble, nmin, ns, nsmax, nsr, nve, nw, nwmax, nwr, nwupbd
           LOGICAL :: sorted
           CHARACTER :: jbcmpz*2
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r8_) :: zdum(1, 1_ip_)
-          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR3,                          &
+          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR3,                       &
             DLAQR4, DLAQR5
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, MOD
           info = 0
@@ -6109,7 +6141,7 @@
           END IF
           IF (n<=ntiny) THEN
             lwkopt = 1
-            IF (lwork/=-1) CALL DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,      &
+            IF (lwork/=-1) CALL DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,   &
               wr, wi, iloz, ihiz, z, ldz, info)
           ELSE
             info = 0
@@ -6129,8 +6161,8 @@
             nsr = ILAENV(15_ip_, 'DLAQR0', jbcmpz, n, ilo, ihi, lwork)
             nsr = MIN(nsr, (n-3)/6, ihi-ilo)
             nsr = MAX( 2_ip_, nsr-MOD(nsr,2))
-            CALL DLAQR3(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,        &
-              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,      &
+            CALL DLAQR3(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,     &
+              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,   &
               work, -1_ip_)
             lwkopt = MAX(3*nsr/2, INT(work(1)))
             IF (lwork==-1) THEN
@@ -6171,7 +6203,7 @@
                   nw = nh
                 ELSE
                   kwtop = kbot - nw + 1
-                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =     &
+                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =  &
                     nw + 1
                 END IF
               END IF
@@ -6187,12 +6219,12 @@
               nho = (n-nw-1) - kt + 1
               kwv = nw + 2
               nve = (n-nw) - kwv + 1
-              CALL DLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),     &
+              CALL DLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),  &
                 ldh, nve, h(kwv,1), ldh, work, lwork)
               kbot = kbot - ld
               ks = kbot - ls + 1
-              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>        &
+              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>     &
                 MIN(nmin,nwmax)))) THEN
                 ns = MIN(nsmax, nsr, MAX(2,kbot-ktop))
                 ns = ns - MOD(ns, 2_ip_)
@@ -6204,7 +6236,7 @@
                     bb = ss
                     cc = wilk2*ss
                     dd = aa
-                    CALL DLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),       &
+                    CALL DLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),    &
                       wi(i), cs, sn)
                   END DO
                   IF (ks==ktop) THEN
@@ -6219,11 +6251,11 @@
                     kt = n - ns + 1
                     CALL DLACPY('A', ns, ns, h(ks,ks), ldh, h(kt,1), ldh)
                     IF (ns>nmin) THEN
-                      CALL DLAQR4(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),    &
-                        ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, work,  &
+                      CALL DLAQR4(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),  &
+                        ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, work,&
                         lwork, inf)
                     ELSE
-                      CALL DLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),    &
+                      CALL DLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),  &
                         ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, inf)
                     END IF
                     ks = ks + inf
@@ -6232,7 +6264,7 @@
                       cc = h(kbot, kbot-1)
                       bb = h(kbot-1, kbot)
                       dd = h(kbot, kbot)
-                      CALL DLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),      &
+                      CALL DLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),   &
                         wr(kbot), wi(kbot), cs, sn)
                       ks = kbot - 1
                     END IF
@@ -6243,7 +6275,7 @@
                       IF (sorted) GO TO 60
                       sorted = .TRUE.
                       DO i = ks, k - 1
-                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+       &
+                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+    &
                           1))) THEN
                           sorted = .FALSE.
                           swap = wr(i)
@@ -6272,7 +6304,7 @@
                 END IF
                 IF (kbot-ks+1==2) THEN
                   IF (wi(kbot)==zero) THEN
-                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,      &
+                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,   &
                       kbot))) THEN
                       wr(kbot-1) = wr(kbot)
                     ELSE
@@ -6289,9 +6321,9 @@
                 nho = (n-kdu+1-4) - (kdu+1) + 1
                 kwv = kdu + 4
                 nve = n - kdu - kwv + 1
-                CALL DLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns, wr(ks),   &
-                  wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_, h(ku,1),    &
-                  ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
+                CALL DLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns,        &
+                  wr(ks), wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_,  &
+                  h(ku,1), ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
               END IF
               IF (ld>0) THEN
                 ndfl = 1
@@ -6324,7 +6356,7 @@
               v(2) = zero
             ELSE
               h21s = h( 2_ip_, 1_ip_)/s
-              v(1) = h21s*h(1, 2_ip_) + (h(1,1)-sr1)*((h(1, 1_ip_)-sr2)/s)     &
+              v(1) = h21s*h(1, 2_ip_) + (h(1,1)-sr1)*((h(1, 1_ip_)-sr2)/s)  &
                 - si1*(si2/s)
               v(2) = h21s*(h(1,1)+h(2,2)-sr1-sr2)
             END IF
@@ -6337,7 +6369,7 @@
             ELSE
               h21s = h( 2_ip_, 1_ip_)/s
               h31s = h( 3_ip_, 1_ip_)/s
-              v(1) = (h(1,1)-sr1)*((h(1,1)-sr2)/s) - si1*(si2/s) + h(1,        &
+              v(1) = (h(1,1)-sr1)*((h(1,1)-sr2)/s) - si1*(si2/s) + h(1,     &
                 2_ip_) *h21s + h(1, 3_ip_)*h31s
               v(2) = h21s*(h(1,1)+h(2,2)-sr1-sr2) + h( 2_ip_, 3_ip_)*h31s
               v(3) = h31s*(h(1,1)+h(3,3)-sr1-sr2) + h21s*h( 3_ip_, 2_ip_)
@@ -6345,26 +6377,26 @@
           END IF
         END SUBROUTINE
 
-        SUBROUTINE DLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,      &
+        SUBROUTINE DLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,   &
           work, lwork)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,    &
+          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,  &
             lwork, n, nd, nh, ns, nv, nw
           LOGICAL :: wantt, wantz
-          REAL(r8_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),          &
+          REAL(r8_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),       &
             work(*), wv(ldwv, *), z(ldz, *)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
-          REAL(r8_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,     &
+          REAL(r8_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,  &
             safmin, smlnum, sn, tau, ulp
-          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,    &
+          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,  &
             kln, krow, kwtop, ltop, lwk1, lwk2, lwkopt
           LOGICAL :: bulge, sorted
           REAL(r8_) :: DLAMCH
           EXTERNAL :: DLAMCH
-          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,                    &
-            DLAHQR, DLANV2, DLARF, DLARFG, DLASET, DORMHR,                     &
+          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,                  &
+            DLAHQR, DLANV2, DLARF, DLARFG, DLASET, DORMHR,                  &
             DTREXC
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -6373,8 +6405,8 @@
           ELSE
             CALL DGEHRD(jw, 1_ip_, jw-1, t, ldt, work, work, -1_ip_, info)
             lwk1 = INT(work(1))
-            CALL DORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v, ldv,   &
-              work, -1_ip_, info)
+            CALL DORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v,     &
+              ldv, work, -1_ip_, info)
             lwk2 = INT(work(1))
             lwkopt = jw + MAX(lwk1, lwk2)
           END IF
@@ -6415,7 +6447,7 @@
           CALL DLACPY('U', jw, jw, h(kwtop,kwtop), ldh, t, ldt)
           CALL DCOPY(jw-1, h(kwtop+1,kwtop), ldh+1, t(2,1), ldt+1)
           CALL DLASET('A', jw, jw, zero, one, v, ldv)
-          CALL DLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),        &
+          CALL DLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),     &
             si(kwtop), 1_ip_, jw, v, ldv, infqr)
           DO j = 1, jw - 3
             t(j+2, j) = zero
@@ -6438,19 +6470,21 @@
                 ns = ns - 1
               ELSE
                 ifst = ns
-                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 1
               END IF
             ELSE
-              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,     &
+              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,  &
                 ns)))
               IF (foo==zero) foo = ABS(s)
-              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo     &
+              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo  &
                 )) THEN
                 ns = ns - 2
               ELSE
                 ifst = ns
-                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 2
               END IF
             END IF
@@ -6477,14 +6511,16 @@
               IF (k==i+1) THEN
                 evi = ABS(t(i,i))
               ELSE
-                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i, i+1)))
+                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i,       &
+                  i+1)))
               END IF
               IF (k==kend) THEN
                 evk = ABS(t(k,k))
               ELSE IF (t(k+1,k)==zero) THEN
                 evk = ABS(t(k,k))
               ELSE
-                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k, k+1)))
+                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k,       &
+                  k+1)))
               END IF
               IF (evi>=evk) THEN
                 i = k
@@ -6492,7 +6528,8 @@
                 sorted = .FALSE.
                 ifst = i
                 ilst = k
-                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 IF (info==0) THEN
                   i = ilst
                 ELSE
@@ -6527,7 +6564,7 @@
               cc = t(i, i-1)
               bb = t(i-1, i)
               dd = t(i, i)
-              CALL DLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),        &
+              CALL DLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),     &
                 sr(kwtop+i-1), si(kwtop+i-1), cs, sn)
               i = i - 2
             END IF
@@ -6543,14 +6580,14 @@
               CALL DLARF('L', ns, jw, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL DLARF('R', ns, ns, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL DLARF('R', jw, ns, work, 1_ip_, tau, v, ldv, work(jw+1))
-              CALL DGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1), lwork-jw,   &
-                info)
+              CALL DGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1),          &
+                lwork-jw, info)
             END IF
             IF (kwtop>1) h(kwtop, kwtop-1) = s*v(1, 1_ip_)
             CALL DLACPY('U', jw, jw, t, ldt, h(kwtop,kwtop), ldh)
             CALL DCOPY(jw-1, t(2,1), ldt+1, h(kwtop+1,kwtop), ldh+1)
-            IF (ns>1 .AND. s/=zero) CALL DORMHR('R', 'N', jw, ns, 1_ip_, ns,   &
-              t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
+            IF (ns>1 .AND. s/=zero) CALL DORMHR('R', 'N', jw, ns, 1_ip_,    &
+              ns, t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
             IF (wantt) THEN
               ltop = 1
             ELSE
@@ -6558,14 +6595,14 @@
             END IF
             DO krow = ltop, kwtop - 1, nv
               kln = MIN(nv, kwtop-krow)
-              CALL DGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,    &
+              CALL DGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,  &
                 ldv, zero, wv, ldwv)
               CALL DLACPY('A', kln, jw, wv, ldwv, h(krow,kwtop), ldh)
             END DO
             IF (wantt) THEN
               DO kcol = kbot + 1, n, nh
                 kln = MIN(nh, n-kcol+1)
-                CALL DGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,        &
+                CALL DGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,      &
                   kcol), ldh, zero, t, ldt)
                 CALL DLACPY('A', jw, kln, t, ldt, h(kwtop,kcol), ldh)
               END DO
@@ -6573,7 +6610,7 @@
             IF (wantz) THEN
               DO krow = iloz, ihiz, nv
                 kln = MIN(nv, ihiz-krow+1)
-                CALL DGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,     &
+                CALL DGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,  &
                   v, ldv, zero, wv, ldwv)
                 CALL DLACPY('A', kln, jw, wv, ldwv, z(krow,kwtop), ldz)
               END DO
@@ -6584,27 +6621,27 @@
           work(1) = DBLE(lwkopt)
         END SUBROUTINE
 
-        SUBROUTINE DLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,      &
+        SUBROUTINE DLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,   &
           work, lwork)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,    &
+          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,  &
             lwork, n, nd, nh, ns, nv, nw
           LOGICAL :: wantt, wantz
-          REAL(r8_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),          &
+          REAL(r8_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),       &
             work(*), wv(ldwv, *), z(ldz, *)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
-          REAL(r8_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,     &
+          REAL(r8_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,  &
             safmin, smlnum, sn, tau, ulp
-          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,    &
+          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,  &
             kln, krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin
           LOGICAL :: bulge, sorted
           REAL(r8_) :: DLAMCH
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: DLAMCH, ILAENV
-          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,                    &
-            DLAHQR, DLANV2, DLAQR4, DLARF, DLARFG, DLASET,                     &
+          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,                  &
+            DLAHQR, DLANV2, DLAQR4, DLARF, DLARFG, DLASET,                  &
             DORMHR, DTREXC
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -6613,10 +6650,10 @@
           ELSE
             CALL DGEHRD(jw, 1_ip_, jw-1, t, ldt, work, work, -1_ip_, info)
             lwk1 = INT(work(1))
-            CALL DORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v, ldv,   &
-              work, -1_ip_, info)
+            CALL DORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v,     &
+              ldv, work, -1_ip_, info)
             lwk2 = INT(work(1))
-            CALL DLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr, si,         &
+            CALL DLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr, si,      &
               1_ip_, jw, v, ldv, work, -1_ip_, infqr)
             lwk3 = INT(work(1))
             lwkopt = MAX(jw+MAX(lwk1,lwk2), lwk3)
@@ -6660,10 +6697,10 @@
           CALL DLASET('A', jw, jw, zero, one, v, ldv)
           nmin = ILAENV(12_ip_, 'DLAQR3', 'SV', jw, 1_ip_, jw, lwork)
           IF (jw>nmin) THEN
-            CALL DLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),      &
+            CALL DLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),   &
               si(kwtop), 1_ip_, jw, v, ldv, work, lwork, infqr)
           ELSE
-            CALL DLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),      &
+            CALL DLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),   &
               si(kwtop), 1_ip_, jw, v, ldv, infqr)
           END IF
           DO j = 1, jw - 3
@@ -6687,19 +6724,21 @@
                 ns = ns - 1
               ELSE
                 ifst = ns
-                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 1
               END IF
             ELSE
-              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,     &
+              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,  &
                 ns)))
               IF (foo==zero) foo = ABS(s)
-              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo     &
+              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo  &
                 )) THEN
                 ns = ns - 2
               ELSE
                 ifst = ns
-                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 2
               END IF
             END IF
@@ -6726,14 +6765,16 @@
               IF (k==i+1) THEN
                 evi = ABS(t(i,i))
               ELSE
-                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i, i+1)))
+                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i,       &
+                  i+1)))
               END IF
               IF (k==kend) THEN
                 evk = ABS(t(k,k))
               ELSE IF (t(k+1,k)==zero) THEN
                 evk = ABS(t(k,k))
               ELSE
-                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k, k+1)))
+                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k,       &
+                  k+1)))
               END IF
               IF (evi>=evk) THEN
                 i = k
@@ -6741,7 +6782,8 @@
                 sorted = .FALSE.
                 ifst = i
                 ilst = k
-                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL DTREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 IF (info==0) THEN
                   i = ilst
                 ELSE
@@ -6776,7 +6818,7 @@
               cc = t(i, i-1)
               bb = t(i-1, i)
               dd = t(i, i)
-              CALL DLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),        &
+              CALL DLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),     &
                 sr(kwtop+i-1), si(kwtop+i-1), cs, sn)
               i = i - 2
             END IF
@@ -6792,14 +6834,14 @@
               CALL DLARF('L', ns, jw, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL DLARF('R', ns, ns, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL DLARF('R', jw, ns, work, 1_ip_, tau, v, ldv, work(jw+1))
-              CALL DGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1), lwork-jw,   &
-                info)
+              CALL DGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1),          &
+                lwork-jw, info)
             END IF
             IF (kwtop>1) h(kwtop, kwtop-1) = s*v(1, 1_ip_)
             CALL DLACPY('U', jw, jw, t, ldt, h(kwtop,kwtop), ldh)
             CALL DCOPY(jw-1, t(2,1), ldt+1, h(kwtop+1,kwtop), ldh+1)
-            IF (ns>1 .AND. s/=zero) CALL DORMHR('R', 'N', jw, ns, 1_ip_, ns,   &
-              t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
+            IF (ns>1 .AND. s/=zero) CALL DORMHR('R', 'N', jw, ns, 1_ip_,    &
+              ns, t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
             IF (wantt) THEN
               ltop = 1
             ELSE
@@ -6807,14 +6849,14 @@
             END IF
             DO krow = ltop, kwtop - 1, nv
               kln = MIN(nv, kwtop-krow)
-              CALL DGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,    &
+              CALL DGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,  &
                 ldv, zero, wv, ldwv)
               CALL DLACPY('A', kln, jw, wv, ldwv, h(krow,kwtop), ldh)
             END DO
             IF (wantt) THEN
               DO kcol = kbot + 1, n, nh
                 kln = MIN(nh, n-kcol+1)
-                CALL DGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,        &
+                CALL DGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,      &
                   kcol), ldh, zero, t, ldt)
                 CALL DLACPY('A', jw, kln, t, ldt, h(kwtop,kcol), ldh)
               END DO
@@ -6822,7 +6864,7 @@
             IF (wantz) THEN
               DO krow = iloz, ihiz, nv
                 kln = MIN(nv, ihiz-krow+1)
-                CALL DGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,     &
+                CALL DGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,  &
                   v, ldv, zero, wv, ldwv)
                 CALL DLACPY('A', kln, jw, wv, ldwv, z(krow,kwtop), ldz)
               END DO
@@ -6833,7 +6875,7 @@
           work(1) = DBLE(lwkopt)
         END SUBROUTINE
 
-        SUBROUTINE DLAQR4(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,     &
+        SUBROUTINE DLAQR4(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,  &
           ihiz, z, ldz, work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: ihi, ihiz, ilo, iloz, info, ldh, ldz, lwork, n
@@ -6850,15 +6892,16 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           REAL(r8_) :: aa, bb, cc, cs, dd, sn, ss, swap
-          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,     &
-            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,     &
+          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,  &
+            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,  &
             nho, nibble, nmin, ns, nsmax, nsr, nve, nw, nwmax, nwr, nwupbd
           LOGICAL :: sorted
           CHARACTER :: jbcmpz*2
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r8_) :: zdum(1, 1_ip_)
-          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR2, DLAQR5
+          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR2,                       &
+            DLAQR5
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, MOD
           info = 0
           IF (n==0) THEN
@@ -6867,7 +6910,7 @@
           END IF
           IF (n<=ntiny) THEN
             lwkopt = 1
-            IF (lwork/=-1) CALL DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,      &
+            IF (lwork/=-1) CALL DLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,   &
               wr, wi, iloz, ihiz, z, ldz, info)
           ELSE
             info = 0
@@ -6887,8 +6930,8 @@
             nsr = ILAENV(15_ip_, 'DLAQR4', jbcmpz, n, ilo, ihi, lwork)
             nsr = MIN(nsr, (n-3)/6, ihi-ilo)
             nsr = MAX( 2_ip_, nsr-MOD(nsr,2))
-            CALL DLAQR2(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,        &
-              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,      &
+            CALL DLAQR2(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,     &
+              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,   &
               work, -1_ip_)
             lwkopt = MAX(3*nsr/2, INT(work(1)))
             IF (lwork==-1) THEN
@@ -6929,7 +6972,7 @@
                   nw = nh
                 ELSE
                   kwtop = kbot - nw + 1
-                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =     &
+                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =  &
                     nw + 1
                 END IF
               END IF
@@ -6945,12 +6988,12 @@
               nho = (n-nw-1) - kt + 1
               kwv = nw + 2
               nve = (n-nw) - kwv + 1
-              CALL DLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),     &
+              CALL DLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),  &
                 ldh, nve, h(kwv,1), ldh, work, lwork)
               kbot = kbot - ld
               ks = kbot - ls + 1
-              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>        &
+              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>     &
                 MIN(nmin,nwmax)))) THEN
                 ns = MIN(nsmax, nsr, MAX(2,kbot-ktop))
                 ns = ns - MOD(ns, 2_ip_)
@@ -6962,7 +7005,7 @@
                     bb = ss
                     cc = wilk2*ss
                     dd = aa
-                    CALL DLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),       &
+                    CALL DLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),    &
                       wi(i), cs, sn)
                   END DO
                   IF (ks==ktop) THEN
@@ -6976,7 +7019,7 @@
                     ks = kbot - ns + 1
                     kt = n - ns + 1
                     CALL DLACPY('A', ns, ns, h(ks,ks), ldh, h(kt,1), ldh)
-                    CALL DLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),      &
+                    CALL DLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),   &
                       ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, inf)
                     ks = ks + inf
                     IF (ks>=kbot) THEN
@@ -6984,7 +7027,7 @@
                       cc = h(kbot, kbot-1)
                       bb = h(kbot-1, kbot)
                       dd = h(kbot, kbot)
-                      CALL DLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),      &
+                      CALL DLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),   &
                         wr(kbot), wi(kbot), cs, sn)
                       ks = kbot - 1
                     END IF
@@ -6995,7 +7038,7 @@
                       IF (sorted) GO TO 60
                       sorted = .TRUE.
                       DO i = ks, k - 1
-                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+       &
+                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+    &
                           1))) THEN
                           sorted = .FALSE.
                           swap = wr(i)
@@ -7024,7 +7067,7 @@
                 END IF
                 IF (kbot-ks+1==2) THEN
                   IF (wi(kbot)==zero) THEN
-                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,      &
+                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,   &
                       kbot))) THEN
                       wr(kbot-1) = wr(kbot)
                     ELSE
@@ -7041,9 +7084,9 @@
                 nho = (n-kdu+1-4) - (kdu+1) + 1
                 kwv = kdu + 4
                 nve = n - kdu - kwv + 1
-                CALL DLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns, wr(ks),   &
-                  wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_, h(ku,1),    &
-                  ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
+                CALL DLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns,        &
+                  wr(ks), wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_,  &
+                  h(ku,1), ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
               END IF
               IF (ld>0) THEN
                 ndfl = 1
@@ -7057,29 +7100,30 @@
           work(1) = DBLE(lwkopt)
         END SUBROUTINE
 
-        SUBROUTINE DLAQR5(wantt, wantz, kacc22, n, ktop, kbot, nshfts, sr,     &
-          si, h, ldh, iloz, ihiz, z, ldz, v, ldv, u, ldu, nv, wv, ldwv, nh,    &
+        SUBROUTINE DLAQR5(wantt, wantz, kacc22, n, ktop, kbot, nshfts, sr,  &
+          si, h, ldh, iloz, ihiz, z, ldz, v, ldv, u, ldu, nv, wv, ldwv, nh, &
           wh, ldwh)
           USE GALAHAD_KINDS
           IMPLICIT NONE
-          INTEGER(ip_) :: ihiz, iloz, kacc22, kbot, ktop, ldh, ldu, ldv,       &
+          INTEGER(ip_) :: ihiz, iloz, kacc22, kbot, ktop, ldh, ldu, ldv,    &
             ldwh, ldwv, ldz, n, nh, nshfts, nv
           LOGICAL :: wantt, wantz
-          REAL(r8_) :: h(ldh, *), si(*), sr(*), u(ldu, *), v(ldv, *),          &
+          REAL(r8_) :: h(ldh, *), si(*), sr(*), u(ldu, *), v(ldv, *),       &
             wh(ldwh, *), wv(ldwv, *), z(ldz, *)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
-          REAL(r8_) :: alpha, beta, h11, h12, h21, h22, refsum, safmax,        &
+          REAL(r8_) :: alpha, beta, h11, h12, h21, h22, refsum, safmax,     &
             safmin, scl, smlnum, swap, tst1, tst2, ulp
-          INTEGER(ip_) :: i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop,   &
-            k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu
+          INTEGER(ip_) :: i, i2, i4, incol, j, jbot, jcol, jlen, jrow,      &
+            jtop, k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, &
+            ns, nu
           LOGICAL :: accum, bmp22
           REAL(r8_) :: DLAMCH
           EXTERNAL :: DLAMCH
           INTRINSIC :: ABS, DBLE, MAX, MIN, MOD
           REAL(r8_) :: vt(3)
-          EXTERNAL :: DGEMM, DLABAD, DLACPY, DLAQR1, DLARFG,                   &
-            DLASET, DTRMM
+          EXTERNAL :: DGEMM, DLABAD, DLACPY, DLAQR1,                        &
+            DLARFG, DLASET, DTRMM
           IF (nshfts<2) RETURN
           IF (ktop>=kbot) RETURN
           DO i = 1, nshfts - 2, 2
@@ -7122,7 +7166,7 @@
               IF (bmp22) THEN
                 k = krcol + 2*(m22-1)
                 IF (k==ktop-1) THEN
-                  CALL DLAQR1( 2_ip_, h(k+1,k+1), ldh, sr(2*m22-1),            &
+                  CALL DLAQR1( 2_ip_, h(k+1,k+1), ldh, sr(2*m22-1),         &
                     si(2*m22-1), sr(2*m22), si(2*m22), v(1,m22))
                   beta = v(1, m22)
                   CALL DLARFG( 2_ip_, beta, v(2,m22), 1_ip_, v(1,m22))
@@ -7168,7 +7212,7 @@
                       h22 = MIN(ABS(h(k+1,k+1)), ABS(h(k,k)-h(k+1,k+1)))
                       scl = h11 + h12
                       tst2 = h22*(h11/scl)
-                      IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*       &
+                      IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*    &
                         tst2)) THEN
                         h(k+1, k) = zero
                       END IF
@@ -7193,7 +7237,7 @@
               DO m = mbot, mtop, -1_ip_
                 k = krcol + 2*(m-1)
                 IF (k==ktop-1) THEN
-                  CALL DLAQR1( 3_ip_, h(ktop,ktop), ldh, sr(2*m-1),            &
+                  CALL DLAQR1( 3_ip_, h(ktop,ktop), ldh, sr(2*m-1),         &
                     si(2*m-1), sr(2*m), si(2*m), v(1,m))
                   alpha = v(1, m)
                   CALL DLARFG( 3_ip_, alpha, v(2,m), 1_ip_, v(1,m))
@@ -7206,18 +7250,18 @@
                   v( 2_ip_, m) = h(k+2, k)
                   v( 3_ip_, m) = h(k+3, k)
                   CALL DLARFG( 3_ip_, beta, v(2,m), 1_ip_, v(1,m))
-                  IF (h(k+3,k)/=zero .OR. h(k+3,k+1)/=zero .OR. h(k+3,         &
+                  IF (h(k+3,k)/=zero .OR. h(k+3,k+1)/=zero .OR. h(k+3,       &
                     k+2)==zero) THEN
                     h(k+1, k) = beta
                     h(k+2, k) = zero
                     h(k+3, k) = zero
                   ELSE
-                    CALL DLAQR1( 3_ip_, h(k+1,k+1), ldh, sr(2*m-1),            &
+                    CALL DLAQR1( 3_ip_, h(k+1,k+1), ldh, sr(2*m-1),         &
                       si(2*m-1), sr(2*m), si(2*m), vt)
                     alpha = vt(1)
                     CALL DLARFG( 3_ip_, alpha, vt(2), 1_ip_, vt(1))
                     refsum = vt(1)*(h(k+1,k)+vt(2)*h(k+2,k))
-                    IF (ABS(h(k+2,k)-refsum*vt(2))+ABS(refsum*vt(3))>ulp*(     &
+                    IF (ABS(h(k+2,k)-refsum*vt(2))+ABS(refsum*vt(3))>ulp*(  &
                       ABS(h(k,k))+ABS(h(k+1,k+1))+ABS(h(k+2,k+2)))) THEN
                       h(k+1, k) = beta
                       h(k+2, k) = zero
@@ -7233,13 +7277,13 @@
                   END IF
                 END IF
                 DO j = jtop, MIN(kbot, k+3)
-                  refsum = v(1, m)*(h(j,k+1)+v(2,m)*h(j,k+2)+v(3,m)*h(j,k+     &
+                  refsum = v(1, m)*(h(j,k+1)+v(2,m)*h(j,k+2)+v(3,m)*h(j,k+  &
                     3))
                   h(j, k+1) = h(j, k+1) - refsum
                   h(j, k+2) = h(j, k+2) - refsum*v( 2_ip_, m)
                   h(j, k+3) = h(j, k+3) - refsum*v( 3_ip_, m)
                 END DO
-                refsum = v(1, m)*(h(k+1,k+1)+v(2,m)*h(k+2,k+1)+v(3,m)*h(k+     &
+                refsum = v(1, m)*(h(k+1,k+1)+v(2,m)*h(k+2,k+1)+v(3,m)*h(k+  &
                   3,k+1))
                 h(k+1, k+1) = h(k+1, k+1) - refsum
                 h(k+2, k+1) = h(k+2, k+1) - refsum*v( 2_ip_, m)
@@ -7262,7 +7306,7 @@
                     h22 = MIN(ABS(h(k+1,k+1)), ABS(h(k,k)-h(k+1,k+1)))
                     scl = h11 + h12
                     tst2 = h22*(h11/scl)
-                    IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*tst2     &
+                    IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*tst2  &
                       )) THEN
                       h(k+1, k) = zero
                     END IF
@@ -7279,7 +7323,7 @@
               DO m = mbot, mtop, -1_ip_
                 k = krcol + 2*(m-1)
                 DO j = MAX(ktop, krcol+2*m), jbot
-                  refsum = v(1, m)*(h(k+1,j)+v(2,m)*h(k+2,j)+v(3,m)*h(k+3,     &
+                  refsum = v(1, m)*(h(k+1,j)+v(2,m)*h(k+2,j)+v(3,m)*h(k+3,  &
                     j))
                   h(k+1, j) = h(k+1, j) - refsum
                   h(k+2, j) = h(k+2, j) - refsum*v( 2_ip_, m)
@@ -7294,7 +7338,7 @@
                   i2 = MAX(i2, kms-(krcol-incol)+1)
                   i4 = MIN(kdu, krcol+2*(mbot-1)-incol+5)
                   DO j = i2, i4
-                    refsum = v(1, m)*(u(j,kms+1)+v(2,m)*u(j,kms+2)+v(3,m)*     &
+                    refsum = v(1, m)*(u(j,kms+1)+v(2,m)*u(j,kms+2)+v(3,m)*  &
                       u(j,kms+3))
                     u(j, kms+1) = u(j, kms+1) - refsum
                     u(j, kms+2) = u(j, kms+2) - refsum*v( 2_ip_, m)
@@ -7305,7 +7349,7 @@
                 DO m = mbot, mtop, -1_ip_
                   k = krcol + 2*(m-1)
                   DO j = iloz, ihiz
-                    refsum = v(1, m)*(z(j,k+1)+v(2,m)*z(j,k+2)+v(3,m)*z(j,     &
+                    refsum = v(1, m)*(z(j,k+1)+v(2,m)*z(j,k+2)+v(3,m)*z(j,  &
                       k+3))
                     z(j, k+1) = z(j, k+1) - refsum
                     z(j, k+2) = z(j, k+2) - refsum*v( 2_ip_, m)
@@ -7326,24 +7370,24 @@
               nu = (kdu-MAX(0,ndcol-kbot)) - k1 + 1
               DO jcol = MIN(ndcol, kbot) + 1, jbot, nh
                 jlen = MIN(nh, jbot-jcol+1)
-                CALL DGEMM('C', 'N', nu, jlen, nu, one, u(k1,k1), ldu,         &
+                CALL DGEMM('C', 'N', nu, jlen, nu, one, u(k1,k1), ldu,      &
                   h(incol+k1,jcol), ldh, zero, wh, ldwh)
-                CALL DLACPY('ALL', nu, jlen, wh, ldwh, h(incol+k1,jcol),       &
+                CALL DLACPY('ALL', nu, jlen, wh, ldwh, h(incol+k1,jcol),    &
                   ldh)
               END DO
               DO jrow = jtop, MAX(ktop, incol) - 1, nv
                 jlen = MIN(nv, MAX(ktop,incol)-jrow)
-                CALL DGEMM('N', 'N', jlen, nu, nu, one, h(jrow,incol+k1),      &
+                CALL DGEMM('N', 'N', jlen, nu, nu, one, h(jrow,incol+k1),   &
                   ldh, u(k1,k1), ldu, zero, wv, ldwv)
-                CALL DLACPY('ALL', jlen, nu, wv, ldwv, h(jrow,incol+k1),       &
+                CALL DLACPY('ALL', jlen, nu, wv, ldwv, h(jrow,incol+k1),    &
                   ldh)
               END DO
               IF (wantz) THEN
                 DO jrow = iloz, ihiz, nv
                   jlen = MIN(nv, ihiz-jrow+1)
-                  CALL DGEMM('N', 'N', jlen, nu, nu, one, z(jrow,incol+k1),    &
+                  CALL DGEMM('N', 'N', jlen, nu, nu, one, z(jrow,incol+k1),  &
                     ldz, u(k1,k1), ldu, zero, wv, ldwv)
-                  CALL DLACPY('ALL', jlen, nu, wv, ldwv, z(jrow,incol+k1),     &
+                  CALL DLACPY('ALL', jlen, nu, wv, ldwv, z(jrow,incol+k1),  &
                     ldz)
                 END DO
               END IF
@@ -7391,21 +7435,21 @@
           END IF
           IF (applyleft) THEN
             IF (lastv>0) THEN
-              CALL DGEMV('Transpose', lastv, lastc, one, c, ldc, v, incv,      &
+              CALL DGEMV('Transpose', lastv, lastc, one, c, ldc, v, incv,   &
                 zero, work, 1_ip_)
               CALL DGER(lastv, lastc, -tau, v, incv, work, 1_ip_, c, ldc)
             END IF
           ELSE
             IF (lastv>0) THEN
-              CALL DGEMV('No transpose', lastc, lastv, one, c, ldc, v, incv,   &
-                zero, work, 1_ip_)
+              CALL DGEMV('No transpose', lastc, lastv, one, c, ldc, v,      &
+                incv, zero, work, 1_ip_)
               CALL DGER(lastc, lastv, -tau, work, 1_ip_, v, incv, c, ldc)
             END IF
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLARFB(side, trans, direct, storev, m, n, k, v, ldv, t,     &
+        SUBROUTINE DLARFB(side, trans, direct, storev, m, n, k, v, ldv, t,  &
           ldt, c, ldc, work, ldwork)
           USE GALAHAD_KINDS
           CHARACTER :: direct, side, storev, trans
@@ -7430,20 +7474,20 @@
                 DO j = 1, k
                   CALL DCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,     &
+                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,  &
                   one, v, ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('Transpose', 'No transpose', n, k, m-k, one,      &
+                  CALL DGEMM('Transpose', 'No transpose', n, k, m-k, one,   &
                     c(k+1,1), ldc, v(k+1,1), ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,    &
+                CALL DTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('No transpose', 'Transpose', m-k, n, k, -one,     &
+                  CALL DGEMM('No transpose', 'Transpose', m-k, n, k, -one,  &
                     v(k+1,1), ldv, work, ldwork, one, c(k+1,1), ldc)
                 END IF
-                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', n, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', n, k,     &
+                  one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
                     c(j, i) = c(j, i) - work(i, j)
@@ -7453,20 +7497,20 @@
                 DO j = 1, k
                   CALL DCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,     &
+                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,  &
                   one, v, ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'No transpose', m, k, n-k, one,   &
-                    c(1,k+1), ldc, v(k+1,1), ldv, one, work, ldwork)
+                  CALL DGEMM('No transpose', 'No transpose', m, k, n-k,     &
+                    one, c(1,k+1), ldc, v(k+1,1), ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,     &
+                CALL DTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'Transpose', m, n-k, k, -one,     &
+                  CALL DGEMM('No transpose', 'Transpose', m, n-k, k, -one,  &
                     work, ldwork, v(k+1,1), ldv, one, c(1,k+1), ldc)
                 END IF
-                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', m, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', m, k,     &
+                  one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
                     c(i, j) = c(i, j) - work(i, j)
@@ -7478,20 +7522,20 @@
                 DO j = 1, k
                   CALL DCOPY(n, c(m-k+j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,     &
+                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,  &
                   one, v(m-k+1,1), ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('Transpose', 'No transpose', n, k, m-k, one, c,   &
-                    ldc, v, ldv, one, work, ldwork)
+                  CALL DGEMM('Transpose', 'No transpose', n, k, m-k, one,   &
+                    c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,    &
+                CALL DTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('No transpose', 'Transpose', m-k, n, k, -one,     &
+                  CALL DGEMM('No transpose', 'Transpose', m-k, n, k, -one,  &
                     v, ldv, work, ldwork, one, c, ldc)
                 END IF
-                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', n, k, one,   &
-                  v(m-k+1,1), ldv, work, ldwork)
+                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', n, k,     &
+                  one, v(m-k+1,1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
                     c(m-k+j, i) = c(m-k+j, i) - work(i, j)
@@ -7501,20 +7545,20 @@
                 DO j = 1, k
                   CALL DCOPY(m, c(1,n-k+j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,     &
+                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,  &
                   one, v(n-k+1,1), ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'No transpose', m, k, n-k, one,   &
-                    c, ldc, v, ldv, one, work, ldwork)
+                  CALL DGEMM('No transpose', 'No transpose', m, k, n-k,     &
+                    one, c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,     &
+                CALL DTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'Transpose', m, n-k, k, -one,     &
+                  CALL DGEMM('No transpose', 'Transpose', m, n-k, k, -one,  &
                     work, ldwork, v, ldv, one, c, ldc)
                 END IF
-                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', m, k, one,   &
-                  v(n-k+1,1), ldv, work, ldwork)
+                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', m, k,     &
+                  one, v(n-k+1,1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
                     c(i, n-k+j) = c(i, n-k+j) - work(i, j)
@@ -7528,19 +7572,19 @@
                 DO j = 1, k
                   CALL DCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', n, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', n, k,     &
+                  one, v, ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('Transpose', 'Transpose', n, k, m-k, one,         &
+                  CALL DGEMM('Transpose', 'Transpose', n, k, m-k, one,      &
                     c(k+1,1), ldc, v(1,k+1), ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,    &
+                CALL DTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('Transpose', 'Transpose', m-k, n, k, -one, v(1,   &
-                    k+1), ldv, work, ldwork, one, c(k+1,1), ldc)
+                  CALL DGEMM('Transpose', 'Transpose', m-k, n, k, -one,     &
+                    v(1,k+1), ldv, work, ldwork, one, c(k+1,1), ldc)
                 END IF
-                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,     &
+                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,  &
                   one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -7551,19 +7595,19 @@
                 DO j = 1, k
                   CALL DCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', m, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL DTRMM('Right', 'Upper', 'Transpose', 'Unit', m, k,     &
+                  one, v, ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'Transpose', m, k, n-k, one,      &
+                  CALL DGEMM('No transpose', 'Transpose', m, k, n-k, one,   &
                     c(1,k+1), ldc, v(1,k+1), ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,     &
+                CALL DTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'No transpose', m, n-k, k,        &
+                  CALL DGEMM('No transpose', 'No transpose', m, n-k, k,     &
                     -one, work, ldwork, v(1,k+1), ldv, one, c(1,k+1), ldc)
                 END IF
-                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,     &
+                CALL DTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,  &
                   one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -7576,19 +7620,19 @@
                 DO j = 1, k
                   CALL DCOPY(n, c(m-k+j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', n, k, one,   &
-                  v(1,m-k+1), ldv, work, ldwork)
+                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', n, k,     &
+                  one, v(1,m-k+1), ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('Transpose', 'Transpose', n, k, m-k, one, c,      &
+                  CALL DGEMM('Transpose', 'Transpose', n, k, m-k, one, c,   &
                     ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,    &
+                CALL DTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL DGEMM('Transpose', 'Transpose', m-k, n, k, -one, v,     &
+                  CALL DGEMM('Transpose', 'Transpose', m-k, n, k, -one, v,  &
                     ldv, work, ldwork, one, c, ldc)
                 END IF
-                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,     &
+                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,  &
                   one, v(1,m-k+1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -7599,19 +7643,19 @@
                 DO j = 1, k
                   CALL DCOPY(m, c(1,n-k+j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', m, k, one,   &
-                  v(1,n-k+1), ldv, work, ldwork)
+                CALL DTRMM('Right', 'Lower', 'Transpose', 'Unit', m, k,     &
+                  one, v(1,n-k+1), ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'Transpose', m, k, n-k, one, c,   &
-                    ldc, v, ldv, one, work, ldwork)
+                  CALL DGEMM('No transpose', 'Transpose', m, k, n-k, one,   &
+                    c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL DTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,     &
+                CALL DTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL DGEMM('No transpose', 'No transpose', m, n-k, k,        &
+                  CALL DGEMM('No transpose', 'No transpose', m, n-k, k,     &
                     -one, work, ldwork, v, ldv, one, c, ldc)
                 END IF
-                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,     &
+                CALL DTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,  &
                   one, v(1,n-k+1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -7698,7 +7742,7 @@
                     t(j, i) = -tau(i)*v(i, j)
                   END DO
                   j = MIN(lastv, prevlastv)
-                  CALL DGEMV('Transpose', j-i, i-1, -tau(i), v(i+1,1), ldv,    &
+                  CALL DGEMV('Transpose', j-i, i-1, -tau(i), v(i+1,1), ldv,  &
                     v(i+1,i), 1_ip_, one, t(1,i), 1_ip_)
                 ELSE
                   DO lastv = n, i + 1, -1_ip_
@@ -7708,11 +7752,11 @@
                     t(j, i) = -tau(i)*v(j, i)
                   END DO
                   j = MIN(lastv, prevlastv)
-                  CALL DGEMV('No transpose', i-1, j-i, -tau(i), v(1,i+1),      &
+                  CALL DGEMV('No transpose', i-1, j-i, -tau(i), v(1,i+1),   &
                     ldv, v(i,i+1), ldv, one, t(1,i), 1_ip_)
                 END IF
-                CALL DTRMV('Upper', 'No transpose', 'Non-unit', i-1, t, ldt,   &
-                  t(1,i), 1_ip_)
+                CALL DTRMV('Upper', 'No transpose', 'Non-unit', i-1, t,     &
+                  ldt, t(1,i), 1_ip_)
                 t(i, i) = tau(i)
                 IF (i>1) THEN
                   prevlastv = MAX(prevlastv, lastv)
@@ -7738,8 +7782,8 @@
                       t(j, i) = -tau(i)*v(n-k+i, j)
                     END DO
                     j = MAX(lastv, prevlastv)
-                    CALL DGEMV('Transpose', n-k+i-j, k-i, -tau(i), v(j,i+1),   &
-                      ldv, v(j,i), 1_ip_, one, t(i+1,i), 1_ip_)
+                    CALL DGEMV('Transpose', n-k+i-j, k-i, -tau(i), v(j,      &
+                      i+1), ldv, v(j,i), 1_ip_, one, t(i+1,i), 1_ip_)
                   ELSE
                     DO lastv = 1, i - 1
                       IF (v(i,lastv)/=zero) EXIT
@@ -7748,10 +7792,10 @@
                       t(j, i) = -tau(i)*v(j, n-k+i)
                     END DO
                     j = MAX(lastv, prevlastv)
-                    CALL DGEMV('No transpose', k-i, n-k+i-j, -tau(i), v(i+1,   &
-                      j), ldv, v(i,j), ldv, one, t(i+1,i), 1_ip_)
+                    CALL DGEMV('No transpose', k-i, n-k+i-j, -tau(i),       &
+                      v(i+1,j), ldv, v(i,j), ldv, one, t(i+1,i), 1_ip_)
                   END IF
-                  CALL DTRMV('Lower', 'No transpose', 'Non-unit', k-i,         &
+                  CALL DTRMV('Lower', 'No transpose', 'Non-unit', k-i,      &
                     t(i+1,i+1), ldt, t(i+1,i), 1_ip_)
                   IF (i>1) THEN
                     prevlastv = MIN(prevlastv, lastv)
@@ -7775,7 +7819,7 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           INTEGER(ip_) :: j
-          REAL(r8_) :: sum, t1, t10, t2, t3, t4, t5, t6, t7, t8, t9, v1,       &
+          REAL(r8_) :: sum, t1, t10, t2, t3, t4, t5, t6, t7, t8, t9, v1,    &
             v10, v2, v3, v4, v5, v6, v7, v8, v9
           LOGICAL :: LSAME
           EXTERNAL :: LSAME
@@ -7826,7 +7870,7 @@
             v4 = v(4)
             t4 = tau*v4
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -7846,7 +7890,7 @@
             v5 = v(5)
             t5 = tau*v5
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -7869,7 +7913,7 @@
             v6 = v(6)
             t6 = tau*v6
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j) + v6*c(6, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -7895,7 +7939,7 @@
             v7 = v(7)
             t7 = tau*v7
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -7924,7 +7968,7 @@
             v8 = v(8)
             t8 = tau*v8
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -7956,9 +8000,9 @@
             v9 = v(9)
             t9 = tau*v9
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
-                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8, j)  &
-                + v9*c(9, j)
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
+                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8,  &
+                j) + v9*c(9, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
               c( 3_ip_, j) = c( 3_ip_, j) - sum*t3
@@ -7992,9 +8036,9 @@
             v10 = v(10)
             t10 = tau*v10
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
-                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8, j)  &
-                + v9*c(9, j) + v10*c(10, j)
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
+                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8,  &
+                j) + v9*c(9, j) + v10*c(10, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
               c( 3_ip_, j) = c( 3_ip_, j) - sum*t3
@@ -8052,7 +8096,7 @@
             v4 = v(4)
             t4 = tau*v4
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8072,7 +8116,7 @@
             v5 = v(5)
             t5 = tau*v5
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_) + v5*c(j, 5)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8095,7 +8139,7 @@
             v6 = v(6)
             t6 = tau*v6
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8121,7 +8165,7 @@
             v7 = v(7)
             t7 = tau*v7
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8150,8 +8194,8 @@
             v8 = v(8)
             t8 = tau*v8
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
-                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +        &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
+                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +     &
                 v8*c(j, 8)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8183,8 +8227,8 @@
             v9 = v(9)
             t9 = tau*v9
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
-                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +        &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
+                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +     &
                 v8*c(j, 8) + v9*c(j, 9)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8219,8 +8263,8 @@
             v10 = v(10)
             t10 = tau*v10
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
-                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +        &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
+                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +     &
                 v8*c(j, 8) + v9*c(j, 9) + v10*c(j, 10)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -8325,7 +8369,7 @@
           IF (LSAME(side,'L')) THEN
             IF (tau/=zero) THEN
               CALL DCOPY(n, c, ldc, work, 1_ip_)
-              CALL DGEMV('Transpose', l, n, one, c(m-l+1,1), ldc, v, incv,     &
+              CALL DGEMV('Transpose', l, n, one, c(m-l+1,1), ldc, v, incv,  &
                 one, work, 1_ip_)
               CALL DAXPY(n, -tau, work, 1_ip_, c, ldc)
               CALL DGER(l, n, -tau, v, incv, work, 1_ip_, c(m-l+1,1), ldc)
@@ -8333,7 +8377,7 @@
           ELSE
             IF (tau/=zero) THEN
               CALL DCOPY(m, c, 1_ip_, work, 1_ip_)
-              CALL DGEMV('No transpose', m, l, one, c(1,n-l+1), ldc, v,        &
+              CALL DGEMV('No transpose', m, l, one, c(1,n-l+1), ldc, v,     &
                 incv, one, work, 1_ip_)
               CALL DAXPY(m, -tau, work, 1_ip_, c, 1_ip_)
               CALL DGER(m, l, -tau, work, 1_ip_, v, incv, c(1,n-l+1), ldc)
@@ -8342,7 +8386,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLARZB(side, trans, direct, storev, m, n, k, l, v, ldv,     &
+        SUBROUTINE DLARZB(side, trans, direct, storev, m, n, k, l, v, ldv,  &
           t, ldt, c, ldc, work, ldwork)
           USE GALAHAD_KINDS
           CHARACTER :: direct, side, storev, trans
@@ -8375,31 +8419,31 @@
             DO j = 1, k
               CALL DCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
             END DO
-            IF (l>0) CALL DGEMM('Transpose', 'Transpose', n, k, l, one,        &
+            IF (l>0) CALL DGEMM('Transpose', 'Transpose', n, k, l, one,     &
               c(m-l+1,1), ldc, v, ldv, one, work, ldwork)
-            CALL DTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one, t,     &
+            CALL DTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one, t,  &
               ldt, work, ldwork)
             DO j = 1, n
               DO i = 1, k
                 c(i, j) = c(i, j) - work(j, i)
               END DO
             END DO
-            IF (l>0) CALL DGEMM('Transpose', 'Transpose', l, n, k, -one, v,    &
+            IF (l>0) CALL DGEMM('Transpose', 'Transpose', l, n, k, -one, v,  &
               ldv, work, ldwork, one, c(m-l+1,1), ldc)
           ELSE IF (LSAME(side,'R')) THEN
             DO j = 1, k
               CALL DCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
             END DO
-            IF (l>0) CALL DGEMM('No transpose', 'Transpose', m, k, l, one,     &
+            IF (l>0) CALL DGEMM('No transpose', 'Transpose', m, k, l, one,  &
               c(1,n-l+1), ldc, v, ldv, one, work, ldwork)
-            CALL DTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one, t,      &
+            CALL DTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one, t,   &
               ldt, work, ldwork)
             DO j = 1, k
               DO i = 1, m
                 c(i, j) = c(i, j) - work(i, j)
               END DO
             END DO
-            IF (l>0) CALL DGEMM('No transpose', 'No transpose', m, l, k,       &
+            IF (l>0) CALL DGEMM('No transpose', 'No transpose', m, l, k,    &
               -one, work, ldwork, v, ldv, one, c(1,n-l+1), ldc)
           END IF
           RETURN
@@ -8433,9 +8477,9 @@
               END DO
             ELSE
               IF (i<k) THEN
-                CALL DGEMV('No transpose', k-i, n, -tau(i), v(i+1,1), ldv,     &
+                CALL DGEMV('No transpose', k-i, n, -tau(i), v(i+1,1), ldv,  &
                   v(i,1), ldv, zero, t(i+1,i), 1_ip_)
-                CALL DTRMV('Lower', 'No transpose', 'Non-unit', k-i, t(i+1,    &
+                CALL DTRMV('Lower', 'No transpose', 'Non-unit', k-i, t(i+1,  &
                   i+1), ldt, t(i+1,i), 1_ip_)
               END IF
               t(i, i) = tau(i)
@@ -8465,7 +8509,7 @@
             IF (fhmx==zero) THEN
               ssmax = ga
             ELSE
-              ssmax = MAX(fhmx, ga)*SQRT(one+(MIN(fhmx,ga)/MAX(fhmx,           &
+              ssmax = MAX(fhmx, ga)*SQRT(one+(MIN(fhmx,ga)/MAX(fhmx,        &
                 ga))**2)
             END IF
           ELSE
@@ -8536,7 +8580,7 @@
             info = -5
           ELSE IF (m<0) THEN
             info = -6
-          ELSE IF (n<0 .OR. (itype==4 .AND. n/=m) .OR. (itype==5 .AND.         &
+          ELSE IF (n<0 .OR. (itype==4 .AND. n/=m) .OR. (itype==5 .AND.      &
             n/=m)) THEN
             info = -7
           ELSE IF (itype<=3 .AND. lda<MAX(1,m)) THEN
@@ -8544,10 +8588,10 @@
           ELSE IF (itype>=4) THEN
             IF (kl<0 .OR. kl>MAX(m-1,0)) THEN
               info = -2
-            ELSE IF (ku<0 .OR. ku>MAX(n-1,0) .OR. ((itype==4 .OR. itype==      &
+            ELSE IF (ku<0 .OR. ku>MAX(n-1,0) .OR. ((itype==4 .OR. itype==   &
               5) .AND. kl/=ku)) THEN
               info = -3
-            ELSE IF ((itype==4 .AND. lda<kl+1) .OR. (itype==5 .AND.            &
+            ELSE IF ((itype==4 .AND. lda<kl+1) .OR. (itype==5 .AND.         &
               lda<ku+1) .OR. (itype==6 .AND. lda<2*kl+ku +1)) THEN
               info = -9
             END IF
@@ -8649,12 +8693,12 @@
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=400)
           REAL(r8_) :: zero, one, two, three, four, eight, ten
-          PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_,    &
+          PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_,  &
             four=4.0_r8_, eight=8.0_r8_, ten=10.0_r8_)
           LOGICAL :: orgati, swtch, swtch3, geomavg
           INTEGER(ip_) :: ii, iim1, iip1, ip1, iter, j, niter
-          REAL(r8_) :: a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim,         &
-            dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps, erretm, eta, phi,    &
+          REAL(r8_) :: a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim,      &
+            dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps, erretm, eta, phi, &
             prew, psi, rhoinv, sglb, sgub, tau, tau2, temp, temp1, temp2, w
           REAL(r8_) :: dd(3), zz(3)
           EXTERNAL :: DLAED6, DLASD5
@@ -8689,11 +8733,11 @@
               psi = psi + z(j)*z(j)/(delta(j)*work(j))
             END DO
             c = rhoinv + psi
-            w = c + z(ii)*z(ii)/(delta(ii)*work(ii)) +                         &
+            w = c + z(ii)*z(ii)/(delta(ii)*work(ii)) +                      &
               z(n)*z(n)/(delta(n)*work(n))
             IF (w<=zero) THEN
               temp1 = SQRT(d(n)*d(n)+rho)
-              temp = z(n-1)*z(n-1)/((d(n-1)+temp1)*(d(n)-d(n-1)+rho/(d(n)+     &
+              temp = z(n-1)*z(n-1)/((d(n-1)+temp1)*(d(n)-d(n-1)+rho/(d(n)+  &
                 temp1))) + z(n)*z(n)/rho
               IF (c<=temp) THEN
                 tau = rho
@@ -8846,7 +8890,7 @@
               phi = phi + z(j)*z(j)/(work(j)*delta(j))
             END DO
             c = rhoinv + psi + phi
-            w = c + z(i)*z(i)/(work(i)*delta(i)) +                             &
+            w = c + z(i)*z(i)/(work(i)*delta(i)) +                          &
               z(ip1)*z(ip1)/(work(ip1)*delta(ip1))
             geomavg = .FALSE.
             IF (w>zero) THEN
@@ -8863,7 +8907,7 @@
               END IF
               tau = tau2/(d(i)+SQRT(d(i)*d(i)+tau2))
               temp = SQRT(eps)
-              IF ((d(i)<=temp*d(ip1)) .AND. (ABS(z(i))<=temp) .AND. (d(        &
+              IF ((d(i)<=temp*d(ip1)) .AND. (ABS(z(i))<=temp) .AND. (d(     &
                 i)>zero)) THEN
                 tau = MIN(ten*d(i), sgub)
                 geomavg = .TRUE.
@@ -8919,7 +8963,8 @@
             dw = dpsi + dphi + temp*temp
             temp = z(ii)*temp
             w = w + temp
-            erretm = eight*(phi-psi) + erretm + two*rhoinv + three*ABS(temp)
+            erretm = eight*(phi-psi) + erretm + two*rhoinv +                &
+              three*ABS(temp)
             IF (ABS(w)<=eps*erretm) THEN
               GO TO 240
             END IF
@@ -8960,7 +9005,7 @@
               IF (orgati) THEN
                 temp1 = z(iim1)/dtiim
                 temp1 = temp1*temp1
-                c = (temp-dtiip*(dpsi+dphi)) - (d(iim1)-d(iip1))*(d(iim1)+     &
+                c = (temp-dtiip*(dpsi+dphi)) - (d(iim1)-d(iip1))*(d(iim1)+  &
                   d(iip1))*temp1
                 zz(1) = z(iim1)*z(iim1)
                 IF (dpsi<temp1) THEN
@@ -8971,7 +9016,7 @@
               ELSE
                 temp1 = z(iip1)/dtiip
                 temp1 = temp1*temp1
-                c = (temp-dtiim*(dpsi+dphi)) - (d(iip1)-d(iim1))*(d(iim1)+     &
+                c = (temp-dtiim*(dpsi+dphi)) - (d(iip1)-d(iim1))*(d(iim1)+  &
                   d(iip1))*temp1
                 IF (dphi<temp1) THEN
                   zz(1) = dtiim*dtiim*dpsi
@@ -9064,7 +9109,8 @@
             dw = dpsi + dphi + temp*temp
             temp = z(ii)*temp
             w = rhoinv + phi + psi + temp
-            erretm = eight*(phi-psi) + erretm + two*rhoinv + three*ABS(temp)
+            erretm = eight*(phi-psi) + erretm + two*rhoinv +                &
+              three*ABS(temp)
             swtch = .FALSE.
             IF (orgati) THEN
               IF (-w>ABS(prew)/ten) swtch = .TRUE.
@@ -9249,9 +9295,9 @@
               dw = dpsi + dphi + temp*temp
               temp = z(ii)*temp
               w = rhoinv + phi + psi + temp
-              erretm = eight*(phi-psi) + erretm + two*rhoinv +                 &
+              erretm = eight*(phi-psi) + erretm + two*rhoinv +              &
                 three*ABS(temp)
-              IF (w*prew>zero .AND. ABS(w)>ABS(prew)/ten) swtch = .NOT.        &
+              IF (w*prew>zero .AND. ABS(w)>ABS(prew)/ten) swtch = .NOT.     &
                 swtch
             END DO
             info = 1
@@ -9266,14 +9312,14 @@
           REAL(r8_) :: dsigma, rho
           REAL(r8_) :: d(2), delta(2), work(2), z(2)
           REAL(r8_) :: zero, one, two, three, four
-          PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_,    &
+          PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_,  &
             four=4.0_r8_)
           REAL(r8_) :: b, c, del, delsq, tau, w
           INTRINSIC :: ABS, SQRT
           del = d(2) - d(1)
           delsq = del*(d(2)+d(1))
           IF (i==1) THEN
-            w = one + four*rho*(z(2)*z(2)/(d(1)+three*d(2))-z(1)*z(1)/(        &
+            w = one + four*rho*(z(2)*z(2)/(d(1)+three*d(2))-z(1)*z(1)/(     &
               three*d(1)+d(2)))/del
             IF (w>zero) THEN
               b = delsq + rho*(z(1)*z(1)+z(2)*z(2))
@@ -9318,23 +9364,23 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASD6(icompq, nl, nr, sqre, d, vf, vl, alpha, beta,        &
-          idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl,     &
+        SUBROUTINE DLASD6(icompq, nl, nr, sqre, d, vf, vl, alpha, beta,     &
+          idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl,  &
           difr, z, k, c, s, work, iwork, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,     &
+          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,  &
             sqre
           REAL(r8_) :: alpha, beta, c, s
           INTEGER(ip_) :: givcol(ldgcol, *), idxq(*), iwork(*), perm(*)
-          REAL(r8_) :: d(*), difl(*), difr(*), givnum(ldgnum, *),              &
+          REAL(r8_) :: d(*), difl(*), difr(*), givnum(ldgnum, *),           &
             poles(ldgnum, *), vf(*), vl(*), work(*), z(*)
           REAL(r8_) :: one, zero
           PARAMETER (one=1.0_r8_, zero=0.0_r8_)
-          INTEGER(ip_) :: i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n,    &
+          INTEGER(ip_) :: i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n,  &
             n1, n2
           REAL(r8_) :: orgnrm
-          EXTERNAL :: DCOPY, DLAMRG, DLASCL, DLASD7, DLASD8,                   &
-            XERBLA
+          EXTERNAL :: DCOPY, DLAMRG, DLASCL, DLASD7,                        &
+            DLASD8, XERBLA
           INTRINSIC :: ABS, MAX
           info = 0
           n = nl + nr + 1
@@ -9373,11 +9419,11 @@
           CALL DLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, 1_ip_, d, n, info)
           alpha = alpha/orgnrm
           beta = beta/orgnrm
-          CALL DLASD7(icompq, nl, nr, sqre, k, d, z, work(iw), vf,             &
-            work(ivfw), vl, work(ivlw), alpha, beta, work(isigma), iwork(idx), &
-            iwork(idxp), idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum,   &
-            c, s, info)
-          CALL DLASD8(icompq, k, d, z, vf, vl, difl, difr, ldgnum,             &
+          CALL DLASD7(icompq, nl, nr, sqre, k, d, z, work(iw), vf,          &
+            work(ivfw), vl, work(ivlw), alpha, beta, work(isigma),          &
+            iwork(idx), iwork(idxp), idxq, perm, givptr, givcol, ldgcol,    &
+            givnum, ldgnum, c, s, info)
+          CALL DLASD8(icompq, k, d, z, vf, vl, difl, difr, ldgnum,          &
             work(isigma), work(iw), info)
           IF (info/=0) THEN
             RETURN
@@ -9393,20 +9439,20 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASD7(icompq, nl, nr, sqre, k, d, z, zw, vf, vfw, vl,      &
-          vlw, alpha, beta, dsigma, idx, idxp, idxq, perm, givptr, givcol,     &
+        SUBROUTINE DLASD7(icompq, nl, nr, sqre, k, d, z, zw, vf, vfw, vl,   &
+          vlw, alpha, beta, dsigma, idx, idxp, idxq, perm, givptr, givcol,  &
           ldgcol, givnum, ldgnum, c, s, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,     &
+          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,  &
             sqre
           REAL(r8_) :: alpha, beta, c, s
-          INTEGER(ip_) :: givcol(ldgcol, *), idx(*), idxp(*), idxq(*),         &
+          INTEGER(ip_) :: givcol(ldgcol, *), idx(*), idxp(*), idxq(*),      &
             perm(*)
-          REAL(r8_) :: d(*), dsigma(*), givnum(ldgnum, *), vf(*), vfw(*),      &
+          REAL(r8_) :: d(*), dsigma(*), givnum(ldgnum, *), vf(*), vfw(*),   &
             vl(*), vlw(*), z(*), zw(*)
           REAL(r8_) :: zero, one, two, eight
           PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, eight=8.0_r8_)
-          INTEGER(ip_) :: i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n,        &
+          INTEGER(ip_) :: i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n,     &
             nlp1, nlp2
           REAL(r8_) :: eps, hlftol, tau, tol, z1
           EXTERNAL :: DCOPY, DLAMRG, DROT, XERBLA
@@ -9581,11 +9627,11 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASD8(icompq, k, d, z, vf, vl, difl, difr, lddifr,         &
+        SUBROUTINE DLASD8(icompq, k, d, z, vf, vl, difl, difr, lddifr,      &
           dsigma, work, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: icompq, info, k, lddifr
-          REAL(r8_) :: d(*), difl(*), difr(lddifr, *), dsigma(*), vf(*),       &
+          REAL(r8_) :: d(*), difl(*), difr(lddifr, *), dsigma(*), vf(*),    &
             vl(*), work(*), z(*)
           REAL(r8_) :: one
           PARAMETER (one=1.0_r8_)
@@ -9629,7 +9675,7 @@
           rho = rho*rho
           CALL DLASET('A', k, 1_ip_, one, one, work(iwk3), k)
           DO j = 1, k
-            CALL DLASD4(k, j, dsigma, z, work(iwk1), rho, d(j), work(iwk2),    &
+            CALL DLASD4(k, j, dsigma, z, work(iwk1), rho, d(j), work(iwk2),  &
               info)
             IF (info/=0) THEN
               RETURN
@@ -9638,11 +9684,11 @@
             difl(j) = -work(j)
             difr(j, 1_ip_) = -work(j+1)
             DO i = 1, j - 1
-              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/             &
+              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/          &
                 (dsigma(i)-dsigma(j))/(dsigma(i)+dsigma(j))
             END DO
             DO i = j + 1, k
-              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/             &
+              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/          &
                 (dsigma(i)-dsigma(j))/(dsigma(i)+dsigma(j))
             END DO
           END DO
@@ -9659,10 +9705,11 @@
             END IF
             work(j) = -z(j)/diflj/(dsigma(j)+dj)
             DO i = 1, j - 1
-              work(i) = z(i)/(DLAMC3(dsigma(i),dsigj)-diflj)/ (dsigma(i)+dj)
+              work(i) = z(i)/(DLAMC3(dsigma(i),dsigj)-diflj)/               &
+                (dsigma(i)+dj)
             END DO
             DO i = j + 1, k
-              work(i) = z(i)/(DLAMC3(dsigma(i),dsigjp)+difrj)/                 &
+              work(i) = z(i)/(DLAMC3(dsigma(i),dsigjp)+difrj)/              &
                 (dsigma(i)+dj)
             END DO
             temp = DNRM2(k, work, 1_ip_)
@@ -9677,25 +9724,25 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASDA(icompq, smlsiz, n, sqre, d, e, u, ldu, vt, k,        &
-          difl, difr, z, poles, givptr, givcol, ldgcol, perm, givnum, c, s,    &
+        SUBROUTINE DLASDA(icompq, smlsiz, n, sqre, d, e, u, ldu, vt, k,     &
+          difl, difr, z, poles, givptr, givcol, ldgcol, perm, givnum, c, s, &
           work, iwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: icompq, info, ldgcol, ldu, n, smlsiz, sqre
-          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),        &
+          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),     &
             perm(ldgcol, *)
-          REAL(r8_) :: c(*), d(*), difl(ldu, *), difr(ldu, *), e(*),           &
-            givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *), vt(ldu, *),        &
+          REAL(r8_) :: c(*), d(*), difl(ldu, *), difr(ldu, *), e(*),        &
+            givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *), vt(ldu, *),     &
             work(*), z(ldu, *)
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
-          INTEGER(ip_) :: i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk, j,   &
-            lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr, nl, nlf, nlp1,  &
-            nlvl, nr, nrf, nrp1, nru, nwork1, nwork2, smlszp, sqrei, vf, vfi,  &
-            vl, vli
+          INTEGER(ip_) :: i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk,   &
+            j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr, nl, nlf,  &
+            nlp1, nlvl, nr, nrf, nrp1, nru, nwork1, nwork2, smlszp, sqrei,  &
+            vf, vfi, vl, vli
           REAL(r8_) :: alpha, beta
-          EXTERNAL :: DCOPY, DLASD6, DLASDQ, DLASDT, DLASET,                   &
-            XERBLA
+          EXTERNAL :: DCOPY, DLASD6, DLASDQ, DLASDT,                        &
+            DLASET, XERBLA
           info = 0
           IF ((icompq<0) .OR. (icompq>1)) THEN
             info = -1
@@ -9717,10 +9764,10 @@
           m = n + sqre
           IF (n<=smlsiz) THEN
             IF (icompq==0) THEN
-              CALL DLASDQ('U', sqre, n, 0_ip_, 0_ip_, 0_ip_, d, e, vt, ldu,    &
+              CALL DLASDQ('U', sqre, n, 0_ip_, 0_ip_, 0_ip_, d, e, vt, ldu,  &
                 u, ldu, u, ldu, work, info)
             ELSE
-              CALL DLASDQ('U', sqre, n, m, n, 0_ip_, d, e, vt, ldu, u, ldu,    &
+              CALL DLASDQ('U', sqre, n, m, n, 0_ip_, d, e, vt, ldu, u, ldu,  &
                 u, ldu, work, info)
             END IF
             RETURN
@@ -9737,8 +9784,8 @@
           vl = vf + m
           nwork1 = vl + m
           nwork2 = nwork1 + smlszp*smlszp
-          CALL DLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml), iwork(ndimr),   &
-            smlsiz)
+          CALL DLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml),              &
+            iwork(ndimr), smlsiz)
           ndb1 = (nd+1)/2
           DO i = ndb1, nd
             i1 = i - 1
@@ -9754,8 +9801,8 @@
             sqrei = 1
             IF (icompq==0) THEN
               CALL DLASET('A', nlp1, nlp1, zero, one, work(nwork1), smlszp)
-              CALL DLASDQ('U', sqrei, nl, nlp1, nru, ncc, d(nlf), e(nlf),      &
-                work(nwork1), smlszp, work(nwork2), nl, work(nwork2), nl,      &
+              CALL DLASDQ('U', sqrei, nl, nlp1, nru, ncc, d(nlf), e(nlf),   &
+                work(nwork1), smlszp, work(nwork2), nl, work(nwork2), nl,   &
                 work(nwork2), info)
               itemp = nwork1 + nl*smlszp
               CALL DCOPY(nlp1, work(nwork1), 1_ip_, work(vfi), 1_ip_)
@@ -9763,8 +9810,8 @@
             ELSE
               CALL DLASET('A', nl, nl, zero, one, u(nlf,1), ldu)
               CALL DLASET('A', nlp1, nlp1, zero, one, vt(nlf,1), ldu)
-              CALL DLASDQ('U', sqrei, nl, nlp1, nl, ncc, d(nlf), e(nlf),       &
-                vt(nlf,1), ldu, u(nlf,1), ldu, u(nlf,1), ldu, work(nwork1),    &
+              CALL DLASDQ('U', sqrei, nl, nlp1, nl, ncc, d(nlf), e(nlf),    &
+                vt(nlf,1), ldu, u(nlf,1), ldu, u(nlf,1), ldu, work(nwork1), &
                 info)
               CALL DCOPY(nlp1, vt(nlf,1), 1_ip_, work(vfi), 1_ip_)
               CALL DCOPY(nlp1, vt(nlf,nlp1), 1_ip_, work(vli), 1_ip_)
@@ -9786,8 +9833,8 @@
             nrp1 = nr + sqrei
             IF (icompq==0) THEN
               CALL DLASET('A', nrp1, nrp1, zero, one, work(nwork1), smlszp)
-              CALL DLASDQ('U', sqrei, nr, nrp1, nru, ncc, d(nrf), e(nrf),      &
-                work(nwork1), smlszp, work(nwork2), nr, work(nwork2), nr,      &
+              CALL DLASDQ('U', sqrei, nr, nrp1, nru, ncc, d(nrf), e(nrf),   &
+                work(nwork1), smlszp, work(nwork2), nr, work(nwork2), nr,   &
                 work(nwork2), info)
               itemp = nwork1 + (nrp1-1)*smlszp
               CALL DCOPY(nrp1, work(nwork1), 1_ip_, work(vfi), 1_ip_)
@@ -9795,8 +9842,8 @@
             ELSE
               CALL DLASET('A', nr, nr, zero, one, u(nrf,1), ldu)
               CALL DLASET('A', nrp1, nrp1, zero, one, vt(nrf,1), ldu)
-              CALL DLASDQ('U', sqrei, nr, nrp1, nr, ncc, d(nrf), e(nrf),       &
-                vt(nrf,1), ldu, u(nrf,1), ldu, u(nrf,1), ldu, work(nwork1),    &
+              CALL DLASDQ('U', sqrei, nr, nrp1, nr, ncc, d(nrf), e(nrf),    &
+                vt(nrf,1), ldu, u(nrf,1), ldu, u(nrf,1), ldu, work(nwork1), &
                 info)
               CALL DCOPY(nrp1, vt(nrf,1), 1_ip_, work(vfi), 1_ip_)
               CALL DCOPY(nrp1, vt(nrf,nrp1), 1_ip_, work(vli), 1_ip_)
@@ -9836,16 +9883,16 @@
               alpha = d(ic)
               beta = e(ic)
               IF (icompq==0) THEN
-                CALL DLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),          &
-                  work(vli), alpha, beta, iwork(idxqi), perm, givptr(1),       &
-                  givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k(1),     &
+                CALL DLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),       &
+                  work(vli), alpha, beta, iwork(idxqi), perm, givptr(1),    &
+                  givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k(1),  &
                   c(1), s(1), work(nwork1), iwork(iwk), info)
               ELSE
                 j = j - 1
-                CALL DLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),          &
-                  work(vli), alpha, beta, iwork(idxqi), perm(nlf,lvl),         &
-                  givptr(j), givcol(nlf,lvl2), ldgcol, givnum(nlf,lvl2), ldu,  &
-                  poles(nlf,lvl2), difl(nlf,lvl), difr(nlf,lvl2), z(nlf,lvl),  &
+                CALL DLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),       &
+                  work(vli), alpha, beta, iwork(idxqi), perm(nlf,lvl),      &
+                  givptr(j), givcol(nlf,lvl2), ldgcol, givnum(nlf,lvl2), ldu,&
+                  poles(nlf,lvl2), difl(nlf,lvl), difr(nlf,lvl2), z(nlf,lvl),&
                   k(j), c(j), s(j), work(nwork1), iwork(iwk), info)
               END IF
               IF (info/=0) THEN
@@ -9856,12 +9903,12 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASDQ(uplo, sqre, n, ncvt, nru, ncc, d, e, vt, ldvt, u,    &
+        SUBROUTINE DLASDQ(uplo, sqre, n, ncvt, nru, ncc, d, e, vt, ldvt, u,  &
           ldu, c, ldc, work, info)
           USE GALAHAD_KINDS
           CHARACTER :: uplo
           INTEGER(ip_) :: info, ldc, ldu, ldvt, n, ncc, ncvt, nru, sqre
-          REAL(r8_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),          &
+          REAL(r8_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),       &
             work(*)
           REAL(r8_) :: zero
           PARAMETER (zero=0.0_r8_)
@@ -9888,12 +9935,12 @@
             info = -5
           ELSE IF (ncc<0) THEN
             info = -6
-          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,       &
+          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,    &
             n))) THEN
             info = -10
           ELSE IF (ldu<MAX(1,nru)) THEN
             info = -12
-          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))      &
+          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))   &
             THEN
             info = -14
           END IF
@@ -9925,7 +9972,7 @@
             END IF
             iuplo = 2
             sqre1 = 0
-            IF (ncvt>0) CALL DLASR('L', 'V', 'F', np1, ncvt, work(1),          &
+            IF (ncvt>0) CALL DLASR('L', 'V', 'F', np1, ncvt, work(1),       &
               work(np1), vt, ldvt)
           END IF
           IF (iuplo==2) THEN
@@ -9949,24 +9996,24 @@
             END IF
             IF (nru>0) THEN
               IF (sqre1==0) THEN
-                CALL DLASR('R', 'V', 'F', nru, n, work(1), work(np1), u,       &
+                CALL DLASR('R', 'V', 'F', nru, n, work(1), work(np1), u,    &
                   ldu)
               ELSE
-                CALL DLASR('R', 'V', 'F', nru, np1, work(1), work(np1), u,     &
+                CALL DLASR('R', 'V', 'F', nru, np1, work(1), work(np1), u,  &
                   ldu)
               END IF
             END IF
             IF (ncc>0) THEN
               IF (sqre1==0) THEN
-                CALL DLASR('L', 'V', 'F', n, ncc, work(1), work(np1), c,       &
+                CALL DLASR('L', 'V', 'F', n, ncc, work(1), work(np1), c,    &
                   ldc)
               ELSE
-                CALL DLASR('L', 'V', 'F', np1, ncc, work(1), work(np1), c,     &
+                CALL DLASR('L', 'V', 'F', np1, ncc, work(1), work(np1), c,  &
                   ldc)
               END IF
             END IF
           END IF
-          CALL DBDSQR('U', n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu, c,       &
+          CALL DBDSQR('U', n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu, c,    &
             ldc, work, info)
           DO i = 1, n
             isub = i
@@ -10068,7 +10115,7 @@
           PARAMETER (zero=0.0_r8_)
           INTEGER(ip_) :: i, iinfo
           REAL(r8_) :: eps, scale, safmin, sigmn, sigmx
-          EXTERNAL :: DCOPY, DLAS2, DLASCL, DLASQ2, DLASRT,                    &
+          EXTERNAL :: DCOPY, DLAS2, DLASCL, DLASQ2, DLASRT,                  &
             XERBLA
           REAL(r8_) :: DLAMCH
           EXTERNAL :: DLAMCH
@@ -10107,7 +10154,7 @@
           scale = SQRT(eps/safmin)
           CALL DCOPY(n, d, 1_ip_, work(1), 2_ip_)
           CALL DCOPY(n-1, e, 1_ip_, work(2), 2_ip_)
-          CALL DLASCL('G', 0_ip_, 0_ip_, sigmx, scale, 2*n-1, 1_ip_, work,     &
+          CALL DLASCL('G', 0_ip_, 0_ip_, sigmx, scale, 2*n-1, 1_ip_, work,  &
             2*n-1, iinfo)
           DO i = 1, 2*n - 1
             work(i) = work(i)**2
@@ -10118,16 +10165,16 @@
             DO i = 1, n
               d(i) = SQRT(work(i))
             END DO
-            CALL DLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,    &
               iinfo)
           ELSE IF (info==2) THEN
             DO i = 1, n
               d(i) = SQRT(work(2*i-1))
               e(i) = SQRT(work(2*i))
             END DO
-            CALL DLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,    &
               iinfo)
-            CALL DLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, e, n,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, e, n,    &
               iinfo)
           END IF
           RETURN
@@ -10140,13 +10187,13 @@
           REAL(r8_) :: cbias
           PARAMETER (cbias=1.50_r8_)
           REAL(r8_) :: zero, half, one, two, four, hundrd
-          PARAMETER (zero=0.0_r8_, half=0.5_r8_, one=1.0_r8_, two=2.0_r8_,     &
+          PARAMETER (zero=0.0_r8_, half=0.5_r8_, one=1.0_r8_, two=2.0_r8_,  &
             four=4.0_r8_, hundrd=100.0_r8_)
           LOGICAL :: ieee
-          INTEGER(ip_) :: i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb, k,    &
+          INTEGER(ip_) :: i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb, k,  &
             kmin, n0, n1, nbig, ndiv, nfail, pp, splt, ttype
-          REAL(r8_) :: d, dee, deemin, desig, dmin, dmin1, dmin2, dn, dn1,     &
-            dn2, e, emax, emin, eps, g, oldemn, qmax, qmin, s, safmin, sigma,  &
+          REAL(r8_) :: d, dee, deemin, desig, dmin, dmin1, dmin2, dn, dn1,  &
+            dn2, e, emax, emin, eps, g, oldemn, qmax, qmin, s, safmin, sigma,&
             t, tau, temp, tol, tol2, trace, zmax, tempe, tempq
           EXTERNAL :: DLASQ3, DLASRT, XERBLA
           INTEGER(ip_) :: ILAENV
@@ -10288,7 +10335,7 @@
                 z(i4-2*pp-2) = d
                 z(i4-2*pp) = zero
                 d = z(i4+1)
-              ELSE IF (safmin*z(i4+1)<z(i4-2*pp-2) .AND.                       &
+              ELSE IF (safmin*z(i4+1)<z(i4-2*pp-2) .AND.                    &
                 safmin*z(i4-2*pp-2)<z(i4+1)) THEN
                 temp = z(i4+1)/z(i4-2*pp-2)
                 z(i4-2*pp) = z(i4-1)*temp
@@ -10384,7 +10431,7 @@
             nbig = 100*(n0-i0+1)
             DO iwhilb = 1, nbig
               IF (i0>n0) GO TO 150
-              CALL DLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,      &
+              CALL DLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,   &
                 iter, ndiv, ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau)
               pp = 1 - pp
               IF (pp==0 .AND. n0-i0>=3) THEN
@@ -10462,18 +10509,18 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,      &
+        SUBROUTINE DLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,   &
           iter, ndiv, ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau)
           USE GALAHAD_KINDS
           LOGICAL :: ieee
           INTEGER(ip_) :: i0, iter, n0, ndiv, nfail, pp
-          REAL(r8_) :: desig, dmin, dmin1, dmin2, dn, dn1, dn2, g, qmax,       &
+          REAL(r8_) :: desig, dmin, dmin1, dmin2, dn, dn1, dn2, g, qmax,    &
             sigma, tau
           REAL(r8_) :: z(*)
           REAL(r8_) :: cbias
           PARAMETER (cbias=1.50_r8_)
           REAL(r8_) :: zero, qurtr, half, one, two, hundrd
-          PARAMETER (zero=0.0_r8_, qurtr=0.250_r8_, half=0.5_r8_,              &
+          PARAMETER (zero=0.0_r8_, qurtr=0.250_r8_, half=0.5_r8_,           &
             one=1.0_r8_, two=2.0_r8_, hundrd=100.0_r8_)
           INTEGER(ip_) :: ipn4, j4, n0in, nn, ttype
           REAL(r8_) :: eps, s, t, temp, tol, tol2
@@ -10491,7 +10538,7 @@
           IF (n0==i0) GO TO 20
           nn = 4*n0 + pp
           IF (n0==(i0+1)) GO TO 40
-          IF (z(nn-5)>tol2*(sigma+z(nn-3)) .AND. z(nn-2*pp-4)>tol2*z(nn-7)     &
+          IF (z(nn-5)>tol2*(sigma+z(nn-3)) .AND. z(nn-2*pp-4)>tol2*z(nn-7)  &
             ) GO TO 30
  20       CONTINUE
           z(4*n0-3) = z(4*n0+pp-3) + sigma
@@ -10551,16 +10598,16 @@
               dmin = -zero
             END IF
           END IF
-          CALL DLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1, dn2,   &
-            tau, ttype, g)
+          CALL DLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1,     &
+            dn2, tau, ttype, g)
  70       CONTINUE
-          CALL DLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2, dn,       &
+          CALL DLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2, dn,    &
             dn1, dn2, ieee, eps)
           ndiv = ndiv + (n0-i0+2)
           iter = iter + 1
           IF (dmin>=zero .AND. dmin1>=zero) THEN
             GO TO 90
-          ELSE IF (dmin<zero .AND. dmin1>zero .AND. z(4*(n0-                   &
+          ELSE IF (dmin<zero .AND. dmin1>zero .AND. z(4*(n0-                &
             1)-pp)<tol*(sigma+dn1) .AND. ABS(dn)<tol*sigma) THEN
             z(4*(n0-1)-pp+2) = zero
             dmin = zero
@@ -10605,7 +10652,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1,    &
+        SUBROUTINE DLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1,  &
           dn2, tau, ttype, g)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: i0, n0, n0in, pp, ttype
@@ -10614,7 +10661,7 @@
           REAL(r8_) :: cnst1, cnst2, cnst3
           PARAMETER (cnst1=0.5630_r8_, cnst2=1.010_r8_, cnst3=1.050_r8_)
           REAL(r8_) :: qurtr, third, half, zero, one, two, hundrd
-          PARAMETER (qurtr=0.250_r8_, third=0.3330_r8_, half=0.50_r8_,         &
+          PARAMETER (qurtr=0.250_r8_, third=0.3330_r8_, half=0.50_r8_,      &
             zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, hundrd=100.0_r8_)
           INTEGER(ip_) :: i4, nn, np
           REAL(r8_) :: a2, b1, b2, gam, gap1, gap2, s
@@ -10778,8 +10825,8 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2, dn,   &
-          dnm1, dnm2, ieee, eps)
+        SUBROUTINE DLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2,    &
+          dn, dnm1, dnm2, ieee, eps)
           USE GALAHAD_KINDS
           LOGICAL :: ieee
           INTEGER(ip_) :: i0, n0, pp
@@ -10985,7 +11032,8 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASQ6(i0, n0, z, pp, dmin, dmin1, dmin2, dn, dnm1, dnm2)
+        SUBROUTINE DLASQ6(i0, n0, z, pp, dmin, dmin1, dmin2, dn, dnm1,      &
+          dnm2)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: i0, n0, pp
           REAL(r8_) :: dmin, dmin1, dmin2, dn, dnm1, dnm2
@@ -11011,8 +11059,8 @@
                 d = z(j4+1)
                 dmin = d
                 emin = zero
-              ELSE IF (safmin*z(j4+1)<z(j4-2) .AND. safmin*z(j4-2)<z(j4+1))    &
-                THEN
+              ELSE IF (safmin*z(j4+1)<z(j4-2) .AND.                         &
+                safmin*z(j4-2)<z(j4+1)) THEN
                 temp = z(j4+1)/z(j4-2)
                 z(j4) = z(j4-1)*temp
                 d = d*temp
@@ -11031,8 +11079,8 @@
                 d = z(j4+2)
                 dmin = d
                 emin = zero
-              ELSE IF (safmin*z(j4+2)<z(j4-3) .AND. safmin*z(j4-3)<z(j4+2))    &
-                THEN
+              ELSE IF (safmin*z(j4+2)<z(j4-3) .AND.                         &
+                safmin*z(j4-3)<z(j4+2)) THEN
                 temp = z(j4+2)/z(j4-3)
                 z(j4-1) = z(j4)*temp
                 d = d*temp
@@ -11054,8 +11102,8 @@
             dnm1 = z(j4p2+2)
             dmin = dnm1
             emin = zero
-          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND. safmin*z(j4-2)<z(j4p2+2))    &
-            THEN
+          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND.                           &
+            safmin*z(j4-2)<z(j4p2+2)) THEN
             temp = z(j4p2+2)/z(j4-2)
             z(j4) = z(j4p2)*temp
             dnm1 = dnm2*temp
@@ -11073,8 +11121,8 @@
             dn = z(j4p2+2)
             dmin = dn
             emin = zero
-          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND. safmin*z(j4-2)<z(j4p2+2))    &
-            THEN
+          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND.                           &
+            safmin*z(j4-2)<z(j4p2+2)) THEN
             temp = z(j4p2+2)/z(j4-2)
             z(j4) = z(j4p2)*temp
             dn = dnm1*temp
@@ -11104,7 +11152,7 @@
           info = 0
           IF (.NOT. (LSAME(side,'L') .OR. LSAME(side,'R'))) THEN
             info = 1
-          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T') .OR.         &
+          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T') .OR.      &
             LSAME(pivot,'B'))) THEN
             info = 2
           ELSE IF (.NOT. (LSAME(direct,'F') .OR. LSAME(direct,'B'))) THEN
@@ -11481,7 +11529,7 @@
           PARAMETER (four=4.0_r8_)
           LOGICAL :: gasmal, swap
           INTEGER(ip_) :: pmax
-          REAL(r8_) :: a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m, mm, r,    &
+          REAL(r8_) :: a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m, mm, r,  &
             s, slt, srt, t, temp, tsign, tt
           INTRINSIC :: ABS, SIGN, SQRT
           REAL(r8_) :: DLAMCH
@@ -11638,7 +11686,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DLASY2(ltranl, ltranr, isgn, n1, n2, tl, ldtl, tr, ldtr,    &
+        SUBROUTINE DLASY2(ltranl, ltranr, isgn, n1, n2, tl, ldtl, tr, ldtr,  &
           b, ldb, scale, x, ldx, xnorm, info)
           USE GALAHAD_KINDS
           LOGICAL :: ltranl, ltranr
@@ -11651,7 +11699,7 @@
           PARAMETER (two=2.0_r8_, half=0.5_r8_, eight=8.0_r8_)
           LOGICAL :: bswap, xswap
           INTEGER(ip_) :: i, ip, ipiv, ipsv, j, jp, jpsv, k
-          REAL(r8_) :: bet, eps, gam, l21, sgn, smin, smlnum, tau1, temp,      &
+          REAL(r8_) :: bet, eps, gam, l21, sgn, smin, smlnum, tau1, temp,   &
             u11, u12, u22, xmax
           LOGICAL :: bswpiv(4), xswpiv(4)
           INTEGER(ip_) :: jpiv(4), locl21(4), locu12(4), locu22(4)
@@ -11661,7 +11709,7 @@
           EXTERNAL :: IDAMAX, DLAMCH
           EXTERNAL :: DCOPY, DSWAP
           INTRINSIC :: ABS, MAX
-          DATA locu12/3, 4_ip_, 1_ip_, 2/, locl21/2, 1_ip_, 4_ip_, 3/,         &
+          DATA locu12/3, 4_ip_, 1_ip_, 2/, locl21/2, 1_ip_, 4_ip_, 3/,      &
             locu22/4, 3_ip_, 2_ip_, 1/
           DATA xswpiv/.FALSE., .FALSE., .TRUE., .TRUE./
           DATA bswpiv/.FALSE., .TRUE., .FALSE., .TRUE./
@@ -11687,7 +11735,7 @@
           xnorm = ABS(x(1,1))
           RETURN
  20       CONTINUE
-          smin = MAX(eps*MAX(ABS(tl(1,1)),ABS(tr(1,1)),ABS(tr(1,2)),ABS(       &
+          smin = MAX(eps*MAX(ABS(tl(1,1)),ABS(tr(1,1)),ABS(tr(1,2)),ABS(    &
             tr(2,1)),ABS(tr(2,2))), smlnum)
           tmp(1) = tl(1, 1_ip_) + sgn*tr(1, 1_ip_)
           tmp(4) = tl(1, 1_ip_) + sgn*tr( 2_ip_, 2_ip_)
@@ -11702,7 +11750,7 @@
           btmp(2) = b(1, 2_ip_)
           GO TO 40
  30       CONTINUE
-          smin = MAX(eps*MAX(ABS(tr(1,1)),ABS(tl(1,1)),ABS(tl(1,2)),ABS(       &
+          smin = MAX(eps*MAX(ABS(tr(1,1)),ABS(tl(1,1)),ABS(tl(1,2)),ABS(    &
             tl(2,1)),ABS(tl(2,2))), smlnum)
           tmp(1) = tl(1, 1_ip_) + sgn*tr(1, 1_ip_)
           tmp(4) = tl( 2_ip_, 2_ip_) + sgn*tr(1, 1_ip_)
@@ -11739,7 +11787,7 @@
             btmp(2) = btmp(2) - l21*btmp(1)
           END IF
           scale = one
-          IF ((two*smlnum)*ABS(btmp(2))>ABS(u22) .OR. (two*smlnum)*ABS(        &
+          IF ((two*smlnum)*ABS(btmp(2))>ABS(u22) .OR. (two*smlnum)*ABS(     &
             btmp(1))>ABS(u11)) THEN
             scale = half/MAX(ABS(btmp(1)), ABS(btmp(2)))
             btmp(1) = btmp(1)*scale
@@ -11762,9 +11810,9 @@
           END IF
           RETURN
  50       CONTINUE
-          smin = MAX(ABS(tr(1,1)), ABS(tr(1,2)), ABS(tr(2,1)), ABS(tr(         &
+          smin = MAX(ABS(tr(1,1)), ABS(tr(1,2)), ABS(tr(2,1)), ABS(tr(      &
             2_ip_, 2_ip_)))
-          smin = MAX(smin, ABS(tl(1,1)), ABS(tl(1,2)), ABS(tl( 2_ip_,          &
+          smin = MAX(smin, ABS(tl(1,1)), ABS(tl(1,2)), ABS(tl( 2_ip_,       &
             1_ip_)), ABS(tl(2,2)))
           smin = MAX(eps*smin, smlnum)
           btmp(1) = zero
@@ -11816,7 +11864,7 @@
               btmp(i) = btmp(ipsv)
               btmp(ipsv) = temp
             END IF
-            IF (jpsv/=i) CALL DSWAP( 4_ip_, t16(1,jpsv), 1_ip_, t16(1,i),      &
+            IF (jpsv/=i) CALL DSWAP( 4_ip_, t16(1,jpsv), 1_ip_, t16(1,i),   &
               1_ip_)
             jpiv(i) = jpsv
             IF (ABS(t16(i,i))<smin) THEN
@@ -11836,11 +11884,11 @@
             t16( 4_ip_, 4_ip_) = smin
           END IF
           scale = one
-          IF ((eight*smlnum)*ABS(btmp(1))>ABS(t16(1, 1_ip_)) .OR.              &
-            (eight*smlnum)*ABS(btmp(2))>ABS(t16( 2_ip_, 2_ip_)) .OR.           &
-            (eight*smlnum)*ABS(btmp(3))>ABS(t16( 3_ip_, 3_ip_)) .OR.           &
+          IF ((eight*smlnum)*ABS(btmp(1))>ABS(t16(1, 1_ip_)) .OR.           &
+            (eight*smlnum)*ABS(btmp(2))>ABS(t16( 2_ip_, 2_ip_)) .OR.        &
+            (eight*smlnum)*ABS(btmp(3))>ABS(t16( 3_ip_, 3_ip_)) .OR.        &
             (eight*smlnum)*ABS(btmp(4))>ABS(t16(4,4))) THEN
-            scale = (one/eight)/MAX(ABS(btmp(1)), ABS(btmp(2)), ABS(btmp(3     &
+            scale = (one/eight)/MAX(ABS(btmp(1)), ABS(btmp(2)), ABS(btmp(3  &
               )), ABS(btmp(4)))
             btmp(1) = btmp(1)*scale
             btmp(2) = btmp(2)*scale
@@ -11880,7 +11928,7 @@
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           REAL(r8_) :: eight, sevten
           PARAMETER (eight=8.0_r8_, sevten=17.0_r8_)
-          INTEGER(ip_) :: imax, j, jb, jj, jmax, jp, k, kk, kkw, kp, kstep,    &
+          INTEGER(ip_) :: imax, j, jb, jj, jmax, jp, k, kk, kkw, kp, kstep,  &
             kw
           REAL(r8_) :: absakk, alpha, colmax, d11, d21, d22, r1, rowmax, t
           LOGICAL :: LSAME
@@ -11896,8 +11944,8 @@
             kw = nb + k - n
             IF ((k<=n-nb+1 .AND. nb<n) .OR. k<1) GO TO 30
             CALL DCOPY(k, a(1,k), 1_ip_, w(1,kw), 1_ip_)
-            IF (k<n) CALL DGEMV('No transpose', k, n-k, -one, a(1,k+1), lda,   &
-              w(k,kw+1), ldw, one, w(1,kw), 1_ip_)
+            IF (k<n) CALL DGEMV('No transpose', k, n-k, -one, a(1,k+1),     &
+              lda, w(k,kw+1), ldw, one, w(1,kw), 1_ip_)
             kstep = 1
             absakk = ABS(w(k,kw))
             IF (k>1) THEN
@@ -11914,9 +11962,9 @@
                 kp = k
               ELSE
                 CALL DCOPY(imax, a(1,imax), 1_ip_, w(1,kw-1), 1_ip_)
-                CALL DCOPY(k-imax, a(imax,imax+1), lda, w(imax+1,kw-1),        &
+                CALL DCOPY(k-imax, a(imax,imax+1), lda, w(imax+1,kw-1),     &
                   1_ip_)
-                IF (k<n) CALL DGEMV('No transpose', k, n-k, -one, a(1,k+1),    &
+                IF (k<n) CALL DGEMV('No transpose', k, n-k, -one, a(1,k+1),  &
                   lda, w(imax,kw+1), ldw, one, w(1,kw-1), 1_ip_)
                 jmax = imax + IDAMAX(k-imax, w(imax+1,kw-1), 1_ip_)
                 rowmax = ABS(w(jmax,kw-1))
@@ -11976,10 +12024,10 @@
             DO j = ((k-1)/nb)*nb + 1, 1_ip_, -nb
               jb = MIN(nb, k-j+1)
               DO jj = j, j + jb - 1
-                CALL DGEMV('No transpose', jj-j+1, n-k, -one, a(j,k+1), lda,   &
-                  w(jj,kw+1), ldw, one, a(j,jj), 1_ip_)
+                CALL DGEMV('No transpose', jj-j+1, n-k, -one, a(j,k+1),     &
+                  lda, w(jj,kw+1), ldw, one, a(j,jj), 1_ip_)
               END DO
-              CALL DGEMM('No transpose', 'Transpose', j-1, jb, n-k, -one,      &
+              CALL DGEMM('No transpose', 'Transpose', j-1, jb, n-k, -one,   &
                 a(1,k+1), lda, w(j,kw+1), ldw, one, a(1,j), lda)
             END DO
             j = k + 1
@@ -11991,7 +12039,7 @@
               j = j + 1
             END IF
             j = j + 1
-            IF (jp/=jj .AND. j<=n) CALL DSWAP(n-j+1, a(jp,j), lda, a(jj,j),    &
+            IF (jp/=jj .AND. j<=n) CALL DSWAP(n-j+1, a(jp,j), lda, a(jj,j),  &
               lda)
             IF (j<n) GO TO 60
             kb = n - k
@@ -12000,7 +12048,7 @@
  70         CONTINUE
             IF ((k>=nb .AND. nb<n) .OR. k>n) GO TO 90
             CALL DCOPY(n-k+1, a(k,k), 1_ip_, w(k,k), 1_ip_)
-            CALL DGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda, w(k,     &
+            CALL DGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda, w(k,   &
               1), ldw, one, w(k,k), 1_ip_)
             kstep = 1
             absakk = ABS(w(k,k))
@@ -12018,9 +12066,9 @@
                 kp = k
               ELSE
                 CALL DCOPY(imax-k, a(imax,k), lda, w(k,k+1), 1_ip_)
-                CALL DCOPY(n-imax+1, a(imax,imax), 1_ip_, w(imax,k+1),         &
+                CALL DCOPY(n-imax+1, a(imax,imax), 1_ip_, w(imax,k+1),      &
                   1_ip_)
-                CALL DGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda,      &
+                CALL DGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda,   &
                   w(imax,1), ldw, one, w(k,k+1), 1_ip_)
                 jmax = k - 1 + IDAMAX(imax-k, w(k,k+1), 1_ip_)
                 rowmax = ABS(w(jmax,k+1))
@@ -12042,7 +12090,7 @@
               IF (kp/=kk) THEN
                 a(kp, kp) = a(kk, kk)
                 CALL DCOPY(kp-kk-1, a(kk+1,kk), 1_ip_, a(kp,kk+1), lda)
-                IF (kp<n) CALL DCOPY(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),      &
+                IF (kp<n) CALL DCOPY(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),   &
                   1_ip_)
                 IF (k>1) CALL DSWAP(k-1, a(kk,1), lda, a(kp,1), lda)
                 CALL DSWAP(kk, w(kk,1), ldw, w(kp,1), ldw)
@@ -12082,12 +12130,12 @@
             DO j = k, n, nb
               jb = MIN(nb, n-j+1)
               DO jj = j, j + jb - 1
-                CALL DGEMV('No transpose', j+jb-jj, k-1, -one, a(jj,1), lda,   &
-                  w(jj,1), ldw, one, a(jj,jj), 1_ip_)
+                CALL DGEMV('No transpose', j+jb-jj, k-1, -one, a(jj,1),     &
+                  lda, w(jj,1), ldw, one, a(jj,jj), 1_ip_)
               END DO
-              IF (j+jb<=n) CALL DGEMM('No transpose', 'Transpose', n-j-jb+1,   &
-                jb, k-1, -one, a(j+jb,1), lda, w(j,1), ldw, one, a(j+jb,j),    &
-                lda)
+              IF (j+jb<=n) CALL DGEMM('No transpose', 'Transpose',          &
+                n-j-jb+1, jb, k-1, -one, a(j+jb,1), lda, w(j,1), ldw, one,  &
+                a(j+jb,j), lda)
             END DO
             j = k - 1
  120        CONTINUE
@@ -12098,7 +12146,8 @@
               j = j - 1
             END IF
             j = j - 1
-            IF (jp/=jj .AND. j>=1) CALL DSWAP(j, a(jp,1), lda, a(jj,1), lda)
+            IF (jp/=jj .AND. j>=1) CALL DSWAP(j, a(jp,1), lda, a(jj,1),     &
+              lda)
             IF (j>1) GO TO 120
             kb = k - 1
           END IF
@@ -12124,55 +12173,55 @@
             DO i = n, n - nb + 1, -1_ip_
               iw = i - n + nb
               IF (i<n) THEN
-                CALL DGEMV('No transpose', i, n-i, -one, a(1,i+1), lda, w(i,   &
-                  iw+1), ldw, one, a(1,i), 1_ip_)
-                CALL DGEMV('No transpose', i, n-i, -one, w(1,iw+1), ldw,       &
+                CALL DGEMV('No transpose', i, n-i, -one, a(1,i+1), lda,     &
+                  w(i,iw+1), ldw, one, a(1,i), 1_ip_)
+                CALL DGEMV('No transpose', i, n-i, -one, w(1,iw+1), ldw,    &
                   a(i,i+1), lda, one, a(1,i), 1_ip_)
               END IF
               IF (i>1) THEN
                 CALL DLARFG(i-1, a(i-1,i), a(1,i), 1_ip_, tau(i-1))
                 e(i-1) = a(i-1, i)
                 a(i-1, i) = one
-                CALL DSYMV('Upper', i-1, one, a, lda, a(1,i), 1_ip_, zero,     &
+                CALL DSYMV('Upper', i-1, one, a, lda, a(1,i), 1_ip_, zero,  &
                   w(1,iw), 1_ip_)
                 IF (i<n) THEN
-                  CALL DGEMV('Transpose', i-1, n-i, one, w(1,iw+1), ldw,       &
+                  CALL DGEMV('Transpose', i-1, n-i, one, w(1,iw+1), ldw,    &
                     a(1,i), 1_ip_, zero, w(i+1,iw), 1_ip_)
-                  CALL DGEMV('No transpose', i-1, n-i, -one, a(1,i+1), lda,    &
+                  CALL DGEMV('No transpose', i-1, n-i, -one, a(1,i+1), lda,  &
                     w(i+1,iw), 1_ip_, one, w(1,iw), 1_ip_)
-                  CALL DGEMV('Transpose', i-1, n-i, one, a(1,i+1), lda, a(1,   &
-                    i), 1_ip_, zero, w(i+1,iw), 1_ip_)
-                  CALL DGEMV('No transpose', i-1, n-i, -one, w(1,iw+1), ldw,   &
-                    w(i+1,iw), 1_ip_, one, w(1,iw), 1_ip_)
+                  CALL DGEMV('Transpose', i-1, n-i, one, a(1,i+1), lda,     &
+                    a(1,i), 1_ip_, zero, w(i+1,iw), 1_ip_)
+                  CALL DGEMV('No transpose', i-1, n-i, -one, w(1,iw+1),     &
+                    ldw, w(i+1,iw), 1_ip_, one, w(1,iw), 1_ip_)
                 END IF
                 CALL DSCAL(i-1, tau(i-1), w(1,iw), 1_ip_)
-                alpha = -half*tau(i-1)*DDOT(i-1, w(1,iw), 1_ip_, a(1,i),       &
+                alpha = -half*tau(i-1)*DDOT(i-1, w(1,iw), 1_ip_, a(1,i),    &
                   1_ip_)
                 CALL DAXPY(i-1, alpha, a(1,i), 1_ip_, w(1,iw), 1_ip_)
               END IF
             END DO
           ELSE
             DO i = 1, nb
-              CALL DGEMV('No transpose', n-i+1, i-1, -one, a(i,1), lda, w(i,   &
-                1), ldw, one, a(i,i), 1_ip_)
-              CALL DGEMV('No transpose', n-i+1, i-1, -one, w(i,1), ldw, a(i,   &
-                1), lda, one, a(i,i), 1_ip_)
+              CALL DGEMV('No transpose', n-i+1, i-1, -one, a(i,1), lda,     &
+                w(i,1), ldw, one, a(i,i), 1_ip_)
+              CALL DGEMV('No transpose', n-i+1, i-1, -one, w(i,1), ldw,     &
+                a(i,1), lda, one, a(i,i), 1_ip_)
               IF (i<n) THEN
                 CALL DLARFG(n-i, a(i+1,i), a(MIN(i+2,n),i), 1_ip_, tau(i))
                 e(i) = a(i+1, i)
                 a(i+1, i) = one
-                CALL DSYMV('Lower', n-i, one, a(i+1,i+1), lda, a(i+1,i),       &
+                CALL DSYMV('Lower', n-i, one, a(i+1,i+1), lda, a(i+1,i),    &
                   1_ip_, zero, w(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', n-i, i-1, one, w(i+1,1), ldw, a(i+1,   &
-                  i), 1_ip_, zero, w(1,i), 1_ip_)
-                CALL DGEMV('No transpose', n-i, i-1, -one, a(i+1,1), lda,      &
+                CALL DGEMV('Transpose', n-i, i-1, one, w(i+1,1), ldw,       &
+                  a(i+1,i), 1_ip_, zero, w(1,i), 1_ip_)
+                CALL DGEMV('No transpose', n-i, i-1, -one, a(i+1,1), lda,   &
                   w(1,i), 1_ip_, one, w(i+1,i), 1_ip_)
-                CALL DGEMV('Transpose', n-i, i-1, one, a(i+1,1), lda, a(i+1,   &
-                  i), 1_ip_, zero, w(1,i), 1_ip_)
-                CALL DGEMV('No transpose', n-i, i-1, -one, w(i+1,1), ldw,      &
+                CALL DGEMV('Transpose', n-i, i-1, one, a(i+1,1), lda,       &
+                  a(i+1,i), 1_ip_, zero, w(1,i), 1_ip_)
+                CALL DGEMV('No transpose', n-i, i-1, -one, w(i+1,1), ldw,   &
                   w(1,i), 1_ip_, one, w(i+1,i), 1_ip_)
                 CALL DSCAL(n-i, tau(i), w(i+1,i), 1_ip_)
-                alpha = -half*tau(i)*DDOT(n-i, w(i+1,i), 1_ip_, a(i+1,i),      &
+                alpha = -half*tau(i)*DDOT(n-i, w(i+1,i), 1_ip_, a(i+1,i),   &
                   1_ip_)
                 CALL DAXPY(n-i, alpha, a(i+1,i), 1_ip_, w(i+1,i), 1_ip_)
               END IF
@@ -12199,8 +12248,8 @@
           END IF
           DO i = m, 1_ip_, -1_ip_
             CALL DLARFG(l+1, a(i,i), a(i,n-l+1), lda, tau(i))
-            CALL DLARZ('Right', i-1, n-i+1, l, a(i,n-l+1), lda, tau(i), a(1,   &
-              i), lda, work)
+            CALL DLARZ('Right', i-1, n-i+1, l, a(i,n-l+1), lda, tau(i),     &
+              a(1,i), lda, work)
           END DO
           RETURN
         END SUBROUTINE
@@ -12238,8 +12287,8 @@
           DO i = 1, k
             ii = n - k + i
             a(m-n+ii, ii) = one
-            CALL DLARF('Left', m-n+ii, ii-1, a(1,ii), 1_ip_, tau(i), a, lda,   &
-              work)
+            CALL DLARF('Left', m-n+ii, ii-1, a(1,ii), 1_ip_, tau(i), a,     &
+              lda, work)
             CALL DSCAL(m-n+ii-1, -tau(i), a(1,ii), 1_ip_)
             a(m-n+ii, ii) = one - tau(i)
             DO l = m - n + ii + 1, m
@@ -12282,7 +12331,7 @@
           DO i = k, 1_ip_, -1_ip_
             IF (i<n) THEN
               a(i, i) = one
-              CALL DLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,       &
+              CALL DLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,     &
                 i+1), lda, work)
             END IF
             IF (i<m) CALL DSCAL(m-i, -tau(i), a(i+1,i), 1_ip_)
@@ -12315,7 +12364,7 @@
             info = -1
           ELSE IF (m<0) THEN
             info = -2
-          ELSE IF (n<0 .OR. (wantq .AND. (n>m .OR. n<MIN(m,k))) .OR. (         &
+          ELSE IF (n<0 .OR. (wantq .AND. (n>m .OR. n<MIN(m,k))) .OR. (      &
             .NOT. wantq .AND. (m>n .OR. m<MIN(n,k)))) THEN
             info = -3
           ELSE IF (k<0) THEN
@@ -12332,8 +12381,8 @@
                 CALL DORGQR(m, n, k, a, lda, tau, work, -1_ip_, iinfo)
               ELSE
                 IF (m>1) THEN
-                  CALL DORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work, -1_ip_,   &
-                    iinfo)
+                  CALL DORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work,        &
+                    -1_ip_, iinfo)
                 END IF
               END IF
             ELSE
@@ -12341,8 +12390,8 @@
                 CALL DORGLQ(m, n, k, a, lda, tau, work, -1_ip_, iinfo)
               ELSE
                 IF (n>1) THEN
-                  CALL DORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work, -1_ip_,   &
-                    iinfo)
+                  CALL DORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work,        &
+                    -1_ip_, iinfo)
                 END IF
               END IF
             END IF
@@ -12375,7 +12424,7 @@
                 a(i, 1_ip_) = zero
               END DO
               IF (m>1) THEN
-                CALL DORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work, lwork,      &
+                CALL DORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work, lwork,   &
                   iinfo)
               END IF
             END IF
@@ -12394,7 +12443,7 @@
                 a(1, j) = zero
               END DO
               IF (n>1) THEN
-                CALL DORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,      &
+                CALL DORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,   &
                   iinfo)
               END IF
             END IF
@@ -12439,7 +12488,7 @@
             IF (i<n) THEN
               IF (i<m) THEN
                 a(i, i) = one
-                CALL DLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,    &
+                CALL DLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,  &
                   i), lda, work)
               END IF
               CALL DSCAL(n-i, -tau(i), a(i,i+1), lda)
@@ -12459,7 +12508,7 @@
           REAL(r8_) :: zero
           PARAMETER (zero=0.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,  &
             nb, nbmin, nx
           EXTERNAL :: DLARFB, DLARFT, DORGL2, XERBLA
           INTRINSIC :: MAX, MIN
@@ -12516,16 +12565,16 @@
           ELSE
             kk = 0
           END IF
-          IF (kk<m) CALL DORGL2(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,           &
+          IF (kk<m) CALL DORGL2(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,        &
             tau(kk+1), work, iinfo)
           IF (kk>0) THEN
             DO i = ki + 1, 1_ip_, -nb
               ib = MIN(nb, k-i+1)
               IF (i+ib<=m) THEN
-                CALL DLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,      &
+                CALL DLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,   &
                   tau(i), work, ldwork)
-                CALL DLARFB('Right', 'Transpose', 'Forward', 'Rowwise',        &
-                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),   &
+                CALL DLARFB('Right', 'Transpose', 'Forward', 'Rowwise',     &
+                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),&
                   lda, work(ib+1), ldwork)
               END IF
               CALL DORGL2(ib, n-i+1, ib, a(i,i), lda, tau(i), work, iinfo)
@@ -12547,7 +12596,7 @@
           REAL(r8_) :: zero
           PARAMETER (zero=0.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, j, kk, l, ldwork, lwkopt, nb,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, j, kk, l, ldwork, lwkopt, nb,  &
             nbmin, nx
           EXTERNAL :: DLARFB, DLARFT, DORG2L, XERBLA
           INTRINSIC :: MAX, MIN
@@ -12614,14 +12663,14 @@
             DO i = k - kk + 1, k, nb
               ib = MIN(nb, k-i+1)
               IF (n-k+i>1) THEN
-                CALL DLARFT('Backward', 'Columnwise', m-k+i+ib-1, ib, a(1,     &
+                CALL DLARFT('Backward', 'Columnwise', m-k+i+ib-1, ib, a(1,   &
                   n-k+i), lda, tau(i), work, ldwork)
-                CALL DLARFB('Left', 'No transpose', 'Backward',                &
-                  'Columnwise', m-k+i+ib-1, n-k+i-1, ib, a(1,n-k+i), lda,      &
+                CALL DLARFB('Left', 'No transpose', 'Backward',             &
+                  'Columnwise', m-k+i+ib-1, n-k+i-1, ib, a(1,n-k+i), lda,   &
                   work, ldwork, a, lda, work(ib+1), ldwork)
               END IF
-              CALL DORG2L(m-k+i+ib-1, ib, ib, a(1,n-k+i), lda, tau(i), work,   &
-                iinfo)
+              CALL DORG2L(m-k+i+ib-1, ib, ib, a(1,n-k+i), lda, tau(i),      &
+                work, iinfo)
               DO j = n - k + i, n - k + i + ib - 1
                 DO l = m - k + i + ib, m
                   a(l, j) = zero
@@ -12640,7 +12689,7 @@
           REAL(r8_) :: zero
           PARAMETER (zero=0.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,  &
             nb, nbmin, nx
           EXTERNAL :: DLARFB, DLARFT, DORG2R, XERBLA
           INTRINSIC :: MAX, MIN
@@ -12697,17 +12746,17 @@
           ELSE
             kk = 0
           END IF
-          IF (kk<n) CALL DORG2R(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,           &
+          IF (kk<n) CALL DORG2R(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,        &
             tau(kk+1), work, iinfo)
           IF (kk>0) THEN
             DO i = ki + 1, 1_ip_, -nb
               ib = MIN(nb, k-i+1)
               IF (i+ib<=n) THEN
-                CALL DLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i), lda,   &
-                  tau(i), work, ldwork)
-                CALL DLARFB('Left', 'No transpose', 'Forward', 'Columnwise',   &
-                  m-i+1, n-i-ib+1, ib, a(i,i), lda, work, ldwork, a(i,i+ib),   &
-                  lda, work(ib+1), ldwork)
+                CALL DLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i),     &
+                  lda, tau(i), work, ldwork)
+                CALL DLARFB('Left', 'No transpose', 'Forward',              &
+                  'Columnwise', m-i+1, n-i-ib+1, ib, a(i,i), lda, work,     &
+                  ldwork, a(i,i+ib), lda, work(ib+1), ldwork)
               END IF
               CALL DORG2R(m-i+1, ib, ib, a(i,i), lda, tau(i), work, iinfo)
               DO j = i, i + ib - 1
@@ -12790,7 +12839,7 @@
               a(i, 1_ip_) = zero
             END DO
             IF (n>1) THEN
-              CALL DORGQR(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,        &
+              CALL DORGQR(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,     &
                 iinfo)
             END IF
           END IF
@@ -12798,7 +12847,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE DORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -12841,7 +12890,8 @@
             RETURN
           END IF
           IF (m==0 .OR. n==0 .OR. k==0) RETURN
-          IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran)) THEN
+          IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))     &
+            THEN
             i1 = 1
             i2 = k
             i3 = 1
@@ -12867,14 +12917,14 @@
             END IF
             aii = a(i, i)
             a(i, i) = one
-            CALL DLARF(side, mi, ni, a(i,i), 1_ip_, tau(i), c(ic,jc), ldc,     &
+            CALL DLARF(side, mi, ni, a(i,i), 1_ip_, tau(i), c(ic,jc), ldc,  &
               work)
             a(i, i) = aii
           END DO
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORMBR(vect, side, trans, m, n, k, a, lda, tau, c, ldc,     &
+        SUBROUTINE DORMBR(vect, side, trans, m, n, k, a, lda, tau, c, ldc,  &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans, vect
@@ -12912,7 +12962,7 @@
             info = -5
           ELSE IF (k<0) THEN
             info = -6
-          ELSE IF ((applyq .AND. lda<MAX(1,nq)) .OR. (.NOT. applyq .AND.       &
+          ELSE IF ((applyq .AND. lda<MAX(1,nq)) .OR. (.NOT. applyq .AND.    &
             lda<MAX(1,MIN(nq,k)))) THEN
             info = -8
           ELSE IF (ldc<MAX(1,m)) THEN
@@ -12923,18 +12973,18 @@
           IF (info==0) THEN
             IF (applyq) THEN
               IF (left) THEN
-                nb = ILAENV(1_ip_, 'DORMQR', side//trans, m-1, n, m-1,         &
+                nb = ILAENV(1_ip_, 'DORMQR', side//trans, m-1, n, m-1,      &
                   -1_ip_)
               ELSE
-                nb = ILAENV(1_ip_, 'DORMQR', side//trans, m, n-1, n-1,         &
+                nb = ILAENV(1_ip_, 'DORMQR', side//trans, m, n-1, n-1,      &
                   -1_ip_)
               END IF
             ELSE
               IF (left) THEN
-                nb = ILAENV(1_ip_, 'DORMLQ', side//trans, m-1, n, m-1,         &
+                nb = ILAENV(1_ip_, 'DORMLQ', side//trans, m-1, n, m-1,      &
                   -1_ip_)
               ELSE
-                nb = ILAENV(1_ip_, 'DORMLQ', side//trans, m, n-1, n-1,         &
+                nb = ILAENV(1_ip_, 'DORMLQ', side//trans, m, n-1, n-1,      &
                   -1_ip_)
               END IF
             END IF
@@ -12951,7 +13001,7 @@
           IF (m==0 .OR. n==0) RETURN
           IF (applyq) THEN
             IF (nq>=k) THEN
-              CALL DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+              CALL DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
                 lwork, iinfo)
             ELSE IF (nq>1) THEN
               IF (left) THEN
@@ -12965,8 +13015,8 @@
                 i1 = 1
                 i2 = 2
               END IF
-              CALL DORMQR(side, trans, mi, ni, nq-1, a(2,1), lda, tau, c(i1,   &
-                i2), ldc, work, lwork, iinfo)
+              CALL DORMQR(side, trans, mi, ni, nq-1, a(2,1), lda, tau,      &
+                c(i1,i2), ldc, work, lwork, iinfo)
             END IF
           ELSE
             IF (notran) THEN
@@ -12975,7 +13025,7 @@
               transt = 'N'
             END IF
             IF (nq>k) THEN
-              CALL DORMLQ(side, transt, m, n, k, a, lda, tau, c, ldc, work,    &
+              CALL DORMLQ(side, transt, m, n, k, a, lda, tau, c, ldc, work,  &
                 lwork, iinfo)
             ELSE IF (nq>1) THEN
               IF (left) THEN
@@ -12989,7 +13039,7 @@
                 i1 = 1
                 i2 = 2
               END IF
-              CALL DORMLQ(side, transt, mi, ni, nq-1, a(1,2), lda, tau,        &
+              CALL DORMLQ(side, transt, mi, ni, nq-1, a(1,2), lda, tau,     &
                 c(i1,i2), ldc, work, lwork, iinfo)
             END IF
           END IF
@@ -12997,7 +13047,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORMHR(side, trans, m, n, ilo, ihi, a, lda, tau, c, ldc,    &
+        SUBROUTINE DORMHR(side, trans, m, n, ilo, ihi, a, lda, tau, c, ldc,  &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -13023,7 +13073,8 @@
           END IF
           IF (.NOT. left .AND. .NOT. LSAME(side,'R')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T'))     &
+            THEN
             info = -2
           ELSE IF (m<0) THEN
             info = -3
@@ -13070,13 +13121,13 @@
             i1 = 1
             i2 = ilo + 1
           END IF
-          CALL DORMQR(side, trans, mi, ni, nh, a(ilo+1,ilo), lda, tau(ilo),    &
+          CALL DORMQR(side, trans, mi, ni, nh, a(ilo+1,ilo), lda, tau(ilo),  &
             c(i1,i2), ldc, work, lwork, iinfo)
           work(1) = lwkopt
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE DORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -13119,7 +13170,8 @@
             RETURN
           END IF
           IF (m==0 .OR. n==0 .OR. k==0) RETURN
-          IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran)) THEN
+          IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran))     &
+            THEN
             i1 = 1
             i2 = k
             i3 = 1
@@ -13145,14 +13197,14 @@
             END IF
             aii = a(i, i)
             a(i, i) = one
-            CALL DLARF(side, mi, ni, a(i,i), lda, tau(i), c(ic,jc), ldc,       &
+            CALL DLARF(side, mi, ni, a(i,i), lda, tau(i), c(ic,jc), ldc,    &
               work)
             a(i, i) = aii
           END DO
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE DORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -13162,7 +13214,7 @@
           PARAMETER (nbmax=64, ldt=nbmax+1, tsize=ldt*nbmax)
           LOGICAL :: left, lquery, notran
           CHARACTER :: transt
-          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,       &
+          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,    &
             lwkopt, mi, nb, nbmin, ni, nq, nw
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
@@ -13198,7 +13250,8 @@
             info = -12
           END IF
           IF (info==0) THEN
-            nb = MIN(nbmax, ILAENV(1_ip_,'DORMLQ',side//trans,m,n,k,-1_ip_))
+            nb = MIN(nbmax, ILAENV(1_ip_,'DORMLQ',side//trans,m,n,k,         &
+              -1_ip_))
             lwkopt = MAX(1, nw)*nb + tsize
             work(1) = lwkopt
           END IF
@@ -13217,16 +13270,16 @@
           IF (nb>1 .AND. nb<k) THEN
             IF (lwork<nw*nb+tsize) THEN
               nb = (lwork-tsize)/ldwork
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DORMLQ',side//trans,m,n,k,      &
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DORMLQ',side//trans,m,n,k,    &
                 -1_ip_))
             END IF
           END IF
           IF (nb<nbmin .OR. nb>=k) THEN
-            CALL DORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,       &
+            CALL DORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,    &
               iinfo)
           ELSE
             iwt = 1 + nw*nb
-            IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran))      &
+            IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran))   &
               THEN
               i1 = 1
               i2 = k
@@ -13250,7 +13303,7 @@
             END IF
             DO i = i1, i2, i3
               ib = MIN(nb, k-i+1)
-              CALL DLARFT('Forward', 'Rowwise', nq-i+1, ib, a(i,i), lda,       &
+              CALL DLARFT('Forward', 'Rowwise', nq-i+1, ib, a(i,i), lda,    &
                 tau(i), work(iwt), ldt)
               IF (left) THEN
                 mi = m - i + 1
@@ -13259,7 +13312,7 @@
                 ni = n - i + 1
                 jc = i
               END IF
-              CALL DLARFB(side, transt, 'Forward', 'Rowwise', mi, ni, ib,      &
+              CALL DLARFB(side, transt, 'Forward', 'Rowwise', mi, ni, ib,   &
                 a(i,i), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
@@ -13267,7 +13320,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE DORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -13276,7 +13329,7 @@
           INTEGER(ip_) :: nbmax, ldt, tsize
           PARAMETER (nbmax=64, ldt=nbmax+1, tsize=ldt*nbmax)
           LOGICAL :: left, lquery, notran
-          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,       &
+          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,    &
             lwkopt, mi, nb, nbmin, ni, nq, nw
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
@@ -13312,7 +13365,8 @@
             info = -12
           END IF
           IF (info==0) THEN
-            nb = MIN(nbmax, ILAENV(1_ip_,'DORMQR',side//trans,m,n,k,-1_ip_))
+            nb = MIN(nbmax, ILAENV(1_ip_,'DORMQR',side//trans,m,n,k,         &
+              -1_ip_))
             lwkopt = MAX(1, nw)*nb + tsize
             work(1) = lwkopt
           END IF
@@ -13331,16 +13385,16 @@
           IF (nb>1 .AND. nb<k) THEN
             IF (lwork<nw*nb+tsize) THEN
               nb = (lwork-tsize)/ldwork
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DORMQR',side//trans,m,n,k,      &
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DORMQR',side//trans,m,n,k,    &
                 -1_ip_))
             END IF
           END IF
           IF (nb<nbmin .OR. nb>=k) THEN
-            CALL DORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,       &
+            CALL DORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,    &
               iinfo)
           ELSE
             iwt = 1 + nw*nb
-            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))      &
+            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))   &
               THEN
               i1 = 1
               i2 = k
@@ -13359,7 +13413,7 @@
             END IF
             DO i = i1, i2, i3
               ib = MIN(nb, k-i+1)
-              CALL DLARFT('Forward', 'Columnwise', nq-i+1, ib, a(i,i), lda,    &
+              CALL DLARFT('Forward', 'Columnwise', nq-i+1, ib, a(i,i), lda,  &
                 tau(i), work(iwt), ldt)
               IF (left) THEN
                 mi = m - i + 1
@@ -13368,7 +13422,7 @@
                 ni = n - i + 1
                 jc = i
               END IF
-              CALL DLARFB(side, trans, 'Forward', 'Columnwise', mi, ni, ib,    &
+              CALL DLARFB(side, trans, 'Forward', 'Columnwise', mi, ni, ib,  &
                 a(i,i), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
@@ -13376,7 +13430,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc,        &
+        SUBROUTINE DORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc,     &
           work, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -13406,7 +13460,7 @@
             info = -4
           ELSE IF (k<0 .OR. k>nq) THEN
             info = -5
-          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>      &
+          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>   &
             n))) THEN
             info = -6
           ELSE IF (lda<MAX(1,k)) THEN
@@ -13445,13 +13499,13 @@
               ni = n - i + 1
               jc = i
             END IF
-            CALL DLARZ(side, mi, ni, l, a(i,ja), lda, tau(i), c(ic,jc), ldc,   &
-              work)
+            CALL DLARZ(side, mi, ni, l, a(i,ja), lda, tau(i), c(ic,jc),     &
+              ldc, work)
           END DO
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc,        &
+        SUBROUTINE DORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc,     &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -13461,8 +13515,8 @@
           PARAMETER (nbmax=64, ldt=nbmax+1, tsize=ldt*nbmax)
           LOGICAL :: left, lquery, notran
           CHARACTER :: transt
-          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, ja, jc, ldwork,   &
-            lwkopt, mi, nb, nbmin, ni, nq, nw
+          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, ja, jc,        &
+            ldwork, lwkopt, mi, nb, nbmin, ni, nq, nw
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
@@ -13489,7 +13543,7 @@
             info = -4
           ELSE IF (k<0 .OR. k>nq) THEN
             info = -5
-          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>      &
+          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>   &
             n))) THEN
             info = -6
           ELSE IF (lda<MAX(1,k)) THEN
@@ -13503,7 +13557,7 @@
             IF (m==0 .OR. n==0) THEN
               lwkopt = 1
             ELSE
-              nb = MIN(nbmax, ILAENV(1_ip_,'DORMRQ',side//trans,m,n,k,         &
+              nb = MIN(nbmax, ILAENV(1_ip_,'DORMRQ',side//trans,m,n,k,       &
                 -1_ip_))
               lwkopt = nw*nb + tsize
             END IF
@@ -13524,16 +13578,16 @@
           IF (nb>1 .AND. nb<k) THEN
             IF (lwork<nw*nb+tsize) THEN
               nb = (lwork-tsize)/ldwork
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DORMRQ',side//trans,m,n,k,      &
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DORMRQ',side//trans,m,n,k,    &
                 -1_ip_))
             END IF
           END IF
           IF (nb<nbmin .OR. nb>=k) THEN
-            CALL DORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work,    &
+            CALL DORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work,  &
               iinfo)
           ELSE
             iwt = 1 + nw*nb
-            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))      &
+            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))   &
               THEN
               i1 = 1
               i2 = k
@@ -13559,7 +13613,7 @@
             END IF
             DO i = i1, i2, i3
               ib = MIN(nb, k-i+1)
-              CALL DLARZT('Backward', 'Rowwise', l, ib, a(i,ja), lda,          &
+              CALL DLARZT('Backward', 'Rowwise', l, ib, a(i,ja), lda,       &
                 tau(i), work(iwt), ldt)
               IF (left) THEN
                 mi = m - i + 1
@@ -13568,7 +13622,7 @@
                 ni = n - i + 1
                 jc = i
               END IF
-              CALL DLARZB(side, transt, 'Backward', 'Rowwise', mi, ni, ib,     &
+              CALL DLARZB(side, transt, 'Backward', 'Rowwise', mi, ni, ib,  &
                 l, a(i,ja), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
@@ -13616,7 +13670,7 @@
               kn = MIN(kd, n-j)
               IF (kn>0) THEN
                 CALL DSCAL(kn, one/ajj, ab(kd,j+1), kld)
-                CALL DSYR('Upper', kn, -one, ab(kd,j+1), kld, ab(kd+1,j+1),    &
+                CALL DSYR('Upper', kn, -one, ab(kd,j+1), kld, ab(kd+1,j+1),  &
                   kld)
               END IF
             END DO
@@ -13629,7 +13683,8 @@
               kn = MIN(kd, n-j)
               IF (kn>0) THEN
                 CALL DSCAL(kn, one/ajj, ab(2,j), 1_ip_)
-                CALL DSYR('Lower', kn, -one, ab(2,j), 1_ip_, ab(1,j+1), kld)
+                CALL DSYR('Lower', kn, -one, ab(2,j), 1_ip_, ab(1,j+1),     &
+                  kld)
               END IF
             END DO
           END IF
@@ -13653,7 +13708,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
-          EXTERNAL :: DGEMM, DPBTF2, DPOTF2, DSYRK, DTRSM,                     &
+          EXTERNAL :: DGEMM, DPBTF2, DPOTF2, DSYRK, DTRSM,                  &
             XERBLA
           INTRINSIC :: MIN
           info = 0
@@ -13693,9 +13748,10 @@
                   i2 = MIN(kd-ib, n-i-ib+1)
                   i3 = MIN(ib, n-i-kd+1)
                   IF (i2>0) THEN
-                    CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', ib,   &
-                      i2, one, ab(kd+1,i), ldab-1, ab(kd+1-ib,i+ib), ldab-1)
-                    CALL DSYRK('Upper', 'Transpose', i2, ib, -one,             &
+                    CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit',    &
+                      ib, i2, one, ab(kd+1,i), ldab-1, ab(kd+1-ib,i+ib),    &
+                      ldab-1)
+                    CALL DSYRK('Upper', 'Transpose', i2, ib, -one,          &
                       ab(kd+1-ib,i+ib), ldab-1, one, ab(kd+1,i+ib), ldab-1)
                   END IF
                   IF (i3>0) THEN
@@ -13704,12 +13760,12 @@
                         work(ii, jj) = ab(ii-jj+1, jj+i+kd-1)
                       END DO
                     END DO
-                    CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', ib,   &
-                      i3, one, ab(kd+1,i), ldab-1, work, ldwork)
-                    IF (i2>0) CALL DGEMM('Transpose', 'No Transpose', i2,      &
-                      i3, ib, -one, ab(kd+1-ib,i+ib), ldab-1, work, ldwork,    &
+                    CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit',    &
+                      ib, i3, one, ab(kd+1,i), ldab-1, work, ldwork)
+                    IF (i2>0) CALL DGEMM('Transpose', 'No Transpose', i2,   &
+                      i3, ib, -one, ab(kd+1-ib,i+ib), ldab-1, work, ldwork, &
                       one, ab(1+ib,i+kd), ldab-1)
-                    CALL DSYRK('Upper', 'Transpose', i3, ib, -one, work,       &
+                    CALL DSYRK('Upper', 'Transpose', i3, ib, -one, work,    &
                       ldwork, one, ab(kd+1,i+kd), ldab-1)
                     DO jj = 1, i3
                       DO ii = jj, ib
@@ -13736,9 +13792,9 @@
                   i2 = MIN(kd-ib, n-i-ib+1)
                   i3 = MIN(ib, n-i-kd+1)
                   IF (i2>0) THEN
-                    CALL DTRSM('Right', 'Lower', 'Transpose', 'Non-unit',      &
+                    CALL DTRSM('Right', 'Lower', 'Transpose', 'Non-unit',   &
                       i2, ib, one, ab(1,i), ldab-1, ab(1+ib,i), ldab-1)
-                    CALL DSYRK('Lower', 'No Transpose', i2, ib, -one,          &
+                    CALL DSYRK('Lower', 'No Transpose', i2, ib, -one,       &
                       ab(1+ib,i), ldab-1, one, ab(1,i+ib), ldab-1)
                   END IF
                   IF (i3>0) THEN
@@ -13747,12 +13803,12 @@
                         work(ii, jj) = ab(kd+1-jj+ii, jj+i-1)
                       END DO
                     END DO
-                    CALL DTRSM('Right', 'Lower', 'Transpose', 'Non-unit',      &
+                    CALL DTRSM('Right', 'Lower', 'Transpose', 'Non-unit',   &
                       i3, ib, one, ab(1,i), ldab-1, work, ldwork)
-                    IF (i2>0) CALL DGEMM('No transpose', 'Transpose', i3,      &
-                      i2, ib, -one, work, ldwork, ab(1+ib,i), ldab-1, one,     &
+                    IF (i2>0) CALL DGEMM('No transpose', 'Transpose', i3,   &
+                      i2, ib, -one, work, ldwork, ab(1+ib,i), ldab-1, one,  &
                       ab(1+kd-ib,i+ib), ldab-1)
-                    CALL DSYRK('Lower', 'No Transpose', i3, ib, -one, work,    &
+                    CALL DSYRK('Lower', 'No Transpose', i3, ib, -one, work,  &
                       ldwork, one, ab(1,i+kd), ldab-1)
                     DO jj = 1, ib
                       DO ii = 1, MIN(jj, i3)
@@ -13802,16 +13858,16 @@
           IF (n==0 .OR. nrhs==0) RETURN
           IF (upper) THEN
             DO j = 1, nrhs
-              CALL DTBSV('Upper', 'Transpose', 'Non-unit', n, kd, ab, ldab,    &
+              CALL DTBSV('Upper', 'Transpose', 'Non-unit', n, kd, ab, ldab,  &
                 b(1,j), 1_ip_)
-              CALL DTBSV('Upper', 'No transpose', 'Non-unit', n, kd, ab,       &
+              CALL DTBSV('Upper', 'No transpose', 'Non-unit', n, kd, ab,    &
                 ldab, b(1,j), 1_ip_)
             END DO
           ELSE
             DO j = 1, nrhs
-              CALL DTBSV('Lower', 'No transpose', 'Non-unit', n, kd, ab,       &
+              CALL DTBSV('Lower', 'No transpose', 'Non-unit', n, kd, ab,    &
                 ldab, b(1,j), 1_ip_)
-              CALL DTBSV('Lower', 'Transpose', 'Non-unit', n, kd, ab, ldab,    &
+              CALL DTBSV('Lower', 'Transpose', 'Non-unit', n, kd, ab, ldab,  &
                 b(1,j), 1_ip_)
             END DO
           END IF
@@ -13857,7 +13913,7 @@
               ajj = SQRT(ajj)
               a(j, j) = ajj
               IF (j<n) THEN
-                CALL DGEMV('Transpose', j-1, n-j, -one, a(1,j+1), lda, a(1,    &
+                CALL DGEMV('Transpose', j-1, n-j, -one, a(1,j+1), lda, a(1,  &
                   j), 1_ip_, one, a(j,j+1), lda)
                 CALL DSCAL(n-j, one/ajj, a(j,j+1), lda)
               END IF
@@ -13872,7 +13928,7 @@
               ajj = SQRT(ajj)
               a(j, j) = ajj
               IF (j<n) THEN
-                CALL DGEMV('No transpose', n-j, j-1, -one, a(j+1,1), lda,      &
+                CALL DGEMV('No transpose', n-j, j-1, -one, a(j+1,1), lda,   &
                   a(j,1), lda, one, a(j+1,j), 1_ip_)
                 CALL DSCAL(n-j, one/ajj, a(j+1,j), 1_ip_)
               END IF
@@ -13920,28 +13976,30 @@
             IF (upper) THEN
               DO j = 1, n, nb
                 jb = MIN(nb, n-j+1)
-                CALL DSYRK('Upper', 'Transpose', jb, j-1, -one, a(1,j), lda,   &
-                  one, a(j,j), lda)
+                CALL DSYRK('Upper', 'Transpose', jb, j-1, -one, a(1,j),     &
+                  lda, one, a(j,j), lda)
                 CALL DPOTRF2('Upper', jb, a(j,j), lda, info)
                 IF (info/=0) GO TO 30
                 IF (j+jb<=n) THEN
-                  CALL DGEMM('Transpose', 'No transpose', jb, n-j-jb+1, j-1,   &
-                    -one, a(1,j), lda, a(1,j+jb), lda, one, a(j,j+jb), lda)
-                  CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', jb,     &
+                  CALL DGEMM('Transpose', 'No transpose', jb, n-j-jb+1,     &
+                    j-1, -one, a(1,j), lda, a(1,j+jb), lda, one, a(j,j+jb), &
+                    lda)
+                  CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', jb,  &
                     n-j-jb+1, one, a(j,j), lda, a(j,j+jb), lda)
                 END IF
               END DO
             ELSE
               DO j = 1, n, nb
                 jb = MIN(nb, n-j+1)
-                CALL DSYRK('Lower', 'No transpose', jb, j-1, -one, a(j,1),     &
+                CALL DSYRK('Lower', 'No transpose', jb, j-1, -one, a(j,1),  &
                   lda, one, a(j,j), lda)
                 CALL DPOTRF2('Lower', jb, a(j,j), lda, info)
                 IF (info/=0) GO TO 30
                 IF (j+jb<=n) THEN
-                  CALL DGEMM('No transpose', 'Transpose', n-j-jb+1, jb, j-1,   &
-                    -one, a(j+jb,1), lda, a(j,1), lda, one, a(j+jb,j), lda)
-                  CALL DTRSM('Right', 'Lower', 'Transpose', 'Non-unit',        &
+                  CALL DGEMM('No transpose', 'Transpose', n-j-jb+1, jb,     &
+                    j-1, -one, a(j+jb,1), lda, a(j,1), lda, one, a(j+jb,j), &
+                    lda)
+                  CALL DTRSM('Right', 'Lower', 'Transpose', 'Non-unit',     &
                     n-j-jb+1, jb, one, a(j,j), lda, a(j+jb,j), lda)
                 END IF
               END DO
@@ -13996,9 +14054,9 @@
               RETURN
             END IF
             IF (upper) THEN
-              CALL DTRSM('L', 'U', 'T', 'N', n1, n2, one, a(1,1), lda, a(1,    &
+              CALL DTRSM('L', 'U', 'T', 'N', n1, n2, one, a(1,1), lda, a(1,  &
                 n1+1), lda)
-              CALL DSYRK(uplo, 'T', n2, n1, -one, a(1,n1+1), lda, one,         &
+              CALL DSYRK(uplo, 'T', n2, n1, -one, a(1,n1+1), lda, one,      &
                 a(n1+1,n1+1), lda)
               CALL DPOTRF2(uplo, n2, a(n1+1,n1+1), lda, iinfo)
               IF (iinfo/=0) THEN
@@ -14006,9 +14064,9 @@
                 RETURN
               END IF
             ELSE
-              CALL DTRSM('R', 'L', 'T', 'N', n2, n1, one, a(1,1), lda,         &
+              CALL DTRSM('R', 'L', 'T', 'N', n2, n1, one, a(1,1), lda,      &
                 a(n1+1,1), lda)
-              CALL DSYRK(uplo, 'N', n2, n1, -one, a(n1+1,1), lda, one,         &
+              CALL DSYRK(uplo, 'N', n2, n1, -one, a(n1+1,1), lda, one,      &
                 a(n1+1,n1+1), lda)
               CALL DPOTRF2(uplo, n2, a(n1+1,n1+1), lda, iinfo)
               IF (iinfo/=0) THEN
@@ -14051,14 +14109,14 @@
           END IF
           IF (n==0 .OR. nrhs==0) RETURN
           IF (upper) THEN
-            CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,      &
+            CALL DTRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,   &
               one, a, lda, b, ldb)
-            CALL DTRSM('Left', 'Upper', 'No transpose', 'Non-unit', n, nrhs,   &
-              one, a, lda, b, ldb)
+            CALL DTRSM('Left', 'Upper', 'No transpose', 'Non-unit', n,      &
+              nrhs, one, a, lda, b, ldb)
           ELSE
-            CALL DTRSM('Left', 'Lower', 'No transpose', 'Non-unit', n, nrhs,   &
-              one, a, lda, b, ldb)
-            CALL DTRSM('Left', 'Lower', 'Transpose', 'Non-unit', n, nrhs,      &
+            CALL DTRSM('Left', 'Lower', 'No transpose', 'Non-unit', n,      &
+              nrhs, one, a, lda, b, ldb)
+            CALL DTRSM('Left', 'Lower', 'Transpose', 'Non-unit', n, nrhs,   &
               one, a, lda, b, ldb)
           END IF
           RETURN
@@ -14151,7 +14209,8 @@
           IF (nrhs==1) THEN
             nb = 1
           ELSE
-            nb = MAX(1_ip_, ILAENV(1_ip_,'DPTTRS',' ',n,nrhs,-1_ip_,-1_ip_))
+            nb = MAX(1_ip_, ILAENV(1_ip_,'DPTTRS',' ',n,nrhs,-1_ip_,         &
+              -1_ip_))
           END IF
           IF (nb>=nrhs) THEN
             CALL DPTTS2(n, nrhs, d, e, b, ldb)
@@ -14234,15 +14293,15 @@
           PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_)
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=30)
-          INTEGER(ip_) :: i, icompz, ii, iscale, j, jtot, k, l, l1, lend,      &
+          INTEGER(ip_) :: i, icompz, ii, iscale, j, jtot, k, l, l1, lend,   &
             lendm1, lendp1, lendsv, lm1, lsv, m, mm, mm1, nm1, nmaxit
-          REAL(r8_) :: anorm, b, c, eps, eps2, f, g, p, r, rt1, rt2, s,        &
+          REAL(r8_) :: anorm, b, c, eps, eps2, f, g, p, r, rt1, rt2, s,     &
             safmax, safmin, ssfmax, ssfmin, tst
           LOGICAL :: LSAME
           REAL(r8_) :: DLAMCH, DLANST, DLAPY2
           EXTERNAL :: LSAME, DLAMCH, DLANST, DLAPY2
-          EXTERNAL :: DLAE2, DLAEV2, DLARTG, DLASCL, DLASET,                   &
-            DLASR, DLASRT, DSWAP, XERBLA
+          EXTERNAL :: DLAE2, DLAEV2, DLARTG, DLASCL,                        &
+            DLASET, DLASR, DLASRT, DSWAP, XERBLA
           INTRINSIC :: ABS, MAX, SIGN, SQRT
           info = 0
           IF (LSAME(compz,'N')) THEN
@@ -14307,15 +14366,15 @@
           IF (anorm==zero) GO TO 10
           IF (anorm>ssfmax) THEN
             iscale = 1
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,     &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,    &
               e(l), n, info)
           ELSE IF (anorm<ssfmin) THEN
             iscale = 2
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,     &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,    &
               e(l), n, info)
           END IF
           IF (ABS(d(lend))<ABS(d(l))) THEN
@@ -14341,7 +14400,7 @@
                 CALL DLAEV2(d(l), e(l), d(l+1), rt1, rt2, c, s)
                 work(l) = c
                 work(n-1+l) = s
-                CALL DLASR('R', 'V', 'B', n, 2_ip_, work(l), work(n-1+l),      &
+                CALL DLASR('R', 'V', 'B', n, 2_ip_, work(l), work(n-1+l),   &
                   z(1,l), ldz)
               ELSE
                 CALL DLAE2(d(l), e(l), d(l+1), rt1, rt2)
@@ -14379,8 +14438,8 @@
             END DO
             IF (icompz>0) THEN
               mm = m - l + 1
-              CALL DLASR('R', 'V', 'B', n, mm, work(l), work(n-1+l), z(1,l),   &
-                ldz)
+              CALL DLASR('R', 'V', 'B', n, mm, work(l), work(n-1+l), z(1,    &
+                l), ldz)
             END IF
             d(l) = d(l) - p
             e(l) = g
@@ -14409,7 +14468,7 @@
                 CALL DLAEV2(d(l-1), e(l-1), d(l), rt1, rt2, c, s)
                 work(m) = c
                 work(n-1+m) = s
-                CALL DLASR('R', 'V', 'F', n, 2_ip_, work(m), work(n-1+m),      &
+                CALL DLASR('R', 'V', 'F', n, 2_ip_, work(m), work(n-1+m),   &
                   z(1,l-1), ldz)
               ELSE
                 CALL DLAE2(d(l-1), e(l-1), d(l), rt1, rt2)
@@ -14447,8 +14506,8 @@
             END DO
             IF (icompz>0) THEN
               mm = l - m + 1
-              CALL DLASR('R', 'V', 'F', n, mm, work(m), work(n-1+m), z(1,m),   &
-                ldz)
+              CALL DLASR('R', 'V', 'F', n, mm, work(m), work(n-1+m), z(1,    &
+                m), ldz)
             END IF
             d(l) = d(l) - p
             e(lm1) = g
@@ -14461,15 +14520,15 @@
           END IF
  140      CONTINUE
           IF (iscale==1) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv+1,        &
+            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv+1,     &
               1_ip_, d(lsv), n, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv, 1_ip_,   &
-              e(lsv), n, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv,       &
+              1_ip_, e(lsv), n, info)
           ELSE IF (iscale==2) THEN
-            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv+1,        &
+            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv+1,     &
               1_ip_, d(lsv), n, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv, 1_ip_,   &
-              e(lsv), n, info)
+            CALL DLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv,       &
+              1_ip_, e(lsv), n, info)
           END IF
           IF (jtot<nmaxit) GO TO 10
           DO i = 1, n - 1
@@ -14509,10 +14568,10 @@
           PARAMETER (zero=0.0_r8_, one=1.0_r8_, two=2.0_r8_, three=3.0_r8_)
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=30)
-          INTEGER(ip_) :: i, iscale, jtot, l, l1, lend, lendsv, lsv, m,        &
+          INTEGER(ip_) :: i, iscale, jtot, l, l1, lend, lendsv, lsv, m,     &
             nmaxit
-          REAL(r8_) :: alpha, anorm, bb, c, eps, eps2, gamma, oldc, oldgam,    &
-            p, r, rt1, rt2, rte, s, safmax, safmin, sigma, ssfmax, ssfmin,     &
+          REAL(r8_) :: alpha, anorm, bb, c, eps, eps2, gamma, oldc, oldgam,  &
+            p, r, rt1, rt2, rte, s, safmax, safmin, sigma, ssfmax, ssfmin,  &
             rmax
           REAL(r8_) :: DLAMCH, DLANST, DLAPY2
           EXTERNAL :: DLAMCH, DLANST, DLAPY2
@@ -14558,15 +14617,15 @@
           IF (anorm==zero) GO TO 10
           IF ((anorm>ssfmax)) THEN
             iscale = 1
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,     &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,    &
               e(l), n, info)
           ELSE IF (anorm<ssfmin) THEN
             iscale = 2
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,     &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,       &
+            CALL DLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,    &
               e(l), n, info)
           END IF
           DO i = l, lend - 1
@@ -14690,9 +14749,9 @@
             GO TO 150
           END IF
  150      CONTINUE
-          IF (iscale==1) CALL DLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm,         &
+          IF (iscale==1) CALL DLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm,      &
             lendsv-lsv+1, 1_ip_, d(lsv), n, info)
-          IF (iscale==2) CALL DLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm,         &
+          IF (iscale==2) CALL DLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm,      &
             lendsv-lsv+1, 1_ip_, d(lsv), n, info)
           IF (jtot<nmaxit) GO TO 10
           DO i = 1, n - 1
@@ -14713,15 +14772,15 @@
           REAL(r8_) :: zero, one
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           LOGICAL :: lower, lquery, wantz
-          INTEGER(ip_) :: iinfo, imax, inde, indtau, indwrk, iscale, llwork,   &
-            lwkopt, nb
+          INTEGER(ip_) :: iinfo, imax, inde, indtau, indwrk, iscale,        &
+            llwork, lwkopt, nb
           REAL(r8_) :: anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANSY
           EXTERNAL :: LSAME, ILAENV, DLAMCH, DLANSY
-          EXTERNAL :: DLASCL, DORGTR, DSCAL, DSTEQR, DSTERF,                   &
-            DSYTRD, XERBLA
+          EXTERNAL :: DLASCL, DORGTR, DSCAL, DSTEQR,                        &
+            DSTERF, DSYTRD, XERBLA
           INTRINSIC :: MAX, SQRT
           wantz = LSAME(jobz, 'V')
           lower = LSAME(uplo, 'L')
@@ -14772,19 +14831,19 @@
             iscale = 1
             sigma = rmax/anrm
           END IF
-          IF (iscale==1) CALL DLASCL(uplo, 0_ip_, 0_ip_, one, sigma, n, n,     &
+          IF (iscale==1) CALL DLASCL(uplo, 0_ip_, 0_ip_, one, sigma, n, n,  &
             a, lda, info)
           inde = 1
           indtau = inde + n
           indwrk = indtau + n
           llwork = lwork - indwrk + 1
-          CALL DSYTRD(uplo, n, a, lda, w, work(inde), work(indtau),            &
+          CALL DSYTRD(uplo, n, a, lda, w, work(inde), work(indtau),         &
             work(indwrk), llwork, iinfo)
           IF (.NOT. wantz) THEN
             CALL DSTERF(n, w, work(inde), info)
           ELSE
-            CALL DORGTR(uplo, n, a, lda, work(indtau), work(indwrk), llwork,   &
-              iinfo)
+            CALL DORGTR(uplo, n, a, lda, work(indtau), work(indwrk),        &
+              llwork, iinfo)
             CALL DSTEQR(jobz, n, w, work(inde), a, lda, work(indtau), info)
           END IF
           IF (iscale==1) THEN
@@ -14809,7 +14868,7 @@
           LOGICAL :: upper
           INTEGER(ip_) :: k
           REAL(r8_) :: akk, bkk, ct
-          EXTERNAL :: DAXPY, DSCAL, DSYR2, DTRMV, DTRSV,                       &
+          EXTERNAL :: DAXPY, DSCAL, DSYR2, DTRMV, DTRSV,                    &
             XERBLA
           INTRINSIC :: MAX
           LOGICAL :: LSAME
@@ -14842,11 +14901,11 @@
                   CALL DSCAL(n-k, one/bkk, a(k,k+1), lda)
                   ct = -half*akk
                   CALL DAXPY(n-k, ct, b(k,k+1), ldb, a(k,k+1), lda)
-                  CALL DSYR2(uplo, n-k, -one, a(k,k+1), lda, b(k,k+1), ldb,    &
+                  CALL DSYR2(uplo, n-k, -one, a(k,k+1), lda, b(k,k+1), ldb,  &
                     a(k+1,k+1), lda)
                   CALL DAXPY(n-k, ct, b(k,k+1), ldb, a(k,k+1), lda)
-                  CALL DTRSV(uplo, 'Transpose', 'Non-unit', n-k, b(k+1,k+1),   &
-                    ldb, a(k,k+1), lda)
+                  CALL DTRSV(uplo, 'Transpose', 'Non-unit', n-k, b(k+1,      &
+                    k+1), ldb, a(k,k+1), lda)
                 END IF
               END DO
             ELSE
@@ -14859,10 +14918,10 @@
                   CALL DSCAL(n-k, one/bkk, a(k+1,k), 1_ip_)
                   ct = -half*akk
                   CALL DAXPY(n-k, ct, b(k+1,k), 1_ip_, a(k+1,k), 1_ip_)
-                  CALL DSYR2(uplo, n-k, -one, a(k+1,k), 1_ip_, b(k+1,k),       &
+                  CALL DSYR2(uplo, n-k, -one, a(k+1,k), 1_ip_, b(k+1,k),    &
                     1_ip_, a(k+1,k+1), lda)
                   CALL DAXPY(n-k, ct, b(k+1,k), 1_ip_, a(k+1,k), 1_ip_)
-                  CALL DTRSV(uplo, 'No transpose', 'Non-unit', n-k, b(k+1,     &
+                  CALL DTRSV(uplo, 'No transpose', 'Non-unit', n-k, b(k+1,   &
                     k+1), ldb, a(k+1,k), 1_ip_)
                 END IF
               END DO
@@ -14872,11 +14931,11 @@
               DO k = 1, n
                 akk = a(k, k)
                 bkk = b(k, k)
-                CALL DTRMV(uplo, 'No transpose', 'Non-unit', k-1, b, ldb,      &
+                CALL DTRMV(uplo, 'No transpose', 'Non-unit', k-1, b, ldb,   &
                   a(1,k), 1_ip_)
                 ct = half*akk
                 CALL DAXPY(k-1, ct, b(1,k), 1_ip_, a(1,k), 1_ip_)
-                CALL DSYR2(uplo, k-1, one, a(1,k), 1_ip_, b(1,k), 1_ip_, a,    &
+                CALL DSYR2(uplo, k-1, one, a(1,k), 1_ip_, b(1,k), 1_ip_, a,  &
                   lda)
                 CALL DAXPY(k-1, ct, b(1,k), 1_ip_, a(1,k), 1_ip_)
                 CALL DSCAL(k-1, bkk, a(1,k), 1_ip_)
@@ -14886,11 +14945,12 @@
               DO k = 1, n
                 akk = a(k, k)
                 bkk = b(k, k)
-                CALL DTRMV(uplo, 'Transpose', 'Non-unit', k-1, b, ldb, a(k,    &
+                CALL DTRMV(uplo, 'Transpose', 'Non-unit', k-1, b, ldb, a(k,  &
                   1), lda)
                 ct = half*akk
                 CALL DAXPY(k-1, ct, b(k,1), ldb, a(k,1), lda)
-                CALL DSYR2(uplo, k-1, one, a(k,1), lda, b(k,1), ldb, a, lda)
+                CALL DSYR2(uplo, k-1, one, a(k,1), lda, b(k,1), ldb, a,     &
+                  lda)
                 CALL DAXPY(k-1, ct, b(k,1), ldb, a(k,1), lda)
                 CALL DSCAL(k-1, bkk, a(k,1), lda)
                 a(k, k) = akk*bkk**2
@@ -14909,7 +14969,7 @@
           PARAMETER (one=1.0_r8_, half=0.5_r8_)
           LOGICAL :: upper
           INTEGER(ip_) :: k, kb, nb
-          EXTERNAL :: DSYGS2, DSYMM, DSYR2K, DTRMM, DTRSM,                     &
+          EXTERNAL :: DSYGS2, DSYMM, DSYR2K, DTRMM, DTRSM,                  &
             XERBLA
           INTRINSIC :: MAX, MIN
           LOGICAL :: LSAME
@@ -14941,36 +15001,36 @@
               IF (upper) THEN
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                   IF (k+kb<=n) THEN
-                    CALL DTRSM('Left', uplo, 'Transpose', 'Non-unit', kb,      &
+                    CALL DTRSM('Left', uplo, 'Transpose', 'Non-unit', kb,   &
                       n-k-kb+1, one, b(k,k), ldb, a(k,k+kb), lda)
-                    CALL DSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),      &
+                    CALL DSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),   &
                       lda, b(k,k+kb), ldb, one, a(k,k+kb), lda)
-                    CALL DSYR2K(uplo, 'Transpose', n-k-kb+1, kb, -one, a(k,    &
+                    CALL DSYR2K(uplo, 'Transpose', n-k-kb+1, kb, -one, a(k,  &
                       k+kb), lda, b(k,k+kb), ldb, one, a(k+kb,k+kb), lda)
-                    CALL DSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),      &
+                    CALL DSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),   &
                       lda, b(k,k+kb), ldb, one, a(k,k+kb), lda)
-                    CALL DTRSM('Right', uplo, 'No transpose', 'Non-unit',      &
+                    CALL DTRSM('Right', uplo, 'No transpose', 'Non-unit',   &
                       kb, n-k-kb+1, one, b(k+kb,k+kb), ldb, a(k,k+kb), lda)
                   END IF
                 END DO
               ELSE
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                   IF (k+kb<=n) THEN
-                    CALL DTRSM('Right', uplo, 'Transpose', 'Non-unit',         &
+                    CALL DTRSM('Right', uplo, 'Transpose', 'Non-unit',      &
                       n-k-kb+1, kb, one, b(k,k), ldb, a(k+kb,k), lda)
-                    CALL DSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),     &
+                    CALL DSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),  &
                       lda, b(k+kb,k), ldb, one, a(k+kb,k), lda)
-                    CALL DSYR2K(uplo, 'No transpose', n-k-kb+1, kb, -one,      &
+                    CALL DSYR2K(uplo, 'No transpose', n-k-kb+1, kb, -one,   &
                       a(k+kb,k), lda, b(k+kb,k), ldb, one, a(k+kb,k+kb), lda)
-                    CALL DSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),     &
+                    CALL DSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),  &
                       lda, b(k+kb,k), ldb, one, a(k+kb,k), lda)
-                    CALL DTRSM('Left', uplo, 'No transpose', 'Non-unit',       &
+                    CALL DTRSM('Left', uplo, 'No transpose', 'Non-unit',    &
                       n-k-kb+1, kb, one, b(k+kb,k+kb), ldb, a(k+kb,k), lda)
                   END IF
                 END DO
@@ -14979,33 +15039,33 @@
               IF (upper) THEN
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL DTRMM('Left', uplo, 'No transpose', 'Non-unit', k-1,    &
+                  CALL DTRMM('Left', uplo, 'No transpose', 'Non-unit', k-1,  &
                     kb, one, b, ldb, a(1,k), lda)
-                  CALL DSYMM('Right', uplo, k-1, kb, half, a(k,k), lda, b(1,   &
-                    k), ldb, one, a(1,k), lda)
-                  CALL DSYR2K(uplo, 'No transpose', k-1, kb, one, a(1,k),      &
+                  CALL DSYMM('Right', uplo, k-1, kb, half, a(k,k), lda,     &
+                    b(1,k), ldb, one, a(1,k), lda)
+                  CALL DSYR2K(uplo, 'No transpose', k-1, kb, one, a(1,k),   &
                     lda, b(1,k), ldb, one, a, lda)
-                  CALL DSYMM('Right', uplo, k-1, kb, half, a(k,k), lda, b(1,   &
-                    k), ldb, one, a(1,k), lda)
-                  CALL DTRMM('Right', uplo, 'Transpose', 'Non-unit', k-1,      &
+                  CALL DSYMM('Right', uplo, k-1, kb, half, a(k,k), lda,     &
+                    b(1,k), ldb, one, a(1,k), lda)
+                  CALL DTRMM('Right', uplo, 'Transpose', 'Non-unit', k-1,   &
                     kb, one, b(k,k), ldb, a(1,k), lda)
-                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                 END DO
               ELSE
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL DTRMM('Right', uplo, 'No transpose', 'Non-unit', kb,    &
+                  CALL DTRMM('Right', uplo, 'No transpose', 'Non-unit', kb,  &
                     k-1, one, b, ldb, a(k,1), lda)
-                  CALL DSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,    &
+                  CALL DSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,  &
                     1), ldb, one, a(k,1), lda)
-                  CALL DSYR2K(uplo, 'Transpose', k-1, kb, one, a(k,1), lda,    &
+                  CALL DSYR2K(uplo, 'Transpose', k-1, kb, one, a(k,1), lda,  &
                     b(k,1), ldb, one, a, lda)
-                  CALL DSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,    &
+                  CALL DSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,  &
                     1), ldb, one, a(k,1), lda)
-                  CALL DTRMM('Left', uplo, 'Transpose', 'Non-unit', kb, k-1,   &
-                    one, b(k,k), ldb, a(k,1), lda)
-                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL DTRMM('Left', uplo, 'Transpose', 'Non-unit', kb,     &
+                    k-1, one, b(k,k), ldb, a(k,1), lda)
+                  CALL DSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                 END DO
               END IF
@@ -15014,7 +15074,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE DSYGV(itype, jobz, uplo, n, a, lda, b, ldb, w, work,        &
+        SUBROUTINE DSYGV(itype, jobz, uplo, n, a, lda, b, ldb, w, work,     &
           lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: jobz, uplo
@@ -15028,7 +15088,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
-          EXTERNAL :: DPOTRF, DSYEV, DSYGST, DTRMM, DTRSM,                     &
+          EXTERNAL :: DPOTRF, DSYEV, DSYGST, DTRMM, DTRSM,                  &
             XERBLA
           INTRINSIC :: MAX
           wantz = LSAME(jobz, 'V')
@@ -15080,7 +15140,7 @@
               ELSE
                 trans = 'T'
               END IF
-              CALL DTRSM('Left', uplo, trans, 'Non-unit', n, neig, one, b,     &
+              CALL DTRSM('Left', uplo, trans, 'Non-unit', n, neig, one, b,  &
                 ldb, a, lda)
             ELSE IF (itype==3) THEN
               IF (upper) THEN
@@ -15088,7 +15148,7 @@
               ELSE
                 trans = 'N'
               END IF
-              CALL DTRMM('Left', uplo, trans, 'Non-unit', n, neig, one, b,     &
+              CALL DTRMM('Left', uplo, trans, 'Non-unit', n, neig, one, b,  &
                 ldb, a, lda)
             END IF
           END IF
@@ -15131,11 +15191,11 @@
               e(i) = a(i, i+1)
               IF (taui/=zero) THEN
                 a(i, i+1) = one
-                CALL DSYMV(uplo, i, taui, a, lda, a(1,i+1), 1_ip_, zero,       &
+                CALL DSYMV(uplo, i, taui, a, lda, a(1,i+1), 1_ip_, zero,    &
                   tau, 1_ip_)
                 alpha = -half*taui*DDOT(i, tau, 1_ip_, a(1,i+1), 1_ip_)
                 CALL DAXPY(i, alpha, a(1,i+1), 1_ip_, tau, 1_ip_)
-                CALL DSYR2(uplo, i, -one, a(1,i+1), 1_ip_, tau, 1_ip_, a,      &
+                CALL DSYR2(uplo, i, -one, a(1,i+1), 1_ip_, tau, 1_ip_, a,   &
                   lda)
                 a(i, i+1) = e(i)
               END IF
@@ -15149,11 +15209,12 @@
               e(i) = a(i+1, i)
               IF (taui/=zero) THEN
                 a(i+1, i) = one
-                CALL DSYMV(uplo, n-i, taui, a(i+1,i+1), lda, a(i+1,i),         &
+                CALL DSYMV(uplo, n-i, taui, a(i+1,i+1), lda, a(i+1,i),      &
                   1_ip_, zero, tau(i), 1_ip_)
-                alpha = -half*taui*DDOT(n-i, tau(i), 1_ip_, a(i+1,i), 1_ip_)
+                alpha = -half*taui*DDOT(n-i, tau(i), 1_ip_, a(i+1,i),       &
+                  1_ip_)
                 CALL DAXPY(n-i, alpha, a(i+1,i), 1_ip_, tau(i), 1_ip_)
-                CALL DSYR2(uplo, n-i, -one, a(i+1,i), 1_ip_, tau(i), 1_ip_,    &
+                CALL DSYR2(uplo, n-i, -one, a(i+1,i), 1_ip_, tau(i), 1_ip_,  &
                   a(i+1,i+1), lda)
                 a(i+1, i) = e(i)
               END IF
@@ -15177,7 +15238,7 @@
           PARAMETER (eight=8.0_r8_, sevten=17.0_r8_)
           LOGICAL :: upper
           INTEGER(ip_) :: i, imax, j, jmax, k, kk, kp, kstep
-          REAL(r8_) :: absakk, alpha, colmax, d11, d12, d21, d22, r1,          &
+          REAL(r8_) :: absakk, alpha, colmax, d11, d12, d21, d22, r1,       &
             rowmax, t, wk, wkm1, wkp1
           LOGICAL :: LSAME, DISNAN
           INTEGER(ip_) :: IDAMAX
@@ -15312,7 +15373,7 @@
               END IF
               kk = k + kstep - 1
               IF (kp/=kk) THEN
-                IF (kp<n) CALL DSWAP(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),      &
+                IF (kp<n) CALL DSWAP(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),   &
                   1_ip_)
                 CALL DSWAP(kp-kk-1, a(kk+1,kk), 1_ip_, a(kp,kk+1), lda)
                 t = a(kk, kk)
@@ -15327,7 +15388,7 @@
               IF (kstep==1) THEN
                 IF (k<n) THEN
                   d11 = one/a(k, k)
-                  CALL DSYR(uplo, n-k, -d11, a(k+1,k), 1_ip_, a(k+1,k+1),      &
+                  CALL DSYR(uplo, n-k, -d11, a(k+1,k), 1_ip_, a(k+1,k+1),   &
                     lda)
                   CALL DSCAL(n-k, d11, a(k+1,k), 1_ip_)
                 END IF
@@ -15371,7 +15432,7 @@
           REAL(r8_) :: one
           PARAMETER (one=1.0_r8_)
           LOGICAL :: lquery, upper
-          INTEGER(ip_) :: i, iinfo, iws, j, kk, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, iinfo, iws, j, kk, ldwork, lwkopt, nb, nbmin,  &
             nx
           EXTERNAL :: DLATRD, DSYR2K, DSYTD2, XERBLA
           INTRINSIC :: MAX
@@ -15408,13 +15469,14 @@
           nx = n
           iws = 1
           IF (nb>1 .AND. nb<n) THEN
-            nx = MAX(nb, ILAENV(3_ip_,'DSYTRD',uplo,n,-1_ip_,-1_ip_,-1_ip_))
+            nx = MAX(nb, ILAENV(3_ip_,'DSYTRD',uplo,n,-1_ip_,-1_ip_,         &
+              -1_ip_))
             IF (nx<n) THEN
               ldwork = n
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = MAX(lwork/ldwork, 1_ip_)
-                nbmin = ILAENV(2_ip_, 'DSYTRD', uplo, n, -1_ip_, -1_ip_,       &
+                nbmin = ILAENV(2_ip_, 'DSYTRD', uplo, n, -1_ip_, -1_ip_,    &
                   -1_ip_)
                 IF (nb<nbmin) nx = n
               END IF
@@ -15428,7 +15490,7 @@
             kk = n - ((n-nx+nb-1)/nb)*nb
             DO i = n - nb + 1, kk + 1, -nb
               CALL DLATRD(uplo, i+nb-1, nb, a, lda, e, tau, work, ldwork)
-              CALL DSYR2K(uplo, 'No transpose', i-1, nb, -one, a(1,i), lda,    &
+              CALL DSYR2K(uplo, 'No transpose', i-1, nb, -one, a(1,i), lda,  &
                 work, ldwork, one, a, lda)
               DO j = i, i + nb - 1
                 a(j-1, j) = e(j-1)
@@ -15438,16 +15500,17 @@
             CALL DSYTD2(uplo, kk, a, lda, d, e, tau, iinfo)
           ELSE
             DO i = 1, n - nx, nb
-              CALL DLATRD(uplo, n-i+1, nb, a(i,i), lda, e(i), tau(i), work,    &
+              CALL DLATRD(uplo, n-i+1, nb, a(i,i), lda, e(i), tau(i), work,  &
                 ldwork)
-              CALL DSYR2K(uplo, 'No transpose', n-i-nb+1, nb, -one, a(i+nb,    &
+              CALL DSYR2K(uplo, 'No transpose', n-i-nb+1, nb, -one, a(i+nb,  &
                 i), lda, work(nb+1), ldwork, one, a(i+nb,i+nb), lda)
               DO j = i, i + nb - 1
                 a(j+1, j) = e(j)
                 d(j) = a(j, j)
               END DO
             END DO
-            CALL DSYTD2(uplo, n-i+1, a(i,i), lda, d(i), e(i), tau(i), iinfo)
+            CALL DSYTD2(uplo, n-i+1, a(i,i), lda, d(i), e(i), tau(i),       &
+              iinfo)
           END IF
           work(1) = lwkopt
           RETURN
@@ -15495,8 +15558,8 @@
             iws = ldwork*nb
             IF (lwork<iws) THEN
               nb = MAX(lwork/ldwork, 1_ip_)
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DSYTRF',uplo,n,-1_ip_,-1_ip_,   &
-                -1_ip_))
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'DSYTRF',uplo,n,-1_ip_,        &
+                -1_ip_,-1_ip_))
             END IF
           ELSE
             iws = 1
@@ -15507,7 +15570,7 @@
  10         CONTINUE
             IF (k<1) GO TO 40
             IF (k>nb) THEN
-              CALL DLASYF(uplo, k, nb, kb, a, lda, ipiv, work, ldwork,         &
+              CALL DLASYF(uplo, k, nb, kb, a, lda, ipiv, work, ldwork,      &
                 iinfo)
             ELSE
               CALL DSYTF2(uplo, k, a, lda, ipiv, iinfo)
@@ -15521,7 +15584,7 @@
  20         CONTINUE
             IF (k>n) GO TO 40
             IF (k<=n-nb) THEN
-              CALL DLASYF(uplo, n-k+1, nb, kb, a(k,k), lda, ipiv(k), work,     &
+              CALL DLASYF(uplo, n-k+1, nb, kb, a(k,k), lda, ipiv(k), work,  &
                 ldwork, iinfo)
             ELSE
               CALL DSYTF2(uplo, n-k+1, a(k,k), lda, ipiv(k), iinfo)
@@ -15583,16 +15646,16 @@
             IF (ipiv(k)>0) THEN
               kp = ipiv(k)
               IF (kp/=k) CALL DSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
-              CALL DGER(k-1, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,1),   &
-                ldb)
+              CALL DGER(k-1, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,    &
+                1), ldb)
               CALL DSCAL(nrhs, one/a(k,k), b(k,1), ldb)
               k = k - 1
             ELSE
               kp = -ipiv(k)
               IF (kp/=k-1) CALL DSWAP(nrhs, b(k-1,1), ldb, b(kp,1), ldb)
-              CALL DGER(k-2, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,1),   &
-                ldb)
-              CALL DGER(k-2, nrhs, -one, a(1,k-1), 1_ip_, b(k-1,1), ldb,       &
+              CALL DGER(k-2, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,    &
+                1), ldb)
+              CALL DGER(k-2, nrhs, -one, a(1,k-1), 1_ip_, b(k-1,1), ldb,    &
                 b(1,1), ldb)
               akm1k = a(k-1, k)
               akm1 = a(k-1, k-1)/akm1k
@@ -15612,15 +15675,15 @@
  40         CONTINUE
             IF (k>n) GO TO 50
             IF (ipiv(k)>0) THEN
-              CALL DGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),         &
+              CALL DGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),      &
                 1_ip_, one, b(k,1), ldb)
               kp = ipiv(k)
               IF (kp/=k) CALL DSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
               k = k + 1
             ELSE
-              CALL DGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),         &
+              CALL DGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),      &
                 1_ip_, one, b(k,1), ldb)
-              CALL DGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k+1),       &
+              CALL DGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k+1),    &
                 1_ip_, one, b(k+1,1), ldb)
               kp = -ipiv(k)
               IF (kp/=k) CALL DSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
@@ -15635,7 +15698,7 @@
             IF (ipiv(k)>0) THEN
               kp = ipiv(k)
               IF (kp/=k) CALL DSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
-              IF (k<n) CALL DGER(n-k, nrhs, -one, a(k+1,k), 1_ip_, b(k,1),     &
+              IF (k<n) CALL DGER(n-k, nrhs, -one, a(k+1,k), 1_ip_, b(k,1),  &
                 ldb, b(k+1,1), ldb)
               CALL DSCAL(nrhs, one/a(k,k), b(k,1), ldb)
               k = k + 1
@@ -15643,9 +15706,9 @@
               kp = -ipiv(k)
               IF (kp/=k+1) CALL DSWAP(nrhs, b(k+1,1), ldb, b(kp,1), ldb)
               IF (k<n-1) THEN
-                CALL DGER(n-k-1, nrhs, -one, a(k+2,k), 1_ip_, b(k,1), ldb,     &
+                CALL DGER(n-k-1, nrhs, -one, a(k+2,k), 1_ip_, b(k,1), ldb,  &
                   b(k+2,1), ldb)
-                CALL DGER(n-k-1, nrhs, -one, a(k+2,k+1), 1_ip_, b(k+1,1),      &
+                CALL DGER(n-k-1, nrhs, -one, a(k+2,k+1), 1_ip_, b(k+1,1),   &
                   ldb, b(k+2,1), ldb)
               END IF
               akm1k = a(k+1, k)
@@ -15666,16 +15729,16 @@
  90         CONTINUE
             IF (k<1) GO TO 100
             IF (ipiv(k)>0) THEN
-              IF (k<n) CALL DGEMV('Transpose', n-k, nrhs, -one, b(k+1,1),      &
+              IF (k<n) CALL DGEMV('Transpose', n-k, nrhs, -one, b(k+1,1),   &
                 ldb, a(k+1,k), 1_ip_, one, b(k,1), ldb)
               kp = ipiv(k)
               IF (kp/=k) CALL DSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
               k = k - 1
             ELSE
               IF (k<n) THEN
-                CALL DGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,        &
+                CALL DGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,     &
                   a(k+1,k), 1_ip_, one, b(k,1), ldb)
-                CALL DGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,        &
+                CALL DGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,     &
                   a(k+1,k-1), 1_ip_, one, b(k-1,1), ldb)
               END IF
               kp = -ipiv(k)
@@ -15746,8 +15809,8 @@
               IF (here+nbf+1<=n) THEN
                 IF (t(here+nbf+1,here+nbf)/=zero) nbnext = 2
               END IF
-              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, nbf, nbnext, work,   &
-                info)
+              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, nbf, nbnext,      &
+                work, info)
               IF (info/=0) THEN
                 ilst = here
                 RETURN
@@ -15761,30 +15824,30 @@
               IF (here+3<=n) THEN
                 IF (t(here+3,here+2)/=zero) nbnext = 2
               END IF
-              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_, nbnext,     &
+              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_, nbnext,  &
                 work, info)
               IF (info/=0) THEN
                 ilst = here
                 RETURN
               END IF
               IF (nbnext==1) THEN
-                CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, nbnext,     &
+                CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, nbnext,  &
                   work, info)
                 here = here + 1
               ELSE
                 IF (t(here+2,here+1)==zero) nbnext = 1
                 IF (nbnext==2) THEN
-                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, nbnext,   &
-                    work, info)
+                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_,        &
+                    nbnext, work, info)
                   IF (info/=0) THEN
                     ilst = here
                     RETURN
                   END IF
                   here = here + 2
                 ELSE
-                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,    &
+                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,  &
                     work, info)
-                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_,         &
+                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_,      &
                     1_ip_, work, info)
                   here = here + 2
                 END IF
@@ -15799,7 +15862,7 @@
               IF (here>=3) THEN
                 IF (t(here-1,here-2)/=zero) nbnext = 2
               END IF
-              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,       &
+              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,    &
                 nbf, work, info)
               IF (info/=0) THEN
                 ilst = here
@@ -15814,20 +15877,20 @@
               IF (here>=3) THEN
                 IF (t(here-1,here-2)/=zero) nbnext = 2
               END IF
-              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,       &
+              CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,    &
                 1_ip_, work, info)
               IF (info/=0) THEN
                 ilst = here
                 RETURN
               END IF
               IF (nbnext==1) THEN
-                CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, nbnext, 1_ip_,     &
+                CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, nbnext, 1_ip_,  &
                   work, info)
                 here = here - 1
               ELSE
                 IF (t(here,here-1)==zero) nbnext = 1
                 IF (nbnext==2) THEN
-                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-1, 2_ip_,         &
+                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-1, 2_ip_,      &
                     1_ip_, work, info)
                   IF (info/=0) THEN
                     ilst = here
@@ -15835,9 +15898,9 @@
                   END IF
                   here = here - 2
                 ELSE
-                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,    &
+                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,  &
                     work, info)
-                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-1, 1_ip_,         &
+                  CALL DLAEXC(wantq, n, t, ldt, q, ldq, here-1, 1_ip_,      &
                     1_ip_, work, info)
                   here = here - 2
                 END IF
@@ -15865,7 +15928,7 @@
           nounit = LSAME(diag, 'N')
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')      &
             .AND. .NOT. LSAME(trans,'C')) THEN
             info = -2
           ELSE IF (.NOT. nounit .AND. .NOT. LSAME(diag,'U')) THEN
@@ -15890,7 +15953,7 @@
             END DO
           END IF
           info = 0
-          CALL DTRSM('Left', uplo, trans, diag, n, nrhs, one, a, lda, b,       &
+          CALL DTRSM('Left', uplo, trans, diag, n, nrhs, one, a, lda, b,    &
             ldb)
           RETURN
         END SUBROUTINE
@@ -15902,7 +15965,7 @@
           REAL(r8_) :: zero
           PARAMETER (zero=0.0_r8_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, m1,      &
+          INTEGER(ip_) :: i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, m1,   &
             mu, nb, nbmin, nx
           EXTERNAL :: XERBLA, DLARZB, DLARZT, DLATRZ
           INTRINSIC :: MAX, MIN
@@ -15955,7 +16018,7 @@
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = lwork/ldwork
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGERQF',' ',m,n,-1_ip_,       &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'DGERQF',' ',m,n,-1_ip_,     &
                   -1_ip_))
               END IF
             END IF
@@ -15968,10 +16031,10 @@
               ib = MIN(m-i+1, nb)
               CALL DLATRZ(ib, n-i+1, n-m, a(i,i), lda, tau(i), work)
               IF (i>1) THEN
-                CALL DLARZT('Backward', 'Rowwise', n-m, ib, a(i,m1), lda,      &
+                CALL DLARZT('Backward', 'Rowwise', n-m, ib, a(i,m1), lda,   &
                   tau(i), work, ldwork)
-                CALL DLARZB('Right', 'No transpose', 'Backward', 'Rowwise',    &
-                  i-1, n-i+1, ib, n-m, a(i,m1), lda, work, ldwork, a(1,i),     &
+                CALL DLARZB('Right', 'No transpose', 'Backward', 'Rowwise',  &
+                  i-1, n-i+1, ib, n-m, a(i,m1), lda, work, ldwork, a(1,i),  &
                   lda, work(ib+1), ldwork)
               END IF
             END DO
@@ -16039,8 +16102,8 @@
           INTRINSIC :: CHAR, ICHAR, INT, MIN, REAL
           INTEGER(ip_) :: IEEECK, IPARMQ, IPARAM2STAGE
           EXTERNAL :: IEEECK, IPARMQ, IPARAM2STAGE
-          GO TO (10, 10, 10, 80, 90, 100, 110, 120, 130, 140, 150, 160, 160,   &
-            160, 160, 160) ispec
+          GO TO (10, 10, 10, 80, 90, 100, 110, 120, 130, 140, 150, 160,     &
+            160, 160, 160, 160) ispec
           ILAENV = -1
           RETURN
  10       CONTINUE
@@ -16057,12 +16120,12 @@
               END DO
             END IF
           ELSE IF (iz==233 .OR. iz==169) THEN
-            IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153) .OR.      &
+            IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153) .OR.   &
               (ic>=162 .AND. ic<=169)) THEN
               subnam(1:1) = CHAR(ic+64)
               DO i = 2, 6
                 ic = ICHAR(subnam(i:i))
-                IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153)       &
+                IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153)    &
                   .OR. (ic>=162 .AND. ic<=169)) subnam(i:i) = CHAR(ic+64)
               END DO
             END IF
@@ -16099,7 +16162,7 @@
               ELSE
                 nb = 64
               END IF
-            ELSE IF (c3=='QRF' .OR. c3=='RQF' .OR. c3=='LQF' .OR.              &
+            ELSE IF (c3=='QRF' .OR. c3=='RQF' .OR. c3=='LQF' .OR.           &
               c3=='QLF') THEN
               IF (sname) THEN
                 nb = 32
@@ -16211,24 +16274,24 @@
             END IF
           ELSE IF (sname .AND. c2=='OR') THEN
             IF (c3(1:1)=='G') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nb = 32
               END IF
             ELSE IF (c3(1:1)=='M') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nb = 32
               END IF
             END IF
           ELSE IF (cname .AND. c2=='UN') THEN
             IF (c3(1:1)=='G') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nb = 32
               END IF
             ELSE IF (c3(1:1)=='M') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nb = 32
               END IF
@@ -16306,7 +16369,8 @@
  60       CONTINUE
           nbmin = 2
           IF (c2=='GE') THEN
-            IF (c3=='QRF' .OR. c3=='RQF' .OR. c3=='LQF' .OR. c3=='QLF') THEN
+            IF (c3=='QRF' .OR. c3=='RQF' .OR. c3=='LQF' .OR. c3=='QLF')     &
+              THEN
               IF (sname) THEN
                 nbmin = 2
               ELSE
@@ -16347,24 +16411,24 @@
             END IF
           ELSE IF (sname .AND. c2=='OR') THEN
             IF (c3(1:1)=='G') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nbmin = 2
               END IF
             ELSE IF (c3(1:1)=='M') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nbmin = 2
               END IF
             END IF
           ELSE IF (cname .AND. c2=='UN') THEN
             IF (c3(1:1)=='G') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nbmin = 2
               END IF
             ELSE IF (c3(1:1)=='M') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nbmin = 2
               END IF
@@ -16380,7 +16444,8 @@
  70       CONTINUE
           nx = 0
           IF (c2=='GE') THEN
-            IF (c3=='QRF' .OR. c3=='RQF' .OR. c3=='LQF' .OR. c3=='QLF') THEN
+            IF (c3=='QRF' .OR. c3=='RQF' .OR. c3=='LQF' .OR. c3=='QLF')     &
+              THEN
               IF (sname) THEN
                 nx = 128
               ELSE
@@ -16409,14 +16474,14 @@
             END IF
           ELSE IF (sname .AND. c2=='OR') THEN
             IF (c3(1:1)=='G') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nx = 128
               END IF
             END IF
           ELSE IF (cname .AND. c2=='UN') THEN
             IF (c3(1:1)=='G') THEN
-              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.      &
+              IF (c4=='QR' .OR. c4=='RQ' .OR. c4=='LQ' .OR. c4=='QL' .OR.   &
                 c4=='HR' .OR. c4=='TR' .OR. c4=='BR') THEN
                 nx = 128
               END IF
@@ -16568,7 +16633,8 @@
           INTEGER(ip_) :: i, ic, iz
           CHARACTER :: subnam*6
           INTRINSIC :: LOG, MAX, MOD, NINT, REAL
-          IF ((ispec==ishfts) .OR. (ispec==inwin) .OR. (ispec==iacc22)) THEN
+          IF ((ispec==ishfts) .OR. (ispec==inwin) .OR. (ispec==iacc22))     &
+            THEN
             nh = ihi - ilo + 1
             ns = 2
             IF (nh>=30) ns = 4
@@ -16605,12 +16671,12 @@
                 END DO
               END IF
             ELSE IF (iz==233 .OR. iz==169) THEN
-              IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153) .OR.    &
-                (ic>=162 .AND. ic<=169)) THEN
+              IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153)      &
+                .OR. (ic>=162 .AND. ic<=169)) THEN
                 subnam(1:1) = CHAR(ic+64)
                 DO i = 2, 6
                   ic = ICHAR(subnam(i:i))
-                  IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153)     &
+                  IF ((ic>=129 .AND. ic<=137) .OR. (ic>=145 .AND. ic<=153)  &
                     .OR. (ic>=162 .AND. ic<=169)) subnam(i:i) = CHAR(ic+64)
                 END DO
               END IF
@@ -16638,12 +16704,12 @@
           END IF
         END FUNCTION
 
-        SUBROUTINE SBDSQR(uplo, n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu,     &
+        SUBROUTINE SBDSQR(uplo, n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu,  &
           c, ldc, work, info)
           USE GALAHAD_KINDS
           CHARACTER :: uplo
           INTEGER(ip_) :: info, ldc, ldu, ldvt, n, ncc, ncvt, nru
-          REAL(r4_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),          &
+          REAL(r4_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),       &
             work(*)
           REAL(r4_) :: zero
           PARAMETER (zero=0.0_r4_)
@@ -16662,15 +16728,15 @@
           INTEGER(ip_) :: maxitr
           PARAMETER (maxitr=6)
           LOGICAL :: lower, rotate
-          INTEGER(ip_) :: i, idir, isub, iter, iterdivn, j, ll, lll, m,        &
+          INTEGER(ip_) :: i, idir, isub, iter, iterdivn, j, ll, lll, m,     &
             maxitdivn, nm1, nm12, nm13, oldll, oldm
-          REAL(r4_) :: abse, abss, cosl, cosr, cs, eps, f, g, h, mu, oldcs,    &
-            oldsn, r, shift, sigmn, sigmx, sinl, sinr, sll, smax, smin, sminl, &
-            sminoa, sn, thresh, tol, tolmul, unfl
+          REAL(r4_) :: abse, abss, cosl, cosr, cs, eps, f, g, h, mu, oldcs,  &
+            oldsn, r, shift, sigmn, sigmx, sinl, sinr, sll, smax, smin,     &
+            sminl, sminoa, sn, thresh, tol, tolmul, unfl
           LOGICAL :: LSAME
           REAL(r4_) :: SLAMCH
           EXTERNAL :: LSAME, SLAMCH
-          EXTERNAL :: SLARTG, SLAS2, SLASQ1, SLASR, SLASV2,                    &
+          EXTERNAL :: SLARTG, SLAS2, SLASQ1, SLASR, SLASV2,                  &
             SROT, SSCAL, SSWAP, XERBLA
           INTRINSIC :: ABS, MAX, MIN, REAL, SIGN, SQRT
           info = 0
@@ -16685,12 +16751,12 @@
             info = -4
           ELSE IF (ncc<0) THEN
             info = -5
-          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,       &
+          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,    &
             n))) THEN
             info = -9
           ELSE IF (ldu<MAX(1,nru)) THEN
             info = -11
-          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))      &
+          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))   &
             THEN
             info = -13
           END IF
@@ -16721,9 +16787,9 @@
               work(i) = cs
               work(nm1+i) = sn
             END DO
-            IF (nru>0) CALL SLASR('R', 'V', 'F', nru, n, work(1), work(n),     &
+            IF (nru>0) CALL SLASR('R', 'V', 'F', nru, n, work(1), work(n),  &
               u, ldu)
-            IF (ncc>0) CALL SLASR('L', 'V', 'F', n, ncc, work(1), work(n),     &
+            IF (ncc>0) CALL SLASR('L', 'V', 'F', n, ncc, work(1), work(n),  &
               c, ldc)
           END IF
           tolmul = MAX(ten, MIN(hndrd,eps**meigth))
@@ -16787,16 +16853,16 @@
  90       CONTINUE
           ll = ll + 1
           IF (ll==m-1) THEN
-            CALL SLASV2(d(m-1), e(m-1), d(m), sigmn, sigmx, sinr, cosr,        &
+            CALL SLASV2(d(m-1), e(m-1), d(m), sigmn, sigmx, sinr, cosr,     &
               sinl, cosl)
             d(m-1) = sigmx
             e(m-1) = zero
             d(m) = sigmn
-            IF (ncvt>0) CALL SROT(ncvt, vt(m-1,1), ldvt, vt(m,1), ldvt,        &
+            IF (ncvt>0) CALL SROT(ncvt, vt(m-1,1), ldvt, vt(m,1), ldvt,     &
               cosr, sinr)
-            IF (nru>0) CALL SROT(nru, u(1,m-1), 1_ip_, u(1,m), 1_ip_, cosl,    &
+            IF (nru>0) CALL SROT(nru, u(1,m-1), 1_ip_, u(1,m), 1_ip_, cosl,  &
               sinl)
-            IF (ncc>0) CALL SROT(ncc, c(m-1,1), ldc, c(m,1), ldc, cosl,        &
+            IF (ncc>0) CALL SROT(ncc, c(m-1,1), ldc, c(m,1), ldc, cosl,     &
               sinl)
             m = m - 2
             GO TO 60
@@ -16809,7 +16875,7 @@
             END IF
           END IF
           IF (idir==1) THEN
-            IF (ABS(e(m-1))<=ABS(tol)*ABS(d(m)) .OR. (tol<zero .AND. ABS(e     &
+            IF (ABS(e(m-1))<=ABS(tol)*ABS(d(m)) .OR. (tol<zero .AND. ABS(e  &
               (m-1))<=thresh)) THEN
               e(m-1) = zero
               GO TO 60
@@ -16827,7 +16893,7 @@
               END DO
             END IF
           ELSE
-            IF (ABS(e(ll))<=ABS(tol)*ABS(d(ll)) .OR. (tol<zero .AND. ABS(      &
+            IF (ABS(e(ll))<=ABS(tol)*ABS(d(ll)) .OR. (tol<zero .AND. ABS(   &
               e(ll))<=thresh)) THEN
               e(ll) = zero
               GO TO 60
@@ -16878,11 +16944,11 @@
               h = d(m)*cs
               d(m) = h*oldcs
               e(m-1) = h*oldsn
-              IF (ncvt>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),     &
+              IF (ncvt>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),  &
                 work(n), vt(ll,1), ldvt)
-              IF (nru>0) CALL SLASR('R', 'V', 'F', nru, m-ll+1,                &
+              IF (nru>0) CALL SLASR('R', 'V', 'F', nru, m-ll+1,             &
                 work(nm12+1), work(nm13+1), u(1,ll), ldu)
-              IF (ncc>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncc,                &
+              IF (ncc>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncc,             &
                 work(nm12+1), work(nm13+1), c(ll,1), ldc)
               IF (ABS(e(m-1))<=thresh) e(m-1) = zero
             ELSE
@@ -16900,11 +16966,11 @@
               h = d(ll)*cs
               d(ll) = h*oldcs
               e(ll) = h*oldsn
-              IF (ncvt>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncvt,              &
+              IF (ncvt>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncvt,           &
                 work(nm12+1), work(nm13+1), vt(ll,1), ldvt)
-              IF (nru>0) CALL SLASR('R', 'V', 'B', nru, m-ll+1, work(1),       &
+              IF (nru>0) CALL SLASR('R', 'V', 'B', nru, m-ll+1, work(1),    &
                 work(n), u(1,ll), ldu)
-              IF (ncc>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncc, work(1),       &
+              IF (ncc>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncc, work(1),    &
                 work(n), c(ll,1), ldc)
               IF (ABS(e(ll))<=thresh) e(ll) = zero
             END IF
@@ -16933,11 +16999,11 @@
                 work(i-ll+1+nm13) = sinl
               END DO
               e(m-1) = f
-              IF (ncvt>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),     &
+              IF (ncvt>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncvt, work(1),  &
                 work(n), vt(ll,1), ldvt)
-              IF (nru>0) CALL SLASR('R', 'V', 'F', nru, m-ll+1,                &
+              IF (nru>0) CALL SLASR('R', 'V', 'F', nru, m-ll+1,             &
                 work(nm12+1), work(nm13+1), u(1,ll), ldu)
-              IF (ncc>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncc,                &
+              IF (ncc>0) CALL SLASR('L', 'V', 'F', m-ll+1, ncc,             &
                 work(nm12+1), work(nm13+1), c(ll,1), ldc)
               IF (ABS(e(m-1))<=thresh) e(m-1) = zero
             ELSE
@@ -16965,11 +17031,11 @@
               END DO
               e(ll) = f
               IF (ABS(e(ll))<=thresh) e(ll) = zero
-              IF (ncvt>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncvt,              &
+              IF (ncvt>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncvt,           &
                 work(nm12+1), work(nm13+1), vt(ll,1), ldvt)
-              IF (nru>0) CALL SLASR('R', 'V', 'B', nru, m-ll+1, work(1),       &
+              IF (nru>0) CALL SLASR('R', 'V', 'B', nru, m-ll+1, work(1),    &
                 work(n), u(1,ll), ldu)
-              IF (ncc>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncc, work(1),       &
+              IF (ncc>0) CALL SLASR('L', 'V', 'B', m-ll+1, ncc, work(1),    &
                 work(n), c(ll,1), ldc)
             END IF
           END IF
@@ -16993,9 +17059,9 @@
             IF (isub/=n+1-i) THEN
               d(isub) = d(n+1-i)
               d(n+1-i) = smin
-              IF (ncvt>0) CALL SSWAP(ncvt, vt(isub,1), ldvt, vt(n+1-i,1),      &
+              IF (ncvt>0) CALL SSWAP(ncvt, vt(isub,1), ldvt, vt(n+1-i,1),   &
                 ldvt)
-              IF (nru>0) CALL SSWAP(nru, u(1,isub), 1_ip_, u(1,n+1-i),         &
+              IF (nru>0) CALL SSWAP(nru, u(1,isub), 1_ip_, u(1,n+1-i),      &
                 1_ip_)
               IF (ncc>0) CALL SSWAP(ncc, c(isub,1), ldc, c(n+1-i,1), ldc)
             END IF
@@ -17054,15 +17120,15 @@
               CALL SLARFG(m-i+1, a(i,i), a(MIN(i+1,m),i), 1_ip_, tauq(i))
               d(i) = a(i, i)
               a(i, i) = one
-              IF (i<n) CALL SLARF('Left', m-i+1, n-i, a(i,i), 1_ip_,           &
+              IF (i<n) CALL SLARF('Left', m-i+1, n-i, a(i,i), 1_ip_,        &
                 tauq(i), a(i,i+1), lda, work)
               a(i, i) = d(i)
               IF (i<n) THEN
                 CALL SLARFG(n-i, a(i,i+1), a(i,MIN(i+2,n)), lda, taup(i))
                 e(i) = a(i, i+1)
                 a(i, i+1) = one
-                CALL SLARF('Right', m-i, n-i, a(i,i+1), lda, taup(i), a(i+1,   &
-                  i+1), lda, work)
+                CALL SLARF('Right', m-i, n-i, a(i,i+1), lda, taup(i),       &
+                  a(i+1,i+1), lda, work)
                 a(i, i+1) = e(i)
               ELSE
                 taup(i) = zero
@@ -17073,14 +17139,14 @@
               CALL SLARFG(n-i+1, a(i,i), a(i,MIN(i+1,n)), lda, taup(i))
               d(i) = a(i, i)
               a(i, i) = one
-              IF (i<m) CALL SLARF('Right', m-i, n-i+1, a(i,i), lda, taup(i),   &
-                a(i+1,i), lda, work)
+              IF (i<m) CALL SLARF('Right', m-i, n-i+1, a(i,i), lda,         &
+                taup(i), a(i+1,i), lda, work)
               a(i, i) = d(i)
               IF (i<m) THEN
                 CALL SLARFG(m-i, a(i+1,i), a(MIN(i+2,m),i), 1_ip_, tauq(i))
                 e(i) = a(i+1, i)
                 a(i+1, i) = one
-                CALL SLARF('Left', m-i, n-i, a(i+1,i), 1_ip_, tauq(i),         &
+                CALL SLARF('Left', m-i, n-i, a(i+1,i), 1_ip_, tauq(i),      &
                   a(i+1,i+1), lda, work)
                 a(i+1, i) = e(i)
               ELSE
@@ -17091,14 +17157,15 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGEBRD(m, n, a, lda, d, e, tauq, taup, work, lwork, info)
+        SUBROUTINE SGEBRD(m, n, a, lda, d, e, tauq, taup, work, lwork,      &
+          info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, lwork, m, n
           REAL(r4_) :: a(lda, *), d(*), e(*), taup(*), tauq(*), work(*)
           REAL(r4_) :: one
           PARAMETER (one=1.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, iinfo, j, ldwrkx, ldwrky, lwkopt, minmn, nb,      &
+          INTEGER(ip_) :: i, iinfo, j, ldwrkx, ldwrky, lwkopt, minmn, nb,   &
             nbmin, nx, ws
           EXTERNAL :: SGEBD2, SGEMM, SLABRD, XERBLA
           INTRINSIC :: MAX, MIN, REAL
@@ -17150,14 +17217,14 @@
             nx = minmn
           END IF
           DO i = 1, minmn - nx, nb
-            CALL SLABRD(m-i+1, n-i+1, nb, a(i,i), lda, d(i), e(i), tauq(i),    &
+            CALL SLABRD(m-i+1, n-i+1, nb, a(i,i), lda, d(i), e(i), tauq(i),  &
               taup(i), work, ldwrkx, work(ldwrkx*nb+1), ldwrky)
-            CALL SGEMM('No transpose', 'Transpose', m-i-nb+1, n-i-nb+1, nb,    &
-              -one, a(i+nb,i), lda, work(ldwrkx*nb+nb+1), ldwrky, one, a(i+nb, &
+            CALL SGEMM('No transpose', 'Transpose', m-i-nb+1, n-i-nb+1, nb,  &
+              -one, a(i+nb,i), lda, work(ldwrkx*nb+nb+1), ldwrky, one,      &
+              a(i+nb,i+nb), lda)
+            CALL SGEMM('No transpose', 'No transpose', m-i-nb+1, n-i-nb+1,  &
+              nb, -one, work(nb+1), ldwrkx, a(i,i+nb), lda, one, a(i+nb,     &
               i+nb), lda)
-            CALL SGEMM('No transpose', 'No transpose', m-i-nb+1, n-i-nb+1,     &
-              nb, -one, work(nb+1), ldwrkx, a(i,i+nb), lda, one, a(i+nb,i+nb), &
-              lda)
             IF (m>=n) THEN
               DO j = i, i + nb - 1
                 a(j, j) = d(j)
@@ -17170,7 +17237,7 @@
               END DO
             END IF
           END DO
-          CALL SGEBD2(m-i+1, n-i+1, a(i,i), lda, d(i), e(i), tauq(i),          &
+          CALL SGEBD2(m-i+1, n-i+1, a(i,i), lda, d(i), e(i), tauq(i),       &
             taup(i), work, iinfo)
           work(1) = ws
           RETURN
@@ -17204,9 +17271,9 @@
             CALL SLARFG(ihi-i, a(i+1,i), a(MIN(i+2,n),i), 1_ip_, tau(i))
             aii = a(i+1, i)
             a(i+1, i) = one
-            CALL SLARF('Right', ihi, ihi-i, a(i+1,i), 1_ip_, tau(i), a(1,      &
+            CALL SLARF('Right', ihi, ihi-i, a(i+1,i), 1_ip_, tau(i), a(1,    &
               i+1), lda, work)
-            CALL SLARF('Left', ihi-i, n-i, a(i+1,i), 1_ip_, tau(i), a(i+1,     &
+            CALL SLARF('Left', ihi-i, n-i, a(i+1,i), 1_ip_, tau(i), a(i+1,   &
               i+1), lda, work)
             a(i+1, i) = aii
           END DO
@@ -17222,10 +17289,10 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin,  &
             nh, nx
           REAL(r4_) :: ei
-          EXTERNAL :: SAXPY, SGEHD2, SGEMM, SLAHR2, SLARFB,                    &
+          EXTERNAL :: SAXPY, SGEHD2, SGEMM, SLAHR2, SLARFB,                  &
             STRMM, XERBLA
           INTRINSIC :: MAX, MIN
           INTEGER(ip_) :: ILAENV
@@ -17271,7 +17338,7 @@
             nx = MAX(nb, ILAENV(3_ip_,'SGEHRD',' ',n,ilo,ihi,-1_ip_))
             IF (nx<nh) THEN
               IF (lwork<n*nb+tsize) THEN
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGEHRD',' ',n,ilo,ihi,        &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGEHRD',' ',n,ilo,ihi,      &
                   -1_ip_))
                 IF (lwork>=(n*nbmin+tsize)) THEN
                   nb = (lwork-tsize)/n
@@ -17288,21 +17355,21 @@
             iwt = 1 + n*nb
             DO i = ilo, ihi - 1 - nx, nb
               ib = MIN(nb, ihi-i)
-              CALL SLAHR2(ihi, i, ib, a(1,i), lda, tau(i), work(iwt), ldt,     &
+              CALL SLAHR2(ihi, i, ib, a(1,i), lda, tau(i), work(iwt), ldt,  &
                 work, ldwork)
               ei = a(i+ib, i+ib-1)
               a(i+ib, i+ib-1) = one
-              CALL SGEMM('No transpose', 'Transpose', ihi, ihi-i-ib+1, ib,     &
+              CALL SGEMM('No transpose', 'Transpose', ihi, ihi-i-ib+1, ib,  &
                 -one, work, ldwork, a(i+ib,i), lda, one, a(1,i+ib), lda)
               a(i+ib, i+ib-1) = ei
-              CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', i, ib-1,       &
+              CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', i, ib-1,    &
                 one, a(i+1,i), lda, work, ldwork)
               DO j = 0, ib - 2
-                CALL SAXPY(i, -one, work(ldwork*j+1), 1_ip_, a(1,i+j+1),       &
+                CALL SAXPY(i, -one, work(ldwork*j+1), 1_ip_, a(1,i+j+1),    &
                   1_ip_)
               END DO
-              CALL SLARFB('Left', 'Transpose', 'Forward', 'Columnwise',        &
-                ihi-i, n-i-ib+1, ib, a(i+1,i), lda, work(iwt), ldt, a(i+1,     &
+              CALL SLARFB('Left', 'Transpose', 'Forward', 'Columnwise',     &
+                ihi-i, n-i-ib+1, ib, a(i+1,i), lda, work(iwt), ldt, a(i+1,   &
                 i+ib), lda, work, ldwork)
             END DO
           END IF
@@ -17339,8 +17406,8 @@
             IF (i<m) THEN
               aii = a(i, i)
               a(i, i) = one
-              CALL SLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,i),   &
-                lda, work)
+              CALL SLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,    &
+                i), lda, work)
               a(i, i) = aii
             END IF
           END DO
@@ -17352,7 +17419,7 @@
           INTEGER(ip_) :: info, lda, lwork, m, n
           REAL(r4_) :: a(lda, *), tau(*), work(*)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,  &
             nx
           EXTERNAL :: SGELQ2, SLARFB, SLARFT, XERBLA
           INTRINSIC :: MAX, MIN
@@ -17393,7 +17460,7 @@
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = lwork/ldwork
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGELQF',' ',m,n,-1_ip_,       &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGELQF',' ',m,n,-1_ip_,     &
                   -1_ip_))
               END IF
             END IF
@@ -17403,23 +17470,23 @@
               ib = MIN(k-i+1, nb)
               CALL SGELQ2(ib, n-i+1, a(i,i), lda, tau(i), work, iinfo)
               IF (i+ib<=m) THEN
-                CALL SLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,      &
+                CALL SLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,   &
                   tau(i), work, ldwork)
-                CALL SLARFB('Right', 'No transpose', 'Forward', 'Rowwise',     &
-                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),   &
+                CALL SLARFB('Right', 'No transpose', 'Forward', 'Rowwise',  &
+                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),&
                   lda, work(ib+1), ldwork)
               END IF
             END DO
           ELSE
             i = 1
           END IF
-          IF (i<=k) CALL SGELQ2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,       &
+          IF (i<=k) CALL SGELQ2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
           work(1) = iws
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork,       &
+        SUBROUTINE SGELS(trans, m, n, nrhs, a, lda, b, ldb, work, lwork,    &
           info)
           USE GALAHAD_KINDS
           CHARACTER :: trans
@@ -17435,7 +17502,7 @@
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
           EXTERNAL :: LSAME, ILAENV, SLAMCH, SLANGE
-          EXTERNAL :: SGELQF, SGEQRF, SLABAD, SLASCL,                          &
+          EXTERNAL :: SGELQF, SGEQRF, SLABAD, SLASCL,                       &
             SLASET, SORMLQ, SORMQR, STRTRS, XERBLA
           INTRINSIC :: MAX, MIN, REAL
           info = 0
@@ -17493,10 +17560,12 @@
           anrm = SLANGE('M', m, n, a, lda, rwork)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL SLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -17507,28 +17576,28 @@
           bnrm = SLANGE('M', brow, nrhs, b, ldb, rwork)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, brow, nrhs, b, ldb,   &
-              info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, brow, nrhs, b,     &
+              ldb, info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, brow, nrhs, b, ldb,   &
-              info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, brow, nrhs, b,     &
+              ldb, info)
             ibscl = 2
           END IF
           IF (m>=n) THEN
             CALL SGEQRF(m, n, a, lda, work(1), work(mn+1), lwork-mn, info)
             IF (.NOT. tpsd) THEN
-              CALL SORMQR('Left', 'Transpose', m, nrhs, n, a, lda, work(1),    &
+              CALL SORMQR('Left', 'Transpose', m, nrhs, n, a, lda, work(1),  &
                 b, ldb, work(mn+1), lwork-mn, info)
-              CALL STRTRS('Upper', 'No transpose', 'Non-unit', n, nrhs, a,     &
+              CALL STRTRS('Upper', 'No transpose', 'Non-unit', n, nrhs, a,  &
                 lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
               END IF
               scllen = n
             ELSE
-              CALL STRTRS('Upper', 'Transpose', 'Non-unit', n, nrhs, a, lda,   &
-                b, ldb, info)
+              CALL STRTRS('Upper', 'Transpose', 'Non-unit', n, nrhs, a,     &
+                lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
               END IF
@@ -17537,14 +17606,14 @@
                   b(i, j) = zero
                 END DO
               END DO
-              CALL SORMQR('Left', 'No transpose', m, nrhs, n, a, lda,          &
+              CALL SORMQR('Left', 'No transpose', m, nrhs, n, a, lda,       &
                 work(1), b, ldb, work(mn+1), lwork-mn, info)
               scllen = m
             END IF
           ELSE
             CALL SGELQF(m, n, a, lda, work(1), work(mn+1), lwork-mn, info)
             IF (.NOT. tpsd) THEN
-              CALL STRTRS('Lower', 'No transpose', 'Non-unit', m, nrhs, a,     &
+              CALL STRTRS('Lower', 'No transpose', 'Non-unit', m, nrhs, a,  &
                 lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
@@ -17554,14 +17623,14 @@
                   b(i, j) = zero
                 END DO
               END DO
-              CALL SORMLQ('Left', 'Transpose', n, nrhs, m, a, lda, work(1),    &
+              CALL SORMLQ('Left', 'Transpose', n, nrhs, m, a, lda, work(1),  &
                 b, ldb, work(mn+1), lwork-mn, info)
               scllen = n
             ELSE
-              CALL SORMLQ('Left', 'No transpose', n, nrhs, m, a, lda,          &
+              CALL SORMLQ('Left', 'No transpose', n, nrhs, m, a, lda,       &
                 work(1), b, ldb, work(mn+1), lwork-mn, info)
-              CALL STRTRS('Lower', 'Transpose', 'Non-unit', m, nrhs, a, lda,   &
-                b, ldb, info)
+              CALL STRTRS('Lower', 'Transpose', 'Non-unit', m, nrhs, a,     &
+                lda, b, ldb, info)
               IF (info>0) THEN
                 RETURN
               END IF
@@ -17569,17 +17638,17 @@
             END IF
           END IF
           IF (iascl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, scllen, nrhs, b,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, scllen, nrhs, b,   &
               ldb, info)
           ELSE IF (iascl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, scllen, nrhs, b,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, scllen, nrhs, b,   &
               ldb, info)
           END IF
           IF (ibscl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, scllen, nrhs, b,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, scllen, nrhs, b,   &
               ldb, info)
           ELSE IF (ibscl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, scllen, nrhs, b,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, scllen, nrhs, b,   &
               ldb, info)
           END IF
  50       CONTINUE
@@ -17587,7 +17656,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGELSD(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,    &
+        SUBROUTINE SGELSD(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,  &
           lwork, iwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, ldb, lwork, m, n, nrhs, rank
@@ -17597,12 +17666,12 @@
           REAL(r4_) :: zero, one, two
           PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: iascl, ibscl, ie, il, itau, itaup, itauq, ldwork,    &
-            liwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork,      &
+          INTEGER(ip_) :: iascl, ibscl, ie, il, itau, itaup, itauq, ldwork,  &
+            liwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork,   &
             smlsiz, wlalsd
           REAL(r4_) :: anrm, bignum, bnrm, eps, sfmin, smlnum
-          EXTERNAL :: SGEBRD, SGELQF, SGEQRF, SLABAD,                          &
-            SLACPY, SLALSD, SLASCL, SLASET, SORMBR, SORMLQ,                    &
+          EXTERNAL :: SGEBRD, SGELQF, SGEQRF, SLABAD,                       &
+            SLACPY, SLALSD, SLASCL, SLASET, SORMBR, SORMLQ,                 &
             SORMQR, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
@@ -17628,59 +17697,59 @@
             maxwrk = 1
             liwork = 1
             IF (minmn>0) THEN
-              smlsiz = ILAENV(9_ip_, 'SGELSD', ' ', 0_ip_, 0_ip_, 0_ip_,       &
+              smlsiz = ILAENV(9_ip_, 'SGELSD', ' ', 0_ip_, 0_ip_, 0_ip_,    &
                 0_ip_)
               mnthr = ILAENV(6_ip_, 'SGELSD', ' ', m, n, nrhs, -1_ip_)
-              nlvl = MAX(INT(LOG(REAL(minmn)/REAL(smlsiz+1))/LOG(two))+1,      &
+              nlvl = MAX(INT(LOG(REAL(minmn)/REAL(smlsiz+1))/LOG(two))+1,   &
                 0_ip_)
               liwork = 3*minmn*nlvl + 11*minmn
               mm = m
               IF (m>=n .AND. m>=mnthr) THEN
                 mm = n
-                maxwrk = MAX(maxwrk, n+n*ILAENV(1_ip_,'SGEQRF',' ',m,n,        &
+                maxwrk = MAX(maxwrk, n+n*ILAENV(1_ip_,'SGEQRF',' ',m,n,      &
                   -1_ip_,-1_ip_))
-                maxwrk = MAX(maxwrk, n+nrhs*ILAENV(1_ip_,'SORMQR','LT',m,      &
+                maxwrk = MAX(maxwrk, n+nrhs*ILAENV(1_ip_,'SORMQR','LT',m,    &
                   nrhs, n,-1_ip_))
               END IF
               IF (m>=n) THEN
-                maxwrk = MAX(maxwrk, 3*n+(mm+n)*ILAENV(1_ip_,'SGEBRD',' ',     &
+                maxwrk = MAX(maxwrk, 3*n+(mm+n)*ILAENV(1_ip_,'SGEBRD',' ',   &
                   mm,n ,-1_ip_,-1_ip_))
-                maxwrk = MAX(maxwrk, 3*n+nrhs*ILAENV(1_ip_,'SORMBR','QLT',     &
+                maxwrk = MAX(maxwrk, 3*n+nrhs*ILAENV(1_ip_,'SORMBR','QLT',   &
                   mm, nrhs,n,-1_ip_))
-                maxwrk = MAX(maxwrk, 3*n+(n-1)*ILAENV(1_ip_,'SORMBR','PLN',    &
+                maxwrk = MAX(maxwrk, 3*n+(n-1)*ILAENV(1_ip_,'SORMBR','PLN',  &
                   n, nrhs,n,-1_ip_))
-                wlalsd = 9*n + 2*n*smlsiz + 8*n*nlvl + n*nrhs +                &
+                wlalsd = 9*n + 2*n*smlsiz + 8*n*nlvl + n*nrhs +             &
                   (smlsiz+1)**2
                 maxwrk = MAX(maxwrk, 3*n+wlalsd)
                 minwrk = MAX(3*n+mm, 3*n+nrhs, 3*n+wlalsd)
               END IF
               IF (n>m) THEN
-                wlalsd = 9*m + 2*m*smlsiz + 8*m*nlvl + m*nrhs +                &
+                wlalsd = 9*m + 2*m*smlsiz + 8*m*nlvl + m*nrhs +             &
                   (smlsiz+1)**2
                 IF (n>=mnthr) THEN
-                  maxwrk = m + m*ILAENV(1_ip_, 'SGELQF', ' ', m, n, -1_ip_,    &
+                  maxwrk = m + m*ILAENV(1_ip_, 'SGELQF', ' ', m, n, -1_ip_,  &
                     -1_ip_)
-                  maxwrk = MAX(maxwrk, m*m+4*m+2*m*ILAENV(1_ip_,'SGEBRD',      &
+                  maxwrk = MAX(maxwrk, m*m+4*m+2*m*ILAENV(1_ip_,'SGEBRD',    &
                     ' ',m ,m,-1_ip_,-1_ip_))
-                  maxwrk = MAX(maxwrk, m*m+4*m+nrhs*ILAENV(1_ip_,'SORMBR',     &
+                  maxwrk = MAX(maxwrk, m*m+4*m+nrhs*ILAENV(1_ip_,'SORMBR',  &
                     'QLT',m,nrhs,m,-1_ip_))
-                  maxwrk = MAX(maxwrk, m*m+4*m+(m-1)*ILAENV(1_ip_,'SORMBR',    &
+                  maxwrk = MAX(maxwrk, m*m+4*m+(m-1)*ILAENV(1_ip_,'SORMBR',  &
                     'PLN',m,nrhs,m,-1_ip_))
                   IF (nrhs>1) THEN
                     maxwrk = MAX(maxwrk, m*m+m+m*nrhs)
                   ELSE
                     maxwrk = MAX(maxwrk, m*m+2*m)
                   END IF
-                  maxwrk = MAX(maxwrk, m+nrhs*ILAENV(1_ip_,'SORMLQ','LT',n,    &
+                  maxwrk = MAX(maxwrk, m+nrhs*ILAENV(1_ip_,'SORMLQ','LT',n,  &
                     nrhs,m,-1_ip_))
                   maxwrk = MAX(maxwrk, m*m+4*m+wlalsd)
                   maxwrk = MAX(maxwrk, 4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m))
                 ELSE
-                  maxwrk = 3*m + (n+m)*ILAENV(1_ip_, 'SGEBRD', ' ', m, n,      &
+                  maxwrk = 3*m + (n+m)*ILAENV(1_ip_, 'SGEBRD', ' ', m, n,   &
                     -1_ip_, -1_ip_)
-                  maxwrk = MAX(maxwrk, 3*m+nrhs*ILAENV(1_ip_,'SORMBR','QLT',   &
-                    m, nrhs,n,-1_ip_))
-                  maxwrk = MAX(maxwrk, 3*m+m*ILAENV(1_ip_,'SORMBR','PLN',n,    &
+                  maxwrk = MAX(maxwrk, 3*m+nrhs*ILAENV(1_ip_,'SORMBR',       &
+                    'QLT',m, nrhs,n,-1_ip_))
+                  maxwrk = MAX(maxwrk, 3*m+m*ILAENV(1_ip_,'SORMBR','PLN',n,  &
                     nrhs,m,-1_ip_))
                   maxwrk = MAX(maxwrk, 3*m+wlalsd)
                 END IF
@@ -17712,10 +17781,12 @@
           anrm = SLANGE('M', m, n, a, lda, work)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL SLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -17726,11 +17797,11 @@
           bnrm = SLANGE('M', m, nrhs, b, ldb, work)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,   &
               info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,   &
               info)
             ibscl = 2
           END IF
@@ -17741,9 +17812,9 @@
               mm = n
               itau = 1
               nwork = itau + n
-              CALL SGEQRF(m, n, a, lda, work(itau), work(nwork),               &
+              CALL SGEQRF(m, n, a, lda, work(itau), work(nwork),            &
                 lwork-nwork+1, info)
-              CALL SORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,    &
+              CALL SORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,  &
                 work(nwork), lwork-nwork+1, info)
               IF (n>1) THEN
                 CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
@@ -17753,25 +17824,25 @@
             itauq = ie + n
             itaup = itauq + n
             nwork = itaup + n
-            CALL SGEBRD(mm, n, a, lda, s, work(ie), work(itauq),               &
+            CALL SGEBRD(mm, n, a, lda, s, work(ie), work(itauq),            &
               work(itaup), work(nwork), lwork-nwork+1, info)
-            CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,    &
+            CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
-            CALL SLALSD('U', smlsiz, n, nrhs, s, work(ie), b, ldb, rcond,      &
+            CALL SLALSD('U', smlsiz, n, nrhs, s, work(ie), b, ldb, rcond,   &
               rank, work(nwork), iwork, info)
             IF (info/=0) THEN
               GO TO 10
             END IF
-            CALL SORMBR('P', 'L', 'N', n, nrhs, n, a, lda, work(itaup), b,     &
+            CALL SORMBR('P', 'L', 'N', n, nrhs, n, a, lda, work(itaup), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
-          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m,       &
+          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m,    &
             wlalsd)) THEN
             ldwork = m
-            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),                 &
+            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),               &
               m*lda+m+m*nrhs,4*m+m*lda+wlalsd)) ldwork = lda
             itau = 1
             nwork = m + 1
-            CALL SGELQF(m, n, a, lda, work(itau), work(nwork),                 &
+            CALL SGELQF(m, n, a, lda, work(itau), work(nwork),              &
               lwork-nwork+1, info)
             il = nwork
             CALL SLACPY('L', m, m, a, lda, work(il), ldwork)
@@ -17780,54 +17851,54 @@
             itauq = ie + m
             itaup = itauq + m
             nwork = itaup + m
-            CALL SGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),      &
+            CALL SGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),   &
               work(itaup), work(nwork), lwork-nwork+1, info)
-            CALL SORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,           &
+            CALL SORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,        &
               work(itauq), b, ldb, work(nwork), lwork-nwork+1, info)
-            CALL SLALSD('U', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,      &
+            CALL SLALSD('U', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,   &
               rank, work(nwork), iwork, info)
             IF (info/=0) THEN
               GO TO 10
             END IF
-            CALL SORMBR('P', 'L', 'N', m, nrhs, m, work(il), ldwork,           &
+            CALL SORMBR('P', 'L', 'N', m, nrhs, m, work(il), ldwork,        &
               work(itaup), b, ldb, work(nwork), lwork-nwork+1, info)
             CALL SLASET('F', n-m, nrhs, zero, zero, b(m+1,1), ldb)
             nwork = itau + m
-            CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,      &
+            CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,   &
               work(nwork), lwork-nwork+1, info)
           ELSE
             ie = 1
             itauq = ie + m
             itaup = itauq + m
             nwork = itaup + m
-            CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq), work(itaup),   &
-              work(nwork), lwork-nwork+1, info)
-            CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,     &
+            CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),             &
+              work(itaup), work(nwork), lwork-nwork+1, info)
+            CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
-            CALL SLALSD('L', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,      &
+            CALL SLALSD('L', smlsiz, m, nrhs, s, work(ie), b, ldb, rcond,   &
               rank, work(nwork), iwork, info)
             IF (info/=0) THEN
               GO TO 10
             END IF
-            CALL SORMBR('P', 'L', 'N', n, nrhs, m, a, lda, work(itaup), b,     &
+            CALL SORMBR('P', 'L', 'N', n, nrhs, m, a, lda, work(itaup), b,  &
               ldb, work(nwork), lwork-nwork+1, info)
           END IF
           IF (iascl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,   &
               info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           ELSE IF (iascl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,   &
               info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           END IF
           IF (ibscl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,   &
               info)
           ELSE IF (ibscl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,   &
               info)
           END IF
  10       CONTINUE
@@ -17836,7 +17907,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,    &
+        SUBROUTINE SGELSS(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work,  &
           lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, ldb, lwork, m, n, nrhs, rank
@@ -17845,15 +17916,15 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: bdspac, bl, chunk, i, iascl, ibscl, ie, il, itau,    &
-            itaup, itauq, iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm,     &
+          INTEGER(ip_) :: bdspac, bl, chunk, i, iascl, ibscl, ie, il, itau,  &
+            itaup, itauq, iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm,  &
             mnthr
-          INTEGER(ip_) :: lwork_sgeqrf, lwork_sormqr, lwork_sgebrd,            &
+          INTEGER(ip_) :: lwork_sgeqrf, lwork_sormqr, lwork_sgebrd,         &
             lwork_sormbr, lwork_sorgbr, lwork_sormlq
           REAL(r4_) :: anrm, bignum, bnrm, eps, sfmin, smlnum, thr
           REAL(r4_) :: dum(1)
-          EXTERNAL :: SBDSQR, SCOPY, SGEBRD, SGELQF, SGEMM,                    &
-            SGEMV, SGEQRF, SLABAD, SLACPY, SLASCL, SLASET,                     &
+          EXTERNAL :: SBDSQR, SCOPY, SGEBRD, SGELQF, SGEMM,                  &
+            SGEMV, SGEQRF, SLABAD, SLACPY, SLASCL, SLASET,                  &
             SORGBR, SORMBR, SORMLQ, SORMQR, SRSCL, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
@@ -17883,7 +17954,7 @@
               IF (m>=n .AND. m>=mnthr) THEN
                 CALL SGEQRF(m, n, a, lda, dum(1), dum(1), -1_ip_, info)
                 lwork_sgeqrf = dum(1)
-                CALL SORMQR('L', 'T', m, nrhs, n, a, lda, dum(1), b, ldb,      &
+                CALL SORMQR('L', 'T', m, nrhs, n, a, lda, dum(1), b, ldb,   &
                   dum(1), -1_ip_, info)
                 lwork_sormqr = dum(1)
                 mm = n
@@ -17892,13 +17963,13 @@
               END IF
               IF (m>=n) THEN
                 bdspac = MAX(1, 5*n)
-                CALL SGEBRD(mm, n, a, lda, s, dum(1), dum(1), dum(1),          &
+                CALL SGEBRD(mm, n, a, lda, s, dum(1), dum(1), dum(1),       &
                   dum(1), -1_ip_, info)
                 lwork_sgebrd = dum(1)
-                CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, dum(1), b,     &
+                CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, dum(1), b,  &
                   ldb, dum(1), -1_ip_, info)
                 lwork_sormbr = dum(1)
-                CALL SORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,      &
+                CALL SORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,   &
                   info)
                 lwork_sorgbr = dum(1)
                 maxwrk = MAX(maxwrk, 3*n+lwork_sgebrd)
@@ -17913,19 +17984,19 @@
                 bdspac = MAX(1, 5*m)
                 minwrk = MAX(3*m+nrhs, 3*m+n, bdspac)
                 IF (n>=mnthr) THEN
-                  CALL SGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1),         &
+                  CALL SGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
                   lwork_sgebrd = dum(1)
-                  CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, dum(1), b,    &
+                  CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, dum(1), b,  &
                     ldb, dum(1), -1_ip_, info)
                   lwork_sormbr = dum(1)
-                  CALL SORGBR('P', m, m, m, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL SORGBR('P', m, m, m, a, lda, dum(1), dum(1), -1_ip_,  &
                     info)
                   lwork_sorgbr = dum(1)
-                  CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, dum(1), b, ldb,    &
+                  CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, dum(1), b, ldb,  &
                     dum(1), -1_ip_, info)
                   lwork_sormlq = dum(1)
-                  maxwrk = m + m*ILAENV(1_ip_, 'SGELQF', ' ', m, n, -1_ip_,    &
+                  maxwrk = m + m*ILAENV(1_ip_, 'SGELQF', ' ', m, n, -1_ip_,  &
                     -1_ip_)
                   maxwrk = MAX(maxwrk, m*m+4*m+lwork_sgebrd)
                   maxwrk = MAX(maxwrk, m*m+4*m+lwork_sormbr)
@@ -17938,13 +18009,13 @@
                   END IF
                   maxwrk = MAX(maxwrk, m+lwork_sormlq)
                 ELSE
-                  CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),         &
+                  CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
                   lwork_sgebrd = dum(1)
-                  CALL SORMBR('Q', 'L', 'T', m, nrhs, m, a, lda, dum(1), b,    &
+                  CALL SORMBR('Q', 'L', 'T', m, nrhs, m, a, lda, dum(1), b,  &
                     ldb, dum(1), -1_ip_, info)
                   lwork_sormbr = dum(1)
-                  CALL SORGBR('P', m, n, m, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL SORGBR('P', m, n, m, a, lda, dum(1), dum(1), -1_ip_,  &
                     info)
                   lwork_sorgbr = dum(1)
                   maxwrk = 3*m + lwork_sgebrd
@@ -17977,10 +18048,12 @@
           anrm = SLANGE('M', m, n, a, lda, work)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL SLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -17991,11 +18064,11 @@
           bnrm = SLANGE('M', m, nrhs, b, ldb, work)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,   &
               info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,   &
               info)
             ibscl = 2
           END IF
@@ -18005,9 +18078,9 @@
               mm = n
               itau = 1
               iwork = itau + n
-              CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),               &
+              CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),            &
                 lwork-iwork+1, info)
-              CALL SORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,    &
+              CALL SORMQR('L', 'T', m, nrhs, n, a, lda, work(itau), b, ldb,  &
                 work(iwork), lwork-iwork+1, info)
               IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
             END IF
@@ -18015,14 +18088,14 @@
             itauq = ie + n
             itaup = itauq + n
             iwork = itaup + n
-            CALL SGEBRD(mm, n, a, lda, s, work(ie), work(itauq),               &
+            CALL SGEBRD(mm, n, a, lda, s, work(ie), work(itauq),            &
               work(itaup), work(iwork), lwork-iwork+1, info)
-            CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,    &
+            CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(iwork), lwork-iwork+1, info)
-            CALL SORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),        &
+            CALL SORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),     &
               lwork-iwork+1, info)
             iwork = ie + n
-            CALL SBDSQR('U', n, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,      &
+            CALL SBDSQR('U', n, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,   &
               1_ip_, b, ldb, work(iwork), info)
             IF (info/=0) GO TO 70
             thr = MAX(rcond*s(1), sfmin)
@@ -18037,30 +18110,30 @@
               END IF
             END DO
             IF (lwork>=ldb*nrhs .AND. nrhs>1) THEN
-              CALL SGEMM('T', 'N', n, nrhs, n, one, a, lda, b, ldb, zero,      &
+              CALL SGEMM('T', 'N', n, nrhs, n, one, a, lda, b, ldb, zero,   &
                 work, ldb)
               CALL SLACPY('G', n, nrhs, work, ldb, b, ldb)
             ELSE IF (nrhs>1) THEN
               chunk = lwork/n
               DO i = 1, nrhs, chunk
                 bl = MIN(nrhs-i+1, chunk)
-                CALL SGEMM('T', 'N', n, bl, n, one, a, lda, b(1,i), ldb,       &
+                CALL SGEMM('T', 'N', n, bl, n, one, a, lda, b(1,i), ldb,    &
                   zero, work, n)
                 CALL SLACPY('G', n, bl, work, n, b(1,i), ldb)
               END DO
             ELSE
-              CALL SGEMV('T', n, n, one, a, lda, b, 1_ip_, zero, work,         &
+              CALL SGEMV('T', n, n, one, a, lda, b, 1_ip_, zero, work,      &
                 1_ip_)
               CALL SCOPY(n, work, 1_ip_, b, 1_ip_)
             END IF
-          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m))      &
+          ELSE IF (n>=mnthr .AND. lwork>=4*m+m*m+MAX(m,2*m-4,nrhs,n-3*m))   &
             THEN
             ldwork = m
-            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),                 &
+            IF (lwork>=MAX(4*m+m*lda+MAX(m,2*m-4,nrhs, n-3*m),               &
               m*lda+m+m*nrhs)) ldwork = lda
             itau = 1
             iwork = m + 1
-            CALL SGELQF(m, n, a, lda, work(itau), work(iwork),                 &
+            CALL SGELQF(m, n, a, lda, work(itau), work(iwork),              &
               lwork-iwork+1, info)
             il = iwork
             CALL SLACPY('L', m, m, a, lda, work(il), ldwork)
@@ -18069,14 +18142,14 @@
             itauq = ie + m
             itaup = itauq + m
             iwork = itaup + m
-            CALL SGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),      &
+            CALL SGEBRD(m, m, work(il), ldwork, s, work(ie), work(itauq),   &
               work(itaup), work(iwork), lwork-iwork+1, info)
-            CALL SORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,           &
+            CALL SORMBR('Q', 'L', 'T', m, nrhs, m, work(il), ldwork,        &
               work(itauq), b, ldb, work(iwork), lwork-iwork+1, info)
-            CALL SORGBR('P', m, m, m, work(il), ldwork, work(itaup),           &
+            CALL SORGBR('P', m, m, m, work(il), ldwork, work(itaup),        &
               work(iwork), lwork-iwork+1, info)
             iwork = ie + m
-            CALL SBDSQR('U', m, m, 0_ip_, nrhs, s, work(ie), work(il),         &
+            CALL SBDSQR('U', m, m, 0_ip_, nrhs, s, work(ie), work(il),      &
               ldwork, a, lda, b, ldb, work(iwork), info)
             IF (info/=0) GO TO 70
             thr = MAX(rcond*s(1), sfmin)
@@ -18092,39 +18165,39 @@
             END DO
             iwork = ie
             IF (lwork>=ldb*nrhs+iwork-1 .AND. nrhs>1) THEN
-              CALL SGEMM('T', 'N', m, nrhs, m, one, work(il), ldwork, b,       &
+              CALL SGEMM('T', 'N', m, nrhs, m, one, work(il), ldwork, b,    &
                 ldb, zero, work(iwork), ldb)
               CALL SLACPY('G', m, nrhs, work(iwork), ldb, b, ldb)
             ELSE IF (nrhs>1) THEN
               chunk = (lwork-iwork+1)/m
               DO i = 1, nrhs, chunk
                 bl = MIN(nrhs-i+1, chunk)
-                CALL SGEMM('T', 'N', m, bl, m, one, work(il), ldwork, b(1,     &
+                CALL SGEMM('T', 'N', m, bl, m, one, work(il), ldwork, b(1,   &
                   i), ldb, zero, work(iwork), m)
                 CALL SLACPY('G', m, bl, work(iwork), m, b(1,i), ldb)
               END DO
             ELSE
-              CALL SGEMV('T', m, m, one, work(il), ldwork, b(1,1), 1_ip_,      &
+              CALL SGEMV('T', m, m, one, work(il), ldwork, b(1,1), 1_ip_,   &
                 zero, work(iwork), 1_ip_)
               CALL SCOPY(m, work(iwork), 1_ip_, b(1,1), 1_ip_)
             END IF
             CALL SLASET('F', n-m, nrhs, zero, zero, b(m+1,1), ldb)
             iwork = itau + m
-            CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,      &
+            CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, work(itau), b, ldb,   &
               work(iwork), lwork-iwork+1, info)
           ELSE
             ie = 1
             itauq = ie + m
             itaup = itauq + m
             iwork = itaup + m
-            CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq), work(itaup),   &
-              work(iwork), lwork-iwork+1, info)
-            CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,     &
+            CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),             &
+              work(itaup), work(iwork), lwork-iwork+1, info)
+            CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, work(itauq), b,  &
               ldb, work(iwork), lwork-iwork+1, info)
-            CALL SORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),        &
+            CALL SORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),     &
               lwork-iwork+1, info)
             iwork = ie + m
-            CALL SBDSQR('L', m, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,      &
+            CALL SBDSQR('L', m, n, 0_ip_, nrhs, s, work(ie), a, lda, dum,   &
               1_ip_, b, ldb, work(iwork), info)
             IF (info/=0) GO TO 70
             thr = MAX(rcond*s(1), sfmin)
@@ -18139,39 +18212,39 @@
               END IF
             END DO
             IF (lwork>=ldb*nrhs .AND. nrhs>1) THEN
-              CALL SGEMM('T', 'N', n, nrhs, m, one, a, lda, b, ldb, zero,      &
+              CALL SGEMM('T', 'N', n, nrhs, m, one, a, lda, b, ldb, zero,   &
                 work, ldb)
               CALL SLACPY('F', n, nrhs, work, ldb, b, ldb)
             ELSE IF (nrhs>1) THEN
               chunk = lwork/n
               DO i = 1, nrhs, chunk
                 bl = MIN(nrhs-i+1, chunk)
-                CALL SGEMM('T', 'N', n, bl, m, one, a, lda, b(1,i), ldb,       &
+                CALL SGEMM('T', 'N', n, bl, m, one, a, lda, b(1,i), ldb,    &
                   zero, work, n)
                 CALL SLACPY('F', n, bl, work, n, b(1,i), ldb)
               END DO
             ELSE
-              CALL SGEMV('T', m, n, one, a, lda, b, 1_ip_, zero, work,         &
+              CALL SGEMV('T', m, n, one, a, lda, b, 1_ip_, zero, work,      &
                 1_ip_)
               CALL SCOPY(n, work, 1_ip_, b, 1_ip_)
             END IF
           END IF
           IF (iascl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,   &
               info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           ELSE IF (iascl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,   &
               info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, anrm, minmn, 1_ip_, s,   &
               minmn, info)
           END IF
           IF (ibscl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,   &
               info)
           ELSE IF (ibscl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,   &
               info)
           END IF
  70       CONTINUE
@@ -18179,7 +18252,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank,       &
+        SUBROUTINE SGELSY(m, n, nrhs, a, lda, b, ldb, jpvt, rcond, rank,    &
           work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: info, lda, ldb, lwork, m, n, nrhs, rank
@@ -18191,15 +18264,16 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, iascl, ibscl, ismax, ismin, j, lwkmin, lwkopt,    &
+          INTEGER(ip_) :: i, iascl, ibscl, ismax, ismin, j, lwkmin, lwkopt,  &
             mn, nb, nb1, nb2, nb3, nb4
-          REAL(r4_) :: anrm, bignum, bnrm, c1, c2, s1, s2, smax, smaxpr,       &
+          REAL(r4_) :: anrm, bignum, bnrm, c1, c2, s1, s2, smax, smaxpr,    &
             smin, sminpr, smlnum, wsize
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
           EXTERNAL :: ILAENV, SLAMCH, SLANGE
-          EXTERNAL :: SCOPY, SGEQP3, SLABAD, SLAIC1, SLASCL,                   &
-            SLASET, SORMQR, SORMRZ, STRSM, STZRZF, XERBLA
+          EXTERNAL :: SCOPY, SGEQP3, SLABAD, SLAIC1,                        &
+            SLASCL, SLASET, SORMQR, SORMRZ, STRSM, STZRZF,                  &
+            XERBLA
           INTRINSIC :: ABS, MAX, MIN
           mn = MIN(m, n)
           ismin = mn + 1
@@ -18251,10 +18325,12 @@
           anrm = SLANGE('M', m, n, a, lda, work)
           iascl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              info)
             iascl = 1
           ELSE IF (anrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              info)
             iascl = 2
           ELSE IF (anrm==zero) THEN
             CALL SLASET('F', MAX(m,n), nrhs, zero, zero, b, ldb)
@@ -18264,15 +18340,15 @@
           bnrm = SLANGE('M', m, nrhs, b, ldb, work)
           ibscl = 0
           IF (bnrm>zero .AND. bnrm<smlnum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, smlnum, m, nrhs, b, ldb,   &
               info)
             ibscl = 1
           ELSE IF (bnrm>bignum) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bnrm, bignum, m, nrhs, b, ldb,   &
               info)
             ibscl = 2
           END IF
-          CALL SGEQP3(m, n, a, lda, jpvt, work(1), work(mn+1), lwork-mn,       &
+          CALL SGEQP3(m, n, a, lda, jpvt, work(1), work(mn+1), lwork-mn,    &
             info)
           wsize = mn + work(mn+1)
           work(ismin) = one
@@ -18289,9 +18365,9 @@
  10       CONTINUE
           IF (rank<mn) THEN
             i = rank + 1
-            CALL SLAIC1(imin, rank, work(ismin), smin, a(1,i), a(i,i),         &
+            CALL SLAIC1(imin, rank, work(ismin), smin, a(1,i), a(i,i),      &
               sminpr, s1, c1)
-            CALL SLAIC1(imax, rank, work(ismax), smax, a(1,i), a(i,i),         &
+            CALL SLAIC1(imax, rank, work(ismax), smax, a(1,i), a(i,i),      &
               smaxpr, s2, c2)
             IF (smaxpr*rcond<=sminpr) THEN
               DO i = 1, rank
@@ -18306,12 +18382,12 @@
               GO TO 10
             END IF
           END IF
-          IF (rank<n) CALL STZRZF(rank, n, a, lda, work(mn+1), work(2*mn+1),   &
-            lwork-2*mn, info)
-          CALL SORMQR('Left', 'Transpose', m, nrhs, mn, a, lda, work(1), b,    &
+          IF (rank<n) CALL STZRZF(rank, n, a, lda, work(mn+1),              &
+            work(2*mn+1), lwork-2*mn, info)
+          CALL SORMQR('Left', 'Transpose', m, nrhs, mn, a, lda, work(1), b,  &
             ldb, work(2*mn+1), lwork-2*mn, info)
           wsize = MAX(wsize, 2*mn+work(2*mn+1))
-          CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', rank,        &
+          CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', rank,     &
             nrhs, one, a, lda, b, ldb)
           DO j = 1, nrhs
             DO i = rank + 1, n
@@ -18319,7 +18395,7 @@
             END DO
           END DO
           IF (rank<n) THEN
-            CALL SORMRZ('Left', 'Transpose', n, nrhs, rank, n-rank, a, lda,    &
+            CALL SORMRZ('Left', 'Transpose', n, nrhs, rank, n-rank, a, lda,  &
               work(mn+1), b, ldb, work(2*mn+1), lwork-2*mn, info)
           END IF
           DO j = 1, nrhs
@@ -18329,21 +18405,21 @@
             CALL SCOPY(n, work(1), 1_ip_, b(1,j), 1_ip_)
           END DO
           IF (iascl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, n, nrhs, b, ldb,   &
               info)
-            CALL SLASCL('U', 0_ip_, 0_ip_, smlnum, anrm, rank, rank, a, lda,   &
-              info)
+            CALL SLASCL('U', 0_ip_, 0_ip_, smlnum, anrm, rank, rank, a,     &
+              lda, info)
           ELSE IF (iascl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, n, nrhs, b, ldb,   &
               info)
-            CALL SLASCL('U', 0_ip_, 0_ip_, bignum, anrm, rank, rank, a, lda,   &
-              info)
+            CALL SLASCL('U', 0_ip_, 0_ip_, bignum, anrm, rank, rank, a,     &
+              lda, info)
           END IF
           IF (ibscl==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, bnrm, n, nrhs, b, ldb,   &
               info)
           ELSE IF (ibscl==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,      &
+            CALL SLASCL('G', 0_ip_, 0_ip_, bignum, bnrm, n, nrhs, b, ldb,   &
               info)
           END IF
  70       CONTINUE
@@ -18359,10 +18435,10 @@
           INTEGER(ip_) :: inb, inbmin, ixover
           PARAMETER (inb=1, inbmin=2, ixover=3)
           LOGICAL :: lquery
-          INTEGER(ip_) :: fjb, iws, j, jb, lwkopt, minmn, minws, na, nb,       &
+          INTEGER(ip_) :: fjb, iws, j, jb, lwkopt, minmn, minws, na, nb,    &
             nbmin, nfxd, nx, sm, sminmn, sn, topbmn
-          EXTERNAL :: SGEQRF, SLAQP2, SLAQPS, SORMQR, SSWAP,                   &
-            XERBLA
+          EXTERNAL :: SGEQRF, SLAQP2, SLAQPS, SORMQR,                       &
+            SSWAP, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SNRM2
           EXTERNAL :: ILAENV, SNRM2
@@ -18418,7 +18494,7 @@
             CALL SGEQRF(m, na, a, lda, tau, work, lwork, info)
             iws = MAX(iws, INT(work(1)))
             IF (na<n) THEN
-              CALL SORMQR('Left', 'Transpose', m, n-na, na, a, lda, tau,       &
+              CALL SORMQR('Left', 'Transpose', m, n-na, na, a, lda, tau,    &
                 a(1,na+1), lda, work, lwork, info)
               iws = MAX(iws, INT(work(1)))
             END IF
@@ -18431,14 +18507,14 @@
             nbmin = 2
             nx = 0
             IF ((nb>1) .AND. (nb<sminmn)) THEN
-              nx = MAX(0_ip_, ILAENV(ixover,'SGEQRF',' ',sm,sn,-1_ip_,         &
+              nx = MAX(0_ip_, ILAENV(ixover,'SGEQRF',' ',sm,sn,-1_ip_,       &
                 -1_ip_))
               IF (nx<sminmn) THEN
                 minws = 2*sn + (sn+1)*nb
                 iws = MAX(iws, minws)
                 IF (lwork<minws) THEN
                   nb = (lwork-2*sn)/(sn+1)
-                  nbmin = MAX(2_ip_, ILAENV(inbmin,'SGEQRF',' ',sm,sn,         &
+                  nbmin = MAX(2_ip_, ILAENV(inbmin,'SGEQRF',' ',sm,sn,       &
                     -1_ip_,-1_ip_))
                 END IF
               END IF
@@ -18453,8 +18529,8 @@
  30           CONTINUE
               IF (j<=topbmn) THEN
                 jb = MIN(nb, topbmn-j+1)
-                CALL SLAQPS(m, n-j+1, j-1, jb, fjb, a(1,j), lda, jpvt(j),      &
-                  tau(j), work(j), work(n+j), work(2*n+1), work(2*n+jb+1),     &
+                CALL SLAQPS(m, n-j+1, j-1, jb, fjb, a(1,j), lda, jpvt(j),   &
+                  tau(j), work(j), work(n+j), work(2*n+1), work(2*n+jb+1),  &
                   n-j+1)
                 j = j + fjb
                 GO TO 30
@@ -18462,7 +18538,7 @@
             ELSE
               j = nfxd + 1
             END IF
-            IF (j<=minmn) CALL SLAQP2(m, n-j+1, j-1, a(1,j), lda, jpvt(j),     &
+            IF (j<=minmn) CALL SLAQP2(m, n-j+1, j-1, a(1,j), lda, jpvt(j),  &
               tau(j), work(j), work(n+j), work(2*n+1))
           END IF
           work(1) = iws
@@ -18497,7 +18573,7 @@
             IF (i<n) THEN
               aii = a(i, i)
               a(i, i) = one
-              CALL SLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,       &
+              CALL SLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,     &
                 i+1), lda, work)
               a(i, i) = aii
             END IF
@@ -18510,7 +18586,7 @@
           INTEGER(ip_) :: info, lda, lwork, m, n
           REAL(r4_) :: a(lda, *), tau(*), work(*)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, k, ldwork, lwkopt, nb, nbmin,  &
             nx
           EXTERNAL :: SGEQR2, SLARFB, SLARFT, XERBLA
           INTRINSIC :: MAX, MIN
@@ -18551,7 +18627,7 @@
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = lwork/ldwork
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGEQRF',' ',m,n,-1_ip_,       &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGEQRF',' ',m,n,-1_ip_,     &
                   -1_ip_))
               END IF
             END IF
@@ -18561,23 +18637,23 @@
               ib = MIN(k-i+1, nb)
               CALL SGEQR2(m-i+1, ib, a(i,i), lda, tau(i), work, iinfo)
               IF (i+ib<=n) THEN
-                CALL SLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i), lda,   &
-                  tau(i), work, ldwork)
-                CALL SLARFB('Left', 'Transpose', 'Forward', 'Columnwise',      &
-                  m-i+1, n-i-ib+1, ib, a(i,i), lda, work, ldwork, a(i,i+ib),   &
+                CALL SLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i),     &
+                  lda, tau(i), work, ldwork)
+                CALL SLARFB('Left', 'Transpose', 'Forward', 'Columnwise',   &
+                  m-i+1, n-i-ib+1, ib, a(i,i), lda, work, ldwork, a(i,i+ib),&
                   lda, work(ib+1), ldwork)
               END IF
             END DO
           ELSE
             i = 1
           END IF
-          IF (i<=k) CALL SGEQR2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,       &
+          IF (i<=k) CALL SGEQR2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
           work(1) = iws
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,      &
+        SUBROUTINE SGESVD(jobu, jobvt, m, n, a, lda, s, u, ldu, vt, ldvt,   &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: jobu, jobvt
@@ -18585,19 +18661,19 @@
           REAL(r4_) :: a(lda, *), s(*), u(ldu, *), vt(ldvt, *), work(*)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
-          LOGICAL :: lquery, wntua, wntuas, wntun, wntuo, wntus, wntva,        &
+          LOGICAL :: lquery, wntua, wntuas, wntun, wntuo, wntus, wntva,     &
             wntvas, wntvn, wntvo, wntvs
-          INTEGER(ip_) :: bdspac, blk, chunk, i, ie, ierr, ir, iscl, itau,     &
-            itaup, itauq, iu, iwork, ldwrkr, ldwrku, maxwrk, minmn, minwrk,    &
+          INTEGER(ip_) :: bdspac, blk, chunk, i, ie, ierr, ir, iscl, itau,  &
+            itaup, itauq, iu, iwork, ldwrkr, ldwrku, maxwrk, minmn, minwrk, &
             mnthr, ncu, ncvt, nru, nrvt, wrkbl
-          INTEGER(ip_) :: lwork_sgeqrf, lwork_sorgqr_n, lwork_sorgqr_m,        &
-            lwork_sgebrd, lwork_sorgbr_p, lwork_sorgbr_q, lwork_sgelqf,        &
+          INTEGER(ip_) :: lwork_sgeqrf, lwork_sorgqr_n, lwork_sorgqr_m,     &
+            lwork_sgebrd, lwork_sorgbr_p, lwork_sorgbr_q, lwork_sgelqf,     &
             lwork_sorglq_n, lwork_sorglq_m
           REAL(r4_) :: anrm, bignum, eps, smlnum
           REAL(r4_) :: dum(1)
-          EXTERNAL :: SBDSQR, SGEBRD, SGELQF, SGEMM, SGEQRF,                   &
-            SLACPY, SLASCL, SLASET, SORGBR, SORGLQ, SORGQR,                    &
-            SORMBR, XERBLA
+          EXTERNAL :: SBDSQR, SGEBRD, SGELQF, SGEMM,                        &
+            SGEQRF, SLACPY, SLASCL, SLASET, SORGBR, SORGLQ,                 &
+            SORGQR, SORMBR, XERBLA
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
@@ -18618,7 +18694,7 @@
           lquery = (lwork==-1)
           IF (.NOT. (wntua .OR. wntus .OR. wntuo .OR. wntun)) THEN
             info = -1
-          ELSE IF (.NOT. (wntva .OR. wntvs .OR. wntvo .OR. wntvn) .OR.         &
+          ELSE IF (.NOT. (wntva .OR. wntvs .OR. wntvo .OR. wntvn) .OR.      &
             (wntvo .AND. wntuo)) THEN
             info = -2
           ELSE IF (m<0) THEN
@@ -18629,7 +18705,7 @@
             info = -6
           ELSE IF (ldu<1 .OR. (wntuas .AND. ldu<m)) THEN
             info = -9
-          ELSE IF (ldvt<1 .OR. (wntva .AND. ldvt<n) .OR. (wntvs .AND.          &
+          ELSE IF (ldvt<1 .OR. (wntva .AND. ldvt<n) .OR. (wntvs .AND.       &
             ldvt<minmn)) THEN
             info = -11
           END IF
@@ -18637,7 +18713,7 @@
             minwrk = 1
             maxwrk = 1
             IF (m>=n .AND. minmn>0) THEN
-              mnthr = ILAENV(6_ip_, 'SGESVD', jobu//jobvt, m, n, 0_ip_,        &
+              mnthr = ILAENV(6_ip_, 'SGESVD', jobu//jobvt, m, n, 0_ip_,     &
                 0_ip_)
               bdspac = 5*n
               CALL SGEQRF(m, n, a, lda, dum(1), dum(1), -1_ip_, ierr)
@@ -18646,20 +18722,20 @@
               lwork_sorgqr_n = INT(dum(1))
               CALL SORGQR(m, m, n, a, lda, dum(1), dum(1), -1_ip_, ierr)
               lwork_sorgqr_m = INT(dum(1))
-              CALL SGEBRD(n, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),     &
+              CALL SGEBRD(n, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),  &
                 -1_ip_, ierr)
               lwork_sgebrd = INT(dum(1))
-              CALL SORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,        &
+              CALL SORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,     &
                 ierr)
               lwork_sorgbr_p = INT(dum(1))
-              CALL SORGBR('Q', n, n, n, a, lda, dum(1), dum(1), -1_ip_,        &
+              CALL SORGBR('Q', n, n, n, a, lda, dum(1), dum(1), -1_ip_,     &
                 ierr)
               lwork_sorgbr_q = INT(dum(1))
               IF (m>=mnthr) THEN
                 IF (wntun) THEN
                   maxwrk = n + lwork_sgeqrf
                   maxwrk = MAX(maxwrk, 3*n+lwork_sgebrd)
-                  IF (wntvo .OR. wntvas) maxwrk = MAX(maxwrk,                  &
+                  IF (wntvo .OR. wntvas) maxwrk = MAX(maxwrk,               &
                     3*n+lwork_sorgbr_p)
                   maxwrk = MAX(maxwrk, bdspac)
                   minwrk = MAX(4*n, bdspac)
@@ -18734,18 +18810,18 @@
                   minwrk = MAX(3*n+m, bdspac)
                 END IF
               ELSE
-                CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),   &
-                  -1_ip_, ierr)
+                CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),        &
+                  dum(1), -1_ip_, ierr)
                 lwork_sgebrd = INT(dum(1))
                 maxwrk = 3*n + lwork_sgebrd
                 IF (wntus .OR. wntuo) THEN
-                  CALL SORGBR('Q', m, n, n, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL SORGBR('Q', m, n, n, a, lda, dum(1), dum(1), -1_ip_,  &
                     ierr)
                   lwork_sorgbr_q = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*n+lwork_sorgbr_q)
                 END IF
                 IF (wntua) THEN
-                  CALL SORGBR('Q', m, m, n, a, lda, dum(1), dum(1), -1_ip_,    &
+                  CALL SORGBR('Q', m, m, n, a, lda, dum(1), dum(1), -1_ip_,  &
                     ierr)
                   lwork_sorgbr_q = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*n+lwork_sorgbr_q)
@@ -18757,7 +18833,7 @@
                 minwrk = MAX(3*n+m, bdspac)
               END IF
             ELSE IF (minmn>0) THEN
-              mnthr = ILAENV(6_ip_, 'SGESVD', jobu//jobvt, m, n, 0_ip_,        &
+              mnthr = ILAENV(6_ip_, 'SGESVD', jobu//jobvt, m, n, 0_ip_,     &
                 0_ip_)
               bdspac = 5*m
               CALL SGELQF(m, n, a, lda, dum(1), dum(1), -1_ip_, ierr)
@@ -18766,7 +18842,7 @@
               lwork_sorglq_n = INT(dum(1))
               CALL SORGLQ(m, n, m, a, lda, dum(1), dum(1), -1_ip_, ierr)
               lwork_sorglq_m = INT(dum(1))
-              CALL SGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1), dum(1),     &
+              CALL SGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1), dum(1),  &
                 -1_ip_, ierr)
               lwork_sgebrd = INT(dum(1))
               CALL SORGBR('P', m, m, m, a, n, dum(1), dum(1), -1_ip_, ierr)
@@ -18777,7 +18853,7 @@
                 IF (wntvn) THEN
                   maxwrk = m + lwork_sgelqf
                   maxwrk = MAX(maxwrk, 3*m+lwork_sgebrd)
-                  IF (wntuo .OR. wntuas) maxwrk = MAX(maxwrk,                  &
+                  IF (wntuo .OR. wntuas) maxwrk = MAX(maxwrk,               &
                     3*m+lwork_sorgbr_q)
                   maxwrk = MAX(maxwrk, bdspac)
                   minwrk = MAX(4*m, bdspac)
@@ -18853,18 +18929,18 @@
                   minwrk = MAX(3*m+n, bdspac)
                 END IF
               ELSE
-                CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1), dum(1),   &
-                  -1_ip_, ierr)
+                CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),        &
+                  dum(1), -1_ip_, ierr)
                 lwork_sgebrd = INT(dum(1))
                 maxwrk = 3*m + lwork_sgebrd
                 IF (wntvs .OR. wntvo) THEN
-                  CALL SORGBR('P', m, n, m, a, n, dum(1), dum(1), -1_ip_,      &
+                  CALL SORGBR('P', m, n, m, a, n, dum(1), dum(1), -1_ip_,   &
                     ierr)
                   lwork_sorgbr_p = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*m+lwork_sorgbr_p)
                 END IF
                 IF (wntva) THEN
-                  CALL SORGBR('P', n, n, m, a, n, dum(1), dum(1), -1_ip_,      &
+                  CALL SORGBR('P', n, n, m, a, n, dum(1), dum(1), -1_ip_,   &
                     ierr)
                   lwork_sorgbr_p = INT(dum(1))
                   maxwrk = MAX(maxwrk, 3*m+lwork_sorgbr_p)
@@ -18898,17 +18974,19 @@
           iscl = 0
           IF (anrm>zero .AND. anrm<smlnum) THEN
             iscl = 1
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda, ierr)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, smlnum, m, n, a, lda,      &
+              ierr)
           ELSE IF (anrm>bignum) THEN
             iscl = 1
-            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda, ierr)
+            CALL SLASCL('G', 0_ip_, 0_ip_, anrm, bignum, m, n, a, lda,      &
+              ierr)
           END IF
           IF (m>=n) THEN
             IF (m>=mnthr) THEN
               IF (wntun) THEN
                 itau = 1
                 iwork = itau + n
-                CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),             &
+                CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),          &
                   lwork-iwork+1, ierr)
                 IF (n>1) THEN
                   CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
@@ -18917,17 +18995,17 @@
                 itauq = ie + n
                 itaup = itauq + n
                 iwork = itaup + n
-                CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),            &
+                CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),         &
                   work(itaup), work(iwork), lwork-iwork+1, ierr)
                 ncvt = 0
                 IF (wntvo .OR. wntvas) THEN
-                  CALL SORGBR('P', n, n, n, a, lda, work(itaup),               &
+                  CALL SORGBR('P', n, n, n, a, lda, work(itaup),            &
                     work(iwork), lwork-iwork+1, ierr)
                   ncvt = n
                 END IF
                 iwork = ie + n
-                CALL SBDSQR('U', n, ncvt, 0_ip_, 0_ip_, s, work(ie), a, lda,   &
-                  dum, 1_ip_, dum, 1_ip_, work(iwork), info)
+                CALL SBDSQR('U', n, ncvt, 0_ip_, 0_ip_, s, work(ie), a,     &
+                  lda, dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                 IF (wntvas) CALL SLACPY('F', n, n, a, lda, vt, ldvt)
               ELSE IF (wntuo .AND. wntvn) THEN
                 IF (lwork>=n*n+MAX(4*n,bdspac)) THEN
@@ -18944,30 +19022,31 @@
                   END IF
                   itau = ir + ldwrkr*n
                   iwork = itau + n
-                  CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL SLACPY('U', n, n, a, lda, work(ir), ldwrkr)
-                  CALL SLASET('L', n-1, n-1, zero, zero, work(ir+1), ldwrkr)
-                  CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),        &
+                  CALL SLASET('L', n-1, n-1, zero, zero, work(ir+1),        &
+                    ldwrkr)
+                  CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL SGEBRD(n, n, work(ir), ldwrkr, s, work(ie),             &
-                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,      &
+                  CALL SGEBRD(n, n, work(ir), ldwrkr, s, work(ie),          &
+                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,   &
                     ierr)
-                  CALL SORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),     &
+                  CALL SORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),  &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL SBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,       &
+                  CALL SBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,    &
                     1_ip_, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
                   iu = ie + n
                   DO i = 1, m, ldwrku
                     chunk = MIN(m-i+1, ldwrku)
-                    CALL SGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,        &
+                    CALL SGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,     &
                       work(ir), ldwrkr, zero, work(iu), ldwrku)
-                    CALL SLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),       &
+                    CALL SLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),    &
                       lda)
                   END DO
                 ELSE
@@ -18975,12 +19054,12 @@
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),          &
+                  CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL SORGBR('Q', m, n, n, a, lda, work(itauq),               &
+                  CALL SORGBR('Q', m, n, n, a, lda, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL SBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,       &
+                  CALL SBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,    &
                     1_ip_, a, lda, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntuo .AND. wntvas) THEN
@@ -18998,58 +19077,58 @@
                   END IF
                   itau = ir + ldwrkr*n
                   iwork = itau + n
-                  CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL SLACPY('U', n, n, a, lda, vt, ldvt)
-                  IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,1),     &
+                  IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,1),  &
                     ldvt)
-                  CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),        &
+                  CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),        &
+                  CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),     &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
                   CALL SLACPY('L', n, n, vt, ldvt, work(ir), ldwrkr)
-                  CALL SORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),     &
+                  CALL SORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),  &
                     work(iwork), lwork-iwork+1, ierr)
-                  CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),             &
+                  CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),          &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,      &
+                  CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,   &
                     work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
                   iu = ie + n
                   DO i = 1, m, ldwrku
                     chunk = MIN(m-i+1, ldwrku)
-                    CALL SGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,        &
+                    CALL SGEMM('N', 'N', chunk, n, n, one, a(i,1), lda,     &
                       work(ir), ldwrkr, zero, work(iu), ldwrku)
-                    CALL SLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),       &
+                    CALL SLACPY('F', chunk, n, work(iu), ldwrku, a(i,1),    &
                       lda)
                   END DO
                 ELSE
                   itau = 1
                   iwork = itau + n
-                  CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL SLACPY('U', n, n, a, lda, vt, ldvt)
-                  IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,1),     &
+                  IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,1),  &
                     ldvt)
-                  CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),        &
+                  CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + n
                   itaup = itauq + n
                   iwork = itaup + n
-                  CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),        &
+                  CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),     &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL SORMBR('Q', 'R', 'N', m, n, n, vt, ldvt, work(itauq),   &
-                    a, lda, work(iwork), lwork-iwork+1, ierr)
-                  CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),             &
+                  CALL SORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,             &
+                    work(itauq), a, lda, work(iwork), lwork-iwork+1, ierr)
+                  CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),          &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + n
-                  CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt, a,   &
-                    lda, dum, 1_ip_, work(iwork), info)
+                  CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,   &
+                    a, lda, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntus) THEN
                 IF (wntvn) THEN
@@ -19062,34 +19141,34 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, work(ir), ldwrkr)
-                    CALL SLASET('L', n-1, n-1, zero, zero, work(ir+1),         &
+                    CALL SLASET('L', n-1, n-1, zero, zero, work(ir+1),      &
                       ldwrkr)
-                    CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),      &
+                    CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(n, n, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', n, n, n, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,     &
+                    CALL SBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,  &
                       1_ip_, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, n, one, a, lda, work(ir),       &
+                    CALL SGEMM('N', 'N', m, n, n, one, a, lda, work(ir),    &
                       ldwrkr, zero, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, n, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, n, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -19098,12 +19177,12 @@
                     IF (n>1) THEN
                       CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,     &
+                    CALL SBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,  &
                       1_ip_, u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvo) THEN
@@ -19124,39 +19203,40 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
-                    CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),      &
+                    CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SLACPY('U', n, n, work(iu), ldwrku, work(ir),         &
+                    CALL SLACPY('U', n, n, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', n, n, n, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),    &
-                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, n, one, a, lda, work(iu),       &
+                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),  &
+                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL SGEMM('N', 'N', m, n, n, one, a, lda, work(iu),    &
                       ldwrku, zero, u, ldu)
                     CALL SLACPY('F', n, n, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, n, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, n, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -19165,15 +19245,15 @@
                     IF (n>1) THEN
                       CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, a, lda, work(itaup),             &
+                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', n, n, n, a, lda, work(itaup),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda, u,   &
-                      ldu, dum, 1_ip_, work(iwork), info)
+                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda,   &
+                      u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvas) THEN
                   IF (lwork>=n*n+MAX(4*n,bdspac)) THEN
@@ -19185,53 +19265,53 @@
                     END IF
                     itau = iu + ldwrku*n
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
-                    CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),      &
+                    CALL SORGQR(m, n, n, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL SLACPY('U', n, n, work(iu), ldwrku, vt, ldvt)
-                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,  &
                       work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, n, one, a, lda, work(iu),       &
+                    CALL SGEMM('N', 'N', m, n, n, one, a, lda, work(iu),    &
                       ldwrku, zero, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, n, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, n, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, vt, ldvt)
-                    IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,1),   &
-                      ldvt)
+                    IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,    &
+                      1), ldvt)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),      &
+                    CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),   &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,              &
+                    CALL SORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,           &
                       work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -19246,36 +19326,36 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
                     CALL SLACPY('U', n, n, a, lda, work(ir), ldwrkr)
-                    CALL SLASET('L', n-1, n-1, zero, zero, work(ir+1),         &
+                    CALL SLASET('L', n-1, n-1, zero, zero, work(ir+1),      &
                       ldwrkr)
-                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(n, n, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SORGBR('Q', n, n, n, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', n, n, n, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,     &
+                    CALL SBDSQR('U', n, 0_ip_, n, 0_ip_, s, work(ie), dum,  &
                       1_ip_, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, n, one, u, ldu, work(ir),       &
+                    CALL SGEMM('N', 'N', m, n, n, one, u, ldu, work(ir),    &
                       ldwrkr, zero, a, lda)
                     CALL SLACPY('F', m, n, a, lda, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -19284,12 +19364,12 @@
                     IF (n>1) THEN
                       CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,     &
+                    CALL SBDSQR('U', n, 0_ip_, m, 0_ip_, s, work(ie), dum,  &
                       1_ip_, u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvo) THEN
@@ -19310,41 +19390,42 @@
                     END IF
                     itau = ir + ldwrkr*n
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SLACPY('U', n, n, work(iu), ldwrku, work(ir),         &
+                    CALL SLACPY('U', n, n, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', n, n, n, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),    &
-                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),       &
+                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), work(ir),  &
+                      ldwrkr, work(iu), ldwrku, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL SGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),    &
                       ldwrku, zero, a, lda)
                     CALL SLACPY('F', m, n, a, lda, u, ldu)
                     CALL SLACPY('F', n, n, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + n
@@ -19353,15 +19434,15 @@
                     IF (n>1) THEN
                       CALL SLASET('L', n-1, n-1, zero, zero, a(2,1), lda)
                     END IF
-                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(n, n, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda, work(itauq),   &
-                      u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, a, lda, work(itaup),             &
+                    CALL SORMBR('Q', 'R', 'N', m, n, n, a, lda,             &
+                      work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', n, n, n, a, lda, work(itaup),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda, u,   &
-                      ldu, dum, 1_ip_, work(iwork), info)
+                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), a, lda,   &
+                      u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntvas) THEN
                   IF (lwork>=n*n+MAX(n+m,4*n,bdspac)) THEN
@@ -19373,55 +19454,55 @@
                     END IF
                     itau = iu + ldwrku*n
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, work(iu), ldwrku)
-                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),         &
+                    CALL SLASET('L', n-1, n-1, zero, zero, work(iu+1),      &
                       ldwrku)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(n, n, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL SLACPY('U', n, n, work(iu), ldwrku, vt, ldvt)
-                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL SORGBR('Q', n, n, n, work(iu), ldwrku,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', n, n, n, 0_ip_, s, work(ie), vt, ldvt,  &
                       work(iu), ldwrku, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),       &
+                    CALL SGEMM('N', 'N', m, n, n, one, u, ldu, work(iu),    &
                       ldwrku, zero, a, lda)
                     CALL SLACPY('F', m, n, a, lda, u, ldu)
                   ELSE
                     itau = 1
                     iwork = itau + n
-                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGEQRF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, n, a, lda, u, ldu)
-                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),      &
+                    CALL SORGQR(m, m, n, u, ldu, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', n, n, a, lda, vt, ldvt)
-                    IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,1),   &
-                      ldvt)
+                    IF (n>1) CALL SLASET('L', n-1, n-1, zero, zero, vt(2,    &
+                      1), ldvt)
                     ie = itau
                     itauq = ie + n
                     itaup = itauq + n
                     iwork = itaup + n
-                    CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),      &
+                    CALL SGEBRD(n, n, vt, ldvt, s, work(ie), work(itauq),   &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,              &
+                    CALL SORMBR('Q', 'R', 'N', m, n, n, vt, ldvt,           &
                       work(itauq), u, ldu, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),           &
+                    CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),        &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + n
-                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', n, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -19431,26 +19512,26 @@
               itauq = ie + n
               itaup = itauq + n
               iwork = itaup + n
-              CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),              &
+              CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),           &
                 work(itaup), work(iwork), lwork-iwork+1, ierr)
               IF (wntuas) THEN
                 CALL SLACPY('L', m, n, a, lda, u, ldu)
                 IF (wntus) ncu = n
                 IF (wntua) ncu = m
-                CALL SORGBR('Q', m, ncu, n, u, ldu, work(itauq),               &
+                CALL SORGBR('Q', m, ncu, n, u, ldu, work(itauq),            &
                   work(iwork), lwork-iwork+1, ierr)
               END IF
               IF (wntvas) THEN
                 CALL SLACPY('U', n, n, a, lda, vt, ldvt)
-                CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),               &
+                CALL SORGBR('P', n, n, n, vt, ldvt, work(itaup),            &
                   work(iwork), lwork-iwork+1, ierr)
               END IF
               IF (wntuo) THEN
-                CALL SORGBR('Q', m, n, n, a, lda, work(itauq), work(iwork),    &
+                CALL SORGBR('Q', m, n, n, a, lda, work(itauq), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               IF (wntvo) THEN
-                CALL SORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),    &
+                CALL SORGBR('P', n, n, n, a, lda, work(itaup), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               iwork = ie + n
@@ -19459,14 +19540,14 @@
               IF (wntvas .OR. wntvo) ncvt = n
               IF (wntvn) ncvt = 0
               IF ((.NOT. wntuo) .AND. (.NOT. wntvo)) THEN
-                CALL SBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  u, ldu, dum, 1_ip_, work(iwork), info)
+                CALL SBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE IF ((.NOT. wntuo) .AND. wntvo) THEN
-                CALL SBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), a, lda,     &
+                CALL SBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), a, lda,  &
                   u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE
-                CALL SBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  a, lda, dum, 1_ip_, work(iwork), info)
+                CALL SBDSQR('U', n, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, a, lda, dum, 1_ip_, work(iwork), info)
               END IF
             END IF
           ELSE
@@ -19474,23 +19555,23 @@
               IF (wntvn) THEN
                 itau = 1
                 iwork = itau + m
-                CALL SGELQF(m, n, a, lda, work(itau), work(iwork),             &
+                CALL SGELQF(m, n, a, lda, work(itau), work(iwork),          &
                   lwork-iwork+1, ierr)
                 CALL SLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
                 ie = 1
                 itauq = ie + m
                 itaup = itauq + m
                 iwork = itaup + m
-                CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),            &
+                CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),         &
                   work(itaup), work(iwork), lwork-iwork+1, ierr)
                 IF (wntuo .OR. wntuas) THEN
-                  CALL SORGBR('Q', m, m, m, a, lda, work(itauq),               &
+                  CALL SORGBR('Q', m, m, m, a, lda, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                 END IF
                 iwork = ie + m
                 nru = 0
                 IF (wntuo .OR. wntuas) nru = m
-                CALL SBDSQR('U', m, 0_ip_, nru, 0_ip_, s, work(ie), dum,       &
+                CALL SBDSQR('U', m, 0_ip_, nru, 0_ip_, s, work(ie), dum,    &
                   1_ip_, a, lda, dum, 1_ip_, work(iwork), info)
                 IF (wntuas) CALL SLACPY('F', m, m, a, lda, u, ldu)
               ELSE IF (wntvo .AND. wntun) THEN
@@ -19511,30 +19592,30 @@
                   END IF
                   itau = ir + ldwrkr*m
                   iwork = itau + m
-                  CALL SGELQF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL SGELQF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL SLACPY('L', m, m, a, lda, work(ir), ldwrkr)
-                  CALL SLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),      &
+                  CALL SLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),   &
                     ldwrkr)
-                  CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),        &
+                  CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL SGEBRD(m, m, work(ir), ldwrkr, s, work(ie),             &
-                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,      &
+                  CALL SGEBRD(m, m, work(ir), ldwrkr, s, work(ie),          &
+                    work(itauq), work(itaup), work(iwork), lwork-iwork+1,   &
                     ierr)
-                  CALL SORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),     &
+                  CALL SORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),  &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL SBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),            &
-                    work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),     &
+                  CALL SBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),         &
+                    work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),  &
                     info)
                   iu = ie + m
                   DO i = 1, n, chunk
                     blk = MIN(n-i+1, chunk)
-                    CALL SGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,     &
+                    CALL SGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,  &
                       a(1,i), lda, zero, work(iu), ldwrku)
                     CALL SLACPY('F', m, blk, work(iu), ldwrku, a(1,i), lda)
                   END DO
@@ -19543,12 +19624,12 @@
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),          &
+                  CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL SORGBR('P', m, n, m, a, lda, work(itaup),               &
+                  CALL SORGBR('P', m, n, m, a, lda, work(itaup),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL SBDSQR('L', m, n, 0_ip_, 0_ip_, s, work(ie), a, lda,    &
+                  CALL SBDSQR('L', m, n, 0_ip_, 0_ip_, s, work(ie), a, lda,  &
                     dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntvo .AND. wntuas) THEN
@@ -19569,54 +19650,54 @@
                   END IF
                   itau = ir + ldwrkr*m
                   iwork = itau + m
-                  CALL SGELQF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL SGELQF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL SLACPY('L', m, m, a, lda, u, ldu)
                   CALL SLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
-                  CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),        &
+                  CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),          &
+                  CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
                   CALL SLACPY('U', m, m, u, ldu, work(ir), ldwrkr)
-                  CALL SORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),     &
+                  CALL SORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),  &
                     work(iwork), lwork-iwork+1, ierr)
-                  CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),               &
+                  CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(ir),      &
+                  CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(ir),   &
                     ldwrkr, u, ldu, dum, 1_ip_, work(iwork), info)
                   iu = ie + m
                   DO i = 1, n, chunk
                     blk = MIN(n-i+1, chunk)
-                    CALL SGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,     &
+                    CALL SGEMM('N', 'N', m, blk, m, one, work(ir), ldwrkr,  &
                       a(1,i), lda, zero, work(iu), ldwrku)
                     CALL SLACPY('F', m, blk, work(iu), ldwrku, a(1,i), lda)
                   END DO
                 ELSE
                   itau = 1
                   iwork = itau + m
-                  CALL SGELQF(m, n, a, lda, work(itau), work(iwork),           &
+                  CALL SGELQF(m, n, a, lda, work(itau), work(iwork),        &
                     lwork-iwork+1, ierr)
                   CALL SLACPY('L', m, m, a, lda, u, ldu)
                   CALL SLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
-                  CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),        &
+                  CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),     &
                     lwork-iwork+1, ierr)
                   ie = itau
                   itauq = ie + m
                   itaup = itauq + m
                   iwork = itaup + m
-                  CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),          &
+                  CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),       &
                     work(itaup), work(iwork), lwork-iwork+1, ierr)
-                  CALL SORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),     &
+                  CALL SORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),  &
                     a, lda, work(iwork), lwork-iwork+1, ierr)
-                  CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),               &
+                  CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),            &
                     work(iwork), lwork-iwork+1, ierr)
                   iwork = ie + m
-                  CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), a, lda, u,     &
+                  CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), a, lda, u,  &
                     ldu, dum, 1_ip_, work(iwork), info)
                 END IF
               ELSE IF (wntvs) THEN
@@ -19630,47 +19711,48 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, work(ir), ldwrkr)
-                    CALL SLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),    &
+                    CALL SLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),  &
                       ldwrkr)
-                    CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),      &
+                    CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(m, m, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', m, m, m, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),          &
-                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),   &
+                    CALL SBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),       &
+                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),&
                       info)
-                    CALL SGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr, a,    &
+                    CALL SGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr, a,  &
                       lda, zero, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL SLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
+                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,      &
+                    CALL SBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,   &
                       ldvt, dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuo) THEN
@@ -19691,53 +19773,55 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
-                    CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),      &
+                    CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SLACPY('L', m, m, work(iu), ldwrku, work(ir),         &
+                    CALL SLACPY('L', m, m, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL SORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', m, m, m, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
-                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,    &
+                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
+                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,  &
                       lda, zero, vt, ldvt)
                     CALL SLACPY('F', m, m, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL SLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, a, lda, work(itauq),             &
+                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL SORGBR('Q', m, m, m, a, lda, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       a, lda, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuas) THEN
@@ -19750,37 +19834,37 @@
                     END IF
                     itau = iu + ldwrku*m
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
-                    CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),      &
+                    CALL SORGLQ(m, n, m, a, lda, work(itau), work(iwork),   &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL SLACPY('L', m, m, work(iu), ldwrku, u, ldu)
-                    CALL SORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL SORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
+                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
                       ldwrku, u, ldu, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,    &
+                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, a,  &
                       lda, zero, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(m, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, u, ldu)
                     CALL SLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
@@ -19788,14 +19872,15 @@
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL SORMBR('P', 'L', 'T', m, n, m, u, ldu,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -19810,49 +19895,50 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
                     CALL SLACPY('L', m, m, a, lda, work(ir), ldwrkr)
-                    CALL SLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),    &
+                    CALL SLASET('U', m-1, m-1, zero, zero, work(ir+ldwrkr),  &
                       ldwrkr)
-                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, work(ir), ldwrkr, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(m, m, work(ir), ldwrkr, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SORGBR('P', m, m, m, work(ir), ldwrkr, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', m, m, m, work(ir), ldwrkr,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),          &
-                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),   &
+                    CALL SBDSQR('U', m, m, 0_ip_, 0_ip_, s, work(ie),       &
+                      work(ir), ldwrkr, dum, 1_ip_, dum, 1_ip_, work(iwork),&
                       info)
-                    CALL SGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr, vt,   &
-                      ldvt, zero, a, lda)
+                    CALL SGEMM('N', 'N', m, n, m, one, work(ir), ldwrkr,    &
+                      vt, ldvt, zero, a, lda)
                     CALL SLACPY('F', m, n, a, lda, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL SLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
+                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,      &
+                    CALL SBDSQR('U', m, n, 0_ip_, 0_ip_, s, work(ie), vt,   &
                       ldvt, dum, 1_ip_, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuo) THEN
@@ -19873,55 +19959,57 @@
                     END IF
                     itau = ir + ldwrkr*m
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
-                    CALL SLACPY('L', m, m, work(iu), ldwrku, work(ir),         &
+                    CALL SLACPY('L', m, m, work(iu), ldwrku, work(ir),      &
                       ldwrkr)
-                    CALL SORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, work(ir), ldwrkr, work(itauq),   &
-                      work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', m, m, m, work(ir), ldwrkr,             &
+                      work(itauq), work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
-                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, vt,   &
-                      ldvt, zero, a, lda)
+                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
+                      ldwrku, work(ir), ldwrkr, dum, 1_ip_, work(iwork),    &
+                      info)
+                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku,    &
+                      vt, ldvt, zero, a, lda)
                     CALL SLACPY('F', m, n, a, lda, vt, ldvt)
                     CALL SLACPY('F', m, m, work(ir), ldwrkr, a, lda)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
                     CALL SLASET('U', m-1, m-1, zero, zero, a(1,2), lda)
-                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(m, m, a, lda, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, a, lda, work(itauq),             &
+                    CALL SORMBR('P', 'L', 'T', m, n, m, a, lda,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL SORGBR('Q', m, m, m, a, lda, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       a, lda, dum, 1_ip_, work(iwork), info)
                   END IF
                 ELSE IF (wntuas) THEN
@@ -19934,39 +20022,39 @@
                     END IF
                     itau = iu + ldwrku*m
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, work(iu), ldwrku)
-                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),    &
+                    CALL SLASET('U', m-1, m-1, zero, zero, work(iu+ldwrku),  &
                       ldwrku)
                     ie = itau
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),           &
-                      work(itauq), work(itaup), work(iwork), lwork-iwork+1,    &
+                    CALL SGEBRD(m, m, work(iu), ldwrku, s, work(ie),        &
+                      work(itauq), work(itaup), work(iwork), lwork-iwork+1, &
                       ierr)
                     CALL SLACPY('L', m, m, work(iu), ldwrku, u, ldu)
-                    CALL SORGBR('P', m, m, m, work(iu), ldwrku, work(itaup),   &
-                      work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL SORGBR('P', m, m, m, work(iu), ldwrku,             &
+                      work(itaup), work(iwork), lwork-iwork+1, ierr)
+                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),    &
+                    CALL SBDSQR('U', m, m, m, 0_ip_, s, work(ie), work(iu),  &
                       ldwrku, u, ldu, dum, 1_ip_, work(iwork), info)
-                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku, vt,   &
-                      ldvt, zero, a, lda)
+                    CALL SGEMM('N', 'N', m, n, m, one, work(iu), ldwrku,    &
+                      vt, ldvt, zero, a, lda)
                     CALL SLACPY('F', m, n, a, lda, vt, ldvt)
                   ELSE
                     itau = 1
                     iwork = itau + m
-                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),         &
+                    CALL SGELQF(m, n, a, lda, work(itau), work(iwork),      &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('U', m, n, a, lda, vt, ldvt)
-                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),    &
+                    CALL SORGLQ(n, n, m, vt, ldvt, work(itau), work(iwork),  &
                       lwork-iwork+1, ierr)
                     CALL SLACPY('L', m, m, a, lda, u, ldu)
                     CALL SLASET('U', m-1, m-1, zero, zero, u(1,2), ldu)
@@ -19974,14 +20062,15 @@
                     itauq = ie + m
                     itaup = itauq + m
                     iwork = itaup + m
-                    CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),        &
+                    CALL SGEBRD(m, m, u, ldu, s, work(ie), work(itauq),     &
                       work(itaup), work(iwork), lwork-iwork+1, ierr)
-                    CALL SORMBR('P', 'L', 'T', m, n, m, u, ldu, work(itaup),   &
-                      vt, ldvt, work(iwork), lwork-iwork+1, ierr)
-                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),             &
+                    CALL SORMBR('P', 'L', 'T', m, n, m, u, ldu,             &
+                      work(itaup), vt, ldvt, work(iwork), lwork-iwork+1,    &
+                      ierr)
+                    CALL SORGBR('Q', m, m, m, u, ldu, work(itauq),          &
                       work(iwork), lwork-iwork+1, ierr)
                     iwork = ie + m
-                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,    &
+                    CALL SBDSQR('U', m, n, m, 0_ip_, s, work(ie), vt, ldvt,  &
                       u, ldu, dum, 1_ip_, work(iwork), info)
                   END IF
                 END IF
@@ -19991,26 +20080,26 @@
               itauq = ie + m
               itaup = itauq + m
               iwork = itaup + m
-              CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),              &
+              CALL SGEBRD(m, n, a, lda, s, work(ie), work(itauq),           &
                 work(itaup), work(iwork), lwork-iwork+1, ierr)
               IF (wntuas) THEN
                 CALL SLACPY('L', m, m, a, lda, u, ldu)
-                CALL SORGBR('Q', m, m, n, u, ldu, work(itauq), work(iwork),    &
+                CALL SORGBR('Q', m, m, n, u, ldu, work(itauq), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               IF (wntvas) THEN
                 CALL SLACPY('U', m, n, a, lda, vt, ldvt)
                 IF (wntva) nrvt = n
                 IF (wntvs) nrvt = m
-                CALL SORGBR('P', nrvt, n, m, vt, ldvt, work(itaup),            &
+                CALL SORGBR('P', nrvt, n, m, vt, ldvt, work(itaup),         &
                   work(iwork), lwork-iwork+1, ierr)
               END IF
               IF (wntuo) THEN
-                CALL SORGBR('Q', m, m, n, a, lda, work(itauq), work(iwork),    &
+                CALL SORGBR('Q', m, m, n, a, lda, work(itauq), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               IF (wntvo) THEN
-                CALL SORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),    &
+                CALL SORGBR('P', m, n, m, a, lda, work(itaup), work(iwork),  &
                   lwork-iwork+1, ierr)
               END IF
               iwork = ie + m
@@ -20019,14 +20108,14 @@
               IF (wntvas .OR. wntvo) ncvt = n
               IF (wntvn) ncvt = 0
               IF ((.NOT. wntuo) .AND. (.NOT. wntvo)) THEN
-                CALL SBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  u, ldu, dum, 1_ip_, work(iwork), info)
+                CALL SBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE IF ((.NOT. wntuo) .AND. wntvo) THEN
-                CALL SBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), a, lda,     &
+                CALL SBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), a, lda,  &
                   u, ldu, dum, 1_ip_, work(iwork), info)
               ELSE
-                CALL SBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt, ldvt,   &
-                  a, lda, dum, 1_ip_, work(iwork), info)
+                CALL SBDSQR('L', m, ncvt, nru, 0_ip_, s, work(ie), vt,      &
+                  ldvt, a, lda, dum, 1_ip_, work(iwork), info)
               END IF
             END IF
           END IF
@@ -20043,13 +20132,13 @@
             END IF
           END IF
           IF (iscl==1) THEN
-            IF (anrm>bignum) CALL SLASCL('G', 0_ip_, 0_ip_, bignum, anrm,      &
+            IF (anrm>bignum) CALL SLASCL('G', 0_ip_, 0_ip_, bignum, anrm,   &
               minmn, 1_ip_, s, minmn, ierr)
-            IF (info/=0 .AND. anrm>bignum) CALL SLASCL('G', 0_ip_, 0_ip_,      &
+            IF (info/=0 .AND. anrm>bignum) CALL SLASCL('G', 0_ip_, 0_ip_,   &
               bignum, anrm, minmn-1, 1_ip_, work(2), minmn, ierr)
-            IF (anrm<smlnum) CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, anrm,      &
+            IF (anrm<smlnum) CALL SLASCL('G', 0_ip_, 0_ip_, smlnum, anrm,   &
               minmn, 1_ip_, s, minmn, ierr)
-            IF (info/=0 .AND. anrm<smlnum) CALL SLASCL('G', 0_ip_, 0_ip_,      &
+            IF (info/=0 .AND. anrm<smlnum) CALL SLASCL('G', 0_ip_, 0_ip_,   &
               smlnum, anrm, minmn-1, 1_ip_, work(2), minmn, ierr)
           END IF
           work(1) = maxwrk
@@ -20102,7 +20191,7 @@
               info = j
             END IF
             IF (j<MIN(m,n)) THEN
-              CALL SGER(m-j, n-j, -one, a(j+1,j), 1_ip_, a(j,j+1), lda,        &
+              CALL SGER(m-j, n-j, -one, a(j+1,j), 1_ip_, a(j,j+1), lda,     &
                 a(j+1,j+1), lda)
             END IF
           END DO
@@ -20147,13 +20236,13 @@
               END DO
               CALL SLASWP(j-1, a, lda, j, j+jb-1, ipiv, 1_ip_)
               IF (j+jb<=n) THEN
-                CALL SLASWP(n-j-jb+1, a(1,j+jb), lda, j, j+jb-1, ipiv,         &
+                CALL SLASWP(n-j-jb+1, a(1,j+jb), lda, j, j+jb-1, ipiv,      &
                   1_ip_)
-                CALL STRSM('Left', 'Lower', 'No transpose', 'Unit', jb,        &
+                CALL STRSM('Left', 'Lower', 'No transpose', 'Unit', jb,     &
                   n-j-jb+1, one, a(j,j), lda, a(j,j+jb), lda)
                 IF (j+jb<=m) THEN
-                  CALL SGEMM('No transpose', 'No transpose', m-j-jb+1,         &
-                    n-j-jb+1, jb, -one, a(j+jb,j), lda, a(j,j+jb), lda, one,   &
+                  CALL SGEMM('No transpose', 'No transpose', m-j-jb+1,      &
+                    n-j-jb+1, jb, -one, a(j+jb,j), lda, a(j,j+jb), lda, one,&
                     a(j+jb,j+jb), lda)
                 END IF
               END IF
@@ -20218,9 +20307,9 @@
             CALL SGETRF2(m, n1, a, lda, ipiv, iinfo)
             IF (info==0 .AND. iinfo>0) info = iinfo
             CALL SLASWP(n2, a(1,n1+1), lda, 1_ip_, n1, ipiv, 1_ip_)
-            CALL STRSM('L', 'L', 'N', 'U', n1, n2, one, a, lda, a(1,n1+1),     &
+            CALL STRSM('L', 'L', 'N', 'U', n1, n2, one, a, lda, a(1,n1+1),  &
               lda)
-            CALL SGEMM('N', 'N', m-n1, n2, n1, -one, a(n1+1,1), lda, a(1,      &
+            CALL SGEMM('N', 'N', m-n1, n2, n1, -one, a(n1+1,1), lda, a(1,    &
               n1+1), lda, one, a(n1+1,n1+1), lda)
             CALL SGETRF2(m-n1, n2, a(n1+1,n1+1), lda, ipiv(n1+1), iinfo)
             IF (info==0 .AND. iinfo>0) info = iinfo + n1
@@ -20247,7 +20336,7 @@
           INTRINSIC :: MAX
           info = 0
           notran = LSAME(trans, 'N')
-          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT.            &
+          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT.         &
             LSAME(trans,'C')) THEN
             info = -1
           ELSE IF (n<0) THEN
@@ -20266,21 +20355,21 @@
           IF (n==0 .OR. nrhs==0) RETURN
           IF (notran) THEN
             CALL SLASWP(nrhs, b, ldb, 1_ip_, n, ipiv, 1_ip_)
-            CALL STRSM('Left', 'Lower', 'No transpose', 'Unit', n, nrhs,       &
+            CALL STRSM('Left', 'Lower', 'No transpose', 'Unit', n, nrhs,    &
               one, a, lda, b, ldb)
-            CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', n, nrhs,   &
-              one, a, lda, b, ldb)
+            CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', n,      &
+              nrhs, one, a, lda, b, ldb)
           ELSE
-            CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,      &
+            CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,   &
               one, a, lda, b, ldb)
-            CALL STRSM('Left', 'Lower', 'Transpose', 'Unit', n, nrhs, one,     &
+            CALL STRSM('Left', 'Lower', 'Transpose', 'Unit', n, nrhs, one,  &
               a, lda, b, ldb)
             CALL SLASWP(nrhs, b, ldb, 1_ip_, n, ipiv, -1_ip_)
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SHSEQR(job, compz, n, ilo, ihi, h, ldh, wr, wi, z, ldz,     &
+        SUBROUTINE SHSEQR(job, compz, n, ilo, ihi, h, ldh, wr, wi, z, ldz,  &
           work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: ihi, ilo, info, ldh, ldz, lwork, n
@@ -20298,7 +20387,8 @@
           INTEGER(ip_) :: ILAENV
           LOGICAL :: LSAME
           EXTERNAL :: ILAENV, LSAME
-          EXTERNAL :: SLACPY, SLAHQR, SLAQR0, SLASET, XERBLA
+          EXTERNAL :: SLACPY, SLAHQR, SLAQR0, SLASET,                       &
+            XERBLA
           INTRINSIC :: MAX, MIN, REAL
           wantt = LSAME(job, 'S')
           initz = LSAME(compz, 'I')
@@ -20329,8 +20419,8 @@
           ELSE IF (n==0) THEN
             RETURN
           ELSE IF (lquery) THEN
-            CALL SLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo, ihi,   &
-              z, ldz, work, lwork, info)
+            CALL SLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,     &
+              ihi, z, ldz, work, lwork, info)
             work(1) = MAX(REAL(MAX(1,n)), work(1))
             RETURN
           ELSE
@@ -20348,32 +20438,32 @@
               wi(ilo) = zero
               RETURN
             END IF
-            nmin = ILAENV(12_ip_, 'SHSEQR', job(:1)//compz(:1), n, ilo, ihi,   &
-              lwork)
+            nmin = ILAENV(12_ip_, 'SHSEQR', job(:1)//compz(:1), n, ilo,     &
+              ihi, lwork)
             nmin = MAX(ntiny, nmin)
             IF (n>nmin) THEN
-              CALL SLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,      &
+              CALL SLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,   &
                 ihi, z, ldz, work, lwork, info)
             ELSE
-              CALL SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,      &
+              CALL SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, ilo,   &
                 ihi, z, ldz, info)
               IF (info>0) THEN
                 kbot = info
                 IF (n>=nl) THEN
-                  CALL SLAQR0(wantt, wantz, n, ilo, kbot, h, ldh, wr, wi,      &
+                  CALL SLAQR0(wantt, wantz, n, ilo, kbot, h, ldh, wr, wi,   &
                     ilo, ihi, z, ldz, work, lwork, info)
                 ELSE
                   CALL SLACPY('A', n, n, h, ldh, hl, nl)
                   hl(n+1, n) = zero
                   CALL SLASET('A', nl, nl-n, zero, zero, hl(1,n+1), nl)
-                  CALL SLAQR0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi,     &
+                  CALL SLAQR0(wantt, wantz, nl, ilo, kbot, hl, nl, wr, wi,  &
                     ilo, ihi, z, ldz, workl, nl, info)
-                  IF (wantt .OR. info/=0) CALL SLACPY('A', n, n, hl, nl, h,    &
+                  IF (wantt .OR. info/=0) CALL SLACPY('A', n, n, hl, nl, h,  &
                     ldh)
                 END IF
               END IF
             END IF
-            IF ((wantt .OR. info/=0) .AND. n>2) CALL SLASET('L', n-2, n-2,     &
+            IF ((wantt .OR. info/=0) .AND. n>2) CALL SLASET('L', n-2, n-2,  &
               zero, zero, h(3,1), ldh)
             work(1) = MAX(REAL(MAX(1,n)), work(1))
           END IF
@@ -20399,11 +20489,11 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLABRD(m, n, nb, a, lda, d, e, tauq, taup, x, ldx, y,       &
+        SUBROUTINE SLABRD(m, n, nb, a, lda, d, e, tauq, taup, x, ldx, y,    &
           ldy)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: lda, ldx, ldy, m, n, nb
-          REAL(r4_) :: a(lda, *), d(*), e(*), taup(*), tauq(*), x(ldx, *),     &
+          REAL(r4_) :: a(lda, *), d(*), e(*), taup(*), tauq(*), x(ldx, *),  &
             y(ldy, *)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
@@ -20413,83 +20503,83 @@
           IF (m<=0 .OR. n<=0) RETURN
           IF (m>=n) THEN
             DO i = 1, nb
-              CALL SGEMV('No transpose', m-i+1, i-1, -one, a(i,1), lda, y(i,   &
-                1), ldy, one, a(i,i), 1_ip_)
-              CALL SGEMV('No transpose', m-i+1, i-1, -one, x(i,1), ldx, a(1,   &
-                i), 1_ip_, one, a(i,i), 1_ip_)
+              CALL SGEMV('No transpose', m-i+1, i-1, -one, a(i,1), lda,     &
+                y(i,1), ldy, one, a(i,i), 1_ip_)
+              CALL SGEMV('No transpose', m-i+1, i-1, -one, x(i,1), ldx,     &
+                a(1,i), 1_ip_, one, a(i,i), 1_ip_)
               CALL SLARFG(m-i+1, a(i,i), a(MIN(i+1,m),i), 1_ip_, tauq(i))
               d(i) = a(i, i)
               IF (i<n) THEN
                 a(i, i) = one
-                CALL SGEMV('Transpose', m-i+1, n-i, one, a(i,i+1), lda, a(i,   &
-                  i), 1_ip_, zero, y(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', m-i+1, i-1, one, a(i,1), lda, a(i,     &
+                CALL SGEMV('Transpose', m-i+1, n-i, one, a(i,i+1), lda,     &
+                  a(i,i), 1_ip_, zero, y(i+1,i), 1_ip_)
+                CALL SGEMV('Transpose', m-i+1, i-1, one, a(i,1), lda, a(i,   &
                   i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL SGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,      &
+                CALL SGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,   &
                   y(1,i), 1_ip_, one, y(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', m-i+1, i-1, one, x(i,1), ldx, a(i,     &
+                CALL SGEMV('Transpose', m-i+1, i-1, one, x(i,1), ldx, a(i,   &
                   i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL SGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, y(1,    &
+                CALL SGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, y(1,  &
                   i), 1_ip_, one, y(i+1,i), 1_ip_)
                 CALL SSCAL(n-i, tauq(i), y(i+1,i), 1_ip_)
-                CALL SGEMV('No transpose', n-i, i, -one, y(i+1,1), ldy, a(i,   &
-                  1), lda, one, a(i,i+1), lda)
-                CALL SGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, x(i,    &
+                CALL SGEMV('No transpose', n-i, i, -one, y(i+1,1), ldy,     &
+                  a(i,1), lda, one, a(i,i+1), lda)
+                CALL SGEMV('Transpose', i-1, n-i, -one, a(1,i+1), lda, x(i,  &
                   1), ldx, one, a(i,i+1), lda)
                 CALL SLARFG(n-i, a(i,i+1), a(i,MIN(i+2,n)), lda, taup(i))
                 e(i) = a(i, i+1)
                 a(i, i+1) = one
-                CALL SGEMV('No transpose', m-i, n-i, one, a(i+1,i+1), lda,     &
+                CALL SGEMV('No transpose', m-i, n-i, one, a(i+1,i+1), lda,  &
                   a(i,i+1), lda, zero, x(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', n-i, i, one, y(i+1,1), ldy, a(i,       &
+                CALL SGEMV('Transpose', n-i, i, one, y(i+1,1), ldy, a(i,     &
                   i+1), lda, zero, x(1,i), 1_ip_)
-                CALL SGEMV('No transpose', m-i, i, -one, a(i+1,1), lda, x(1,   &
-                  i), 1_ip_, one, x(i+1,i), 1_ip_)
-                CALL SGEMV('No transpose', i-1, n-i, one, a(1,i+1), lda,       &
+                CALL SGEMV('No transpose', m-i, i, -one, a(i+1,1), lda,     &
+                  x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
+                CALL SGEMV('No transpose', i-1, n-i, one, a(1,i+1), lda,    &
                   a(i,i+1), lda, zero, x(1,i), 1_ip_)
-                CALL SGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,      &
+                CALL SGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,   &
                   x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
                 CALL SSCAL(m-i, taup(i), x(i+1,i), 1_ip_)
               END IF
             END DO
           ELSE
             DO i = 1, nb
-              CALL SGEMV('No transpose', n-i+1, i-1, -one, y(i,1), ldy, a(i,   &
-                1), lda, one, a(i,i), lda)
-              CALL SGEMV('Transpose', i-1, n-i+1, -one, a(1,i), lda, x(i,1),   &
-                ldx, one, a(i,i), lda)
+              CALL SGEMV('No transpose', n-i+1, i-1, -one, y(i,1), ldy,     &
+                a(i,1), lda, one, a(i,i), lda)
+              CALL SGEMV('Transpose', i-1, n-i+1, -one, a(1,i), lda, x(i,    &
+                1), ldx, one, a(i,i), lda)
               CALL SLARFG(n-i+1, a(i,i), a(i,MIN(i+1,n)), lda, taup(i))
               d(i) = a(i, i)
               IF (i<m) THEN
                 a(i, i) = one
-                CALL SGEMV('No transpose', m-i, n-i+1, one, a(i+1,i), lda,     &
+                CALL SGEMV('No transpose', m-i, n-i+1, one, a(i+1,i), lda,  &
                   a(i,i), lda, zero, x(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', n-i+1, i-1, one, y(i,1), ldy, a(i,     &
+                CALL SGEMV('Transpose', n-i+1, i-1, one, y(i,1), ldy, a(i,   &
                   i), lda, zero, x(1,i), 1_ip_)
-                CALL SGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,      &
+                CALL SGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,   &
                   x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
-                CALL SGEMV('No transpose', i-1, n-i+1, one, a(1,i), lda,       &
+                CALL SGEMV('No transpose', i-1, n-i+1, one, a(1,i), lda,    &
                   a(i,i), lda, zero, x(1,i), 1_ip_)
-                CALL SGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,      &
+                CALL SGEMV('No transpose', m-i, i-1, -one, x(i+1,1), ldx,   &
                   x(1,i), 1_ip_, one, x(i+1,i), 1_ip_)
                 CALL SSCAL(m-i, taup(i), x(i+1,i), 1_ip_)
-                CALL SGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,      &
+                CALL SGEMV('No transpose', m-i, i-1, -one, a(i+1,1), lda,   &
                   y(i,1), ldy, one, a(i+1,i), 1_ip_)
-                CALL SGEMV('No transpose', m-i, i, -one, x(i+1,1), ldx, a(1,   &
-                  i), 1_ip_, one, a(i+1,i), 1_ip_)
+                CALL SGEMV('No transpose', m-i, i, -one, x(i+1,1), ldx,     &
+                  a(1,i), 1_ip_, one, a(i+1,i), 1_ip_)
                 CALL SLARFG(m-i, a(i+1,i), a(MIN(i+2,m),i), 1_ip_, tauq(i))
                 e(i) = a(i+1, i)
                 a(i+1, i) = one
-                CALL SGEMV('Transpose', m-i, n-i, one, a(i+1,i+1), lda,        &
+                CALL SGEMV('Transpose', m-i, n-i, one, a(i+1,i+1), lda,     &
                   a(i+1,i), 1_ip_, zero, y(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', m-i, i-1, one, a(i+1,1), lda, a(i+1,   &
-                  i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL SGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,      &
+                CALL SGEMV('Transpose', m-i, i-1, one, a(i+1,1), lda,       &
+                  a(i+1,i), 1_ip_, zero, y(1,i), 1_ip_)
+                CALL SGEMV('No transpose', n-i, i-1, -one, y(i+1,1), ldy,   &
                   y(1,i), 1_ip_, one, y(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', m-i, i, one, x(i+1,1), ldx, a(i+1,     &
+                CALL SGEMV('Transpose', m-i, i, one, x(i+1,1), ldx, a(i+1,   &
                   i), 1_ip_, zero, y(1,i), 1_ip_)
-                CALL SGEMV('Transpose', i, n-i, -one, a(1,i+1), lda, y(1,i),   &
-                  1_ip_, one, y(i+1,i), 1_ip_)
+                CALL SGEMV('Transpose', i, n-i, -one, a(1,i+1), lda, y(1,    &
+                  i), 1_ip_, one, y(i+1,i), 1_ip_)
                 CALL SSCAL(n-i, tauq(i), y(i+1,i), 1_ip_)
               END IF
             END DO
@@ -20582,15 +20672,15 @@
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=40)
           REAL(r4_) :: zero, one, two, three, four, eight
-          PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_,    &
+          PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_,  &
             four=4.0_r4_, eight=8.0_r4_)
           REAL(r4_) :: SLAMCH
           EXTERNAL :: SLAMCH
           REAL(r4_) :: dscale(3), zscale(3)
           LOGICAL :: scale
           INTEGER(ip_) :: i, iter, niter
-          REAL(r4_) :: a, b, base, c, ddf, df, eps, erretm, eta, f, fc,        &
-            sclfac, sclinv, small1, small2, sminv1, sminv2, temp, temp1,       &
+          REAL(r4_) :: a, b, base, c, ddf, df, eps, erretm, eta, f, fc,     &
+            sclfac, sclinv, small1, small2, sminv1, sminv2, temp, temp1,    &
             temp2, temp3, temp4, lbd, ubd
           INTRINSIC :: ABS, INT, LOG, MAX, MIN, SQRT
           info = 0
@@ -20635,7 +20725,7 @@
             IF (d(1)==tau .OR. d(2)==tau .OR. d(3)==tau) THEN
               tau = zero
             ELSE
-              temp = finit + tau*z(1)/(d(1)*(d(1)-tau)) +                      &
+              temp = finit + tau*z(1)/(d(1)*(d(1)-tau)) +                   &
                 tau*z(2)/(d(2)*(d(2)-tau)) + tau*z(3)/(d(3)*(d(3)-tau))
               IF (temp<=zero) THEN
                 lbd = tau
@@ -20747,7 +20837,7 @@
             END DO
             f = finit + tau*fc
             erretm = eight*(ABS(finit)+ABS(tau)*erretm) + ABS(tau)*df
-            IF ((ABS(f)<=four*eps*erretm) .OR. ((ubd-                          &
+            IF ((ABS(f)<=four*eps*erretm) .OR. ((ubd-                       &
               lbd)<=four*eps*ABS(tau))) GO TO 60
             IF (f<=zero) THEN
               lbd = tau
@@ -20849,12 +20939,12 @@
           INTEGER(ip_) :: ldd, ldx
           PARAMETER (ldd=4, ldx=2)
           INTEGER(ip_) :: ierr, j2, j3, j4, k, nd
-          REAL(r4_) :: cs, dnorm, eps, scale, smlnum, sn, t11, t22, t33,       &
+          REAL(r4_) :: cs, dnorm, eps, scale, smlnum, sn, t11, t22, t33,    &
             tau, tau1, tau2, temp, thresh, wi1, wi2, wr1, wr2, xnorm
           REAL(r4_) :: d(ldd, 4_ip_), u(3), u1(3), u2(3), x(ldx, 2_ip_)
           REAL(r4_) :: SLAMCH, SLANGE
           EXTERNAL :: SLAMCH, SLANGE
-          EXTERNAL :: SLACPY, SLANV2, SLARFG, SLARFX,                          &
+          EXTERNAL :: SLACPY, SLANV2, SLARFG, SLARFX,                       &
             SLARTG, SLASY2, SROT
           INTRINSIC :: ABS, MAX
           info = 0
@@ -20867,7 +20957,7 @@
             t11 = t(j1, j1)
             t22 = t(j2, j2)
             CALL SLARTG(t(j1,j2), t22-t11, cs, sn, temp)
-            IF (j3<=n) CALL SROT(n-j1-1, t(j1,j3), ldt, t(j2,j3), ldt, cs,     &
+            IF (j3<=n) CALL SROT(n-j1-1, t(j1,j3), ldt, t(j2,j3), ldt, cs,  &
               sn)
             CALL SROT(j1-1, t(1,j1), 1_ip_, t(1,j2), 1_ip_, cs, sn)
             t(j1, j1) = t22
@@ -20882,7 +20972,7 @@
             eps = SLAMCH('P')
             smlnum = SLAMCH('S')/eps
             thresh = MAX(ten*eps*dnorm, smlnum)
-            CALL SLASY2(.FALSE., .FALSE., -1_ip_, n1, n2, d, ldd, d(n1+1,      &
+            CALL SLASY2(.FALSE., .FALSE., -1_ip_, n1, n2, d, ldd, d(n1+1,    &
               n1+1), ldd, d(1,n1+1), ldd, scale, x, ldx, xnorm, ierr)
             k = n1 + n1 + n2 - 3
             GO TO (10, 20, 30) k
@@ -20895,8 +20985,8 @@
             t11 = t(j1, j1)
             CALL SLARFX('L', 3_ip_, 3_ip_, u, tau, d, ldd, work)
             CALL SLARFX('R', 3_ip_, 3_ip_, u, tau, d, ldd, work)
-            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(3,3)- t11))>thresh) GO TO    &
-              50
+            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(3,3)- t11))>thresh) GO    &
+              TO 50
             CALL SLARFX('L', 3_ip_, n-j1+1, u, tau, t(j1,j1), ldt, work)
             CALL SLARFX('R', j2, 3_ip_, u, tau, t(1,j1), ldt, work)
             t(j3, j1) = zero
@@ -20915,8 +21005,8 @@
             t33 = t(j3, j3)
             CALL SLARFX('L', 3_ip_, 3_ip_, u, tau, d, ldd, work)
             CALL SLARFX('R', 3_ip_, 3_ip_, u, tau, d, ldd, work)
-            IF (MAX(ABS(d(2,1)),ABS(d(3,1)),ABS(d(1,1)- t33))>thresh) GO TO    &
-              50
+            IF (MAX(ABS(d(2,1)),ABS(d(3,1)),ABS(d(1,1)- t33))>thresh) GO    &
+              TO 50
             CALL SLARFX('R', j3, 3_ip_, u, tau, t(1,j1), ldt, work)
             CALL SLARFX('L', 3_ip_, n-j1, u, tau, t(j1,j2), ldt, work)
             t(j1, j1) = t33
@@ -20942,7 +21032,7 @@
             CALL SLARFX('R', 4_ip_, 3_ip_, u1, tau1, d, ldd, work)
             CALL SLARFX('L', 3_ip_, 4_ip_, u2, tau2, d(2,1), ldd, work)
             CALL SLARFX('R', 4_ip_, 3_ip_, u2, tau2, d(1,2), ldd, work)
-            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(4,1)),ABS( d(4,              &
+            IF (MAX(ABS(d(3,1)),ABS(d(3,2)),ABS(d(4,1)),ABS( d(4,            &
               2)))>thresh) GO TO 50
             CALL SLARFX('L', 3_ip_, n-j1+1, u1, tau1, t(j1,j1), ldt, work)
             CALL SLARFX('R', j4, 3_ip_, u1, tau1, t(1,j1), ldt, work)
@@ -20958,22 +21048,22 @@
             END IF
  40         CONTINUE
             IF (n2==2) THEN
-              CALL SLANV2(t(j1,j1), t(j1,j2), t(j2,j1), t(j2,j2), wr1, wi1,    &
+              CALL SLANV2(t(j1,j1), t(j1,j2), t(j2,j1), t(j2,j2), wr1, wi1,  &
                 wr2, wi2, cs, sn)
               CALL SROT(n-j1-1, t(j1,j1+2), ldt, t(j2,j1+2), ldt, cs, sn)
               CALL SROT(j1-1, t(1,j1), 1_ip_, t(1,j2), 1_ip_, cs, sn)
-              IF (wantq) CALL SROT(n, q(1,j1), 1_ip_, q(1,j2), 1_ip_, cs,      &
+              IF (wantq) CALL SROT(n, q(1,j1), 1_ip_, q(1,j2), 1_ip_, cs,   &
                 sn)
             END IF
             IF (n1==2) THEN
               j3 = j1 + n2
               j4 = j3 + 1
-              CALL SLANV2(t(j3,j3), t(j3,j4), t(j4,j3), t(j4,j4), wr1, wi1,    &
+              CALL SLANV2(t(j3,j3), t(j3,j4), t(j4,j3), t(j4,j4), wr1, wi1,  &
                 wr2, wi2, cs, sn)
-              IF (j3+2<=n) CALL SROT(n-j3-1, t(j3,j3+2), ldt, t(j4,j3+2),      &
+              IF (j3+2<=n) CALL SROT(n-j3-1, t(j3,j3+2), ldt, t(j4,j3+2),   &
                 ldt, cs, sn)
               CALL SROT(j3-1, t(1,j3), 1_ip_, t(1,j4), 1_ip_, cs, sn)
-              IF (wantq) CALL SROT(n, q(1,j3), 1_ip_, q(1,j4), 1_ip_, cs,      &
+              IF (wantq) CALL SROT(n, q(1,j3), 1_ip_, q(1,j4), 1_ip_, cs,   &
                 sn)
             END IF
           END IF
@@ -20982,7 +21072,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,     &
+        SUBROUTINE SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,  &
           ihiz, z, ldz, info)
           USE GALAHAD_KINDS
           IMPLICIT NONE
@@ -20995,10 +21085,10 @@
           PARAMETER (dat1=3.0_r4_/4.0_r4_, dat2=-0.4375_r4_)
           INTEGER(ip_) :: kexsh
           PARAMETER (kexsh=10)
-          REAL(r4_) :: aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22,      &
-            rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmax, safmin, smlnum, sn,     &
+          REAL(r4_) :: aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22,   &
+            rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmax, safmin, smlnum, sn,  &
             sum, t1, t2, t3, tr, tst, ulp, v2, v3
-          INTEGER(ip_) :: i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz,       &
+          INTEGER(ip_) :: i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz,    &
             kdefl
           REAL(r4_) :: v(3)
           REAL(r4_) :: SLAMCH
@@ -21117,7 +21207,7 @@
               h21s = h(m+1, m)
               s = ABS(h(m,m)-rt2r) + ABS(rt2i) + ABS(h21s)
               h21s = h(m+1, m)/s
-              v(1) = h21s*h(m, m+1) + (h(m,m)-rt1r)*((h(m, m)-rt2r)/s) -       &
+              v(1) = h21s*h(m, m+1) + (h(m,m)-rt1r)*((h(m, m)-rt2r)/s) -    &
                 rt1i*(rt2i/s)
               v(2) = h21s*(h(m,m)+h(m+1,m+1)-rt1r-rt2r)
               v(3) = h21s*h(m+2, m+1)
@@ -21126,7 +21216,7 @@
               v(2) = v(2)/s
               v(3) = v(3)/s
               IF (m==l) GO TO 60
-              IF (ABS(h(m,m-1))*(ABS(v(2))+ABS(v(3)))<=ulp*ABS(v(1))*(ABS(     &
+              IF (ABS(h(m,m-1))*(ABS(v(2))+ABS(v(3)))<=ulp*ABS(v(1))*(ABS(  &
                 h(m-1,m-1))+ABS(h(m,m))+ABS(h(m+1,m+1)))) GO TO 60
             END DO
  60         CONTINUE
@@ -21194,10 +21284,10 @@
             wr(i) = h(i, i)
             wi(i) = zero
           ELSE IF (l==i-1) THEN
-            CALL SLANV2(h(i-1,i-1), h(i-1,i), h(i,i-1), h(i,i), wr(i-1),       &
+            CALL SLANV2(h(i-1,i-1), h(i-1,i), h(i,i-1), h(i,i), wr(i-1),    &
               wi(i-1), wr(i), wi(i), cs, sn)
             IF (wantt) THEN
-              IF (i2>i) CALL SROT(i2-i, h(i-1,i+1), ldh, h(i,i+1), ldh, cs,    &
+              IF (i2>i) CALL SROT(i2-i, h(i-1,i+1), ldh, h(i,i+1), ldh, cs,  &
                 sn)
               CALL SROT(i-i1-1, h(i1,i-1), 1_ip_, h(i1,i), 1_ip_, cs, sn)
             END IF
@@ -21220,50 +21310,51 @@
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           INTEGER(ip_) :: i
           REAL(r4_) :: ei
-          EXTERNAL :: SAXPY, SCOPY, SGEMM, SGEMV, SLACPY,                      &
+          EXTERNAL :: SAXPY, SCOPY, SGEMM, SGEMV, SLACPY,                   &
             SLARFG, SSCAL, STRMM, STRMV
           INTRINSIC :: MIN
           IF (n<=1) RETURN
           DO i = 1, nb
             IF (i>1) THEN
-              CALL SGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy,        &
+              CALL SGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy,     &
                 a(k+i-1,1), lda, one, a(k+1,i), 1_ip_)
               CALL SCOPY(i-1, a(k+1,i), 1_ip_, t(1,nb), 1_ip_)
-              CALL STRMV('Lower', 'Transpose', 'UNIT', i-1, a(k+1,1), lda,     &
+              CALL STRMV('Lower', 'Transpose', 'UNIT', i-1, a(k+1,1), lda,  &
                 t(1,nb), 1_ip_)
-              CALL SGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda,        &
+              CALL SGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda,     &
                 a(k+i,i), 1_ip_, one, t(1,nb), 1_ip_)
-              CALL STRMV('Upper', 'Transpose', 'NON-UNIT', i-1, t, ldt, t(1,   &
-                nb), 1_ip_)
-              CALL SGEMV('NO TRANSPOSE', n-k-i+1, i-1, -one, a(k+i,1), lda,    &
+              CALL STRMV('Upper', 'Transpose', 'NON-UNIT', i-1, t, ldt,     &
+                t(1,nb), 1_ip_)
+              CALL SGEMV('NO TRANSPOSE', n-k-i+1, i-1, -one, a(k+i,1), lda,  &
                 t(1,nb), 1_ip_, one, a(k+i,i), 1_ip_)
-              CALL STRMV('Lower', 'NO TRANSPOSE', 'UNIT', i-1, a(k+1,1),       &
+              CALL STRMV('Lower', 'NO TRANSPOSE', 'UNIT', i-1, a(k+1,1),    &
                 lda, t(1,nb), 1_ip_)
               CALL SAXPY(i-1, -one, t(1,nb), 1_ip_, a(k+1,i), 1_ip_)
               a(k+i-1, i-1) = ei
             END IF
-            CALL SLARFG(n-k-i+1, a(k+i,i), a(MIN(k+i+1,n),i), 1_ip_, tau(i))
+            CALL SLARFG(n-k-i+1, a(k+i,i), a(MIN(k+i+1,n),i), 1_ip_,        &
+              tau(i))
             ei = a(k+i, i)
             a(k+i, i) = one
-            CALL SGEMV('NO TRANSPOSE', n-k, n-k-i+1, one, a(k+1,i+1), lda,     &
+            CALL SGEMV('NO TRANSPOSE', n-k, n-k-i+1, one, a(k+1,i+1), lda,  &
               a(k+i,i), 1_ip_, zero, y(k+1,i), 1_ip_)
-            CALL SGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda, a(k+i,   &
-              i), 1_ip_, zero, t(1,i), 1_ip_)
-            CALL SGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy, t(1,     &
+            CALL SGEMV('Transpose', n-k-i+1, i-1, one, a(k+i,1), lda,       &
+              a(k+i,i), 1_ip_, zero, t(1,i), 1_ip_)
+            CALL SGEMV('NO TRANSPOSE', n-k, i-1, -one, y(k+1,1), ldy, t(1,   &
               i), 1_ip_, one, y(k+1,i), 1_ip_)
             CALL SSCAL(n-k, tau(i), y(k+1,i), 1_ip_)
             CALL SSCAL(i-1, -tau(i), t(1,i), 1_ip_)
-            CALL STRMV('Upper', 'No Transpose', 'NON-UNIT', i-1, t, ldt,       &
+            CALL STRMV('Upper', 'No Transpose', 'NON-UNIT', i-1, t, ldt,    &
               t(1,i), 1_ip_)
             t(i, i) = tau(i)
           END DO
           a(k+nb, nb) = ei
           CALL SLACPY('ALL', k, nb, a(1,2), lda, y, ldy)
-          CALL STRMM('RIGHT', 'Lower', 'NO TRANSPOSE', 'UNIT', k, nb, one,     &
+          CALL STRMM('RIGHT', 'Lower', 'NO TRANSPOSE', 'UNIT', k, nb, one,  &
             a(k+1,1), lda, y, ldy)
-          IF (n>k+nb) CALL SGEMM('NO TRANSPOSE', 'NO TRANSPOSE', k, nb,        &
+          IF (n>k+nb) CALL SGEMM('NO TRANSPOSE', 'NO TRANSPOSE', k, nb,     &
             n-k-nb, one, a(1,2+nb), lda, a(k+1+nb,1), lda, one, y, ldy)
-          CALL STRMM('RIGHT', 'Upper', 'NO TRANSPOSE', 'NON-UNIT', k, nb,      &
+          CALL STRMM('RIGHT', 'Upper', 'NO TRANSPOSE', 'NON-UNIT', k, nb,   &
             one, t, ldt, y, ldy)
           RETURN
         END SUBROUTINE
@@ -21277,8 +21368,8 @@
           PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_)
           REAL(r4_) :: half, four
           PARAMETER (half=0.5_r4_, four=4.0_r4_)
-          REAL(r4_) :: absalp, absest, absgam, alpha, b, cosine, eps, norma,   &
-            s1, s2, sine, t, test, tmp, zeta1, zeta2
+          REAL(r4_) :: absalp, absest, absgam, alpha, b, cosine, eps,       &
+            norma, s1, s2, sine, t, test, tmp, zeta1, zeta2
           INTRINSIC :: ABS, MAX, SIGN, SQRT
           REAL(r4_) :: SDOT, SLAMCH
           EXTERNAL :: SDOT, SLAMCH
@@ -21414,7 +21505,7 @@
             ELSE
               zeta1 = alpha/absest
               zeta2 = gamma/absest
-              norma = MAX(one+zeta1*zeta1+ABS(zeta1*zeta2),                    &
+              norma = MAX(one+zeta1*zeta1+ABS(zeta1*zeta2),                 &
                 ABS(zeta1*zeta2)+zeta2*zeta2)
               test = one + two*(zeta1-zeta2)*(zeta1+zeta2)
               IF (test>=zero) THEN
@@ -21452,21 +21543,21 @@
           RETURN
         END FUNCTION
 
-        SUBROUTINE SLALS0(icompq, nl, nr, sqre, nrhs, b, ldb, bx, ldbx,        &
-          perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl, difr, z,  &
+        SUBROUTINE SLALS0(icompq, nl, nr, sqre, nrhs, b, ldb, bx, ldbx,     &
+          perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl, difr, z,&
           k, c, s, work, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: givptr, icompq, info, k, ldb, ldbx, ldgcol,          &
+          INTEGER(ip_) :: givptr, icompq, info, k, ldb, ldbx, ldgcol,       &
             ldgnum, nl, nr, nrhs, sqre
           REAL(r4_) :: c, s
           INTEGER(ip_) :: givcol(ldgcol, *), perm(*)
-          REAL(r4_) :: b(ldb, *), bx(ldbx, *), difl(*), difr(ldgnum, *),       &
+          REAL(r4_) :: b(ldb, *), bx(ldbx, *), difl(*), difr(ldgnum, *),    &
             givnum(ldgnum, *), poles(ldgnum, *), work(*), z(*)
           REAL(r4_) :: one, zero, negone
           PARAMETER (one=1.0_r4_, zero=0.0_r4_, negone=-1.0_r4_)
           INTEGER(ip_) :: i, j, m, n, nlp1
           REAL(r4_) :: diflj, difrj, dj, dsigj, dsigjp, temp
-          EXTERNAL :: SCOPY, SGEMV, SLACPY, SLASCL, SROT,                      &
+          EXTERNAL :: SCOPY, SGEMV, SLACPY, SLASCL, SROT,                   &
             SSCAL, XERBLA
           REAL(r4_) :: SLAMC3, SNRM2
           EXTERNAL :: SLAMC3, SNRM2
@@ -21504,7 +21595,7 @@
           nlp1 = nl + 1
           IF (icompq==0) THEN
             DO i = 1, givptr
-              CALL SROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),    &
+              CALL SROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),  &
                 ldb, givnum(i,2), givnum(i,1))
             END DO
             CALL SCOPY(nrhs, b(nlp1,1), ldb, bx(1,1), ldbx)
@@ -21534,7 +21625,7 @@
                   IF ((z(i)==zero) .OR. (poles(i,2)==zero)) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = poles(i, 2_ip_)*z(i)/(SLAMC3(poles(i, 2_ip_),    &
+                    work(i) = poles(i, 2_ip_)*z(i)/(SLAMC3(poles(i, 2_ip_),  &
                       dsigj)-diflj)/(poles(i,2)+dj)
                   END IF
                 END DO
@@ -21542,19 +21633,19 @@
                   IF ((z(i)==zero) .OR. (poles(i,2)==zero)) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = poles(i, 2_ip_)*z(i)/(SLAMC3(poles(i, 2_ip_),    &
+                    work(i) = poles(i, 2_ip_)*z(i)/(SLAMC3(poles(i, 2_ip_),  &
                       dsigjp)+difrj)/(poles(i,2)+dj)
                   END IF
                 END DO
                 work(1) = negone
                 temp = SNRM2(k, work, 1_ip_)
-                CALL SGEMV('T', k, nrhs, one, bx, ldbx, work, 1_ip_, zero,     &
+                CALL SGEMV('T', k, nrhs, one, bx, ldbx, work, 1_ip_, zero,  &
                   b(j,1), ldb)
-                CALL SLASCL('G', 0_ip_, 0_ip_, temp, one, 1_ip_, nrhs, b(j,    &
+                CALL SLASCL('G', 0_ip_, 0_ip_, temp, one, 1_ip_, nrhs, b(j,  &
                   1), ldb, info)
               END DO
             END IF
-            IF (k<MAX(m,n)) CALL SLACPY('A', n-k, nrhs, bx(k+1,1), ldbx,       &
+            IF (k<MAX(m,n)) CALL SLACPY('A', n-k, nrhs, bx(k+1,1), ldbx,    &
               b(k+1,1), ldb)
           ELSE
             IF (k==1) THEN
@@ -21571,19 +21662,19 @@
                   IF (z(j)==zero) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = z(j)/(SLAMC3(dsigj,-poles(i+1, 2_ip_))-difr(i,   &
-                      1))/(dsigj+poles(i,1))/difr(i, 2_ip_)
+                    work(i) = z(j)/(SLAMC3(dsigj,-poles(i+1,                &
+                      2_ip_))-difr(i,1))/(dsigj+poles(i,1))/difr(i, 2_ip_)
                   END IF
                 END DO
                 DO i = j + 1, k
                   IF (z(j)==zero) THEN
                     work(i) = zero
                   ELSE
-                    work(i) = z(j)/(SLAMC3(dsigj,-poles(i,                     &
+                    work(i) = z(j)/(SLAMC3(dsigj,-poles(i,                  &
                       2_ip_))-difl(i))/(dsigj+poles(i,1))/difr(i, 2_ip_)
                   END IF
                 END DO
-                CALL SGEMV('T', k, nrhs, one, b, ldb, work, 1_ip_, zero,       &
+                CALL SGEMV('T', k, nrhs, one, b, ldb, work, 1_ip_, zero,    &
                   bx(j,1), ldbx)
               END DO
             END IF
@@ -21591,7 +21682,7 @@
               CALL SCOPY(nrhs, b(m,1), ldb, bx(m,1), ldbx)
               CALL SROT(nrhs, bx(1,1), ldbx, bx(m,1), ldbx, c, s)
             END IF
-            IF (k<MAX(m,n)) CALL SLACPY('A', n-k, nrhs, b(k+1,1), ldb,         &
+            IF (k<MAX(m,n)) CALL SLACPY('A', n-k, nrhs, b(k+1,1), ldb,      &
               bx(k+1,1), ldbx)
             CALL SCOPY(nrhs, bx(1,1), ldbx, b(nlp1,1), ldb)
             IF (sqre==1) THEN
@@ -21601,27 +21692,27 @@
               CALL SCOPY(nrhs, bx(i,1), ldbx, b(perm(i),1), ldb)
             END DO
             DO i = givptr, 1_ip_, -1_ip_
-              CALL SROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),    &
+              CALL SROT(nrhs, b(givcol(i,2),1), ldb, b(givcol(i, 1_ip_),1),  &
                 ldb, givnum(i,2), -givnum(i,1))
             END DO
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLALSA(icompq, smlsiz, n, nrhs, b, ldb, bx, ldbx, u, ldu,   &
-          vt, k, difl, difr, z, poles, givptr, givcol, ldgcol, perm, givnum,   &
-          c, s, work, iwork, info)
+        SUBROUTINE SLALSA(icompq, smlsiz, n, nrhs, b, ldb, bx, ldbx, u,     &
+          ldu, vt, k, difl, difr, z, poles, givptr, givcol, ldgcol, perm,   &
+          givnum, c, s, work, iwork, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: icompq, info, ldb, ldbx, ldgcol, ldu, n, nrhs,       &
+          INTEGER(ip_) :: icompq, info, ldb, ldbx, ldgcol, ldu, n, nrhs,    &
             smlsiz
-          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),        &
+          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),     &
             perm(ldgcol, *)
-          REAL(r4_) :: b(ldb, *), bx(ldbx, *), c(*), difl(ldu, *), difr(ldu,   &
-            *), givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *), vt(ldu, *),    &
-            work(*), z(ldu, *)
+          REAL(r4_) :: b(ldb, *), bx(ldbx, *), c(*), difl(ldu, *),          &
+            difr(ldu, *), givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *),   &
+            vt(ldu, *), work(*), z(ldu, *)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
-          INTEGER(ip_) :: i, i1, ic, im1, inode, j, lf, ll, lvl, lvl2, nd,     &
+          INTEGER(ip_) :: i, i1, ic, im1, inode, j, lf, ll, lvl, lvl2, nd,  &
             ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqre
           EXTERNAL :: SCOPY, SGEMM, SLALS0, SLASDT, XERBLA
           info = 0
@@ -21649,8 +21740,8 @@
           inode = 1
           ndiml = inode + n
           ndimr = ndiml + n
-          CALL SLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml), iwork(ndimr),   &
-            smlsiz)
+          CALL SLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml),              &
+            iwork(ndimr), smlsiz)
           IF (icompq==1) THEN
             GO TO 50
           END IF
@@ -21662,10 +21753,10 @@
             nr = iwork(ndimr+i1)
             nlf = ic - nl
             nrf = ic + 1
-            CALL SGEMM('T', 'N', nl, nrhs, nl, one, u(nlf,1), ldu, b(nlf,1),   &
-              ldb, zero, bx(nlf,1), ldbx)
-            CALL SGEMM('T', 'N', nr, nrhs, nr, one, u(nrf,1), ldu, b(nrf,1),   &
-              ldb, zero, bx(nrf,1), ldbx)
+            CALL SGEMM('T', 'N', nl, nrhs, nl, one, u(nlf,1), ldu, b(nlf,    &
+              1), ldb, zero, bx(nlf,1), ldbx)
+            CALL SGEMM('T', 'N', nr, nrhs, nr, one, u(nrf,1), ldu, b(nrf,    &
+              1), ldb, zero, bx(nrf,1), ldbx)
           END DO
           DO i = 1, nd
             ic = iwork(inode+i-1)
@@ -21690,10 +21781,11 @@
               nlf = ic - nl
               nrf = ic + 1
               j = j - 1
-              CALL SLALS0(icompq, nl, nr, sqre, nrhs, bx(nlf,1), ldbx,         &
-                b(nlf,1), ldb, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2),     &
-                ldgcol, givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,lvl), &
-                difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work, info)
+              CALL SLALS0(icompq, nl, nr, sqre, nrhs, bx(nlf,1), ldbx,      &
+                b(nlf,1), ldb, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2),  &
+                ldgcol, givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,    &
+                lvl), difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work,   &
+                info)
             END DO
           END DO
           GO TO 90
@@ -21721,10 +21813,11 @@
                 sqre = 1
               END IF
               j = j + 1
-              CALL SLALS0(icompq, nl, nr, sqre, nrhs, b(nlf,1), ldb, bx(nlf,   &
-                1), ldbx, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2), ldgcol,  &
-                givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,lvl),         &
-                difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work, info)
+              CALL SLALS0(icompq, nl, nr, sqre, nrhs, b(nlf,1), ldb,        &
+                bx(nlf,1), ldbx, perm(nlf,lvl), givptr(j), givcol(nlf,lvl2),&
+                ldgcol, givnum(nlf,lvl2), ldu, poles(nlf,lvl2), difl(nlf,    &
+                lvl), difr(nlf,lvl2), z(nlf,lvl), k(j), c(j), s(j), work,   &
+                info)
             END DO
           END DO
           ndb1 = (nd+1)/2
@@ -21741,16 +21834,16 @@
             END IF
             nlf = ic - nl
             nrf = ic + 1
-            CALL SGEMM('T', 'N', nlp1, nrhs, nlp1, one, vt(nlf,1), ldu,        &
+            CALL SGEMM('T', 'N', nlp1, nrhs, nlp1, one, vt(nlf,1), ldu,     &
               b(nlf,1), ldb, zero, bx(nlf,1), ldbx)
-            CALL SGEMM('T', 'N', nrp1, nrhs, nrp1, one, vt(nrf,1), ldu,        &
+            CALL SGEMM('T', 'N', nrp1, nrhs, nrp1, one, vt(nrf,1), ldu,     &
               b(nrf,1), ldb, zero, bx(nrf,1), ldbx)
           END DO
  90       CONTINUE
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLALSD(uplo, smlsiz, n, nrhs, d, e, b, ldb, rcond, rank,    &
+        SUBROUTINE SLALSD(uplo, smlsiz, n, nrhs, d, e, b, ldb, rcond, rank,  &
           work, iwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: uplo
@@ -21760,15 +21853,15 @@
           REAL(r4_) :: b(ldb, *), d(*), e(*), work(*)
           REAL(r4_) :: zero, one, two
           PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_)
-          INTEGER(ip_) :: bx, bxst, c, difl, difr, givcol, givnum, givptr,     &
-            i, icmpq1, icmpq2, iwk, j, k, nlvl, nm1, nsize, nsub, nwork, perm, &
-            poles, s, sizei, smlszp, sqre, st, st1, u, vt, z
+          INTEGER(ip_) :: bx, bxst, c, difl, difr, givcol, givnum, givptr,  &
+            i, icmpq1, icmpq2, iwk, j, k, nlvl, nm1, nsize, nsub, nwork,    &
+            perm, poles, s, sizei, smlszp, sqre, st, st1, u, vt, z
           REAL(r4_) :: cs, eps, orgnrm, r, rcnd, sn, tol
           INTEGER(ip_) :: ISAMAX
           REAL(r4_) :: SLAMCH, SLANST
           EXTERNAL :: ISAMAX, SLAMCH, SLANST
-          EXTERNAL :: SCOPY, SGEMM, SLACPY, SLALSA, SLARTG,                    &
-            SLASCL, SLASDA, SLASDQ, SLASET, SLASRT, SROT,                      &
+          EXTERNAL :: SCOPY, SGEMM, SLACPY, SLALSA, SLARTG,                  &
+            SLASCL, SLASDA, SLASDQ, SLASET, SLASRT, SROT,                   &
             XERBLA
           INTRINSIC :: ABS, INT, LOG, REAL, SIGN
           info = 0
@@ -21797,8 +21890,8 @@
               CALL SLASET('A', 1_ip_, nrhs, zero, zero, b, ldb)
             ELSE
               rank = 1
-              CALL SLASCL('G', 0_ip_, 0_ip_, d(1), one, 1_ip_, nrhs, b, ldb,   &
-                info)
+              CALL SLASCL('G', 0_ip_, 0_ip_, d(1), one, 1_ip_, nrhs, b,     &
+                ldb, info)
               d(1) = ABS(d(1))
             END IF
             RETURN
@@ -21833,12 +21926,12 @@
             RETURN
           END IF
           CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, 1_ip_, d, n, info)
-          CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, nm1, 1_ip_, e, nm1,      &
+          CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, nm1, 1_ip_, e, nm1,   &
             info)
           IF (n<=smlsiz) THEN
             nwork = 1 + n*n
             CALL SLASET('A', n, n, zero, one, work, n)
-            CALL SLASDQ('U', 0_ip_, n, n, 0_ip_, nrhs, d, e, work, n, work,    &
+            CALL SLASDQ('U', 0_ip_, n, n, 0_ip_, nrhs, d, e, work, n, work,  &
               n, b, ldb, work(nwork), info)
             IF (info/=0) THEN
               RETURN
@@ -21848,18 +21941,18 @@
               IF (d(i)<=tol) THEN
                 CALL SLASET('A', 1_ip_, nrhs, zero, zero, b(i,1), ldb)
               ELSE
-                CALL SLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs, b(i,    &
+                CALL SLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs, b(i,  &
                   1), ldb, info)
                 rank = rank + 1
               END IF
             END DO
-            CALL SGEMM('T', 'N', n, nrhs, n, one, work, n, b, ldb, zero,       &
+            CALL SGEMM('T', 'N', n, nrhs, n, one, work, n, b, ldb, zero,    &
               work(nwork), n)
             CALL SLACPY('A', n, nrhs, work(nwork), n, b, ldb)
-            CALL SLASCL('G', 0_ip_, 0_ip_, one, orgnrm, n, 1_ip_, d, n,        &
+            CALL SLASCL('G', 0_ip_, 0_ip_, one, orgnrm, n, 1_ip_, d, n,     &
               info)
             CALL SLASRT('D', n, d, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb,    &
               info)
             RETURN
           END IF
@@ -21915,30 +22008,31 @@
                 CALL SCOPY(nrhs, b(st,1), ldb, work(bx+st1), n)
               ELSE IF (nsize<=smlsiz) THEN
                 CALL SLASET('A', nsize, nsize, zero, one, work(vt+st1), n)
-                CALL SLASDQ('U', 0_ip_, nsize, nsize, 0_ip_, nrhs, d(st),      &
-                  e(st), work(vt+st1), n, work(nwork), n, b(st,1), ldb,        &
+                CALL SLASDQ('U', 0_ip_, nsize, nsize, 0_ip_, nrhs, d(st),   &
+                  e(st), work(vt+st1), n, work(nwork), n, b(st,1), ldb,     &
                   work(nwork), info)
                 IF (info/=0) THEN
                   RETURN
                 END IF
-                CALL SLACPY('A', nsize, nrhs, b(st,1), ldb, work(bx+st1), n)
+                CALL SLACPY('A', nsize, nrhs, b(st,1), ldb, work(bx+st1),   &
+                  n)
               ELSE
-                CALL SLASDA(icmpq1, smlsiz, nsize, sqre, d(st), e(st),         &
-                  work(u+st1), n, work(vt+st1), iwork(k+st1), work(difl+st1),  &
-                  work(difr+st1), work(z+st1), work(poles+st1),                &
-                  iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1),    &
-                  work(givnum+st1), work(c+st1), work(s+st1), work(nwork),     &
+                CALL SLASDA(icmpq1, smlsiz, nsize, sqre, d(st), e(st),      &
+                  work(u+st1), n, work(vt+st1), iwork(k+st1), work(difl+st1),&
+                  work(difr+st1), work(z+st1), work(poles+st1),             &
+                  iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1), &
+                  work(givnum+st1), work(c+st1), work(s+st1), work(nwork),  &
                   iwork(iwk), info)
                 IF (info/=0) THEN
                   RETURN
                 END IF
                 bxst = bx + st1
-                CALL SLALSA(icmpq2, smlsiz, nsize, nrhs, b(st,1), ldb,         &
-                  work(bxst), n, work(u+st1), n, work(vt+st1), iwork(k+st1),   &
-                  work(difl+st1), work(difr+st1), work(z+st1),                 &
-                  work(poles+st1), iwork(givptr+st1), iwork(givcol+st1), n,    &
-                  iwork(perm+st1), work(givnum+st1), work(c+st1), work(s+st1), &
-                  work(nwork), iwork(iwk), info)
+                CALL SLALSA(icmpq2, smlsiz, nsize, nrhs, b(st,1), ldb,      &
+                  work(bxst), n, work(u+st1), n, work(vt+st1), iwork(k+st1),&
+                  work(difl+st1), work(difr+st1), work(z+st1),              &
+                  work(poles+st1), iwork(givptr+st1), iwork(givcol+st1), n, &
+                  iwork(perm+st1), work(givnum+st1), work(c+st1),           &
+                  work(s+st1), work(nwork), iwork(iwk), info)
                 IF (info/=0) THEN
                   RETURN
                 END IF
@@ -21952,7 +22046,7 @@
               CALL SLASET('A', 1_ip_, nrhs, zero, zero, work(bx+i-1), n)
             ELSE
               rank = rank + 1
-              CALL SLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs,           &
+              CALL SLASCL('G', 0_ip_, 0_ip_, d(i), one, 1_ip_, nrhs,        &
                 work(bx+i-1), n, info)
             END IF
             d(i) = ABS(d(i))
@@ -21966,14 +22060,14 @@
             IF (nsize==1) THEN
               CALL SCOPY(nrhs, work(bxst), n, b(st,1), ldb)
             ELSE IF (nsize<=smlsiz) THEN
-              CALL SGEMM('T', 'N', nsize, nrhs, nsize, one, work(vt+st1), n,   &
-                work(bxst), n, zero, b(st,1), ldb)
+              CALL SGEMM('T', 'N', nsize, nrhs, nsize, one, work(vt+st1),   &
+                n, work(bxst), n, zero, b(st,1), ldb)
             ELSE
-              CALL SLALSA(icmpq2, smlsiz, nsize, nrhs, work(bxst), n, b(st,    &
-                1), ldb, work(u+st1), n, work(vt+st1), iwork(k+st1),           &
-                work(difl+st1), work(difr+st1), work(z+st1), work(poles+st1),  &
-                iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1),      &
-                work(givnum+st1), work(c+st1), work(s+st1), work(nwork),       &
+              CALL SLALSA(icmpq2, smlsiz, nsize, nrhs, work(bxst), n, b(st,  &
+                1), ldb, work(u+st1), n, work(vt+st1), iwork(k+st1),        &
+                work(difl+st1), work(difr+st1), work(z+st1), work(poles+st1),&
+                iwork(givptr+st1), iwork(givcol+st1), n, iwork(perm+st1),   &
+                work(givnum+st1), work(c+st1), work(s+st1), work(nwork),    &
                 iwork(iwk), info)
               IF (info/=0) THEN
                 RETURN
@@ -21982,7 +22076,8 @@
           END DO
           CALL SLASCL('G', 0_ip_, 0_ip_, one, orgnrm, n, 1_ip_, d, n, info)
           CALL SLASRT('D', n, d, info)
-          CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb, info)
+          CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, nrhs, b, ldb,      &
+            info)
           RETURN
         END SUBROUTINE
 
@@ -21994,7 +22089,7 @@
           REAL(r4_) :: rnd, eps, sfmin, small, rmach
           LOGICAL :: LSAME
           EXTERNAL :: LSAME
-          INTRINSIC :: DIGITS, EPSILON, HUGE, MAXEXPONENT, MINEXPONENT,        &
+          INTRINSIC :: DIGITS, EPSILON, HUGE, MAXEXPONENT, MINEXPONENT,     &
             RADIX, TINY
           rnd = one
           IF (one==rnd) THEN
@@ -22177,7 +22272,8 @@
               sum = ABS(e(i))
               IF (anorm<sum .OR. SISNAN(sum)) anorm = sum
             END DO
-          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,'I')) THEN
+          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,'I'))     &
+            THEN
             IF (n==1) THEN
               anorm = ABS(d(1))
             ELSE
@@ -22237,7 +22333,7 @@
                 END DO
               END DO
             END IF
-          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR.              &
+          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR.           &
             (norm=='1')) THEN
             value = zero
             IF (LSAME(uplo,'U')) THEN
@@ -22304,7 +22400,7 @@
           PARAMETER (zero=0.0_r4_, half=0.5_r4_, one=1.0_r4_, two=2.0_r4_)
           REAL(r4_) :: multpl
           PARAMETER (multpl=4.0_r4_)
-          REAL(r4_) :: aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab, sac,    &
+          REAL(r4_) :: aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab, sac,  &
             scale, sigma, sn1, tau, temp, z, safmin, safmn2, safmx2
           INTEGER(ip_) :: count
           REAL(r4_) :: SLAMCH, SLAPY2
@@ -22472,7 +22568,7 @@
               vn2(pvt) = vn2(i)
             END IF
             IF (offpi<m) THEN
-              CALL SLARFG(m-offpi+1, a(offpi,i), a(offpi+1,i), 1_ip_,          &
+              CALL SLARFG(m-offpi+1, a(offpi,i), a(offpi+1,i), 1_ip_,       &
                 tau(i))
             ELSE
               CALL SLARFG(1_ip_, a(m,i), a(m,i), 1_ip_, tau(i))
@@ -22480,7 +22576,7 @@
             IF (i<n) THEN
               aii = a(offpi, i)
               a(offpi, i) = one
-              CALL SLARF('Left', m-offpi+1, n-i, a(offpi,i), 1_ip_, tau(i),    &
+              CALL SLARF('Left', m-offpi+1, n-i, a(offpi,i), 1_ip_, tau(i),  &
                 a(offpi,i+1), lda, work(1))
               a(offpi, i) = aii
             END IF
@@ -22506,12 +22602,13 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLAQPS(m, n, offset, nb, kb, a, lda, jpvt, tau, vn1, vn2,   &
-          auxv, f, ldf)
+        SUBROUTINE SLAQPS(m, n, offset, nb, kb, a, lda, jpvt, tau, vn1,     &
+          vn2, auxv, f, ldf)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: kb, lda, ldf, m, n, nb, offset
           INTEGER(ip_) :: jpvt(*)
-          REAL(r4_) :: a(lda, *), auxv(*), f(ldf, *), tau(*), vn1(*), vn2(*)
+          REAL(r4_) :: a(lda, *), auxv(*), f(ldf, *), tau(*), vn1(*),       &
+            vn2(*)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           INTEGER(ip_) :: itemp, j, k, lastrk, lsticc, pvt, rk
@@ -22540,7 +22637,7 @@
               vn2(pvt) = vn2(k)
             END IF
             IF (k>1) THEN
-              CALL SGEMV('No transpose', m-rk+1, k-1, -one, a(rk,1), lda,      &
+              CALL SGEMV('No transpose', m-rk+1, k-1, -one, a(rk,1), lda,   &
                 f(k,1), ldf, one, a(rk,k), 1_ip_)
             END IF
             IF (rk<m) THEN
@@ -22551,20 +22648,20 @@
             akk = a(rk, k)
             a(rk, k) = one
             IF (k<n) THEN
-              CALL SGEMV('Transpose', m-rk+1, n-k, tau(k), a(rk,k+1), lda,     &
+              CALL SGEMV('Transpose', m-rk+1, n-k, tau(k), a(rk,k+1), lda,  &
                 a(rk,k), 1_ip_, zero, f(k+1,k), 1_ip_)
             END IF
             DO j = 1, k
               f(j, k) = zero
             END DO
             IF (k>1) THEN
-              CALL SGEMV('Transpose', m-rk+1, k-1, -tau(k), a(rk,1), lda,      &
+              CALL SGEMV('Transpose', m-rk+1, k-1, -tau(k), a(rk,1), lda,   &
                 a(rk,k), 1_ip_, zero, auxv(1), 1_ip_)
-              CALL SGEMV('No transpose', n, k-1, one, f(1,1), ldf, auxv(1),    &
+              CALL SGEMV('No transpose', n, k-1, one, f(1,1), ldf, auxv(1),  &
                 1_ip_, one, f(1,k), 1_ip_)
             END IF
             IF (k<n) THEN
-              CALL SGEMV('No transpose', n-k, k, -one, f(k+1,1), ldf, a(rk,    &
+              CALL SGEMV('No transpose', n-k, k, -one, f(k+1,1), ldf, a(rk,  &
                 1), lda, one, a(rk,k+1), lda)
             END IF
             IF (rk<lastrk) THEN
@@ -22588,7 +22685,7 @@
           kb = k
           rk = offset + kb
           IF (kb<MIN(n,m-offset)) THEN
-            CALL SGEMM('No transpose', 'Transpose', m-rk, n-kb, kb, -one,      &
+            CALL SGEMM('No transpose', 'Transpose', m-rk, n-kb, kb, -one,   &
               a(rk+1,1), lda, f(kb+1,1), ldf, one, a(rk+1,kb+1), lda)
           END IF
  40       CONTINUE
@@ -22602,7 +22699,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,     &
+        SUBROUTINE SLAQR0(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,  &
           ihiz, z, ldz, work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: ihi, ihiz, ilo, iloz, info, ldh, ldz, lwork, n
@@ -22619,15 +22716,15 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           REAL(r4_) :: aa, bb, cc, cs, dd, sn, ss, swap
-          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,     &
-            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,     &
+          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,  &
+            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,  &
             nho, nibble, nmin, ns, nsmax, nsr, nve, nw, nwmax, nwr, nwupbd
           LOGICAL :: sorted
           CHARACTER :: jbcmpz*2
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r4_) :: zdum(1, 1_ip_)
-          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR3,                          &
+          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR3,                       &
             SLAQR4, SLAQR5
           INTRINSIC :: ABS, INT, MAX, MIN, MOD, REAL
           info = 0
@@ -22637,7 +22734,7 @@
           END IF
           IF (n<=ntiny) THEN
             lwkopt = 1
-            IF (lwork/=-1) CALL SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,      &
+            IF (lwork/=-1) CALL SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,   &
               wr, wi, iloz, ihiz, z, ldz, info)
           ELSE
             info = 0
@@ -22657,8 +22754,8 @@
             nsr = ILAENV(15_ip_, 'SLAQR0', jbcmpz, n, ilo, ihi, lwork)
             nsr = MIN(nsr, (n-3)/6, ihi-ilo)
             nsr = MAX( 2_ip_, nsr-MOD(nsr,2))
-            CALL SLAQR3(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,        &
-              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,      &
+            CALL SLAQR3(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,     &
+              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,   &
               work, -1_ip_)
             lwkopt = MAX(3*nsr/2, INT(work(1)))
             IF (lwork==-1) THEN
@@ -22699,7 +22796,7 @@
                   nw = nh
                 ELSE
                   kwtop = kbot - nw + 1
-                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =     &
+                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =  &
                     nw + 1
                 END IF
               END IF
@@ -22715,12 +22812,12 @@
               nho = (n-nw-1) - kt + 1
               kwv = nw + 2
               nve = (n-nw) - kwv + 1
-              CALL SLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),     &
+              CALL SLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),  &
                 ldh, nve, h(kwv,1), ldh, work, lwork)
               kbot = kbot - ld
               ks = kbot - ls + 1
-              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>        &
+              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>     &
                 MIN(nmin,nwmax)))) THEN
                 ns = MIN(nsmax, nsr, MAX(2,kbot-ktop))
                 ns = ns - MOD(ns, 2_ip_)
@@ -22732,7 +22829,7 @@
                     bb = ss
                     cc = wilk2*ss
                     dd = aa
-                    CALL SLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),       &
+                    CALL SLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),    &
                       wi(i), cs, sn)
                   END DO
                   IF (ks==ktop) THEN
@@ -22747,11 +22844,11 @@
                     kt = n - ns + 1
                     CALL SLACPY('A', ns, ns, h(ks,ks), ldh, h(kt,1), ldh)
                     IF (ns>nmin) THEN
-                      CALL SLAQR4(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),    &
-                        ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, work,  &
+                      CALL SLAQR4(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),  &
+                        ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, work,&
                         lwork, inf)
                     ELSE
-                      CALL SLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),    &
+                      CALL SLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),  &
                         ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, inf)
                     END IF
                     ks = ks + inf
@@ -22760,7 +22857,7 @@
                       cc = h(kbot, kbot-1)
                       bb = h(kbot-1, kbot)
                       dd = h(kbot, kbot)
-                      CALL SLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),      &
+                      CALL SLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),   &
                         wr(kbot), wi(kbot), cs, sn)
                       ks = kbot - 1
                     END IF
@@ -22771,7 +22868,7 @@
                       IF (sorted) GO TO 60
                       sorted = .TRUE.
                       DO i = ks, k - 1
-                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+       &
+                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+    &
                           1))) THEN
                           sorted = .FALSE.
                           swap = wr(i)
@@ -22800,7 +22897,7 @@
                 END IF
                 IF (kbot-ks+1==2) THEN
                   IF (wi(kbot)==zero) THEN
-                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,      &
+                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,   &
                       kbot))) THEN
                       wr(kbot-1) = wr(kbot)
                     ELSE
@@ -22817,9 +22914,9 @@
                 nho = (n-kdu+1-4) - (kdu+1) + 1
                 kwv = kdu + 4
                 nve = n - kdu - kwv + 1
-                CALL SLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns, wr(ks),   &
-                  wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_, h(ku,1),    &
-                  ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
+                CALL SLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns,        &
+                  wr(ks), wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_,  &
+                  h(ku,1), ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
               END IF
               IF (ld>0) THEN
                 ndfl = 1
@@ -22852,7 +22949,7 @@
               v(2) = zero
             ELSE
               h21s = h( 2_ip_, 1_ip_)/s
-              v(1) = h21s*h(1, 2_ip_) + (h(1,1)-sr1)*((h(1, 1_ip_)-sr2)/s)     &
+              v(1) = h21s*h(1, 2_ip_) + (h(1,1)-sr1)*((h(1, 1_ip_)-sr2)/s)  &
                 - si1*(si2/s)
               v(2) = h21s*(h(1,1)+h(2,2)-sr1-sr2)
             END IF
@@ -22865,7 +22962,7 @@
             ELSE
               h21s = h( 2_ip_, 1_ip_)/s
               h31s = h( 3_ip_, 1_ip_)/s
-              v(1) = (h(1,1)-sr1)*((h(1,1)-sr2)/s) - si1*(si2/s) + h(1,        &
+              v(1) = (h(1,1)-sr1)*((h(1,1)-sr2)/s) - si1*(si2/s) + h(1,     &
                 2_ip_) *h21s + h(1, 3_ip_)*h31s
               v(2) = h21s*(h(1,1)+h(2,2)-sr1-sr2) + h( 2_ip_, 3_ip_)*h31s
               v(3) = h31s*(h(1,1)+h(3,3)-sr1-sr2) + h21s*h( 3_ip_, 2_ip_)
@@ -22873,26 +22970,26 @@
           END IF
         END SUBROUTINE
 
-        SUBROUTINE SLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,      &
+        SUBROUTINE SLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,   &
           work, lwork)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,    &
+          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,  &
             lwork, n, nd, nh, ns, nv, nw
           LOGICAL :: wantt, wantz
-          REAL(r4_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),          &
+          REAL(r4_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),       &
             work(*), wv(ldwv, *), z(ldz, *)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
-          REAL(r4_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,     &
+          REAL(r4_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,  &
             safmin, smlnum, sn, tau, ulp
-          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,    &
+          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,  &
             kln, krow, kwtop, ltop, lwk1, lwk2, lwkopt
           LOGICAL :: bulge, sorted
           REAL(r4_) :: SLAMCH
           EXTERNAL :: SLAMCH
-          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,                    &
-            SLAHQR, SLANV2, SLARF, SLARFG, SLASET, SORMHR,                     &
+          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,                  &
+            SLAHQR, SLANV2, SLARF, SLARFG, SLASET, SORMHR,                  &
             STREXC
           INTRINSIC :: ABS, INT, MAX, MIN, REAL, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -22901,8 +22998,8 @@
           ELSE
             CALL SGEHRD(jw, 1_ip_, jw-1, t, ldt, work, work, -1_ip_, info)
             lwk1 = INT(work(1))
-            CALL SORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v, ldv,   &
-              work, -1_ip_, info)
+            CALL SORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v,     &
+              ldv, work, -1_ip_, info)
             lwk2 = INT(work(1))
             lwkopt = jw + MAX(lwk1, lwk2)
           END IF
@@ -22943,7 +23040,7 @@
           CALL SLACPY('U', jw, jw, h(kwtop,kwtop), ldh, t, ldt)
           CALL SCOPY(jw-1, h(kwtop+1,kwtop), ldh+1, t(2,1), ldt+1)
           CALL SLASET('A', jw, jw, zero, one, v, ldv)
-          CALL SLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),        &
+          CALL SLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),     &
             si(kwtop), 1_ip_, jw, v, ldv, infqr)
           DO j = 1, jw - 3
             t(j+2, j) = zero
@@ -22966,19 +23063,21 @@
                 ns = ns - 1
               ELSE
                 ifst = ns
-                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 1
               END IF
             ELSE
-              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,     &
+              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,  &
                 ns)))
               IF (foo==zero) foo = ABS(s)
-              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo     &
+              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo  &
                 )) THEN
                 ns = ns - 2
               ELSE
                 ifst = ns
-                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 2
               END IF
             END IF
@@ -23005,14 +23104,16 @@
               IF (k==i+1) THEN
                 evi = ABS(t(i,i))
               ELSE
-                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i, i+1)))
+                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i,       &
+                  i+1)))
               END IF
               IF (k==kend) THEN
                 evk = ABS(t(k,k))
               ELSE IF (t(k+1,k)==zero) THEN
                 evk = ABS(t(k,k))
               ELSE
-                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k, k+1)))
+                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k,       &
+                  k+1)))
               END IF
               IF (evi>=evk) THEN
                 i = k
@@ -23020,7 +23121,8 @@
                 sorted = .FALSE.
                 ifst = i
                 ilst = k
-                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 IF (info==0) THEN
                   i = ilst
                 ELSE
@@ -23055,7 +23157,7 @@
               cc = t(i, i-1)
               bb = t(i-1, i)
               dd = t(i, i)
-              CALL SLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),        &
+              CALL SLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),     &
                 sr(kwtop+i-1), si(kwtop+i-1), cs, sn)
               i = i - 2
             END IF
@@ -23071,14 +23173,14 @@
               CALL SLARF('L', ns, jw, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL SLARF('R', ns, ns, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL SLARF('R', jw, ns, work, 1_ip_, tau, v, ldv, work(jw+1))
-              CALL SGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1), lwork-jw,   &
-                info)
+              CALL SGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1),          &
+                lwork-jw, info)
             END IF
             IF (kwtop>1) h(kwtop, kwtop-1) = s*v(1, 1_ip_)
             CALL SLACPY('U', jw, jw, t, ldt, h(kwtop,kwtop), ldh)
             CALL SCOPY(jw-1, t(2,1), ldt+1, h(kwtop+1,kwtop), ldh+1)
-            IF (ns>1 .AND. s/=zero) CALL SORMHR('R', 'N', jw, ns, 1_ip_, ns,   &
-              t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
+            IF (ns>1 .AND. s/=zero) CALL SORMHR('R', 'N', jw, ns, 1_ip_,    &
+              ns, t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
             IF (wantt) THEN
               ltop = 1
             ELSE
@@ -23086,14 +23188,14 @@
             END IF
             DO krow = ltop, kwtop - 1, nv
               kln = MIN(nv, kwtop-krow)
-              CALL SGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,    &
+              CALL SGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,  &
                 ldv, zero, wv, ldwv)
               CALL SLACPY('A', kln, jw, wv, ldwv, h(krow,kwtop), ldh)
             END DO
             IF (wantt) THEN
               DO kcol = kbot + 1, n, nh
                 kln = MIN(nh, n-kcol+1)
-                CALL SGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,        &
+                CALL SGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,      &
                   kcol), ldh, zero, t, ldt)
                 CALL SLACPY('A', jw, kln, t, ldt, h(kwtop,kcol), ldh)
               END DO
@@ -23101,7 +23203,7 @@
             IF (wantz) THEN
               DO krow = iloz, ihiz, nv
                 kln = MIN(nv, ihiz-krow+1)
-                CALL SGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,     &
+                CALL SGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,  &
                   v, ldv, zero, wv, ldwv)
                 CALL SLACPY('A', kln, jw, wv, ldwv, z(krow,kwtop), ldz)
               END DO
@@ -23112,27 +23214,27 @@
           work(1) = REAL(lwkopt)
         END SUBROUTINE
 
-        SUBROUTINE SLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,      &
+        SUBROUTINE SLAQR3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+          ihiz, z, ldz, ns, nd, sr, si, v, ldv, nh, t, ldt, nv, wv, ldwv,   &
           work, lwork)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,    &
+          INTEGER(ip_) :: ihiz, iloz, kbot, ktop, ldh, ldt, ldv, ldwv, ldz,  &
             lwork, n, nd, nh, ns, nv, nw
           LOGICAL :: wantt, wantz
-          REAL(r4_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),          &
+          REAL(r4_) :: h(ldh, *), si(*), sr(*), t(ldt, *), v(ldv, *),       &
             work(*), wv(ldwv, *), z(ldz, *)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
-          REAL(r4_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,     &
+          REAL(r4_) :: aa, bb, beta, cc, cs, dd, evi, evk, foo, s, safmax,  &
             safmin, smlnum, sn, tau, ulp
-          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,    &
+          INTEGER(ip_) :: i, ifst, ilst, info, infqr, j, jw, k, kcol, kend,  &
             kln, krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin
           LOGICAL :: bulge, sorted
           REAL(r4_) :: SLAMCH
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: SLAMCH, ILAENV
-          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,                    &
-            SLAHQR, SLANV2, SLAQR4, SLARF, SLARFG, SLASET,                     &
+          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,                  &
+            SLAHQR, SLANV2, SLAQR4, SLARF, SLARFG, SLASET,                  &
             SORMHR, STREXC
           INTRINSIC :: ABS, INT, MAX, MIN, REAL, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -23141,10 +23243,10 @@
           ELSE
             CALL SGEHRD(jw, 1_ip_, jw-1, t, ldt, work, work, -1_ip_, info)
             lwk1 = INT(work(1))
-            CALL SORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v, ldv,   &
-              work, -1_ip_, info)
+            CALL SORMHR('R', 'N', jw, jw, 1_ip_, jw-1, t, ldt, work, v,     &
+              ldv, work, -1_ip_, info)
             lwk2 = INT(work(1))
-            CALL SLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr, si,         &
+            CALL SLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr, si,      &
               1_ip_, jw, v, ldv, work, -1_ip_, infqr)
             lwk3 = INT(work(1))
             lwkopt = MAX(jw+MAX(lwk1,lwk2), lwk3)
@@ -23188,10 +23290,10 @@
           CALL SLASET('A', jw, jw, zero, one, v, ldv)
           nmin = ILAENV(12_ip_, 'SLAQR3', 'SV', jw, 1_ip_, jw, lwork)
           IF (jw>nmin) THEN
-            CALL SLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),      &
+            CALL SLAQR4(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),   &
               si(kwtop), 1_ip_, jw, v, ldv, work, lwork, infqr)
           ELSE
-            CALL SLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),      &
+            CALL SLAHQR(.TRUE., .TRUE., jw, 1_ip_, jw, t, ldt, sr(kwtop),   &
               si(kwtop), 1_ip_, jw, v, ldv, infqr)
           END IF
           DO j = 1, jw - 3
@@ -23215,19 +23317,21 @@
                 ns = ns - 1
               ELSE
                 ifst = ns
-                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 1
               END IF
             ELSE
-              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,     &
+              foo = ABS(t(ns,ns)) + SQRT(ABS(t(ns,ns-1)))*SQRT(ABS(t(ns-1,  &
                 ns)))
               IF (foo==zero) foo = ABS(s)
-              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo     &
+              IF (MAX(ABS(s*v(1,ns)),ABS(s*v(1,ns-1)))<=MAX(smlnum,ulp*foo  &
                 )) THEN
                 ns = ns - 2
               ELSE
                 ifst = ns
-                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 ilst = ilst + 2
               END IF
             END IF
@@ -23254,14 +23358,16 @@
               IF (k==i+1) THEN
                 evi = ABS(t(i,i))
               ELSE
-                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i, i+1)))
+                evi = ABS(t(i,i)) + SQRT(ABS(t(i+1,i)))*SQRT(ABS(t(i,       &
+                  i+1)))
               END IF
               IF (k==kend) THEN
                 evk = ABS(t(k,k))
               ELSE IF (t(k+1,k)==zero) THEN
                 evk = ABS(t(k,k))
               ELSE
-                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k, k+1)))
+                evk = ABS(t(k,k)) + SQRT(ABS(t(k+1,k)))*SQRT(ABS(t(k,       &
+                  k+1)))
               END IF
               IF (evi>=evk) THEN
                 i = k
@@ -23269,7 +23375,8 @@
                 sorted = .FALSE.
                 ifst = i
                 ilst = k
-                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work, info)
+                CALL STREXC('V', jw, t, ldt, v, ldv, ifst, ilst, work,      &
+                  info)
                 IF (info==0) THEN
                   i = ilst
                 ELSE
@@ -23304,7 +23411,7 @@
               cc = t(i, i-1)
               bb = t(i-1, i)
               dd = t(i, i)
-              CALL SLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),        &
+              CALL SLANV2(aa, bb, cc, dd, sr(kwtop+i-2), si(kwtop+i-2),     &
                 sr(kwtop+i-1), si(kwtop+i-1), cs, sn)
               i = i - 2
             END IF
@@ -23320,14 +23427,14 @@
               CALL SLARF('L', ns, jw, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL SLARF('R', ns, ns, work, 1_ip_, tau, t, ldt, work(jw+1))
               CALL SLARF('R', jw, ns, work, 1_ip_, tau, v, ldv, work(jw+1))
-              CALL SGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1), lwork-jw,   &
-                info)
+              CALL SGEHRD(jw, 1_ip_, ns, t, ldt, work, work(jw+1),          &
+                lwork-jw, info)
             END IF
             IF (kwtop>1) h(kwtop, kwtop-1) = s*v(1, 1_ip_)
             CALL SLACPY('U', jw, jw, t, ldt, h(kwtop,kwtop), ldh)
             CALL SCOPY(jw-1, t(2,1), ldt+1, h(kwtop+1,kwtop), ldh+1)
-            IF (ns>1 .AND. s/=zero) CALL SORMHR('R', 'N', jw, ns, 1_ip_, ns,   &
-              t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
+            IF (ns>1 .AND. s/=zero) CALL SORMHR('R', 'N', jw, ns, 1_ip_,    &
+              ns, t, ldt, work, v, ldv, work(jw+1), lwork-jw, info)
             IF (wantt) THEN
               ltop = 1
             ELSE
@@ -23335,14 +23442,14 @@
             END IF
             DO krow = ltop, kwtop - 1, nv
               kln = MIN(nv, kwtop-krow)
-              CALL SGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,    &
+              CALL SGEMM('N', 'N', kln, jw, jw, one, h(krow,kwtop), ldh, v,  &
                 ldv, zero, wv, ldwv)
               CALL SLACPY('A', kln, jw, wv, ldwv, h(krow,kwtop), ldh)
             END DO
             IF (wantt) THEN
               DO kcol = kbot + 1, n, nh
                 kln = MIN(nh, n-kcol+1)
-                CALL SGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,        &
+                CALL SGEMM('C', 'N', jw, kln, jw, one, v, ldv, h(kwtop,      &
                   kcol), ldh, zero, t, ldt)
                 CALL SLACPY('A', jw, kln, t, ldt, h(kwtop,kcol), ldh)
               END DO
@@ -23350,7 +23457,7 @@
             IF (wantz) THEN
               DO krow = iloz, ihiz, nv
                 kln = MIN(nv, ihiz-krow+1)
-                CALL SGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,     &
+                CALL SGEMM('N', 'N', kln, jw, jw, one, z(krow,kwtop), ldz,  &
                   v, ldv, zero, wv, ldwv)
                 CALL SLACPY('A', kln, jw, wv, ldwv, z(krow,kwtop), ldz)
               END DO
@@ -23361,7 +23468,7 @@
           work(1) = REAL(lwkopt)
         END SUBROUTINE
 
-        SUBROUTINE SLAQR4(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,     &
+        SUBROUTINE SLAQR4(wantt, wantz, n, ilo, ihi, h, ldh, wr, wi, iloz,  &
           ihiz, z, ldz, work, lwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: ihi, ihiz, ilo, iloz, info, ldh, ldz, lwork, n
@@ -23378,15 +23485,16 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           REAL(r4_) :: aa, bb, cc, cs, dd, sn, ss, swap
-          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,     &
-            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,     &
+          INTEGER(ip_) :: i, inf, it, itmax, k, kacc22, kbot, kdu, ks, kt,  &
+            ktop, ku, kv, kwh, kwtop, kwv, ld, ls, lwkopt, ndec, ndfl, nh,  &
             nho, nibble, nmin, ns, nsmax, nsr, nve, nw, nwmax, nwr, nwupbd
           LOGICAL :: sorted
           CHARACTER :: jbcmpz*2
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r4_) :: zdum(1, 1_ip_)
-          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR2, SLAQR5
+          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR2,                       &
+            SLAQR5
           INTRINSIC :: ABS, INT, MAX, MIN, MOD, REAL
           info = 0
           IF (n==0) THEN
@@ -23395,7 +23503,7 @@
           END IF
           IF (n<=ntiny) THEN
             lwkopt = 1
-            IF (lwork/=-1) CALL SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,      &
+            IF (lwork/=-1) CALL SLAHQR(wantt, wantz, n, ilo, ihi, h, ldh,   &
               wr, wi, iloz, ihiz, z, ldz, info)
           ELSE
             info = 0
@@ -23415,8 +23523,8 @@
             nsr = ILAENV(15_ip_, 'SLAQR4', jbcmpz, n, ilo, ihi, lwork)
             nsr = MIN(nsr, (n-3)/6, ihi-ilo)
             nsr = MAX( 2_ip_, nsr-MOD(nsr,2))
-            CALL SLAQR2(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,        &
-              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,      &
+            CALL SLAQR2(wantt, wantz, n, ilo, ihi, nwr+1, h, ldh, iloz,     &
+              ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh,   &
               work, -1_ip_)
             lwkopt = MAX(3*nsr/2, INT(work(1)))
             IF (lwork==-1) THEN
@@ -23457,7 +23565,7 @@
                   nw = nh
                 ELSE
                   kwtop = kbot - nw + 1
-                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =     &
+                  IF (ABS(h(kwtop,kwtop-1))>ABS(h(kwtop-1, kwtop-2))) nw =  &
                     nw + 1
                 END IF
               END IF
@@ -23473,12 +23581,12 @@
               nho = (n-nw-1) - kt + 1
               kwv = nw + 2
               nve = (n-nw) - kwv + 1
-              CALL SLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,       &
-                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),     &
+              CALL SLAQR2(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz,    &
+                ihiz, z, ldz, ls, ld, wr, wi, h(kv,1), ldh, nho, h(kv,kt),  &
                 ldh, nve, h(kwv,1), ldh, work, lwork)
               kbot = kbot - ld
               ks = kbot - ls + 1
-              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>        &
+              IF ((ld==0) .OR. ((100*ld<=nw*nibble) .AND. (kbot-ktop+1>     &
                 MIN(nmin,nwmax)))) THEN
                 ns = MIN(nsmax, nsr, MAX(2,kbot-ktop))
                 ns = ns - MOD(ns, 2_ip_)
@@ -23490,7 +23598,7 @@
                     bb = ss
                     cc = wilk2*ss
                     dd = aa
-                    CALL SLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),       &
+                    CALL SLANV2(aa, bb, cc, dd, wr(i-1), wi(i-1), wr(i),    &
                       wi(i), cs, sn)
                   END DO
                   IF (ks==ktop) THEN
@@ -23504,7 +23612,7 @@
                     ks = kbot - ns + 1
                     kt = n - ns + 1
                     CALL SLACPY('A', ns, ns, h(ks,ks), ldh, h(kt,1), ldh)
-                    CALL SLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),      &
+                    CALL SLAHQR(.FALSE., .FALSE., ns, 1_ip_, ns, h(kt,1),   &
                       ldh, wr(ks), wi(ks), 1_ip_, 1_ip_, zdum, 1_ip_, inf)
                     ks = ks + inf
                     IF (ks>=kbot) THEN
@@ -23512,7 +23620,7 @@
                       cc = h(kbot, kbot-1)
                       bb = h(kbot-1, kbot)
                       dd = h(kbot, kbot)
-                      CALL SLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),      &
+                      CALL SLANV2(aa, bb, cc, dd, wr(kbot-1), wi(kbot-1),   &
                         wr(kbot), wi(kbot), cs, sn)
                       ks = kbot - 1
                     END IF
@@ -23523,7 +23631,7 @@
                       IF (sorted) GO TO 60
                       sorted = .TRUE.
                       DO i = ks, k - 1
-                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+       &
+                        IF (ABS(wr(i))+ABS(wi(i))<ABS(wr(i+1))+ABS(wi(i+    &
                           1))) THEN
                           sorted = .FALSE.
                           swap = wr(i)
@@ -23552,7 +23660,7 @@
                 END IF
                 IF (kbot-ks+1==2) THEN
                   IF (wi(kbot)==zero) THEN
-                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,      &
+                    IF (ABS(wr(kbot)-h(kbot,kbot))<ABS(wr(kbot-1)-h(kbot,   &
                       kbot))) THEN
                       wr(kbot-1) = wr(kbot)
                     ELSE
@@ -23569,9 +23677,9 @@
                 nho = (n-kdu+1-4) - (kdu+1) + 1
                 kwv = kdu + 4
                 nve = n - kdu - kwv + 1
-                CALL SLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns, wr(ks),   &
-                  wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_, h(ku,1),    &
-                  ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
+                CALL SLAQR5(wantt, wantz, kacc22, n, ktop, kbot, ns,        &
+                  wr(ks), wi(ks), h, ldh, iloz, ihiz, z, ldz, work, 3_ip_,  &
+                  h(ku,1), ldh, nve, h(kwv,1), ldh, nho, h(ku,kwh), ldh)
               END IF
               IF (ld>0) THEN
                 ndfl = 1
@@ -23585,29 +23693,30 @@
           work(1) = REAL(lwkopt)
         END SUBROUTINE
 
-        SUBROUTINE SLAQR5(wantt, wantz, kacc22, n, ktop, kbot, nshfts, sr,     &
-          si, h, ldh, iloz, ihiz, z, ldz, v, ldv, u, ldu, nv, wv, ldwv, nh,    &
+        SUBROUTINE SLAQR5(wantt, wantz, kacc22, n, ktop, kbot, nshfts, sr,  &
+          si, h, ldh, iloz, ihiz, z, ldz, v, ldv, u, ldu, nv, wv, ldwv, nh, &
           wh, ldwh)
           USE GALAHAD_KINDS
           IMPLICIT NONE
-          INTEGER(ip_) :: ihiz, iloz, kacc22, kbot, ktop, ldh, ldu, ldv,       &
+          INTEGER(ip_) :: ihiz, iloz, kacc22, kbot, ktop, ldh, ldu, ldv,    &
             ldwh, ldwv, ldz, n, nh, nshfts, nv
           LOGICAL :: wantt, wantz
-          REAL(r4_) :: h(ldh, *), si(*), sr(*), u(ldu, *), v(ldv, *),          &
+          REAL(r4_) :: h(ldh, *), si(*), sr(*), u(ldu, *), v(ldv, *),       &
             wh(ldwh, *), wv(ldwv, *), z(ldz, *)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
-          REAL(r4_) :: alpha, beta, h11, h12, h21, h22, refsum, safmax,        &
+          REAL(r4_) :: alpha, beta, h11, h12, h21, h22, refsum, safmax,     &
             safmin, scl, smlnum, swap, tst1, tst2, ulp
-          INTEGER(ip_) :: i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop,   &
-            k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu
+          INTEGER(ip_) :: i, i2, i4, incol, j, jbot, jcol, jlen, jrow,      &
+            jtop, k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, &
+            ns, nu
           LOGICAL :: accum, bmp22
           REAL(r4_) :: SLAMCH
           EXTERNAL :: SLAMCH
           INTRINSIC :: ABS, MAX, MIN, MOD, REAL
           REAL(r4_) :: vt(3)
-          EXTERNAL :: SGEMM, SLABAD, SLACPY, SLAQR1, SLARFG,                   &
-            SLASET, STRMM
+          EXTERNAL :: SGEMM, SLABAD, SLACPY, SLAQR1,                        &
+            SLARFG, SLASET, STRMM
           IF (nshfts<2) RETURN
           IF (ktop>=kbot) RETURN
           DO i = 1, nshfts - 2, 2
@@ -23650,7 +23759,7 @@
               IF (bmp22) THEN
                 k = krcol + 2*(m22-1)
                 IF (k==ktop-1) THEN
-                  CALL SLAQR1( 2_ip_, h(k+1,k+1), ldh, sr(2*m22-1),            &
+                  CALL SLAQR1( 2_ip_, h(k+1,k+1), ldh, sr(2*m22-1),         &
                     si(2*m22-1), sr(2*m22), si(2*m22), v(1,m22))
                   beta = v(1, m22)
                   CALL SLARFG( 2_ip_, beta, v(2,m22), 1_ip_, v(1,m22))
@@ -23696,7 +23805,7 @@
                       h22 = MIN(ABS(h(k+1,k+1)), ABS(h(k,k)-h(k+1,k+1)))
                       scl = h11 + h12
                       tst2 = h22*(h11/scl)
-                      IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*       &
+                      IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*    &
                         tst2)) THEN
                         h(k+1, k) = zero
                       END IF
@@ -23721,7 +23830,7 @@
               DO m = mbot, mtop, -1_ip_
                 k = krcol + 2*(m-1)
                 IF (k==ktop-1) THEN
-                  CALL SLAQR1( 3_ip_, h(ktop,ktop), ldh, sr(2*m-1),            &
+                  CALL SLAQR1( 3_ip_, h(ktop,ktop), ldh, sr(2*m-1),         &
                     si(2*m-1), sr(2*m), si(2*m), v(1,m))
                   alpha = v(1, m)
                   CALL SLARFG( 3_ip_, alpha, v(2,m), 1_ip_, v(1,m))
@@ -23734,18 +23843,18 @@
                   v( 2_ip_, m) = h(k+2, k)
                   v( 3_ip_, m) = h(k+3, k)
                   CALL SLARFG( 3_ip_, beta, v(2,m), 1_ip_, v(1,m))
-                  IF (h(k+3,k)/=zero .OR. h(k+3,k+1)/=zero .OR. h(k+3,         &
+                  IF (h(k+3,k)/=zero .OR. h(k+3,k+1)/=zero .OR. h(k+3,       &
                     k+2)==zero) THEN
                     h(k+1, k) = beta
                     h(k+2, k) = zero
                     h(k+3, k) = zero
                   ELSE
-                    CALL SLAQR1( 3_ip_, h(k+1,k+1), ldh, sr(2*m-1),            &
+                    CALL SLAQR1( 3_ip_, h(k+1,k+1), ldh, sr(2*m-1),         &
                       si(2*m-1), sr(2*m), si(2*m), vt)
                     alpha = vt(1)
                     CALL SLARFG( 3_ip_, alpha, vt(2), 1_ip_, vt(1))
                     refsum = vt(1)*(h(k+1,k)+vt(2)*h(k+2,k))
-                    IF (ABS(h(k+2,k)-refsum*vt(2))+ABS(refsum*vt(3))>ulp*(     &
+                    IF (ABS(h(k+2,k)-refsum*vt(2))+ABS(refsum*vt(3))>ulp*(  &
                       ABS(h(k,k))+ABS(h(k+1,k+1))+ABS(h(k+2,k+2)))) THEN
                       h(k+1, k) = beta
                       h(k+2, k) = zero
@@ -23761,13 +23870,13 @@
                   END IF
                 END IF
                 DO j = jtop, MIN(kbot, k+3)
-                  refsum = v(1, m)*(h(j,k+1)+v(2,m)*h(j,k+2)+v(3,m)*h(j,k+     &
+                  refsum = v(1, m)*(h(j,k+1)+v(2,m)*h(j,k+2)+v(3,m)*h(j,k+  &
                     3))
                   h(j, k+1) = h(j, k+1) - refsum
                   h(j, k+2) = h(j, k+2) - refsum*v( 2_ip_, m)
                   h(j, k+3) = h(j, k+3) - refsum*v( 3_ip_, m)
                 END DO
-                refsum = v(1, m)*(h(k+1,k+1)+v(2,m)*h(k+2,k+1)+v(3,m)*h(k+     &
+                refsum = v(1, m)*(h(k+1,k+1)+v(2,m)*h(k+2,k+1)+v(3,m)*h(k+  &
                   3,k+1))
                 h(k+1, k+1) = h(k+1, k+1) - refsum
                 h(k+2, k+1) = h(k+2, k+1) - refsum*v( 2_ip_, m)
@@ -23790,7 +23899,7 @@
                     h22 = MIN(ABS(h(k+1,k+1)), ABS(h(k,k)-h(k+1,k+1)))
                     scl = h11 + h12
                     tst2 = h22*(h11/scl)
-                    IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*tst2     &
+                    IF (tst2==zero .OR. h21*(h12/scl)<=MAX(smlnum,ulp*tst2  &
                       )) THEN
                       h(k+1, k) = zero
                     END IF
@@ -23807,7 +23916,7 @@
               DO m = mbot, mtop, -1_ip_
                 k = krcol + 2*(m-1)
                 DO j = MAX(ktop, krcol+2*m), jbot
-                  refsum = v(1, m)*(h(k+1,j)+v(2,m)*h(k+2,j)+v(3,m)*h(k+3,     &
+                  refsum = v(1, m)*(h(k+1,j)+v(2,m)*h(k+2,j)+v(3,m)*h(k+3,  &
                     j))
                   h(k+1, j) = h(k+1, j) - refsum
                   h(k+2, j) = h(k+2, j) - refsum*v( 2_ip_, m)
@@ -23822,7 +23931,7 @@
                   i2 = MAX(i2, kms-(krcol-incol)+1)
                   i4 = MIN(kdu, krcol+2*(mbot-1)-incol+5)
                   DO j = i2, i4
-                    refsum = v(1, m)*(u(j,kms+1)+v(2,m)*u(j,kms+2)+v(3,m)*     &
+                    refsum = v(1, m)*(u(j,kms+1)+v(2,m)*u(j,kms+2)+v(3,m)*  &
                       u(j,kms+3))
                     u(j, kms+1) = u(j, kms+1) - refsum
                     u(j, kms+2) = u(j, kms+2) - refsum*v( 2_ip_, m)
@@ -23833,7 +23942,7 @@
                 DO m = mbot, mtop, -1_ip_
                   k = krcol + 2*(m-1)
                   DO j = iloz, ihiz
-                    refsum = v(1, m)*(z(j,k+1)+v(2,m)*z(j,k+2)+v(3,m)*z(j,     &
+                    refsum = v(1, m)*(z(j,k+1)+v(2,m)*z(j,k+2)+v(3,m)*z(j,  &
                       k+3))
                     z(j, k+1) = z(j, k+1) - refsum
                     z(j, k+2) = z(j, k+2) - refsum*v( 2_ip_, m)
@@ -23854,24 +23963,24 @@
               nu = (kdu-MAX(0,ndcol-kbot)) - k1 + 1
               DO jcol = MIN(ndcol, kbot) + 1, jbot, nh
                 jlen = MIN(nh, jbot-jcol+1)
-                CALL SGEMM('C', 'N', nu, jlen, nu, one, u(k1,k1), ldu,         &
+                CALL SGEMM('C', 'N', nu, jlen, nu, one, u(k1,k1), ldu,      &
                   h(incol+k1,jcol), ldh, zero, wh, ldwh)
-                CALL SLACPY('ALL', nu, jlen, wh, ldwh, h(incol+k1,jcol),       &
+                CALL SLACPY('ALL', nu, jlen, wh, ldwh, h(incol+k1,jcol),    &
                   ldh)
               END DO
               DO jrow = jtop, MAX(ktop, incol) - 1, nv
                 jlen = MIN(nv, MAX(ktop,incol)-jrow)
-                CALL SGEMM('N', 'N', jlen, nu, nu, one, h(jrow,incol+k1),      &
+                CALL SGEMM('N', 'N', jlen, nu, nu, one, h(jrow,incol+k1),   &
                   ldh, u(k1,k1), ldu, zero, wv, ldwv)
-                CALL SLACPY('ALL', jlen, nu, wv, ldwv, h(jrow,incol+k1),       &
+                CALL SLACPY('ALL', jlen, nu, wv, ldwv, h(jrow,incol+k1),    &
                   ldh)
               END DO
               IF (wantz) THEN
                 DO jrow = iloz, ihiz, nv
                   jlen = MIN(nv, ihiz-jrow+1)
-                  CALL SGEMM('N', 'N', jlen, nu, nu, one, z(jrow,incol+k1),    &
+                  CALL SGEMM('N', 'N', jlen, nu, nu, one, z(jrow,incol+k1),  &
                     ldz, u(k1,k1), ldu, zero, wv, ldwv)
-                  CALL SLACPY('ALL', jlen, nu, wv, ldwv, z(jrow,incol+k1),     &
+                  CALL SLACPY('ALL', jlen, nu, wv, ldwv, z(jrow,incol+k1),  &
                     ldz)
                 END DO
               END IF
@@ -23919,21 +24028,21 @@
           END IF
           IF (applyleft) THEN
             IF (lastv>0) THEN
-              CALL SGEMV('Transpose', lastv, lastc, one, c, ldc, v, incv,      &
+              CALL SGEMV('Transpose', lastv, lastc, one, c, ldc, v, incv,   &
                 zero, work, 1_ip_)
               CALL SGER(lastv, lastc, -tau, v, incv, work, 1_ip_, c, ldc)
             END IF
           ELSE
             IF (lastv>0) THEN
-              CALL SGEMV('No transpose', lastc, lastv, one, c, ldc, v, incv,   &
-                zero, work, 1_ip_)
+              CALL SGEMV('No transpose', lastc, lastv, one, c, ldc, v,      &
+                incv, zero, work, 1_ip_)
               CALL SGER(lastc, lastv, -tau, work, 1_ip_, v, incv, c, ldc)
             END IF
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLARFB(side, trans, direct, storev, m, n, k, v, ldv, t,     &
+        SUBROUTINE SLARFB(side, trans, direct, storev, m, n, k, v, ldv, t,  &
           ldt, c, ldc, work, ldwork)
           USE GALAHAD_KINDS
           CHARACTER :: direct, side, storev, trans
@@ -23958,20 +24067,20 @@
                 DO j = 1, k
                   CALL SCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,     &
+                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,  &
                   one, v, ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('Transpose', 'No transpose', n, k, m-k, one,      &
+                  CALL SGEMM('Transpose', 'No transpose', n, k, m-k, one,   &
                     c(k+1,1), ldc, v(k+1,1), ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,    &
+                CALL STRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('No transpose', 'Transpose', m-k, n, k, -one,     &
+                  CALL SGEMM('No transpose', 'Transpose', m-k, n, k, -one,  &
                     v(k+1,1), ldv, work, ldwork, one, c(k+1,1), ldc)
                 END IF
-                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', n, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', n, k,     &
+                  one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
                     c(j, i) = c(j, i) - work(i, j)
@@ -23981,20 +24090,20 @@
                 DO j = 1, k
                   CALL SCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,     &
+                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,  &
                   one, v, ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'No transpose', m, k, n-k, one,   &
-                    c(1,k+1), ldc, v(k+1,1), ldv, one, work, ldwork)
+                  CALL SGEMM('No transpose', 'No transpose', m, k, n-k,     &
+                    one, c(1,k+1), ldc, v(k+1,1), ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,     &
+                CALL STRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'Transpose', m, n-k, k, -one,     &
+                  CALL SGEMM('No transpose', 'Transpose', m, n-k, k, -one,  &
                     work, ldwork, v(k+1,1), ldv, one, c(1,k+1), ldc)
                 END IF
-                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', m, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', m, k,     &
+                  one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
                     c(i, j) = c(i, j) - work(i, j)
@@ -24006,20 +24115,20 @@
                 DO j = 1, k
                   CALL SCOPY(n, c(m-k+j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,     &
+                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,  &
                   one, v(m-k+1,1), ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('Transpose', 'No transpose', n, k, m-k, one, c,   &
-                    ldc, v, ldv, one, work, ldwork)
+                  CALL SGEMM('Transpose', 'No transpose', n, k, m-k, one,   &
+                    c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,    &
+                CALL STRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('No transpose', 'Transpose', m-k, n, k, -one,     &
+                  CALL SGEMM('No transpose', 'Transpose', m-k, n, k, -one,  &
                     v, ldv, work, ldwork, one, c, ldc)
                 END IF
-                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', n, k, one,   &
-                  v(m-k+1,1), ldv, work, ldwork)
+                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', n, k,     &
+                  one, v(m-k+1,1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
                     c(m-k+j, i) = c(m-k+j, i) - work(i, j)
@@ -24029,20 +24138,20 @@
                 DO j = 1, k
                   CALL SCOPY(m, c(1,n-k+j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,     &
+                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,  &
                   one, v(n-k+1,1), ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'No transpose', m, k, n-k, one,   &
-                    c, ldc, v, ldv, one, work, ldwork)
+                  CALL SGEMM('No transpose', 'No transpose', m, k, n-k,     &
+                    one, c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,     &
+                CALL STRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'Transpose', m, n-k, k, -one,     &
+                  CALL SGEMM('No transpose', 'Transpose', m, n-k, k, -one,  &
                     work, ldwork, v, ldv, one, c, ldc)
                 END IF
-                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', m, k, one,   &
-                  v(n-k+1,1), ldv, work, ldwork)
+                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', m, k,     &
+                  one, v(n-k+1,1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
                     c(i, n-k+j) = c(i, n-k+j) - work(i, j)
@@ -24056,19 +24165,19 @@
                 DO j = 1, k
                   CALL SCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', n, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', n, k,     &
+                  one, v, ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('Transpose', 'Transpose', n, k, m-k, one,         &
+                  CALL SGEMM('Transpose', 'Transpose', n, k, m-k, one,      &
                     c(k+1,1), ldc, v(1,k+1), ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,    &
+                CALL STRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('Transpose', 'Transpose', m-k, n, k, -one, v(1,   &
-                    k+1), ldv, work, ldwork, one, c(k+1,1), ldc)
+                  CALL SGEMM('Transpose', 'Transpose', m-k, n, k, -one,     &
+                    v(1,k+1), ldv, work, ldwork, one, c(k+1,1), ldc)
                 END IF
-                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,     &
+                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,  &
                   one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -24079,19 +24188,19 @@
                 DO j = 1, k
                   CALL SCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', m, k, one,   &
-                  v, ldv, work, ldwork)
+                CALL STRMM('Right', 'Upper', 'Transpose', 'Unit', m, k,     &
+                  one, v, ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'Transpose', m, k, n-k, one,      &
+                  CALL SGEMM('No transpose', 'Transpose', m, k, n-k, one,   &
                     c(1,k+1), ldc, v(1,k+1), ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,     &
+                CALL STRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'No transpose', m, n-k, k,        &
+                  CALL SGEMM('No transpose', 'No transpose', m, n-k, k,     &
                     -one, work, ldwork, v(1,k+1), ldv, one, c(1,k+1), ldc)
                 END IF
-                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,     &
+                CALL STRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,  &
                   one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -24104,19 +24213,19 @@
                 DO j = 1, k
                   CALL SCOPY(n, c(m-k+j,1), ldc, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', n, k, one,   &
-                  v(1,m-k+1), ldv, work, ldwork)
+                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', n, k,     &
+                  one, v(1,m-k+1), ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('Transpose', 'Transpose', n, k, m-k, one, c,      &
+                  CALL SGEMM('Transpose', 'Transpose', n, k, m-k, one, c,   &
                     ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,    &
+                CALL STRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL SGEMM('Transpose', 'Transpose', m-k, n, k, -one, v,     &
+                  CALL SGEMM('Transpose', 'Transpose', m-k, n, k, -one, v,  &
                     ldv, work, ldwork, one, c, ldc)
                 END IF
-                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,     &
+                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,  &
                   one, v(1,m-k+1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -24127,19 +24236,19 @@
                 DO j = 1, k
                   CALL SCOPY(m, c(1,n-k+j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', m, k, one,   &
-                  v(1,n-k+1), ldv, work, ldwork)
+                CALL STRMM('Right', 'Lower', 'Transpose', 'Unit', m, k,     &
+                  one, v(1,n-k+1), ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'Transpose', m, k, n-k, one, c,   &
-                    ldc, v, ldv, one, work, ldwork)
+                  CALL SGEMM('No transpose', 'Transpose', m, k, n-k, one,   &
+                    c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL STRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,     &
+                CALL STRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL SGEMM('No transpose', 'No transpose', m, n-k, k,        &
+                  CALL SGEMM('No transpose', 'No transpose', m, n-k, k,     &
                     -one, work, ldwork, v, ldv, one, c, ldc)
                 END IF
-                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,     &
+                CALL STRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,  &
                   one, v(1,n-k+1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -24226,7 +24335,7 @@
                     t(j, i) = -tau(i)*v(i, j)
                   END DO
                   j = MIN(lastv, prevlastv)
-                  CALL SGEMV('Transpose', j-i, i-1, -tau(i), v(i+1,1), ldv,    &
+                  CALL SGEMV('Transpose', j-i, i-1, -tau(i), v(i+1,1), ldv,  &
                     v(i+1,i), 1_ip_, one, t(1,i), 1_ip_)
                 ELSE
                   DO lastv = n, i + 1, -1_ip_
@@ -24236,11 +24345,11 @@
                     t(j, i) = -tau(i)*v(j, i)
                   END DO
                   j = MIN(lastv, prevlastv)
-                  CALL SGEMV('No transpose', i-1, j-i, -tau(i), v(1,i+1),      &
+                  CALL SGEMV('No transpose', i-1, j-i, -tau(i), v(1,i+1),   &
                     ldv, v(i,i+1), ldv, one, t(1,i), 1_ip_)
                 END IF
-                CALL STRMV('Upper', 'No transpose', 'Non-unit', i-1, t, ldt,   &
-                  t(1,i), 1_ip_)
+                CALL STRMV('Upper', 'No transpose', 'Non-unit', i-1, t,     &
+                  ldt, t(1,i), 1_ip_)
                 t(i, i) = tau(i)
                 IF (i>1) THEN
                   prevlastv = MAX(prevlastv, lastv)
@@ -24266,8 +24375,8 @@
                       t(j, i) = -tau(i)*v(n-k+i, j)
                     END DO
                     j = MAX(lastv, prevlastv)
-                    CALL SGEMV('Transpose', n-k+i-j, k-i, -tau(i), v(j,i+1),   &
-                      ldv, v(j,i), 1_ip_, one, t(i+1,i), 1_ip_)
+                    CALL SGEMV('Transpose', n-k+i-j, k-i, -tau(i), v(j,      &
+                      i+1), ldv, v(j,i), 1_ip_, one, t(i+1,i), 1_ip_)
                   ELSE
                     DO lastv = 1, i - 1
                       IF (v(i,lastv)/=zero) EXIT
@@ -24276,10 +24385,10 @@
                       t(j, i) = -tau(i)*v(j, n-k+i)
                     END DO
                     j = MAX(lastv, prevlastv)
-                    CALL SGEMV('No transpose', k-i, n-k+i-j, -tau(i), v(i+1,   &
-                      j), ldv, v(i,j), ldv, one, t(i+1,i), 1_ip_)
+                    CALL SGEMV('No transpose', k-i, n-k+i-j, -tau(i),       &
+                      v(i+1,j), ldv, v(i,j), ldv, one, t(i+1,i), 1_ip_)
                   END IF
-                  CALL STRMV('Lower', 'No transpose', 'Non-unit', k-i,         &
+                  CALL STRMV('Lower', 'No transpose', 'Non-unit', k-i,      &
                     t(i+1,i+1), ldt, t(i+1,i), 1_ip_)
                   IF (i>1) THEN
                     prevlastv = MIN(prevlastv, lastv)
@@ -24303,7 +24412,7 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           INTEGER(ip_) :: j
-          REAL(r4_) :: sum, t1, t10, t2, t3, t4, t5, t6, t7, t8, t9, v1,       &
+          REAL(r4_) :: sum, t1, t10, t2, t3, t4, t5, t6, t7, t8, t9, v1,    &
             v10, v2, v3, v4, v5, v6, v7, v8, v9
           LOGICAL :: LSAME
           EXTERNAL :: LSAME
@@ -24354,7 +24463,7 @@
             v4 = v(4)
             t4 = tau*v4
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -24374,7 +24483,7 @@
             v5 = v(5)
             t5 = tau*v5
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -24397,7 +24506,7 @@
             v6 = v(6)
             t6 = tau*v6
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j) + v6*c(6, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -24423,7 +24532,7 @@
             v7 = v(7)
             t7 = tau*v7
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -24452,7 +24561,7 @@
             v8 = v(8)
             t8 = tau*v8
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
                 4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
@@ -24484,9 +24593,9 @@
             v9 = v(9)
             t9 = tau*v9
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
-                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8, j)  &
-                + v9*c(9, j)
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
+                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8,  &
+                j) + v9*c(9, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
               c( 3_ip_, j) = c( 3_ip_, j) - sum*t3
@@ -24520,9 +24629,9 @@
             v10 = v(10)
             t10 = tau*v10
             DO j = 1, n
-              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(     &
-                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8, j)  &
-                + v9*c(9, j) + v10*c(10, j)
+              sum = v1*c(1, j) + v2*c( 2_ip_, j) + v3*c( 3_ip_, j) + v4*c(  &
+                4_ip_, j) + v5*c(5, j) + v6*c(6, j) + v7*c(7, j) + v8*c(8,  &
+                j) + v9*c(9, j) + v10*c(10, j)
               c(1, j) = c(1, j) - sum*t1
               c( 2_ip_, j) = c( 2_ip_, j) - sum*t2
               c( 3_ip_, j) = c( 3_ip_, j) - sum*t3
@@ -24580,7 +24689,7 @@
             v4 = v(4)
             t4 = tau*v4
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24600,7 +24709,7 @@
             v5 = v(5)
             t5 = tau*v5
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_) + v5*c(j, 5)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24623,7 +24732,7 @@
             v6 = v(6)
             t6 = tau*v6
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24649,7 +24758,7 @@
             v7 = v(7)
             t7 = tau*v7
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
                 v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24678,8 +24787,8 @@
             v8 = v(8)
             t8 = tau*v8
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
-                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +        &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
+                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +     &
                 v8*c(j, 8)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24711,8 +24820,8 @@
             v9 = v(9)
             t9 = tau*v9
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
-                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +        &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
+                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +     &
                 v8*c(j, 8) + v9*c(j, 9)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24747,8 +24856,8 @@
             v10 = v(10)
             t10 = tau*v10
             DO j = 1, m
-              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +         &
-                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +        &
+              sum = v1*c(j, 1_ip_) + v2*c(j, 2_ip_) + v3*c(j, 3_ip_) +      &
+                v4*c(j, 4_ip_) + v5*c(j, 5) + v6*c(j, 6) + v7*c(j, 7) +     &
                 v8*c(j, 8) + v9*c(j, 9) + v10*c(j, 10)
               c(j, 1_ip_) = c(j, 1_ip_) - sum*t1
               c(j, 2_ip_) = c(j, 2_ip_) - sum*t2
@@ -24852,7 +24961,7 @@
           IF (LSAME(side,'L')) THEN
             IF (tau/=zero) THEN
               CALL SCOPY(n, c, ldc, work, 1_ip_)
-              CALL SGEMV('Transpose', l, n, one, c(m-l+1,1), ldc, v, incv,     &
+              CALL SGEMV('Transpose', l, n, one, c(m-l+1,1), ldc, v, incv,  &
                 one, work, 1_ip_)
               CALL SAXPY(n, -tau, work, 1_ip_, c, ldc)
               CALL SGER(l, n, -tau, v, incv, work, 1_ip_, c(m-l+1,1), ldc)
@@ -24860,7 +24969,7 @@
           ELSE
             IF (tau/=zero) THEN
               CALL SCOPY(m, c, 1_ip_, work, 1_ip_)
-              CALL SGEMV('No transpose', m, l, one, c(1,n-l+1), ldc, v,        &
+              CALL SGEMV('No transpose', m, l, one, c(1,n-l+1), ldc, v,     &
                 incv, one, work, 1_ip_)
               CALL SAXPY(m, -tau, work, 1_ip_, c, 1_ip_)
               CALL SGER(m, l, -tau, work, 1_ip_, v, incv, c(1,n-l+1), ldc)
@@ -24869,7 +24978,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLARZB(side, trans, direct, storev, m, n, k, l, v, ldv,     &
+        SUBROUTINE SLARZB(side, trans, direct, storev, m, n, k, l, v, ldv,  &
           t, ldt, c, ldc, work, ldwork)
           USE GALAHAD_KINDS
           CHARACTER :: direct, side, storev, trans
@@ -24902,31 +25011,31 @@
             DO j = 1, k
               CALL SCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
             END DO
-            IF (l>0) CALL SGEMM('Transpose', 'Transpose', n, k, l, one,        &
+            IF (l>0) CALL SGEMM('Transpose', 'Transpose', n, k, l, one,     &
               c(m-l+1,1), ldc, v, ldv, one, work, ldwork)
-            CALL STRMM('Right', 'Lower', transt, 'Non-unit', n, k, one, t,     &
+            CALL STRMM('Right', 'Lower', transt, 'Non-unit', n, k, one, t,  &
               ldt, work, ldwork)
             DO j = 1, n
               DO i = 1, k
                 c(i, j) = c(i, j) - work(j, i)
               END DO
             END DO
-            IF (l>0) CALL SGEMM('Transpose', 'Transpose', l, n, k, -one, v,    &
+            IF (l>0) CALL SGEMM('Transpose', 'Transpose', l, n, k, -one, v,  &
               ldv, work, ldwork, one, c(m-l+1,1), ldc)
           ELSE IF (LSAME(side,'R')) THEN
             DO j = 1, k
               CALL SCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
             END DO
-            IF (l>0) CALL SGEMM('No transpose', 'Transpose', m, k, l, one,     &
+            IF (l>0) CALL SGEMM('No transpose', 'Transpose', m, k, l, one,  &
               c(1,n-l+1), ldc, v, ldv, one, work, ldwork)
-            CALL STRMM('Right', 'Lower', trans, 'Non-unit', m, k, one, t,      &
+            CALL STRMM('Right', 'Lower', trans, 'Non-unit', m, k, one, t,   &
               ldt, work, ldwork)
             DO j = 1, k
               DO i = 1, m
                 c(i, j) = c(i, j) - work(i, j)
               END DO
             END DO
-            IF (l>0) CALL SGEMM('No transpose', 'No transpose', m, l, k,       &
+            IF (l>0) CALL SGEMM('No transpose', 'No transpose', m, l, k,    &
               -one, work, ldwork, v, ldv, one, c(1,n-l+1), ldc)
           END IF
           RETURN
@@ -24960,9 +25069,9 @@
               END DO
             ELSE
               IF (i<k) THEN
-                CALL SGEMV('No transpose', k-i, n, -tau(i), v(i+1,1), ldv,     &
+                CALL SGEMV('No transpose', k-i, n, -tau(i), v(i+1,1), ldv,  &
                   v(i,1), ldv, zero, t(i+1,i), 1_ip_)
-                CALL STRMV('Lower', 'No transpose', 'Non-unit', k-i, t(i+1,    &
+                CALL STRMV('Lower', 'No transpose', 'Non-unit', k-i, t(i+1,  &
                   i+1), ldt, t(i+1,i), 1_ip_)
               END IF
               t(i, i) = tau(i)
@@ -24992,7 +25101,7 @@
             IF (fhmx==zero) THEN
               ssmax = ga
             ELSE
-              ssmax = MAX(fhmx, ga)*SQRT(one+(MIN(fhmx,ga)/MAX(fhmx,           &
+              ssmax = MAX(fhmx, ga)*SQRT(one+(MIN(fhmx,ga)/MAX(fhmx,        &
                 ga))**2)
             END IF
           ELSE
@@ -25063,7 +25172,7 @@
             info = -5
           ELSE IF (m<0) THEN
             info = -6
-          ELSE IF (n<0 .OR. (itype==4 .AND. n/=m) .OR. (itype==5 .AND.         &
+          ELSE IF (n<0 .OR. (itype==4 .AND. n/=m) .OR. (itype==5 .AND.      &
             n/=m)) THEN
             info = -7
           ELSE IF (itype<=3 .AND. lda<MAX(1,m)) THEN
@@ -25071,10 +25180,10 @@
           ELSE IF (itype>=4) THEN
             IF (kl<0 .OR. kl>MAX(m-1,0)) THEN
               info = -2
-            ELSE IF (ku<0 .OR. ku>MAX(n-1,0) .OR. ((itype==4 .OR. itype==      &
+            ELSE IF (ku<0 .OR. ku>MAX(n-1,0) .OR. ((itype==4 .OR. itype==   &
               5) .AND. kl/=ku)) THEN
               info = -3
-            ELSE IF ((itype==4 .AND. lda<kl+1) .OR. (itype==5 .AND.            &
+            ELSE IF ((itype==4 .AND. lda<kl+1) .OR. (itype==5 .AND.         &
               lda<ku+1) .OR. (itype==6 .AND. lda<2*kl+ku +1)) THEN
               info = -9
             END IF
@@ -25176,12 +25285,12 @@
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=400)
           REAL(r4_) :: zero, one, two, three, four, eight, ten
-          PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_,    &
+          PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_,  &
             four=4.0_r4_, eight=8.0_r4_, ten=10.0_r4_)
           LOGICAL :: orgati, swtch, swtch3, geomavg
           INTEGER(ip_) :: ii, iim1, iip1, ip1, iter, j, niter
-          REAL(r4_) :: a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim,         &
-            dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps, erretm, eta, phi,    &
+          REAL(r4_) :: a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim,      &
+            dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps, erretm, eta, phi, &
             prew, psi, rhoinv, sglb, sgub, tau, tau2, temp, temp1, temp2, w
           REAL(r4_) :: dd(3), zz(3)
           EXTERNAL :: SLAED6, SLASD5
@@ -25216,11 +25325,11 @@
               psi = psi + z(j)*z(j)/(delta(j)*work(j))
             END DO
             c = rhoinv + psi
-            w = c + z(ii)*z(ii)/(delta(ii)*work(ii)) +                         &
+            w = c + z(ii)*z(ii)/(delta(ii)*work(ii)) +                      &
               z(n)*z(n)/(delta(n)*work(n))
             IF (w<=zero) THEN
               temp1 = SQRT(d(n)*d(n)+rho)
-              temp = z(n-1)*z(n-1)/((d(n-1)+temp1)*(d(n)-d(n-1)+rho/(d(n)+     &
+              temp = z(n-1)*z(n-1)/((d(n-1)+temp1)*(d(n)-d(n-1)+rho/(d(n)+  &
                 temp1))) + z(n)*z(n)/rho
               IF (c<=temp) THEN
                 tau = rho
@@ -25373,7 +25482,7 @@
               phi = phi + z(j)*z(j)/(work(j)*delta(j))
             END DO
             c = rhoinv + psi + phi
-            w = c + z(i)*z(i)/(work(i)*delta(i)) +                             &
+            w = c + z(i)*z(i)/(work(i)*delta(i)) +                          &
               z(ip1)*z(ip1)/(work(ip1)*delta(ip1))
             geomavg = .FALSE.
             IF (w>zero) THEN
@@ -25390,7 +25499,7 @@
               END IF
               tau = tau2/(d(i)+SQRT(d(i)*d(i)+tau2))
               temp = SQRT(eps)
-              IF ((d(i)<=temp*d(ip1)) .AND. (ABS(z(i))<=temp) .AND. (d(        &
+              IF ((d(i)<=temp*d(ip1)) .AND. (ABS(z(i))<=temp) .AND. (d(     &
                 i)>zero)) THEN
                 tau = MIN(ten*d(i), sgub)
                 geomavg = .TRUE.
@@ -25446,7 +25555,8 @@
             dw = dpsi + dphi + temp*temp
             temp = z(ii)*temp
             w = w + temp
-            erretm = eight*(phi-psi) + erretm + two*rhoinv + three*ABS(temp)
+            erretm = eight*(phi-psi) + erretm + two*rhoinv +                &
+              three*ABS(temp)
             IF (ABS(w)<=eps*erretm) THEN
               GO TO 240
             END IF
@@ -25487,7 +25597,7 @@
               IF (orgati) THEN
                 temp1 = z(iim1)/dtiim
                 temp1 = temp1*temp1
-                c = (temp-dtiip*(dpsi+dphi)) - (d(iim1)-d(iip1))*(d(iim1)+     &
+                c = (temp-dtiip*(dpsi+dphi)) - (d(iim1)-d(iip1))*(d(iim1)+  &
                   d(iip1))*temp1
                 zz(1) = z(iim1)*z(iim1)
                 IF (dpsi<temp1) THEN
@@ -25498,7 +25608,7 @@
               ELSE
                 temp1 = z(iip1)/dtiip
                 temp1 = temp1*temp1
-                c = (temp-dtiim*(dpsi+dphi)) - (d(iip1)-d(iim1))*(d(iim1)+     &
+                c = (temp-dtiim*(dpsi+dphi)) - (d(iip1)-d(iim1))*(d(iim1)+  &
                   d(iip1))*temp1
                 IF (dphi<temp1) THEN
                   zz(1) = dtiim*dtiim*dpsi
@@ -25591,7 +25701,8 @@
             dw = dpsi + dphi + temp*temp
             temp = z(ii)*temp
             w = rhoinv + phi + psi + temp
-            erretm = eight*(phi-psi) + erretm + two*rhoinv + three*ABS(temp)
+            erretm = eight*(phi-psi) + erretm + two*rhoinv +                &
+              three*ABS(temp)
             swtch = .FALSE.
             IF (orgati) THEN
               IF (-w>ABS(prew)/ten) swtch = .TRUE.
@@ -25776,9 +25887,9 @@
               dw = dpsi + dphi + temp*temp
               temp = z(ii)*temp
               w = rhoinv + phi + psi + temp
-              erretm = eight*(phi-psi) + erretm + two*rhoinv +                 &
+              erretm = eight*(phi-psi) + erretm + two*rhoinv +              &
                 three*ABS(temp)
-              IF (w*prew>zero .AND. ABS(w)>ABS(prew)/ten) swtch = .NOT.        &
+              IF (w*prew>zero .AND. ABS(w)>ABS(prew)/ten) swtch = .NOT.     &
                 swtch
             END DO
             info = 1
@@ -25793,14 +25904,14 @@
           REAL(r4_) :: dsigma, rho
           REAL(r4_) :: d(2), delta(2), work(2), z(2)
           REAL(r4_) :: zero, one, two, three, four
-          PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_,    &
+          PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_,  &
             four=4.0_r4_)
           REAL(r4_) :: b, c, del, delsq, tau, w
           INTRINSIC :: ABS, SQRT
           del = d(2) - d(1)
           delsq = del*(d(2)+d(1))
           IF (i==1) THEN
-            w = one + four*rho*(z(2)*z(2)/(d(1)+three*d(2))-z(1)*z(1)/(        &
+            w = one + four*rho*(z(2)*z(2)/(d(1)+three*d(2))-z(1)*z(1)/(     &
               three*d(1)+d(2)))/del
             IF (w>zero) THEN
               b = delsq + rho*(z(1)*z(1)+z(2)*z(2))
@@ -25845,23 +25956,23 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASD6(icompq, nl, nr, sqre, d, vf, vl, alpha, beta,        &
-          idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl,     &
+        SUBROUTINE SLASD6(icompq, nl, nr, sqre, d, vf, vl, alpha, beta,     &
+          idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, poles, difl,  &
           difr, z, k, c, s, work, iwork, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,     &
+          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,  &
             sqre
           REAL(r4_) :: alpha, beta, c, s
           INTEGER(ip_) :: givcol(ldgcol, *), idxq(*), iwork(*), perm(*)
-          REAL(r4_) :: d(*), difl(*), difr(*), givnum(ldgnum, *),              &
+          REAL(r4_) :: d(*), difl(*), difr(*), givnum(ldgnum, *),           &
             poles(ldgnum, *), vf(*), vl(*), work(*), z(*)
           REAL(r4_) :: one, zero
           PARAMETER (one=1.0_r4_, zero=0.0_r4_)
-          INTEGER(ip_) :: i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n,    &
+          INTEGER(ip_) :: i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n,  &
             n1, n2
           REAL(r4_) :: orgnrm
-          EXTERNAL :: SCOPY, SLAMRG, SLASCL, SLASD7, SLASD8,                   &
-            XERBLA
+          EXTERNAL :: SCOPY, SLAMRG, SLASCL, SLASD7,                        &
+            SLASD8, XERBLA
           INTRINSIC :: ABS, MAX
           info = 0
           n = nl + nr + 1
@@ -25900,11 +26011,11 @@
           CALL SLASCL('G', 0_ip_, 0_ip_, orgnrm, one, n, 1_ip_, d, n, info)
           alpha = alpha/orgnrm
           beta = beta/orgnrm
-          CALL SLASD7(icompq, nl, nr, sqre, k, d, z, work(iw), vf,             &
-            work(ivfw), vl, work(ivlw), alpha, beta, work(isigma), iwork(idx), &
-            iwork(idxp), idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum,   &
-            c, s, info)
-          CALL SLASD8(icompq, k, d, z, vf, vl, difl, difr, ldgnum,             &
+          CALL SLASD7(icompq, nl, nr, sqre, k, d, z, work(iw), vf,          &
+            work(ivfw), vl, work(ivlw), alpha, beta, work(isigma),          &
+            iwork(idx), iwork(idxp), idxq, perm, givptr, givcol, ldgcol,    &
+            givnum, ldgnum, c, s, info)
+          CALL SLASD8(icompq, k, d, z, vf, vl, difl, difr, ldgnum,          &
             work(isigma), work(iw), info)
           IF (info/=0) THEN
             RETURN
@@ -25920,20 +26031,20 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASD7(icompq, nl, nr, sqre, k, d, z, zw, vf, vfw, vl,      &
-          vlw, alpha, beta, dsigma, idx, idxp, idxq, perm, givptr, givcol,     &
+        SUBROUTINE SLASD7(icompq, nl, nr, sqre, k, d, z, zw, vf, vfw, vl,   &
+          vlw, alpha, beta, dsigma, idx, idxp, idxq, perm, givptr, givcol,  &
           ldgcol, givnum, ldgnum, c, s, info)
           USE GALAHAD_KINDS
-          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,     &
+          INTEGER(ip_) :: givptr, icompq, info, k, ldgcol, ldgnum, nl, nr,  &
             sqre
           REAL(r4_) :: alpha, beta, c, s
-          INTEGER(ip_) :: givcol(ldgcol, *), idx(*), idxp(*), idxq(*),         &
+          INTEGER(ip_) :: givcol(ldgcol, *), idx(*), idxp(*), idxq(*),      &
             perm(*)
-          REAL(r4_) :: d(*), dsigma(*), givnum(ldgnum, *), vf(*), vfw(*),      &
+          REAL(r4_) :: d(*), dsigma(*), givnum(ldgnum, *), vf(*), vfw(*),   &
             vl(*), vlw(*), z(*), zw(*)
           REAL(r4_) :: zero, one, two, eight
           PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, eight=8.0_r4_)
-          INTEGER(ip_) :: i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n,        &
+          INTEGER(ip_) :: i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n,     &
             nlp1, nlp2
           REAL(r4_) :: eps, hlftol, tau, tol, z1
           EXTERNAL :: SCOPY, SLAMRG, SROT, XERBLA
@@ -26108,11 +26219,11 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASD8(icompq, k, d, z, vf, vl, difl, difr, lddifr,         &
+        SUBROUTINE SLASD8(icompq, k, d, z, vf, vl, difl, difr, lddifr,      &
           dsigma, work, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: icompq, info, k, lddifr
-          REAL(r4_) :: d(*), difl(*), difr(lddifr, *), dsigma(*), vf(*),       &
+          REAL(r4_) :: d(*), difl(*), difr(lddifr, *), dsigma(*), vf(*),    &
             vl(*), work(*), z(*)
           REAL(r4_) :: one
           PARAMETER (one=1.0_r4_)
@@ -26156,7 +26267,7 @@
           rho = rho*rho
           CALL SLASET('A', k, 1_ip_, one, one, work(iwk3), k)
           DO j = 1, k
-            CALL SLASD4(k, j, dsigma, z, work(iwk1), rho, d(j), work(iwk2),    &
+            CALL SLASD4(k, j, dsigma, z, work(iwk1), rho, d(j), work(iwk2),  &
               info)
             IF (info/=0) THEN
               RETURN
@@ -26165,11 +26276,11 @@
             difl(j) = -work(j)
             difr(j, 1_ip_) = -work(j+1)
             DO i = 1, j - 1
-              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/             &
+              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/          &
                 (dsigma(i)-dsigma(j))/(dsigma(i)+dsigma(j))
             END DO
             DO i = j + 1, k
-              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/             &
+              work(iwk3i+i) = work(iwk3i+i)*work(i)*work(iwk2i+i)/          &
                 (dsigma(i)-dsigma(j))/(dsigma(i)+dsigma(j))
             END DO
           END DO
@@ -26186,10 +26297,11 @@
             END IF
             work(j) = -z(j)/diflj/(dsigma(j)+dj)
             DO i = 1, j - 1
-              work(i) = z(i)/(SLAMC3(dsigma(i),dsigj)-diflj)/ (dsigma(i)+dj)
+              work(i) = z(i)/(SLAMC3(dsigma(i),dsigj)-diflj)/               &
+                (dsigma(i)+dj)
             END DO
             DO i = j + 1, k
-              work(i) = z(i)/(SLAMC3(dsigma(i),dsigjp)+difrj)/                 &
+              work(i) = z(i)/(SLAMC3(dsigma(i),dsigjp)+difrj)/              &
                 (dsigma(i)+dj)
             END DO
             temp = SNRM2(k, work, 1_ip_)
@@ -26204,25 +26316,25 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASDA(icompq, smlsiz, n, sqre, d, e, u, ldu, vt, k,        &
-          difl, difr, z, poles, givptr, givcol, ldgcol, perm, givnum, c, s,    &
+        SUBROUTINE SLASDA(icompq, smlsiz, n, sqre, d, e, u, ldu, vt, k,     &
+          difl, difr, z, poles, givptr, givcol, ldgcol, perm, givnum, c, s, &
           work, iwork, info)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: icompq, info, ldgcol, ldu, n, smlsiz, sqre
-          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),        &
+          INTEGER(ip_) :: givcol(ldgcol, *), givptr(*), iwork(*), k(*),     &
             perm(ldgcol, *)
-          REAL(r4_) :: c(*), d(*), difl(ldu, *), difr(ldu, *), e(*),           &
-            givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *), vt(ldu, *),        &
+          REAL(r4_) :: c(*), d(*), difl(ldu, *), difr(ldu, *), e(*),        &
+            givnum(ldu, *), poles(ldu, *), s(*), u(ldu, *), vt(ldu, *),     &
             work(*), z(ldu, *)
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
-          INTEGER(ip_) :: i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk, j,   &
-            lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr, nl, nlf, nlp1,  &
-            nlvl, nr, nrf, nrp1, nru, nwork1, nwork2, smlszp, sqrei, vf, vfi,  &
-            vl, vli
+          INTEGER(ip_) :: i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk,   &
+            j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr, nl, nlf,  &
+            nlp1, nlvl, nr, nrf, nrp1, nru, nwork1, nwork2, smlszp, sqrei,  &
+            vf, vfi, vl, vli
           REAL(r4_) :: alpha, beta
-          EXTERNAL :: SCOPY, SLASD6, SLASDQ, SLASDT, SLASET,                   &
-            XERBLA
+          EXTERNAL :: SCOPY, SLASD6, SLASDQ, SLASDT,                        &
+            SLASET, XERBLA
           info = 0
           IF ((icompq<0) .OR. (icompq>1)) THEN
             info = -1
@@ -26244,10 +26356,10 @@
           m = n + sqre
           IF (n<=smlsiz) THEN
             IF (icompq==0) THEN
-              CALL SLASDQ('U', sqre, n, 0_ip_, 0_ip_, 0_ip_, d, e, vt, ldu,    &
+              CALL SLASDQ('U', sqre, n, 0_ip_, 0_ip_, 0_ip_, d, e, vt, ldu,  &
                 u, ldu, u, ldu, work, info)
             ELSE
-              CALL SLASDQ('U', sqre, n, m, n, 0_ip_, d, e, vt, ldu, u, ldu,    &
+              CALL SLASDQ('U', sqre, n, m, n, 0_ip_, d, e, vt, ldu, u, ldu,  &
                 u, ldu, work, info)
             END IF
             RETURN
@@ -26264,8 +26376,8 @@
           vl = vf + m
           nwork1 = vl + m
           nwork2 = nwork1 + smlszp*smlszp
-          CALL SLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml), iwork(ndimr),   &
-            smlsiz)
+          CALL SLASDT(n, nlvl, nd, iwork(inode), iwork(ndiml),              &
+            iwork(ndimr), smlsiz)
           ndb1 = (nd+1)/2
           DO i = ndb1, nd
             i1 = i - 1
@@ -26281,8 +26393,8 @@
             sqrei = 1
             IF (icompq==0) THEN
               CALL SLASET('A', nlp1, nlp1, zero, one, work(nwork1), smlszp)
-              CALL SLASDQ('U', sqrei, nl, nlp1, nru, ncc, d(nlf), e(nlf),      &
-                work(nwork1), smlszp, work(nwork2), nl, work(nwork2), nl,      &
+              CALL SLASDQ('U', sqrei, nl, nlp1, nru, ncc, d(nlf), e(nlf),   &
+                work(nwork1), smlszp, work(nwork2), nl, work(nwork2), nl,   &
                 work(nwork2), info)
               itemp = nwork1 + nl*smlszp
               CALL SCOPY(nlp1, work(nwork1), 1_ip_, work(vfi), 1_ip_)
@@ -26290,8 +26402,8 @@
             ELSE
               CALL SLASET('A', nl, nl, zero, one, u(nlf,1), ldu)
               CALL SLASET('A', nlp1, nlp1, zero, one, vt(nlf,1), ldu)
-              CALL SLASDQ('U', sqrei, nl, nlp1, nl, ncc, d(nlf), e(nlf),       &
-                vt(nlf,1), ldu, u(nlf,1), ldu, u(nlf,1), ldu, work(nwork1),    &
+              CALL SLASDQ('U', sqrei, nl, nlp1, nl, ncc, d(nlf), e(nlf),    &
+                vt(nlf,1), ldu, u(nlf,1), ldu, u(nlf,1), ldu, work(nwork1), &
                 info)
               CALL SCOPY(nlp1, vt(nlf,1), 1_ip_, work(vfi), 1_ip_)
               CALL SCOPY(nlp1, vt(nlf,nlp1), 1_ip_, work(vli), 1_ip_)
@@ -26313,8 +26425,8 @@
             nrp1 = nr + sqrei
             IF (icompq==0) THEN
               CALL SLASET('A', nrp1, nrp1, zero, one, work(nwork1), smlszp)
-              CALL SLASDQ('U', sqrei, nr, nrp1, nru, ncc, d(nrf), e(nrf),      &
-                work(nwork1), smlszp, work(nwork2), nr, work(nwork2), nr,      &
+              CALL SLASDQ('U', sqrei, nr, nrp1, nru, ncc, d(nrf), e(nrf),   &
+                work(nwork1), smlszp, work(nwork2), nr, work(nwork2), nr,   &
                 work(nwork2), info)
               itemp = nwork1 + (nrp1-1)*smlszp
               CALL SCOPY(nrp1, work(nwork1), 1_ip_, work(vfi), 1_ip_)
@@ -26322,8 +26434,8 @@
             ELSE
               CALL SLASET('A', nr, nr, zero, one, u(nrf,1), ldu)
               CALL SLASET('A', nrp1, nrp1, zero, one, vt(nrf,1), ldu)
-              CALL SLASDQ('U', sqrei, nr, nrp1, nr, ncc, d(nrf), e(nrf),       &
-                vt(nrf,1), ldu, u(nrf,1), ldu, u(nrf,1), ldu, work(nwork1),    &
+              CALL SLASDQ('U', sqrei, nr, nrp1, nr, ncc, d(nrf), e(nrf),    &
+                vt(nrf,1), ldu, u(nrf,1), ldu, u(nrf,1), ldu, work(nwork1), &
                 info)
               CALL SCOPY(nrp1, vt(nrf,1), 1_ip_, work(vfi), 1_ip_)
               CALL SCOPY(nrp1, vt(nrf,nrp1), 1_ip_, work(vli), 1_ip_)
@@ -26363,16 +26475,16 @@
               alpha = d(ic)
               beta = e(ic)
               IF (icompq==0) THEN
-                CALL SLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),          &
-                  work(vli), alpha, beta, iwork(idxqi), perm, givptr(1),       &
-                  givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k(1),     &
+                CALL SLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),       &
+                  work(vli), alpha, beta, iwork(idxqi), perm, givptr(1),    &
+                  givcol, ldgcol, givnum, ldu, poles, difl, difr, z, k(1),  &
                   c(1), s(1), work(nwork1), iwork(iwk), info)
               ELSE
                 j = j - 1
-                CALL SLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),          &
-                  work(vli), alpha, beta, iwork(idxqi), perm(nlf,lvl),         &
-                  givptr(j), givcol(nlf,lvl2), ldgcol, givnum(nlf,lvl2), ldu,  &
-                  poles(nlf,lvl2), difl(nlf,lvl), difr(nlf,lvl2), z(nlf,lvl),  &
+                CALL SLASD6(icompq, nl, nr, sqrei, d(nlf), work(vfi),       &
+                  work(vli), alpha, beta, iwork(idxqi), perm(nlf,lvl),      &
+                  givptr(j), givcol(nlf,lvl2), ldgcol, givnum(nlf,lvl2), ldu,&
+                  poles(nlf,lvl2), difl(nlf,lvl), difr(nlf,lvl2), z(nlf,lvl),&
                   k(j), c(j), s(j), work(nwork1), iwork(iwk), info)
               END IF
               IF (info/=0) THEN
@@ -26383,12 +26495,12 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASDQ(uplo, sqre, n, ncvt, nru, ncc, d, e, vt, ldvt, u,    &
+        SUBROUTINE SLASDQ(uplo, sqre, n, ncvt, nru, ncc, d, e, vt, ldvt, u,  &
           ldu, c, ldc, work, info)
           USE GALAHAD_KINDS
           CHARACTER :: uplo
           INTEGER(ip_) :: info, ldc, ldu, ldvt, n, ncc, ncvt, nru, sqre
-          REAL(r4_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),          &
+          REAL(r4_) :: c(ldc, *), d(*), e(*), u(ldu, *), vt(ldvt, *),       &
             work(*)
           REAL(r4_) :: zero
           PARAMETER (zero=0.0_r4_)
@@ -26415,12 +26527,12 @@
             info = -5
           ELSE IF (ncc<0) THEN
             info = -6
-          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,       &
+          ELSE IF ((ncvt==0 .AND. ldvt<1) .OR. (ncvt>0 .AND. ldvt<MAX(1,    &
             n))) THEN
             info = -10
           ELSE IF (ldu<MAX(1,nru)) THEN
             info = -12
-          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))      &
+          ELSE IF ((ncc==0 .AND. ldc<1) .OR. (ncc>0 .AND. ldc<MAX(1, n)))   &
             THEN
             info = -14
           END IF
@@ -26452,7 +26564,7 @@
             END IF
             iuplo = 2
             sqre1 = 0
-            IF (ncvt>0) CALL SLASR('L', 'V', 'F', np1, ncvt, work(1),          &
+            IF (ncvt>0) CALL SLASR('L', 'V', 'F', np1, ncvt, work(1),       &
               work(np1), vt, ldvt)
           END IF
           IF (iuplo==2) THEN
@@ -26476,24 +26588,24 @@
             END IF
             IF (nru>0) THEN
               IF (sqre1==0) THEN
-                CALL SLASR('R', 'V', 'F', nru, n, work(1), work(np1), u,       &
+                CALL SLASR('R', 'V', 'F', nru, n, work(1), work(np1), u,    &
                   ldu)
               ELSE
-                CALL SLASR('R', 'V', 'F', nru, np1, work(1), work(np1), u,     &
+                CALL SLASR('R', 'V', 'F', nru, np1, work(1), work(np1), u,  &
                   ldu)
               END IF
             END IF
             IF (ncc>0) THEN
               IF (sqre1==0) THEN
-                CALL SLASR('L', 'V', 'F', n, ncc, work(1), work(np1), c,       &
+                CALL SLASR('L', 'V', 'F', n, ncc, work(1), work(np1), c,    &
                   ldc)
               ELSE
-                CALL SLASR('L', 'V', 'F', np1, ncc, work(1), work(np1), c,     &
+                CALL SLASR('L', 'V', 'F', np1, ncc, work(1), work(np1), c,  &
                   ldc)
               END IF
             END IF
           END IF
-          CALL SBDSQR('U', n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu, c,       &
+          CALL SBDSQR('U', n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu, c,    &
             ldc, work, info)
           DO i = 1, n
             isub = i
@@ -26595,7 +26707,7 @@
           PARAMETER (zero=0.0_r4_)
           INTEGER(ip_) :: i, iinfo
           REAL(r4_) :: eps, scale, safmin, sigmn, sigmx
-          EXTERNAL :: SCOPY, SLAS2, SLASCL, SLASQ2, SLASRT,                    &
+          EXTERNAL :: SCOPY, SLAS2, SLASCL, SLASQ2, SLASRT,                  &
             XERBLA
           REAL(r4_) :: SLAMCH
           EXTERNAL :: SLAMCH
@@ -26634,7 +26746,7 @@
           scale = SQRT(eps/safmin)
           CALL SCOPY(n, d, 1_ip_, work(1), 2_ip_)
           CALL SCOPY(n-1, e, 1_ip_, work(2), 2_ip_)
-          CALL SLASCL('G', 0_ip_, 0_ip_, sigmx, scale, 2*n-1, 1_ip_, work,     &
+          CALL SLASCL('G', 0_ip_, 0_ip_, sigmx, scale, 2*n-1, 1_ip_, work,  &
             2*n-1, iinfo)
           DO i = 1, 2*n - 1
             work(i) = work(i)**2
@@ -26645,16 +26757,16 @@
             DO i = 1, n
               d(i) = SQRT(work(i))
             END DO
-            CALL SLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,    &
               iinfo)
           ELSE IF (info==2) THEN
             DO i = 1, n
               d(i) = SQRT(work(2*i-1))
               e(i) = SQRT(work(2*i))
             END DO
-            CALL SLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, d, n,    &
               iinfo)
-            CALL SLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, e, n,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, scale, sigmx, n, 1_ip_, e, n,    &
               iinfo)
           END IF
           RETURN
@@ -26667,13 +26779,13 @@
           REAL(r4_) :: cbias
           PARAMETER (cbias=1.50_r4_)
           REAL(r4_) :: zero, half, one, two, four, hundrd
-          PARAMETER (zero=0.0_r4_, half=0.5_r4_, one=1.0_r4_, two=2.0_r4_,     &
+          PARAMETER (zero=0.0_r4_, half=0.5_r4_, one=1.0_r4_, two=2.0_r4_,  &
             four=4.0_r4_, hundrd=100.0_r4_)
           LOGICAL :: ieee
-          INTEGER(ip_) :: i0, i4, iinfo, ipn4, iter, iwhila, iwhilb, k,        &
+          INTEGER(ip_) :: i0, i4, iinfo, ipn4, iter, iwhila, iwhilb, k,     &
             kmin, n0, nbig, ndiv, nfail, pp, splt, ttype, i1, n1
-          REAL(r4_) :: d, dee, deemin, desig, dmin, dmin1, dmin2, dn, dn1,     &
-            dn2, e, emax, emin, eps, g, oldemn, qmax, qmin, s, safmin, sigma,  &
+          REAL(r4_) :: d, dee, deemin, desig, dmin, dmin1, dmin2, dn, dn1,  &
+            dn2, e, emax, emin, eps, g, oldemn, qmax, qmin, s, safmin, sigma,&
             t, tau, temp, tol, tol2, trace, zmax, tempe, tempq
           EXTERNAL :: SLASQ3, SLASRT, XERBLA
           REAL(r4_) :: SLAMCH
@@ -26814,7 +26926,7 @@
                 z(i4-2*pp-2) = d
                 z(i4-2*pp) = zero
                 d = z(i4+1)
-              ELSE IF (safmin*z(i4+1)<z(i4-2*pp-2) .AND.                       &
+              ELSE IF (safmin*z(i4+1)<z(i4-2*pp-2) .AND.                    &
                 safmin*z(i4-2*pp-2)<z(i4+1)) THEN
                 temp = z(i4+1)/z(i4-2*pp-2)
                 z(i4-2*pp) = z(i4-1)*temp
@@ -26910,7 +27022,7 @@
             nbig = 100*(n0-i0+1)
             DO iwhilb = 1, nbig
               IF (i0>n0) GO TO 150
-              CALL SLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,      &
+              CALL SLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,   &
                 iter, ndiv, ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau)
               pp = 1 - pp
               IF (pp==0 .AND. n0-i0>=3) THEN
@@ -26990,18 +27102,18 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,      &
+        SUBROUTINE SLASQ3(i0, n0, z, pp, dmin, sigma, desig, qmax, nfail,   &
           iter, ndiv, ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau)
           USE GALAHAD_KINDS
           LOGICAL :: ieee
           INTEGER(ip_) :: i0, iter, n0, ndiv, nfail, pp
-          REAL(r4_) :: desig, dmin, dmin1, dmin2, dn, dn1, dn2, g, qmax,       &
+          REAL(r4_) :: desig, dmin, dmin1, dmin2, dn, dn1, dn2, g, qmax,    &
             sigma, tau
           REAL(r4_) :: z(*)
           REAL(r4_) :: cbias
           PARAMETER (cbias=1.50_r4_)
           REAL(r4_) :: zero, qurtr, half, one, two, hundrd
-          PARAMETER (zero=0.0_r4_, qurtr=0.250_r4_, half=0.5_r4_,              &
+          PARAMETER (zero=0.0_r4_, qurtr=0.250_r4_, half=0.5_r4_,           &
             one=1.0_r4_, two=2.0_r4_, hundrd=100.0_r4_)
           INTEGER(ip_) :: ipn4, j4, n0in, nn, ttype
           REAL(r4_) :: eps, s, t, temp, tol, tol2
@@ -27019,7 +27131,7 @@
           IF (n0==i0) GO TO 20
           nn = 4*n0 + pp
           IF (n0==(i0+1)) GO TO 40
-          IF (z(nn-5)>tol2*(sigma+z(nn-3)) .AND. z(nn-2*pp-4)>tol2*z(nn-7)     &
+          IF (z(nn-5)>tol2*(sigma+z(nn-3)) .AND. z(nn-2*pp-4)>tol2*z(nn-7)  &
             ) GO TO 30
  20       CONTINUE
           z(4*n0-3) = z(4*n0+pp-3) + sigma
@@ -27079,16 +27191,16 @@
               dmin = -zero
             END IF
           END IF
-          CALL SLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1, dn2,   &
-            tau, ttype, g)
+          CALL SLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1,     &
+            dn2, tau, ttype, g)
  70       CONTINUE
-          CALL SLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2, dn,       &
+          CALL SLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2, dn,    &
             dn1, dn2, ieee, eps)
           ndiv = ndiv + (n0-i0+2)
           iter = iter + 1
           IF (dmin>=zero .AND. dmin1>=zero) THEN
             GO TO 90
-          ELSE IF (dmin<zero .AND. dmin1>zero .AND. z(4*(n0-                   &
+          ELSE IF (dmin<zero .AND. dmin1>zero .AND. z(4*(n0-                &
             1)-pp)<tol*(sigma+dn1) .AND. ABS(dn)<tol*sigma) THEN
             z(4*(n0-1)-pp+2) = zero
             dmin = zero
@@ -27133,7 +27245,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1,    &
+        SUBROUTINE SLASQ4(i0, n0, z, pp, n0in, dmin, dmin1, dmin2, dn, dn1,  &
           dn2, tau, ttype, g)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: i0, n0, n0in, pp, ttype
@@ -27142,7 +27254,7 @@
           REAL(r4_) :: cnst1, cnst2, cnst3
           PARAMETER (cnst1=0.5630_r4_, cnst2=1.010_r4_, cnst3=1.050_r4_)
           REAL(r4_) :: qurtr, third, half, zero, one, two, hundrd
-          PARAMETER (qurtr=0.250_r4_, third=0.3330_r4_, half=0.50_r4_,         &
+          PARAMETER (qurtr=0.250_r4_, third=0.3330_r4_, half=0.50_r4_,      &
             zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, hundrd=100.0_r4_)
           INTEGER(ip_) :: i4, nn, np
           REAL(r4_) :: a2, b1, b2, gam, gap1, gap2, s
@@ -27306,8 +27418,8 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2, dn,   &
-          dnm1, dnm2, ieee, eps)
+        SUBROUTINE SLASQ5(i0, n0, z, pp, tau, sigma, dmin, dmin1, dmin2,    &
+          dn, dnm1, dnm2, ieee, eps)
           USE GALAHAD_KINDS
           LOGICAL :: ieee
           INTEGER(ip_) :: i0, n0, pp
@@ -27513,7 +27625,8 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASQ6(i0, n0, z, pp, dmin, dmin1, dmin2, dn, dnm1, dnm2)
+        SUBROUTINE SLASQ6(i0, n0, z, pp, dmin, dmin1, dmin2, dn, dnm1,      &
+          dnm2)
           USE GALAHAD_KINDS
           INTEGER(ip_) :: i0, n0, pp
           REAL(r4_) :: dmin, dmin1, dmin2, dn, dnm1, dnm2
@@ -27539,8 +27652,8 @@
                 d = z(j4+1)
                 dmin = d
                 emin = zero
-              ELSE IF (safmin*z(j4+1)<z(j4-2) .AND. safmin*z(j4-2)<z(j4+1))    &
-                THEN
+              ELSE IF (safmin*z(j4+1)<z(j4-2) .AND.                         &
+                safmin*z(j4-2)<z(j4+1)) THEN
                 temp = z(j4+1)/z(j4-2)
                 z(j4) = z(j4-1)*temp
                 d = d*temp
@@ -27559,8 +27672,8 @@
                 d = z(j4+2)
                 dmin = d
                 emin = zero
-              ELSE IF (safmin*z(j4+2)<z(j4-3) .AND. safmin*z(j4-3)<z(j4+2))    &
-                THEN
+              ELSE IF (safmin*z(j4+2)<z(j4-3) .AND.                         &
+                safmin*z(j4-3)<z(j4+2)) THEN
                 temp = z(j4+2)/z(j4-3)
                 z(j4-1) = z(j4)*temp
                 d = d*temp
@@ -27582,8 +27695,8 @@
             dnm1 = z(j4p2+2)
             dmin = dnm1
             emin = zero
-          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND. safmin*z(j4-2)<z(j4p2+2))    &
-            THEN
+          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND.                           &
+            safmin*z(j4-2)<z(j4p2+2)) THEN
             temp = z(j4p2+2)/z(j4-2)
             z(j4) = z(j4p2)*temp
             dnm1 = dnm2*temp
@@ -27601,8 +27714,8 @@
             dn = z(j4p2+2)
             dmin = dn
             emin = zero
-          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND. safmin*z(j4-2)<z(j4p2+2))    &
-            THEN
+          ELSE IF (safmin*z(j4p2+2)<z(j4-2) .AND.                           &
+            safmin*z(j4-2)<z(j4p2+2)) THEN
             temp = z(j4p2+2)/z(j4-2)
             z(j4) = z(j4p2)*temp
             dn = dnm1*temp
@@ -27632,7 +27745,7 @@
           info = 0
           IF (.NOT. (LSAME(side,'L') .OR. LSAME(side,'R'))) THEN
             info = 1
-          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T') .OR.         &
+          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T') .OR.      &
             LSAME(pivot,'B'))) THEN
             info = 2
           ELSE IF (.NOT. (LSAME(direct,'F') .OR. LSAME(direct,'B'))) THEN
@@ -28009,7 +28122,7 @@
           PARAMETER (four=4.0_r4_)
           LOGICAL :: gasmal, swap
           INTEGER(ip_) :: pmax
-          REAL(r4_) :: a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m, mm, r,    &
+          REAL(r4_) :: a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m, mm, r,  &
             s, slt, srt, t, temp, tsign, tt
           INTRINSIC :: ABS, SIGN, SQRT
           REAL(r4_) :: SLAMCH
@@ -28166,7 +28279,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SLASY2(ltranl, ltranr, isgn, n1, n2, tl, ldtl, tr, ldtr,    &
+        SUBROUTINE SLASY2(ltranl, ltranr, isgn, n1, n2, tl, ldtl, tr, ldtr,  &
           b, ldb, scale, x, ldx, xnorm, info)
           USE GALAHAD_KINDS
           LOGICAL :: ltranl, ltranr
@@ -28179,7 +28292,7 @@
           PARAMETER (two=2.0_r4_, half=0.5_r4_, eight=8.0_r4_)
           LOGICAL :: bswap, xswap
           INTEGER(ip_) :: i, ip, ipiv, ipsv, j, jp, jpsv, k
-          REAL(r4_) :: bet, eps, gam, l21, sgn, smin, smlnum, tau1, temp,      &
+          REAL(r4_) :: bet, eps, gam, l21, sgn, smin, smlnum, tau1, temp,   &
             u11, u12, u22, xmax
           LOGICAL :: bswpiv(4), xswpiv(4)
           INTEGER(ip_) :: jpiv(4), locl21(4), locu12(4), locu22(4)
@@ -28189,7 +28302,7 @@
           EXTERNAL :: ISAMAX, SLAMCH
           EXTERNAL :: SCOPY, SSWAP
           INTRINSIC :: ABS, MAX
-          DATA locu12/3, 4_ip_, 1_ip_, 2/, locl21/2, 1_ip_, 4_ip_, 3/,         &
+          DATA locu12/3, 4_ip_, 1_ip_, 2/, locl21/2, 1_ip_, 4_ip_, 3/,      &
             locu22/4, 3_ip_, 2_ip_, 1/
           DATA xswpiv/.FALSE., .FALSE., .TRUE., .TRUE./
           DATA bswpiv/.FALSE., .TRUE., .FALSE., .TRUE./
@@ -28215,7 +28328,7 @@
           xnorm = ABS(x(1,1))
           RETURN
  20       CONTINUE
-          smin = MAX(eps*MAX(ABS(tl(1,1)),ABS(tr(1,1)),ABS(tr(1,2)),ABS(       &
+          smin = MAX(eps*MAX(ABS(tl(1,1)),ABS(tr(1,1)),ABS(tr(1,2)),ABS(    &
             tr(2,1)),ABS(tr(2,2))), smlnum)
           tmp(1) = tl(1, 1_ip_) + sgn*tr(1, 1_ip_)
           tmp(4) = tl(1, 1_ip_) + sgn*tr( 2_ip_, 2_ip_)
@@ -28230,7 +28343,7 @@
           btmp(2) = b(1, 2_ip_)
           GO TO 40
  30       CONTINUE
-          smin = MAX(eps*MAX(ABS(tr(1,1)),ABS(tl(1,1)),ABS(tl(1,2)),ABS(       &
+          smin = MAX(eps*MAX(ABS(tr(1,1)),ABS(tl(1,1)),ABS(tl(1,2)),ABS(    &
             tl(2,1)),ABS(tl(2,2))), smlnum)
           tmp(1) = tl(1, 1_ip_) + sgn*tr(1, 1_ip_)
           tmp(4) = tl( 2_ip_, 2_ip_) + sgn*tr(1, 1_ip_)
@@ -28267,7 +28380,7 @@
             btmp(2) = btmp(2) - l21*btmp(1)
           END IF
           scale = one
-          IF ((two*smlnum)*ABS(btmp(2))>ABS(u22) .OR. (two*smlnum)*ABS(        &
+          IF ((two*smlnum)*ABS(btmp(2))>ABS(u22) .OR. (two*smlnum)*ABS(     &
             btmp(1))>ABS(u11)) THEN
             scale = half/MAX(ABS(btmp(1)), ABS(btmp(2)))
             btmp(1) = btmp(1)*scale
@@ -28290,9 +28403,9 @@
           END IF
           RETURN
  50       CONTINUE
-          smin = MAX(ABS(tr(1,1)), ABS(tr(1,2)), ABS(tr(2,1)), ABS(tr(         &
+          smin = MAX(ABS(tr(1,1)), ABS(tr(1,2)), ABS(tr(2,1)), ABS(tr(      &
             2_ip_, 2_ip_)))
-          smin = MAX(smin, ABS(tl(1,1)), ABS(tl(1,2)), ABS(tl( 2_ip_,          &
+          smin = MAX(smin, ABS(tl(1,1)), ABS(tl(1,2)), ABS(tl( 2_ip_,       &
             1_ip_)), ABS(tl(2,2)))
           smin = MAX(eps*smin, smlnum)
           btmp(1) = zero
@@ -28344,7 +28457,7 @@
               btmp(i) = btmp(ipsv)
               btmp(ipsv) = temp
             END IF
-            IF (jpsv/=i) CALL SSWAP( 4_ip_, t16(1,jpsv), 1_ip_, t16(1,i),      &
+            IF (jpsv/=i) CALL SSWAP( 4_ip_, t16(1,jpsv), 1_ip_, t16(1,i),   &
               1_ip_)
             jpiv(i) = jpsv
             IF (ABS(t16(i,i))<smin) THEN
@@ -28364,11 +28477,11 @@
             t16( 4_ip_, 4_ip_) = smin
           END IF
           scale = one
-          IF ((eight*smlnum)*ABS(btmp(1))>ABS(t16(1, 1_ip_)) .OR.              &
-            (eight*smlnum)*ABS(btmp(2))>ABS(t16( 2_ip_, 2_ip_)) .OR.           &
-            (eight*smlnum)*ABS(btmp(3))>ABS(t16( 3_ip_, 3_ip_)) .OR.           &
+          IF ((eight*smlnum)*ABS(btmp(1))>ABS(t16(1, 1_ip_)) .OR.           &
+            (eight*smlnum)*ABS(btmp(2))>ABS(t16( 2_ip_, 2_ip_)) .OR.        &
+            (eight*smlnum)*ABS(btmp(3))>ABS(t16( 3_ip_, 3_ip_)) .OR.        &
             (eight*smlnum)*ABS(btmp(4))>ABS(t16(4,4))) THEN
-            scale = (one/eight)/MAX(ABS(btmp(1)), ABS(btmp(2)), ABS(btmp(3     &
+            scale = (one/eight)/MAX(ABS(btmp(1)), ABS(btmp(2)), ABS(btmp(3  &
               )), ABS(btmp(4)))
             btmp(1) = btmp(1)*scale
             btmp(2) = btmp(2)*scale
@@ -28408,7 +28521,7 @@
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           REAL(r4_) :: eight, sevten
           PARAMETER (eight=8.0_r4_, sevten=17.0_r4_)
-          INTEGER(ip_) :: imax, j, jb, jj, jmax, jp, k, kk, kkw, kp, kstep,    &
+          INTEGER(ip_) :: imax, j, jb, jj, jmax, jp, k, kk, kkw, kp, kstep,  &
             kw
           REAL(r4_) :: absakk, alpha, colmax, d11, d21, d22, r1, rowmax, t
           LOGICAL :: LSAME
@@ -28424,8 +28537,8 @@
             kw = nb + k - n
             IF ((k<=n-nb+1 .AND. nb<n) .OR. k<1) GO TO 30
             CALL SCOPY(k, a(1,k), 1_ip_, w(1,kw), 1_ip_)
-            IF (k<n) CALL SGEMV('No transpose', k, n-k, -one, a(1,k+1), lda,   &
-              w(k,kw+1), ldw, one, w(1,kw), 1_ip_)
+            IF (k<n) CALL SGEMV('No transpose', k, n-k, -one, a(1,k+1),     &
+              lda, w(k,kw+1), ldw, one, w(1,kw), 1_ip_)
             kstep = 1
             absakk = ABS(w(k,kw))
             IF (k>1) THEN
@@ -28442,9 +28555,9 @@
                 kp = k
               ELSE
                 CALL SCOPY(imax, a(1,imax), 1_ip_, w(1,kw-1), 1_ip_)
-                CALL SCOPY(k-imax, a(imax,imax+1), lda, w(imax+1,kw-1),        &
+                CALL SCOPY(k-imax, a(imax,imax+1), lda, w(imax+1,kw-1),     &
                   1_ip_)
-                IF (k<n) CALL SGEMV('No transpose', k, n-k, -one, a(1,k+1),    &
+                IF (k<n) CALL SGEMV('No transpose', k, n-k, -one, a(1,k+1),  &
                   lda, w(imax,kw+1), ldw, one, w(1,kw-1), 1_ip_)
                 jmax = imax + ISAMAX(k-imax, w(imax+1,kw-1), 1_ip_)
                 rowmax = ABS(w(jmax,kw-1))
@@ -28504,10 +28617,10 @@
             DO j = ((k-1)/nb)*nb + 1, 1_ip_, -nb
               jb = MIN(nb, k-j+1)
               DO jj = j, j + jb - 1
-                CALL SGEMV('No transpose', jj-j+1, n-k, -one, a(j,k+1), lda,   &
-                  w(jj,kw+1), ldw, one, a(j,jj), 1_ip_)
+                CALL SGEMV('No transpose', jj-j+1, n-k, -one, a(j,k+1),     &
+                  lda, w(jj,kw+1), ldw, one, a(j,jj), 1_ip_)
               END DO
-              CALL SGEMM('No transpose', 'Transpose', j-1, jb, n-k, -one,      &
+              CALL SGEMM('No transpose', 'Transpose', j-1, jb, n-k, -one,   &
                 a(1,k+1), lda, w(j,kw+1), ldw, one, a(1,j), lda)
             END DO
             j = k + 1
@@ -28519,7 +28632,7 @@
               j = j + 1
             END IF
             j = j + 1
-            IF (jp/=jj .AND. j<=n) CALL SSWAP(n-j+1, a(jp,j), lda, a(jj,j),    &
+            IF (jp/=jj .AND. j<=n) CALL SSWAP(n-j+1, a(jp,j), lda, a(jj,j),  &
               lda)
             IF (j<n) GO TO 60
             kb = n - k
@@ -28528,7 +28641,7 @@
  70         CONTINUE
             IF ((k>=nb .AND. nb<n) .OR. k>n) GO TO 90
             CALL SCOPY(n-k+1, a(k,k), 1_ip_, w(k,k), 1_ip_)
-            CALL SGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda, w(k,     &
+            CALL SGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda, w(k,   &
               1), ldw, one, w(k,k), 1_ip_)
             kstep = 1
             absakk = ABS(w(k,k))
@@ -28546,9 +28659,9 @@
                 kp = k
               ELSE
                 CALL SCOPY(imax-k, a(imax,k), lda, w(k,k+1), 1_ip_)
-                CALL SCOPY(n-imax+1, a(imax,imax), 1_ip_, w(imax,k+1),         &
+                CALL SCOPY(n-imax+1, a(imax,imax), 1_ip_, w(imax,k+1),      &
                   1_ip_)
-                CALL SGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda,      &
+                CALL SGEMV('No transpose', n-k+1, k-1, -one, a(k,1), lda,   &
                   w(imax,1), ldw, one, w(k,k+1), 1_ip_)
                 jmax = k - 1 + ISAMAX(imax-k, w(k,k+1), 1_ip_)
                 rowmax = ABS(w(jmax,k+1))
@@ -28570,7 +28683,7 @@
               IF (kp/=kk) THEN
                 a(kp, kp) = a(kk, kk)
                 CALL SCOPY(kp-kk-1, a(kk+1,kk), 1_ip_, a(kp,kk+1), lda)
-                IF (kp<n) CALL SCOPY(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),      &
+                IF (kp<n) CALL SCOPY(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),   &
                   1_ip_)
                 IF (k>1) CALL SSWAP(k-1, a(kk,1), lda, a(kp,1), lda)
                 CALL SSWAP(kk, w(kk,1), ldw, w(kp,1), ldw)
@@ -28610,12 +28723,12 @@
             DO j = k, n, nb
               jb = MIN(nb, n-j+1)
               DO jj = j, j + jb - 1
-                CALL SGEMV('No transpose', j+jb-jj, k-1, -one, a(jj,1), lda,   &
-                  w(jj,1), ldw, one, a(jj,jj), 1_ip_)
+                CALL SGEMV('No transpose', j+jb-jj, k-1, -one, a(jj,1),     &
+                  lda, w(jj,1), ldw, one, a(jj,jj), 1_ip_)
               END DO
-              IF (j+jb<=n) CALL SGEMM('No transpose', 'Transpose', n-j-jb+1,   &
-                jb, k-1, -one, a(j+jb,1), lda, w(j,1), ldw, one, a(j+jb,j),    &
-                lda)
+              IF (j+jb<=n) CALL SGEMM('No transpose', 'Transpose',          &
+                n-j-jb+1, jb, k-1, -one, a(j+jb,1), lda, w(j,1), ldw, one,  &
+                a(j+jb,j), lda)
             END DO
             j = k - 1
  120        CONTINUE
@@ -28626,7 +28739,8 @@
               j = j - 1
             END IF
             j = j - 1
-            IF (jp/=jj .AND. j>=1) CALL SSWAP(j, a(jp,1), lda, a(jj,1), lda)
+            IF (jp/=jj .AND. j>=1) CALL SSWAP(j, a(jp,1), lda, a(jj,1),     &
+              lda)
             IF (j>1) GO TO 120
             kb = k - 1
           END IF
@@ -28652,55 +28766,55 @@
             DO i = n, n - nb + 1, -1_ip_
               iw = i - n + nb
               IF (i<n) THEN
-                CALL SGEMV('No transpose', i, n-i, -one, a(1,i+1), lda, w(i,   &
-                  iw+1), ldw, one, a(1,i), 1_ip_)
-                CALL SGEMV('No transpose', i, n-i, -one, w(1,iw+1), ldw,       &
+                CALL SGEMV('No transpose', i, n-i, -one, a(1,i+1), lda,     &
+                  w(i,iw+1), ldw, one, a(1,i), 1_ip_)
+                CALL SGEMV('No transpose', i, n-i, -one, w(1,iw+1), ldw,    &
                   a(i,i+1), lda, one, a(1,i), 1_ip_)
               END IF
               IF (i>1) THEN
                 CALL SLARFG(i-1, a(i-1,i), a(1,i), 1_ip_, tau(i-1))
                 e(i-1) = a(i-1, i)
                 a(i-1, i) = one
-                CALL SSYMV('Upper', i-1, one, a, lda, a(1,i), 1_ip_, zero,     &
+                CALL SSYMV('Upper', i-1, one, a, lda, a(1,i), 1_ip_, zero,  &
                   w(1,iw), 1_ip_)
                 IF (i<n) THEN
-                  CALL SGEMV('Transpose', i-1, n-i, one, w(1,iw+1), ldw,       &
+                  CALL SGEMV('Transpose', i-1, n-i, one, w(1,iw+1), ldw,    &
                     a(1,i), 1_ip_, zero, w(i+1,iw), 1_ip_)
-                  CALL SGEMV('No transpose', i-1, n-i, -one, a(1,i+1), lda,    &
+                  CALL SGEMV('No transpose', i-1, n-i, -one, a(1,i+1), lda,  &
                     w(i+1,iw), 1_ip_, one, w(1,iw), 1_ip_)
-                  CALL SGEMV('Transpose', i-1, n-i, one, a(1,i+1), lda, a(1,   &
-                    i), 1_ip_, zero, w(i+1,iw), 1_ip_)
-                  CALL SGEMV('No transpose', i-1, n-i, -one, w(1,iw+1), ldw,   &
-                    w(i+1,iw), 1_ip_, one, w(1,iw), 1_ip_)
+                  CALL SGEMV('Transpose', i-1, n-i, one, a(1,i+1), lda,     &
+                    a(1,i), 1_ip_, zero, w(i+1,iw), 1_ip_)
+                  CALL SGEMV('No transpose', i-1, n-i, -one, w(1,iw+1),     &
+                    ldw, w(i+1,iw), 1_ip_, one, w(1,iw), 1_ip_)
                 END IF
                 CALL SSCAL(i-1, tau(i-1), w(1,iw), 1_ip_)
-                alpha = -half*tau(i-1)*SDOT(i-1, w(1,iw), 1_ip_, a(1,i),       &
+                alpha = -half*tau(i-1)*SDOT(i-1, w(1,iw), 1_ip_, a(1,i),    &
                   1_ip_)
                 CALL SAXPY(i-1, alpha, a(1,i), 1_ip_, w(1,iw), 1_ip_)
               END IF
             END DO
           ELSE
             DO i = 1, nb
-              CALL SGEMV('No transpose', n-i+1, i-1, -one, a(i,1), lda, w(i,   &
-                1), ldw, one, a(i,i), 1_ip_)
-              CALL SGEMV('No transpose', n-i+1, i-1, -one, w(i,1), ldw, a(i,   &
-                1), lda, one, a(i,i), 1_ip_)
+              CALL SGEMV('No transpose', n-i+1, i-1, -one, a(i,1), lda,     &
+                w(i,1), ldw, one, a(i,i), 1_ip_)
+              CALL SGEMV('No transpose', n-i+1, i-1, -one, w(i,1), ldw,     &
+                a(i,1), lda, one, a(i,i), 1_ip_)
               IF (i<n) THEN
                 CALL SLARFG(n-i, a(i+1,i), a(MIN(i+2,n),i), 1_ip_, tau(i))
                 e(i) = a(i+1, i)
                 a(i+1, i) = one
-                CALL SSYMV('Lower', n-i, one, a(i+1,i+1), lda, a(i+1,i),       &
+                CALL SSYMV('Lower', n-i, one, a(i+1,i+1), lda, a(i+1,i),    &
                   1_ip_, zero, w(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', n-i, i-1, one, w(i+1,1), ldw, a(i+1,   &
-                  i), 1_ip_, zero, w(1,i), 1_ip_)
-                CALL SGEMV('No transpose', n-i, i-1, -one, a(i+1,1), lda,      &
+                CALL SGEMV('Transpose', n-i, i-1, one, w(i+1,1), ldw,       &
+                  a(i+1,i), 1_ip_, zero, w(1,i), 1_ip_)
+                CALL SGEMV('No transpose', n-i, i-1, -one, a(i+1,1), lda,   &
                   w(1,i), 1_ip_, one, w(i+1,i), 1_ip_)
-                CALL SGEMV('Transpose', n-i, i-1, one, a(i+1,1), lda, a(i+1,   &
-                  i), 1_ip_, zero, w(1,i), 1_ip_)
-                CALL SGEMV('No transpose', n-i, i-1, -one, w(i+1,1), ldw,      &
+                CALL SGEMV('Transpose', n-i, i-1, one, a(i+1,1), lda,       &
+                  a(i+1,i), 1_ip_, zero, w(1,i), 1_ip_)
+                CALL SGEMV('No transpose', n-i, i-1, -one, w(i+1,1), ldw,   &
                   w(1,i), 1_ip_, one, w(i+1,i), 1_ip_)
                 CALL SSCAL(n-i, tau(i), w(i+1,i), 1_ip_)
-                alpha = -half*tau(i)*SDOT(n-i, w(i+1,i), 1_ip_, a(i+1,i),      &
+                alpha = -half*tau(i)*SDOT(n-i, w(i+1,i), 1_ip_, a(i+1,i),   &
                   1_ip_)
                 CALL SAXPY(n-i, alpha, a(i+1,i), 1_ip_, w(i+1,i), 1_ip_)
               END IF
@@ -28727,8 +28841,8 @@
           END IF
           DO i = m, 1_ip_, -1_ip_
             CALL SLARFG(l+1, a(i,i), a(i,n-l+1), lda, tau(i))
-            CALL SLARZ('Right', i-1, n-i+1, l, a(i,n-l+1), lda, tau(i), a(1,   &
-              i), lda, work)
+            CALL SLARZ('Right', i-1, n-i+1, l, a(i,n-l+1), lda, tau(i),     &
+              a(1,i), lda, work)
           END DO
           RETURN
         END SUBROUTINE
@@ -28766,8 +28880,8 @@
           DO i = 1, k
             ii = n - k + i
             a(m-n+ii, ii) = one
-            CALL SLARF('Left', m-n+ii, ii-1, a(1,ii), 1_ip_, tau(i), a, lda,   &
-              work)
+            CALL SLARF('Left', m-n+ii, ii-1, a(1,ii), 1_ip_, tau(i), a,     &
+              lda, work)
             CALL SSCAL(m-n+ii-1, -tau(i), a(1,ii), 1_ip_)
             a(m-n+ii, ii) = one - tau(i)
             DO l = m - n + ii + 1, m
@@ -28810,7 +28924,7 @@
           DO i = k, 1_ip_, -1_ip_
             IF (i<n) THEN
               a(i, i) = one
-              CALL SLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,       &
+              CALL SLARF('Left', m-i+1, n-i, a(i,i), 1_ip_, tau(i), a(i,     &
                 i+1), lda, work)
             END IF
             IF (i<m) CALL SSCAL(m-i, -tau(i), a(i+1,i), 1_ip_)
@@ -28843,7 +28957,7 @@
             info = -1
           ELSE IF (m<0) THEN
             info = -2
-          ELSE IF (n<0 .OR. (wantq .AND. (n>m .OR. n<MIN(m,k))) .OR. (         &
+          ELSE IF (n<0 .OR. (wantq .AND. (n>m .OR. n<MIN(m,k))) .OR. (      &
             .NOT. wantq .AND. (m>n .OR. m<MIN(n,k)))) THEN
             info = -3
           ELSE IF (k<0) THEN
@@ -28860,8 +28974,8 @@
                 CALL SORGQR(m, n, k, a, lda, tau, work, -1_ip_, iinfo)
               ELSE
                 IF (m>1) THEN
-                  CALL SORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work, -1_ip_,   &
-                    iinfo)
+                  CALL SORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work,        &
+                    -1_ip_, iinfo)
                 END IF
               END IF
             ELSE
@@ -28869,8 +28983,8 @@
                 CALL SORGLQ(m, n, k, a, lda, tau, work, -1_ip_, iinfo)
               ELSE
                 IF (n>1) THEN
-                  CALL SORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work, -1_ip_,   &
-                    iinfo)
+                  CALL SORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work,        &
+                    -1_ip_, iinfo)
                 END IF
               END IF
             END IF
@@ -28903,7 +29017,7 @@
                 a(i, 1_ip_) = zero
               END DO
               IF (m>1) THEN
-                CALL SORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work, lwork,      &
+                CALL SORGQR(m-1, m-1, m-1, a(2,2), lda, tau, work, lwork,   &
                   iinfo)
               END IF
             END IF
@@ -28922,7 +29036,7 @@
                 a(1, j) = zero
               END DO
               IF (n>1) THEN
-                CALL SORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,      &
+                CALL SORGLQ(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,   &
                   iinfo)
               END IF
             END IF
@@ -28967,7 +29081,7 @@
             IF (i<n) THEN
               IF (i<m) THEN
                 a(i, i) = one
-                CALL SLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,    &
+                CALL SLARF('Right', m-i, n-i+1, a(i,i), lda, tau(i), a(i+1,  &
                   i), lda, work)
               END IF
               CALL SSCAL(n-i, -tau(i), a(i,i+1), lda)
@@ -28987,7 +29101,7 @@
           REAL(r4_) :: zero
           PARAMETER (zero=0.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,  &
             nb, nbmin, nx
           EXTERNAL :: SLARFB, SLARFT, SORGL2, XERBLA
           INTRINSIC :: MAX, MIN
@@ -29044,16 +29158,16 @@
           ELSE
             kk = 0
           END IF
-          IF (kk<m) CALL SORGL2(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,           &
+          IF (kk<m) CALL SORGL2(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,        &
             tau(kk+1), work, iinfo)
           IF (kk>0) THEN
             DO i = ki + 1, 1_ip_, -nb
               ib = MIN(nb, k-i+1)
               IF (i+ib<=m) THEN
-                CALL SLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,      &
+                CALL SLARFT('Forward', 'Rowwise', n-i+1, ib, a(i,i), lda,   &
                   tau(i), work, ldwork)
-                CALL SLARFB('Right', 'Transpose', 'Forward', 'Rowwise',        &
-                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),   &
+                CALL SLARFB('Right', 'Transpose', 'Forward', 'Rowwise',     &
+                  m-i-ib+1, n-i+1, ib, a(i,i), lda, work, ldwork, a(i+ib,i),&
                   lda, work(ib+1), ldwork)
               END IF
               CALL SORGL2(ib, n-i+1, ib, a(i,i), lda, tau(i), work, iinfo)
@@ -29075,7 +29189,7 @@
           REAL(r4_) :: zero
           PARAMETER (zero=0.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, j, kk, l, ldwork, lwkopt, nb,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, j, kk, l, ldwork, lwkopt, nb,  &
             nbmin, nx
           EXTERNAL :: SLARFB, SLARFT, SORG2L, XERBLA
           INTRINSIC :: MAX, MIN
@@ -29142,14 +29256,14 @@
             DO i = k - kk + 1, k, nb
               ib = MIN(nb, k-i+1)
               IF (n-k+i>1) THEN
-                CALL SLARFT('Backward', 'Columnwise', m-k+i+ib-1, ib, a(1,     &
+                CALL SLARFT('Backward', 'Columnwise', m-k+i+ib-1, ib, a(1,   &
                   n-k+i), lda, tau(i), work, ldwork)
-                CALL SLARFB('Left', 'No transpose', 'Backward',                &
-                  'Columnwise', m-k+i+ib-1, n-k+i-1, ib, a(1,n-k+i), lda,      &
+                CALL SLARFB('Left', 'No transpose', 'Backward',             &
+                  'Columnwise', m-k+i+ib-1, n-k+i-1, ib, a(1,n-k+i), lda,   &
                   work, ldwork, a, lda, work(ib+1), ldwork)
               END IF
-              CALL SORG2L(m-k+i+ib-1, ib, ib, a(1,n-k+i), lda, tau(i), work,   &
-                iinfo)
+              CALL SORG2L(m-k+i+ib-1, ib, ib, a(1,n-k+i), lda, tau(i),      &
+                work, iinfo)
               DO j = n - k + i, n - k + i + ib - 1
                 DO l = m - k + i + ib, m
                   a(l, j) = zero
@@ -29168,7 +29282,7 @@
           REAL(r4_) :: zero
           PARAMETER (zero=0.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,     &
+          INTEGER(ip_) :: i, ib, iinfo, iws, j, ki, kk, l, ldwork, lwkopt,  &
             nb, nbmin, nx
           EXTERNAL :: SLARFB, SLARFT, SORG2R, XERBLA
           INTRINSIC :: MAX, MIN
@@ -29225,17 +29339,17 @@
           ELSE
             kk = 0
           END IF
-          IF (kk<n) CALL SORG2R(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,           &
+          IF (kk<n) CALL SORG2R(m-kk, n-kk, k-kk, a(kk+1,kk+1), lda,        &
             tau(kk+1), work, iinfo)
           IF (kk>0) THEN
             DO i = ki + 1, 1_ip_, -nb
               ib = MIN(nb, k-i+1)
               IF (i+ib<=n) THEN
-                CALL SLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i), lda,   &
-                  tau(i), work, ldwork)
-                CALL SLARFB('Left', 'No transpose', 'Forward', 'Columnwise',   &
-                  m-i+1, n-i-ib+1, ib, a(i,i), lda, work, ldwork, a(i,i+ib),   &
-                  lda, work(ib+1), ldwork)
+                CALL SLARFT('Forward', 'Columnwise', m-i+1, ib, a(i,i),     &
+                  lda, tau(i), work, ldwork)
+                CALL SLARFB('Left', 'No transpose', 'Forward',              &
+                  'Columnwise', m-i+1, n-i-ib+1, ib, a(i,i), lda, work,     &
+                  ldwork, a(i,i+ib), lda, work(ib+1), ldwork)
               END IF
               CALL SORG2R(m-i+1, ib, ib, a(i,i), lda, tau(i), work, iinfo)
               DO j = i, i + ib - 1
@@ -29318,7 +29432,7 @@
               a(i, 1_ip_) = zero
             END DO
             IF (n>1) THEN
-              CALL SORGQR(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,        &
+              CALL SORGQR(n-1, n-1, n-1, a(2,2), lda, tau, work, lwork,     &
                 iinfo)
             END IF
           END IF
@@ -29326,7 +29440,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE SORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29369,7 +29483,8 @@
             RETURN
           END IF
           IF (m==0 .OR. n==0 .OR. k==0) RETURN
-          IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran)) THEN
+          IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))     &
+            THEN
             i1 = 1
             i2 = k
             i3 = 1
@@ -29395,14 +29510,14 @@
             END IF
             aii = a(i, i)
             a(i, i) = one
-            CALL SLARF(side, mi, ni, a(i,i), 1_ip_, tau(i), c(ic,jc), ldc,     &
+            CALL SLARF(side, mi, ni, a(i,i), 1_ip_, tau(i), c(ic,jc), ldc,  &
               work)
             a(i, i) = aii
           END DO
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORMBR(vect, side, trans, m, n, k, a, lda, tau, c, ldc,     &
+        SUBROUTINE SORMBR(vect, side, trans, m, n, k, a, lda, tau, c, ldc,  &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans, vect
@@ -29440,7 +29555,7 @@
             info = -5
           ELSE IF (k<0) THEN
             info = -6
-          ELSE IF ((applyq .AND. lda<MAX(1,nq)) .OR. (.NOT. applyq .AND.       &
+          ELSE IF ((applyq .AND. lda<MAX(1,nq)) .OR. (.NOT. applyq .AND.    &
             lda<MAX(1,MIN(nq,k)))) THEN
             info = -8
           ELSE IF (ldc<MAX(1,m)) THEN
@@ -29451,18 +29566,18 @@
           IF (info==0) THEN
             IF (applyq) THEN
               IF (left) THEN
-                nb = ILAENV(1_ip_, 'SORMQR', side//trans, m-1, n, m-1,         &
+                nb = ILAENV(1_ip_, 'SORMQR', side//trans, m-1, n, m-1,      &
                   -1_ip_)
               ELSE
-                nb = ILAENV(1_ip_, 'SORMQR', side//trans, m, n-1, n-1,         &
+                nb = ILAENV(1_ip_, 'SORMQR', side//trans, m, n-1, n-1,      &
                   -1_ip_)
               END IF
             ELSE
               IF (left) THEN
-                nb = ILAENV(1_ip_, 'SORMLQ', side//trans, m-1, n, m-1,         &
+                nb = ILAENV(1_ip_, 'SORMLQ', side//trans, m-1, n, m-1,      &
                   -1_ip_)
               ELSE
-                nb = ILAENV(1_ip_, 'SORMLQ', side//trans, m, n-1, n-1,         &
+                nb = ILAENV(1_ip_, 'SORMLQ', side//trans, m, n-1, n-1,      &
                   -1_ip_)
               END IF
             END IF
@@ -29479,7 +29594,7 @@
           IF (m==0 .OR. n==0) RETURN
           IF (applyq) THEN
             IF (nq>=k) THEN
-              CALL SORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+              CALL SORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
                 lwork, iinfo)
             ELSE IF (nq>1) THEN
               IF (left) THEN
@@ -29493,8 +29608,8 @@
                 i1 = 1
                 i2 = 2
               END IF
-              CALL SORMQR(side, trans, mi, ni, nq-1, a(2,1), lda, tau, c(i1,   &
-                i2), ldc, work, lwork, iinfo)
+              CALL SORMQR(side, trans, mi, ni, nq-1, a(2,1), lda, tau,      &
+                c(i1,i2), ldc, work, lwork, iinfo)
             END IF
           ELSE
             IF (notran) THEN
@@ -29503,7 +29618,7 @@
               transt = 'N'
             END IF
             IF (nq>k) THEN
-              CALL SORMLQ(side, transt, m, n, k, a, lda, tau, c, ldc, work,    &
+              CALL SORMLQ(side, transt, m, n, k, a, lda, tau, c, ldc, work,  &
                 lwork, iinfo)
             ELSE IF (nq>1) THEN
               IF (left) THEN
@@ -29517,7 +29632,7 @@
                 i1 = 1
                 i2 = 2
               END IF
-              CALL SORMLQ(side, transt, mi, ni, nq-1, a(1,2), lda, tau,        &
+              CALL SORMLQ(side, transt, mi, ni, nq-1, a(1,2), lda, tau,     &
                 c(i1,i2), ldc, work, lwork, iinfo)
             END IF
           END IF
@@ -29525,7 +29640,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORMHR(side, trans, m, n, ilo, ihi, a, lda, tau, c, ldc,    &
+        SUBROUTINE SORMHR(side, trans, m, n, ilo, ihi, a, lda, tau, c, ldc,  &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29551,7 +29666,8 @@
           END IF
           IF (.NOT. left .AND. .NOT. LSAME(side,'R')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')) THEN
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T'))     &
+            THEN
             info = -2
           ELSE IF (m<0) THEN
             info = -3
@@ -29598,13 +29714,13 @@
             i1 = 1
             i2 = ilo + 1
           END IF
-          CALL SORMQR(side, trans, mi, ni, nh, a(ilo+1,ilo), lda, tau(ilo),    &
+          CALL SORMQR(side, trans, mi, ni, nh, a(ilo+1,ilo), lda, tau(ilo),  &
             c(i1,i2), ldc, work, lwork, iinfo)
           work(1) = lwkopt
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE SORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29647,7 +29763,8 @@
             RETURN
           END IF
           IF (m==0 .OR. n==0 .OR. k==0) RETURN
-          IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran)) THEN
+          IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran))     &
+            THEN
             i1 = 1
             i2 = k
             i3 = 1
@@ -29673,14 +29790,14 @@
             END IF
             aii = a(i, i)
             a(i, i) = one
-            CALL SLARF(side, mi, ni, a(i,i), lda, tau(i), c(ic,jc), ldc,       &
+            CALL SLARF(side, mi, ni, a(i,i), lda, tau(i), c(ic,jc), ldc,    &
               work)
             a(i, i) = aii
           END DO
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE SORMLQ(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29690,7 +29807,7 @@
           PARAMETER (nbmax=64, ldt=nbmax+1, tsize=ldt*nbmax)
           LOGICAL :: left, lquery, notran
           CHARACTER :: transt
-          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,       &
+          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,    &
             lwkopt, mi, nb, nbmin, ni, nq, nw
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
@@ -29726,7 +29843,8 @@
             info = -12
           END IF
           IF (info==0) THEN
-            nb = MIN(nbmax, ILAENV(1_ip_,'SORMLQ',side//trans,m,n,k,-1_ip_))
+            nb = MIN(nbmax, ILAENV(1_ip_,'SORMLQ',side//trans,m,n,k,         &
+              -1_ip_))
             lwkopt = MAX(1, nw)*nb + tsize
             work(1) = lwkopt
           END IF
@@ -29745,16 +29863,16 @@
           IF (nb>1 .AND. nb<k) THEN
             IF (lwork<nw*nb+tsize) THEN
               nb = (lwork-tsize)/ldwork
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SORMLQ',side//trans,m,n,k,      &
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SORMLQ',side//trans,m,n,k,    &
                 -1_ip_))
             END IF
           END IF
           IF (nb<nbmin .OR. nb>=k) THEN
-            CALL SORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,       &
+            CALL SORML2(side, trans, m, n, k, a, lda, tau, c, ldc, work,    &
               iinfo)
           ELSE
             iwt = 1 + nw*nb
-            IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran))      &
+            IF ((left .AND. notran) .OR. (.NOT. left .AND. .NOT. notran))   &
               THEN
               i1 = 1
               i2 = k
@@ -29778,7 +29896,7 @@
             END IF
             DO i = i1, i2, i3
               ib = MIN(nb, k-i+1)
-              CALL SLARFT('Forward', 'Rowwise', nq-i+1, ib, a(i,i), lda,       &
+              CALL SLARFT('Forward', 'Rowwise', nq-i+1, ib, a(i,i), lda,    &
                 tau(i), work(iwt), ldt)
               IF (left) THEN
                 mi = m - i + 1
@@ -29787,7 +29905,7 @@
                 ni = n - i + 1
                 jc = i
               END IF
-              CALL SLARFB(side, transt, 'Forward', 'Rowwise', mi, ni, ib,      &
+              CALL SLARFB(side, transt, 'Forward', 'Rowwise', mi, ni, ib,   &
                 a(i,i), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
@@ -29795,7 +29913,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,     &
+        SUBROUTINE SORMQR(side, trans, m, n, k, a, lda, tau, c, ldc, work,  &
           lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29804,7 +29922,7 @@
           INTEGER(ip_) :: nbmax, ldt, tsize
           PARAMETER (nbmax=64, ldt=nbmax+1, tsize=ldt*nbmax)
           LOGICAL :: left, lquery, notran
-          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,       &
+          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, jc, ldwork,    &
             lwkopt, mi, nb, nbmin, ni, nq, nw
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
@@ -29840,7 +29958,8 @@
             info = -12
           END IF
           IF (info==0) THEN
-            nb = MIN(nbmax, ILAENV(1_ip_,'SORMQR',side//trans,m,n,k,-1_ip_))
+            nb = MIN(nbmax, ILAENV(1_ip_,'SORMQR',side//trans,m,n,k,         &
+              -1_ip_))
             lwkopt = MAX(1, nw)*nb + tsize
             work(1) = lwkopt
           END IF
@@ -29859,16 +29978,16 @@
           IF (nb>1 .AND. nb<k) THEN
             IF (lwork<nw*nb+tsize) THEN
               nb = (lwork-tsize)/ldwork
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SORMQR',side//trans,m,n,k,      &
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SORMQR',side//trans,m,n,k,    &
                 -1_ip_))
             END IF
           END IF
           IF (nb<nbmin .OR. nb>=k) THEN
-            CALL SORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,       &
+            CALL SORM2R(side, trans, m, n, k, a, lda, tau, c, ldc, work,    &
               iinfo)
           ELSE
             iwt = 1 + nw*nb
-            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))      &
+            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))   &
               THEN
               i1 = 1
               i2 = k
@@ -29887,7 +30006,7 @@
             END IF
             DO i = i1, i2, i3
               ib = MIN(nb, k-i+1)
-              CALL SLARFT('Forward', 'Columnwise', nq-i+1, ib, a(i,i), lda,    &
+              CALL SLARFT('Forward', 'Columnwise', nq-i+1, ib, a(i,i), lda,  &
                 tau(i), work(iwt), ldt)
               IF (left) THEN
                 mi = m - i + 1
@@ -29896,7 +30015,7 @@
                 ni = n - i + 1
                 jc = i
               END IF
-              CALL SLARFB(side, trans, 'Forward', 'Columnwise', mi, ni, ib,    &
+              CALL SLARFB(side, trans, 'Forward', 'Columnwise', mi, ni, ib,  &
                 a(i,i), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
@@ -29904,7 +30023,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc,        &
+        SUBROUTINE SORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc,     &
           work, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29934,7 +30053,7 @@
             info = -4
           ELSE IF (k<0 .OR. k>nq) THEN
             info = -5
-          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>      &
+          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>   &
             n))) THEN
             info = -6
           ELSE IF (lda<MAX(1,k)) THEN
@@ -29973,13 +30092,13 @@
               ni = n - i + 1
               jc = i
             END IF
-            CALL SLARZ(side, mi, ni, l, a(i,ja), lda, tau(i), c(ic,jc), ldc,   &
-              work)
+            CALL SLARZ(side, mi, ni, l, a(i,ja), lda, tau(i), c(ic,jc),     &
+              ldc, work)
           END DO
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc,        &
+        SUBROUTINE SORMRZ(side, trans, m, n, k, l, a, lda, tau, c, ldc,     &
           work, lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: side, trans
@@ -29989,8 +30108,8 @@
           PARAMETER (nbmax=64, ldt=nbmax+1, tsize=ldt*nbmax)
           LOGICAL :: left, lquery, notran
           CHARACTER :: transt
-          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, ja, jc, ldwork,   &
-            lwkopt, mi, nb, nbmin, ni, nq, nw
+          INTEGER(ip_) :: i, i1, i2, i3, ib, ic, iinfo, iwt, ja, jc,        &
+            ldwork, lwkopt, mi, nb, nbmin, ni, nq, nw
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
@@ -30017,7 +30136,7 @@
             info = -4
           ELSE IF (k<0 .OR. k>nq) THEN
             info = -5
-          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>      &
+          ELSE IF (l<0 .OR. (left .AND. (l>m)) .OR. (.NOT. left .AND. (l>   &
             n))) THEN
             info = -6
           ELSE IF (lda<MAX(1,k)) THEN
@@ -30031,7 +30150,7 @@
             IF (m==0 .OR. n==0) THEN
               lwkopt = 1
             ELSE
-              nb = MIN(nbmax, ILAENV(1_ip_,'SORMRQ',side//trans,m,n,k,         &
+              nb = MIN(nbmax, ILAENV(1_ip_,'SORMRQ',side//trans,m,n,k,       &
                 -1_ip_))
               lwkopt = nw*nb + tsize
             END IF
@@ -30051,16 +30170,16 @@
           IF (nb>1 .AND. nb<k) THEN
             IF (lwork<nw*nb+tsize) THEN
               nb = (lwork-tsize)/ldwork
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SORMRQ',side//trans,m,n,k,      &
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SORMRQ',side//trans,m,n,k,    &
                 -1_ip_))
             END IF
           END IF
           IF (nb<nbmin .OR. nb>=k) THEN
-            CALL SORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work,    &
+            CALL SORMR3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work,  &
               iinfo)
           ELSE
             iwt = 1 + nw*nb
-            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))      &
+            IF ((left .AND. .NOT. notran) .OR. (.NOT. left .AND. notran))   &
               THEN
               i1 = 1
               i2 = k
@@ -30086,7 +30205,7 @@
             END IF
             DO i = i1, i2, i3
               ib = MIN(nb, k-i+1)
-              CALL SLARZT('Backward', 'Rowwise', l, ib, a(i,ja), lda,          &
+              CALL SLARZT('Backward', 'Rowwise', l, ib, a(i,ja), lda,       &
                 tau(i), work(iwt), ldt)
               IF (left) THEN
                 mi = m - i + 1
@@ -30095,7 +30214,7 @@
                 ni = n - i + 1
                 jc = i
               END IF
-              CALL SLARZB(side, transt, 'Backward', 'Rowwise', mi, ni, ib,     &
+              CALL SLARZB(side, transt, 'Backward', 'Rowwise', mi, ni, ib,  &
                 l, a(i,ja), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
@@ -30143,7 +30262,7 @@
               kn = MIN(kd, n-j)
               IF (kn>0) THEN
                 CALL SSCAL(kn, one/ajj, ab(kd,j+1), kld)
-                CALL SSYR('Upper', kn, -one, ab(kd,j+1), kld, ab(kd+1,j+1),    &
+                CALL SSYR('Upper', kn, -one, ab(kd,j+1), kld, ab(kd+1,j+1),  &
                   kld)
               END IF
             END DO
@@ -30156,7 +30275,8 @@
               kn = MIN(kd, n-j)
               IF (kn>0) THEN
                 CALL SSCAL(kn, one/ajj, ab(2,j), 1_ip_)
-                CALL SSYR('Lower', kn, -one, ab(2,j), 1_ip_, ab(1,j+1), kld)
+                CALL SSYR('Lower', kn, -one, ab(2,j), 1_ip_, ab(1,j+1),     &
+                  kld)
               END IF
             END DO
           END IF
@@ -30180,7 +30300,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
-          EXTERNAL :: SGEMM, SPBTF2, SPOTF2, SSYRK, STRSM,                     &
+          EXTERNAL :: SGEMM, SPBTF2, SPOTF2, SSYRK, STRSM,                  &
             XERBLA
           INTRINSIC :: MIN
           info = 0
@@ -30220,9 +30340,10 @@
                   i2 = MIN(kd-ib, n-i-ib+1)
                   i3 = MIN(ib, n-i-kd+1)
                   IF (i2>0) THEN
-                    CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', ib,   &
-                      i2, one, ab(kd+1,i), ldab-1, ab(kd+1-ib,i+ib), ldab-1)
-                    CALL SSYRK('Upper', 'Transpose', i2, ib, -one,             &
+                    CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit',    &
+                      ib, i2, one, ab(kd+1,i), ldab-1, ab(kd+1-ib,i+ib),    &
+                      ldab-1)
+                    CALL SSYRK('Upper', 'Transpose', i2, ib, -one,          &
                       ab(kd+1-ib,i+ib), ldab-1, one, ab(kd+1,i+ib), ldab-1)
                   END IF
                   IF (i3>0) THEN
@@ -30231,12 +30352,12 @@
                         work(ii, jj) = ab(ii-jj+1, jj+i+kd-1)
                       END DO
                     END DO
-                    CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', ib,   &
-                      i3, one, ab(kd+1,i), ldab-1, work, ldwork)
-                    IF (i2>0) CALL SGEMM('Transpose', 'No Transpose', i2,      &
-                      i3, ib, -one, ab(kd+1-ib,i+ib), ldab-1, work, ldwork,    &
+                    CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit',    &
+                      ib, i3, one, ab(kd+1,i), ldab-1, work, ldwork)
+                    IF (i2>0) CALL SGEMM('Transpose', 'No Transpose', i2,   &
+                      i3, ib, -one, ab(kd+1-ib,i+ib), ldab-1, work, ldwork, &
                       one, ab(1+ib,i+kd), ldab-1)
-                    CALL SSYRK('Upper', 'Transpose', i3, ib, -one, work,       &
+                    CALL SSYRK('Upper', 'Transpose', i3, ib, -one, work,    &
                       ldwork, one, ab(kd+1,i+kd), ldab-1)
                     DO jj = 1, i3
                       DO ii = jj, ib
@@ -30263,9 +30384,9 @@
                   i2 = MIN(kd-ib, n-i-ib+1)
                   i3 = MIN(ib, n-i-kd+1)
                   IF (i2>0) THEN
-                    CALL STRSM('Right', 'Lower', 'Transpose', 'Non-unit',      &
+                    CALL STRSM('Right', 'Lower', 'Transpose', 'Non-unit',   &
                       i2, ib, one, ab(1,i), ldab-1, ab(1+ib,i), ldab-1)
-                    CALL SSYRK('Lower', 'No Transpose', i2, ib, -one,          &
+                    CALL SSYRK('Lower', 'No Transpose', i2, ib, -one,       &
                       ab(1+ib,i), ldab-1, one, ab(1,i+ib), ldab-1)
                   END IF
                   IF (i3>0) THEN
@@ -30274,12 +30395,12 @@
                         work(ii, jj) = ab(kd+1-jj+ii, jj+i-1)
                       END DO
                     END DO
-                    CALL STRSM('Right', 'Lower', 'Transpose', 'Non-unit',      &
+                    CALL STRSM('Right', 'Lower', 'Transpose', 'Non-unit',   &
                       i3, ib, one, ab(1,i), ldab-1, work, ldwork)
-                    IF (i2>0) CALL SGEMM('No transpose', 'Transpose', i3,      &
-                      i2, ib, -one, work, ldwork, ab(1+ib,i), ldab-1, one,     &
+                    IF (i2>0) CALL SGEMM('No transpose', 'Transpose', i3,   &
+                      i2, ib, -one, work, ldwork, ab(1+ib,i), ldab-1, one,  &
                       ab(1+kd-ib,i+ib), ldab-1)
-                    CALL SSYRK('Lower', 'No Transpose', i3, ib, -one, work,    &
+                    CALL SSYRK('Lower', 'No Transpose', i3, ib, -one, work,  &
                       ldwork, one, ab(1,i+kd), ldab-1)
                     DO jj = 1, ib
                       DO ii = 1, MIN(jj, i3)
@@ -30329,16 +30450,16 @@
           IF (n==0 .OR. nrhs==0) RETURN
           IF (upper) THEN
             DO j = 1, nrhs
-              CALL STBSV('Upper', 'Transpose', 'Non-unit', n, kd, ab, ldab,    &
+              CALL STBSV('Upper', 'Transpose', 'Non-unit', n, kd, ab, ldab,  &
                 b(1,j), 1_ip_)
-              CALL STBSV('Upper', 'No transpose', 'Non-unit', n, kd, ab,       &
+              CALL STBSV('Upper', 'No transpose', 'Non-unit', n, kd, ab,    &
                 ldab, b(1,j), 1_ip_)
             END DO
           ELSE
             DO j = 1, nrhs
-              CALL STBSV('Lower', 'No transpose', 'Non-unit', n, kd, ab,       &
+              CALL STBSV('Lower', 'No transpose', 'Non-unit', n, kd, ab,    &
                 ldab, b(1,j), 1_ip_)
-              CALL STBSV('Lower', 'Transpose', 'Non-unit', n, kd, ab, ldab,    &
+              CALL STBSV('Lower', 'Transpose', 'Non-unit', n, kd, ab, ldab,  &
                 b(1,j), 1_ip_)
             END DO
           END IF
@@ -30384,7 +30505,7 @@
               ajj = SQRT(ajj)
               a(j, j) = ajj
               IF (j<n) THEN
-                CALL SGEMV('Transpose', j-1, n-j, -one, a(1,j+1), lda, a(1,    &
+                CALL SGEMV('Transpose', j-1, n-j, -one, a(1,j+1), lda, a(1,  &
                   j), 1_ip_, one, a(j,j+1), lda)
                 CALL SSCAL(n-j, one/ajj, a(j,j+1), lda)
               END IF
@@ -30399,7 +30520,7 @@
               ajj = SQRT(ajj)
               a(j, j) = ajj
               IF (j<n) THEN
-                CALL SGEMV('No transpose', n-j, j-1, -one, a(j+1,1), lda,      &
+                CALL SGEMV('No transpose', n-j, j-1, -one, a(j+1,1), lda,   &
                   a(j,1), lda, one, a(j+1,j), 1_ip_)
                 CALL SSCAL(n-j, one/ajj, a(j+1,j), 1_ip_)
               END IF
@@ -30447,28 +30568,30 @@
             IF (upper) THEN
               DO j = 1, n, nb
                 jb = MIN(nb, n-j+1)
-                CALL SSYRK('Upper', 'Transpose', jb, j-1, -one, a(1,j), lda,   &
-                  one, a(j,j), lda)
+                CALL SSYRK('Upper', 'Transpose', jb, j-1, -one, a(1,j),     &
+                  lda, one, a(j,j), lda)
                 CALL SPOTRF2('Upper', jb, a(j,j), lda, info)
                 IF (info/=0) GO TO 30
                 IF (j+jb<=n) THEN
-                  CALL SGEMM('Transpose', 'No transpose', jb, n-j-jb+1, j-1,   &
-                    -one, a(1,j), lda, a(1,j+jb), lda, one, a(j,j+jb), lda)
-                  CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', jb,     &
+                  CALL SGEMM('Transpose', 'No transpose', jb, n-j-jb+1,     &
+                    j-1, -one, a(1,j), lda, a(1,j+jb), lda, one, a(j,j+jb), &
+                    lda)
+                  CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', jb,  &
                     n-j-jb+1, one, a(j,j), lda, a(j,j+jb), lda)
                 END IF
               END DO
             ELSE
               DO j = 1, n, nb
                 jb = MIN(nb, n-j+1)
-                CALL SSYRK('Lower', 'No transpose', jb, j-1, -one, a(j,1),     &
+                CALL SSYRK('Lower', 'No transpose', jb, j-1, -one, a(j,1),  &
                   lda, one, a(j,j), lda)
                 CALL SPOTRF2('Lower', jb, a(j,j), lda, info)
                 IF (info/=0) GO TO 30
                 IF (j+jb<=n) THEN
-                  CALL SGEMM('No transpose', 'Transpose', n-j-jb+1, jb, j-1,   &
-                    -one, a(j+jb,1), lda, a(j,1), lda, one, a(j+jb,j), lda)
-                  CALL STRSM('Right', 'Lower', 'Transpose', 'Non-unit',        &
+                  CALL SGEMM('No transpose', 'Transpose', n-j-jb+1, jb,     &
+                    j-1, -one, a(j+jb,1), lda, a(j,1), lda, one, a(j+jb,j), &
+                    lda)
+                  CALL STRSM('Right', 'Lower', 'Transpose', 'Non-unit',     &
                     n-j-jb+1, jb, one, a(j,j), lda, a(j+jb,j), lda)
                 END IF
               END DO
@@ -30523,9 +30646,9 @@
               RETURN
             END IF
             IF (upper) THEN
-              CALL STRSM('L', 'U', 'T', 'N', n1, n2, one, a(1,1), lda, a(1,    &
+              CALL STRSM('L', 'U', 'T', 'N', n1, n2, one, a(1,1), lda, a(1,  &
                 n1+1), lda)
-              CALL SSYRK(uplo, 'T', n2, n1, -one, a(1,n1+1), lda, one,         &
+              CALL SSYRK(uplo, 'T', n2, n1, -one, a(1,n1+1), lda, one,      &
                 a(n1+1,n1+1), lda)
               CALL SPOTRF2(uplo, n2, a(n1+1,n1+1), lda, iinfo)
               IF (iinfo/=0) THEN
@@ -30533,9 +30656,9 @@
                 RETURN
               END IF
             ELSE
-              CALL STRSM('R', 'L', 'T', 'N', n2, n1, one, a(1,1), lda,         &
+              CALL STRSM('R', 'L', 'T', 'N', n2, n1, one, a(1,1), lda,      &
                 a(n1+1,1), lda)
-              CALL SSYRK(uplo, 'N', n2, n1, -one, a(n1+1,1), lda, one,         &
+              CALL SSYRK(uplo, 'N', n2, n1, -one, a(n1+1,1), lda, one,      &
                 a(n1+1,n1+1), lda)
               CALL SPOTRF2(uplo, n2, a(n1+1,n1+1), lda, iinfo)
               IF (iinfo/=0) THEN
@@ -30578,14 +30701,14 @@
           END IF
           IF (n==0 .OR. nrhs==0) RETURN
           IF (upper) THEN
-            CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,      &
+            CALL STRSM('Left', 'Upper', 'Transpose', 'Non-unit', n, nrhs,   &
               one, a, lda, b, ldb)
-            CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', n, nrhs,   &
-              one, a, lda, b, ldb)
+            CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', n,      &
+              nrhs, one, a, lda, b, ldb)
           ELSE
-            CALL STRSM('Left', 'Lower', 'No transpose', 'Non-unit', n, nrhs,   &
-              one, a, lda, b, ldb)
-            CALL STRSM('Left', 'Lower', 'Transpose', 'Non-unit', n, nrhs,      &
+            CALL STRSM('Left', 'Lower', 'No transpose', 'Non-unit', n,      &
+              nrhs, one, a, lda, b, ldb)
+            CALL STRSM('Left', 'Lower', 'Transpose', 'Non-unit', n, nrhs,   &
               one, a, lda, b, ldb)
           END IF
           RETURN
@@ -30678,7 +30801,8 @@
           IF (nrhs==1) THEN
             nb = 1
           ELSE
-            nb = MAX(1_ip_, ILAENV(1_ip_,'SPTTRS',' ',n,nrhs,-1_ip_,-1_ip_))
+            nb = MAX(1_ip_, ILAENV(1_ip_,'SPTTRS',' ',n,nrhs,-1_ip_,         &
+              -1_ip_))
           END IF
           IF (nb>=nrhs) THEN
             CALL SPTTS2(n, nrhs, d, e, b, ldb)
@@ -30761,15 +30885,15 @@
           PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_)
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=30)
-          INTEGER(ip_) :: i, icompz, ii, iscale, j, jtot, k, l, l1, lend,      &
+          INTEGER(ip_) :: i, icompz, ii, iscale, j, jtot, k, l, l1, lend,   &
             lendm1, lendp1, lendsv, lm1, lsv, m, mm, mm1, nm1, nmaxit
-          REAL(r4_) :: anorm, b, c, eps, eps2, f, g, p, r, rt1, rt2, s,        &
+          REAL(r4_) :: anorm, b, c, eps, eps2, f, g, p, r, rt1, rt2, s,     &
             safmax, safmin, ssfmax, ssfmin, tst
           LOGICAL :: LSAME
           REAL(r4_) :: SLAMCH, SLANST, SLAPY2
           EXTERNAL :: LSAME, SLAMCH, SLANST, SLAPY2
-          EXTERNAL :: SLAE2, SLAEV2, SLARTG, SLASCL, SLASET,                   &
-            SLASR, SLASRT, SSWAP, XERBLA
+          EXTERNAL :: SLAE2, SLAEV2, SLARTG, SLASCL,                        &
+            SLASET, SLASR, SLASRT, SSWAP, XERBLA
           INTRINSIC :: ABS, MAX, SIGN, SQRT
           info = 0
           IF (LSAME(compz,'N')) THEN
@@ -30834,15 +30958,15 @@
           IF (anorm==zero) GO TO 10
           IF (anorm>ssfmax) THEN
             iscale = 1
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,     &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,    &
               e(l), n, info)
           ELSE IF (anorm<ssfmin) THEN
             iscale = 2
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,     &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,    &
               e(l), n, info)
           END IF
           IF (ABS(d(lend))<ABS(d(l))) THEN
@@ -30868,7 +30992,7 @@
                 CALL SLAEV2(d(l), e(l), d(l+1), rt1, rt2, c, s)
                 work(l) = c
                 work(n-1+l) = s
-                CALL SLASR('R', 'V', 'B', n, 2_ip_, work(l), work(n-1+l),      &
+                CALL SLASR('R', 'V', 'B', n, 2_ip_, work(l), work(n-1+l),   &
                   z(1,l), ldz)
               ELSE
                 CALL SLAE2(d(l), e(l), d(l+1), rt1, rt2)
@@ -30906,8 +31030,8 @@
             END DO
             IF (icompz>0) THEN
               mm = m - l + 1
-              CALL SLASR('R', 'V', 'B', n, mm, work(l), work(n-1+l), z(1,l),   &
-                ldz)
+              CALL SLASR('R', 'V', 'B', n, mm, work(l), work(n-1+l), z(1,    &
+                l), ldz)
             END IF
             d(l) = d(l) - p
             e(l) = g
@@ -30936,7 +31060,7 @@
                 CALL SLAEV2(d(l-1), e(l-1), d(l), rt1, rt2, c, s)
                 work(m) = c
                 work(n-1+m) = s
-                CALL SLASR('R', 'V', 'F', n, 2_ip_, work(m), work(n-1+m),      &
+                CALL SLASR('R', 'V', 'F', n, 2_ip_, work(m), work(n-1+m),   &
                   z(1,l-1), ldz)
               ELSE
                 CALL SLAE2(d(l-1), e(l-1), d(l), rt1, rt2)
@@ -30974,8 +31098,8 @@
             END DO
             IF (icompz>0) THEN
               mm = l - m + 1
-              CALL SLASR('R', 'V', 'F', n, mm, work(m), work(n-1+m), z(1,m),   &
-                ldz)
+              CALL SLASR('R', 'V', 'F', n, mm, work(m), work(n-1+m), z(1,    &
+                m), ldz)
             END IF
             d(l) = d(l) - p
             e(lm1) = g
@@ -30988,15 +31112,15 @@
           END IF
  140      CONTINUE
           IF (iscale==1) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv+1,        &
+            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv+1,     &
               1_ip_, d(lsv), n, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv, 1_ip_,   &
-              e(lsv), n, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm, lendsv-lsv,       &
+              1_ip_, e(lsv), n, info)
           ELSE IF (iscale==2) THEN
-            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv+1,        &
+            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv+1,     &
               1_ip_, d(lsv), n, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv, 1_ip_,   &
-              e(lsv), n, info)
+            CALL SLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm, lendsv-lsv,       &
+              1_ip_, e(lsv), n, info)
           END IF
           IF (jtot<nmaxit) GO TO 10
           DO i = 1, n - 1
@@ -31036,9 +31160,9 @@
           PARAMETER (zero=0.0_r4_, one=1.0_r4_, two=2.0_r4_, three=3.0_r4_)
           INTEGER(ip_) :: maxit
           PARAMETER (maxit=30)
-          INTEGER(ip_) :: i, iscale, jtot, l, l1, lend, lendsv, lsv, m,        &
+          INTEGER(ip_) :: i, iscale, jtot, l, l1, lend, lendsv, lsv, m,     &
             nmaxit
-          REAL(r4_) :: alpha, anorm, bb, c, eps, eps2, gamma, oldc, oldgam,    &
+          REAL(r4_) :: alpha, anorm, bb, c, eps, eps2, gamma, oldc, oldgam,  &
             p, r, rt1, rt2, rte, s, safmax, safmin, sigma, ssfmax, ssfmin
           REAL(r4_) :: SLAMCH, SLANST, SLAPY2
           EXTERNAL :: SLAMCH, SLANST, SLAPY2
@@ -31083,15 +31207,15 @@
           IF (anorm==zero) GO TO 10
           IF (anorm>ssfmax) THEN
             iscale = 1
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,     &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmax, lend-l, 1_ip_,    &
               e(l), n, info)
           ELSE IF (anorm<ssfmin) THEN
             iscale = 2
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,     &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l+1, 1_ip_,  &
               d(l), n, info)
-            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,       &
+            CALL SLASCL('G', 0_ip_, 0_ip_, anorm, ssfmin, lend-l, 1_ip_,    &
               e(l), n, info)
           END IF
           DO i = l, lend - 1
@@ -31215,9 +31339,9 @@
             GO TO 150
           END IF
  150      CONTINUE
-          IF (iscale==1) CALL SLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm,         &
+          IF (iscale==1) CALL SLASCL('G', 0_ip_, 0_ip_, ssfmax, anorm,      &
             lendsv-lsv+1, 1_ip_, d(lsv), n, info)
-          IF (iscale==2) CALL SLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm,         &
+          IF (iscale==2) CALL SLASCL('G', 0_ip_, 0_ip_, ssfmin, anorm,      &
             lendsv-lsv+1, 1_ip_, d(lsv), n, info)
           IF (jtot<nmaxit) GO TO 10
           DO i = 1, n - 1
@@ -31238,15 +31362,15 @@
           REAL(r4_) :: zero, one
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           LOGICAL :: lower, lquery, wantz
-          INTEGER(ip_) :: iinfo, imax, inde, indtau, indwrk, iscale, llwork,   &
-            lwkopt, nb
+          INTEGER(ip_) :: iinfo, imax, inde, indtau, indwrk, iscale,        &
+            llwork, lwkopt, nb
           REAL(r4_) :: anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANSY
           EXTERNAL :: ILAENV, LSAME, SLAMCH, SLANSY
-          EXTERNAL :: SLASCL, SORGTR, SSCAL, SSTEQR, SSTERF,                   &
-            SSYTRD, XERBLA
+          EXTERNAL :: SLASCL, SORGTR, SSCAL, SSTEQR,                        &
+            SSTERF, SSYTRD, XERBLA
           INTRINSIC :: MAX, SQRT
           wantz = LSAME(jobz, 'V')
           lower = LSAME(uplo, 'L')
@@ -31297,19 +31421,19 @@
             iscale = 1
             sigma = rmax/anrm
           END IF
-          IF (iscale==1) CALL SLASCL(uplo, 0_ip_, 0_ip_, one, sigma, n, n,     &
+          IF (iscale==1) CALL SLASCL(uplo, 0_ip_, 0_ip_, one, sigma, n, n,  &
             a, lda, info)
           inde = 1
           indtau = inde + n
           indwrk = indtau + n
           llwork = lwork - indwrk + 1
-          CALL SSYTRD(uplo, n, a, lda, w, work(inde), work(indtau),            &
+          CALL SSYTRD(uplo, n, a, lda, w, work(inde), work(indtau),         &
             work(indwrk), llwork, iinfo)
           IF (.NOT. wantz) THEN
             CALL SSTERF(n, w, work(inde), info)
           ELSE
-            CALL SORGTR(uplo, n, a, lda, work(indtau), work(indwrk), llwork,   &
-              iinfo)
+            CALL SORGTR(uplo, n, a, lda, work(indtau), work(indwrk),        &
+              llwork, iinfo)
             CALL SSTEQR(jobz, n, w, work(inde), a, lda, work(indtau), info)
           END IF
           IF (iscale==1) THEN
@@ -31334,7 +31458,7 @@
           LOGICAL :: upper
           INTEGER(ip_) :: k
           REAL(r4_) :: akk, bkk, ct
-          EXTERNAL :: SAXPY, SSCAL, SSYR2, STRMV, STRSV,                       &
+          EXTERNAL :: SAXPY, SSCAL, SSYR2, STRMV, STRSV,                    &
             XERBLA
           INTRINSIC :: MAX
           LOGICAL :: LSAME
@@ -31367,11 +31491,11 @@
                   CALL SSCAL(n-k, one/bkk, a(k,k+1), lda)
                   ct = -half*akk
                   CALL SAXPY(n-k, ct, b(k,k+1), ldb, a(k,k+1), lda)
-                  CALL SSYR2(uplo, n-k, -one, a(k,k+1), lda, b(k,k+1), ldb,    &
+                  CALL SSYR2(uplo, n-k, -one, a(k,k+1), lda, b(k,k+1), ldb,  &
                     a(k+1,k+1), lda)
                   CALL SAXPY(n-k, ct, b(k,k+1), ldb, a(k,k+1), lda)
-                  CALL STRSV(uplo, 'Transpose', 'Non-unit', n-k, b(k+1,k+1),   &
-                    ldb, a(k,k+1), lda)
+                  CALL STRSV(uplo, 'Transpose', 'Non-unit', n-k, b(k+1,      &
+                    k+1), ldb, a(k,k+1), lda)
                 END IF
               END DO
             ELSE
@@ -31384,10 +31508,10 @@
                   CALL SSCAL(n-k, one/bkk, a(k+1,k), 1_ip_)
                   ct = -half*akk
                   CALL SAXPY(n-k, ct, b(k+1,k), 1_ip_, a(k+1,k), 1_ip_)
-                  CALL SSYR2(uplo, n-k, -one, a(k+1,k), 1_ip_, b(k+1,k),       &
+                  CALL SSYR2(uplo, n-k, -one, a(k+1,k), 1_ip_, b(k+1,k),    &
                     1_ip_, a(k+1,k+1), lda)
                   CALL SAXPY(n-k, ct, b(k+1,k), 1_ip_, a(k+1,k), 1_ip_)
-                  CALL STRSV(uplo, 'No transpose', 'Non-unit', n-k, b(k+1,     &
+                  CALL STRSV(uplo, 'No transpose', 'Non-unit', n-k, b(k+1,   &
                     k+1), ldb, a(k+1,k), 1_ip_)
                 END IF
               END DO
@@ -31397,11 +31521,11 @@
               DO k = 1, n
                 akk = a(k, k)
                 bkk = b(k, k)
-                CALL STRMV(uplo, 'No transpose', 'Non-unit', k-1, b, ldb,      &
+                CALL STRMV(uplo, 'No transpose', 'Non-unit', k-1, b, ldb,   &
                   a(1,k), 1_ip_)
                 ct = half*akk
                 CALL SAXPY(k-1, ct, b(1,k), 1_ip_, a(1,k), 1_ip_)
-                CALL SSYR2(uplo, k-1, one, a(1,k), 1_ip_, b(1,k), 1_ip_, a,    &
+                CALL SSYR2(uplo, k-1, one, a(1,k), 1_ip_, b(1,k), 1_ip_, a,  &
                   lda)
                 CALL SAXPY(k-1, ct, b(1,k), 1_ip_, a(1,k), 1_ip_)
                 CALL SSCAL(k-1, bkk, a(1,k), 1_ip_)
@@ -31411,11 +31535,12 @@
               DO k = 1, n
                 akk = a(k, k)
                 bkk = b(k, k)
-                CALL STRMV(uplo, 'Transpose', 'Non-unit', k-1, b, ldb, a(k,    &
+                CALL STRMV(uplo, 'Transpose', 'Non-unit', k-1, b, ldb, a(k,  &
                   1), lda)
                 ct = half*akk
                 CALL SAXPY(k-1, ct, b(k,1), ldb, a(k,1), lda)
-                CALL SSYR2(uplo, k-1, one, a(k,1), lda, b(k,1), ldb, a, lda)
+                CALL SSYR2(uplo, k-1, one, a(k,1), lda, b(k,1), ldb, a,     &
+                  lda)
                 CALL SAXPY(k-1, ct, b(k,1), ldb, a(k,1), lda)
                 CALL SSCAL(k-1, bkk, a(k,1), lda)
                 a(k, k) = akk*bkk**2
@@ -31434,7 +31559,7 @@
           PARAMETER (one=1.0, half=0.5)
           LOGICAL :: upper
           INTEGER(ip_) :: k, kb, nb
-          EXTERNAL :: SSYGS2, SSYMM, SSYR2K, STRMM, STRSM,                     &
+          EXTERNAL :: SSYGS2, SSYMM, SSYR2K, STRMM, STRSM,                  &
             XERBLA
           INTRINSIC :: MAX, MIN
           LOGICAL :: LSAME
@@ -31466,36 +31591,36 @@
               IF (upper) THEN
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                   IF (k+kb<=n) THEN
-                    CALL STRSM('Left', uplo, 'Transpose', 'Non-unit', kb,      &
+                    CALL STRSM('Left', uplo, 'Transpose', 'Non-unit', kb,   &
                       n-k-kb+1, one, b(k,k), ldb, a(k,k+kb), lda)
-                    CALL SSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),      &
+                    CALL SSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),   &
                       lda, b(k,k+kb), ldb, one, a(k,k+kb), lda)
-                    CALL SSYR2K(uplo, 'Transpose', n-k-kb+1, kb, -one, a(k,    &
+                    CALL SSYR2K(uplo, 'Transpose', n-k-kb+1, kb, -one, a(k,  &
                       k+kb), lda, b(k,k+kb), ldb, one, a(k+kb,k+kb), lda)
-                    CALL SSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),      &
+                    CALL SSYMM('Left', uplo, kb, n-k-kb+1, -half, a(k,k),   &
                       lda, b(k,k+kb), ldb, one, a(k,k+kb), lda)
-                    CALL STRSM('Right', uplo, 'No transpose', 'Non-unit',      &
+                    CALL STRSM('Right', uplo, 'No transpose', 'Non-unit',   &
                       kb, n-k-kb+1, one, b(k+kb,k+kb), ldb, a(k,k+kb), lda)
                   END IF
                 END DO
               ELSE
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                   IF (k+kb<=n) THEN
-                    CALL STRSM('Right', uplo, 'Transpose', 'Non-unit',         &
+                    CALL STRSM('Right', uplo, 'Transpose', 'Non-unit',      &
                       n-k-kb+1, kb, one, b(k,k), ldb, a(k+kb,k), lda)
-                    CALL SSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),     &
+                    CALL SSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),  &
                       lda, b(k+kb,k), ldb, one, a(k+kb,k), lda)
-                    CALL SSYR2K(uplo, 'No transpose', n-k-kb+1, kb, -one,      &
+                    CALL SSYR2K(uplo, 'No transpose', n-k-kb+1, kb, -one,   &
                       a(k+kb,k), lda, b(k+kb,k), ldb, one, a(k+kb,k+kb), lda)
-                    CALL SSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),     &
+                    CALL SSYMM('Right', uplo, n-k-kb+1, kb, -half, a(k,k),  &
                       lda, b(k+kb,k), ldb, one, a(k+kb,k), lda)
-                    CALL STRSM('Left', uplo, 'No transpose', 'Non-unit',       &
+                    CALL STRSM('Left', uplo, 'No transpose', 'Non-unit',    &
                       n-k-kb+1, kb, one, b(k+kb,k+kb), ldb, a(k+kb,k), lda)
                   END IF
                 END DO
@@ -31504,33 +31629,33 @@
               IF (upper) THEN
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL STRMM('Left', uplo, 'No transpose', 'Non-unit', k-1,    &
+                  CALL STRMM('Left', uplo, 'No transpose', 'Non-unit', k-1,  &
                     kb, one, b, ldb, a(1,k), lda)
-                  CALL SSYMM('Right', uplo, k-1, kb, half, a(k,k), lda, b(1,   &
-                    k), ldb, one, a(1,k), lda)
-                  CALL SSYR2K(uplo, 'No transpose', k-1, kb, one, a(1,k),      &
+                  CALL SSYMM('Right', uplo, k-1, kb, half, a(k,k), lda,     &
+                    b(1,k), ldb, one, a(1,k), lda)
+                  CALL SSYR2K(uplo, 'No transpose', k-1, kb, one, a(1,k),   &
                     lda, b(1,k), ldb, one, a, lda)
-                  CALL SSYMM('Right', uplo, k-1, kb, half, a(k,k), lda, b(1,   &
-                    k), ldb, one, a(1,k), lda)
-                  CALL STRMM('Right', uplo, 'Transpose', 'Non-unit', k-1,      &
+                  CALL SSYMM('Right', uplo, k-1, kb, half, a(k,k), lda,     &
+                    b(1,k), ldb, one, a(1,k), lda)
+                  CALL STRMM('Right', uplo, 'Transpose', 'Non-unit', k-1,   &
                     kb, one, b(k,k), ldb, a(1,k), lda)
-                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                 END DO
               ELSE
                 DO k = 1, n, nb
                   kb = MIN(n-k+1, nb)
-                  CALL STRMM('Right', uplo, 'No transpose', 'Non-unit', kb,    &
+                  CALL STRMM('Right', uplo, 'No transpose', 'Non-unit', kb,  &
                     k-1, one, b, ldb, a(k,1), lda)
-                  CALL SSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,    &
+                  CALL SSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,  &
                     1), ldb, one, a(k,1), lda)
-                  CALL SSYR2K(uplo, 'Transpose', k-1, kb, one, a(k,1), lda,    &
+                  CALL SSYR2K(uplo, 'Transpose', k-1, kb, one, a(k,1), lda,  &
                     b(k,1), ldb, one, a, lda)
-                  CALL SSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,    &
+                  CALL SSYMM('Left', uplo, kb, k-1, half, a(k,k), lda, b(k,  &
                     1), ldb, one, a(k,1), lda)
-                  CALL STRMM('Left', uplo, 'Transpose', 'Non-unit', kb, k-1,   &
-                    one, b(k,k), ldb, a(k,1), lda)
-                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,       &
+                  CALL STRMM('Left', uplo, 'Transpose', 'Non-unit', kb,     &
+                    k-1, one, b(k,k), ldb, a(k,1), lda)
+                  CALL SSYGS2(itype, uplo, kb, a(k,k), lda, b(k,k), ldb,    &
                     info)
                 END DO
               END IF
@@ -31539,7 +31664,7 @@
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE SSYGV(itype, jobz, uplo, n, a, lda, b, ldb, w, work,        &
+        SUBROUTINE SSYGV(itype, jobz, uplo, n, a, lda, b, ldb, w, work,     &
           lwork, info)
           USE GALAHAD_KINDS
           CHARACTER :: jobz, uplo
@@ -31553,7 +31678,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV, LSAME
-          EXTERNAL :: SPOTRF, SSYEV, SSYGST, STRMM, STRSM,                     &
+          EXTERNAL :: SPOTRF, SSYEV, SSYGST, STRMM, STRSM,                  &
             XERBLA
           INTRINSIC :: MAX
           wantz = LSAME(jobz, 'V')
@@ -31605,7 +31730,7 @@
               ELSE
                 trans = 'T'
               END IF
-              CALL STRSM('Left', uplo, trans, 'Non-unit', n, neig, one, b,     &
+              CALL STRSM('Left', uplo, trans, 'Non-unit', n, neig, one, b,  &
                 ldb, a, lda)
             ELSE IF (itype==3) THEN
               IF (upper) THEN
@@ -31613,7 +31738,7 @@
               ELSE
                 trans = 'N'
               END IF
-              CALL STRMM('Left', uplo, trans, 'Non-unit', n, neig, one, b,     &
+              CALL STRMM('Left', uplo, trans, 'Non-unit', n, neig, one, b,  &
                 ldb, a, lda)
             END IF
           END IF
@@ -31656,11 +31781,11 @@
               e(i) = a(i, i+1)
               IF (taui/=zero) THEN
                 a(i, i+1) = one
-                CALL SSYMV(uplo, i, taui, a, lda, a(1,i+1), 1_ip_, zero,       &
+                CALL SSYMV(uplo, i, taui, a, lda, a(1,i+1), 1_ip_, zero,    &
                   tau, 1_ip_)
                 alpha = -half*taui*SDOT(i, tau, 1_ip_, a(1,i+1), 1_ip_)
                 CALL SAXPY(i, alpha, a(1,i+1), 1_ip_, tau, 1_ip_)
-                CALL SSYR2(uplo, i, -one, a(1,i+1), 1_ip_, tau, 1_ip_, a,      &
+                CALL SSYR2(uplo, i, -one, a(1,i+1), 1_ip_, tau, 1_ip_, a,   &
                   lda)
                 a(i, i+1) = e(i)
               END IF
@@ -31674,11 +31799,12 @@
               e(i) = a(i+1, i)
               IF (taui/=zero) THEN
                 a(i+1, i) = one
-                CALL SSYMV(uplo, n-i, taui, a(i+1,i+1), lda, a(i+1,i),         &
+                CALL SSYMV(uplo, n-i, taui, a(i+1,i+1), lda, a(i+1,i),      &
                   1_ip_, zero, tau(i), 1_ip_)
-                alpha = -half*taui*SDOT(n-i, tau(i), 1_ip_, a(i+1,i), 1_ip_)
+                alpha = -half*taui*SDOT(n-i, tau(i), 1_ip_, a(i+1,i),       &
+                  1_ip_)
                 CALL SAXPY(n-i, alpha, a(i+1,i), 1_ip_, tau(i), 1_ip_)
-                CALL SSYR2(uplo, n-i, -one, a(i+1,i), 1_ip_, tau(i), 1_ip_,    &
+                CALL SSYR2(uplo, n-i, -one, a(i+1,i), 1_ip_, tau(i), 1_ip_,  &
                   a(i+1,i+1), lda)
                 a(i+1, i) = e(i)
               END IF
@@ -31702,7 +31828,7 @@
           PARAMETER (eight=8.0_r4_, sevten=17.0_r4_)
           LOGICAL :: upper
           INTEGER(ip_) :: i, imax, j, jmax, k, kk, kp, kstep
-          REAL(r4_) :: absakk, alpha, colmax, d11, d12, d21, d22, r1,          &
+          REAL(r4_) :: absakk, alpha, colmax, d11, d12, d21, d22, r1,       &
             rowmax, t, wk, wkm1, wkp1
           LOGICAL :: LSAME, SISNAN
           INTEGER(ip_) :: ISAMAX
@@ -31837,7 +31963,7 @@
               END IF
               kk = k + kstep - 1
               IF (kp/=kk) THEN
-                IF (kp<n) CALL SSWAP(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),      &
+                IF (kp<n) CALL SSWAP(n-kp, a(kp+1,kk), 1_ip_, a(kp+1,kp),   &
                   1_ip_)
                 CALL SSWAP(kp-kk-1, a(kk+1,kk), 1_ip_, a(kp,kk+1), lda)
                 t = a(kk, kk)
@@ -31852,7 +31978,7 @@
               IF (kstep==1) THEN
                 IF (k<n) THEN
                   d11 = one/a(k, k)
-                  CALL SSYR(uplo, n-k, -d11, a(k+1,k), 1_ip_, a(k+1,k+1),      &
+                  CALL SSYR(uplo, n-k, -d11, a(k+1,k), 1_ip_, a(k+1,k+1),   &
                     lda)
                   CALL SSCAL(n-k, d11, a(k+1,k), 1_ip_)
                 END IF
@@ -31896,7 +32022,7 @@
           REAL(r4_) :: one
           PARAMETER (one=1.0_r4_)
           LOGICAL :: lquery, upper
-          INTEGER(ip_) :: i, iinfo, iws, j, kk, ldwork, lwkopt, nb, nbmin,     &
+          INTEGER(ip_) :: i, iinfo, iws, j, kk, ldwork, lwkopt, nb, nbmin,  &
             nx
           EXTERNAL :: SLATRD, SSYR2K, SSYTD2, XERBLA
           INTRINSIC :: MAX
@@ -31933,13 +32059,14 @@
           nx = n
           iws = 1
           IF (nb>1 .AND. nb<n) THEN
-            nx = MAX(nb, ILAENV(3_ip_,'SSYTRD',uplo,n,-1_ip_,-1_ip_,-1_ip_))
+            nx = MAX(nb, ILAENV(3_ip_,'SSYTRD',uplo,n,-1_ip_,-1_ip_,         &
+              -1_ip_))
             IF (nx<n) THEN
               ldwork = n
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = MAX(lwork/ldwork, 1_ip_)
-                nbmin = ILAENV(2_ip_, 'SSYTRD', uplo, n, -1_ip_, -1_ip_,       &
+                nbmin = ILAENV(2_ip_, 'SSYTRD', uplo, n, -1_ip_, -1_ip_,    &
                   -1_ip_)
                 IF (nb<nbmin) nx = n
               END IF
@@ -31953,7 +32080,7 @@
             kk = n - ((n-nx+nb-1)/nb)*nb
             DO i = n - nb + 1, kk + 1, -nb
               CALL SLATRD(uplo, i+nb-1, nb, a, lda, e, tau, work, ldwork)
-              CALL SSYR2K(uplo, 'No transpose', i-1, nb, -one, a(1,i), lda,    &
+              CALL SSYR2K(uplo, 'No transpose', i-1, nb, -one, a(1,i), lda,  &
                 work, ldwork, one, a, lda)
               DO j = i, i + nb - 1
                 a(j-1, j) = e(j-1)
@@ -31963,16 +32090,17 @@
             CALL SSYTD2(uplo, kk, a, lda, d, e, tau, iinfo)
           ELSE
             DO i = 1, n - nx, nb
-              CALL SLATRD(uplo, n-i+1, nb, a(i,i), lda, e(i), tau(i), work,    &
+              CALL SLATRD(uplo, n-i+1, nb, a(i,i), lda, e(i), tau(i), work,  &
                 ldwork)
-              CALL SSYR2K(uplo, 'No transpose', n-i-nb+1, nb, -one, a(i+nb,    &
+              CALL SSYR2K(uplo, 'No transpose', n-i-nb+1, nb, -one, a(i+nb,  &
                 i), lda, work(nb+1), ldwork, one, a(i+nb,i+nb), lda)
               DO j = i, i + nb - 1
                 a(j+1, j) = e(j)
                 d(j) = a(j, j)
               END DO
             END DO
-            CALL SSYTD2(uplo, n-i+1, a(i,i), lda, d(i), e(i), tau(i), iinfo)
+            CALL SSYTD2(uplo, n-i+1, a(i,i), lda, d(i), e(i), tau(i),       &
+              iinfo)
           END IF
           work(1) = lwkopt
           RETURN
@@ -32020,8 +32148,8 @@
             iws = ldwork*nb
             IF (lwork<iws) THEN
               nb = MAX(lwork/ldwork, 1_ip_)
-              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SSYTRF',uplo,n,-1_ip_,-1_ip_,   &
-                -1_ip_))
+              nbmin = MAX(2_ip_, ILAENV(2_ip_,'SSYTRF',uplo,n,-1_ip_,        &
+                -1_ip_,-1_ip_))
             END IF
           ELSE
             iws = 1
@@ -32032,7 +32160,7 @@
  10         CONTINUE
             IF (k<1) GO TO 40
             IF (k>nb) THEN
-              CALL SLASYF(uplo, k, nb, kb, a, lda, ipiv, work, ldwork,         &
+              CALL SLASYF(uplo, k, nb, kb, a, lda, ipiv, work, ldwork,      &
                 iinfo)
             ELSE
               CALL SSYTF2(uplo, k, a, lda, ipiv, iinfo)
@@ -32046,7 +32174,7 @@
  20         CONTINUE
             IF (k>n) GO TO 40
             IF (k<=n-nb) THEN
-              CALL SLASYF(uplo, n-k+1, nb, kb, a(k,k), lda, ipiv(k), work,     &
+              CALL SLASYF(uplo, n-k+1, nb, kb, a(k,k), lda, ipiv(k), work,  &
                 ldwork, iinfo)
             ELSE
               CALL SSYTF2(uplo, n-k+1, a(k,k), lda, ipiv(k), iinfo)
@@ -32108,16 +32236,16 @@
             IF (ipiv(k)>0) THEN
               kp = ipiv(k)
               IF (kp/=k) CALL SSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
-              CALL SGER(k-1, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,1),   &
-                ldb)
+              CALL SGER(k-1, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,    &
+                1), ldb)
               CALL SSCAL(nrhs, one/a(k,k), b(k,1), ldb)
               k = k - 1
             ELSE
               kp = -ipiv(k)
               IF (kp/=k-1) CALL SSWAP(nrhs, b(k-1,1), ldb, b(kp,1), ldb)
-              CALL SGER(k-2, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,1),   &
-                ldb)
-              CALL SGER(k-2, nrhs, -one, a(1,k-1), 1_ip_, b(k-1,1), ldb,       &
+              CALL SGER(k-2, nrhs, -one, a(1,k), 1_ip_, b(k,1), ldb, b(1,    &
+                1), ldb)
+              CALL SGER(k-2, nrhs, -one, a(1,k-1), 1_ip_, b(k-1,1), ldb,    &
                 b(1,1), ldb)
               akm1k = a(k-1, k)
               akm1 = a(k-1, k-1)/akm1k
@@ -32137,15 +32265,15 @@
  40         CONTINUE
             IF (k>n) GO TO 50
             IF (ipiv(k)>0) THEN
-              CALL SGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),         &
+              CALL SGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),      &
                 1_ip_, one, b(k,1), ldb)
               kp = ipiv(k)
               IF (kp/=k) CALL SSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
               k = k + 1
             ELSE
-              CALL SGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),         &
+              CALL SGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k),      &
                 1_ip_, one, b(k,1), ldb)
-              CALL SGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k+1),       &
+              CALL SGEMV('Transpose', k-1, nrhs, -one, b, ldb, a(1,k+1),    &
                 1_ip_, one, b(k+1,1), ldb)
               kp = -ipiv(k)
               IF (kp/=k) CALL SSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
@@ -32160,7 +32288,7 @@
             IF (ipiv(k)>0) THEN
               kp = ipiv(k)
               IF (kp/=k) CALL SSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
-              IF (k<n) CALL SGER(n-k, nrhs, -one, a(k+1,k), 1_ip_, b(k,1),     &
+              IF (k<n) CALL SGER(n-k, nrhs, -one, a(k+1,k), 1_ip_, b(k,1),  &
                 ldb, b(k+1,1), ldb)
               CALL SSCAL(nrhs, one/a(k,k), b(k,1), ldb)
               k = k + 1
@@ -32168,9 +32296,9 @@
               kp = -ipiv(k)
               IF (kp/=k+1) CALL SSWAP(nrhs, b(k+1,1), ldb, b(kp,1), ldb)
               IF (k<n-1) THEN
-                CALL SGER(n-k-1, nrhs, -one, a(k+2,k), 1_ip_, b(k,1), ldb,     &
+                CALL SGER(n-k-1, nrhs, -one, a(k+2,k), 1_ip_, b(k,1), ldb,  &
                   b(k+2,1), ldb)
-                CALL SGER(n-k-1, nrhs, -one, a(k+2,k+1), 1_ip_, b(k+1,1),      &
+                CALL SGER(n-k-1, nrhs, -one, a(k+2,k+1), 1_ip_, b(k+1,1),   &
                   ldb, b(k+2,1), ldb)
               END IF
               akm1k = a(k+1, k)
@@ -32191,16 +32319,16 @@
  90         CONTINUE
             IF (k<1) GO TO 100
             IF (ipiv(k)>0) THEN
-              IF (k<n) CALL SGEMV('Transpose', n-k, nrhs, -one, b(k+1,1),      &
+              IF (k<n) CALL SGEMV('Transpose', n-k, nrhs, -one, b(k+1,1),   &
                 ldb, a(k+1,k), 1_ip_, one, b(k,1), ldb)
               kp = ipiv(k)
               IF (kp/=k) CALL SSWAP(nrhs, b(k,1), ldb, b(kp,1), ldb)
               k = k - 1
             ELSE
               IF (k<n) THEN
-                CALL SGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,        &
+                CALL SGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,     &
                   a(k+1,k), 1_ip_, one, b(k,1), ldb)
-                CALL SGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,        &
+                CALL SGEMV('Transpose', n-k, nrhs, -one, b(k+1,1), ldb,     &
                   a(k+1,k-1), 1_ip_, one, b(k-1,1), ldb)
               END IF
               kp = -ipiv(k)
@@ -32271,8 +32399,8 @@
               IF (here+nbf+1<=n) THEN
                 IF (t(here+nbf+1,here+nbf)/=zero) nbnext = 2
               END IF
-              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, nbf, nbnext, work,   &
-                info)
+              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, nbf, nbnext,      &
+                work, info)
               IF (info/=0) THEN
                 ilst = here
                 RETURN
@@ -32286,30 +32414,30 @@
               IF (here+3<=n) THEN
                 IF (t(here+3,here+2)/=zero) nbnext = 2
               END IF
-              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_, nbnext,     &
+              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_, nbnext,  &
                 work, info)
               IF (info/=0) THEN
                 ilst = here
                 RETURN
               END IF
               IF (nbnext==1) THEN
-                CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, nbnext,     &
+                CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, nbnext,  &
                   work, info)
                 here = here + 1
               ELSE
                 IF (t(here+2,here+1)==zero) nbnext = 1
                 IF (nbnext==2) THEN
-                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, nbnext,   &
-                    work, info)
+                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_,        &
+                    nbnext, work, info)
                   IF (info/=0) THEN
                     ilst = here
                     RETURN
                   END IF
                   here = here + 2
                 ELSE
-                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,    &
+                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,  &
                     work, info)
-                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_,         &
+                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here+1, 1_ip_,      &
                     1_ip_, work, info)
                   here = here + 2
                 END IF
@@ -32324,7 +32452,7 @@
               IF (here>=3) THEN
                 IF (t(here-1,here-2)/=zero) nbnext = 2
               END IF
-              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,       &
+              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,    &
                 nbf, work, info)
               IF (info/=0) THEN
                 ilst = here
@@ -32339,20 +32467,20 @@
               IF (here>=3) THEN
                 IF (t(here-1,here-2)/=zero) nbnext = 2
               END IF
-              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,       &
+              CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-nbnext, nbnext,    &
                 1_ip_, work, info)
               IF (info/=0) THEN
                 ilst = here
                 RETURN
               END IF
               IF (nbnext==1) THEN
-                CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, nbnext, 1_ip_,     &
+                CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, nbnext, 1_ip_,  &
                   work, info)
                 here = here - 1
               ELSE
                 IF (t(here,here-1)==zero) nbnext = 1
                 IF (nbnext==2) THEN
-                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-1, 2_ip_,         &
+                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-1, 2_ip_,      &
                     1_ip_, work, info)
                   IF (info/=0) THEN
                     ilst = here
@@ -32360,9 +32488,9 @@
                   END IF
                   here = here - 2
                 ELSE
-                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,    &
+                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here, 1_ip_, 1_ip_,  &
                     work, info)
-                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-1, 1_ip_,         &
+                  CALL SLAEXC(wantq, n, t, ldt, q, ldq, here-1, 1_ip_,      &
                     1_ip_, work, info)
                   here = here - 2
                 END IF
@@ -32390,7 +32518,7 @@
           nounit = LSAME(diag, 'N')
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')         &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')      &
             .AND. .NOT. LSAME(trans,'C')) THEN
             info = -2
           ELSE IF (.NOT. nounit .AND. .NOT. LSAME(diag,'U')) THEN
@@ -32415,7 +32543,7 @@
             END DO
           END IF
           info = 0
-          CALL STRSM('Left', uplo, trans, diag, n, nrhs, one, a, lda, b,       &
+          CALL STRSM('Left', uplo, trans, diag, n, nrhs, one, a, lda, b,    &
             ldb)
           RETURN
         END SUBROUTINE
@@ -32427,7 +32555,7 @@
           REAL(r4_) :: zero
           PARAMETER (zero=0.0_r4_)
           LOGICAL :: lquery
-          INTEGER(ip_) :: i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, m1,      &
+          INTEGER(ip_) :: i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, m1,   &
             mu, nb, nbmin, nx
           EXTERNAL :: XERBLA, SLARZB, SLARZT, SLATRZ
           INTRINSIC :: MAX, MIN
@@ -32480,7 +32608,7 @@
               iws = ldwork*nb
               IF (lwork<iws) THEN
                 nb = lwork/ldwork
-                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGERQF',' ',m,n,-1_ip_,       &
+                nbmin = MAX(2_ip_, ILAENV(2_ip_,'SGERQF',' ',m,n,-1_ip_,     &
                   -1_ip_))
               END IF
             END IF
@@ -32493,10 +32621,10 @@
               ib = MIN(m-i+1, nb)
               CALL SLATRZ(ib, n-i+1, n-m, a(i,i), lda, tau(i), work)
               IF (i>1) THEN
-                CALL SLARZT('Backward', 'Rowwise', n-m, ib, a(i,m1), lda,      &
+                CALL SLARZT('Backward', 'Rowwise', n-m, ib, a(i,m1), lda,   &
                   tau(i), work, ldwork)
-                CALL SLARZB('Right', 'No transpose', 'Backward', 'Rowwise',    &
-                  i-1, n-i+1, ib, n-m, a(i,m1), lda, work, ldwork, a(1,i),     &
+                CALL SLARZB('Right', 'No transpose', 'Backward', 'Rowwise',  &
+                  i-1, n-i+1, ib, n-m, a(i,m1), lda, work, ldwork, a(1,i),  &
                   lda, work(ib+1), ldwork)
               END IF
             END DO
@@ -32581,21 +32709,21 @@
           END IF
           IF (applyleft) THEN
             IF (lastv>0) THEN
-              CALL ZGEMV('Conjugate transpose', lastv, lastc, one, c, ldc,     &
+              CALL ZGEMV('Conjugate transpose', lastv, lastc, one, c, ldc,  &
                 v, incv, zero, work, 1_ip_)
               CALL ZGERC(lastv, lastc, -tau, v, incv, work, 1_ip_, c, ldc)
             END IF
           ELSE
             IF (lastv>0) THEN
-              CALL ZGEMV('No transpose', lastc, lastv, one, c, ldc, v, incv,   &
-                zero, work, 1_ip_)
+              CALL ZGEMV('No transpose', lastc, lastv, one, c, ldc, v,      &
+                incv, zero, work, 1_ip_)
               CALL ZGERC(lastc, lastv, -tau, work, 1_ip_, v, incv, c, ldc)
             END IF
           END IF
           RETURN
         END SUBROUTINE
 
-        SUBROUTINE ZLARFB(side, trans, direct, storev, m, n, k, v, ldv, t,     &
+        SUBROUTINE ZLARFB(side, trans, direct, storev, m, n, k, v, ldv, t,  &
           ldt, c, ldc, work, ldwork)
           USE GALAHAD_KINDS
           CHARACTER :: direct, side, storev, trans
@@ -32622,19 +32750,20 @@
                   CALL ZCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
                   CALL ZLACGV(n, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,     &
+                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,  &
                   one, v, ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('Conjugate transpose', 'No transpose', n, k,      &
-                    m-k, one, c(k+1,1), ldc, v(k+1,1), ldv, one, work, ldwork)
+                  CALL ZGEMM('Conjugate transpose', 'No transpose', n, k,   &
+                    m-k, one, c(k+1,1), ldc, v(k+1,1), ldv, one, work,      &
+                    ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,    &
+                CALL ZTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('No transpose', 'Conjugate transpose', m-k, n,    &
+                  CALL ZGEMM('No transpose', 'Conjugate transpose', m-k, n,  &
                     k, -one, v(k+1,1), ldv, work, ldwork, one, c(k+1,1), ldc)
                 END IF
-                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',  &
                   n, k, one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -32645,19 +32774,19 @@
                 DO j = 1, k
                   CALL ZCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,     &
+                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,  &
                   one, v, ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'No transpose', m, k, n-k, one,   &
-                    c(1,k+1), ldc, v(k+1,1), ldv, one, work, ldwork)
+                  CALL ZGEMM('No transpose', 'No transpose', m, k, n-k,     &
+                    one, c(1,k+1), ldc, v(k+1,1), ldv, one, work, ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,     &
+                CALL ZTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, n-k,    &
+                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, n-k,  &
                     k, -one, work, ldwork, v(k+1,1), ldv, one, c(1,k+1), ldc)
                 END IF
-                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',  &
                   m, k, one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -32671,19 +32800,19 @@
                   CALL ZCOPY(n, c(m-k+j,1), ldc, work(1,j), 1_ip_)
                   CALL ZLACGV(n, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,     &
+                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,  &
                   one, v(m-k+1,1), ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('Conjugate transpose', 'No transpose', n, k,      &
+                  CALL ZGEMM('Conjugate transpose', 'No transpose', n, k,   &
                     m-k, one, c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,    &
+                CALL ZTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('No transpose', 'Conjugate transpose', m-k, n,    &
+                  CALL ZGEMM('No transpose', 'Conjugate transpose', m-k, n,  &
                     k, -one, v, ldv, work, ldwork, one, c, ldc)
                 END IF
-                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',  &
                   n, k, one, v(m-k+1,1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -32694,19 +32823,19 @@
                 DO j = 1, k
                   CALL ZCOPY(m, c(1,n-k+j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,     &
+                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,  &
                   one, v(n-k+1,1), ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'No transpose', m, k, n-k, one,   &
-                    c, ldc, v, ldv, one, work, ldwork)
+                  CALL ZGEMM('No transpose', 'No transpose', m, k, n-k,     &
+                    one, c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,     &
+                CALL ZTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, n-k,    &
+                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, n-k,  &
                     k, -one, work, ldwork, v, ldv, one, c, ldc)
                 END IF
-                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',  &
                   m, k, one, v(n-k+1,1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -32722,21 +32851,21 @@
                   CALL ZCOPY(n, c(j,1), ldc, work(1,j), 1_ip_)
                   CALL ZLACGV(n, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',  &
                   n, k, one, v, ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',     &
-                    n, k, m-k, one, c(k+1,1), ldc, v(1,k+1), ldv, one, work,   &
+                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',  &
+                    n, k, m-k, one, c(k+1,1), ldc, v(1,k+1), ldv, one, work,&
                     ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,    &
+                CALL ZTRMM('Right', 'Upper', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',     &
-                    m-k, n, k, -one, v(1,k+1), ldv, work, ldwork, one, c(k+1,  &
+                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',  &
+                    m-k, n, k, -one, v(1,k+1), ldv, work, ldwork, one, c(k+1,&
                     1), ldc)
                 END IF
-                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,     &
+                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', n, k,  &
                   one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -32747,19 +32876,20 @@
                 DO j = 1, k
                   CALL ZCOPY(m, c(1,j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Upper', 'Conjugate transpose', 'Unit',  &
                   m, k, one, v, ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, k,      &
-                    n-k, one, c(1,k+1), ldc, v(1,k+1), ldv, one, work, ldwork)
+                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, k,   &
+                    n-k, one, c(1,k+1), ldc, v(1,k+1), ldv, one, work,      &
+                    ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,     &
+                CALL ZTRMM('Right', 'Upper', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'No transpose', m, n-k, k,        &
+                  CALL ZGEMM('No transpose', 'No transpose', m, n-k, k,     &
                     -one, work, ldwork, v(1,k+1), ldv, one, c(1,k+1), ldc)
                 END IF
-                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,     &
+                CALL ZTRMM('Right', 'Upper', 'No transpose', 'Unit', m, k,  &
                   one, v, ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -32773,19 +32903,19 @@
                   CALL ZCOPY(n, c(m-k+j,1), ldc, work(1,j), 1_ip_)
                   CALL ZLACGV(n, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',  &
                   n, k, one, v(1,m-k+1), ldv, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',     &
+                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',  &
                     n, k, m-k, one, c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,    &
+                CALL ZTRMM('Right', 'Lower', transt, 'Non-unit', n, k, one,  &
                   t, ldt, work, ldwork)
                 IF (m>k) THEN
-                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',     &
+                  CALL ZGEMM('Conjugate transpose', 'Conjugate transpose',  &
                     m-k, n, k, -one, v, ldv, work, ldwork, one, c, ldc)
                 END IF
-                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,     &
+                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', n, k,  &
                   one, v(1,m-k+1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, n
@@ -32796,19 +32926,19 @@
                 DO j = 1, k
                   CALL ZCOPY(m, c(1,n-k+j), 1_ip_, work(1,j), 1_ip_)
                 END DO
-                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',    &
+                CALL ZTRMM('Right', 'Lower', 'Conjugate transpose', 'Unit',  &
                   m, k, one, v(1,n-k+1), ldv, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, k,      &
+                  CALL ZGEMM('No transpose', 'Conjugate transpose', m, k,   &
                     n-k, one, c, ldc, v, ldv, one, work, ldwork)
                 END IF
-                CALL ZTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,     &
+                CALL ZTRMM('Right', 'Lower', trans, 'Non-unit', m, k, one,  &
                   t, ldt, work, ldwork)
                 IF (n>k) THEN
-                  CALL ZGEMM('No transpose', 'No transpose', m, n-k, k,        &
+                  CALL ZGEMM('No transpose', 'No transpose', m, n-k, k,     &
                     -one, work, ldwork, v, ldv, one, c, ldc)
                 END IF
-                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,     &
+                CALL ZTRMM('Right', 'Lower', 'No transpose', 'Unit', m, k,  &
                   one, v(1,n-k+1), ldv, work, ldwork)
                 DO j = 1, k
                   DO i = 1, m
@@ -32901,7 +33031,7 @@
                     t(j, i) = -tau(i)*CONJG(v(i,j))
                   END DO
                   j = MIN(lastv, prevlastv)
-                  CALL ZGEMV('Conjugate transpose', j-i, i-1, -tau(i),         &
+                  CALL ZGEMV('Conjugate transpose', j-i, i-1, -tau(i),      &
                     v(i+1,1), ldv, v(i+1,i), 1_ip_, one, t(1,i), 1_ip_)
                 ELSE
                   DO lastv = n, i + 1, -1_ip_
@@ -32911,11 +33041,11 @@
                     t(j, i) = -tau(i)*v(j, i)
                   END DO
                   j = MIN(lastv, prevlastv)
-                  CALL ZGEMM('N', 'C', i-1, 1_ip_, j-i, -tau(i), v(1,i+1),     &
+                  CALL ZGEMM('N', 'C', i-1, 1_ip_, j-i, -tau(i), v(1,i+1),  &
                     ldv, v(i,i+1), ldv, one, t(1,i), ldt)
                 END IF
-                CALL ZTRMV('Upper', 'No transpose', 'Non-unit', i-1, t, ldt,   &
-                  t(1,i), 1_ip_)
+                CALL ZTRMV('Upper', 'No transpose', 'Non-unit', i-1, t,     &
+                  ldt, t(1,i), 1_ip_)
                 t(i, i) = tau(i)
                 IF (i>1) THEN
                   prevlastv = MAX(prevlastv, lastv)
@@ -32941,8 +33071,9 @@
                       t(j, i) = -tau(i)*CONJG(v(n-k+i,j))
                     END DO
                     j = MAX(lastv, prevlastv)
-                    CALL ZGEMV('Conjugate transpose', n-k+i-j, k-i, -tau(i),   &
-                      v(j,i+1), ldv, v(j,i), 1_ip_, one, t(i+1,i), 1_ip_)
+                    CALL ZGEMV('Conjugate transpose', n-k+i-j, k-i,         &
+                      -tau(i), v(j,i+1), ldv, v(j,i), 1_ip_, one, t(i+1,i), &
+                      1_ip_)
                   ELSE
                     DO lastv = 1, i - 1
                       IF (v(i,lastv)/=zero) EXIT
@@ -32951,10 +33082,10 @@
                       t(j, i) = -tau(i)*v(j, n-k+i)
                     END DO
                     j = MAX(lastv, prevlastv)
-                    CALL ZGEMM('N', 'C', k-i, 1_ip_, n-k+i-j, -tau(i),         &
+                    CALL ZGEMM('N', 'C', k-i, 1_ip_, n-k+i-j, -tau(i),      &
                       v(i+1,j), ldv, v(i,j), ldv, one, t(i+1,i), ldt)
                   END IF
-                  CALL ZTRMV('Lower', 'No transpose', 'Non-unit', k-i,         &
+                  CALL ZTRMV('Lower', 'No transpose', 'Non-unit', k-i,      &
                     t(i+1,i+1), ldt, t(i+1,i), 1_ip_)
                   IF (i>1) THEN
                     prevlastv = MIN(prevlastv, lastv)

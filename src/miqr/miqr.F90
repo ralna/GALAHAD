@@ -2203,8 +2203,8 @@
 
 !  Local variables
 
-      INTEGER ( KIND = ip_ ) :: old_length, used_length, min_length, new_length, new_size
-      INTEGER ( KIND = ip_ ) :: array_size
+      INTEGER ( KIND = ip_ ) :: old_length, used_length, min_length
+      INTEGER ( KIND = ip_ ) :: new_length, new_size, array_size
 
       inform%status = GALAHAD_ok
 

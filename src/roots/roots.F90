@@ -2158,7 +2158,7 @@
 
               IF ( i < ii ) THEN
                 DO j = 1, i
-                  data%P( j - 1, i - 1 ) = data%P( j, i ) * REAL( j, KIND = rp_ )
+                  data%P( j - 1, i - 1 ) = data%P( j, i ) * REAL( j, KIND = rp_)
                 END DO
               END IF
             END DO
@@ -2201,7 +2201,7 @@
               IF ( AIMAG( data%CROOTS( j ) ) == zero .AND.                     &
                    REAL( data%CROOTS( j ) ) > a )                              &
                 smallest_root_in_interval = MIN(                               &
-                  REAL( data%CROOTS( j ), KIND = rp_ ),                         &
+                  REAL( data%CROOTS( j ), KIND = rp_ ),                        &
                   smallest_root_in_interval )
             END DO
             GO TO 990

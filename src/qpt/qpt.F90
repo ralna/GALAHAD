@@ -2075,7 +2075,7 @@
 
 !       Count the number of different values of the starting point.
 
-        CALL QPT_accum_vals( nval2, cval2, ival2, val2, NVALUES, j, prob%X( j ) )
+        CALL QPT_accum_vals( nval2, cval2, ival2, val2, NVALUES, j, prob%X( j ))
 
       END DO
 

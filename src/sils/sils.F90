@@ -532,7 +532,8 @@
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      TYPE( SILS_ainfo ), INTENT( INOUT ) :: AINFO
-     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: PERM( MATRIX%n ) ! Pivot sequence
+     INTEGER ( KIND = ip_ ), INTENT( IN ),                                     &
+                             OPTIONAL :: PERM( MATRIX%n ) ! Pivot sequence
 
 !  Local variables
 

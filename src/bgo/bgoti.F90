@@ -404,7 +404,7 @@ CONTAINS
    REAL, PARAMETER :: freq = 10.0_rp_
    REAL, PARAMETER :: mag = 1000.0_rp_
    U( 1 ) = U( 1 )                                                             &
-            + ( 2.0_rp_ - mag * freq * freq * COS( freq * X( 1 ) ) ) * V( 1 )   &
+            + ( 2.0_rp_ - mag * freq * freq * COS( freq * X( 1 ) ) ) * V( 1 )  &
             + 2.0_rp_ * V( 3 )
    U( 2 ) = U( 2 ) + 2.0_rp_ * ( V( 2 ) + V( 3 ) )
    U( 3 ) = U( 3 ) + 2.0_rp_ * ( V( 1 ) + V( 2 ) + 2.0_rp_ * V( 3 ) )
@@ -454,7 +454,7 @@ CONTAINS
      j = INDEX_nz_v( i )
      SELECT CASE( j )
      CASE( 1 )
-       P( 1 ) = P( 1 ) + 2.0_rp_ * V( 1 )                                       &
+       P( 1 ) = P( 1 ) + 2.0_rp_ * V( 1 )                                      &
          - mag * freq * freq * COS( freq * X( 1 ) ) * V( 1 )
        USED( 1 ) = .TRUE.
        P( 3 ) = P( 3 ) + 2.0_rp_ * V( 1 )

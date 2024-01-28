@@ -7992,8 +7992,8 @@
      LOGICAL, INTENT( IN ) :: b_in_a, deallocate_error_fatal, space_critical
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: alloc_status
-     INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE, DIMENSION( : ) :: IW, PTR, ROW
-     INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE, DIMENSION( : ) :: ORDER, MAP
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE,                     &
+                             DIMENSION( : ) :: IW, PTR, ROW, ORDER, MAP
      CHARACTER ( LEN = 80 ), INTENT( INOUT ) :: bad_alloc
      TYPE ( SMT_type ), INTENT( IN ) :: A, B
 

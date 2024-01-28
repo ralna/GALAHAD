@@ -4414,7 +4414,7 @@
 !  set up space for the Bunch-Kaufman factorization of S
 
         np1 = H_lm%n_restriction + 1 ; npm = n + m
-        nb = LAENV( 1_ip_, 'DSYTRF', 'L', efactors%len_s_max,                  &
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', efactors%len_s_max,               &
                     - 1_ip_, - 1_ip_, - 1_ip_ )
 
         array_name = 'sbls: efactors%IPIV'

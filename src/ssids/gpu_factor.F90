@@ -336,7 +336,8 @@ contains
     delta = 0.01_rp_
     eps = tiny(1.0_rp_)
 
-    if (gpu%num_levels .eq. 0) return ! Shortcut empty streams (v. small matrices)
+    ! Shortcut empty streams (v. small matrices)
+    if (gpu%num_levels .eq. 0) return 
 
     gpu%n = n
     gpu%nnodes = nnodes
@@ -2187,8 +2188,9 @@ contains
   end subroutine spral_ssids_assemble_contrib
 
   !> @brief Form contribution block
-  subroutine spral_ssids_form_contrib(stream, nnodes, c_lev, c_lvlptr, c_lvllist, &
-       c_nodes, c_rptr, c_sptr, off_LDLT, ptr_levLDLT, c_gwork) bind(C)
+  subroutine spral_ssids_form_contrib(stream, nnodes, c_lev, c_lvlptr, &
+                                      c_lvllist, c_nodes, c_rptr, c_sptr, &
+                                      off_LDLT, ptr_levLDLT, c_gwork) bind(C)
     use, intrinsic :: iso_c_binding
     implicit none
 
@@ -2390,7 +2392,8 @@ contains
 1000 continue
     return
 400 continue
-    print *, "[Error][spral_ssids_factor_posdef] CUDA error: ", cudaGetErrorString(stats%cuda_error)
+    print *, "[Error][spral_ssids_factor_posdef] CUDA error: ", &
+      cudaGetErrorString(stats%cuda_error)
     goto 1000
 300 continue
     print *, "[Error][spral_ssids_factor_posdef] Matrix not posdef"
@@ -2959,8 +2962,8 @@ contains
     goto 200
   end subroutine spral_ssids_level_custack_init
 
-  subroutine spral_ssids_assign_nodes_to_levels(nnodes, c_sparent, c_gpu_contribs, c_num_levels, &
-       c_lvlptr, c_lvllist) bind (C)
+  subroutine spral_ssids_assign_nodes_to_levels(nnodes, c_sparent, & 
+       c_gpu_contribs, c_num_levels, c_lvlptr, c_lvllist) bind (C)
     use, intrinsic :: iso_c_binding
     implicit none
 

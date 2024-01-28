@@ -7832,7 +7832,8 @@
         END IF
 
         IF ( debug ) THEN
-          WRITE(  control%out, "( ' c0, c1, c3, c4 ', 4ES12.4 )" ) c0, c1, c3, c4
+          WRITE(  control%out, "( ' c0, c1, c3, c4 ', 4ES12.4 )" )             &
+             c0, c1, c3, c4
           res_cs = ( 1 - alpha_u ) * res_prim_dual
           DO i = dims%x_free + 1, dims%x_u_start - 1
             res_cs = res_cs + ABS(                                             &

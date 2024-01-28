@@ -285,14 +285,14 @@
          CALL SMT_put( p%Ao%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( p%Ao%val( o * n ) )
          p%Ao%m = o ; p%Ao%n = n
-         p%Ao%val( : o * n ) = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
+         p%Ao%val( : o * n ) = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,          &
                                  0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
                                  0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
        CASE ( 5 ) ! A dense by rows
          CALL SMT_put( p%Ao%type, 'DENSE_BY_ROWS', s )
          ALLOCATE( p%Ao%val( o * n ) )
          p%Ao%m = o ; p%Ao%n = n
-         p%Ao%val( : o * n ) = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_,                    &
+         p%Ao%val( : o * n ) = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_,                   &
                                  1.0_rp_, 1.0_rp_, 0.0_rp_,                    &
                                  0.0_rp_, 0.0_rp_, 1.0_rp_,                    &
                                  0.0_rp_, 0.0_rp_, 1.0_rp_ /)

@@ -12,6 +12,7 @@
      INTEGER, PARAMETER :: hout = 25      ! for generated preprocessor header
      INTEGER, PARAMETER :: scratch = 26   ! for intermediate workings
      INTEGER, PARAMETER :: max_line = 400 ! maximum line length
+     INTEGER, PARAMETER :: max_chars = 75 ! maximum # characters in a line
      CHARACTER ( len = 80 ) :: new_line
      CHARACTER ( len = max_line ) :: in_line, line
      CHARACTER ( len = 8 ) :: date
@@ -85,7 +86,8 @@
 
          IF ( l + 9 <= l_end ) THEN
            IF ( new_line( l : l + 9 ) == 'L FUNCTION' .OR.                     &
-                new_line( l : l + 9 ) == 'N FUNCTION' ) THEN
+                new_line( l : l + 9 ) == 'N FUNCTION' .OR.                     &
+                new_line( l : l + 9 ) == 'R FUNCTION' ) THEN
              DO i = l + 10, l_end
                IF ( new_line( i + 1 : i + 1 ) == '(' ) EXIT
              END DO
@@ -549,10 +551,10 @@
 !  corresponds to an external statement)
 
        IF ( external_line ) THEN
-         line_max = 76 - nz - 16
+         line_max = max_chars - nz - 16
          IF ( line( l_end : l_end ) /= '&' ) external_line = .FALSE.
        ELSE
-         line_max = 76 - nz
+         line_max = max_chars - nz
        END IF
 
        DO 
@@ -561,8 +563,8 @@
              WRITE( out, "( A, A )" ) REPEAT( ' ', nz ), TRIM( line )
            EXIT
 
-!  the line has more than 76 characters, split it into two appropriate-sized
-!  chunks, and repeat
+!  the line has more than max_chars characters, split it into two 
+!  appropriate-sized chunks, and repeat
 
          ELSE
            DO k = line_max, 1, - 1
@@ -572,11 +574,11 @@
                IF ( line( k : k ) == ',' ) THEN
                  WRITE( out, "( A, A, A, '&' )" )                              &
                    REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                   &
-                   REPEAT( ' ', 79 - nz - k )
+                   REPEAT( ' ', max_chars + 2 - nz - k )
                ELSE
-                 WRITE( out, "( A, A, A, ' &' )" )                             &
+                 WRITE( out, "( A, A, A, '&' )" )                              &
                    REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                   &
-                   REPEAT( ' ', 79 - nz - k )
+                   REPEAT( ' ', max_chars + 2 - nz - k )
                END IF
                nz = MIN( nz + 2, nz2 ) 
                EXIT

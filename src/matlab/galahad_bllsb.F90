@@ -174,7 +174,7 @@
       END IF
 
       IF ( nlhs > 3 )                                                          &
-        CALL mexErrMsgTxt( ' galahad_bllsb provides at most 3 output arguments' )
+        CALL mexErrMsgTxt( ' galahad_bllsb provides at most 3 output arguments')
 
 !  Initialize the internal structures for bllsb
 

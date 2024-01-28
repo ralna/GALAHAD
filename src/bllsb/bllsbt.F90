@@ -122,7 +122,7 @@
      &      F6.1, ' status = ', I6 )" ) status, info%iter,                     &
               info%obj, info%status
      ELSE
-       WRITE( 6, "(I2, ': BLLSB_solve exit status = ', I6 )") status, info%status
+       WRITE( 6, "(I2, ': BLLSB_solve exit status = ', I6)") status, info%status
      END IF
      DEALLOCATE( p%Ao%val, p%Ao%col )
      CALL BLLSB_terminate( data, control, info )
@@ -213,7 +213,7 @@
      &            F6.1, ' status = ', I6 )" ) st, i, info%iter,                &
                   info%obj, info%status
        ELSE
-         WRITE( 6, "( A1, I1,': BLLSB_solve exit status = ', I6 ) " )           &
+         WRITE( 6, "( A1, I1,': BLLSB_solve exit status = ', I6 ) " )          &
            st, i, info%status
        END IF
 !      STOP

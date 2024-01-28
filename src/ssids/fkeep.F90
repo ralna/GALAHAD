@@ -19,7 +19,8 @@ module spral_ssids_fkeep_precision
    use spral_ssids_subtree_precision, only : numeric_subtree_base
    use spral_ssids_cpu_subtree_precision, only : cpu_numeric_subtree
 #ifdef PROFILE
-   use spral_ssids_profile_precision, only : profile_begin, profile_end, profile_add_event
+   use spral_ssids_profile_precision, only : profile_begin, profile_end, &
+                                             profile_add_event
 #endif
    implicit none
 
@@ -47,8 +48,10 @@ module spral_ssids_fkeep_precision
       type(ssids_inform) :: inform
 
    contains
-      procedure, pass(fkeep) :: inner_factor => inner_factor_cpu ! Do actual factorization
-      procedure, pass(fkeep) :: inner_solve => inner_solve_cpu ! Do actual solve
+      procedure, pass(fkeep) :: inner_factor => inner_factor_cpu 
+        ! Do actual factorization
+      procedure, pass(fkeep) :: inner_solve => inner_solve_cpu 
+        ! Do actual solve
       procedure, pass(fkeep) :: enquire_posdef => enquire_posdef_cpu
       procedure, pass(fkeep) :: enquire_indef => enquire_indef_cpu
       procedure, pass(fkeep) :: alter => alter_cpu ! Alter D values
@@ -185,7 +188,8 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
 
 #ifdef PROFILE
      ! At least some all region subtrees exist
-     call profile_add_event("EV_ALL_REGIONS", "Starting processing root subtree", 0)
+     call profile_add_event("EV_ALL_REGIONS", &
+                            "Starting processing root subtree", 0)
 #endif
 
      !$omp parallel num_threads(total_threads) default(shared)
@@ -439,7 +443,7 @@ end subroutine alter_cpu
 
 subroutine free_fkeep(fkeep, flag)
    class(ssids_fkeep), intent(inout) :: fkeep
-   integer(ip_), intent(out) :: flag ! not actually used for cpu version, set to 0
+   integer(ip_), intent(out) :: flag ! not used for cpu version, set to 0
 
    integer(ip_) :: i
    integer(ip_) :: st

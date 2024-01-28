@@ -6852,7 +6852,7 @@
       IF ( print_detail ) THEN
         CALL QPA_p_val_and_slope( dims, n, m,                                  &
                                   f, g_s, s_hs, rho_g, rho_b, X, X_l,          &
-                                  X_u, RES_l, RES_u, S, A_s, 0.0_rp_, t_pert,   &
+                                  X_u, RES_l, RES_u, S, A_s, 0.0_rp_, t_pert,  &
                                   too_small, REF, m_link, C_stat, B_stat,      &
                                   eval, eslope )
         write( out, 2010 ) '  val', val, eval

@@ -280,41 +280,42 @@
 
       SELECT CASE ( inform%status )
       CASE (-1)
-         WRITE(*,*) 'Which means : an error has occured within TRIMSQP_solve.'
+         WRITE(*,*) 'Which means: an error has occured within TRIMSQP_solve.'
       CASE (0)
-         WRITE(*,*) 'Which means : ** Solution Found **'
+         WRITE(*,*) 'Which means: ** Solution Found **'
          solved = .TRUE.
       CASE (1)
-         WRITE(*,*) 'Which means : BUG, forgot to reset status upon initial entry'
+         WRITE(*,*) 'Which means: BUG, unset status upon initial entry'
       CASE (2)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : f and c are needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : f and c are needed.'
          CALL funFC_reverse( nlp%f, nlp%C, nlp%X, userdata = userdata )
       CASE (3)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : g is needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : g is needed.'
          CALL funG_reverse( nlp%G, nlp%X )
       CASE (4)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : J is needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : J is needed.'
          CALL funJ_reverse( nlp%J_val, nlp%X )
       CASE (5)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : g and J are needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : g and J are needed.'
          CALL funG_reverse( nlp%G, nlp%X )
          CALL funJ_reverse( nlp%J_val, nlp%X )
       CASE (6)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : H is needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : H is needed.'
          CALL funH_reverse( nlp%H_val, nlp%X, nlp%Y )
       CASE (7)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : u <- J*v+u is needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : u <- J*v+u needed.'
          !transpose = .FALSE.
          !CALL fun_JV_reverse( data%u, data%v, nlp%X, transpose )
       CASE (8)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : u <- J^T*v+u is needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : u <- J^T*v+u needed.'
          !transpose = .TRUE.
          !CALL fun_Jv_reverse( data%u, data%v, nlp%X, transpose )
       CASE (9)
-         WRITE(*,*) 'Which means : REVERSE COMMUNICATION : u <- H*v+u is needed.'
+         WRITE(*,*) 'Which means: REVERSE COMMUNICATION : u <- H*v+u needed.'
          !CALL fun_Hv_reverse( data%u, data%v, nlp%X )
       CASE DEFAULT
-         WRITE(*,*) 'Which means : an in-appropriate value of status has been returned.'
+         WRITE(*,*) 'Which means: an in-appropriate value of status',          &
+                    ' has been returned.'
       END SELECT
 
       num_recursive_calls = num_recursive_calls + 1

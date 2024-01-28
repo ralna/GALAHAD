@@ -2358,7 +2358,7 @@
               inform%x_norm = TWO_NORM( X )
               x_norm2( 0 ) = inform%x_norm ** 2
             ELSE
-              CALL mop_AX( one, M, X, zero, data%Y( : n ), 0_ip_,                  &
+              CALL mop_AX( one, M, X, zero, data%Y( : n ), 0_ip_,              &
                            symmetric = .TRUE. )
               x_norm2( 0 ) = DOT_PRODUCT( X, data%Y( : n ) )
               IF ( x_norm2( 0 ) < zero ) THEN
@@ -2684,7 +2684,7 @@
             IF ( unit_m ) THEN
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Z( : n ) )
             ELSE
-              CALL mop_AX( one, M, data%Z( : n ), zero, data%Y( : n ), 0_ip_,      &
+              CALL mop_AX( one, M, data%Z( : n ), zero, data%Y( : n ), 0_ip_,  &
                            symmetric = .TRUE. )
               z_norm2 = DOT_PRODUCT( data%Z( : n ), data%Y( : n ) )
             END IF

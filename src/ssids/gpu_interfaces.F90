@@ -19,7 +19,7 @@ module spral_ssids_gpu_ifaces_precision
    ! assemble_kernels.cu
    !
    public :: &
-             add_delays_precision,    & ! Copies/expands any delayed pivots into node
+             add_delays_precision,    & ! Copies/expands delayed pivots -> node
              assemble_precision,      & ! Performs assembly of non-delayed part
              load_nodes_precision,    & ! Copies A into L (no scaling)
              load_nodes_sc_precision, & ! Copies A into L (with scaling)
@@ -89,9 +89,9 @@ module spral_ssids_gpu_ifaces_precision
    !
    ! syrk_kernels.cu
    !
-   public :: cuda_dsyrk_precision,               & ! Form Schur complement, single block
-             cuda_multidsyrk_precision,          & ! Form Schur complement, multiple blks
-             cuda_multidsyrk_low_col_precision     ! As above, high aspect ratio version
+   public :: cuda_dsyrk_precision, & ! Form Schur complement, single block
+             cuda_multidsyrk_precision, & ! Form Schur complement, multiple blks
+             cuda_multidsyrk_low_col_precision ! High aspect ratio version
    interface ! syrk_kernels.cu
       subroutine cuda_dsyrk_precision(stream, n, m, k, alpha, a, lda, b, ldb, &
             beta, c, ldc) bind(C, name="spral_ssids_dsyrk_precision")
@@ -129,14 +129,22 @@ module spral_ssids_gpu_ifaces_precision
    !
    ! dense_factor_kernels.cu
    !
-   public :: block_ldlt_precision,            & ! LDL^T kernel for single block
-             block_llt_precision,             & ! LL^T kernel for single block
-             cuda_collect_stats_precision,    & ! Accumulates statistics for a level
-             multiblock_ldlt_precision,       & ! LDL^T kernel for multiple blocks
-             multiblock_ldlt_setup_precision, & ! Sets up data for next multiblock_ldlt
-             multiblock_llt_precision,        & ! LL^T kernel for multiple blocks
-             multiblock_llt_setup_precision,  & ! Sets up data for next multiblock_llt
-             square_ldlt_precision              ! LDL^T kernel for root delays block
+   public :: block_ldlt_precision,            & 
+                ! LDL^T kernel for single block
+             block_llt_precision,             & 
+                ! LL^T kernel for single block
+             cuda_collect_stats_precision,    & 
+                ! Accumulates statistics for a level
+             multiblock_ldlt_precision,       & 
+                ! LDL^T kernel for multiple blocks
+             multiblock_ldlt_setup_precision, & 
+                ! Sets up data for next multiblock_ldlt
+             multiblock_llt_precision,        & 
+                ! LL^T kernel for multiple blocks
+             multiblock_llt_setup_precision,  & 
+                ! Sets up data for next multiblock_llt
+             square_ldlt_precision
+                ! LDL^T kernel for root delays block
    interface
       subroutine block_ldlt_precision(stream, n, m, p, a, lda, f, ldf, fd, &
             ldfd, d, delta, eps, ind, stat) &
@@ -243,17 +251,28 @@ module spral_ssids_gpu_ifaces_precision
    !
    ! reorder_kernels.cu
    !
-   public :: copy_ic_precision,         & ! 2D copy with column permutation
-             copy_mc_precision,         & ! Straight forward 2d copy with mask on column
-             multisymm_precision,       & ! symmetrically fill in upper triangle
-             multicopy_precision,       & ! copies column blocks in multiple nodes
-             multireorder_precision,    & ! copies L and LD about with permutation
-             reorder_cols2_precision,   & ! in place col perm via workspace (2 arrays)
-             reorder_rows_precision,    & ! in place row permutation via workspace
-             reorder_rows2_precision,   & ! in place row perm via workspace (2 arrays)
-             swap_ni2Dm_precision,      & ! 2D swap with row and col perm (non-intersect)
-             swap_ni2D_ic_precision,    & ! 2D swap with column perm (non-intersecting)
-             swap_ni2D_ir_precision       ! 2D swap with row perm (non-intersection)
+   public :: copy_ic_precision,         & 
+               ! 2D copy with column permutation
+             copy_mc_precision,         & 
+               ! Straight forward 2d copy with mask on column
+             multisymm_precision,       & 
+               ! symmetrically fill in upper triangle
+             multicopy_precision,       & 
+               ! copies column blocks in multiple nodes
+             multireorder_precision,    & 
+               ! copies L and LD about with permutation
+             reorder_cols2_precision,   & 
+               ! in place col perm via workspace (2 arrays)
+             reorder_rows_precision,    & 
+                ! in place row permutation via workspace
+             reorder_rows2_precision,   & 
+                ! in place row perm via workspace (2 arrays)
+             swap_ni2Dm_precision,      & 
+                ! 2D swap with row and col perm (non-intersect)
+             swap_ni2D_ic_precision,    & 
+                ! 2D swap with column perm (non-intersecting)
+             swap_ni2D_ir_precision
+                ! 2D swap with row perm (non-intersection)
    interface ! reorder_kernels.cu
       subroutine copy_ic_precision(stream, n, m, a, lda, b, ldb, mask) &
             bind(C, name="spral_ssids_copy_ic_precision")
@@ -373,10 +392,10 @@ module spral_ssids_gpu_ifaces_precision
    !
    ! solve_kernels.cu
    !
-   public :: run_bwd_solve_kernels_precision,    & ! execute prepared bwd solve
-             run_d_solve_kernel_precision,       & ! execute prepared d solve
-             run_fwd_solve_kernels_precision,    & ! execute prepared fwd solve
-             run_slv_contrib_fwd_precision         ! execute prepared scatter of contrib
+   public :: run_bwd_solve_kernels_precision,   & ! execute prepared bwd solve
+             run_d_solve_kernel_precision,      & ! execute prepared d solve
+             run_fwd_solve_kernels_precision,   & ! execute prepared fwd solve
+             run_slv_contrib_fwd_precision ! execute prepared scatter of contrib
    interface ! solve_kernels.cu
       subroutine run_bwd_solve_kernels_precision(dsolve, unit_diagonal, x_gpu, &
             work_gpu, nsync, sync_gpu, gpu, stream) &

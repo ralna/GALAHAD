@@ -1089,7 +1089,8 @@ contains
    end if
 
    if (C_ASSOCIATED(c_rlist_direct)) then
-      call C_F_POINTER(c_rlist_direct, rlist_direct, shape=(/ rptr(nnodes+1)-1 /))
+      call C_F_POINTER(c_rlist_direct, rlist_direct, &
+                       shape=(/ rptr(nnodes+1)-1 /))
    else
       print *, "Error c_rlist_direct is NULL"
       return

@@ -54,8 +54,8 @@
    CALL ARC_information( data, inform, status )
    IF ( inform%status == 0 ) THEN          ! Successful return
      WRITE( 6, "( ' ARC: ', I0, ' iterations -',                               &
-    &     ' optimal objective value =',                                        &
-    &       ES12.4, ', ||g|| =', ES11.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
+    &     ' optimal objective value =', ES12.4, ', ||g|| =', ES11.4, /,        &
+          ' Optimal solution = ', ( 5ES12.4 ) )" )                             &
      inform%iter, inform%obj, inform%norm_g, X
    ELSE                                    ! Error returns
      WRITE( 6, "( ' ARC_solve exit status = ', I6 ) " ) inform%status

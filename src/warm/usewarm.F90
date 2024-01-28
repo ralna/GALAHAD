@@ -208,7 +208,8 @@
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: X_names, C_names
       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX, D, O
       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status, X_status
-      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status_1, X_status_1
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status_1
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status_1
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 

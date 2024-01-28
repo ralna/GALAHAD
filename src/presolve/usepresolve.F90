@@ -96,8 +96,9 @@
 
 !  Scalars
 
-      INTEGER ( KIND = ip_ ) :: n, m, la, lh, liw, i, j, l, neh, nea, alloc_stat
-      INTEGER ( KIND = ip_ ) :: A_ne, H_ne, A_ne_red, H_ne_red, smt_stat, cutest_status
+      INTEGER ( KIND = ip_ ) :: n, m, la, lh, liw, i, j, l, neh, nea
+      INTEGER ( KIND = ip_ ) :: A_ne, H_ne, A_ne_red, H_ne_red
+      INTEGER ( KIND = ip_ ) :: smt_stat, cutest_status, alloc_stat
       INTEGER ( KIND = ip_ ) :: errout = 6
       REAL    :: time1, time2, time3, time4
       CHARACTER ( LEN = 10 ) :: pname

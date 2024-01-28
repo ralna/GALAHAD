@@ -25,10 +25,12 @@
    CALL SMT_put( M%type, 'DIAGONAL', s )         ! Specify diagonal for M
    ALLOCATE( M%val( n ) ) ; M%val = 2.0_wp
    CALL RQS_initialize( data, control, inform )  ! Initialize control parameters
-   CALL RQS_solve( n, p, sigma, f, C, H, X, data, control, inform, M = M ) ! Solve
+   CALL RQS_solve( n, p, sigma, f, C, H, X, data,                              &
+                   control, inform, M = M ) ! Solve
    IF ( inform%status == 0 ) THEN !  Successful return
-    WRITE( 6, "( 1X, I0, ' factorizations. Objective and Lagrange multiplier =',&
-   &    2ES12.4 )" ) inform%factorizations, inform%obj, inform%multiplier
+    WRITE( 6, "( 1X, I0,                                                       &
+      ' factorizations. Objective and Lagrange multiplier =', 2ES12.4 )" )     &
+          inform%factorizations, inform%obj, inform%multiplier
    ELSE  !  Error returns
     WRITE( 6, "( ' RQS_solve exit status = ', I0 ) " ) inform%status
    END IF

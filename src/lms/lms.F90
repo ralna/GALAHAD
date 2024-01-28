@@ -325,7 +325,7 @@
       SELECT CASE( control%method )
       CASE ( 2 )
         method = 'SR1   '
-        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                          &
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                       &
                     - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = data%len_c * nb
         len2_qp = 1 ; len2_qp_perm = 1
@@ -334,7 +334,7 @@
       CASE ( 4 )
         method = 'ISBFGS'
         data%len_c = 2 * data%m ; len2_qp_perm = 1
-        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                          &
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                       &
                     - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = data%len_c * nb
       CASE DEFAULT
@@ -346,7 +346,7 @@
       IF ( data%any_method ) THEN
         method = 'ANY   '
         data%len_c = 2 * data%m
-        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                          &
+        nb = LAENV( 1_ip_, 'DSYTRF', 'L', data%len_c,                       &
                     - 1_ip_, - 1_ip_, - 1_ip_ )
         data%lwork = MAX( data%len_c * nb, data%lwork )
       END IF

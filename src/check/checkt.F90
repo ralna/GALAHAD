@@ -87,7 +87,8 @@ PROGRAM GALAHAD_check_test
 
   nlp%J%row = (/ 1, 1, 1, 2 /)   ;  nlp%J%col = (/ 1, 2, 3, 2 /)
   nlp%H%row = (/ 2, 3, 3 /)      ;  nlp%H%col = (/ 2, 2, 3 /)
-  nlp%X = (/ four, three, two /) ;  nlp%X_l = -five ;  nlp%X_u = five ;  nlp%Y = (/ two, three /)
+  nlp%X = (/ four, three, two /) ;  nlp%X_l = -five ;  nlp%X_u = five
+  nlp%Y = (/ two, three /)
 
   !--------------------------------------|
   ! Test everything for expensive check. |
@@ -106,12 +107,14 @@ PROGRAM GALAHAD_check_test
         call CHECK_initialize( control )
 
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         stat = inform%status
 
         call CHECK_terminate( data, control, inform )
 
-        if ( inform%status /= 0 .or. stat /= 0 .or. .not. inform%derivative_ok ) then
+        if ( inform%status /= 0 .or. stat /= 0 .or. .not. &
+             inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
         end if
@@ -127,12 +130,14 @@ PROGRAM GALAHAD_check_test
         IF ( stat == 0 ) call CHECK_read_specfile( control, 34 )
 
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         stat = inform%status
 
         call CHECK_terminate( data, control, inform )
 
-        if ( inform%status /= 0 .or. stat /= 0 .or. .not. inform%derivative_ok ) then
+        if ( inform%status /= 0 .or. stat /= 0 .or. .not. &
+             inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
         end if
@@ -205,10 +210,12 @@ PROGRAM GALAHAD_check_test
               call mop_Ax( one, nlp%J, data%RC%V, one, data%RC%U )
            elseif ( inform%status == 7 ) then
               call funJ2(stat, data%RC%X, userdata, nlp%J%val)
-              call mop_Ax( one, nlp%J, data%RC%V, one, data%RC%U, transpose=.true. )
+              call mop_Ax( one, nlp%J, data%RC%V, one, data%RC%U, &
+                           transpose=.true. )
            elseif ( inform%status == 9 ) then
               call funH2(stat, data%RC%X, data%RC%Y, userdata, nlp%H%val)
-              call mop_Ax( one, nlp%H, data%RC%V, one, data%RC%U, symmetric=.true. )
+              call mop_Ax( one, nlp%H, data%RC%V, one, data%RC%U, &
+                           symmetric=.true. )
            else
               nwrong = nwrong + 1
               vwrong(nwrong) = test
@@ -228,7 +235,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = -1
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -236,7 +244,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 0
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -244,7 +253,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 1
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -252,7 +262,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 2
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -260,7 +271,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 3
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -268,7 +280,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 4
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -276,7 +289,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 5
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -290,7 +304,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .true.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -300,7 +315,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .true.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -310,7 +326,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -320,7 +337,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .true.
         control%checkH = .true.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -330,7 +348,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .true.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -340,7 +359,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .true.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -350,7 +370,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -390,7 +411,8 @@ PROGRAM GALAHAD_check_test
 
         nlp%m = -1
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -3 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -399,7 +421,8 @@ PROGRAM GALAHAD_check_test
 
         nlp%n = 0
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -3 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -407,14 +430,16 @@ PROGRAM GALAHAD_check_test
         nlp%n = n
 
         inform%status = -1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -50 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
         end if
 
         inform%status = 0
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -51 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -423,7 +448,8 @@ PROGRAM GALAHAD_check_test
         temp = nlp%X_l(1)
         nlp%X_l(1) = nlp%X_u(1) + one
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -57 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -444,18 +470,21 @@ PROGRAM GALAHAD_check_test
 
      if ( test == 9 ) then
 
-        ! Check initalize, verify, and terminate subroutines with default control parameters.
+        ! Check initalize, verify, and terminate subroutines with 
+        ! default control parameters.
 
         call CHECK_initialize( control )
         control%verify_level = 1
 
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         stat = inform%status
 
         call CHECK_terminate( data, control, inform )
 
-        if ( inform%status /= 0 .or. stat /= 0 .or. .not. inform%derivative_ok ) then
+        if ( inform%status /= 0 .or. stat /= 0 .or. .not. &
+             inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
         end if
@@ -472,12 +501,14 @@ PROGRAM GALAHAD_check_test
         IF ( stat == 0 ) call CHECK_read_specfile( control, 34 )
 
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         stat = inform%status
 
         call CHECK_terminate( data, control, inform )
 
-        if ( inform%status /= 0 .or. stat /= 0 .or. .not. inform%derivative_ok ) then
+        if ( inform%status /= 0 .or. stat /= 0 .or. .not. &
+             inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
         end if
@@ -551,10 +582,12 @@ PROGRAM GALAHAD_check_test
               call mop_Ax( one, nlp%J, data%RC%V, one, data%RC%U )
            elseif ( inform%status == 7 ) then
               call funJ2(stat, data%RC%X, userdata, nlp%J%val)
-              call mop_Ax( one, nlp%J, data%RC%V, one, data%RC%U, transpose=.true. )
+              call mop_Ax( one, nlp%J, data%RC%V, one, data%RC%U, &
+                           transpose=.true. )
            elseif ( inform%status == 9 ) then
               call funH2(stat, data%RC%X, data%RC%Y, userdata, nlp%H%val)
-              call mop_Ax( one, nlp%H, data%RC%V, one, data%RC%U, symmetric=.true. )
+              call mop_Ax( one, nlp%H, data%RC%V, one, data%RC%U, &
+                           symmetric=.true. )
            else
               nwrong = nwrong + 1
               vwrong(nwrong) = test
@@ -574,7 +607,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = -1
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -582,7 +616,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 0
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -590,7 +625,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 1
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -598,7 +634,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 2
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -606,7 +643,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 3
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -614,7 +652,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 4
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -622,7 +661,8 @@ PROGRAM GALAHAD_check_test
 
         control%print_level = 5
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -636,7 +676,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .true.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -646,7 +687,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .true.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -656,7 +698,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -666,7 +709,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .true.
         control%checkH = .true.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -676,7 +720,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .true.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -686,7 +731,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .true.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -696,7 +742,8 @@ PROGRAM GALAHAD_check_test
         control%checkJ = .false.
         control%checkH = .false.
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -717,7 +764,8 @@ PROGRAM GALAHAD_check_test
         control%H_availability = 3
 
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, &
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, &
                           funG, eval_Jv=funJv, eval_Hv=funHv )
         if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
            nwrong = nwrong + 1
@@ -736,7 +784,8 @@ PROGRAM GALAHAD_check_test
 
         nlp%m = -1
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -3 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -745,7 +794,8 @@ PROGRAM GALAHAD_check_test
 
         nlp%n = 0
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -3 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -753,14 +803,16 @@ PROGRAM GALAHAD_check_test
         nlp%n = n
 
         inform%status = -1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -50 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
         end if
 
         inform%status = 0
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -51 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -769,7 +821,8 @@ PROGRAM GALAHAD_check_test
         temp = nlp%X_l(1)
         nlp%X_l(1) = nlp%X_u(1) + one
         inform%status = 1
-        call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+        call CHECK_verify( nlp, data, control, inform, userdata, &
+                           funF, funC, funG, funJ, funH)
         if ( inform%status /= -57 ) then
            nwrong = nwrong + 1
            vwrong(nwrong) = test
@@ -788,7 +841,8 @@ PROGRAM GALAHAD_check_test
 
   control%verify_level = 0
   inform%status = 1
-  call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH)
+  call CHECK_verify( nlp, data, control, inform, userdata, &
+                     funF, funC, funG, funJ, funH)
   if ( inform%status /= 0 .or. .not. inform%derivative_ok ) then
      nwrong = nwrong + 1
      vwrong(nwrong) = test

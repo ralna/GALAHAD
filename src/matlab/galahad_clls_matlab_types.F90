@@ -182,7 +182,7 @@
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, CLLS_control%identical_bounds_tol )
         CASE( 'mu_pounce' )
-          CALL MATLAB_get_value( ps, 'mu_pounce',                               &
+          CALL MATLAB_get_value( ps, 'mu_pounce',                              &
                                  pc, CLLS_control%mu_pounce )
         CASE( 'indicator_tol_p' )
           CALL MATLAB_get_value( ps, 'indicator_tol_p',                        &

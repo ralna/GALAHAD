@@ -148,7 +148,7 @@
 !     WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )")&
 !               inform%iter + inform%iter_pass2, f, inform%multiplier
       IF ( pass /= 3 .AND. pass /= 6 .AND. pass /= 7 )                         &
-        CALL GLRT_terminate( data, control, inform ) !  delete internal workspace
+        CALL GLRT_terminate( data, control, inform ) ! delete internal workspace
    END DO
 
 !  =============

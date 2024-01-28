@@ -235,12 +235,17 @@ module spral_ssids_gpu_datatypes_precision
       integer(ip_) :: num_levels = 0 ! number of levels
       integer(ip_) :: presolve = 0
       integer(ip_), dimension(:), allocatable :: lvlptr ! pointers into lvllist
-      integer(ip_), dimension(:), allocatable :: lvllist ! list of nodes at level
-      integer(C_INT64_T), dimension(:), allocatable :: off_L ! offsets for each node
+      integer(ip_), dimension(:), allocatable :: lvllist 
+          ! list of nodes at level
+      integer(C_INT64_T), dimension(:), allocatable :: off_L 
+          ! offsets for each node
       ! the following three are row offsets for independence from nrhs
-      integer(ip_), dimension(:), allocatable :: off_lx ! node offsets for fwd solve
-      integer(ip_), dimension(:), allocatable :: off_lc ! offsets for node contrib.
-      integer(ip_), dimension(:), allocatable :: off_ln ! node offsets for bwd solve
+      integer(ip_), dimension(:), allocatable :: off_lx 
+           ! node offsets for fwd solve
+      integer(ip_), dimension(:), allocatable :: off_lc 
+           ! offsets for node contrib.
+      integer(ip_), dimension(:), allocatable :: off_ln 
+           ! node offsets for bwd solve
       integer(C_INT64_T) :: rd_size = 0
       integer(ip_) :: max_lx_size = 0
       integer(ip_) :: max_lc_size = 0

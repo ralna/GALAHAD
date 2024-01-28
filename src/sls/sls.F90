@@ -4170,7 +4170,7 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          data%sytr_lwork =                                                     &
-           data%n * LAENV( 1_ip_, 'DSYTRF', 'L', data%n,                       &
+           data%n * LAENV( 1_ip_, 'DSYTRF', 'L', data%n,                    &
                            - 1_ip_, - 1_ip_, - 1_ip_ )
          CALL SPACE_resize_array( data%sytr_lwork, data%WORK,                  &
                                   inform%status, inform%alloc_status )
@@ -8385,11 +8385,11 @@
          inform%status = 0
          GO TO 900
        END IF
-       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
-       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -8453,11 +8453,11 @@
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MKL_PARDISO_SOLVE(                                                 &
-                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,            &
+                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,    &
                      phase, data%matrix%n, data%matrix%VAL( 1 : data%ne ),     &
                      data%matrix%PTR( 1 : data%matrix%n + 1 ),                 &
                      data%matrix%COL( 1 : data%ne ),                           &
-                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                       &
+                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                   &
                      data%mkl_pardiso_IPARM, control%print_level_solver,       &
                      data%B1( 1 : data%n ), X( 1 : data%n ),                   &
                      inform%pardiso_error )
@@ -9063,11 +9063,11 @@
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL MKL_PARDISO_SOLVE(                                                 &
-                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,            &
-                     331_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),       &
+                     data%mkl_pardiso_PT, 1_ip_, 1_ip_, data%pardiso_mtype,    &
+                     331_ip_, data%matrix%n, data%matrix%VAL( 1 : data%ne ),   &
                      data%matrix%PTR( 1 : data%matrix%n + 1 ),                 &
                      data%matrix%COL( 1 : data%ne ),                           &
-                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                       &
+                     data%ORDER( 1 : data%matrix%n ), 1_ip_,                   &
                      data%mkl_pardiso_IPARM, control%print_level_solver,       &
                      data%B1( 1 : data%n ), X( 1 : data%n ),                   &
                      inform%pardiso_error )
@@ -9111,7 +9111,8 @@
        data%wsmp_IPARM( 2 ) = 4
        data%wsmp_IPARM( 3 ) = 4
 
-       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%B2, inform%status,         &
+
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
@@ -9503,7 +9504,7 @@
 
      CASE ( 'potr', 'sytr', 'pbtr' )
 
-       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,             &
+       CALL SPACE_resize_array( data%n, 1_ip_, data%X2, inform%status,         &
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF

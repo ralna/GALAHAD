@@ -1386,9 +1386,9 @@
 
          CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
              prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH,               &
-             prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,                      &
-             prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_,                    &
-             prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval, prob%n,             &
+             prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1_ip_,                  &
+             prob%ISTAEV( prob%nel + 1 ) - 1_ip_, prob%nel + 1_ip_,            &
+             prob%nel + 1_ip_, prob%nel + 1_ip_, prob%nel, lfuval, prob%n,     &
              prob%ISTEPA( prob%nel + 1 ) - 1_ip_, 1_ip_, i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 1 ) THEN

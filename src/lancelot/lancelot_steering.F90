@@ -2671,7 +2671,7 @@
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, IVUSE
      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_col_ptr, L_col_ptr
-     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) ::                        &
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) ::                       &
        W, RHS, RHS2, P2, G , DIAG
      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA
 

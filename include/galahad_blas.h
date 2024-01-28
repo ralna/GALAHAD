@@ -1,13 +1,14 @@
 #ifdef GALAHAD_64BIT_INTEGER
 #define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
 #ifdef GALAHAD_NO_UNDERSCORE_64BIT_INTEGER
-#define LSAME  LSAME64
-#define XERBLA XERBLA64
 #define DASUM  DASUM64
 #define DCABS1 DCABS164
 #define DDOT   DDOT64
 #define DNRM2  DNRM264
 #define DZNRM2 DZNRM264
+#define IDAMAX IDAMAX64
+#define ISAMAX ISAMAX64
+#define LSAME  LSAME64
 #define SASUM  SASUM64
 #define SDOT   SDOT64
 #define SNRM2  SNRM264
@@ -55,6 +56,7 @@
 #define STRMV  STRMV64
 #define STRSM  STRSM64
 #define STRSV  STRSV64
+#define XERBLA XERBLA64
 #define ZCOPY  ZCOPY64
 #define ZDSCAL ZDSCAL64
 #define ZGEMM  ZGEMM64
@@ -68,13 +70,14 @@
 #define ZTRMV  ZTRMV64
 #define ZTRSM  ZTRSM64
 #elif GALAHAD_DOUBLE_UNDERSCORE_64BIT_INTEGER
-#define LSAME  LSAME__64
-#define XERBLA XERBLA__64
 #define DASUM  DASUM__64
 #define DCABS1 DCABS1__64
 #define DDOT   DDOT__64
 #define DNRM2  DNRM2__64
 #define DZNRM2 DZNRM2__64
+#define IDAMAX IDAMAX__64
+#define ISAMAX ISAMAX__64
+#define LSAME  LSAME__64
 #define SASUM  SASUM__64
 #define SDOT   SDOT__64
 #define SNRM2  SNRM2__64
@@ -122,6 +125,7 @@
 #define STRMV  STRMV__64
 #define STRSM  STRSM__64
 #define STRSV  STRSV__64
+#define XERBLA XERBLA__64
 #define ZCOPY  ZCOPY__64
 #define ZDSCAL ZDSCAL__64
 #define ZGEMM  ZGEMM__64
@@ -135,13 +139,14 @@
 #define ZTRMV  ZTRMV__64
 #define ZTRSM  ZTRSM__64
 #elif GALAHAD_NO_SYMBOL_64BIT_INTEGER
-#define LSAME  LSAME
-#define XERBLA XERBLA
 #define DASUM  DASUM
 #define DCABS1 DCABS1
 #define DDOT   DDOT
 #define DNRM2  DNRM2
 #define DZNRM2 DZNRM2
+#define IDAMAX IDAMAX
+#define ISAMAX ISAMAX
+#define LSAME  LSAME
 #define SASUM  SASUM
 #define SDOT   SDOT
 #define SNRM2  SNRM2
@@ -189,6 +194,7 @@
 #define STRMV  STRMV
 #define STRSM  STRSM
 #define STRSV  STRSV
+#define XERBLA XERBLA
 #define ZCOPY  ZCOPY
 #define ZDSCAL ZDSCAL
 #define ZGEMM  ZGEMM
@@ -202,13 +208,14 @@
 #define ZTRMV  ZTRMV
 #define ZTRSM  ZTRSM
 #else
-#define LSAME  LSAME_64
-#define XERBLA XERBLA_64
 #define DASUM  DASUM_64
 #define DCABS1 DCABS1_64
 #define DDOT   DDOT_64
 #define DNRM2  DNRM2_64
 #define DZNRM2 DZNRM2_64
+#define IDAMAX IDAMAX_64
+#define ISAMAX ISAMAX_64
+#define LSAME  LSAME_64
 #define SASUM  SASUM_64
 #define SDOT   SDOT_64
 #define SNRM2  SNRM2_64
@@ -256,6 +263,7 @@
 #define STRMV  STRMV_64
 #define STRSM  STRSM_64
 #define STRSV  STRSV_64
+#define XERBLA XERBLA_64
 #define ZCOPY  ZCOPY_64
 #define ZDSCAL ZDSCAL_64
 #define ZGEMM  ZGEMM_64

@@ -151,17 +151,17 @@ contains
           if (nrhs .eq. 1) then
              call solve_fwd_one(pos_def, rlist(rptr(node)), invp, x, &
                   blkm, blkn, nelim, nd, &
-                  !nodes(node)%rsmptr%rmem(nodes(node)%rsmsa), & ! nodes(node)%lcol
+               !nodes(node)%rsmptr%rmem(nodes(node)%rsmsa), & ! nodes(node)%lcol
                   nodes(node)%lcol, &
-                  !nodes(node)%ismptr%imem(nodes(node)%ismsa), & ! nodes(node)%perm
+               !nodes(node)%ismptr%imem(nodes(node)%ismsa), & ! nodes(node)%perm
                   nodes(node)%perm, &
                   xlocal, map)
           else
-             call solve_fwd_mult(pos_def, rlist(rptr(node)), invp, nrhs, x, ldx,&
-                  blkm, blkn, nelim, nd, &
-                  !nodes(node)%rsmptr%rmem(nodes(node)%rsmsa), & ! nodes(node)%lcol
+             call solve_fwd_mult(pos_def, rlist(rptr(node)), invp, &
+                  nrhs, x, ldx, blkm, blkn, nelim, nd, &
+               !nodes(node)%rsmptr%rmem(nodes(node)%rsmsa), & ! nodes(node)%lcol
                   nodes(node)%lcol, &
-                  !nodes(node)%ismptr%imem(nodes(node)%ismsa), & ! nodes(node)%perm
+               !nodes(node)%ismptr%imem(nodes(node)%ismsa), & ! nodes(node)%perm
                   nodes(node)%perm, &
                   xlocal, map)
           end if
@@ -179,11 +179,13 @@ contains
 
           if (nrhs .eq. 1) then
              call solve_diag_one(invp, x, nelim, &
-                  nodes(node)%rsmptr%rmem(nodes(node)%rsmsa+blkm*blkn), & ! node%d
+                  nodes(node)%rsmptr%rmem(nodes(node)%rsmsa+blkm*blkn), & 
+              ! node%d
                   nodes(node)%ismptr%imem(nodes(node)%ismsa)) ! node%perm
           else
              call solve_diag_mult(invp, nrhs, x, ldx, nelim, &
-                  nodes(node)%rsmptr%rmem(nodes(node)%rsmsa+blkm*blkn), & ! node%d
+                  nodes(node)%rsmptr%rmem(nodes(node)%rsmsa+blkm*blkn), & 
+               ! node%d
                   nodes(node)%ismptr%imem(nodes(node)%ismsa)) ! node%perm
           end if
        end do

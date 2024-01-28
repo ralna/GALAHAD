@@ -26,6 +26,6 @@
     max_iter = max( max_iter, iter )
   END DO
   CALL CPU_TIME( te )
-  write(6,"( ' max iter, aver cpu, ', i0, 1X, F5.2 )" ) max_iter,               &
+  WRITE( 6, "( ' max iter, aver cpu, ', i0, 1X, F5.2 )" ) max_iter,            &
     ( te - ts ) / n_prob
   END PROGRAM BARC_test

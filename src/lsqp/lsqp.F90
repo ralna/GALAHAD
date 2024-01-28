@@ -7729,7 +7729,8 @@
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: X_stat
 
 !  local variables
 

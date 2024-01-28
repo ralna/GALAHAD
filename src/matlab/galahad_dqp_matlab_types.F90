@@ -408,7 +408,7 @@
 
 !  create the components of sub-structure GLTR_control
 
-      CALL GLTR_matlab_control_get( pointer, DQP_control%GLTR_control,           &
+      CALL GLTR_matlab_control_get( pointer, DQP_control%GLTR_control,         &
                                    'GLTR_control' )
 
       RETURN

@@ -425,7 +425,7 @@
                                mxGetPr( PSLS_pointer%time_pointer%factorize ) )
       CALL MATLAB_copy_to_ptr( REAL( PSLS_inform%time%solve, wp ),             &
                                mxGetPr( PSLS_pointer%time_pointer%solve ) )
-      CALL MATLAB_copy_to_ptr( REAL( PSLS_inform%time%update, wp ),             &
+      CALL MATLAB_copy_to_ptr( REAL( PSLS_inform%time%update, wp ),            &
                                mxGetPr( PSLS_pointer%time_pointer%update ) )
 
 !  symmetric linear system components

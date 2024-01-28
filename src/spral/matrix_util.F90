@@ -2497,8 +2497,8 @@ end subroutine convert_coord_to_cscl_ptr64_precision
 !
 ! This subroutine will use map to translate the values of val to val_out
 !
-subroutine apply_conversion_map_ptr32_precision(matrix_type, lmap, map, val, ne, &
-      val_out)
+subroutine apply_conversion_map_ptr32_precision(matrix_type, lmap, map, &  
+                                                val, ne, val_out)
    integer(ip_), intent(in) :: matrix_type
    integer(i4_), intent(in) :: lmap
    integer(i4_), dimension(lmap), intent(in) :: map

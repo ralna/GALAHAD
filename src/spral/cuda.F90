@@ -175,7 +175,8 @@ module spral_cuda_precision
        type(C_PTR), value :: stream
      end function cudaMemcpyAsync
      integer(C_IP_) function cudaMemcpy2DAsync(dst, dpitch, src, spitch, &
-          width, height, kind, stream) bind(C, name="spral_cuda_precisionMemcpy2DAsync")
+          width, height, kind, stream) bind(C, &
+           name="spral_cuda_precisionMemcpy2DAsync")
        use spral_kinds
        type(C_PTR), value :: dst
        integer(C_SIZE_T), value :: dpitch

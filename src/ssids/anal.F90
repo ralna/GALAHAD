@@ -927,7 +927,8 @@ contains
        do node = part(i), part(i+1)-1
           weight = real(flops(node)) / tot_weight
           if (weight .lt. small) cycle ! Prune smallest nodes
-          if(sparent(node) .ne. -1) write(2, '(i10, "--", i10)')sparent(node), node
+          if(sparent(node) .ne. -1) &
+            write(2, '(i10, "--", i10)')sparent(node), node
        end do
 
     end do

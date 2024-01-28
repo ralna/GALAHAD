@@ -48,41 +48,41 @@
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'coordinate', ne, H_row, H_col, H_ptr )
-       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                  &
-                                FUN, GRAD, HESS, PREC )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'coordinate', ne, H_row, H_col, H_ptr )
+       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                 &
+                                 FUN, GRAD, HESS, PREC )
      CASE ( 2 ) ! sparse by rows
        st = 'R'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                  &
-                                FUN, GRAD, HESS, PREC )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
+       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                 &
+                                 FUN, GRAD, HESS, PREC )
      CASE ( 3 ) ! dense
        st = 'D'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'dense', ne, H_row, H_col, H_ptr )
-       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                  &
-                                FUN, GRAD, HESS_dense, PREC )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'dense', ne, H_row, H_col, H_ptr )
+       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                 &
+                                 FUN, GRAD, HESS_dense, PREC )
      CASE ( 4 ) ! diagonal
        st = 'I'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'diagonal', ne, H_row, H_col, H_ptr )
-       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                  &
-                                FUN_diag, GRAD_diag, HESS_diag, PREC )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'diagonal', ne, H_row, H_col, H_ptr )
+       CALL TR2A_solve_with_mat( data, userdata, status, X, G,                 &
+                                 FUN_diag, GRAD_diag, HESS_diag, PREC )
      CASE ( 5 ) ! access by products
        st = 'P'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'absent', ne, H_row, H_col, H_ptr )
-       CALL TR2A_solve_without_mat( data, userdata, status, X, G,               &
-                                   FUN, GRAD, HESSPROD, PREC )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'absent', ne, H_row, H_col, H_ptr )
+       CALL TR2A_solve_without_mat( data, userdata, status, X, G,              &
+                                    FUN, GRAD, HESSPROD, PREC )
      END SELECT
      CALL TR2A_information( data, inform, status )
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A1, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( A1, ': TR2A_solve exit status = ', I0 ) " ) st, inform%status
+       WRITE( 6, "( A1, ': TR2A_solve exit status = ', I0 )" ) st, inform%status
      END IF
 !    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
 !    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
@@ -100,11 +100,11 @@
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
-       CALL TR2A_import( control, data, status, n,                              &
+       CALL TR2A_import( control, data, status, n,                             &
                         'coordinate', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
-         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,          &
+                                           X, f, G, H_val, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -126,11 +126,11 @@
        END DO
      CASE ( 2 ) ! sparse by rows
        st = 'R'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'sparse_by_rows', ne, H_row, H_col, H_ptr )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
-         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,          &
+                                           X, f, G, H_val, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -152,11 +152,11 @@
        END DO
      CASE ( 3 ) ! dense
        st = 'D'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'dense', ne, H_row, H_col, H_ptr )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'dense', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
-         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_dense, U, V )
+         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,          &
+                                         X, f, G, H_dense, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -178,11 +178,11 @@
        END DO
      CASE ( 4 ) ! diagonal
        st = 'I'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'diagonal', ne, H_row, H_col, H_ptr )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'diagonal', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
-         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, f, G, H_diag, U, V )
+         CALL TR2A_solve_reverse_with_mat( data, status, eval_status,          &
+                                         X, f, G, H_diag, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -204,11 +204,11 @@
        END DO
      CASE ( 5 ) ! access by products
        st = 'P'
-       CALL TR2A_import( control, data, status, n,                              &
-                        'absent', ne, H_row, H_col, H_ptr )
+       CALL TR2A_import( control, data, status, n,                             &
+                         'absent', ne, H_row, H_col, H_ptr )
        DO ! reverse-communication loop
-         CALL TR2A_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, f, G, U, V )
+         CALL TR2A_solve_reverse_without_mat( data, status, eval_status,       &
+                                              X, f, G, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -234,7 +234,7 @@
        WRITE( 6, "( A1, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( A1, ': TR2A_solve exit status = ', I0 ) " ) st, inform%status
+       WRITE( 6, "( A1, ': TR2A_solve exit status = ', I0 )" ) st, inform%status
      END IF
 !    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
 !    WRITE( 6, "( ' G ', 3ES12.5 )" ) G

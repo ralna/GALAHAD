@@ -219,7 +219,7 @@
           CALL MATLAB_get_value( ps, 'renormalize_weight',                     &
                                  pc, ARC_control%renormalize_weight )
         CASE( 'quadratic_ratio_test' )
-          CALL MATLAB_get_value( ps, 'quadratic_ratio_test',                     &
+          CALL MATLAB_get_value( ps, 'quadratic_ratio_test',                   &
                                  pc, ARC_control%quadratic_ratio_test )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &

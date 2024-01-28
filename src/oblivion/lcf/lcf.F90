@@ -1598,7 +1598,7 @@
                            DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C_RES
       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( dims%v_e ) :: SOL
-      REAL ( KIND = rp_ ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C
 
 !  Allocatable arrays and structures
@@ -2122,7 +2122,7 @@
             size_p = SUM( ( two * X - Pb_x - Pl_x ) ** 2 ) +                   &
                      SUM( ( two * C - Pb_c - Pl_c ) ** 2 )
             IF ( size_p /= zero ) THEN
-              alpha = 3.8_rp_ *                                                 &
+              alpha = 3.8_rp_ *                                                &
                 ( inform%size_b ** 2 + inform%size_l ** 2 ) / size_p
             ELSE
               alpha = 1.9_rp_

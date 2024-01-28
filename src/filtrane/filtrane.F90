@@ -569,7 +569,7 @@
 !                      defined by the vector control%group.
 !                      Default : none.
 
-         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: group   ! INTENT( IN )
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: group ! INTENT( IN )
 
 !                   group( i ) contains the index of the group to which
 !                   the i-th constrained item is assigned. A constrained

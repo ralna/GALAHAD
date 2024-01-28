@@ -6062,7 +6062,8 @@
              if ( print_level >= GALAHAD_crazy ) then
                 write(out, 1015)
                 write( out,  '(4(2x, ES15.8))') &
-                     ( data%BFGS%d(i), data%BFGS%Bs(i), data%BFGS%gradLx_new(i), data%BFGS%gradLx(i),  i = 1, n )
+                     ( data%BFGS%d(i), data%BFGS%Bs(i), &
+                       data%BFGS%gradLx_new(i), data%BFGS%gradLx(i),  i = 1, n )
              end if
           end if
 
@@ -9330,8 +9331,10 @@
  real( kind = rp_ ), intent( in ), dimension( : ) :: res_vl, res_vu
  character ( len = 2 ), intent( in ), dimension( : ) :: v_type
  real( kind = rp_ ), intent( in ), optional :: tiny
- INTEGER ( KIND = ip_ ), intent( inout ), dimension( : ), optional :: sat, vl_l, vl_u
- INTEGER ( KIND = ip_ ), intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
+ INTEGER ( KIND = ip_ ), intent( inout ), dimension( : ),                      &
+                         optional :: sat, vl_l, vl_u
+ INTEGER ( KIND = ip_ ), intent( inout ),                                      &
+                         optional :: num_sat, num_vl_l, num_vl_u
 
  !------------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s
@@ -10089,7 +10092,8 @@
  ! D u m m y   A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- INTEGER ( KIND = ip_ ), intent( in ) :: L, error, out, n, print_level, num_update
+ INTEGER ( KIND = ip_ ), intent( in ) :: L, error, out, n
+ INTEGER ( KIND = ip_ ), intent( in ) :: print_level, num_update
  INTEGER ( KIND = ip_ ), intent( out ) :: status
  real( kind = rp_ ), intent( out ) :: theta
  real( kind = rp_ ), intent( in ) :: damp_factor
@@ -10394,7 +10398,8 @@
  end if
 
  if ( m_a > 0 ) then
-    call print_real_vec( 'Ya_p', data%QPpred%Y(m+1:m+m_a), 5, num_print, out, error )
+    call print_real_vec( 'Ya_p', data%QPpred%Y(m+1:m+m_a), 5, &
+                         num_print, out, error )
  end if
 
  call print_real_vec( 's_p', data%s_p, 5, num_print, out, error )
@@ -10467,7 +10472,8 @@
     call print_real_vec( 'v_out', data%v_out, 5, num_print, out, error )
  end if
 
- call print_real_vec( 'X + s_steer', nlp%X+data%s_steer, 5, num_print, out, error )
+ call print_real_vec( 'X + s_steer', nlp%X+data%s_steer, & 
+                      5, num_print, out, error )
 
  write( out, 3001 )
 
@@ -10711,11 +10717,13 @@
  call print_int_vec( 'x-fixed', data%fx, 10, num_print, out, error )
  if ( m > 0 ) then
     call print_int_vec( 'J-in-working-set', data%wJ, 10, num_print, out, error )
-    call print_int_vec( 'J-NOT-in-working-set', data%wJ_comp, 10, num_print, out, error )
+    call print_int_vec( 'J-NOT-in-working-set', data%wJ_comp, &
+                        10, num_print, out, error )
  end if
  if ( m_a > 0 ) then
     call print_int_vec( 'A-in-working-set', data%wA, 6, num_print, out, error )
-    call print_int_vec( 'A-NOT-in-working set', data%wA_comp, 10, num_print, out, error )
+    call print_int_vec( 'A-NOT-in-working set', data%wA_comp, &
+                        10, num_print, out, error )
  end if
 
  call print_real_vec( 'S_s', data%s_s, 5, num_print, out, error )
@@ -11047,16 +11055,24 @@
   1X, 79('*'),/, &
   1X, 23('*'),'BEGIN SUMMARY (S2QP) : ITERATE S(', I7,')', 23('*'), /, &
   1X, 79('*'),/, &
-  1X, 'B-approx-type = ', 12x, I1, T34, 'alpha-cauchy  = ', ES13.6, T66, 'trial-step    = ', 11x,A2,  /, &
-  1X, 'BFGS-mod-type = ', 12x, I1, T34, 'dec-cauchy    = ', ES13.6, T66, 'dec-model     = ', ES13.6,  /, &
-  1x, 'use-prev-pred = ', 12x, L1, T34, 'sEqp-computed = ', 12x,L1, T66, 'ratio         = ', ES13.6,  /, &
-  1x, 'use-TR-pred   = ', 12x, L1, T34, 'alpha-feas    = ', ES13.6, T66, 'step-sucess   = ', 6x,  A7, /, &
-  1X, 'iters-pred    = ', 6x,  I7, T34, 'sIqp-computed = ', 12x,L1, T66, 'step-accepted = ', 12x, L1, /, &
-  1X, 'radius-pred   = ', ES13.6,  T34, 'descent       = ', 9x, A4, T66, 'reverting     = ', 12x, L1, /, &
-  1X, 'inf-norm-pred = ', ES13.6,  T34, 'iters-acc     = ', 6x, I7, T66, 'NM-active     = ', 12x, L1, /, &
-  1x, 'inf-norm-Y_p  = ', ES13.6,  T34, 'acc-radius    = ', ES13.6, T66, 'NM-steps      = ', 12x, I1, /, &
-                                   T34, 'inf-norm-acc  = ', ES13.6, T66, 'NM-#-fail     = ', 12x, I1, /, &
-                                   T34, 'inf-norm-Y_s  = ', ES13.6,                                   /, &
+  1X, 'B-approx-type = ', 12x, I1, T34, 'alpha-cauchy  = ', ES13.6, &
+      T66, 'trial-step    = ', 11x,A2,  /, &
+  1X, 'BFGS-mod-type = ', 12x, I1, T34, &
+      'dec-cauchy    = ', ES13.6, T66, 'dec-model     = ', ES13.6,  /, &
+  1x, 'use-prev-pred = ', 12x, L1, T34, &
+      'sEqp-computed = ', 12x,L1, T66, 'ratio         = ', ES13.6,  /, &
+  1x, 'use-TR-pred   = ', 12x, L1, T34, &
+      'alpha-feas    = ', ES13.6, T66, 'step-sucess   = ', 6x,  A7, /, &
+  1X, 'iters-pred    = ', 6x,  I7, T34, &
+      'sIqp-computed = ', 12x,L1, T66, 'step-accepted = ', 12x, L1, /, &
+  1X, 'radius-pred   = ', ES13.6,  T34, &
+      'descent       = ', 9x, A4, T66, 'reverting     = ', 12x, L1, /, &
+  1X, 'inf-norm-pred = ', ES13.6,  T34, &
+      'iters-acc     = ', 6x, I7, T66, 'NM-active     = ', 12x, L1, /, &
+  1x, 'inf-norm-Y_p  = ', ES13.6,  T34, &
+      'acc-radius    = ', ES13.6, T66, 'NM-steps      = ', 12x, I1, /, &
+      T34, 'inf-norm-acc  = ', ES13.6, T66, 'NM-#-fail     = ', 12x, I1, /, &
+      T34, 'inf-norm-Y_s  = ', ES13.6,                                   /, &
   1X, 79('*'),/, &
   1X, 23('*'),'END SUMMARY (S2QP)', 23('*'), /, &
   1X, 79('*') )

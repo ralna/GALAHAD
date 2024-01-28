@@ -7746,7 +7746,8 @@ inner: DO
      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: search_error, J_ne
      LOGICAL, INTENT( IN ) :: printt, scale_xcf
      REAL ( KIND = rp_ ), INTENT( IN ) :: mu, nu, merit
-     REAL ( KIND = rp_ ), INTENT( OUT ) :: barrier, penalty, merit_trial, f_trial
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: barrier, penalty
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: merit_trial, f_trial
      REAL ( KIND = rp_ ), INTENT( INOUT ) :: alpha, slope, ratio
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: XSTATE
      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nfree ) :: XFREE

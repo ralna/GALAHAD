@@ -154,10 +154,10 @@ stop
 
       DO
          IF ( pass /= 4 ) THEN
-           CALL GLTR_solve( nn, radius, f, X( : nn ), R( : nn ),                &
+           CALL GLTR_solve( nn, radius, f, X( : nn ), R( : nn ),               &
                             VECTOR( : nn ), data, control, info )
          ELSE
-           CALL GLTR_solve( nn, radius, f, X0, R0,                              &
+           CALL GLTR_solve( nn, radius, f, X0, R0,                             &
                             VECTOR0, data, control, info )
          END IF
 
@@ -179,7 +179,7 @@ stop
          CASE ( 3, 7 )
             H_vector( 1 ) = - two * VECTOR( 1 ) + VECTOR( 2 )
             DO i = 2, n - 1
-              H_vector( i ) = VECTOR( i - 1 ) - two * VECTOR( i ) +         &
+              H_vector( i ) = VECTOR( i - 1 ) - two * VECTOR( i ) +            &
                               VECTOR( i + 1 )
             END DO
             H_vector( n ) = VECTOR( n - 1 ) - two * VECTOR( n )

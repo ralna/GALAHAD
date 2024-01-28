@@ -91,7 +91,7 @@ module hsl_MA97_single
     real(sp_) :: small = tiny(one) ! Minimum pivot size
     logical(lp_) :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
     integer(long_) :: solve_min = 100000 ! Minimum value of info%num_factor
-    logical(lp_) :: solve_mf = .false. ! Do we use s/n (false) or m/f (true) solve?
+    logical(lp_) :: solve_mf = .false. ! Use s/n (false) or m/f (true) solve?
     real(sp_) :: u = 0.01 ! Initial relative pivot threshold
     integer(ip_) :: unit_diagnostics = 6 ! unit for diagnostic printing.
     integer(ip_) :: unit_error = 6 ! unit number for error messages

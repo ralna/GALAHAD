@@ -66,22 +66,27 @@
    WRITE( 6, "( /, 5X, 'i', 6x, 'v', 11X, 'l', 11X, 'u', 11X, 'z', 11X,        &
   &            'g', 6X, 'type' )" )
    DO i = 1, d%x_free                      ! free variables
-     WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), '  '
+     WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),   &
+                   '  '
    END DO
    DO i = d%x_free + 1, d%x_l_start - 1    ! non-negativities
-    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), '0< '
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &
+                   '0< '
    END DO
    DO i = d%x_l_start, d%x_u_start - 1     ! lower-bounded variables
-    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), 'l< '
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &
+                   'l< '
    END DO
    DO i = d%x_u_start, d%x_l_end           ! range-bounded variables
-    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), 'l<u'
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &
+                   'l<u'
    END DO
    DO i = d%x_l_end + 1, d%x_u_end         ! upper-bounded variables
-    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), ' <u'
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &
+                   ' <u'
    END DO
    DO i = d%x_u_end + 1, p%n                ! non-positivities
-    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), ' <0'
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &                   ' <0'
    END DO
 ! re-ordered constraints
    WRITE( 6, "( /, 5X,'i', 5x, 'A*v', 10X, 'l', 11X, 'u', 11X, 'y',            &

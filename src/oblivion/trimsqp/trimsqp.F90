@@ -1120,231 +1120,301 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
  ! CALL SPACE_resize_array( nlp%m, data%Jv, inform%status, inform%alloc_status )
  ! IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSp, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%JxSp, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSc, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%JxSc, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSac, inform%status,inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%JxSac, &
+                           inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSs, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%JxSs, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSsteer, inform%status,                &
-                           inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%JxSsteer, 
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSf, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%JxSf, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%Jpos, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%Jpos, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%Jneg, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%Jneg, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%u_in, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%u_in, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%v_in, inform%status, inform%alloc_status)
+  CALL SPACE_resize_array( nlp%m, data%v_in, &
+                           inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%JtY, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY_cur, inform%status,                 &
-                           inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%JtY_cur, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY_p, inform%status,inform%alloc_status)
+  CALL SPACE_resize_array( nlp%n, data%JtY_p, &
+                           inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%JtY_s, inform%status,inform%alloc_status)
+  CALL SPACE_resize_array( nlp%n, data%JtY_s, &
+                           inform%status,inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Jtv, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Jtv, &
+!                           inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Jtv_cur, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Jtv_cur, &
+!                           inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Jtv_p, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Jtv_p, &
+!                           inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Jtv_s, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Jtv_s, &
+!                          inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Jtv2, inform%status, inform%alloc_status)
+  !CALL SPACE_resize_array( nlp%n, data%Jtv2, &
+!                           inform%status, inform%alloc_status)
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Jtv3, inform%status, inform%alloc_status)
+  !CALL SPACE_resize_array( nlp%n, data%Jtv3, &
+!                           inform%status, inform%alloc_status)
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array(nlp%m, data%C_new, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%C_cauchy, inform%status,      &
-                                                 inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%C_cauchy, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%cauchy_Y, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%cauchy_Y, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%C_type, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%C_type, &
+                          inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%CplusJSc, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%CplusJSc, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%CplusJxSp, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%CplusJxSp, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-!  CALL SPACE_resize_array( nlp%m, data%CplusJxSs, inform%status, inform%alloc_status )
+!  CALL SPACE_resize_array( nlp%m, data%CplusJxSs, &
+!                           inform%status, inform%alloc_status )
 !  IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%w, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%w, inform%status, &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%J_norms, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%J_norms, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%Y_seqp, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%Y_seqp, inform%status, &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%sat, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%sat, inform%status, &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%vl_l, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%vl_l, inform%status, &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%vl_u, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%vl_u, inform%status, &
+                           inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( data%lbreak, data%IBREAK, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( data%lbreak, data%IBREAK, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( data%lbreak, data%BREAKP, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( data%lbreak, data%BREAKP, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%C_RES_l, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%C_RES_l, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%C_RES_u, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m, data%C_RES_u, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%m_a, data%Av, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%m_a, data%Av, &
+  !                         inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%AXplusSc, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%AXplusSc, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%AxSp, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%AxSp, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%AxSc, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%AxSc, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%AxSac, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%AxSac, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%AxSs, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%AxSs, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%Apos, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%Apos, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%Aneg, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%Aneg, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%Ya_seqp, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%Ya_seqp, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Atv, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Atv, &
+  !                        inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%G_prev, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%G_prev, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%AtYa, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%AtYa, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%AtYa_cur, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%AtYa_cur, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%AtYa_p, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%AtYa_p, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%n, data%AtYa_s, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%n, data%AtYa_s, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Atv_cur, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Atv_cur, &
+  !                        inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Atv_p, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Atv_p, &
+  !                        inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Atv_s, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Atv_s, &
+  !                        inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Atv2, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Atv2, &
+  !                        inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  !CALL SPACE_resize_array( nlp%n, data%Atv3, inform%status, inform%alloc_status )
+  !CALL SPACE_resize_array( nlp%n, data%Atv3, &
+  !                         inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%A_type, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%A_type, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%A_RES_l, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%A_RES_l, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%A_RES_u, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%A_RES_u, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m_a, data%cauchy_Y_a, inform%status, inform%alloc_status )
+  CALL SPACE_resize_array( nlp%m_a, data%cauchy_Y_a, &
+                           inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   if ( data%control%NM_steps > 0 ) then
 
-     CALL SPACE_resize_array( nlp%n, data%revert%G_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%n, data%revert%G_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%n, data%revert%X_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%n, data%revert%X_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%n, data%revert%Z_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%n, data%revert%Z_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m, data%revert%C_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m, data%revert%C_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m, data%revert%Y_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m, data%revert%Y_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m_a, data%revert%Ax_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m_a, data%revert%Ax_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m_a, data%revert%Y_a_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m_a, data%revert%Y_a_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m, data%revert%C_RES_l_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m, data%revert%C_RES_l_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m, data%revert%C_RES_u_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m, data%revert%C_RES_u_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m_a, data%revert%A_RES_l_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m_a, data%revert%A_RES_l_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%m_a, data%revert%A_RES_u_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%m_a, data%revert%A_RES_u_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%n, data%revert%X_RES_l_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%n, data%revert%X_RES_l_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-     CALL SPACE_resize_array( nlp%n, data%revert%X_RES_u_revert, inform%status, inform%alloc_status )
+     CALL SPACE_resize_array( nlp%n, data%revert%X_RES_u_revert, &
+                           inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   end if
@@ -2220,8 +2290,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                         out, control%error, symmetric=.true. )
            if ( data%control%B_type == 2 ) then
               do i = 1, nLMV
-                 data%BxSp = data%BxSp - dot_product(data%s_p, data%L_BFGS%A( :, nLMV )) * data%L_BFGS%A( :, nLMV )
-                 data%BxSp = data%BxSp + dot_product(data%s_p, data%L_BFGS%B( :, nLMV )) * data%L_BFGS%B( :, nLMV )
+                 data%BxSp = data%BxSp - dot_product(data%s_p, &
+                    data%L_BFGS%A( :, nLMV )) * data%L_BFGS%A( :, nLMV )
+                 data%BxSp = data%BxSp + dot_product(data%s_p, &
+                    data%L_BFGS%B( :, nLMV )) * data%L_BFGS%B( :, nLMV )
               end do
            end if
            data%Sp_B_Sp = DOT_PRODUCT( data%BxSp, data%s_p )  ! s_p^T B s_p
@@ -2231,13 +2303,16 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            data%decreaseB = data%decreaseB - half * data%Sp_B_Sp
 
            ! Compute decrease in SMOOTH convex model.
-           data%decreaseB_smooth = -DOT_PRODUCT(nlp%G,data%s_p) - half * data%Sp_B_Sp
+           data%decreaseB_smooth = -DOT_PRODUCT(nlp%G,data%s_p) &
+                                     - half * data%Sp_B_Sp
            if ( nlp%m > 0 ) then
               dummy_real = zero
               do i = 1, m
-                 dummy_real =  data%u_in(i) + data%v_in(i) - data%QPpred%X(n+i) - data%QPpred%X(n+m+i)
+                 dummy_real = data%u_in(i) + data%v_in(i) &
+                               - data%QPpred%X(n+i) - data%QPpred%X(n+m+i)
               end do
-              data%decreaseB_smooth = data%decreaseB_smooth + data%penalty*dummy_real
+              data%decreaseB_smooth = data%decreaseB_smooth &
+                                        + data%penalty*dummy_real
            end if
 
            if ( data%control%print_level >= GALAHAD_DEBUG ) then
@@ -2269,8 +2344,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                    out, control%error, transpose=.false. )
            end if
 
-           if ( inform%QPpred_inform%status /= GALAHAD_OK .or. data%decreaseB < - tenm5 ) then
-              write(*,*) 'WARNING : trimsqp : entered the --Catch-- bad predictor.'
+           if ( inform%QPpred_inform%status /= GALAHAD_OK .or. &
+                data%decreaseB < - tenm5 ) then
+              write(*,*) 'WARNING : trimsqp : entered the --Catch', &
+                         ' -- bad predictor.'
               write(*,*) 'Predictor status = ', inform%QPpred_inform%status
               write(*,*) 'decreaseB        = ', data%decreaseB
               return
@@ -2304,7 +2381,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
 
            if ( inform%QPpred_inform%status /= GALAHAD_OK ) then
-              write(out,*) ' QPpred : returned status ', inform%QPpred_inform%status
+              write(out,*) ' QPpred : returned status ', &
+                inform%QPpred_inform%status
               GO TO 999
            end if
 
@@ -2321,10 +2399,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !!$           call mop_Ax( one, nlp%J, data%s_p, one, data%JxSp, &
 !!$                        out, control%error, transpose=.false. )
 !!$           data%CplusJxSp = nlp%C + data%JxSp
-!!$           call constraint_violation(nlp, data%CplusJxSp, data,                 &
-!!$                                     data%norm_c_linearize_pred, inform%status, &
-!!$                                     data%sat, data%vl_l, data%vl_u,            &
-!!$                                     data%num_sat, data%num_vl_l, data%num_vl_u )
+!!$           call constraint_violation(nlp, data%CplusJxSp, data,             &
+!!$                                 data%norm_c_linearize_pred, inform%status, &
+!!$                                 data%sat, data%vl_l, data%vl_u,            &
+!!$                                 data%num_sat, data%num_vl_l, data%num_vl_u )
 !!$
 !!$        end if
 !!$
@@ -2397,7 +2475,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                             data%control%QPsteer_control, inform%QPsteer_inform)
 
               if ( inform%QPsteer_inform%status /= GALAHAD_ok ) then
-                 write(out,*) ' QPsteer : returned status ', inform%QPsteer_inform%status
+                 write(out,*) ' QPsteer : returned status ', &
+                   inform%QPsteer_inform%status
                  GO TO 999
               end if
 
@@ -2424,7 +2503,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !              data%steering_good = .false.
 !              data%penalty = min(data%control%penalty_expansion*data%penalty, data%control%max_penalty )
 !           elseif ( data%dec_norm_c_pred >= data%steer_L_factor * data%dec_norm_c_steer ) then
-           if ( data%dec_norm_c_pred >= data%steer_L_factor * data%dec_norm_c_steer ) then
+           if ( data%dec_norm_c_pred >= &
+                  data%steer_L_factor * data%dec_norm_c_steer ) then
               !if ( .true. ) then
                  data%steering_good = .true.
               !else
@@ -2438,7 +2518,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         end if
 
         if ( data%steering_good ) then
-           if ( data%decreaseB >= data%steer_Q_factor * data%penalty * data%dec_norm_c_pred  .or. &
+           if ( data%decreaseB >= &
+              data%steer_Q_factor * data%penalty * data%dec_norm_c_pred  .or. &
                 abs(data%decreaseB) <= tenm6 ) then
               ! relax...steering is already good.
            else
@@ -2485,7 +2566,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      end do
 
      data%iterates_pred = inform%QPpred_inform%QPA_inform%major_iter
-     data%iterates_pred = data%iterates_pred + inform%QPpred_inform%QPB_inform%iter
+     data%iterates_pred = data%iterates_pred &
+                            +inform%QPpred_inform%QPB_inform%iter
 
 !!$     ! Compute decrease in CONVEX model.
 !!$     ! *********************************
@@ -2594,7 +2676,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      data%decreaseH_pred = data%decreaseH_pred - half * data%Sp_H_Sp
 
      if ( data%control%print_level >= GALAHAD_DEBUG ) then
-        write( data%control%out, 3065 ) data%two_norm_s_p, data%gts_pred, data%Sp_H_Sp
+        write( data%control%out, 3065 ) data%two_norm_s_p, &
+                                        data%gts_pred, data%Sp_H_Sp
      end if
 
      ! Call subroutine get_cauchy_step if needed.
@@ -2625,7 +2708,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            write(out,*) 'C    = ', nlp%C
            write(out,*) 'Js_p = ', data%JxSp
         else
-           print_1line  = .false. ; print_detail = .false. ; print_debug  = .false.
+           print_1line  = .false. ; print_detail = .false. 
+           print_debug  = .false.
         end if
 
         call get_cauchy_step( nlp%m, data%C_type,                             &
@@ -2677,14 +2761,18 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      data%Sc_H_Sc = DOT_PRODUCT( data%HxSc, data%s_c )  ! s_c^T H s_c
 
-     data%decreaseH_cauchy = data%penalty * ( data%norm_c - data%norm_c_linearize_cauchy )
-     data%decreaseH_cauchy = data%decreaseH_cauchy - DOT_PRODUCT( nlp%G, data%s_c )
+     data%decreaseH_cauchy = data%penalty &
+                               * ( data%norm_c - data%norm_c_linearize_cauchy )
+     data%decreaseH_cauchy = data%decreaseH_cauchy &
+                              - DOT_PRODUCT( nlp%G, data%s_c )
      data%decreaseH_cauchy = data%decreaseH_cauchy - half * data%Sc_H_Sc
 
      if ( data%control%print_level >= GALAHAD_DEBUG ) then
-        write(out, 3067) data%norm_c, data%norm_c_linearize_cauchy,                      &
-                         data%decreaseH_cauchy, data%num_sat, data%num_vl_l, data%num_vl_u
-        write(out,'(3(3x, I7, 13x) )') (data%sat(i), data%vl_l(i), data%vl_u(i), i = 1, m)
+        write(out, 3067) data%norm_c, data%norm_c_linearize_cauchy,            &
+                         data%decreaseH_cauchy, data%num_sat, &
+                         data%num_vl_l, data%num_vl_u
+        write(out,'(3(3x, I7, 13x) )') &
+            (data%sat(i), data%vl_l(i), data%vl_u(i), i = 1, m)
      end if
 
      ! Possibly solve for SQP step s_s.
@@ -2705,14 +2793,16 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      data%seqp_computed = .false.
 
-     if (data%sqp_computed .and. data%norm_c_linearize_pred < tenm7 .and. data%control%use_seqp) then
+     if (data%sqp_computed .and. data%norm_c_linearize_pred < tenm7 .and. &
+         data%control%use_seqp) then
 
         ! Compute SEQP step.
         ! *****************
 
         data%seqp_computed = .true.
 
-        data%TRsqp = max( data%control%TRsqp_scale * data%TRpred, data%min_TRsqp )
+        data%TRsqp = max( data%control%TRsqp_scale * data%TRpred, &
+                          data%min_TRsqp )
 
         ! Compute approximate Cauchy point.
         ! *********************************
@@ -2753,10 +2843,12 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !         write(*,*) 'A_m =', data%QPseqp%A%m
 !         write(*,*) 'A_n =', data%QPseqp%A%n
 
-        call EQP_solve( data%QPseqp, data%QPseqp_data, data%control%QPseqp_control, inform%QPseqp_inform )
+        call EQP_solve( data%QPseqp, data%QPseqp_data, &
+                        data%control%QPseqp_control, inform%QPseqp_inform )
 
         if ( inform%QPseqp_inform%status /= GALAHAD_OK ) then
-           write(out,*) ' TRIMSQP : qp_seqp status = ', inform%QPseqp_inform%status
+           write(out,*) ' TRIMSQP : qp_seqp status = ', &
+             inform%QPseqp_inform%status
            go to 999
         end if
 
@@ -2771,10 +2863,13 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         data%Y_seqp( data%wJ( : data%nwJ) ) = data%QPseqp%Y( : data%nwJ )
 
         data%Ya_seqp = zero
-        data%Ya_seqp( data%wA( : data%nwA) ) = data%QPseqp%Y( data%nwJ + 1 : data%nwJ + data%nwA )
+        data%Ya_seqp( data%wA( : data%nwA) ) &
+          = data%QPseqp%Y( data%nwJ + 1 : data%nwJ + data%nwA )
 
         data%Z_seqp = zero
-        data%Z_seqp( data%fx( : data%nfx) ) = data%QPseqp%Y( data%nwJ + data%nwA + 1 : data%nwJ + data%nwA + data%nfx )
+        data%Z_seqp( data%fx( : data%nfx) ) &
+          = data%QPseqp%Y( data%nwJ + data%nwA + 1 : &
+                           data%nwJ + data%nwA + data%nfx )
 
         if (nlp%m > 0 ) then
            data%inf_norm_Y_s = maxval( abs(data%QPseqp%Y( : data%nwJ )) )
@@ -2801,7 +2896,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                      out, data%control%error, symmetric=.true. )
         data%Ss_H_Ss = DOT_PRODUCT( data%HxSs, data%s_s )
 
-        data%alpha_feas = max_feas_step( nlp, data, data%X_type, data%A_type, data%C_type )
+        data%alpha_feas = max_feas_step( nlp, data, data%X_type, &
+                                         data%A_type, data%C_type )
 
         ! The full step s_f.
 
@@ -2842,13 +2938,15 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            write( out, * ) 'alpha_feas     = ', data%alpha_feas
            if ( data%seqp_use_pred ) then
               write( out, * ) 'HxS_p          = ', data%HxSp
-              write( out, * ) 'X+S_p+alpha*S_s      = ', nlp%X + data%s_p + data%alpha_feas*data%s_s
+              write( out, * ) 'X+S_p+alpha*S_s      = ', &
+                nlp%X + data%s_p + data%alpha_feas*data%s_s
               write( out, * ) 'g+HxSp         = ', nlp%G + data%HxSp
               dummy_real = DOT_PRODUCT( nlp%G + data%HxSp, data%s_s )
               write( out, * ) '(g+HxSp)^T s_s = ', dummy_real
            else
               write( out, * ) 'HxS_ac          = ', data%HxSac
-              write( out, * ) 'X+S_ac+alpha*S_s      = ', nlp%X + data%s_ac + data%alpha_feas*data%s_s
+              write( out, * ) 'X+S_ac+alpha*S_s      = ', &
+                nlp%X + data%s_ac + data%alpha_feas*data%s_s
               write( out, * ) 'g+HxSac         = ', nlp%G + data%HxSac
               dummy_real = DOT_PRODUCT( nlp%G + data%HxSac, data%s_s )
               write( out, * ) '(g+HxSac)^T s_s = ', dummy_real
@@ -2883,7 +2981,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         data%alpha_feas = -one
 
-        data%TRsqp = max( data%control%TRsqp_scale * data%TRpred, data%min_TRsqp )
+        data%TRsqp = max( data%control%TRsqp_scale * data%TRpred, &
+                          data%min_TRsqp )
 
         ! Get A*s_c
 
@@ -2959,13 +3058,15 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                            data%control%QPsiqp_control, inform%QPsiqp_inform )
 
            if ( inform%QPsiqp_inform%status /= GALAHAD_OK ) then
-              write(out,*) 'TRIMSQP : QPsiqp status = ', inform%QPsiqp_inform%status
+              write(out,*) 'TRIMSQP : QPsiqp status = ', &
+                 inform%QPsiqp_inform%status
               GO TO 999
            end if
 
            qpc_successful    = .true.
            data%iterates_sqp = inform%QPsiqp_inform%QPA_inform%major_iter
-           data%iterates_sqp = data%iterates_sqp + inform%QPsiqp_inform%QPB_inform%iter
+           data%iterates_sqp = data%iterates_sqp &
+                                 + inform%QPsiqp_inform%QPB_inform%iter
 
         end do
 
@@ -2996,14 +3097,20 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
            ! J multipliers
 
-           data%QPsiqp%Y( data%vl_l(:data%num_vl_l) ) = data%QPsiqp%Y( data%vl_l(:data%num_vl_l) ) - data%penalty * dummy_real
-           data%QPsiqp%Y( data%vl_u(:data%num_vl_u) ) = data%QPsiqp%Y( data%vl_u(:data%num_vl_u) ) + data%penalty * dummy_real
-           data%QPsiqp%Y( : nlp%m )                   = data%QPsiqp%Y( : nlp%m ) / ( one - dummy_real )
+           data%QPsiqp%Y( data%vl_l(:data%num_vl_l) )  &
+             = data%QPsiqp%Y( data%vl_l(:data%num_vl_l) ) &
+               - data%penalty * dummy_real
+           data%QPsiqp%Y( data%vl_u(:data%num_vl_u) ) &
+             = data%QPsiqp%Y( data%vl_u(:data%num_vl_u) ) &
+               + data%penalty * dummy_real
+           data%QPsiqp%Y( : nlp%m ) &
+             = data%QPsiqp%Y( : nlp%m ) / ( one - dummy_real )
 
            ! A and Z multipliers
 
-           data%QPsiqp%Y(m+1:m+m_a) =  data%QPsiqp%Y(m+1:m+m_a) / (one - dummy_real)
-           data%QPsiqp%Z            = data%QPsiqp%Z / (one - dummy_real)
+           data%QPsiqp%Y(m+1:m+m_a) &
+             = data%QPsiqp%Y(m+1:m+m_a) / (one - dummy_real)
+           data%QPsiqp%Z = data%QPsiqp%Z / (one - dummy_real)
 
         end if
 
@@ -3049,7 +3156,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         data%Sf_H_Sf = DOT_PRODUCT( data%HxSf, data%s_f )  ! s_f^T H s_f
 
-        data%decreaseH_full = data%penalty * (data%norm_c - data%norm_c_linearize_full)
+        data%decreaseH_full = data%penalty &
+                               * (data%norm_c - data%norm_c_linearize_full)
         data%decreaseH_full = data%decreaseH_full - DOT_PRODUCT(nlp%G, data%s_f)
         data%decreaseH_full = data%decreaseH_full - half * data%Sf_H_sf
 
@@ -3453,14 +3561,18 @@ end do
      IF ( data%control%print_sol ) THEN
         IF( data%control%fulsol ) then
            WRITE( data%control%out, "( ' X', / ( 3ES24.16 ) )" ) nlp%X
-           IF ( nlp%m  > 0 ) WRITE( data%control%out, "( ' Y  ', / ( 3ES24.16 ) )" ) nlp%Y
-           IF ( nlp%m_a> 0 ) WRITE( data%control%out, "( ' Y_a', / ( 3ES24.16 ) )" ) nlp%Y_a
+           IF ( nlp%m  > 0 ) &
+             WRITE( data%control%out, "( ' Y  ', / ( 3ES24.16 ) )" ) nlp%Y
+           IF ( nlp%m_a> 0 ) &
+             WRITE( data%control%out, "( ' Y_a', / ( 3ES24.16 ) )" ) nlp%Y_a
            WRITE( data%control%out, "( ' Z', / ( 3ES24.16 ) )" ) nlp%Z
         ELSE
            write(*,*) 'trimsqp : not yet implemented - 100'
            WRITE( data%control%out, "( ' X', / ( 3ES24.16 ) )" ) nlp%X
-           IF ( nlp%m > 0 ) WRITE( data%control%out, "( ' Y', / ( 3ES24.16 ) )" ) nlp%Y
-           IF ( nlp%m_a> 0 ) WRITE( data%control%out, "( ' Y_a', / ( 3ES24.16 ) )" ) nlp%Y_a
+           IF ( nlp%m > 0 ) &
+             WRITE( data%control%out, "( ' Y', / ( 3ES24.16 ) )" ) nlp%Y
+           IF ( nlp%m_a> 0 ) &
+             WRITE( data%control%out, "( ' Y_a', / ( 3ES24.16 ) )" ) nlp%Y_a
            WRITE( data%control%out, "( ' Z', / ( 3ES24.16 ) )" ) nlp%Z
         END IF
      END IF
@@ -3490,26 +3602,26 @@ end do
           STATUS = 'NEW', IOSTAT = iores )
   END IF
   IF ( iores /= 0 ) THEN
-     WRITE( data%control%out, "( ' IOSTAT = ', I6, ' when opening file ', A9 )" )         &
+     WRITE( data%control%out, "( ' IOSTAT = ', I6, ' when opening file ', A )")&
           iores, sfilename
      RETURN
   END IF
 
-  WRITE( sfiledevice, "( '*   TRIMSQP solution for problem name: ', A8 )" )     &
+  WRITE( sfiledevice, "( '*   TRIMSQP solution for problem name: ', A )" )     &
        nlp%pname
   WRITE( sfiledevice, "( /, '*   variables ', / )" )
   DO i = 1, nlp%n
-     WRITE( sfiledevice, "( '    Solution  ', A10, ES12.5 )" )               &
+     WRITE( sfiledevice, "( '    Solution  ', A10, ES12.5 )" )                 &
           nlp%VNAMES( i ), nlp%X( i )
   END DO
-  WRITE( sfiledevice, "( /, '*   Lagrange multipliers - general constraints ', / )" )
+  WRITE( sfiledevice,"( /, '*   Lagrange multipliers - general constraints',/)")
   DO i = 1, nlp%m
-     WRITE( sfiledevice, "( ' M-gen  Solution  ', A10, ES12.5 )" )              &
+     WRITE( sfiledevice, "( ' M-gen  Solution  ', A10, ES12.5 )" )             &
           nlp%CNAMES( i ), nlp%Y( i )
   END DO
-  WRITE( sfiledevice, "( /, '*   Lagrange multipliers - linear constraints ', / )" )
+  WRITE( sfiledevice, "( /, '*   Lagrange multipliers - linear constraints',/)")
   DO i = 1, nlp%m_a
-     WRITE( sfiledevice, "( ' M-lin  Solution  ', A10, ES12.5 )" )              &
+     WRITE( sfiledevice, "( ' M-lin  Solution  ', A10, ES12.5 )" )             &
           nlp%ANAMES( i ), nlp%Y_a( i )
   END DO
   WRITE( sfiledevice, "( /, ' XL Solution  ', 10X, ES12.5 )" ) nlp%f
@@ -3524,7 +3636,8 @@ end do
      STOP
 
  991 CONTINUE
-     WRITE( data%control%out, "( ' TRIMSQP: error closing file.  iores =  ', I0 )" ) iores
+     WRITE( data%control%out, &
+              "( ' TRIMSQP: error closing file.  iores = ', I0 )" ) iores
      STOP
 
  992 CONTINUE
@@ -3557,15 +3670,15 @@ end do
      1x, (93('=')) )
 
 !1002 FORMAT( /,  &
-!     ' Iterate   Penalty          Merit            Primal_vl        Dual_vl  ',&
-!     '       Comp_Slack     TRpred    TRsqp       |c(x)|_1         C_forcing',&
-!     '     FOO   Penalty' )
-!1003 FORMAT(3X, I5, 2X, ES8.2, 2X, ES19.12, 3(2X, ES15.9), 2(2X, ES8.2),       &
+!    ' Iterate   Penalty          Merit            Primal_vl        Dual_vl  ',&
+!    '       Comp_Slack     TRpred    TRsqp       |c(x)|_1         C_forcing',&
+!    '     FOO   Penalty' )
+!1003 FORMAT(3X, I5, 2X, ES8.2, 2X, ES19.12, 3(2X, ES15.9), 2(2X, ES8.2),      &
 !            2( 2X, ES15.9), 2X, L3, 2x, A8 )
 !1004 FORMAT( /,  &
 !     '          approx_B   iter_p    inf_norm_s_p         alpha        ', &
-!     'decrease_cauchy   sqp   iter_s       inf_norm_s_s   descent       decrease_full ', &
-!     '     ratio   accept   success' )
+!     'decrease_cauchy   sqp   iter_s       inf_norm_s_s   descent      ', &
+      ' decrease_full      ratio   accept   success' )
 !1005 FORMAT(T11, A, 2X, I7, 2X, ES13.6, 2X, ES12.6, 2X, ES19.12,      &
 !            2X, A3, 2X, I7, 4X, ES13.6, 2X, A4, 5X, ES19.12,          &
 !            2X, ES9.2, 2X, A3, 5X, A7, / )
@@ -3729,10 +3842,11 @@ end do
       1x, '  -------                -------                -------'     )
 3068 format( 1x, '-- full step : (c_norm, c_linearize_norm) =', 2(2x, ES15.9 ) )
 !3069 format( 1x, '-- recomputing merit function at new penalty value.' )
-3070 format( 1x, '-- full step computed and gives good decrease.  GOOD!',    /, &
+3070 format( 1x, '-- full step computed and gives good decrease.  GOOD!',   /, &
              1x, '(fnew, cnew_vl) =', 2(2x, ES16.9 ), /, &
              1x, '(decrease cauchy, decrease full) =', 2(2x, ES16.9) )
-3071 format( 1x, '(c_norm, c_linearize_norm, dec_con_vl_s_p ) =', 3(2x, ES16.9 ), /,          &
+3071 format( 1x, '(c_norm, c_linearize_norm, dec_con_vl_s_p ) =', &
+              3(2x, ES16.9 ), /,         &
       1x, 'decrease in CONVEX model at predictor point = ', ES16.9         )
 !3072 format( 1x, '(c_norm, con_viol_s_steer, dec_con_vl_s_steer ) =', 3(2x, ES15.9 ) )
 
@@ -3787,7 +3901,7 @@ end do
 
 !  Deallocate arrays set for feasibility LP and steering LP.
 
-     CALL LSQP_terminate( data%QPfeas_data, control%QPfeas_control,              &
+     CALL LSQP_terminate( data%QPfeas_data, control%QPfeas_control,            &
                          inform%QPfeas_inform )
      IF ( inform%QPfeas_inform%status /= GALAHAD_ok ) THEN
        inform%status       = GALAHAD_error_deallocate
@@ -3796,7 +3910,7 @@ end do
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 
-!!$     CALL LSQP_terminate( data%QPsteer_data, control%QPsteer_control,              &
+!!$     CALL LSQP_terminate( data%QPsteer_data, control%QPsteer_control,       &
 !!$                         inform%QPsteer_inform )
 !!$     IF ( inform%QPsteer_inform%status /= GALAHAD_ok ) THEN
 !!$       inform%status       = GALAHAD_error_deallocate
@@ -3807,7 +3921,7 @@ end do
 
 !  Deallocate arrays set for QPC
 
-     CALL QPC_terminate( data%QPsteer_data, control%QPsteer_control,              &
+     CALL QPC_terminate( data%QPsteer_data, control%QPsteer_control,           &
                          inform%QPsteer_inform )
      IF ( inform%QPsteer_inform%status /= GALAHAD_ok ) THEN
        inform%status       = GALAHAD_error_deallocate
@@ -3816,7 +3930,7 @@ end do
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 
-     CALL QPC_terminate( data%QPpred_data, control%QPpred_control,              &
+     CALL QPC_terminate( data%QPpred_data, control%QPpred_control,             &
                          inform%QPpred_inform )
      IF ( inform%QPpred_inform%status /= GALAHAD_ok ) THEN
        inform%status       = GALAHAD_error_deallocate
@@ -3825,7 +3939,7 @@ end do
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 
-     CALL QPC_terminate( data%QPsiqp_data, control%QPsiqp_control,              &
+     CALL QPC_terminate( data%QPsiqp_data, control%QPsiqp_control,             &
                          inform%QPsiqp_inform )
      IF ( inform%QPsiqp_inform%status /= GALAHAD_ok  ) THEN
        inform%status       = GALAHAD_error_deallocate
@@ -3848,50 +3962,50 @@ end do
 !  Deallocate all remaining allocated arrays
 
      !array_name = 'trimSQP: data%Jv'
-     !CALL SPACE_dealloc_array( data%Jv,                                        &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Jv,                                       &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
 
      !array_name = 'trimSQP: data%Jtv'
-     !CALL SPACE_dealloc_array( data%Jtv,                                       &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Jtv,                                      &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
 
      !array_name = 'trimSQP: data%Jtv2'
-     !CALL SPACE_dealloc_array( data%Jtv2,                                      &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Jtv2,                                     &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
 
      !array_name = 'trimSQP: data%Av'
-     !CALL SPACE_dealloc_array( data%Av,                                        &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Av,                                       &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
 
      !array_name = 'trimSQP: data%Atv'
-     !CALL SPACE_dealloc_array( data%Atv,                                       &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Atv,                                      &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
 
      !array_name = 'trimSQP: data%Atv2'
-     !CALL SPACE_dealloc_array( data%Atv2,                                      &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Atv2,                                     &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
 
      !array_name = 'trimSQP: data%Hv'
-     !CALL SPACE_dealloc_array( data%Hv,                                        &
-     !     inform%status, inform%alloc_status, array_name = array_name,         &
+     !CALL SPACE_dealloc_array( data%Hv,                                       &
+     !     inform%status, inform%alloc_status, array_name = array_name,        &
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
@@ -4109,34 +4223,44 @@ end do
     !CALL SPACE_resize_array( QPfeas%n, QPfeas%G, inform%status, inform%alloc_status )
     !IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%n, QPfeas%X_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%n, QPfeas%X_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%n, QPfeas%X, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%n, QPfeas%X, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%n, QPfeas%X0, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%n, QPfeas%X0, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%n, QPfeas%X_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%n, QPfeas%X_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%n, QPfeas%Z, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%n, QPfeas%Z, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%n, QPfeas%WEIGHT, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%n, QPfeas%WEIGHT, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%m, QPfeas%C_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%m, QPfeas%C_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%m, QPfeas%C, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%m, QPfeas%C, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%m, QPfeas%C_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%m, QPfeas%C_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPfeas%m, QPfeas%Y, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPfeas%m, QPfeas%Y, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     ! Allocate A: since LSQP does not support all storage types that
@@ -4150,11 +4274,14 @@ end do
 
        len = nlp%m_a * nlp%n
 
-       CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPfeas%A%ne = len
@@ -4163,11 +4290,14 @@ end do
 
        len =  nlp%A%ne
 
-       CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPfeas%A%ne = len
@@ -4176,11 +4306,14 @@ end do
 
        len =  nlp%A%ptr( nlp%m_a + 1 ) - 1
 
-       CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPfeas%A%ne = len
@@ -4189,11 +4322,14 @@ end do
 
        len =  nlp%A%ptr( nlp%n + 1 ) - 1
 
-       CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPfeas%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPfeas%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPfeas%A%ne = len
@@ -4278,43 +4414,56 @@ end do
 
     ! Allocate components independent of storage type.
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%G, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%G, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%X_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%X_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%X, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%X, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%X0, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%X0, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%X_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%X_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%X_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%X_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%n, QPsteer%Z, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%n, QPsteer%Z, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    !CALL SPACE_resize_array( QPsteer%n, QPsteer%WEIGHT, inform%status, inform%alloc_status )
+    !CALL SPACE_resize_array( QPsteer%n, QPsteer%WEIGHT, &
+    !                       inform%status, inform%alloc_status )
     !IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%m, QPsteer%C_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%m, QPsteer%C_l, &
+                           inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%m, QPsteer%C, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%m, QPsteer%C, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%m, QPsteer%C_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%m, QPsteer%C_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%m, QPsteer%C_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%m, QPsteer%C_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
-    CALL SPACE_resize_array( QPsteer%m, QPsteer%Y, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsteer%m, QPsteer%Y, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     ! Allocate A: since LSQP does not support all storage types that
@@ -4328,11 +4477,14 @@ end do
 
        len = nlp%m_a * nlp%n
 
-       CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPsteer%A%ne = len
@@ -4341,11 +4493,14 @@ end do
 
        len =  nlp%A%ne + nlp%J%ne + 2*nlp%m
 
-       CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%row, &
+                                 inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPsteer%A%ne = len
@@ -4354,11 +4509,14 @@ end do
 
        len =  nlp%A%ptr( nlp%m_a + 1 ) - 1
 
-       CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPsteer%A%ne = len
@@ -4367,11 +4525,14 @@ end do
 
        len =  nlp%A%ptr( nlp%n + 1 ) - 1
 
-       CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       CALL SPACE_resize_array( len, QPsteer%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsteer%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
 
        QPsteer%A%ne = len
@@ -4385,11 +4546,14 @@ end do
     call SMT_put( QPsteer%A%type, 'COORDINATE', inform%status )
     call SMT_put( QPsteer%H%type, 'COORDINATE', inform%status )
 
-    CALL SPACE_resize_array( 0, QPsteer%H%val, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( 0, QPsteer%H%val, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    CALL SPACE_resize_array( 0, QPsteer%H%col, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( 0, QPsteer%H%col, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    CALL SPACE_resize_array( 0, QPsteer%H%row, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( 0, QPsteer%H%row, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     QPsteer%H%ne = 0
@@ -4492,37 +4656,48 @@ end do
 
     QPpred%gradient_kind = 2
 
-    CALL SPACE_resize_array( QPpred%n, QPpred%G, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%n, QPpred%G, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%n, QPpred%X_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%n, QPpred%X_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%n, QPpred%X, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%n, QPpred%X, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%n, QPpred%X_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%n, QPpred%X_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%n, QPpred%Z, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%n, QPpred%Z, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%n, QPpred%X_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%n, QPpred%X_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%m, QPpred%C_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%m, QPpred%C_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%m, QPpred%C, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%m, QPpred%C, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%m, QPpred%C_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%m, QPpred%C_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%m, QPpred%C_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%m, QPpred%C_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPpred%m, QPpred%Y, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPpred%m, QPpred%Y, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     if ( B_type == 2 ) then
@@ -4608,11 +4783,14 @@ end do
        if ( m_a > 0 )     len = len + nlp%A%ne
        if ( B_type == 2 ) len = len + 2*(n+1)*L
 
-       CALL SPACE_resize_array( len, QPpred%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPpred%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPpred%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPpred%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPpred%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPpred%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        QPpred%A%val = zero
@@ -4690,9 +4868,12 @@ end do
        len = n*(n+1)/2
 
        call SMT_put( QPpred%H%type, 'COORDINATE', inform%status )
-       CALL SPACE_resize_array( len, QPpred%H%val, inform%status, inform%alloc_status )
-       CALL SPACE_resize_array( len, QPpred%H%row, inform%status, inform%alloc_status )
-       CALL SPACE_resize_array( len, QPpred%H%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPpred%H%val, &
+                                inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPpred%H%row, &
+                                inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPpred%H%col, &
+                                inform%status, inform%alloc_status )
        QPpred%H%m  = n + 2*m
        QPpred%H%n  = n + 2*m
        QPpred%H%ne = len
@@ -4707,9 +4888,12 @@ end do
        end do
 
        call SMT_put( data%B%type, 'COORDINATE', inform%status )
-       call SPACE_resize_array( len, data%B%val, inform%status, inform%alloc_status )
-       call SPACE_resize_array( len, data%B%row, inform%status, inform%alloc_status )
-       call SPACE_resize_array( len, data%B%col, inform%status, inform%alloc_status )
+       call SPACE_resize_array( len, data%B%val, &
+                                inform%status, inform%alloc_status )
+       call SPACE_resize_array( len, data%B%row, &
+                                inform%status, inform%alloc_status )
+       call SPACE_resize_array( len, data%B%col, &
+                                inform%status, inform%alloc_status )
        data%B%m   = n
        data%B%n   = n
        data%B%ne  = len
@@ -4718,10 +4902,14 @@ end do
        data%B%col = QPpred%H%col
        data%B%val = QPpred%H%val
 
-       CALL SPACE_resize_array( n, data%BFGS%d, inform%status, inform%alloc_status )
-       CALL SPACE_resize_array( n, data%BFGS%Bs, inform%status, inform%alloc_status )
-       CALL SPACE_resize_array( n, data%BFGS%gradLx, inform%status, inform%alloc_status )
-       CALL SPACE_resize_array( n, data%BFGS%gradLx_new, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( n, data%BFGS%d, &
+                                inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( n, data%BFGS%Bs, &
+                                inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( n, data%BFGS%gradLx, &
+                                inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( n, data%BFGS%gradLx_new, &
+                                inform%status, inform%alloc_status )
 
        if ( data%control%NM_steps > 0 ) then  ! non-monotone
           CALL SPACE_resize_array( len, data%revert%Bval_revert, inform%status, inform%alloc_status )
@@ -4737,21 +4925,26 @@ end do
        len = n + 2*m
        if ( B_type == 2 ) then
           len = len + 2*L
-          CALL SPACE_resize_array( n, data%L_BFGS%gradLx, inform%status, inform%alloc_status )
-          CALL SPACE_resize_array( n, data%L_BFGS%gradLx_new, inform%status, inform%alloc_status )
+          CALL SPACE_resize_array( n, data%L_BFGS%gradLx, &
+                                   inform%status, inform%alloc_status )
+          CALL SPACE_resize_array( n, data%L_BFGS%gradLx_new, &
+                                   inform%status, inform%alloc_status )
        end if
 
        call SMT_put( data%B%type,   'DIAGONAL', inform%status )
-       call SPACE_resize_array( n, data%B%val, inform%status, inform%alloc_status )
+       call SPACE_resize_array( n, data%B%val, &
+                                inform%status, inform%alloc_status )
        data%B%m  = n
        data%B%n  = n
 
        if ( data%control%NM_steps > 0 ) then  ! non-monotone
-          CALL SPACE_resize_array( n, data%revert%Bval_revert, inform%status, inform%alloc_status )
+          CALL SPACE_resize_array( n, data%revert%Bval_revert, &
+                                   inform%status, inform%alloc_status )
        end if
 
        call SMT_put( QPpred%H%type, 'DIAGONAL', inform%status )
-       call SPACE_resize_array( len, QPpred%H%val, inform%status, inform%alloc_status )
+       call SPACE_resize_array( len, QPpred%H%val, &
+                                inform%status, inform%alloc_status )
        QPpred%H%m   = len
        QPpred%H%n   = len
        QPpred%H%ne  = len
@@ -4789,7 +4982,8 @@ end do
 
 ! Format statements
 
-1000 FORMAT(1X, '** ERROR trimsqp  : unrecognized storage type in subroutine build_QPpred.')
+1000 FORMAT(1X, '** ERROR trimsqp  : unrecognized storage type', &
+                ' in subroutine build_QPpred.')
 1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine', &
                 ' build_QPpred : error= ', I0, ' status= ', I0, '.'  )
 
@@ -4846,37 +5040,48 @@ end do
 
     ! Allocate components independent of storage type.
 
-    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%G, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%G, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%Z, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%Z, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_l, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_l, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_u, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_u, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%Y, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPsiqp%m, QPsiqp%Y, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     ! Prepare for hot starts.
@@ -4910,7 +5115,8 @@ end do
 
        len = (nlp%m + nlp%m_a + 1) * nlp%n
 
-       CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -4936,11 +5142,14 @@ end do
           end if
        end if
 
-       CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        QPsiqp%A%ne = len
@@ -4986,11 +5195,14 @@ end do
 
        len =  nlp%J%ptr( nlp%m + 1 ) + nlp%A%ptr( nlp%m_a + 1 ) - 2 + nlp%n
 
-       CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( nlp%m + nlp%m_a + 2, QPsiqp%A%ptr, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( nlp%m + nlp%m_a + 2, QPsiqp%A%ptr, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5035,11 +5247,14 @@ end do
 
        len =  nlp%J%ptr( nlp%n + 1 ) + nlp%A%ptr( nlp%n + 1 ) - 2 + nlp%n
 
-       CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( nlp%n + 1, QPsiqp%A%ptr, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( nlp%n + 1, QPsiqp%A%ptr, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5097,7 +5312,8 @@ end do
 
        len = size( nlp%H%val )
 
-       CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5112,11 +5328,14 @@ end do
 
        len =  nlp%H%ne
 
-       CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%H%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%H%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5136,11 +5355,14 @@ end do
 
        len =  nlp%H%ptr(nlp%n+1) - 1
 
-       CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%H%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( nlp%n + 1, QPsiqp%H%ptr, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( nlp%n + 1, QPsiqp%H%ptr, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5158,11 +5380,14 @@ end do
 
        len =  nlp%H%ptr(nlp%n+1) - 1
 
-       CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPsiqp%H%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( nlp%n + 1, QPsiqp%H%ptr, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( nlp%n + 1, QPsiqp%H%ptr, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5180,7 +5405,8 @@ end do
 
        len =  nlp%n
 
-       CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPsiqp%H%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5207,8 +5433,10 @@ end do
 
 ! Format statements
 
-1000 FORMAT(1X, '** ERROR trimsqp : unrecognized storage type in subroutine build_QPsiqp.')
-1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine build_QPsiqp.',   &
+1000 FORMAT(1X, '** ERROR trimsqp : unrecognized storage type in', &
+                ' subroutine build_QPsiqp.')
+1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine', &
+                ' build_QPsiqp.',   &
             ' error= ', I0, ' status= ', I0, '.')
 
   END SUBROUTINE build_QPsiqp
@@ -5261,56 +5489,73 @@ end do
 
     ! Allocate components independent of storage type.
 
-    CALL SPACE_resize_array( QPseqp%n, QPseqp%G, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%n, QPseqp%G, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    !CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_l, inform%status, inform%alloc_status )
+    !CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_l, &
+    !                        inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPseqp%n, QPseqp%X, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%n, QPseqp%X, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    !CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_u, inform%status, inform%alloc_status )
+    !CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_u, &
+    !                        inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPseqp%n, QPseqp%Z, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%n, QPseqp%Z, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPseqp%n, QPseqp%X_status, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%n, QPseqp%X_status, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_l, inform%status, inform%alloc_status )
+    !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_l, &
+    !                        inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     ! This is the constant term, NOT the constraints!
-    CALL SPACE_resize_array( QPseqp%m, QPseqp%C, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%m, QPseqp%C, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_u, inform%status, inform%alloc_status )
+    !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_u, &
+    !                        inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_status, inform%status, inform%alloc_status )
+    !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_status, &
+    !                        inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPseqp%n, data%fr, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%n, data%fr, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPseqp%n, data%fx, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%n, data%fx, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( nlp%m_a, data%wA, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( nlp%m_a, data%wA, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( nlp%m_a, data%wA_comp, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( nlp%m_a, data%wA_comp, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( nlp%m, data%wJ, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( nlp%m, data%wJ, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( nlp%m, data%wJ_comp, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( nlp%m, data%wJ_comp, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-    CALL SPACE_resize_array( QPseqp%m, QPseqp%Y, inform%status, inform%alloc_status )
+    CALL SPACE_resize_array( QPseqp%m, QPseqp%Y, &
+                             inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     ! Set constant in constraint to zero.
@@ -5364,11 +5609,14 @@ end do
           end if
        end if
 
-       CALL SPACE_resize_array( len, QPseqp%A%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPseqp%A%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPseqp%A%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPseqp%A%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPseqp%A%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPseqp%A%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        QPseqp%A%ne = len
@@ -5439,11 +5687,14 @@ end do
 
        len =  nlp%H%ne
 
-       CALL SPACE_resize_array( len, QPseqp%H%val, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPseqp%H%val, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPseqp%H%col, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPseqp%H%col, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       CALL SPACE_resize_array( len, QPseqp%H%row, inform%status, inform%alloc_status )
+       CALL SPACE_resize_array( len, QPseqp%H%row, &
+                                inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
@@ -5491,9 +5742,10 @@ end do
 
 ! Format statements
 
-1000 FORMAT(1X, '** ERROR trimsqp : unrecognized storage type in subroutine build_QPseqp.')
-1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine build_QPseqp.',   &
-            ' error= ', I0, ' status= ', I0, '.')
+1000 FORMAT(1X, '** ERROR trimsqp : unrecognized storage type in', &
+                ' subroutine build_QPseqp.')
+1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine', &
+                ' build_QPseqp. error= ', I0, ' status= ', I0, '.')
 
   END SUBROUTINE build_QPseqp
 
@@ -5553,7 +5805,8 @@ end do
     CASE ('DENSE')
 
        do i = 1, nlp%m_a
-          QPfeas%A%val( 1+(i-1)*nlp%n : i*nlp%n ) = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
+          QPfeas%A%val( 1+(i-1)*nlp%n : i*nlp%n ) &
+            = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
           QPfeas%A%row( 1+(i-1)*nlp%n : i*nlp%n ) = i
           do j = 1, nlp%n
              QPfeas%A%col( (i-1)*nlp%n + j ) = j
@@ -5604,7 +5857,8 @@ end do
 
 ! Format statements
 
-1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine fill_QPfeas.')
+1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine', &
+                ' fill_QPfeas.')
 
   END SUBROUTINE fill_QPfeas
 
@@ -5651,8 +5905,10 @@ end do
     QPsteer%G = zero
     QPsteer%G( n+1 : ) = one
 
-    QPsteer%C_l( : m )  = nlp%C_l-nlp%C;    QPsteer%C_l( m+1 : m + m_a )  = nlp%A_l-nlp%Ax
-    QPsteer%C_u( : m )  = nlp%C_u-nlp%C;    QPsteer%C_u( m+1 : m + m_a )  = nlp%A_u-nlp%Ax
+    QPsteer%C_l( : m )  = nlp%C_l-nlp%C
+    QPsteer%C_l( m+1 : m + m_a )  = nlp%A_l-nlp%Ax
+    QPsteer%C_u( : m )  = nlp%C_u-nlp%C
+    QPsteer%C_u( m+1 : m + m_a )  = nlp%A_u-nlp%Ax
 
     QPsteer%C_status = 0
 
@@ -5702,7 +5958,8 @@ end do
     CASE ('DENSE')
 
        do i = 1, nlp%m_a
-          QPsteer%A%val( 1+(i-1)*nlp%n : i*nlp%n ) = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
+          QPsteer%A%val( 1+(i-1)*nlp%n : i*nlp%n ) &
+            = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
           QPsteer%A%row( 1+(i-1)*nlp%n : i*nlp%n ) = i
           do j = 1, nlp%n
              QPsteer%A%col( (i-1)*nlp%n + j ) = j
@@ -5823,8 +6080,10 @@ end do
 
 ! Format statements
 
-1000 FORMAT(1X, '** ERROR : unrecognized storage type nlp%J%type in subroutine fill_QPsteer.')
-1001 FORMAT(1X, '** ERROR : unrecognized storage type nlp%A%type in subroutine fill_QPsteer.')
+1000 FORMAT(1X, '** ERROR : unrecognized storage type nlp%J%type', &
+                ' in subroutine fill_QPsteer.')
+1001 FORMAT(1X, '** ERROR : unrecognized storage type nlp%A%type', &
+                ' in subroutine fill_QPsteer.')
 
   END SUBROUTINE fill_QPsteer
 
@@ -5855,8 +6114,8 @@ end do
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
 
-    integer ( kind = ip_ ) :: tally, i, j, l, Ane, m, n, m_a, np2m, B_type, error, out
-    integer ( kind = ip_ ) :: Ltn, A_ind, B_ind, iterate
+    integer ( kind = ip_ ) :: tally, i, j, l, Ane, m, n, m_a, np2m, B_type
+    integer ( kind = ip_ ) :: Ltn, A_ind, B_ind, iterate, error, out
     real( kind = rp_ ) :: Bij, di, Bsi, theta, stBs, damp_factor
     real( kind = rp_ ) :: B_lammin, B_lammax, dummy_real
 
@@ -6375,7 +6634,8 @@ end do
           if ( data%control%print_level >= GALAHAD_DEBUG ) then
              write( out, 1015 )
              write( out,  '(4(2x, ES15.8))') &
-                  ( data%BFGS%d(i), data%BFGS%BS(i), data%BFGS%gradLx(i), data%BFGS%gradLx_new(i),  i = 1, n )
+                  ( data%BFGS%d(i), data%BFGS%BS(i), data%BFGS%gradLx(i), &
+                    data%BFGS%gradLx_new(i),  i = 1, n )
              write( out, 1016 ) data%BFGS%std, stBs
           end if
 
@@ -6478,18 +6738,24 @@ end do
     return
 
 ! Format statements
-1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine fill_QPpred.')
+1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine', &
+                ' fill_QPpred.')
 1001 format(1x, 'BFGS : Damping used with theta = ', ES12.5 )
-1015 format( /, '---------------------------------------------------------------',/,&
+1015 format( /, '---------------------------------', &
+                '------------------------------',/,&
              1x,'Initial data needed for BFGS has been computed to be:',/ &
-             10x, 'd', 15x, 'Bs', 11x, 'gradLxnew', 10x, 'gradLx', /          &
-             6x, '---------', 7x, '---------', 8x, '---------', 8x, '----------' )
+             10x, 'd', 15x, 'Bs', 11x, 'gradLxnew', 10x, 'gradLx', / &
+             6x, '---------', 7x, '---------', 8x, &
+                 '---------', 8x, '----------' )
 1016 format( /, 's^Td = ', ES16.9, 5x, 's^TBs = ', ES16.9, /, &
-                '--------------------------------------------------------------')
-1017 format( /, '---------------------------------------------------------------',/,&
+                '---------------------------------', &
+                '-----------------------------')
+1017 format( /, '---------------------------------', &
+                '------------------------------', /, &
              1x,'BFGS has been formed with the following data:',/ &
              10x, 'd', 15x, 'Bs', 11x, 'gradLxnew', 10x, 'gradLx', /          &
-             6x, '---------', 7x, '---------', 8x, '---------', 8x, '----------' )
+             6x, '---------', 7x, '---------', 8x, &
+                 '---------', 8x, '----------' )
 1018 format(1x, 'stBs = ', ES16.9, 3x, 'skipping BFGS update.' )
 
   END SUBROUTINE fill_QPpred
@@ -6525,7 +6791,8 @@ end do
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
 
-    integer ( kind = ip_ ) :: tally, tally2, i, j, Ane, correction_type, m, m_a, n
+    integer ( kind = ip_ ) :: tally, tally2, i, j, Ane, correction_type
+    integer ( kind = ip_ ) :: m, m_a, n
 
     correction_type = data%control%correction_type
 
@@ -6565,13 +6832,15 @@ end do
           !QPsiqp%C_u( tally + 1 : tally + m_a )  = nlp%A_u - ( nlp%Ax + data%Av )
           QPsiqp%C_l( tally + 1 : tally + m_a )  = nlp%A_l - data%AXplusSc
           QPsiqp%C_u( tally + 1 : tally + m_a )  = nlp%A_u - data%AXplusSc
-          QPsiqp%Y(   tally + 1 : tally + m_a )  = nlp%Y_a  ! DPR: cauchy multipliers?
+          QPsiqp%Y(   tally + 1 : tally + m_a )  = nlp%Y_a  
+             ! DPR: cauchy multipliers?
           tally                                 = m + m_a
        end if
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
-       QPsiqp%C_u( tally + 1 )  = zero + tenm5 !two*epsmch**(0.1_wp) ! DPR: added for experiment
+       QPsiqp%C_u( tally + 1 )  = zero + tenm5 
+         !two*epsmch**(0.1_wp) ! DPR: added for experiment
        QPsiqp%Y  ( tally + 1 )  = zero
 
        ! G
@@ -6582,13 +6851,17 @@ end do
        ! X_l and X_u
        do i = 1, n
 
-          QPsiqp%X_l( i )  = nlp%X_l(i) - ( nlp%X(i) + data%s_c(i) )   ! Suppose to be negative
-          !QPsiqp%X_l( i )  = min( nlp%X_l(i), data%min_TRsqp )         ! ensure feasible region.
+          QPsiqp%X_l( i )  = nlp%X_l(i) - ( nlp%X(i) + data%s_c(i) )
+             ! Suppose to be negative
+          !QPsiqp%X_l( i )  = min( nlp%X_l(i), data%min_TRsqp )
+             ! ensure feasible region.
           QPsiqp%X_l( i )  = max( QPsiqp%X_l(i), - data%TRsqp )
           QPsiqp%X_l( i )  = min( QPsiqp%X_l(i), zero )  ! Do I want this?
 
-          QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) ) ! Suppose to be positive.
-          !QPsiqp%X_u( i )  = max( QPsiqp%X_u( i ), - data%min_TRsqp ) ! Ensure feasible region.
+          QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) ) 
+             ! Suppose to be positive.
+          !QPsiqp%X_u( i )  = max( QPsiqp%X_u( i ), - data%min_TRsqp ) 
+          ! Ensure feasible region.
           QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )
           QPsiqp%X_u( i )  = max( QPsiqp%X_u(i), zero )  ! Do I want this?
 
@@ -6598,7 +6871,8 @@ end do
        !QPsiqp%X_u( n + 1 : n + 2*m ) = data%control%infinity  ! (u,v)
 
        QPsiqp%X_u( n + 1 : n + 2*m ) = data%control%QPsiqp_control%infinity
-       QPsiqp%X_u( n + data%sat(:data%num_sat) )     = zero   ! DPR : might want to do more here.
+       QPsiqp%X_u( n + data%sat(:data%num_sat) )     = zero   
+            ! DPR : might want to do more here.
        QPsiqp%X_u( n + m + data%sat(:data%num_sat) ) = zero
 
        ! X
@@ -6636,10 +6910,13 @@ end do
        ! Linear constraints C and Y
        if ( m_a > 0 ) then
 
-          QPsiqp%C_l( tally + 1 : tally + m_a )  = nlp%A_l - ( nlp%Ax + data%AxSp )
-          QPsiqp%C_u( tally + 1 : tally + m_a )  = nlp%A_u - ( nlp%Ax + data%AxSp )
+          QPsiqp%C_l( tally + 1 : tally + m_a ) &
+            = nlp%A_l - ( nlp%Ax + data%AxSp )
+          QPsiqp%C_u( tally + 1 : tally + m_a ) &
+            = nlp%A_u - ( nlp%Ax + data%AxSp )
 
-          QPsiqp%Y( tally + 1 : tally + m_a )  = nlp%Y_a  ! DPR: again use predictor multipliers.
+          QPsiqp%Y( tally + 1 : tally + m_a )  = nlp%Y_a  
+            ! DPR: again use predictor multipliers.
 
           tally = m + m_a
 
@@ -6647,7 +6924,8 @@ end do
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
-       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_rp_ !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
+       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_rp_ 
+            !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
        QPsiqp%Y  ( tally + 1 )  = zero
 
        ! G
@@ -6677,9 +6955,10 @@ end do
           QPsiqp%X_l( i )  = min( QPsiqp%X_l(i), zero )  ! Do I want this?
 
           QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) )
-          QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )   ! DPR: probably want to ensure that the initial
-                                                              !point is feasible by perturbing either
-                                                              ! the bound or the intial point.
+          QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )   
+                  ! DPR: probably want to ensure that the initial
+                  !point is feasible by perturbing either
+                  ! the bound or the intial point.
           QPsiqp%X_u( i )  = max( QPsiqp%X_u(i), zero )  ! Do I want this?
 
        end do
@@ -6710,10 +6989,13 @@ end do
        ! Linear constraints C and Y
        if ( m_a > 0 ) then
 
-          QPsiqp%C_l( tally + 1 : tally + m_a )  = nlp%A_l - ( nlp%Ax + data%AxSp )
-          QPsiqp%C_u( tally + 1 : tally + m_a )  = nlp%A_u - ( nlp%Ax + data%AxSp )
+          QPsiqp%C_l( tally + 1 : tally + m_a ) &
+             = nlp%A_l - ( nlp%Ax + data%AxSp )
+          QPsiqp%C_u( tally + 1 : tally + m_a ) &
+             = nlp%A_u - ( nlp%Ax + data%AxSp )
 
-          QPsiqp%Y( tally + 1 : tally + m_a )  = nlp%Y_a  ! DPR: again use predictor multipliers.
+          QPsiqp%Y( tally + 1 : tally + m_a )  = nlp%Y_a  
+            ! DPR: again use predictor multipliers.
 
           tally = m + m_a
 
@@ -6721,7 +7003,8 @@ end do
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
-       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_rp_ !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
+       QPsiqp%C_u( tally + 1 )  = zero + 0.0005_rp_ 
+           !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
        QPsiqp%Y  ( tally + 1 )  = zero
 
        ! G
@@ -6750,9 +7033,10 @@ end do
           QPsiqp%X_l( i )  = min( QPsiqp%X_l(i), zero )  ! Do I want this?
 
           QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) )
-          QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )   ! DPR: probably want to ensure that the initial
-                                                              !point is feasible by perturbing either
-                                                              ! the bound or the intial point.
+          QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp ) 
+             ! DPR: probably want to ensure that the initial
+             !point is feasible by perturbing either
+             ! the bound or the intial point.
           QPsiqp%X_u( i )  = max( QPsiqp%X_u(i), zero )  ! Do I want this?
 
        end do
@@ -6775,10 +7059,10 @@ end do
     QPsiqp%C_status( 1 : nlp%m + nlp%m_a ) = data%QPpred%C_status
     QPsiqp%X_status(1:nlp%n)               = data%QPpred%X_status(1:nlp%n)
 
-    !---------------------------------------------------------------------
-    ! Load QPsiqp%A with the portion from J, I, -I, A, and the descent condition. !
-    ! NB: Assumes that nlp%A and nlp%J have the same storage format.      !
-    !----------------------------------------------------------------------
+ !---------------------------------------------------------------------
+ ! Load QPsiqp%A with the portion from J, I, -I, A, and the descent condition. !
+ ! NB: Assumes that nlp%A and nlp%J have the same storage format.      !
+ !----------------------------------------------------------------------
 
     SELECT CASE ( SMT_get( QPsiqp%A%type ) )
 
@@ -6966,7 +7250,8 @@ end do
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
 
-    integer ( kind = ip_ ) :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp, i, j, tally, out, nvl
+    integer ( kind = ip_ ) :: nfr, nfx, nwA, nwA_comp
+    integer ( kind = ip_ ) :: nwJ, nwJ_comp, i, j, tally, out, nvl
     integer ( kind = ip_ ), dimension( max(max(nlp%m, nlp%n), nlp%m_a ) ) :: vl
 
     out = data%control%out
@@ -6996,7 +7281,8 @@ end do
        if ( data%QPpred%X_status(i) /= 0 ) then
           select case ( data%X_type(i) )
           case ('LB')
-             if ( abs(nlp%X(i) + data%s_p(i) - nlp%X_l(i))/(one + abs(nlp%X_l(i))) < data%control%stop_p ) then
+             if ( abs(nlp%X(i) + data%s_p(i) - nlp%X_l(i))&
+                 /(one + abs(nlp%X_l(i))) < data%control%stop_p ) then
                 nfx            = nfx + 1
                 data%fx( nfx ) = i
              else
@@ -7004,7 +7290,8 @@ end do
                 data%fr( nfr ) = i
              end if
           case ('UB')
-             if ( abs(nlp%X(i) + data%s_p(i) - nlp%X_u(i))/(one + abs(nlp%X_u(i))) < data%control%stop_p ) then
+             if ( abs(nlp%X(i) + data%s_p(i) - nlp%X_u(i))&
+                 /(one + abs(nlp%X_u(i))) < data%control%stop_p ) then
                 nfx            = nfx + 1
                 data%fx( nfx ) = i
              else
@@ -7018,10 +7305,12 @@ end do
              nfx            = nfx + 1
              data%fx( nfx ) = i
           case ('RB')
-             if ( abs(nlp%X(i) + data%s_p(i) - nlp%X_u(i))/(one + abs(nlp%X_u(i))) < data%control%stop_p ) then
+             if ( abs(nlp%X(i) + data%s_p(i) - nlp%X_u(i))&
+                  /(one + abs(nlp%X_u(i))) < data%control%stop_p ) then
                 nfx            = nfx + 1
                 data%fx( nfx ) = i
-             elseif ( abs(nlp%X(i) + data%s_p(i) - nlp%X_l(i))/(one + abs(nlp%X_l(i))) < data%control%stop_p ) then
+             elseif ( abs(nlp%X(i) + data%s_p(i) - nlp%X_l(i))&
+                 /(one + abs(nlp%X_l(i))) < data%control%stop_p ) then
                 nfx            = nfx + 1
                 data%fx( nfx ) = i
              else
@@ -7070,10 +7359,10 @@ end do
        end if
     end do
  else
-    call get_active( -data%A_RES_l, data%A_RES_u,                               &
+    call get_active( -data%A_RES_l, data%A_RES_u,                              &
                      data%AxSac + data%A_RES_l, data%A_RES_u - data%AxSac,     &
-                     data%A_type, nwA, data%wA, nwA_comp, data%wA_comp, nvl, vl,&
-                     point1*data%control%stop_p, out )
+                     data%A_type, nwA, data%wA, nwA_comp, data%wA_comp, nvl,   &
+                     vl, point1*data%control%stop_p, out )
 
     data%wA( nwA+1 : nwA+nvl )  = vl( : nvl )
     nwA = nwA + nvl
@@ -7098,10 +7387,10 @@ end do
        end if
     end do
  else
-    call get_active( -data%C_RES_l, data%C_RES_u,                               &
+    call get_active( -data%C_RES_l, data%C_RES_u,                              &
                      data%JxSac + data%C_RES_l, data%C_RES_u - data%JxSac,     &
-                     data%C_type, nwJ, data%wJ, nwJ_comp, data%wJ_comp, nvl, vl,&
-                     point1*data%control%stop_p, out )
+                     data%C_type, nwJ, data%wJ, nwJ_comp, data%wJ_comp, nvl,   &
+                     vl, point1*data%control%stop_p, out )
 
     data%wJ( nwJ+1 : nwJ+nvl )  = vl( : nvl )
     nwJ = nwJ + nvl
@@ -7962,10 +8251,12 @@ end do
 
 ! Format statements
 
-1000 FORMAT(3X, '** ERROR : unrecognized storage type in subroutine build_QPsiqp.')
+1000 FORMAT(3X, '** ERROR : unrecognized storage type in subroutine', &
+                ' build_QPsiqp.')
 
 2000 FORMAT( /,  &
-     1X, '                    STATISTICS FOR MATRIX ', A, '                  ',/,  &
+     1X, '                    STATISTICS FOR MATRIX ', &
+      A, '                  ',/,  &
      1X, '                    -----------------------                        ' )
 
 3000 FORMAT(/, T16, 'm  = ', I10, 7X, 'type = ', 60A )
@@ -8424,7 +8715,7 @@ end do
                               BREAKP, exact, out, print_1line, print_detail, &
                               print_debug, t_min, too_small, inform )
 
-    ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !
     !  Find the global minimizer of the function
     !
@@ -8436,7 +8727,7 @@ end do
     !  where x is a vector of n components ( x_1, .... , x_n ),
     !  H is a symmetric matrix, and A is an m by n matrix.
     !
-    ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !
     !  Arguments:
     !
@@ -8483,15 +8774,15 @@ end do
     !  inform is an INTEGER variable, which gives the exit status. Possible
     !   values are:
     !
-    !    0     the minimizer given in t_min occurs between breakpoints after first
-    !    1     the minimizer given in t_min occurs at the breakpoint indicated by
+    !    0   the minimizer given in t_min occurs between breakpoints after first
+    !    1   the minimizer given in t_min occurs at the breakpoint indicated by
     !          the variable active
-    !    2     the minimizer occurs at t_min = 1.
-    !   -1     the minimizer given in t_min occurs before the first breakpoint
-    !   -2     the function is unbounded from below. Ignore the value in t_min
-    !   -3     the value m is negative. Ignore the value in t_min
+    !    2   the minimizer occurs at t_min = 1.
+    !   -1   the minimizer given in t_min occurs before the first breakpoint
+    !   -2   the function is unbounded from below. Ignore the value in t_min
+    !   -3   the value m is negative. Ignore the value in t_min
     !
-    ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     !  Dummy arguments
 
@@ -8571,18 +8862,18 @@ end do
 
           t_break = - res / as
 
-          IF ( ( as > zero .AND. res > zero ) .OR.                              &
+          IF ( ( as > zero .AND. res > zero ) .OR.                             &
                ( as < zero .AND. res < zero ) ) CYCLE
           cosine = ABS( as ) / ( s_norm * A_norms( i ) )
           IF ( print_debug .AND. cosine < tiny_cosine ) THEN
-             WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                          &
+             WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                        &
                   i, res, as,  t_break, cosine
           END IF
 
           !  Find the breakpoint
 
           IF ( print_debug ) THEN
-             WRITE( out, "( ' const EQ ', i5, 4ES18.10 )" )                         &
+             WRITE( out, "( ' const EQ ', i5, 4ES18.10 )" )                    &
                   i, res, as,  t_break, cosine
           END IF
 
@@ -8614,18 +8905,18 @@ end do
 
           t_break = - res / as
 
-          IF ( ( as > zero .AND. res >= zero ) .OR.                              &
+          IF ( ( as > zero .AND. res >= zero ) .OR.                            &
                ( as < zero .AND. res < zero ) ) CYCLE
           cosine = ABS( as ) / ( s_norm * A_norms( i ) )
           IF ( print_debug .AND. cosine < tiny_cosine ) THEN
-             WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                           &
+             WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                        &
                   i, res, as,  t_break, cosine
           END IF
 
           !  Find the breakpoint
 
           IF ( print_debug ) THEN
-             WRITE( out, "( ' const LB ', i5, 4ES18.10 )" )                         &
+             WRITE( out, "( ' const LB ', i5, 4ES18.10 )" )                    &
                   i, res, as,  t_break, cosine
           END IF
 
@@ -8654,18 +8945,18 @@ end do
 
           t_break = - res / as
 
-          IF ( ( as > zero .AND. res >= zero ) .OR.                              &
+          IF ( ( as > zero .AND. res >= zero ) .OR.                            &
                ( as < zero .AND. res < zero ) ) CYCLE
           cosine = ABS( as ) / ( s_norm * A_norms( i ) )
           IF ( print_debug .AND. cosine < tiny_cosine ) THEN
-             WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                           &
+             WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                        &
                   i, res, as,  t_break, cosine
           END IF
 
           !  Find the breakpoint
 
           IF ( print_debug ) THEN
-             WRITE( out, "( ' const UB ', i5, 4ES18.10 )" )                         &
+             WRITE( out, "( ' const UB ', i5, 4ES18.10 )" )                    &
                   i, res, as,  t_break, cosine
           END IF
 
@@ -8699,24 +8990,25 @@ end do
 !!$            end if
              IF ( ABS( as ) < too_small ) CYCLE
 
-             IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
+             IF ( res + t_pert * as < zero ) &
+                slope_infeas_g = slope_infeas_g - as
 
              !  Find if the step will change the status of the constraint
 
              t_break = - res / as
 
-             IF ( ( as > zero .AND. res >= zero ) .OR.                              &
+             IF ( ( as > zero .AND. res >= zero ) .OR.                         &
                   ( as < zero .AND. res < zero ) ) CYCLE
              cosine = ABS( as ) / ( s_norm * A_norms( i ) )
              IF ( print_debug .AND. cosine < tiny_cosine ) THEN
-                WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                           &
+                WRITE( out, "( 'rconst ', i5, 4ES12.4 )" )                     &
                      i, res, as,  t_break, cosine
              END IF
 
              !  Find the breakpoint
 
              IF ( print_debug ) THEN
-                WRITE( out, "( ' const RB ', i5, 4ES18.10 )" )                         &
+                WRITE( out, "( ' const RB ', i5, 4ES18.10 )" )                 &
                      i, res, as,  t_break, cosine
              END IF
              if ( t_break <= one ) then
@@ -8927,7 +9219,7 @@ end do
                   "( 3X, I7, ES12.4, A14, 3ES12.4 )" ) &
                   iter, t_min, '      -      -', fun, slope, curv
              IF ( print_debug ) THEN
-                exact_val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,     &
+                exact_val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,    &
                      RES_l, RES_u, A_s, t_min, too_small )
                 write( out, 2010 ) '  val', fun, exact_val
              END IF
@@ -9119,14 +9411,14 @@ end do
 
     IF ( print_detail ) WRITE( out,                                          &
          "( ' *** predicted vs actual function values =', /, 2ES22.14,       &
-         &        /, ' .... being more careful ... ' )" )                             &
+         &        /, ' .... being more careful ... ' )" )                    &
          f + rho_g * infeas_g, val
 
-    !  ==========================================================================
-    !  This part of the code is to cope with the possibility that rounding errors
-    !  have so dominated the search that a descent point has not been found. A
-    !  more cautious search will be performed.
-    !  ==========================================================================
+    !  =========================================================================
+    !  This part of the code is to cope with the possibility that rounding 
+    !  errors have so dominated the search that a descent point has not been 
+    !  found. A more cautious search will be performed.
+    !  =========================================================================
 
     iter = 0 ; t_break = zero ; t_min = zero
 
@@ -9204,16 +9496,16 @@ end do
           t_break = one !biginf
        END IF
 
-       !  If the gradient of the univariate function is nonzero and its curvature is
-       !  positive, compute the line minimum
+       !  If the gradient of the univariate function is nonzero and its 
+       !  curvature is positive, compute the line minimum
 
        IF ( curv > zero ) THEN
           IF ( print_detail ) WRITE( out, "( ' slope, curv ', 2ES12.4 )" )     &
                slope,  curv
           t_star = - slope / curv
 
-          !  If the line minimum occurs before the breakpoint, the line minimum gives
-          !  the required minimizer. Exit
+          !  If the line minimum occurs before the breakpoint, the 
+          !  line minimum gives the required minimizer. Exit
 
           IF ( nbreak == 0 .OR. t_star < t_break ) THEN
              t_min = t_star
@@ -9221,18 +9513,18 @@ end do
 
              !  Calculate the function value for the piecewise quadratic
 
-             val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,          &
+             val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,             &
                   RES_l, RES_u, A_s, t_break, too_small )
 
 
-             !  If the function value has risen in the current interval, search the
-             !  interval for a better value, and exit
+             !  If the function value has risen in the current interval, 
+             !  search the interval for a better value, and exit
 
              IF ( val_old < val ) THEN
-!!$              CALL QPA_linesearch_interval( dims, n, m,                        &
-!!$                                            f, g_s, s_hs, rho_g, rho_b,        &
-!!$                                            X, X_l, X_u, RES_l, RES_u, S, A_s, &
-!!$                                            t_old, val_old, t_min, val,        &
+!!$              CALL QPA_linesearch_interval( dims, n, m,                     &
+!!$                                            f, g_s, s_hs, rho_g, rho_b,     &
+!!$                                            X, X_l, X_u, RES_l, RES_u,S A_s,&
+!!$                                            t_old, val_old, t_min, val,     &
 !!$                                            too_small, out, print_detail )
              END IF
 
@@ -9241,7 +9533,7 @@ end do
                   "( 3X, I7, ES12.4, A14, 3ES12.4 )" ) &
                   iter, t_min, '      -      -', fun, zero, curv
              IF ( print_debug ) THEN
-                exact_val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,          &
+                exact_val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,         &
                      RES_l, RES_u, A_s, t_min, too_small )
 
                 WRITE( out, 2010 ) '  val', fun, exact_val
@@ -9289,10 +9581,10 @@ end do
              !  Update the slope
 
              IF ( ibreakp <= m ) THEN
-                IF ( print_detail ) WRITE( out, 2020 )                           &
+                IF ( print_detail ) WRITE( out, 2020 )                         &
                      'C', IBREAK( nbreak ), BREAKP( nbreak )
              ELSE
-                IF ( print_detail ) WRITE( out, 2020 )                           &
+                IF ( print_detail ) WRITE( out, 2020 )                         &
                      'B', IBREAK( nbreak ) - m, BREAKP( nbreak )
              END IF
 
@@ -9328,10 +9620,10 @@ end do
             WRITE( out, "( ' val_old, val ', 2ES22.14 )" ) val_old, val
        IF ( val_old < val ) THEN
           t_min = t_break
-!!$          CALL QPA_linesearch_interval( dims, n, m,                            &
-!!$                                        f, g_s, s_hs, rho_g, rho_b, X,         &
-!!$                                        X_l, X_u, RES_l, RES_u, S, A_s,        &
-!!$                                        t_old, val_old, t_min, val,            &
+!!$          CALL QPA_linesearch_interval( dims, n, m,                         &
+!!$                                        f, g_s, s_hs, rho_g, rho_b, X,      &
+!!$                                        X_l, X_u, RES_l, RES_u, S, A_s,     &
+!!$                                        t_old, val_old, t_min, val,         &
 !!$                                        too_small, out, print_detail )
           EXIT
        END IF
@@ -9355,7 +9647,7 @@ end do
          ' fun       slope        curv ', / )
 2010 FORMAT( 1X, A5, '(est,true) = ', 2ES22.14 )
 2020 FORMAT( ' breakpoint for ', A1, '-term ', I7, ' reached, step = ', ES12.4)
-    !2030 FORMAT( ' breakpoint for ', A1, '-term ', I7, ' is acceptable,',         &
+    !2030 FORMAT( ' breakpoint for ', A1, '-term ', I7, ' is acceptable,',     &
     !             ' cosine = ', ES12.4 )
 2040 FORMAT( /, ' Interval = [', ES12.4, ',', ES12.4, ']' )
 2050 FORMAT( /, ' Interval = [', ES12.4, ',', ES12.4, &
@@ -9402,9 +9694,9 @@ end do
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
       !REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
       CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: C_type
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( m ) ::  RES_l
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( m ) ::  RES_u
 
 !  Local variables
@@ -9482,7 +9774,7 @@ end do
 
     END FUNCTION cauchy_get_val
 
-!-*   C A U C H Y _ G  E T _ V A L _ A N D _ S L O P E   S U B R O U T I  N E -*-*
+!-   C A U C H Y _ G  E T _ V A L _ A N D _ S L O P E   S U B R O U T I  N E -*-
 
     SUBROUTINE cauchy_get_val_and_slope( m, C_type, f, g_s, s_hs, rho_g,   &
                                          RES_l, RES_u, A_s, t,    &
@@ -9510,9 +9802,9 @@ end do
       REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
 !      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( m ) ::  RES_l
-      REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( m ) ::  RES_u
 
 !  Local variables
@@ -9613,7 +9905,7 @@ end do
 
 
 
-!-*   C H E C K _ S U B  P R O B L E M _ O P T I M A L   S U B R O U T I N E -*-*
+!-   C H E C K _ S U B  P R O B L E M _ O P T I M A L   S U B R O U T I N E -*-
 
     SUBROUTINE check_sub_optimal( nlp, Y, JtY, Y_a, AtY_a, Z,         &
                                   C_RES_l, C_RES_u,                   &
@@ -9883,7 +10175,8 @@ end do
 !         comp_vl = max( comp_vl, abs( Y(i) ) )
 
        case default
-          write( out, * ) 'ERROR: check_subproblem_optimal : unrecognized C_type value'
+          write( out, * ) &
+            'ERROR: check_subproblem_optimal : unrecognized C_type value'
 
        end select
 
@@ -10032,8 +10325,8 @@ end do
 
 !-*   C O N S T R A I N T_ V I O L A T I O N   S U B R O U T I N E -*-*
 
-    SUBROUTINE constraint_violation( nlp, v, data, viol, status, &
-                                   sat, vl_l, vl_u, num_sat, num_vl_l, num_vl_u )
+    SUBROUTINE constraint_violation( nlp, v, data, viol, status, sat, &
+                                     vl_l, vl_u, num_sat, num_vl_l, num_vl_u )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -10050,8 +10343,10 @@ end do
     type( NLPT_problem_type ), intent( in ) :: nlp
     type( TRIMSQP_data_type ), intent( in ) :: data
     integer ( kind = ip_ ), intent( out ) :: status
-    integer ( kind = ip_ ), intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
-    integer ( kind = ip_ ), intent( inout ), dimension( nlp%m ), optional :: sat, vl_l, vl_u
+    integer ( kind = ip_ ), intent( inout ), optional :: num_sat
+    integer ( kind = ip_ ), intent( inout ), optional :: num_vl_l, num_vl_u
+    integer ( kind = ip_ ), intent( inout ),                                   &
+                            dimension( nlp%m ), optional :: sat, vl_l, vl_u
     real( kind = rp_ ), intent( out ) :: viol
     real( kind = rp_ ), intent( in ), dimension( nlp%m ) :: v
 
@@ -10434,45 +10729,57 @@ end do
 !!$    write(*,*) 'Jss = ', data%JxSs
 
     do i = 1, nspos
-       if ( X_type( data%spos(i) ) == 'RB' .or. X_type( data%spos(i) ) == 'UB' ) then
-          dummy = nlp%X_u( data%spos(i) ) - ( nlp%X( data%spos(i) ) + data%s_ac( data%spos(i) ) )
+       if ( X_type( data%spos(i) ) == 'RB' .or. &
+            X_type( data%spos(i) ) == 'UB' ) then
+          dummy = nlp%X_u( data%spos(i) ) &
+            - ( nlp%X( data%spos(i) ) + data%s_ac( data%spos(i) ) )
           dummy = dummy / data%s_s( data%spos(i) )
           alpha_x = min( alpha_x,  dummy )
        end if
     end do
     do i = 1, nsneg
-       if ( X_type( data%sneg(i) ) == 'RB' .or. X_type( data%sneg(i) ) == 'LB' ) then
-          dummy = nlp%X_l( data%sneg(i) ) - ( nlp%X( data%sneg(i) ) + data%s_ac( data%sneg(i) ) );
+       if ( X_type( data%sneg(i) ) == 'RB' .or. &
+            X_type( data%sneg(i) ) == 'LB' ) then
+          dummy = nlp%X_l( data%sneg(i) ) &
+            - ( nlp%X( data%sneg(i) ) + data%s_ac( data%sneg(i) ) )
           dummy = dummy / data%s_s( data%sneg(i) )
           alpha_x = min( alpha_x,  dummy )
        end if
     end do
 
     do i = 1, nApos
-       if ( A_type( data%Apos(i) ) == 'RB' .or. A_type( data%Apos(i) ) == 'UB' ) then
-          dummy = nlp%A_u( data%Apos(i) ) - ( nlp%Ax( data%Apos(i) ) + data%AxSac( data%Apos(i) ) )
+       if ( A_type( data%Apos(i) ) == 'RB' .or. &
+            A_type( data%Apos(i) ) == 'UB' ) then
+          dummy = nlp%A_u( data%Apos(i) ) &
+            - ( nlp%Ax( data%Apos(i) ) + data%AxSac( data%Apos(i) ) )
           dummy = dummy / data%AxSs( data%Apos(i) )
           alpha_A = min( alpha_A,  dummy )
        end if
     end do
     do i = 1, nAneg
-       if ( A_type( data%Aneg(i) ) == 'RB' .or. A_type( data%Aneg(i) ) == 'LB' ) then
-          dummy = nlp%A_l( data%Aneg(i) ) - ( nlp%Ax( data%Aneg(i) ) + data%AxSac( data%Aneg(i) ) )
+       if ( A_type( data%Aneg(i) ) == 'RB' .or. &
+            A_type( data%Aneg(i) ) == 'LB' ) then
+          dummy = nlp%A_l( data%Aneg(i) ) &
+             - ( nlp%Ax( data%Aneg(i) ) + data%AxSac( data%Aneg(i) ) )
           dummy = dummy / data%AxSs( data%Aneg(i) )
           alpha_A = min( alpha_A,  dummy )
        end if
     end do
 
     do i = 1, nJpos
-       if ( C_type( data%Jpos(i)) == 'RB' .or. C_type( data%Jpos(i)) == 'UB' ) then
-          dummy = nlp%C_u( data%Jpos(i) ) - ( nlp%C( data%Jpos(i) ) + data%JxSac( data%Jpos(i) ) )
+       if ( C_type( data%Jpos(i)) == 'RB' .or. &
+            C_type( data%Jpos(i)) == 'UB' ) then
+          dummy = nlp%C_u( data%Jpos(i) ) &
+            - ( nlp%C( data%Jpos(i) ) + data%JxSac( data%Jpos(i) ) )
           dummy = dummy / data%JxSs( data%Jpos(i) )
           alpha_C = min( alpha_C,  dummy )
        end if
     end do
     do i = 1, nJneg
-       if ( C_type( data%Jneg(i) ) == 'RB' .or. C_type( data%Jneg(i) ) == 'LB' ) then
-          dummy = nlp%C_l( data%Jneg(i) ) - ( nlp%C( data%Jneg(i) ) + data%JxSac( data%Jneg(i) ) )
+       if ( C_type( data%Jneg(i) ) == 'RB' .or. &
+            C_type( data%Jneg(i) ) == 'LB' ) then
+          dummy = nlp%C_l( data%Jneg(i) ) &
+            - ( nlp%C( data%Jneg(i) ) + data%JxSac( data%Jneg(i) ) )
           dummy = dummy / data%JxSs( data%Jneg(i) )
           alpha_C = min( alpha_C,  dummy )
        end if
@@ -10496,8 +10803,8 @@ end do
 !!$     1x, 'norm_c     = ', ES11.5, T30, 'norm_lin_pred  = ', ES11.5,      &
 !!$                                  T62, 'dec_lin_s_p      = ', ES12.5 )
 !!$3001 format(1x, (30('*-*')) )
-!!$3002 format(1x, 'norm_c     = ', ES11.5, T30, 'norm_lin_steer = ', ES11.5,      &
-!!$                                         T62, 'dec_c_lin_steer  = ', ES12.5,/,&
+!!$3002 format(1x, 'norm_c     = ', ES11.5, T30, 'norm_lin_steer = ', ES11.5,  &
+!!$                                 T62, 'dec_c_lin_steer  = ', ES12.5,/,&
 !!$            1x, 'norm_steer = ', ES11.5, T30, 'norm_Y_steer   = ', ES11.5 )
 
   end function max_feas_step
@@ -10528,7 +10835,8 @@ end do
     n = size(vl)
 
     do i = 1, n
-       if ( v_type( i ) == 'EQ' .or. v_type( i ) == 'LB' .or. v_type( i ) == 'RB'  ) then
+       if ( v_type( i ) == 'EQ' .or. v_type( i ) == 'LB' .or. &
+            v_type( i ) == 'RB'  ) then
           res_vl( i ) = v( i ) - vl( i )
        end if
        if ( v_type( i ) == 'UB' .or. v_type( i ) == 'RB' ) then
@@ -10540,7 +10848,8 @@ end do
 
 !-*   g e t _ a c t i v e  S U B R O U T I N E -*-*
 
-  SUBROUTINE get_active( xl, xu, res_xl, res_xu, x_type, nfx, fx, nfr, fr, nvl, vl, tol, out )
+  SUBROUTINE get_active( xl, xu, res_xl, res_xu, x_type,                       &
+                         nfx, fx, nfr, fr, nvl, vl, tol, out )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -10633,7 +10942,8 @@ end do
            end if
         end if
      case default
-        write( out, * ) ' ERROR:trimsqp:get_active: Unrecognized value x_type(i).'
+        write( out, * ) &
+          ' ERROR:trimsqp:get_active: Unrecognized value x_type(i).'
         return
      end select
 
@@ -10691,16 +11001,19 @@ end do
   do i = 1, last
 
      if ( i == last ) then
-        B(:,ind(last)) = Y(:,ind(last)) / dot_product( Y(:,ind(last)), S(:,ind(last)) )**half
+        B(:,ind(last)) = &
+          Y(:,ind(last)) / dot_product( Y(:,ind(last)), S(:,ind(last)) )**half
         do j = 1, last-1
-           SBinner( ind(last), ind(j) ) = dot_product( S(:,ind(last)), B(:,ind(j)) )
+           SBinner( ind(last), ind(j) ) &
+             = dot_product( S(:,ind(last)), B(:,ind(j)) )
         end do
      end if
      A(:,ind(i)) = zero
      call mop_Ax( one, Bzero, S(:,ind(i)), one, A(:,ind(i)), &
                   out, error, transpose=.false. )
      do k = 1, i-1
-        A(:,ind(i)) = A(:,ind(i)) - dot_product( A(:,ind(k)), S(:,ind(i)) ) * A(:,ind(k))
+        A(:,ind(i)) = A(:,ind(i)) &
+           - dot_product( A(:,ind(k)), S(:,ind(i)) ) * A(:,ind(k))
         A(:,ind(i)) = A(:,ind(i)) + SBinner(ind(i),ind(k)) * B(:,ind(k))
      end do
      Bs = A(:,ind(i))
@@ -10722,20 +11035,25 @@ end do
               write(error, *)' ERROR:get_L_BFGS: disallowed value curve_mod.'
            end if
 
-           B(:,ind(last)) = Y(:,ind(last)) / ( dot_product( Y(:,ind(last)), S(:,ind(last)) ) )**half
+           B(:,ind(last)) = Y(:,ind(last)) &
+              / ( dot_product( Y(:,ind(last)), S(:,ind(last)) ) )**half
            do j= 1, last-1
-              SBinner(ind(last),ind(j)) = dot_product( S(:,ind(last)), B(:,ind(j)) )
+              SBinner(ind(last),ind(j)) &
+                = dot_product( S(:,ind(last)), B(:,ind(j)) )
            end do
 
            ! Double check if sufficiently positive definite.
            yts = dot_product( Y(:,ind(last)), S(:,ind(last)) )
            sta = dot_product( S(:,ind(last)), A(:,ind(last)) )  ! s_k^T B_k s_k
            if ( yts < 0.5*eta*sta ) then
-              write(error,*) 'ERROR:get_L_BFGS: curvature MAY be wrong after modification!'
+              write(error,*) &
+                'ERROR:get_L_BFGS: curvature MAY be wrong after modification!'
               if ( yts < tenm8 ) then
-                 write(error,*) 'ERROR:get_L_BFGS: curvature PROBABLY wrong after modification!'
+                write(error,*) &
+                'ERROR:get_L_BFGS: curvature PROBABLY wrong after modification!'
                  if ( yts <= zero ) then
-                    write(error,*) 'ERROR:get_L_BFGS: curvature DEFINITELY wrong after modification!'
+                    write(error,*) &
+              'ERROR:get_L_BFGS: curvature DEFINITELY wrong after modification!'
                  end if
               end if
            end if

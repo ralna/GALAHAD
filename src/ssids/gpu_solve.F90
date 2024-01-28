@@ -163,7 +163,8 @@ contains
 !
 ! This subroutine performs a D solve on the specified subtree
 !
-  subroutine subtree_d_solve_gpu(num_levels, bwd_slv_lookup, gpu_x, gpu_y, stream)
+  subroutine subtree_d_solve_gpu(num_levels, bwd_slv_lookup, &
+                                 gpu_x, gpu_y, stream)
     implicit none
     integer(ip_), intent(in) :: num_levels
     type(lookups_gpu_bwd), dimension(:) :: bwd_slv_lookup
@@ -449,8 +450,8 @@ contains
 
        nscatter = nscatter + (nelim-1)/SLV_SCATTER_NB + 1
     end do
-    allocate(assemble_lookup(nassemble), trsv_lookup(ntrsv), gemv_lookup(ngemv),&
-         reduce_lookup(nreduce), scatter_lookup(nscatter), &
+    allocate(assemble_lookup(nassemble), trsv_lookup(ntrsv), &
+         gemv_lookup(ngemv), reduce_lookup(nreduce), scatter_lookup(nscatter), &
          assemble_lookup2(nassemble2), asmblkdata(nasmblk), stat=st)
     if (st .ne. 0) return
 
@@ -574,7 +575,8 @@ contains
           end do
           do i = 0, nx-1
              nreduce = nreduce + 1
-             reduce_lookup(nreduce)%m = min(SLV_GEMV_NX,blkm-nelim-i*SLV_GEMV_NX)
+             reduce_lookup(nreduce)%m &
+               = min(SLV_GEMV_NX,blkm-nelim-i*SLV_GEMV_NX)
              reduce_lookup(nreduce)%n = ny
              reduce_lookup(nreduce)%src_offset = lwork + i*SLV_GEMV_NX
              reduce_lookup(nreduce)%ldsrc = blkm-nelim

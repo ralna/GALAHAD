@@ -205,9 +205,11 @@
      IF ( class == 0 ) mat%class = 1
      WRITE ( 6, 2200 ) mat%class
      IF ( class == 0 )                                                         &
-       RHS3 = (/ 1.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 8.0_rp_, 13.0_rp_/)
+       RHS3 = (/ 1.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_,                           &
+                 6.0_rp_, 8.0_rp_, 13.0_rp_/)
      IF ( class == 1 )                                                         &
-       RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_, 13.0_rp_/)
+       RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_,                           &
+                 6.0_rp_, 5.0_rp_, 13.0_rp_/)
      IF ( mat%class == 2 ) THEN
        mat%BD_val( 8 ) = 2.0_rp_
        RHS1( 6 ) = 15.0_rp_

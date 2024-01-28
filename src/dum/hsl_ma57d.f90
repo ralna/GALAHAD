@@ -135,10 +135,10 @@ module hsl_ma57_double
    end type ma57_finfo
 
    type ma57_sinfo
-      real(dp_) :: cond = -1.0_dp_  ! Condition # of matrix (category 1 equations)
-      real(dp_) :: cond2 = -1.0_dp_ ! Condition # of matrix (category 2 equations)
-      real(dp_) :: berr = -1.0_dp_  ! Condition # of matrix (category 1 equations)
-      real(dp_) :: berr2 = -1.0_dp_ ! Condition # of matrix (category 2 equations)
+      real(dp_) :: cond = -1.0_dp_  ! Condition # of matrix (cat 1 equations)
+      real(dp_) :: cond2 = -1.0_dp_ ! Condition # of matrix (cat 2 equations)
+      real(dp_) :: berr = -1.0_dp_  ! Condition # of matrix (cat 1 equations)
+      real(dp_) :: berr2 = -1.0_dp_ ! Condition # of matrix (cat 2 equations)
       real(dp_) :: error = -1.0_dp_ ! Estimate of forward error using above data
       integer(ip_) :: flag = 0  ! Flags success or failure case
       integer(ip_) :: stat = 0  ! STAT value after allocate failure
@@ -413,11 +413,12 @@ contains
                                nzd,iptrd,drows,dvals,perm,invperm,scale,sinfo)
       type(ma57_factors), intent(in) :: factors
       type(ma57_control), intent(in) :: control
-      real(dp_), intent(out) :: lvals(factors%nebdu),dvals(2*factors%n),        &
-                               scale(factors%n)
-      integer(ip_),  intent(out) :: nzl,nzd,iptrl(factors%n+1),lrows(factors%nebdu), &
-                              iptrd(factors%n+1),drows(2*factors%n),           &
-                              perm(factors%n),invperm(factors%n)
+      real(dp_), intent(out) :: lvals(factors%nebdu),dvals(2*factors%n),       &
+                                scale(factors%n)
+      integer(ip_),  intent(out) :: nzl,nzd,iptrl(factors%n+1),                &
+                                    lrows(factors%nebdu),                      &
+                                    iptrd(factors%n+1),drows(2*factors%n),     &
+                                    perm(factors%n),invperm(factors%n)
       type(ma57_sinfo), intent(out) :: sinfo
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
         "( ' We regret that the solution options that you have ', /,           &

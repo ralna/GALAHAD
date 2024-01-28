@@ -20,10 +20,11 @@
 *    conditions, which will include financial conditions.
 * 2. All information on the Package is provided to the Licensee on the
 *    understanding that the details thereof are confidential.
-* 3. All publications issued by the Licensee that include results obtained
-*    with the help of one or more of the Packages shall acknowledge the
-*    use of the Packages. The Licensee will notify the Numerical Analysis
-*    Group at Rutherford Appleton Laboratory of any such publication.
+* 3. All publications issued by the Licensee that include results
+*    obtained with the help of one or more of the Packages shall 
+*    acknowledge the use of the Packages. The Licensee will notify the 
+*    Numerical Analysis Group at Rutherford Appleton Laboratory of any 
+*    such publication.
 * 4. The Packages may be modified by or on behalf of the Licensee
 *    for such use in research applications but at no time shall such
 *    Packages or modifications thereof become the property of the

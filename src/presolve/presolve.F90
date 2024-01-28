@@ -1461,7 +1461,7 @@
 !                       incompatible value of prob%H_ne
 
 
-         INTEGER ( KIND = ip_ ) :: nbr_transforms = 0               ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: nbr_transforms = 0  ! INTENT( OUT )
 
 !                   The final number of problem transformations, as reported
 !                   to the user at exit.
@@ -1820,7 +1820,8 @@
 
       TYPE, PUBLIC :: PRESOLVE_full_data_type
         LOGICAL :: f_indexing = .TRUE.
-        INTEGER ( KIND = ip_ ) :: n_orig, m_orig, n_trans, m_trans, h_ne_trans, a_ne_trans
+        INTEGER ( KIND = ip_ ) :: n_orig, m_orig, n_trans
+        INTEGER ( KIND = ip_ ) :: m_trans, h_ne_trans, a_ne_trans
         TYPE ( PRESOLVE_data_type ) :: PRESOLVE_data
         TYPE ( PRESOLVE_control_type ) :: PRESOLVE_control
         TYPE ( PRESOLVE_inform_type ) :: PRESOLVE_inform
@@ -2047,7 +2048,7 @@
 !        SPECIAL_LINEAR_COLUMNS, because of the possible occurence of
 !        empty or singleton rows that modify the bounds.
 
-      INTEGER ( KIND = ip_ ), PRIVATE, DIMENSION( N_HEURISTICS ), PARAMETER ::                &
+      INTEGER ( KIND = ip_ ), PRIVATE, DIMENSION( N_HEURISTICS ), PARAMETER :: &
 !
          PRESOLVING_SEQUENCE = (/                                              &
                                     EMPTY_AND_SINGLETON_ROWS,                  &
@@ -6692,7 +6693,7 @@ vars: DO j = 1, prob%n
 
 !                       Update the bounds on y(i).
 
-                        IF ( s%level >= DEBUG ) WRITE( s%out, * )               &
+                        IF ( s%level >= DEBUG ) WRITE( s%out, * )              &
                            '    y(', i, ') must lie in [', nli, ',', nui, ']'
 
                         IF ( PRESOLVE_is_zero( nui - nli ) ) THEN
@@ -11910,7 +11911,7 @@ rlit:    DO it = 1, prob%m
                   IF ( a_val /= ZERO ) THEN
                      jj = prob%A%col( k )
                      IF ( prob%X_status( jj ) <= ELIMINATED .OR. j == jj ) CYCLE
-                     IF ( PRESOLVE_is_too_big( prob%G( jj ) - a_val * yi ) ) THEN
+                     IF ( PRESOLVE_is_too_big( prob%G( jj ) - a_val * yi )) THEN
                         IF (  s%level >= DEBUG ) WRITE( s%out, * )             &
                             '    elimination of linear singleton column',      &
                             ' prevented by unacceptable growth'
@@ -13121,7 +13122,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER ( KIND = ip_ ) :: l
-      REAL ( KIND = rp_ ) :: nxl, nxu, nzl, nzu, xlj, xlk, xuj, xuk,            &
+      REAL ( KIND = rp_ ) :: nxl, nxu, nzl, nzu, xlj, xlk, xuj, xuk,           &
                             zlj, zuj, zlk, zuk
 
 !     Get the involved variables' bounds.
@@ -13531,7 +13532,7 @@ rlit:    DO it = 1, prob%m
 
       INTEGER ( KIND = ip_ ) :: k, jj, ic, l, kik
       LOGICAL            :: lower_active, upper_active
-      REAL ( KIND = rp_ ) :: aij, aik, xlj, xuj, cli, xlk, xuk,                 &
+      REAL ( KIND = rp_ ) :: aij, aik, xlj, xuj, cli, xlk, xuk,                &
                             nxlk, nxuk, zlk, zuk, yli, yui, nyli, nyui
 
 !     Find the other active nonzero in row i.
@@ -14938,7 +14939,8 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER ( KIND = ip_ ) :: i, ic, j, k, ie, nactx, nactc, nacta, nacte, nacth
+      INTEGER ( KIND = ip_ ) :: i, ic, j, k, ie
+      INTEGER ( KIND = ip_ ) :: nactx, nactc, nacta, nacte, nacth
       LOGICAL :: error
 
       error = .FALSE.
@@ -18232,7 +18234,7 @@ lic:   DO
 !==============================================================================
 !==============================================================================
 
-      REAL( KIND = rp_ ) FUNCTION                                               &
+      REAL( KIND = rp_ ) FUNCTION                                              &
           PRESOLVE_max_dual_correction( low, val, upp, yz, dyz )
 
 !     see how much of the correction dyz to yz, the dual associated to the
@@ -18429,7 +18431,7 @@ sli:     DO ii = 1, prob%m
                IF ( get_z ) prob%Z( j ) = ZERO
                RETURN
             END IF
-            IF ( s%level >= DEBUG ) WRITE( s%out, * )                            &
+            IF ( s%level >= DEBUG ) WRITE( s%out, * )                          &
                '    remaining correction =', czj
          END DO sli
       END IF

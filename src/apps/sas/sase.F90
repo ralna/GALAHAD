@@ -388,7 +388,8 @@
 !  fix l, r, theta and phi, and solve for xi and b
 
    f = 0.0_rp_
-   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ ; r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_
+   r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    DO i = 1, obs
      alpha = 0.0_rp_
      DO ip = 1, np
@@ -475,7 +476,8 @@
 !  before finding l, fix l, r, theta and phi, and solve for xi and b
 
    f = 0.0_rp_
-   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ ; r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_
+   r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
      alpha = DOT_PRODUCT( L, p_l%A%val( ne + 1 : ne + nl ) )
@@ -558,7 +560,8 @@
 !  before finding r, fix l, r, theta and phi, and solve for xi and b
 
    f = 0.0_rp_
-   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ ; r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_
+   r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
      alpha = DOT_PRODUCT( R, p_r%A%val( ne + 1 : ne + nr ) )

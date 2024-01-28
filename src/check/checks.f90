@@ -28,10 +28,12 @@ PROGRAM GALAHAD_check_example
   allocate( nlp%H%row(Hne), nlp%H%col(Hne), nlp%H%val(Hne) )
   nlp%J%row = (/ 1, 1, 1, 2 /) ;  nlp%J%col = (/ 1, 2, 3, 2 /)
   nlp%H%row = (/ 2, 3, 3 /)    ;  nlp%H%col = (/ 2, 2, 3 /)
-  nlp%X = (/ four, three, two /) ;  nlp%X_l = -five ;  nlp%X_u = five ;  nlp%Y = (/ two, three /)
+  nlp%X = (/ four, three, two /) ;  nlp%X_l = -five ;  nlp%X_u = five
+  nlp%Y = (/ two, three /)
   call CHECK_initialize( control ) ;   control%print_level = 3
   inform%status = 1
-  call CHECK_verify( nlp, data, control, inform, userdata, funF, funC, funG, funJ, funH )
+  call CHECK_verify( nlp, data, control, inform, userdata, &
+                     funF, funC, funG, funJ, funH )
   call CHECK_terminate( data, control, inform )
 END PROGRAM GALAHAD_check_example
 

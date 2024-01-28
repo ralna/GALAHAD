@@ -118,11 +118,10 @@
 
 !  Scalars
 
-      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, liw, iores, smt_stat
+      INTEGER ( KIND = ip_ ) :: i, j, l, n, m, ir, ic, liw, iores, smt_stat
 !     INTEGER ( KIND = ip_ ) :: np1, npm
-      INTEGER ( KIND = ip_ ) :: i, j, l
-      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER ( KIND = ip_ ) :: alloc_stat, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfixed, ndegen
+      INTEGER ( KIND = ip_ ) :: alloc_stat, A_ne, H_ne, iter, mequal, mredun
       REAL :: time, timeo, times, timet
       REAL ( KIND = rp_ ) :: stopr, dummy, objf, res_c, res_k, max_cs
       LOGICAL :: filexx, printo

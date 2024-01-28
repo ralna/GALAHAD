@@ -5332,11 +5332,11 @@
 
           norm_cd =  norm_c + norm_d
           IF ( ( norm_c <= theta_c .AND. norm_d <= theta_d .AND. .NOT.         &
-               inform%GLTR_inform%negative_curvature .AND. .NOT.               &
-               ( control%extrapolate > 1 .AND. inner_iteration == 0 ) ) .OR.   &
-               ( control%extrapolate > 0 .AND. inner_iteration > 2 .AND.       &
-                 mu < 1.01_rp_ * control%mu_min .AND. successful_iteration .AND.&
-                 norm_cd > 0.9_rp_ * old_norm_cd ) ) THEN
+              inform%GLTR_inform%negative_curvature .AND. .NOT.               &
+              ( control%extrapolate > 1 .AND. inner_iteration == 0 ) ) .OR.   &
+              ( control%extrapolate > 0 .AND. inner_iteration > 2 .AND.       &
+                mu < 1.01_rp_ * control%mu_min .AND. successful_iteration .AND.&
+                norm_cd > 0.9_rp_ * old_norm_cd ) ) THEN
             inform%status = GALAHAD_ok
             inform%GLTR_inform%status = 1
             start_major = .TRUE.
@@ -7312,7 +7312,7 @@
 
 !  Update convergence tolerances, theta_c, theta_d and theta_e
 
-        IF ( mu < 1.01_rp_ * control%mu_min .AND.                               &
+        IF ( mu < 1.01_rp_ * control%mu_min .AND.                              &
              control%extrapolate > 0 .AND. allow_extrapolate) THEN
 !         theta_c = ten * epsmch
 !         theta_d = ten * epsmch

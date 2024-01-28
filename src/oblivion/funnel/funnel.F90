@@ -5291,7 +5291,8 @@
 
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_total
        REAL ( KIND = rp_ ), INTENT( IN ) :: barrier
-       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n_total ) :: GRAD_barrier, D
+       REAL ( KIND = rp_ ), INTENT( IN ),                                      &
+                            DIMENSION( n_total ) :: GRAD_barrier, D
        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n_total ) :: HD
        TYPE ( SMT_type ), INTENT( IN ) :: HESS_barrier
 

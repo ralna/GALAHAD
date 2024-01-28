@@ -233,7 +233,8 @@
          ELSE
            p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
          END IF
-         p%X = (/  -2.0_rp_, 1.0_rp_,  3.0_rp_ /) ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
+         p%X = (/  -2.0_rp_, 1.0_rp_,  3.0_rp_ /) ; p%Y = 0.0_rp_
+         p%Z = 0.0_rp_
          CALL LSQP_solve( p, data, control, info )
          IF ( info%status == 0 ) THEN
            WRITE( 6, "( A1, 2I1, ':', I6, ' iterations. Value = ', F6.1 )" ) &

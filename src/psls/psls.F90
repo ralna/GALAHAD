@@ -5050,7 +5050,8 @@
 !  provide character descriptions of the preconditioners provided
 
       CHARACTER ( LEN = 80 ) :: PSLS_name
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: preconditioner, semi_bandwidth, icfs_vectors
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: preconditioner
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: semi_bandwidth, icfs_vectors
       PSLS_name =  REPEAT( ' ', 80 )
       SELECT CASE ( preconditioner )
       CASE ( : - 1 )

@@ -1172,7 +1172,8 @@
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: NZ_out
        END SUBROUTINE eval_ASPROD
      END INTERFACE
 

@@ -101,8 +101,8 @@ module hsl_MA86_single
 
    type block_type
       integer(ip_) :: bcol            ! block column that blk belongs to
-      integer(ip_) :: blkm            ! height of block (number of rows in blk)
-      integer(ip_) :: blkn            ! width of block (number of columns in blk)
+      integer(ip_) :: blkm            ! height of block (# rows in blk)
+      integer(ip_) :: blkn            ! width of block (# columns in blk)
       integer(long_) :: dblk      ! id of the block on the diagonal within the
          ! block column to which blk belongs
       integer(ip_) :: dep_initial     ! initial dependency count for block,

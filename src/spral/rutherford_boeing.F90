@@ -150,7 +150,7 @@ contains
 
     ! Other local variables
     character(len=80) :: buffer1, buffer2 ! Buffers for reading char data
-    integer(ip_) :: t1, t2, t3, t4 ! Temporary variables for reading integer data
+    integer(ip_) :: t1, t2, t3, t4 ! Temporary variables for reading int data
     integer(ip_) :: iost ! stat parameter for io ops
 
     info = SUCCESS
@@ -425,7 +425,8 @@ contains
     if (r_type_code(1:1) .eq. "q") info = WARN_AUX_FILE
 
     ! Determine whether we are reading values from file or not
-    read_val = ((options%values .ge. 0) .and. (options%values .ne. VALUES_PATTERN))
+    read_val = ((options%values .ge. 0) .and. &
+                (options%values .ne. VALUES_PATTERN))
     read_val = read_val .and. (r_type_code(1:1) .ne. "p")
     read_val = read_val .and. (r_type_code(1:1) .ne. "q")
 

@@ -2036,8 +2036,9 @@
 1008 FORMAT(2X,'J(', I5, ',', I5, ')', 3X, A3, 3X, ES16.9, 2(3X,ES16.9) )
 1009 FORMAT(2X,'H(', I5, ',', I5, ')', 3X, A3, 3X, ES16.9, 2(3X,ES16.9) )
 1010 FORMAT(/, &
-     2X,'   Component      Ok      Difference            Value             Error'    ,/,&
-     2X,'--------------   ---   ----------------   ----------------   ----------------' )
+     2X,'   Component      Ok      Difference            Value        ',       &
+        '     Error', /,  2X, '--------------   ---   ----------------',       &
+        '   ----------------   ----------------' )
 1011 FORMAT(2X,'G( : )', 11X, A3, 2X, ES16.9, 2(3X,ES16.9))
 1014 FORMAT(2X,'J(', I5, ', : )', 5X, A3, 2X, ES16.9, 2(3X,ES16.9))
 1015 FORMAT(2X,'H(', I5, ', : )', 5X, A3, 2X, ES16.9, 2(3X,ES16.9))
@@ -2051,11 +2052,14 @@
      T13, '|                CONTROL PARAMETERS                   |',/  &
      T13, '-------------------------------------------------------' )
 1018 FORMAT(/, &
-     12X, 'checkG = ', L2, 3x, 'f_available = ', I2, 3x, 'deall_error_fatal = ', L2, /, &
-     12X, 'checkJ = ', L2, 3x, 'c_available = ', I2, 3x, 'print_level       = ', I2, /, &
-     12X, 'checkH = ', L2, 3x, 'g_available = ', I2, 3x, 'verify_level      = ', I2, /, &
-     12X, 'error  = ', I2, 3x, 'J_available = ', I2, 3x, 'out               = ', I2, /, &
-                          T27, 'H_available = ', I2 )
+     12X, 'checkG = ', L2, 3x, 'f_available = ', I2, 3x, &
+          'deall_error_fatal = ', L2, /, &
+     12X, 'checkJ = ', L2, 3x, 'c_available = ', I2, 3x, &
+          'print_level       = ', I2, /, &
+     12X, 'checkH = ', L2, 3x, 'g_available = ', I2, 3x, &
+          'verify_level      = ', I2, /, &
+     12X, 'error  = ', I2, 3x, 'J_available = ', I2, 3x, &
+          'out               = ', I2, /, T27, 'H_available = ', I2 )
 1019 FORMAT(/, &
      T16, '----------------------------------------------',/, &
      T16, '|                MATRIX DATA                 |',/  &
