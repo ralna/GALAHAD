@@ -13,7 +13,7 @@ function append_macros!(macros::Dict{String,String}, path::String)
   for line in lines
     if startswith(line, "#define")
       tab = split(line, " ")
-      macros[tab[2]]  = tab[3]
+      macros[tab[2]]  = tab[end]
     end
   end
   return macros
