@@ -190,7 +190,7 @@
 
      INTERFACE TRSM
 
-       SUBROUTINE STRSM( side, uplo, transa, diag, m, n, alpha, A, lda,    &    
+       SUBROUTINE STRSM( side, uplo, transa, diag, m, n, alpha, A, lda,    &
                          B, ldb )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: side, uplo, transa, diag

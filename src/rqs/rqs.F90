@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 08:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 13:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -995,7 +995,7 @@
 
 !  allocate workspace
 
-          nb = LAENV( 1, 'DSYTRD', 'L', n, - 1, - 1, - 1 )
+          nb = LAENV( 1_ip_, 'DSYTRD', 'L', n, - 1_ip_, - 1_ip_, - 1_ip_ )
           lwork = MAX( 1, 3 * n - 1, ( nb + 2 ) * n )
 
           array_name = 'rqs: work'
@@ -1006,10 +1006,9 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 910
 
-          IF ( PRESENT( M ) ) THEN
-
 !  if necessary allocate space to hold the additional dense matrices M_dense
 
+          IF ( PRESENT( M ) ) THEN
             array_name = 'rqs: M_dense'
             CALL SPACE_resize_array( n, n, data%M_dense,                       &
                 inform%status, inform%alloc_status, array_name = array_name,   &

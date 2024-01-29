@@ -20,7 +20,7 @@
      CHARACTER ( len = 6 ) :: sub( 1000 )
      CHARACTER ( len = 6 ) :: fun( 1000 )
      CHARACTER ( len = 4 ) :: suff64( 4 ) = (/ '64  ', '__64', '    ', '_64 ' /)
-     INTEGER :: i, ib, j, k, l, l_end, l_new, l_next, line_max
+     INTEGER :: i, ib, j, k, l, l_end, l_new, l_next, line_max, lsame
      INTEGER :: nsub, nfun, lost, nz, nz2
      LOGICAL :: proc, proc_end, external_line
 
@@ -233,11 +233,12 @@
 !    z(2*n+5) = hundrd*nfail/REAL(iter)
 
        line = REPEAT( ' ', max_line )
-       k = 1 ; l_next = 0
+       k = 1 ; l_next = 0 ; lsame = 0
        DO l = 1, l_end
          IF ( in_line( l : l ) /= ' ' .AND. nz < 0 ) nz = l
          IF ( l < l_next ) CYCLE
          IF ( in_line( l : l + 7 ) == 'EXTERNAL' ) external_line = .TRUE.
+         IF ( in_line( l : l + 4 ) == 'LSAME' ) lsame = lsame + 1
          IF ( in_line( l : l + 12 ) == 'MAX(0, ILAENV' ) THEN
            line( k : k + 9 ) = 'MAX(0_ip_, '
            l_next = l + 6 ; k = k + 10
@@ -568,6 +569,8 @@
 
        IF ( external_line ) THEN
          line_max = max_chars - nz - 16
+       ELSE IF ( lsame > 1 ) THEN
+         line_max = max_chars - nz - 4 * ( lsame - 1 )
        ELSE
          line_max = max_chars - nz
        END IF

@@ -423,13 +423,14 @@
 
 !  Store the problem dimensions
 
-     prob%n = n
-     prob%m = m
+     prob%n = n ; prob%m = m
      IF ( ALLOCATED( prob%H%type ) ) DEALLOCATE( prob%H%type )
      CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', smt_stat )
      IF ( ALLOCATED( prob%A%type ) ) DEALLOCATE( prob%A%type )
      CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', smt_stat )
-     prob%f = obj ; prob%rho_g = 2 * m ; prob%rho_b = 2 * n
+     prob%f = obj
+     prob%rho_g = REAL( 2 * m, KIND = rp_ )
+     prob%rho_b = REAL( 2 * n, KIND = rp_ )
 
 !  ------------------- problem set-up complete ----------------------
 
@@ -500,8 +501,8 @@
        CALL SPECFILE_assign_integer( spec( 24 ), qfiledevice, errout )
      END IF
 
-     IF ( prob%rho_g <= zero ) prob%rho_g = 2 * m
-     IF ( prob%rho_b <= zero ) prob%rho_b = 2 * n
+     IF ( prob%rho_g <= zero ) prob%rho_g = REAL( 2 * m, KIND = rp_ )
+     IF ( prob%rho_b <= zero ) prob%rho_b = REAL( 2 * n, KIND = rp_ )
 
 !  If required, print out the (raw) problem data
 
