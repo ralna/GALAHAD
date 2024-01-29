@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 09:08 GMT
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 10:19 GMT
 
 #include "galahad_blas.h"
 
@@ -5392,7 +5392,7 @@
           INTRINSIC :: LEN_TRIM
           WRITE (*, FMT=9999) srname(1:LEN_TRIM(srname)), info
           STOP
- 9999     FORMAT (' ** On entry to ', A, ' parameter number ', I2, ' had ',  &
+ 9999     FORMAT (' ** On entry to ', A, ' parameter number ', I2, ' had ', &
    'an illegal value')
         END SUBROUTINE
 

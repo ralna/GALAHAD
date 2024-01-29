@@ -55,8 +55,8 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
-     USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF, SYTRS,   &
-                                          PBTRF, PBTRS ! , SYEV
+     USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF,       &
+                                          SYTRS, PBTRF, PBTRS ! , SYEV
      USE HSL_ZD11_precision
      USE HSL_MA57_precision
      USE HSL_MA77_precision

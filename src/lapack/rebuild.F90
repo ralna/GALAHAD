@@ -593,7 +593,7 @@
                  ELSE
                    WRITE( out, "( A, A, A, '&' )" )                            &
                      REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                 &
-                     REPEAT( ' ', max_chars + 2 - nz - k )
+                     REPEAT( ' ', MAX( 0, max_chars + 1 - nz - k ) )
                  END IF
                ELSE
                  IF ( external_line ) THEN

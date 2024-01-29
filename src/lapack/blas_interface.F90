@@ -190,7 +190,8 @@
 
      INTERFACE TRSM
 
-       SUBROUTINE STRSM( side, uplo, transa, diag, m, n, alpha, A, lda, B, ldb )
+       SUBROUTINE STRSM( side, uplo, transa, diag, m, n, alpha, A, lda,    &    
+                         B, ldb )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: side, uplo, transa, diag
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, lda, ldb
@@ -199,7 +200,8 @@
        REAL, INTENT( INOUT ), DIMENSION( ldb, * ) :: B
        END SUBROUTINE STRSM
 
-       SUBROUTINE DTRSM( side, uplo, transa, diag, m, n, alpha, A, lda, B, ldb )
+       SUBROUTINE DTRSM( side, uplo, transa, diag, m, n, alpha, A, lda,    &
+                         B, ldb )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: side, uplo, transa, diag
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, lda, ldb
@@ -214,7 +216,8 @@
 
      INTERFACE TBSV
 
-       SUBROUTINE STBSV( uplo, trans, diag, n, semi_bandwidth, A, lda, X, incx )
+       SUBROUTINE STBSV( uplo, trans, diag, n, semi_bandwidth, A, lda,     &
+                         X, incx )
        USE GALAHAD_KINDS_precision
 !       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
 !       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda, incx
@@ -226,7 +229,8 @@
        REAL, INTENT( INOUT ) :: X( * )
        END SUBROUTINE STBSV
 
-       SUBROUTINE DTBSV( uplo, trans, diag, n, semi_bandwidth, A, lda, X, incx )
+       SUBROUTINE DTBSV( uplo, trans, diag, n, semi_bandwidth, A, lda,    &
+                         X, incx )
        USE GALAHAD_KINDS_precision
 !      CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans, diag
 !      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, semi_bandwidth, lda, incx
@@ -244,7 +248,8 @@
 
      INTERFACE GEMV
 
-       SUBROUTINE SGEMV( trans, m, n, alpha, A, lda, X, incx, beta, Y, incy )
+       SUBROUTINE SGEMV( trans, m, n, alpha, A, lda, X, incx, beta,       &
+                         Y, incy )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: trans
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: incx, incy, lda, m, n
@@ -253,7 +258,8 @@
        REAL, INTENT( INOUT ) :: Y( * )
        END SUBROUTINE SGEMV
 
-       SUBROUTINE DGEMV( trans, m, n, alpha, A, lda, X, incx, beta, Y, incy )
+       SUBROUTINE DGEMV( trans, m, n, alpha, A, lda, X, incx, beta,       &
+                         Y, incy )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: trans
        INTEGER ( KIND = ip_ ), INTENT( IN ) :: incx, incy, lda, m, n
@@ -268,7 +274,7 @@
 
      INTERFACE GEMM
 
-       SUBROUTINE SGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,       &
+       SUBROUTINE SGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,   &
                          beta, C, ldc )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: transa, transb
@@ -278,7 +284,7 @@
        REAL, INTENT( INOUT ) :: C( ldc, * )
        END SUBROUTINE SGEMM
 
-       SUBROUTINE DGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,       &
+       SUBROUTINE DGEMM( transa, transb, m, n, k, alpha, A, lda, B, ldb,   &
                          beta, C, ldc )
        USE GALAHAD_KINDS_precision
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: transa, transb

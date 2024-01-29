@@ -4915,7 +4915,8 @@ end do
                                 inform%status, inform%alloc_status )
 
        if ( data%control%NM_steps > 0 ) then  ! non-monotone
-          CALL SPACE_resize_array( len, data%revert%Bval_revert, inform%status, inform%alloc_status )
+          CALL SPACE_resize_array( len, data%revert%Bval_revert,               &
+                                   inform%status, inform%alloc_status )
        end if
 
     elseif ( B_type == 4 ) then  ! EXACT
