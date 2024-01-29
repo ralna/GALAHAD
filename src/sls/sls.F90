@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -2694,7 +2694,6 @@
      LOGICAL :: mc6168_ordering
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
-     INTEGER ( KIND = ip_ ) :: LAENV
 !$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix

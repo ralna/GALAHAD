@@ -593,7 +593,6 @@ create_lapack:
 	$(MV) galahad_lapack.h $(GALAHAD)/include/
 	$(RM) ./build_lapack
 
-
 #  book keeping
 
 clean:

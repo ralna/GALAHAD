@@ -1076,7 +1076,8 @@ contains
        call inform%print_flag(options, context)
     end if
 
-    if ((options%print_level .ge. 1) .and. (options%unit_diagnostics .ge. 0)) then
+    if ((options%print_level .ge. 1) .and. &
+        (options%unit_diagnostics .ge. 0)) then
        write (options%unit_diagnostics,'(/a)') &
             ' Completed factorisation with:'
        write (options%unit_diagnostics, &

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -831,7 +831,7 @@
       REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       LOGICAL :: new_q
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ) :: LAENV
+!     INTEGER ( KIND = ip_ ) :: LAENV
 
 !  prefix for all output
 

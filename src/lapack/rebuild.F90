@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-20 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 09:45 GMT.
 
 !  read a file containg a subset of the reference blas, lapack, etc
 !  written in fortran 77, and output a multi-precision version capable
@@ -215,13 +215,29 @@
 !  transform the line to accommodate multi-precision symbols, and
 !  to replace archaic fortran 77 functions
 
+!  TODO: replace
+!    '= dum(1)' '=INT(dum(1),KIND=ip_)'
+!    '= isgn' '= REAL(isgn,KIND=KIND(sgn)_)'
+!    '= iws' '= REAL(iws,KIND=KIND(work(1)))
+!    '= lwkopt' '= REAL(lwkopt,KIND=KIND(work(1)))
+!    '= maxwrk' '= REAL(maxwrk,KIND=KIND(work(1)))
+!    '= ws'    '= REAL(ws,KIND=KIND(work(1)))
+!    'lwkopt = work(1)' 'lwkopt = INT(work(1),KIND=ip_)'
+!
+!  and modify
+!    IF (tol>=zero .AND. n*tol*(sminl/smax)<=MAX(eps,hndrth*tol)) THEN
+!    thresh = MAX(ABS(tol)*smax, maxitr*(n*(n*unfl)))
+!    thresh = MAX(tol*sminoa, maxitr*(n*(n*unfl)))
+!    wsize = MAX(wsize, 2*mn+work(2*mn+1))
+!    wsize = mn + work(mn+1)
+!    z(2*n+5) = hundrd*nfail/REAL(iter)
+
        line = REPEAT( ' ', max_line )
        k = 1 ; l_next = 0
        DO l = 1, l_end
          IF ( in_line( l : l ) /= ' ' .AND. nz < 0 ) nz = l
          IF ( l < l_next ) CYCLE
          IF ( in_line( l : l + 7 ) == 'EXTERNAL' ) external_line = .TRUE.
-
          IF ( in_line( l : l + 12 ) == 'MAX(0, ILAENV' ) THEN
            line( k : k + 9 ) = 'MAX(0_ip_, '
            l_next = l + 6 ; k = k + 10
@@ -552,7 +568,6 @@
 
        IF ( external_line ) THEN
          line_max = max_chars - nz - 16
-         IF ( line( l_end : l_end ) /= '&' ) external_line = .FALSE.
        ELSE
          line_max = max_chars - nz
        END IF
@@ -572,13 +587,23 @@
              IF ( ( line( k : k ) == ' ' .AND. line( k-1 : k-1 ) /= "'" ) .OR. &
                   line( k : k ) == ',' ) THEN
                IF ( line( k : k ) == ',' ) THEN
-                 WRITE( out, "( A, A, A, '&' )" )                              &
-                   REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                   &
-                   REPEAT( ' ', max_chars + 2 - nz - k )
+                 IF ( external_line ) THEN
+                   WRITE( out, "( A, A, '& ' )" )                              &
+                     REPEAT( ' ', nz ), TRIM( line( 1 : k ) )
+                 ELSE
+                   WRITE( out, "( A, A, A, '&' )" )                            &
+                     REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                 &
+                     REPEAT( ' ', max_chars + 2 - nz - k )
+                 END IF
                ELSE
-                 WRITE( out, "( A, A, A, '&' )" )                              &
-                   REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                   &
-                   REPEAT( ' ', max_chars + 2 - nz - k )
+                 IF ( external_line ) THEN
+                   WRITE( out, "( A, A, ' &' )" )                              &
+                     REPEAT( ' ', nz ), TRIM( line( 1 : k ) )
+                 ELSE
+                   WRITE( out, "( A, A, A, '&' )" )                            &
+                     REPEAT( ' ', nz ), TRIM( line( 1 : k ) ),                 &
+                     REPEAT( ' ', max_chars + 2 - nz - k )
+                 END IF
                END IF
                nz = MIN( nz + 2, nz2 ) 
                EXIT
@@ -589,6 +614,7 @@
            l_end = LEN_TRIM( line )
          END IF
        END DO  
+       external_line = .FALSE.
 
 !  if a procedure line ends in a closing bracket, add a USE statement
 

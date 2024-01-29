@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-28 AT 10:43 GMT
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 09:08 GMT
 
 #include "galahad_lapack.h"
 
@@ -36,7 +36,7 @@
           LOGICAL :: LSAME
           REAL(r8_) :: DLAMCH
           EXTERNAL :: LSAME, DLAMCH
-          EXTERNAL :: DLARTG, DLAS2, DLASQ1, DLASR, DLASV2,                  &
+          EXTERNAL :: DLARTG, DLAS2, DLASQ1, DLASR, DLASV2,& 
             DROT, DSCAL, DSWAP, XERBLA
           INTRINSIC :: ABS, DBLE, MAX, MIN, SIGN, SQRT
           info = 0
@@ -592,7 +592,7 @@
           INTEGER(ip_) :: i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin,  &
             nh, nx
           REAL(r8_) :: ei
-          EXTERNAL :: DAXPY, DGEHD2, DGEMM, DLAHR2, DLARFB,                  &
+          EXTERNAL :: DAXPY, DGEHD2, DGEMM, DLAHR2, DLARFB,& 
             DTRMM, XERBLA
           INTRINSIC :: MAX, MIN
           INTEGER(ip_) :: ILAENV
@@ -802,7 +802,7 @@
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
           EXTERNAL :: LSAME, ILAENV, DLABAD, DLAMCH, DLANGE
-          EXTERNAL :: DGELQF, DGEQRF, DLASCL, DLASET,                       &
+          EXTERNAL :: DGELQF, DGEQRF, DLASCL, DLASET, &
             DORMLQ, DORMQR, DTRTRS, XERBLA
           INTRINSIC :: DBLE, MAX, MIN
           info = 0
@@ -970,8 +970,8 @@
             liwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork,   &
             smlsiz, wlalsd
           REAL(r8_) :: anrm, bignum, bnrm, eps, sfmin, smlnum
-          EXTERNAL :: DGEBRD, DGELQF, DGEQRF, DLABAD,                       &
-            DLACPY, DLALSD, DLASCL, DLASET, DORMBR, DORMLQ,                 &
+          EXTERNAL :: DGEBRD, DGELQF, DGEQRF, DLABAD, &
+            DLACPY, DLALSD, DLASCL, DLASET, DORMBR, DORMLQ, &
             DORMQR, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
@@ -1219,8 +1219,8 @@
             lwork_dormbr, lwork_dorgbr, lwork_dormlq, lwork_dgelqf
           REAL(r8_) :: anrm, bignum, bnrm, eps, sfmin, smlnum, thr
           REAL(r8_) :: dum(1)
-          EXTERNAL :: DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM,                  &
-            DGEMV, DGEQRF, DLABAD, DLACPY, DLASCL, DLASET,                  &
+          EXTERNAL :: DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM,& 
+            DGEMV, DGEQRF, DLABAD, DLACPY, DLASCL, DLASET, &
             DORGBR, DORMBR, DORMLQ, DORMQR, DRSCL, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
@@ -1568,8 +1568,8 @@
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANGE
           EXTERNAL :: ILAENV, DLAMCH, DLANGE
-          EXTERNAL :: DCOPY, DGEQP3, DLABAD, DLAIC1,                        &
-            DLASCL, DLASET, DORMQR, DORMRZ, DTRSM, DTZRZF,                  &
+          EXTERNAL :: DCOPY, DGEQP3, DLABAD, DLAIC1, &
+            DLASCL, DLASET, DORMQR, DORMRZ, DTRSM, DTZRZF, &
             XERBLA
           INTRINSIC :: ABS, MAX, MIN
           mn = MIN(m, n)
@@ -1734,7 +1734,7 @@
           LOGICAL :: lquery
           INTEGER(ip_) :: fjb, iws, j, jb, lwkopt, minmn, minws, na, nb,    &
             nbmin, nfxd, nx, sm, sminmn, sn, topbmn
-          EXTERNAL :: DGEQRF, DLAQP2, DLAQPS, DORMQR,                       &
+          EXTERNAL :: DGEQRF, DLAQP2, DLAQPS, DORMQR, &
             DSWAP, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DNRM2
@@ -1968,8 +1968,8 @@
             lwork_dorglq_n, lwork_dorglq_m
           REAL(r8_) :: anrm, bignum, eps, smlnum
           REAL(r8_) :: dum(1)
-          EXTERNAL :: DBDSQR, DGEBRD, DGELQF, DGEMM,                        &
-            DGEQRF, DLACPY, DLASCL, DLASET, DORGBR, DORGLQ,                 &
+          EXTERNAL :: DBDSQR, DGEBRD, DGELQF, DGEMM, &
+            DGEQRF, DLACPY, DLASCL, DLASET, DORGBR, DORGLQ, &
             DORGQR, DORMBR, XERBLA
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
@@ -3683,7 +3683,7 @@
           INTEGER(ip_) :: ILAENV
           LOGICAL :: LSAME
           EXTERNAL :: ILAENV, LSAME
-          EXTERNAL :: DLACPY, DLAHQR, DLAQR0, DLASET,                       &
+          EXTERNAL :: DLACPY, DLAHQR, DLAQR0, DLASET, &
             XERBLA
           INTRINSIC :: DBLE, MAX, MIN
           wantt = LSAME(job, 'S')
@@ -4331,7 +4331,7 @@
           REAL(r8_) :: d(ldd, 4_ip_), u(3), u1(3), u2(3), x(ldx, 2_ip_)
           REAL(r8_) :: DLAMCH, DLANGE
           EXTERNAL :: DLAMCH, DLANGE
-          EXTERNAL :: DLACPY, DLANV2, DLARFG, DLARFX,                       &
+          EXTERNAL :: DLACPY, DLANV2, DLARFG, DLARFX, &
             DLARTG, DLASY2, DROT
           INTRINSIC :: ABS, MAX
           info = 0
@@ -4698,7 +4698,7 @@
           PARAMETER (zero=0.0_r8_, one=1.0_r8_)
           INTEGER(ip_) :: i
           REAL(r8_) :: ei
-          EXTERNAL :: DAXPY, DCOPY, DGEMM, DGEMV, DLACPY,                   &
+          EXTERNAL :: DAXPY, DCOPY, DGEMM, DGEMV, DLACPY, &
             DLARFG, DSCAL, DTRMM, DTRMV
           INTRINSIC :: MIN
           IF (n<=1) RETURN
@@ -4945,7 +4945,7 @@
           PARAMETER (one=1.0_r8_, zero=0.0_r8_, negone=-1.0_r8_)
           INTEGER(ip_) :: i, j, m, n, nlp1
           REAL(r8_) :: diflj, difrj, dj, dsigj, dsigjp, temp
-          EXTERNAL :: DCOPY, DGEMV, DLACPY, DLASCL, DROT,                   &
+          EXTERNAL :: DCOPY, DGEMV, DLACPY, DLASCL, DROT, &
             DSCAL, XERBLA
           REAL(r8_) :: DLAMC3, DNRM2
           EXTERNAL :: DLAMC3, DNRM2
@@ -5248,8 +5248,8 @@
           INTEGER(ip_) :: IDAMAX
           REAL(r8_) :: DLAMCH, DLANST
           EXTERNAL :: IDAMAX, DLAMCH, DLANST
-          EXTERNAL :: DCOPY, DGEMM, DLACPY, DLALSA, DLARTG,                  &
-            DLASCL, DLASDA, DLASDQ, DLASET, DLASRT, DROT,                   &
+          EXTERNAL :: DCOPY, DGEMM, DLACPY, DLALSA, DLARTG,& 
+            DLASCL, DLASDA, DLASDQ, DLASET, DLASRT, DROT, &
             XERBLA
           INTRINSIC :: ABS, DBLE, INT, LOG, SIGN
           info = 0
@@ -6131,7 +6131,7 @@
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r8_) :: zdum(1, 1_ip_)
-          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR3,                       &
+          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR3, &
             DLAQR4, DLAQR5
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, MOD
           info = 0
@@ -6395,8 +6395,8 @@
           LOGICAL :: bulge, sorted
           REAL(r8_) :: DLAMCH
           EXTERNAL :: DLAMCH
-          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,                  &
-            DLAHQR, DLANV2, DLARF, DLARFG, DLASET, DORMHR,                  &
+          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,& 
+            DLAHQR, DLANV2, DLARF, DLARFG, DLASET, DORMHR, &
             DTREXC
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -6640,8 +6640,8 @@
           REAL(r8_) :: DLAMCH
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: DLAMCH, ILAENV
-          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,                  &
-            DLAHQR, DLANV2, DLAQR4, DLARF, DLARFG, DLASET,                  &
+          EXTERNAL :: DCOPY, DGEHRD, DGEMM, DLABAD, DLACPY,& 
+            DLAHQR, DLANV2, DLAQR4, DLARF, DLARFG, DLASET, &
             DORMHR, DTREXC
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -6900,7 +6900,7 @@
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r8_) :: zdum(1, 1_ip_)
-          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR2,                       &
+          EXTERNAL :: DLACPY, DLAHQR, DLANV2, DLAQR2, &
             DLAQR5
           INTRINSIC :: ABS, DBLE, INT, MAX, MIN, MOD
           info = 0
@@ -7122,7 +7122,7 @@
           EXTERNAL :: DLAMCH
           INTRINSIC :: ABS, DBLE, MAX, MIN, MOD
           REAL(r8_) :: vt(3)
-          EXTERNAL :: DGEMM, DLABAD, DLACPY, DLAQR1,                        &
+          EXTERNAL :: DGEMM, DLABAD, DLACPY, DLAQR1, &
             DLARFG, DLASET, DTRMM
           IF (nshfts<2) RETURN
           IF (ktop>=kbot) RETURN
@@ -9379,7 +9379,7 @@
           INTEGER(ip_) :: i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n,  &
             n1, n2
           REAL(r8_) :: orgnrm
-          EXTERNAL :: DCOPY, DLAMRG, DLASCL, DLASD7,                        &
+          EXTERNAL :: DCOPY, DLAMRG, DLASCL, DLASD7, &
             DLASD8, XERBLA
           INTRINSIC :: ABS, MAX
           info = 0
@@ -9741,7 +9741,7 @@
             nlp1, nlvl, nr, nrf, nrp1, nru, nwork1, nwork2, smlszp, sqrei,  &
             vf, vfi, vl, vli
           REAL(r8_) :: alpha, beta
-          EXTERNAL :: DCOPY, DLASD6, DLASDQ, DLASDT,                        &
+          EXTERNAL :: DCOPY, DLASD6, DLASDQ, DLASDT, &
             DLASET, XERBLA
           info = 0
           IF ((icompq<0) .OR. (icompq>1)) THEN
@@ -10115,7 +10115,7 @@
           PARAMETER (zero=0.0_r8_)
           INTEGER(ip_) :: i, iinfo
           REAL(r8_) :: eps, scale, safmin, sigmn, sigmx
-          EXTERNAL :: DCOPY, DLAS2, DLASCL, DLASQ2, DLASRT,                  &
+          EXTERNAL :: DCOPY, DLAS2, DLASCL, DLASQ2, DLASRT,& 
             XERBLA
           REAL(r8_) :: DLAMCH
           EXTERNAL :: DLAMCH
@@ -13708,7 +13708,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
-          EXTERNAL :: DGEMM, DPBTF2, DPOTF2, DSYRK, DTRSM,                  &
+          EXTERNAL :: DGEMM, DPBTF2, DPOTF2, DSYRK, DTRSM, &
             XERBLA
           INTRINSIC :: MIN
           info = 0
@@ -14300,7 +14300,7 @@
           LOGICAL :: LSAME
           REAL(r8_) :: DLAMCH, DLANST, DLAPY2
           EXTERNAL :: LSAME, DLAMCH, DLANST, DLAPY2
-          EXTERNAL :: DLAE2, DLAEV2, DLARTG, DLASCL,                        &
+          EXTERNAL :: DLAE2, DLAEV2, DLARTG, DLASCL, &
             DLASET, DLASR, DLASRT, DSWAP, XERBLA
           INTRINSIC :: ABS, MAX, SIGN, SQRT
           info = 0
@@ -14779,7 +14779,7 @@
           INTEGER(ip_) :: ILAENV
           REAL(r8_) :: DLAMCH, DLANSY
           EXTERNAL :: LSAME, ILAENV, DLAMCH, DLANSY
-          EXTERNAL :: DLASCL, DORGTR, DSCAL, DSTEQR,                        &
+          EXTERNAL :: DLASCL, DORGTR, DSCAL, DSTEQR, &
             DSTERF, DSYTRD, XERBLA
           INTRINSIC :: MAX, SQRT
           wantz = LSAME(jobz, 'V')
@@ -14868,7 +14868,7 @@
           LOGICAL :: upper
           INTEGER(ip_) :: k
           REAL(r8_) :: akk, bkk, ct
-          EXTERNAL :: DAXPY, DSCAL, DSYR2, DTRMV, DTRSV,                    &
+          EXTERNAL :: DAXPY, DSCAL, DSYR2, DTRMV, DTRSV, &
             XERBLA
           INTRINSIC :: MAX
           LOGICAL :: LSAME
@@ -14969,7 +14969,7 @@
           PARAMETER (one=1.0_r8_, half=0.5_r8_)
           LOGICAL :: upper
           INTEGER(ip_) :: k, kb, nb
-          EXTERNAL :: DSYGS2, DSYMM, DSYR2K, DTRMM, DTRSM,                  &
+          EXTERNAL :: DSYGS2, DSYMM, DSYR2K, DTRMM, DTRSM, &
             XERBLA
           INTRINSIC :: MAX, MIN
           LOGICAL :: LSAME
@@ -15088,7 +15088,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
-          EXTERNAL :: DPOTRF, DSYEV, DSYGST, DTRMM, DTRSM,                  &
+          EXTERNAL :: DPOTRF, DSYEV, DSYGST, DTRMM, DTRSM, &
             XERBLA
           INTRINSIC :: MAX
           wantz = LSAME(jobz, 'V')
@@ -16736,7 +16736,7 @@
           LOGICAL :: LSAME
           REAL(r4_) :: SLAMCH
           EXTERNAL :: LSAME, SLAMCH
-          EXTERNAL :: SLARTG, SLAS2, SLASQ1, SLASR, SLASV2,                  &
+          EXTERNAL :: SLARTG, SLAS2, SLASQ1, SLASR, SLASV2,& 
             SROT, SSCAL, SSWAP, XERBLA
           INTRINSIC :: ABS, MAX, MIN, REAL, SIGN, SQRT
           info = 0
@@ -17292,7 +17292,7 @@
           INTEGER(ip_) :: i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin,  &
             nh, nx
           REAL(r4_) :: ei
-          EXTERNAL :: SAXPY, SGEHD2, SGEMM, SLAHR2, SLARFB,                  &
+          EXTERNAL :: SAXPY, SGEHD2, SGEMM, SLAHR2, SLARFB,& 
             STRMM, XERBLA
           INTRINSIC :: MAX, MIN
           INTEGER(ip_) :: ILAENV
@@ -17502,7 +17502,7 @@
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
           EXTERNAL :: LSAME, ILAENV, SLAMCH, SLANGE
-          EXTERNAL :: SGELQF, SGEQRF, SLABAD, SLASCL,                       &
+          EXTERNAL :: SGELQF, SGEQRF, SLABAD, SLASCL, &
             SLASET, SORMLQ, SORMQR, STRTRS, XERBLA
           INTRINSIC :: MAX, MIN, REAL
           info = 0
@@ -17670,8 +17670,8 @@
             liwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork,   &
             smlsiz, wlalsd
           REAL(r4_) :: anrm, bignum, bnrm, eps, sfmin, smlnum
-          EXTERNAL :: SGEBRD, SGELQF, SGEQRF, SLABAD,                       &
-            SLACPY, SLALSD, SLASCL, SLASET, SORMBR, SORMLQ,                 &
+          EXTERNAL :: SGEBRD, SGELQF, SGEQRF, SLABAD, &
+            SLACPY, SLALSD, SLASCL, SLASET, SORMBR, SORMLQ, &
             SORMQR, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
@@ -17923,8 +17923,8 @@
             lwork_sormbr, lwork_sorgbr, lwork_sormlq
           REAL(r4_) :: anrm, bignum, bnrm, eps, sfmin, smlnum, thr
           REAL(r4_) :: dum(1)
-          EXTERNAL :: SBDSQR, SCOPY, SGEBRD, SGELQF, SGEMM,                  &
-            SGEMV, SGEQRF, SLABAD, SLACPY, SLASCL, SLASET,                  &
+          EXTERNAL :: SBDSQR, SCOPY, SGEBRD, SGELQF, SGEMM,& 
+            SGEMV, SGEQRF, SLABAD, SLACPY, SLASCL, SLASET, &
             SORGBR, SORMBR, SORMLQ, SORMQR, SRSCL, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
@@ -18271,8 +18271,8 @@
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANGE
           EXTERNAL :: ILAENV, SLAMCH, SLANGE
-          EXTERNAL :: SCOPY, SGEQP3, SLABAD, SLAIC1,                        &
-            SLASCL, SLASET, SORMQR, SORMRZ, STRSM, STZRZF,                  &
+          EXTERNAL :: SCOPY, SGEQP3, SLABAD, SLAIC1, &
+            SLASCL, SLASET, SORMQR, SORMRZ, STRSM, STZRZF, &
             XERBLA
           INTRINSIC :: ABS, MAX, MIN
           mn = MIN(m, n)
@@ -18437,7 +18437,7 @@
           LOGICAL :: lquery
           INTEGER(ip_) :: fjb, iws, j, jb, lwkopt, minmn, minws, na, nb,    &
             nbmin, nfxd, nx, sm, sminmn, sn, topbmn
-          EXTERNAL :: SGEQRF, SLAQP2, SLAQPS, SORMQR,                       &
+          EXTERNAL :: SGEQRF, SLAQP2, SLAQPS, SORMQR, &
             SSWAP, XERBLA
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SNRM2
@@ -18671,8 +18671,8 @@
             lwork_sorglq_n, lwork_sorglq_m
           REAL(r4_) :: anrm, bignum, eps, smlnum
           REAL(r4_) :: dum(1)
-          EXTERNAL :: SBDSQR, SGEBRD, SGELQF, SGEMM,                        &
-            SGEQRF, SLACPY, SLASCL, SLASET, SORGBR, SORGLQ,                 &
+          EXTERNAL :: SBDSQR, SGEBRD, SGELQF, SGEMM, &
+            SGEQRF, SLACPY, SLASCL, SLASET, SORGBR, SORGLQ, &
             SORGQR, SORMBR, XERBLA
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
@@ -20387,7 +20387,7 @@
           INTEGER(ip_) :: ILAENV
           LOGICAL :: LSAME
           EXTERNAL :: ILAENV, LSAME
-          EXTERNAL :: SLACPY, SLAHQR, SLAQR0, SLASET,                       &
+          EXTERNAL :: SLACPY, SLAHQR, SLAQR0, SLASET, &
             XERBLA
           INTRINSIC :: MAX, MIN, REAL
           wantt = LSAME(job, 'S')
@@ -20944,7 +20944,7 @@
           REAL(r4_) :: d(ldd, 4_ip_), u(3), u1(3), u2(3), x(ldx, 2_ip_)
           REAL(r4_) :: SLAMCH, SLANGE
           EXTERNAL :: SLAMCH, SLANGE
-          EXTERNAL :: SLACPY, SLANV2, SLARFG, SLARFX,                       &
+          EXTERNAL :: SLACPY, SLANV2, SLARFG, SLARFX, &
             SLARTG, SLASY2, SROT
           INTRINSIC :: ABS, MAX
           info = 0
@@ -21310,7 +21310,7 @@
           PARAMETER (zero=0.0_r4_, one=1.0_r4_)
           INTEGER(ip_) :: i
           REAL(r4_) :: ei
-          EXTERNAL :: SAXPY, SCOPY, SGEMM, SGEMV, SLACPY,                   &
+          EXTERNAL :: SAXPY, SCOPY, SGEMM, SGEMV, SLACPY, &
             SLARFG, SSCAL, STRMM, STRMV
           INTRINSIC :: MIN
           IF (n<=1) RETURN
@@ -21557,7 +21557,7 @@
           PARAMETER (one=1.0_r4_, zero=0.0_r4_, negone=-1.0_r4_)
           INTEGER(ip_) :: i, j, m, n, nlp1
           REAL(r4_) :: diflj, difrj, dj, dsigj, dsigjp, temp
-          EXTERNAL :: SCOPY, SGEMV, SLACPY, SLASCL, SROT,                   &
+          EXTERNAL :: SCOPY, SGEMV, SLACPY, SLASCL, SROT, &
             SSCAL, XERBLA
           REAL(r4_) :: SLAMC3, SNRM2
           EXTERNAL :: SLAMC3, SNRM2
@@ -21860,8 +21860,8 @@
           INTEGER(ip_) :: ISAMAX
           REAL(r4_) :: SLAMCH, SLANST
           EXTERNAL :: ISAMAX, SLAMCH, SLANST
-          EXTERNAL :: SCOPY, SGEMM, SLACPY, SLALSA, SLARTG,                  &
-            SLASCL, SLASDA, SLASDQ, SLASET, SLASRT, SROT,                   &
+          EXTERNAL :: SCOPY, SGEMM, SLACPY, SLALSA, SLARTG,& 
+            SLASCL, SLASDA, SLASDQ, SLASET, SLASRT, SROT, &
             XERBLA
           INTRINSIC :: ABS, INT, LOG, REAL, SIGN
           info = 0
@@ -22724,7 +22724,7 @@
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r4_) :: zdum(1, 1_ip_)
-          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR3,                       &
+          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR3, &
             SLAQR4, SLAQR5
           INTRINSIC :: ABS, INT, MAX, MIN, MOD, REAL
           info = 0
@@ -22988,8 +22988,8 @@
           LOGICAL :: bulge, sorted
           REAL(r4_) :: SLAMCH
           EXTERNAL :: SLAMCH
-          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,                  &
-            SLAHQR, SLANV2, SLARF, SLARFG, SLASET, SORMHR,                  &
+          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,& 
+            SLAHQR, SLANV2, SLARF, SLARFG, SLASET, SORMHR, &
             STREXC
           INTRINSIC :: ABS, INT, MAX, MIN, REAL, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -23233,8 +23233,8 @@
           REAL(r4_) :: SLAMCH
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: SLAMCH, ILAENV
-          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,                  &
-            SLAHQR, SLANV2, SLAQR4, SLARF, SLARFG, SLASET,                  &
+          EXTERNAL :: SCOPY, SGEHRD, SGEMM, SLABAD, SLACPY,& 
+            SLAHQR, SLANV2, SLAQR4, SLARF, SLARFG, SLASET, &
             SORMHR, STREXC
           INTRINSIC :: ABS, INT, MAX, MIN, REAL, SQRT
           jw = MIN(nw, kbot-ktop+1)
@@ -23493,7 +23493,7 @@
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV
           REAL(r4_) :: zdum(1, 1_ip_)
-          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR2,                       &
+          EXTERNAL :: SLACPY, SLAHQR, SLANV2, SLAQR2, &
             SLAQR5
           INTRINSIC :: ABS, INT, MAX, MIN, MOD, REAL
           info = 0
@@ -23715,7 +23715,7 @@
           EXTERNAL :: SLAMCH
           INTRINSIC :: ABS, MAX, MIN, MOD, REAL
           REAL(r4_) :: vt(3)
-          EXTERNAL :: SGEMM, SLABAD, SLACPY, SLAQR1,                        &
+          EXTERNAL :: SGEMM, SLABAD, SLACPY, SLAQR1, &
             SLARFG, SLASET, STRMM
           IF (nshfts<2) RETURN
           IF (ktop>=kbot) RETURN
@@ -25971,7 +25971,7 @@
           INTEGER(ip_) :: i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n,  &
             n1, n2
           REAL(r4_) :: orgnrm
-          EXTERNAL :: SCOPY, SLAMRG, SLASCL, SLASD7,                        &
+          EXTERNAL :: SCOPY, SLAMRG, SLASCL, SLASD7, &
             SLASD8, XERBLA
           INTRINSIC :: ABS, MAX
           info = 0
@@ -26333,7 +26333,7 @@
             nlp1, nlvl, nr, nrf, nrp1, nru, nwork1, nwork2, smlszp, sqrei,  &
             vf, vfi, vl, vli
           REAL(r4_) :: alpha, beta
-          EXTERNAL :: SCOPY, SLASD6, SLASDQ, SLASDT,                        &
+          EXTERNAL :: SCOPY, SLASD6, SLASDQ, SLASDT, &
             SLASET, XERBLA
           info = 0
           IF ((icompq<0) .OR. (icompq>1)) THEN
@@ -26707,7 +26707,7 @@
           PARAMETER (zero=0.0_r4_)
           INTEGER(ip_) :: i, iinfo
           REAL(r4_) :: eps, scale, safmin, sigmn, sigmx
-          EXTERNAL :: SCOPY, SLAS2, SLASCL, SLASQ2, SLASRT,                  &
+          EXTERNAL :: SCOPY, SLAS2, SLASCL, SLASQ2, SLASRT,& 
             XERBLA
           REAL(r4_) :: SLAMCH
           EXTERNAL :: SLAMCH
@@ -30300,7 +30300,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: LSAME, ILAENV
-          EXTERNAL :: SGEMM, SPBTF2, SPOTF2, SSYRK, STRSM,                  &
+          EXTERNAL :: SGEMM, SPBTF2, SPOTF2, SSYRK, STRSM, &
             XERBLA
           INTRINSIC :: MIN
           info = 0
@@ -30892,7 +30892,7 @@
           LOGICAL :: LSAME
           REAL(r4_) :: SLAMCH, SLANST, SLAPY2
           EXTERNAL :: LSAME, SLAMCH, SLANST, SLAPY2
-          EXTERNAL :: SLAE2, SLAEV2, SLARTG, SLASCL,                        &
+          EXTERNAL :: SLAE2, SLAEV2, SLARTG, SLASCL, &
             SLASET, SLASR, SLASRT, SSWAP, XERBLA
           INTRINSIC :: ABS, MAX, SIGN, SQRT
           info = 0
@@ -31369,7 +31369,7 @@
           INTEGER(ip_) :: ILAENV
           REAL(r4_) :: SLAMCH, SLANSY
           EXTERNAL :: ILAENV, LSAME, SLAMCH, SLANSY
-          EXTERNAL :: SLASCL, SORGTR, SSCAL, SSTEQR,                        &
+          EXTERNAL :: SLASCL, SORGTR, SSCAL, SSTEQR, &
             SSTERF, SSYTRD, XERBLA
           INTRINSIC :: MAX, SQRT
           wantz = LSAME(jobz, 'V')
@@ -31458,7 +31458,7 @@
           LOGICAL :: upper
           INTEGER(ip_) :: k
           REAL(r4_) :: akk, bkk, ct
-          EXTERNAL :: SAXPY, SSCAL, SSYR2, STRMV, STRSV,                    &
+          EXTERNAL :: SAXPY, SSCAL, SSYR2, STRMV, STRSV, &
             XERBLA
           INTRINSIC :: MAX
           LOGICAL :: LSAME
@@ -31559,7 +31559,7 @@
           PARAMETER (one=1.0, half=0.5)
           LOGICAL :: upper
           INTEGER(ip_) :: k, kb, nb
-          EXTERNAL :: SSYGS2, SSYMM, SSYR2K, STRMM, STRSM,                  &
+          EXTERNAL :: SSYGS2, SSYMM, SSYR2K, STRMM, STRSM, &
             XERBLA
           INTRINSIC :: MAX, MIN
           LOGICAL :: LSAME
@@ -31678,7 +31678,7 @@
           LOGICAL :: LSAME
           INTEGER(ip_) :: ILAENV
           EXTERNAL :: ILAENV, LSAME
-          EXTERNAL :: SPOTRF, SSYEV, SSYGST, STRMM, STRSM,                  &
+          EXTERNAL :: SPOTRF, SSYEV, SSYGST, STRMM, STRSM, &
             XERBLA
           INTRINSIC :: MAX
           wantz = LSAME(jobz, 'V')

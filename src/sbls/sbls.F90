@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -2104,7 +2104,6 @@
       LOGICAL :: printi, resize, use_schur_complement
       LOGICAL :: fail_if_not_sc, numerical_pivoting
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER ( KIND = ip_ ) :: LAENV
 
 !     REAL ( KIND = rp_ ) :: DD(2,A%m+A%n)
 

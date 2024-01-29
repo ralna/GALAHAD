@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-04 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 09:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -2728,8 +2728,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      ! the Cauchy step s_c.
 
-     data%alpha_c      = min( one, data%alpha_c )  ! DPR: this should always be true.
-     data%s_c          = data%alpha_c * data%s_p
+     data%alpha_c = min( one, data%alpha_c )  ! DPR: this should always be true.
+     data%s_c = data%alpha_c * data%s_p
      data%inf_norm_s_c = data%alpha_c * data%inf_norm_s_p
 
      if ( data%control%print_level >= GALAHAD_DEBUG ) then
@@ -2852,7 +2852,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            go to 999
         end if
 
-        data%iterates_sqp = inform%QPseqp_inform%cg_iter   ! Are these really iterations? ???? DPR
+        data%iterates_sqp = inform%QPseqp_inform%cg_iter   
+          ! Are these really iterations? ???? DPR
 
         ! The FULL length seqp step and multipliers.
 
@@ -3239,7 +3240,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         if ( data%NM%active ) then
            if ( data%NM%num_fail == 0 ) then
               data%NM%decreaseH  = data%decreaseH_full
-              data%NM%merit_best = data%merit ! this may be different than data%revert%merit_revert. B/c penalt changes?
+              data%NM%merit_best = data%merit 
+     ! this may be different than data%revert%merit_revert. B/c penalty changes?
            end if
            data%ratio = data%NM%merit_best - data%merit_new
            data%ratio = data%ratio / data%NM%decreaseH
@@ -3733,9 +3735,9 @@ end do
 !             '   sigma     nv     TR       y_model          gmts',            &
 !             '              merit        imp' )
 
-2000 format(1x, '** ERROR : allocation error in subroutine TRIMSQP_solve.',   &
+2000 format(1x, '** ERROR : allocation error in subroutine TRIMSQP_solve.',    &
             ' error= ', I0, ' status= ', I0, '.')
-2001 format(1x, '** ERROR : de-allocation error in subroutine TRIMSQP_solve.',   &
+2001 format(1x, '** ERROR : de-allocation error in subroutine TRIMSQP_solve.', &
             ' error= ', I0, ' status= ', I0, '.')
 !3000 format(1x, (65('*')), / )
 !3001 format(1x, (65('*')),                                                         /, &
@@ -3782,7 +3784,7 @@ end do
 !!$3014 format( /, 2x, ' QPsiqp%m = ', I5, '   QPsiqp%n = ', I5, '   QPsiqp%f = ', ES16.9 )
 !3015 format( 1x, 'Merit function is first-order optimal', &
 !                 ' - turning non-monotone off.', /)
-3016 format( 1x, ' NM%active = T : saving model decrease for possible revert', / )
+3016 format( 1x, ' NM%active = T : saving model decrease for possible revert',/)
 !3015 format( /, '---------------------------------------------------------------',/,&
 !             1x,'BFGS is being used, the following data has been computed',/ &
 !             10x, 'd', 15x, 'Bs', 11x, 'gradLxnew', 10x, 'gradLx', /          &
@@ -4613,7 +4615,8 @@ end do
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-    integer ( kind = ip_ ) :: len, Ane, tally, i, j, out, error, m, n, m_a, L!, Hne, Bne
+    integer ( kind = ip_ ) :: len, Ane, tally, i, j, out, error
+    integer ( kind = ip_ ) :: m, n, m_a, L !, Hne, Bne
     integer ( kind = ip_ ) :: B_type, Bind, Aind, I_Bind, I_Aind, Ltn, np2m
     character, allocatable, dimension( : ) :: store_type
 
@@ -5103,7 +5106,8 @@ end do
     elseif ( nlp%m_a > 0 ) then
        call SMT_put( store_type, SMT_get( nlp%A%type ), inform%status )
     else
-       call SMT_put( store_type, 'COORDINATE', inform%status ) ! dummy value DPR: maybe dense for descent constraint.
+       call SMT_put( store_type, 'COORDINATE', inform%status ) 
+         ! dummy value DPR: maybe dense for descent constraint.
     end if
 
     SELECT CASE ( SMT_get( store_type ) )
@@ -6027,7 +6031,8 @@ end do
     CASE ('DENSE')
 
        do i = 1, nlp%m_a
-          QPsteer%A%val( 1+(i-1)*nlp%n : i*nlp%n ) = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
+          QPsteer%A%val( 1+(i-1)*nlp%n : i*nlp%n )                             &
+            = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
           QPsteer%A%row( 1+(i-1)*nlp%n : i*nlp%n ) = i
           do j = 1, nlp%n
              QPsteer%A%col( (i-1)*nlp%n + j ) = j
@@ -6684,7 +6689,8 @@ end do
              if ( data%control%print_level >= GALAHAD_DEBUG ) then
                 write( out, 1017 )
                 write( out,  '(4(2x, ES15.8))') &
-                     ( data%BFGS%d(i), data%BFGS%BS(i), data%BFGS%gradLx(i), data%BFGS%gradLx_new(i),  i = 1, n )
+                     ( data%BFGS%d(i), data%BFGS%BS(i), data%BFGS%gradLx(i),   &
+                       data%BFGS%gradLx_new(i),  i = 1, n )
                 write( out, 1016 ) data%BFGS%std, stBs
              end if
 
@@ -6803,8 +6809,8 @@ end do
     ! Fill constants.
     !****************
 
-    ! F
-    QPsiqp%f = zero !Irrelavant, but actually f_k + g_k^T s_c + half s_c ^T H_k s_c
+    ! F - irrelavant, but actually f_k + g_k^T s_c + half s_c ^T H_k s_c
+    QPsiqp%f = zero
 
     ! Fill vectors.
     !****************
@@ -7217,8 +7223,8 @@ end do
 
 ! Format statements
 
-1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine fill_QPsiqp.')
-
+1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine',          &
+                ' fill_QPsiqp.')
 
   END SUBROUTINE fill_QPsiqp
 
@@ -9354,7 +9360,7 @@ end do
           !  of accuracy, so the line derivative should be recomputed.
 
           IF ( ABS( slope ) < - epsqrt * slope_old ) THEN
-             IF ( print_debug )                                                 &
+             IF ( print_debug )                                                &
                   WRITE( out, "( ' recompute line derivative ... ' )" )
              CALL cauchy_get_val_and_slope( m, C_type, f, g_s, s_hs, rho_g,   &
                                             RES_l, RES_u, A_s, t_break,       &
@@ -9362,7 +9368,7 @@ end do
                                             val, slope, exact )
 
              gradient = slope + t_break * curv
-             IF ( print_debug )                                                 &
+             IF ( print_debug )                                                &
                   WRITE( out, "( ' val, slope ', 2ES22.14 )" ) val, slope
           ENDIF
 
@@ -9533,7 +9539,7 @@ end do
                   "( 3X, I7, ES12.4, A14, 3ES12.4 )" ) &
                   iter, t_min, '      -      -', fun, zero, curv
              IF ( print_debug ) THEN
-                exact_val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,         &
+                exact_val = cauchy_get_val( m, C_type, f, g_s, s_hs, rho_g,    &
                      RES_l, RES_u, A_s, t_min, too_small )
 
                 WRITE( out, 2010 ) '  val', fun, exact_val

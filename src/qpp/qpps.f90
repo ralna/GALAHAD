@@ -86,7 +86,8 @@
                    ' <u'
    END DO
    DO i = d%x_u_end + 1, p%n                ! non-positivities
-    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &                   ' <0'
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ),    &
+                   ' <0'
    END DO
 ! re-ordered constraints
    WRITE( 6, "( /, 5X,'i', 5x, 'A*v', 10X, 'l', 11X, 'u', 11X, 'y',            &
