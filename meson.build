@@ -89,7 +89,7 @@ libhsl_name = get_option('libhsl')
 libwsmp_name = get_option('libwsmp')
 libpardiso_name = get_option('libpardiso')
 libspmf_name = get_option('libspmf')
-libpastix_name = get_option('libpastix')
+libpastixf_name = get_option('libpastixf')
 libsmumps_name = get_option('libsmumps')
 libdmumps_name = get_option('libdmumps')
 libampl_name = get_option('libampl')
@@ -105,7 +105,7 @@ libhsl_path = get_option('libhsl_path')
 libwsmp_path = get_option('libwsmp_path')
 libpardiso_path = get_option('libpardiso_path')
 libspmf_path = get_option('libspmf_path')
-libpastix_path = get_option('libpastix_path')
+libpastixf_path = get_option('libpastixf_path')
 libampl_path = get_option('libampl_path')
 libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
@@ -128,7 +128,7 @@ libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_doubl
 libwsmp = fc.find_library(libwsmp_name, dirs : libwsmp_path, required : false)
 libpardiso = fc.find_library(libpardiso_name, dirs : libpardiso_path, required : false)
 libspmf = fc.find_library(libspmf_name, dirs : libspmf_path, required : false)
-libpastix = fc.find_library(libpastix_name, dirs : libpastix_path, required : false)
+libpastixf = fc.find_library(libpastixf_name, dirs : libpastixf_path, required : false)
 libsmumps = fc.find_library(libsmumps_name, dirs : libmumps_path, required : false)
 libdmumps = fc.find_library(libdmumps_name, dirs : libmumps_path, required : false)
 libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
@@ -166,7 +166,7 @@ endif
 libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]
 libgalahad_deps = [libblas, liblapack, libmetis, libhsl,
-                   libwsmp, libpardiso, libspmf, libpastix,
+                   libwsmp, libpardiso, libspmf, libpastixf,
                    libampl, libmpi, libhwloc]
 
 # Fortran files *.F90 or *.f90
@@ -255,6 +255,37 @@ endif
 
 extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
 extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
+
+if not libsmumps.found()
+  extra_args_single += '-DDUMMY_SMUMPS'
+endif
+if not libdmumps.found()
+  extra_args_double += '-DDUMMY_DMUMPS'
+endif
+if not (libblas_name == 'mkl_rt' or liblapack_name == 'mkl_rt')
+  extra_args_single += '-DDUMMY_MKL_PARDISO'
+  extra_args_double += '-DDUMMY_MKL_PARDISO'
+endif
+if not libpardiso.found()
+  extra_args_single += '-DDUMMY_PARDISO'
+  extra_args_double += '-DDUMMY_PARDISO'
+endif
+if not libpastixf.found()
+  extra_args_single += '-DDUMMY_PASTIXF'
+  extra_args_double += '-DDUMMY_PASTIXF'
+endif
+if not libspmf.found()
+  extra_args_single += '-DDUMMY_SPMF'
+  extra_args_double += '-DDUMMY_SPMF'
+endif
+if not libwsmp.found()
+  extra_args_single += '-DDUMMY_WSMP'
+  extra_args_double += '-DDUMMY_WSMP'
+endif
+if not libmpi.found()
+  extra_args_single += '-DDUMMY_MPI'
+  extra_args_double += '-DDUMMY_MPI'
+endif
 
 # 64 bits integer
 if galahad_int64

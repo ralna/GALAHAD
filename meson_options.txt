@@ -83,10 +83,10 @@ option('libspmf',
        value : 'spmf',
        description : 'SPMF library against which to link')
 
-option('libpastix',
+option('libpastixf',
        type : 'string',
-       value : 'pastix',
-       description : 'PASTIX library against which to link')
+       value : 'pastixf',
+       description : 'PASTIXF library against which to link')
 
 option('libsmumps',
        type : 'string',
@@ -153,10 +153,10 @@ option('libspmf_path',
        value : [],
        description : 'Additional directories to search for the SPMF library')
 
-option('libpastix_path',
+option('libpastixf_path',
        type : 'array',
        value : [],
-       description : 'Additional directories to search for the PASTIX library')
+       description : 'Additional directories to search for the PASTIXF library')
 
 option('libmumps_path',
        type : 'array',

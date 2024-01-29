@@ -319,10 +319,6 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_single_ciface_64
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_single_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface_64
-#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single_64
-#define mumps_struc smumps_struc
-#define MUMPS_STRUC SMUMPS_STRUC
-#define MUMPS_precision SMUMPS_64
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_single_64
@@ -729,10 +725,6 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_single_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_single_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface
-#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single
-#define mumps_struc smumps_struc
-#define MUMPS_STRUC SMUMPS_STRUC
-#define MUMPS_precision SMUMPS
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_single
@@ -1144,10 +1136,6 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_double_ciface_64
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_double_ciface_64
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface_64
-#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double_64
-#define MUMPS_STRUC DMUMPS_STRUC
-#define mumps_struc dmumps_struc
-#define MUMPS_precision DMUMPS_64
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface_64
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_double_64
@@ -1552,10 +1540,6 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_double_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_double_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface
-#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double
-#define MUMPS_STRUC DMUMPS_STRUC
-#define MUMPS_precision DMUMPS
-#define mumps_struc dmumps_struc
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_double
@@ -1650,4 +1634,119 @@
 #define INQP_precision INQP_double
 #endif
 #define c_precision c_double
+#endif
+
+#ifdef GALAHAD_SINGLE
+#define mumps_struc smumps_struc
+#define MUMPS_STRUC SMUMPS_STRUC
+#ifdef GALAHAD_64BIT_INTEGER
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single_64
+#ifdef DUMMY_SMUMPS
+#define MUMPS_precision GALAHAD_SMUMPS_64
+#else
+#define MUMPS_precision SMUMPS_64
+#endif
+#else
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single
+#ifdef DUMMY_SMUMPS
+#define MUMPS_precision GALAHAD_SMUMPS
+#else
+#define MUMPS_precision SMUMPS
+#endif
+#endif
+#else
+#define mumps_struc dmumps_struc
+#define MUMPS_STRUC DMUMPS_STRUC
+#ifdef GALAHAD_64BIT_INTEGER
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double_64
+#ifdef DUMMY_DMUMPS
+#define MUMPS_precision GALAHAD_DMUMPS_64
+#else
+#define MUMPS_precision DMUMPS_64
+#endif
+#else
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double
+#ifdef DUMMY_DMUMPS
+#define MUMPS_precision GALAHAD_DMUMPS
+#else
+#define MUMPS_precision DMUMPS
+#endif
+#endif
+#endif
+
+#ifdef DUMMY_MPI
+#define MPI_INIT GALAHAD_MPI_INIT
+#define MPI_INITIALIZED GALAHAD_MPI_INITIALIZED
+#define MPI_FINALIZE GALAHAD_MPI_FINALIZE
+#endif
+
+#ifdef DUMMY_PARDISO
+#define PARDISOINIT GALAHAD_PARDISOINIT
+#define PARDISO GALAHAD_PARDISO
+#endif
+
+#ifdef DUMMY_MKL_PARDISO
+#define PARDISO_D GALAHAD_PARDISO_D
+#define PARDISO_D_2D GALAHAD_PARDISO_D_2D
+#define PARDISO_D_64 GALAHAD_PARDISO_D_64
+#define PARDISO_D_64_2D GALAHAD_PARDISO_D_64_2D
+#define PARDISO_DC GALAHAD_PARDISO_DC
+#define PARDISO_DC_2D GALAHAD_PARDISO_DC_2D
+#define PARDISO_DC_64 GALAHAD_PARDISO_DC_64
+#define PARDISO_DC_64_2D GALAHAD_PARDISO_DC_64_2D
+#define PARDISO_EXPORT_C GALAHAD_PARDISO_EXPORT_C
+#define PARDISO_EXPORT_D GALAHAD_PARDISO_EXPORT_D
+#define PARDISO_EXPORT_S GALAHAD_PARDISO_EXPORT_S
+#define PARDISO_EXPORT_Z GALAHAD_PARDISO_EXPORT_Z
+#define PARDISO_GETDIAG_D GALAHAD_PARDISO_GETDIAG_D
+#define PARDISO_GETDIAG_Z GALAHAD_PARDISO_GETDIAG_Z
+#define PARDISO_GETENV GALAHAD_PARDISO_GETENV
+#define PARDISO_GETENV_F GALAHAD_PARDISO_GETENV_F
+#define PARDISO_HANDLE_DELETE GALAHAD_PARDISO_HANDLE_DELETE
+#define PARDISO_HANDLE_DELETE_64 GALAHAD_PARDISO_HANDLE_DELETE_64
+#define PARDISO_HANDLE_RESTORE GALAHAD_PARDISO_HANDLE_RESTORE
+#define PARDISO_HANDLE_RESTORE_64 GALAHAD_PARDISO_HANDLE_RESTORE_64
+#define PARDISO_HANDLE_STORE GALAHAD_PARDISO_HANDLE_STORE
+#define PARDISO_HANDLE_STORE_64 GALAHAD_PARDISO_HANDLE_STORE_64
+#define PARDISO_S GALAHAD_PARDISO_S
+#define PARDISO_S_2D GALAHAD_PARDISO_S_2D
+#define PARDISO_S_64 GALAHAD_PARDISO_S_64
+#define PARDISO_S_64_2D GALAHAD_PARDISO_S_64_2D
+#define PARDISO_SC GALAHAD_PARDISO_SC
+#define PARDISO_SC_2D GALAHAD_PARDISO_SC_2D
+#define PARDISO_SC_64 GALAHAD_PARDISO_SC_64
+#define PARDISO_SC_64_2D GALAHAD_PARDISO_SC_64_2D
+#define PARDISO_SETENV GALAHAD_PARDISO_SETENV
+#define PARDISO_SETENV_F GALAHAD_PARDISO_SETENV_F
+#define MKL_PARDISO_PIVOT GALAHAD_MKL_PARDISO_PIVOT
+#endif
+
+#ifdef DUMMY_WSMP
+#define WSMP_INITIALIZE GALAHAD_WSMP_INITIALIZE
+#define WSETMAXTHRDS GALAHAD_WSETMAXTHRDS
+#define WSSMP GALAHAD_WSSMP
+#define WSMP_CLEAR GALAHAD_WSMP_CLEAR
+#define WSSFREE GALAHAD_WSSFREE
+#endif
+
+#ifdef DUMMY_SPMF
+#define spmInit_f08 GALAHAD_spmInit_f08
+#define spmUpdateComputedFields_f08 GALAHAD_spmUpdateComputedFields_f08
+#define spmAlloc_f08 GALAHAD_spmAlloc_f08
+#define spmCheckAndCorrect_f08 GALAHAD_spmCheckAndCorrect_f08
+#define spmGetArray_f08 GALAHAD_spmGetArray_f08
+#define spmCheckAxb_f08 GALAHAD_spmCheckAxb_f08
+#define spmExit_f08 GALAHAD_spmExit_f08
+#endif
+
+#ifdef DUMMY_PASTIXF
+#define pastixInitParam_f08 GALAHAD_pastixInitParam_f08
+#define pastixInit_f08 GALAHAD_pastixInit_f08
+#define pastix_task_analyze_f08 GALAHAD_pastix_task_analyze_f08
+#define pastix_task_numfact_f08 GALAHAD_pastix_task_numfact_f08
+#define pastix_task_solve_f08 GALAHAD_pastix_task_solve_f08
+#define pastix_task_refine_f08 GALAHAD_pastix_task_refine_f08
+#define pastixOrderGet_f08 GALAHAD_pastixOrderGet_f08
+#define pastixOrderGetArray_f08 GALAHAD_pastixOrderGetArray_f08
+#define pastixFinalize_f08 GALAHAD_pastixFinalize_f08
 #endif

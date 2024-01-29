@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-  G A L A H A D  -  D U M M Y   S P M F  S U B R O U T I N E S -*-*-*-
 
    SUBROUTINE spmInit_f08( spm )
