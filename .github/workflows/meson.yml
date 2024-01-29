@@ -46,11 +46,11 @@ jobs:
             version: '2023.2'
             int64: false
             allow_failure: true
-          - os: ubuntu-latest
-            compiler: nvidia-hpc
-            version: '23.11'
-            int64: false
-            allow_failure: true
+          # - os: ubuntu-latest
+          #   compiler: nvidia-hpc
+          #   version: '23.11'
+          #   int64: false
+          #   allow_failure: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
