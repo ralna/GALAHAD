@@ -7,13 +7,13 @@ function file_extension(file::String)
   return extension
 end
 
-function append_macros!(macros::Dict{String,String}, path::String)
+function append_macros!(macros::Vector{Tuple{String,String}}, path::String)
   str = read(path, String)
   lines = split(str, '\n')
   for line in lines
     if startswith(line, "#define")
-      tab = split(line, " ")
-      macros[tab[2]]  = tab[end]
+      tab = split(line, " ", keepempty=false)
+      push!(macros, (tab[2], tab[3]))
     end
   end
   return macros
@@ -24,10 +24,14 @@ excluded_files = ["blas_original.f", "blas_original.f90",
                   "lapack_original.f", "lapack_original.f90",
                   "ieeeck_original.f", "noieeeck_original.f"]
 
-macros = Dict{String,String}()
+macros = Tuple{String,String}[]
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_hsl.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_kinds.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedures.h"))
 
 # Check the number of characters
 for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
@@ -48,18 +52,18 @@ for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
         println("Line $i in the file $file has more than 80 characters.")
         global n = n+1
       end
-      for symbol in keys(macros)
+      for (symbol, pp_symbol) in macros
         if occursin(symbol, line) && (file_extension(file) == "f")
-          line2 = replace(line, symbol => macros[symbol])
+          line2 = replace(line, symbol => pp_symbol)
           if length(line2) > 72
-            println("Line $i in the file $file has more than 72 characters if $symbol is replaced by $(macros[symbol]).")
+            println("Line $i in the file $file has more than 72 characters if $symbol is replaced by $(pp_symbol).")
             global n = n+1
           end
         end
         if occursin(symbol, line) && (file_extension(file) ∈ ["f90", "F90"])
-          line2 = replace(line, symbol => macros[symbol])
+          line2 = replace(line, symbol => pp_symbol)
           if length(line2) > 80
-            println("Line $i in the file $file has more than 80 characters if $symbol is replaced by $(macros[symbol]).")
+            println("Line $i in the file $file has more than 80 characters if $symbol is replaced by $(pp_symbol).")
             global n = n+1
           end
         end
