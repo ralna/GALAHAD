@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
 
+#include "galahad_modules.h"
+
 ! -*-*- G A L A H A D  -  D U M M Y   P A S T I X F  S U B R O U T I N E S -*-*-
 
    SUBROUTINE pastixInitParam_f08( iparm, dparm )

@@ -104,7 +104,7 @@ if not libspmf.found()
   libgalahad_src += files('spmf.F90', 'spmf_enums.F90')
 endif
 
-if not libpastix.found()
+if not libpastixf.found()
   libgalahad_src += files('pastixf.F90', 'pastixf_enums.F90')
 endif
 

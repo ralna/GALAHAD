@@ -4,7 +4,7 @@
 
 !-*-*-*-  G A L A H A D  -  D U M M Y   P A R D I S O  R O U T I N E S  -*-*-*-
 
-   SUBROUTINE pardisoinit( PT, mtype, solver, IPARM, DPARM, error )
+   SUBROUTINE PARDISOINIT( PT, mtype, solver, IPARM, DPARM, error )
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SYMBOLS
    INTEGER ( KIND = long_ ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
@@ -13,9 +13,9 @@
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: error
    error = GALAHAD_unavailable_option
-   END SUBROUTINE pardisoinit
+   END SUBROUTINE PARDISOINIT
 
-   SUBROUTINE pardiso( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,           &
+   SUBROUTINE PARDISO( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,           &
                        PERM, nrhs, IPARM, msglvl, B, X, error, DPARM )
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SYMBOLS
@@ -32,4 +32,4 @@
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: B
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
    error = GALAHAD_unavailable_option
-   END SUBROUTINE pardiso
+   END SUBROUTINE PARDISO

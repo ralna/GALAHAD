@@ -3898,11 +3898,11 @@
 !  fill 'iparm' and 'dparm' arrays with default values
 
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-         CALL wsmp_initialize( )
+         CALL WSMP_INITIALIZE( )
          data%wsmp_iparm( 1 ) = 0
          data%wsmp_iparm( 2 ) = 0
          data%wsmp_iparm( 3 ) = 0
-         CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
+         CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
                      data%matrix%COL( 1 : data%ne ),                           &
                      data%matrix%VAL( 1 : data%ne ),                           &
                      data%DIAG( 0 : 0 ),                                       &
@@ -3934,11 +3934,11 @@
 
          CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,              &
                                         data%wsmp_DPARM )
-!$       CALL wsetmaxthrds( OMP_GET_NUM_THREADS( ) )
+!$       CALL WSETMAXTHRDS( OMP_GET_NUM_THREADS( ) )
 
          data%wsmp_iparm( 2 ) = 1
          data%wsmp_iparm( 3 ) = 2
-         CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
+         CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
                      data%matrix%COL( 1 : data%ne ),                           &
                      data%matrix%VAL( 1 : data%ne ),                           &
                      data%DIAG( 0 : 0 ),                                       &
@@ -5198,7 +5198,7 @@
          data%wsmp_IPARM( 2 ) = 3
          data%wsmp_IPARM( 3 ) = 3
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-         CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
+         CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
                      data%matrix%COL( 1 : data%ne ),                           &
                      data%matrix%VAL( 1 : data%ne ),                           &
                      data%DIAG( 0 : 0 ),                                       &
@@ -6524,7 +6524,7 @@
        data%wsmp_iparm( 2 ) = 4
        data%wsmp_iparm( 3 ) = 5
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
+       CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
                    data%matrix%COL( 1 : data%ne ),                             &
                    data%matrix%VAL( 1 : data%ne ),                             &
                    data%DIAG( 0 : 0 ),                                         &
@@ -6929,7 +6929,7 @@
        data%wsmp_IPARM( 2 ) = 4
        data%wsmp_IPARM( 3 ) = 5
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
+       CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
                    data%matrix%COL( 1 : data%ne ),                             &
                    data%matrix%VAL( 1 : data%ne ),                             &
                    data%DIAG( 0 : 0 ),                                         &
@@ -7326,8 +7326,8 @@
 !  = WSMP =
 
      CASE ( 'wsmp' )
-       CALL wsmp_clear( )
-       CALL wssfree( )
+       CALL WSMP_CLEAR( )
+       CALL WSSFREE( )
 
 !  = PaStiX =
 
@@ -8510,7 +8510,7 @@
        data%B2( : data%n, 1 ) = X( : data%n )
 
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
+       CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
                    data%matrix%COL( 1 : data%ne ),                             &
                    data%matrix%VAL( 1 : data%ne ),                             &
                    data%DIAG( 0 : 0 ),                                         &
@@ -9118,7 +9118,7 @@
        data%B2( : data%n, 1 ) = X( : data%n )
 
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
+       CALL WSSMP( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
                    data%matrix%COL( 1 : data%ne ),                             &
                    data%matrix%VAL( 1 : data%ne ),                             &
                    data%DIAG( 0 : 0 ),                                         &

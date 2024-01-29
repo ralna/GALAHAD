@@ -4,15 +4,15 @@
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   W S M P   R O U T I N E S  -*-*-*-*-
 
-   SUBROUTINE wsmp_initialize( )
-   END SUBROUTINE wsmp_initialize
+   SUBROUTINE WSMP_INITIALIZE( )
+   END SUBROUTINE WSMP_INITIALIZE
 
-   SUBROUTINE wsetmaxthrds( numthrds )
+   SUBROUTINE WSETMAXTHRDS( numthrds )
    USE GALAHAD_KINDS_precision
    INTEGER ( KIND = ip_ ), INTENT( IN ) :: numthrds
-   END SUBROUTINE wsetmaxthrds
+   END SUBROUTINE WSETMAXTHRDS
 
-   SUBROUTINE wssmp( n, IA, JA, AVALS, DIAG, PERM, INVP, B, ldb, nrhs,         &
+   SUBROUTINE WSSMP( n, IA, JA, AVALS, DIAG, PERM, INVP, B, ldb, nrhs,         &
                      AUX, naux, MRP, IPARM, DPARM )
    USE GALAHAD_KINDS_precision
    USE GALAHAD_SYMBOLS
@@ -27,11 +27,11 @@
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
    IPARM( 64 ) = GALAHAD_unavailable_option
-   END SUBROUTINE wssmp
+   END SUBROUTINE WSSMP
 
-   SUBROUTINE wsmp_clear( )
-   END SUBROUTINE wsmp_clear
+   SUBROUTINE WSMP_CLEAR( )
+   END SUBROUTINE WSMP_CLEAR
 
-   SUBROUTINE wssfree( )
-   END SUBROUTINE wssfree
+   SUBROUTINE WSSFREE( )
+   END SUBROUTINE WSSFREE
 

@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
 
+#include "galahad_modules.h"
+
 !- G A L A H A D  -  M K L  P A R A D I S O  I N T E R F A C E   M O D U L E S -
 
 MODULE MKL_PARDISO_PRIVATE
