@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 12:56 GMT
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 13:26 GMT
 
 #include "galahad_blas.h"
 
@@ -195,10 +195,10 @@
             nrowb = n
           END IF
           info = 0
-          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa, 'C')) .AND.           &
+          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa, 'C')) .AND. &
             (.NOT. LSAME(transa,'T'))) THEN
             info = 1
-          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb, 'C')) .AND.      &
+          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb, 'C')) .AND. &
             (.NOT. LSAME(transb,'T'))) THEN
             info = 2
           ELSE IF (m<0) THEN
@@ -324,7 +324,7 @@
           EXTERNAL :: XERBLA
           INTRINSIC :: MAX
           info = 0
-          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')           &
+          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') &
             .AND. .NOT. LSAME(trans,'C')) THEN
             info = 1
           ELSE IF (m<0) THEN
@@ -692,7 +692,7 @@
           END IF
           upper = LSAME(uplo, 'U')
           info = 0
-          IF ((.NOT. LSAME(side,'L')) .AND. (.NOT. LSAME(side,'R')))        &
+          IF ((.NOT. LSAME(side,'L')) .AND. (.NOT. LSAME(side,'R'))) &
             THEN
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
@@ -1151,7 +1151,7 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT.                    &
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. &
             LSAME(trans, 'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
@@ -1309,7 +1309,7 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT.                    &
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. &
             LSAME(trans, 'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
@@ -1452,10 +1452,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -1618,10 +1618,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -1785,10 +1785,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -1965,10 +1965,10 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT.                   &
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. &
             LSAME(transa, 'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,         &
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, &
             'N'))) THEN
             info = 4
           ELSE IF (m<0) THEN
@@ -2142,10 +2142,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -2304,10 +2304,10 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT.                   &
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. &
             LSAME(transa, 'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,         &
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, &
             'N'))) THEN
             info = 4
           ELSE IF (m<0) THEN
@@ -2505,10 +2505,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -2954,10 +2954,10 @@
             nrowb = n
           END IF
           info = 0
-          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa, 'C')) .AND.           &
+          IF ((.NOT. nota) .AND. (.NOT. LSAME(transa, 'C')) .AND. &
             (.NOT. LSAME(transa,'T'))) THEN
             info = 1
-          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb, 'C')) .AND.      &
+          ELSE IF ((.NOT. notb) .AND. (.NOT. LSAME(transb, 'C')) .AND. &
             (.NOT. LSAME(transb,'T'))) THEN
             info = 2
           ELSE IF (m<0) THEN
@@ -3083,7 +3083,7 @@
           EXTERNAL :: XERBLA
           INTRINSIC :: MAX
           info = 0
-          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')           &
+          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') &
             .AND. .NOT. LSAME(trans,'C')) THEN
             info = 1
           ELSE IF (m<0) THEN
@@ -3451,7 +3451,7 @@
           END IF
           upper = LSAME(uplo, 'U')
           info = 0
-          IF ((.NOT. LSAME(side,'L')) .AND. (.NOT. LSAME(side,'R')))        &
+          IF ((.NOT. LSAME(side,'L')) .AND. (.NOT. LSAME(side,'R'))) &
             THEN
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
@@ -3910,7 +3910,7 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT.                    &
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. &
             LSAME(trans, 'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
@@ -4068,7 +4068,7 @@
           info = 0
           IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 1
-          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT.                    &
+          ELSE IF ((.NOT. LSAME(trans,'N')) .AND. (.NOT. &
             LSAME(trans, 'T')) .AND. (.NOT. LSAME(trans,'C'))) THEN
             info = 2
           ELSE IF (n<0) THEN
@@ -4211,10 +4211,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -4377,10 +4377,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -4544,10 +4544,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -4724,10 +4724,10 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT.                   &
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. &
             LSAME(transa, 'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,         &
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, &
             'N'))) THEN
             info = 4
           ELSE IF (m<0) THEN
@@ -4901,10 +4901,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -5063,10 +5063,10 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT.                   &
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. &
             LSAME(transa, 'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,         &
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, &
             'N'))) THEN
             info = 4
           ELSE IF (m<0) THEN
@@ -5264,10 +5264,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -5725,7 +5725,7 @@
           EXTERNAL :: XERBLA
           INTRINSIC :: DCONJG, MAX
           info = 0
-          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T')           &
+          IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,'T') &
             .AND. .NOT. LSAME(trans,'C')) THEN
             info = 1
           ELSE IF (m<0) THEN
@@ -6158,10 +6158,10 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT.                   &
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. &
             LSAME(transa, 'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,         &
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, &
             'N'))) THEN
             info = 4
           ELSE IF (m<0) THEN
@@ -6369,10 +6369,10 @@
           info = 0
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = 1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = 2
-          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N'))       &
+          ELSE IF (.NOT. LSAME(diag,'U') .AND. .NOT. LSAME(diag,'N')) &
             THEN
             info = 3
           ELSE IF (n<0) THEN
@@ -6565,10 +6565,10 @@
             info = 1
           ELSE IF ((.NOT. upper) .AND. (.NOT. LSAME(uplo,'L'))) THEN
             info = 2
-          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT.                   &
+          ELSE IF ((.NOT. LSAME(transa,'N')) .AND. (.NOT. &
             LSAME(transa, 'T')) .AND. (.NOT. LSAME(transa,'C'))) THEN
             info = 3
-          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag,         &
+          ELSE IF ((.NOT. LSAME(diag,'U')) .AND. (.NOT. LSAME(diag, &
             'N'))) THEN
             info = 4
           ELSE IF (m<0) THEN

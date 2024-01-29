@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 12:56 GMT
+! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 13:26 GMT
 
 #include "galahad_lapack.h"
 
@@ -3632,7 +3632,7 @@
           INTRINSIC :: MAX
           info = 0
           notran = LSAME(trans, 'N')
-          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT.         &
+          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT. &
             LSAME(trans,'C')) THEN
             info = -1
           ELSE IF (n<0) THEN
@@ -5660,7 +5660,7 @@
               sum = ABS(e(i))
               IF (anorm<sum .OR. DISNAN(sum)) anorm = sum
             END DO
-          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,          &
+          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,& 
             'I')) THEN
             IF (n==1) THEN
               anorm = ABS(d(1))
@@ -5721,7 +5721,7 @@
                 END DO
               END DO
             END IF
-          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR.           &
+          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR. &
             (norm=='1')) THEN
             value = zero
             IF (LSAME(uplo,'U')) THEN
@@ -11152,10 +11152,10 @@
           info = 0
           IF (.NOT. (LSAME(side,'L') .OR. LSAME(side,'R'))) THEN
             info = 1
-          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T')           &
+          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T') &
             .OR. LSAME(pivot,'B'))) THEN
             info = 2
-          ELSE IF (.NOT. (LSAME(direct,'F') .OR. LSAME(direct,'B')))        &
+          ELSE IF (.NOT. (LSAME(direct,'F') .OR. LSAME(direct,'B'))) &
             THEN
             info = 3
           ELSE IF (m<0) THEN
@@ -13074,7 +13074,7 @@
           END IF
           IF (.NOT. left .AND. .NOT. LSAME(side,'R')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T')) THEN
             info = -2
           ELSE IF (m<0) THEN
@@ -13713,7 +13713,7 @@
             XERBLA
           INTRINSIC :: MIN
           info = 0
-          IF ((.NOT. LSAME(uplo,'U')) .AND. (.NOT. LSAME(uplo,'L')))        &
+          IF ((.NOT. LSAME(uplo,'U')) .AND. (.NOT. LSAME(uplo,'L'))) &
             THEN
             info = -1
           ELSE IF (n<0) THEN
@@ -15930,7 +15930,7 @@
           nounit = LSAME(diag, 'N')
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = -2
           ELSE IF (.NOT. nounit .AND. .NOT. LSAME(diag,'U')) THEN
@@ -20338,7 +20338,7 @@
           INTRINSIC :: MAX
           info = 0
           notran = LSAME(trans, 'N')
-          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT.         &
+          IF (.NOT. notran .AND. .NOT. LSAME(trans,'T') .AND. .NOT. &
             LSAME(trans,'C')) THEN
             info = -1
           ELSE IF (n<0) THEN
@@ -22274,7 +22274,7 @@
               sum = ABS(e(i))
               IF (anorm<sum .OR. SISNAN(sum)) anorm = sum
             END DO
-          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,          &
+          ELSE IF (LSAME(norm,'O') .OR. norm=='1' .OR. LSAME(norm,& 
             'I')) THEN
             IF (n==1) THEN
               anorm = ABS(d(1))
@@ -22335,7 +22335,7 @@
                 END DO
               END DO
             END IF
-          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR.           &
+          ELSE IF ((LSAME(norm,'I')) .OR. (LSAME(norm, 'O')) .OR. &
             (norm=='1')) THEN
             value = zero
             IF (LSAME(uplo,'U')) THEN
@@ -27747,10 +27747,10 @@
           info = 0
           IF (.NOT. (LSAME(side,'L') .OR. LSAME(side,'R'))) THEN
             info = 1
-          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T')           &
+          ELSE IF (.NOT. (LSAME(pivot,'V') .OR. LSAME(pivot, 'T') &
             .OR. LSAME(pivot,'B'))) THEN
             info = 2
-          ELSE IF (.NOT. (LSAME(direct,'F') .OR. LSAME(direct,'B')))        &
+          ELSE IF (.NOT. (LSAME(direct,'F') .OR. LSAME(direct,'B'))) &
             THEN
             info = 3
           ELSE IF (m<0) THEN
@@ -29669,7 +29669,7 @@
           END IF
           IF (.NOT. left .AND. .NOT. LSAME(side,'R')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T')) THEN
             info = -2
           ELSE IF (m<0) THEN
@@ -30307,7 +30307,7 @@
             XERBLA
           INTRINSIC :: MIN
           info = 0
-          IF ((.NOT. LSAME(uplo,'U')) .AND. (.NOT. LSAME(uplo,'L')))        &
+          IF ((.NOT. LSAME(uplo,'U')) .AND. (.NOT. LSAME(uplo,'L'))) &
             THEN
             info = -1
           ELSE IF (n<0) THEN
@@ -32522,7 +32522,7 @@
           nounit = LSAME(diag, 'N')
           IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
             info = -1
-          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,          &
+          ELSE IF (.NOT. LSAME(trans,'N') .AND. .NOT. LSAME(trans,& 
             'T') .AND. .NOT. LSAME(trans,'C')) THEN
             info = -2
           ELSE IF (.NOT. nounit .AND. .NOT. LSAME(diag,'U')) THEN

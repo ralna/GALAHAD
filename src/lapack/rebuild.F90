@@ -590,7 +590,7 @@
              IF ( ( line( k : k ) == ' ' .AND. line( k-1 : k-1 ) /= "'" ) .OR. &
                   line( k : k ) == ',' ) THEN
                IF ( line( k : k ) == ',' ) THEN
-                 IF ( external_line ) THEN
+                 IF ( external_line .OR. lsame > 1 ) THEN
                    WRITE( out, "( A, A, '& ' )" )                              &
                      REPEAT( ' ', nz ), TRIM( line( 1 : k ) )
                  ELSE
@@ -599,7 +599,7 @@
                      REPEAT( ' ', MAX( 0, max_chars + 1 - nz - k ) )
                  END IF
                ELSE
-                 IF ( external_line ) THEN
+                 IF ( external_line .OR. lsame > 1 ) THEN
                    WRITE( out, "( A, A, ' &' )" )                              &
                      REPEAT( ' ', nz ), TRIM( line( 1 : k ) )
                  ELSE
