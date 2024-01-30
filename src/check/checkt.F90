@@ -127,7 +127,7 @@ PROGRAM GALAHAD_check_test
 
         OPEN( 34, FILE = 'RUNCHECK.SPC', FORM = 'FORMATTED', STATUS = 'OLD', &
               IOSTAT = stat )
-        IF ( stat == 0 ) call CHECK_read_specfile( control, 34 )
+        IF ( stat == 0 ) call CHECK_read_specfile( control, 34_ip_ )
 
         inform%status = 1
         call CHECK_verify( nlp, data, control, inform, userdata, &
