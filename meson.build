@@ -286,8 +286,12 @@ if not libmpi.found()
   extra_args_single += '-DDUMMY_MPI'
   extra_args_double += '-DDUMMY_MPI'
 endif
+if not libhsl.found()
+  extra_args_single += '-DDUMMY_HSL'
+  extra_args_double += '-DDUMMY_HSL'
+endif
 
-# 64 bits integer
+# Compile GALAHAD with 64-bit integer
 if galahad_int64
   extra_args_single += ['-DGALAHAD_64BIT_INTEGER', '-DSPRAL_64BIT_INTEGER']
   extra_args_double += ['-DGALAHAD_64BIT_INTEGER', '-DSPRAL_64BIT_INTEGER']
