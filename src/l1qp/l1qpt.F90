@@ -18,15 +18,7 @@
    REAL ( KIND = rp_ ) :: delta
    CHARACTER ( len = 1 ) :: st
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
-   CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
-   CHARACTER ( LEN = 30 ) :: definite_linear_solver = REPEAT( ' ', 30 )
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
-   symmetric_linear_solver = 'ssids'
-   symmetric_linear_solver = 'sytr'
-!  symmetric_linear_solver = 'ma97'
-   definite_linear_solver = 'ssids'
-   definite_linear_solver = 'sytr'
-!  definite_linear_solver = 'ma97'
 
 !go to 77
 !go to 111
@@ -73,6 +65,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL L1QP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 1
 ! control%print_level = 1
@@ -179,6 +172,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = 0.1_rp_ * infty
    control%restore_problem = 1
 !  control%print_level = 1
@@ -234,19 +228,16 @@
 !  DO data_storage_type = -7, -7
    DO data_storage_type = -7, 0
      CALL L1QP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 1
 !    control%CQP_control%SBLS_control%print_level = 4
 !    control%CQP_control%SBLS_control%SLS_control%print_level = 3
 !    control%CQP_control%SBLS_control%SLS_control%print_level_solver = 2
-! control%CQP_control%SBLS_control%preconditioner = 3
-!  control%CQP_control%SBLS_control%factorization = 2
-! control%CQP_control%SBLS_control%itref_max = 2
-     control%CQP_control%SBLS_control%symmetric_linear_solver                  &
-       = symmetric_linear_solver
-     control%CQP_control%SBLS_control%definite_linear_solver                   &
-        = definite_linear_solver
+!    control%CQP_control%SBLS_control%preconditioner = 3
+!    control%CQP_control%SBLS_control%factorization = 2
+!    control%CQP_control%SBLS_control%itref_max = 2
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -423,6 +414,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 1
@@ -431,10 +423,6 @@
 !    control%CQP_control%SBLS_control%print_level = 1
 !    control%DQP_control%print_level = 1
 !    control%DQP_control%SBLS_control%print_level = 1
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-    definite_linear_solver
 
 !  test with new and existing data
 
@@ -519,15 +507,12 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 11
 !  control%EQP_control%print_level = 21
 !  control%print_level = 4
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-     definite_linear_solver
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -558,14 +543,11 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%CRO_control%error = 0
 !  control%print_level = 4
    control%infinity = infty
    control%restore_problem = 2
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-    definite_linear_solver
    DO i = tests + 2, tests + 2
      p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
      p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
@@ -649,10 +631,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL L1QP_initialize( data, control, info )
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-     definite_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
@@ -734,13 +713,10 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-     definite_linear_solver
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
    IF ( info%status == 0 ) THEN
@@ -813,13 +789,10 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-     definite_linear_solver
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    X_stat = 0 ; C_stat = 0
    X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
@@ -892,13 +865,10 @@
    p%C_u = p%C_l
 
    CALL L1QP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-   control%CQP_control%SBLS_control%symmetric_linear_solver =                  &
-     symmetric_linear_solver
-   control%CQP_control%SBLS_control%definite_linear_solver =                   &
-     definite_linear_solver
 !  control%out = 6 ; control%print_level = 1
 !  control%CQP_control%print_level = 5
 !  control%CQP_control%FDC_control%print_level = 1
@@ -941,5 +911,18 @@
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( L1QP_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%CQP_control%FDC_control%use_sls = use_sls
+     control%CQP_control%FDC_control%symmetric_linear_solver                   &
+       = symmetric_linear_solver
+     control%CQP_control%SBLS_control%symmetric_linear_solver                  &
+        = symmetric_linear_solver
+     control%CQP_control%SBLS_control%definite_linear_solver                   &
+        = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_L1QP_EXAMPLE

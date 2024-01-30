@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 15:35 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRU_test_deck
    USE GALAHAD_USERDATA_precision
@@ -60,6 +60,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      CALL TRU_initialize( data, control,inform ) ! Initialize control parameters
+     CALL WHICH_sls( control )
      control%out = 0 ; control%error = 0
 !     control%print_level = 4
 !     control%TRS_control%print_level = 4
@@ -152,6 +153,7 @@
 
    DO i = 1, 7
      CALL TRU_initialize( data, control, inform )! Initialize control parameters
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      inform%status = 1                            ! set for initial entry
      nlp%X = 1.0_rp_                               ! start from one
@@ -180,9 +182,6 @@
 !      control%trs_control%print_level = 1
 !      control%trs_control%sls_control%print_level = 3
        control%subproblem_direct = .TRUE.
-       control%psls_control%definite_linear_solver = 'sytr '
-!      control%trs_control%definite_linear_solver = 'ma27 '
-!      control%trs_control%symmetric_linear_solver = 'ma27 '
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
@@ -209,7 +208,6 @@
 !      control%print_level = 1
        control%subproblem_direct = .TRUE.
        control%norm = 10
-       control%dps_control%symmetric_linear_solver = 'sytr '
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
@@ -265,6 +263,7 @@
 
    DO i = 1, 6
      CALL TRU_initialize( data, control, inform )! Initialize control parameters
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      inform%status = 1                            ! set for initial entry
      nlp%X = 1.0_rp_                               ! start from one
@@ -343,6 +342,16 @@
    DEALLOCATE( nlp%X, nlp%G, nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type,      &
                userdata%real )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( TRU_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%TRS_control%definite_linear_solver = definite_linear_solver
+     control%PSLS_control%definite_linear_solver = definite_linear_solver
+     control%DPS_control%symmetric_linear_solver = symmetric_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_TRU_test_deck
 

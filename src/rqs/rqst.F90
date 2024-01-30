@@ -59,7 +59,7 @@
      sigma = one
      p = 3.0_rp_
      CALL RQS_initialize( data, control, inform )
-     control%definite_linear_solver = 'ma57'
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
 !    control%error = 6 ; control%out = 6 ; control%print_level = 1
      IF ( pass == GALAHAD_error_restrictions ) THEN
@@ -117,9 +117,7 @@
 !  DO data_storage_type = -1, -1
    DO data_storage_type = 0, 0
      CALL RQS_initialize( data, control, inform )
-!    control%definite_linear_solver = 'ma57'
-     control%definite_linear_solver = 'sytr'
-     control%symmetric_linear_solver = 'sytr'
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -266,7 +264,7 @@
 !  DO pass = 1, 1
      C = (/ 5.0_rp_, 0.0_rp_, 4.0_rp_ /)
      CALL RQS_initialize( data, control, inform )
-!    control%definite_linear_solver = 'ma57'
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
 !    control%error = 6 ; control%out = 6 ; control%print_level = 10
 !     IF ( pass == 13 ) THEN
@@ -294,10 +292,17 @@
 !              inform%iter + info%iter_pass2, f, info%multiplier
      CALL RQS_terminate( data, control, inform ) !  delete internal workspace
    END DO
-
    DEALLOCATE( X, C, H%row, H%col, H%val, H%type, M%val, M%type )
-
    CLOSE( unit = 23 )
-
+   WRITE( 6, "( /, ' tests completed' )" )
    STOP
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( RQS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM GALAHAD_RQS_test_deck

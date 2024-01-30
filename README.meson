@@ -2,6 +2,21 @@
 
 All commands below are to be run from the top of the GALAHAD source tree.
 
+# If you are in a hurry ... default install and test
+
+```
+meson setup builddir/pc64.lnx.gfo --buildtype=debug -Dgalahad_int64=true -Dlibblas= -Dliblapack= -Dlibmetis=
+meson compile -C builddir/pc64.lnx.gfo
+meson test -C builddir/pc64.lnx.gfo 
+```
+# If you make a mistake!
+
+```
+meson setup --wipe builddir/pc64.lnx.gfo
+```
+
+# Details
+
 ##  Install meson
 
 Refer to https://mesonbuild.com/Getting-meson.html

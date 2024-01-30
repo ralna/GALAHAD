@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 11:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DLP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -58,6 +58,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL DLP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 1
 ! control%print_level = 1
@@ -129,6 +130,7 @@
    status = 5
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
 
@@ -192,15 +194,16 @@
 
    DO data_storage_type = -3, 0
      CALL DLP_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 1
 !    control%SBLS_control%print_level = 4
 !    control%SBLS_control%SLS_control%print_level = 3
 !    control%SBLS_control%SLS_control%print_level_solver = 2
-! control%SBLS_control%preconditioner = 3
-!  control%SBLS_control%factorization = 2
-! control%SBLS_control%itref_max = 2
+!    control%SBLS_control%preconditioner = 3
+!    control%SBLS_control%factorization = 2
+!    control%SBLS_control%itref_max = 2
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -287,6 +290,7 @@
    p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
@@ -390,6 +394,7 @@
 !   p%A%ptr = (/ 1, 3 /)
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
@@ -466,6 +471,7 @@
    p%A%col = (/ 1, 2, 2, 3 /)
    p%A%ptr = (/ 1, 3, 5 /)
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 11
@@ -499,6 +505,7 @@
    p%A%col = (/ 1, 2, 2, 3 /)
    p%A%ptr = (/ 1, 3, 5 /)
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%CRO_control%error = 0
 !  control%print_level = 4
    control%infinity = infty
@@ -577,6 +584,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
@@ -646,6 +654,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -709,6 +718,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -771,6 +781,7 @@
    p%C_u = p%C_l
 
    CALL DLP_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -811,5 +822,17 @@
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
    DEALLOCATE( p%A%ptr )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( DLP_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_DLP_EXAMPLE

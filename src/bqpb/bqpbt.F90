@@ -57,6 +57,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL BQPB_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
 
      p%new_problem_structure = .TRUE.
@@ -127,6 +128,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
 !  control%print_level = 1
    p%X = 1.0_rp_ ; p%Z = 0.0_rp_
@@ -163,6 +165,7 @@
 
    DO data_storage_type = -3, 0
      CALL BQPB_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%infinity = infty
 !    control%out = 6 ; control%print_level = 11
      p%new_problem_structure = .TRUE.
@@ -248,6 +251,7 @@
    p%H%col = (/ 1, 1, 2 /)
    p%H%ptr = (/ 1, 2, 4 /)
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 1
 
@@ -286,6 +290,7 @@
    p%H%col = (/ 1, 2 /)
    p%H%ptr = (/ 1, 2, 3 /)
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 1
 !  control%EQP_control%print_level = 21
@@ -315,6 +320,7 @@
    p%H%col = (/ 1, 2 /)
    p%H%ptr = (/ 1, 2, 3 /)
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
 !  control%print_level = 1
    control%infinity = infty
    DO i = tests + 2, tests + 2
@@ -371,6 +377,7 @@
                 8, 9, 10, 11, 12, 13, 14 /)
 
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%print_level = 101
    control%out = scratch_out
@@ -420,6 +427,7 @@
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL BQPB_solve( p, data, control, info, X_stat )
@@ -462,6 +470,7 @@
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Z = 0.0_rp_
    X_stat = 0
@@ -506,6 +515,7 @@
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL BQPB_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%infinity = infty
    p%X = 0.0_rp_ ; p%Z = 0.0_rp_
    X_stat = 0
@@ -542,5 +552,15 @@
    DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( BQPB_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_BQPB_EXAMPLE

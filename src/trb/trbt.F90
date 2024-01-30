@@ -1,4 +1,4 @@
-!  THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:15 GMT.
+!  THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 15:35 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRB_test
    USE GALAHAD_USERDATA_precision
@@ -64,6 +64,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      CALL TRB_initialize( data, control, inform )! Initialize control parameters
+     CALL WHICH_sls( control )
      control%out = 0 ; control%error = 0
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
@@ -168,6 +169,7 @@
 !  DO i = 1, 1
    DO i = 1, 7
      CALL TRB_initialize( data, control, inform )! Initialize control parameters
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      inform%status = 1                        ! set for initial entry
      nlp%X = 1.0_rp_                           ! start from one
@@ -266,6 +268,7 @@
 
    DO i = 1, 6
      CALL TRB_initialize( data, control, inform )! Initialize control parameters
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      inform%status = 1                          ! set for initial entry
      nlp%X = 1.0_rp_                             ! start from one
@@ -335,6 +338,14 @@
    WRITE( 6, "( /, ' tests completed' )" )
 
 CONTAINS
+
+   SUBROUTINE WHICH_sls( control )
+   TYPE ( TRB_control_type ) :: control
+#include "galahad_sls_defaults.h"
+   control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%TRS_control%definite_linear_solver = definite_linear_solver
+   control%PSLS_control%definite_linear_solver = definite_linear_solver
+   END SUBROUTINE WHICH_sls
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
    USE GALAHAD_USERDATA_precision

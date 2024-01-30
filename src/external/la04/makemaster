@@ -13,13 +13,13 @@ la04: la04_$(PRECIS)
 	@printf ' %-21s\n' "HSL LA04 routines ($(PRECIS) $(SUCC)"
 la04_silent: la04_$(PRECIS)
 la04_single: $(HLGS)(fa14s.o) $(HLGS)(fd15s.o) $(HLGS)(mc29s.o) \
-               $(HLGS)(mc59s.o) $(HLGS)(la15s.o) $(HLGS)(la04s.o)
+             $(HLGS)(mc59s.o) $(HLGS)(la15s.o) $(HLGS)(la04s.o)
 la04_double: $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(mc29d.o) \
-               $(HLGD)(mc59d.o) $(HLGD)(la15d.o) $(HLGD)(la04d.o)
-la04_single_64: $(HLGS64)(fa14s.o) $(HLGS64fd15s.o) $(HLGS64mc29s.o) \
-               $(HLGS64)(mc59s.o) $(HLGS64la15s.o) $(HLGS64la04s.o)
-la04_double_64: $(HLGD64)(fa14d.o) $(HLGD64fd15d.o) $(HLGD64mc29d.o) \
-               $(HLGD64)(mc59d.o) $(HLGD64(la15d.o) $(HLGD64la04d.o)
+             $(HLGD)(mc59d.o) $(HLGD)(la15d.o) $(HLGD)(la04d.o)
+la04_single_64: $(HLGS64)(fa14s.o) $(HLGS64)(fd15s.o) $(HLGS64)(mc29s.o) \
+                $(HLGS64)(mc59s.o) $(HLGS64)(la15s.o) $(HLGS64)(la04s.o)
+la04_double_64: $(HLGD64)(fa14d.o) $(HLGD64)(fd15d.o) $(HLGD64)(mc29d.o) \
+                $(HLGD64)(mc59d.o) $(HLGD64)(la15d.o) $(HLGD64)(la04d.o)
 
 #  individual compilations
 

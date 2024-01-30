@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 12:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_L2RT_test_deck
    USE GALAHAD_KINDS_precision
@@ -156,7 +156,7 @@
 
       DO
         IF ( pass == 1 ) THEN
-          CALL L2RT_solve( 0, nn, p, sigma, mu, X0, U0, V0, data, control,     &
+          CALL L2RT_solve( 0_ip_, nn, p, sigma, mu, X0, U0, V0, data, control, &
                            inform )
         ELSE
           CALL L2RT_solve( m, n, p, sigma, mu, X, U, V, data, control, inform )
@@ -254,5 +254,6 @@
       CALL L2RT_terminate( data, control, inform ) !  delete internal workspace
    END DO
    CLOSE( unit = 23 )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_L2RT_test_deck

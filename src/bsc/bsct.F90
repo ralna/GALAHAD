@@ -25,9 +25,9 @@
 !  error exit tests
 
    WRITE( 6, "( ' error exit tests ', / ) " )
-   CALL BSC_form( -1, n, A, S, data, control, inform ) ! Form S
+   CALL BSC_form( -1_ip_, n, A, S, data, control, inform ) ! Form S
    WRITE( 6, "( ' BSC_solve exit status = ', I6 ) " ) inform%status
-   CALL BSC_form( m, 0, A, S, data, control, inform ) ! Form S
+   CALL BSC_form( m, 0_ip_, A, S, data, control, inform ) ! Form S
    WRITE( 6, "( ' BSC_solve exit status = ', I6 ) " ) inform%status
    CALL SMT_put( A%type, 'BOORDINATE', i )     ! storage for A
    CALL BSC_form( m, n, A, S, data, control, inform ) ! Form S

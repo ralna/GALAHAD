@@ -24,12 +24,12 @@
 
    OPEN( UNIT = 23, STATUS = 'SCRATCH' )
 !  OPEN( UNIT = 23 )
-!  DO pass = 1, 11
-   DO pass = 3, 4
+   DO pass = 1, 11
+!  DO pass = 3, 4
       IF ( pass /= 4 .AND. pass /= 7 .AND. pass /= 8 )                         &
            CALL GLTR_initialize( data, control, info )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
-      control%error = 6 ; control%out = 6 ; control%print_level = 1
+!     control%error = 6 ; control%out = 6 ; control%print_level = 1
       info%status = 1
       radius = one
       IF ( pass == 2 ) control%unitm = .FALSE. ; radius = 1000.0_rp_
@@ -127,7 +127,7 @@
       IF ( pass /= 3 .AND. pass /= 6 .AND. pass /= 7 )                         &
         CALL GLTR_terminate( data, control, info ) !  delete internal workspace
    END DO
-stop
+
 !  =============
 !  Error entries
 !  =============
@@ -207,6 +207,7 @@ stop
       CALL GLTR_terminate( data, control, info ) !  delete internal workspace
    END DO
    CLOSE( unit = 23 )
+   WRITE( 6, "( /, ' tests completed' )" )
 
 !  STOP
    END PROGRAM GALAHAD_GLTR_test_deck

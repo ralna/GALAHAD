@@ -12,7 +12,9 @@
    TYPE ( QPA_inform_type ) :: info
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, smt_stat, i
    INTEGER ( KIND = ip_ ) :: data_storage_type, tests, status, scratch_out = 56
-   CHARACTER ( len = 1 ) :: st
+   CHARACTER ( LEN = 1 ) :: st
+   CHARACTER ( LEN = 5 ) :: symmetric_linear_solver = 'sytr '
+!  CHARACTER ( LEN = 5 ) :: symmetric_linear_solver = 'ssids'
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
@@ -58,6 +60,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL QPA_initialize( data, control, info )
+     control%symmetric_linear_solver = symmetric_linear_solver
      control%infinity = infty
      control%restore_problem = 1
 
@@ -146,6 +149,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 2
    control%solve_qp = .TRUE.
@@ -191,6 +195,7 @@
    DO data_storage_type = 0, -3, -1
      p%rho_g = 10.0_rp_ ; p%rho_b = 10.0_rp_
      CALL QPA_initialize( data, control, info )
+     control%symmetric_linear_solver = symmetric_linear_solver
 !    control%print_level = 1
      control%infinity = infty
      control%restore_problem = 2
@@ -307,6 +312,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 2
    control%solve_qp = .TRUE.
@@ -408,6 +414,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 2
    control%solve_qp = .TRUE.
@@ -444,6 +451,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 2
    DO i = tests + 2, tests + 2
@@ -527,6 +535,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
@@ -608,6 +617,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -679,6 +689,7 @@
               1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
 
    CALL QPA_initialize( data, control, info )
+   control%symmetric_linear_solver = symmetric_linear_solver
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.

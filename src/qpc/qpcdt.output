@@ -3,61 +3,61 @@
 
  3: QPC_solve exit status =     -3
  4: QPC_solve exit status =     -4
- 5: QPC_solve exit status =    -10
-17: QPC_solve exit status =    -10
-18: QPC_solve exit status =    -10
+17: QPC_solve exit status =    -17
+18: QPC_solve exit status =    -18
 19: QPC_solve exit status =    -19
 23: QPC_solve exit status =    -23
  7: QPC_solve exit status =     -7
 
  basic tests of storage formats 
 
-I1: QPC_solve exit status =    -10
-I2: QPC_solve exit status =    -10
-D1: QPC_solve exit status =    -10
-D2: QPC_solve exit status =    -10
-R1: QPC_solve exit status =    -10
-R2: QPC_solve exit status =    -10
-C1: QPC_solve exit status =    -10
-C2: QPC_solve exit status =    -10
+I1:    -1     8 iterations. Optimal objective value =    4.0 status =      0
+I2:    -1     8 iterations. Optimal objective value =    4.0 status =      0
+D1:    -1    19 iterations. Optimal objective value =    5.4 status =      0
+D2:    -1    18 iterations. Optimal objective value =    5.4 status =      0
+R1:    -1    19 iterations. Optimal objective value =    5.4 status =      0
+R2:    -1    19 iterations. Optimal objective value =    5.4 status =      0
+C1:    -1    19 iterations. Optimal objective value =    5.4 status =      0
+C2:    -1    19 iterations. Optimal objective value =    5.4 status =      0
 
  basic tests of options 
 
- 0: QPC_solve exit status =    -10
- 1: QPC_solve exit status =    -10
- 2: QPC_solve exit status =    -10
- 3: QPC_solve exit status =    -10
- 4: QPC_solve exit status =    -10
- 5: QPC_solve exit status =    -10
- 6: QPC_solve exit status =    -10
- 7: QPC_solve exit status =    -10
- 8: QPC_solve exit status =    -10
- 9: QPC_solve exit status =    -10
-10: QPC_solve exit status =    -10
-11: QPC_solve exit status =    -10
-12: QPC_solve exit status =    -10
-13: QPC_solve exit status =    -10
-14: QPC_solve exit status =    -10
-15: QPC_solve exit status =    -10
-16: QPC_solve exit status =    -10
-17: QPC_solve exit status =    -10
-18: QPC_solve exit status =    -10
-19: QPC_solve exit status =    -10
-20: QPC_solve exit status =    -10
-21: QPC_solve exit status =    -10
-22: QPC_solve exit status =    -10
-23: QPC_solve exit status =    -10
-24: QPC_solve exit status =    -10
-25: QPC_solve exit status =     -9
-26: QPC_solve exit status =    -10
+ 0:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 1:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 2:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 3:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 4:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 5:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 6:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 7:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 8:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+ 9:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+10:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+11:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+12:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+13:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+14:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+15:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+16:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+17:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+18:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+19:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+20:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+21:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+22:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+23:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+24:    -1     5 iterations. Optimal objective value =    0.3 status =      0
+25:     6    -1 iterations. Optimal objective value =    0.3 status =      0
+26:    -1    -1 iterations. Optimal objective value =    0.3 status =      0
 27:    -1    -1 iterations. Optimal objective value =    0.3 status =      0
 
  full test of generic problems 
 
- 1: QPC_solve exit status =    -10
- 2: QPC_solve exit status =    -10
- 3: QPC_solve exit status =    -10
- 4: QPC_solve exit status =    -10
- 5: QPC_solve exit status =    -10
- 6:    -1     4 iterations. Optimal objective value =    0.0 status =      0
- 7:     3     4 iterations. Optimal objective value =    1.5 status =      0
+ 2:    -1    10 iterations. Optimal objective value =   44.3 status =      0
+ 3:    -1    10 iterations. Optimal objective value =   44.3 status =      0
+ 4:    -1    -1 iterations. Optimal objective value =   28.1 status =      0
+ 5:    -1    -1 iterations. Optimal objective value =   28.7 status =      0
+ 6:    -1     8 iterations. Optimal objective value =    0.0 status =      0
+ 7:    -1     5 iterations. Optimal objective value =    1.5 status =      0
+
+ tests completed

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 11:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRS_test_program
    USE GALAHAD_KINDS_precision
@@ -57,7 +57,7 @@
      nn = n
      radius = one
      CALL TRS_initialize( data, control, inform )
-     control%definite_linear_solver = 'ma27'
+     CALL WHICH_sls( control )
 !    control%print_level = 10
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      control%sls_control%error = 23 ; control%sls_control%out = 23
@@ -116,7 +116,7 @@
 
    DO data_storage_type = -3, 0
      CALL TRS_initialize( data, control, inform )
-!    control%definite_linear_solver = 'ma57'
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      control%sls_control%error = 23 ; control%sls_control%out = 23
      control%sls_control%warning = 23 ; control%sls_control%statistics = 23
@@ -265,7 +265,7 @@
    DO pass = 1, 8
      C = (/ 5.0_rp_, 0.0_rp_, 4.0_rp_ /)
      CALL TRS_initialize( data, control, inform )
-     control%definite_linear_solver = 'sils'
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      control%sls_control%error = 23 ; control%sls_control%out = 23
      control%sls_control%warning = 23 ; control%sls_control%statistics = 23
@@ -288,8 +288,15 @@
    END DO
 
    DEALLOCATE( X, C, H%row, H%col, H%val, H%type, M%val, M%type )
-
    CLOSE( unit = 23 )
-
    STOP
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( TRS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM GALAHAD_TRS_test_program

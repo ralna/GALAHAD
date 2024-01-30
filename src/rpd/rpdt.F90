@@ -7,7 +7,7 @@
    TYPE ( RPD_control_type ) :: control
    TYPE ( RPD_inform_type ) :: inform
    TYPE ( QPT_problem_type ) :: prob
-   INTEGER ( KIND = ip_ ) :: length
+   INTEGER :: length
    INTEGER ( KIND = ip_ ) :: i, qplib_unit = 21
    CHARACTER ( LEN = 8 ) :: galahad_var = 'GALAHAD'
    CHARACTER( LEN = : ), ALLOCATABLE :: galahad

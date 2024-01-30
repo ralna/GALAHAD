@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-06-05 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 12:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LLSR_test_program
    USE GALAHAD_KINDS_precision
@@ -74,6 +74,7 @@
    DO pass = 1, 5
      power = 3.0_rp_ ; weight = one
      CALL LLSR_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      IF ( pass == 2 ) weight = - one
      IF ( pass == 3 ) CALL SMT_put( A%type, 'UNCOORDINATE', i )
@@ -96,7 +97,8 @@
      ELSE IF ( pass /= 1 ) THEN
        CALL LLSR_solve( m, n, power, weight, A, B, X, data, control, inform )
      ELSE
-       CALL LLSR_solve( 0, 0, power, weight, A, B, X, data, control, inform )
+       CALL LLSR_solve( 0_ip_, 0_ip_, power, weight, A, B, X, data, control,   &
+                        inform )
      END IF
      IF ( pass == 2 ) weight = one
      IF ( pass == 3 ) CALL SMT_put( A%type, 'COORDINATE', i )
@@ -123,13 +125,11 @@
 !  DO data_storage_type = 2, 2
    DO data_storage_type = 1, 4
      CALL LLSR_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
 !    control%print_level = 1
 !    control%sls_control%print_level_solver = 3
 !    control%sls_control%print_level = 3
-     control%sbls_control%symmetric_linear_solver = "sytr  "
-     control%sbls_control%definite_linear_solver = "potr  "
-     control%definite_linear_solver = "potr  "
      power = 3.0_rp_ ; weight = one
      IF ( data_storage_type == 1 ) THEN          ! sparse co-ordinate storage
        st = 'C'
@@ -188,12 +188,11 @@
      DO with_s = 0, 1
        DO pass = 1, 4
          CALL LLSR_initialize( data, control, inform )
+         CALL WHICH_sls( control )
 !        control%itmax = 50
 !        control%extra_vectors = 100
          control%error = 23 ; control%out = 23 ; control%print_level = 10
 !        control%print_level = 100
-         control%sbls_control%symmetric_linear_solver = "sytr  "
-         control%sbls_control%definite_linear_solver = "sytr  "
          weight = one
          IF ( pass == 2 ) weight = 0.1_rp_
          IF ( pass == 3 ) weight = 1000.0_rp_
@@ -219,10 +218,19 @@
        END DO
      END DO
    END DO
-
-   CLOSE( unit = 23 )
-   WRITE( 6, "( /, ' tests completed' )" )
    DEALLOCATE( A%row, A%col, A%val, A%ptr, A%type, A_dense%val )
    DEALLOCATE( S%row, S%col, S%val, S%ptr, S%type, S_dense%val )
+   CLOSE( unit = 23 )
+
+   WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( LLSR_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%definite_linear_solver = definite_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_LLSR_test_program

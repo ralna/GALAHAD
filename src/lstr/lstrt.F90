@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 12:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LSTR_test_deck
    USE GALAHAD_KINDS_precision
@@ -157,7 +157,8 @@
         IF ( pass /= 4 ) THEN
           CALL LSTR_solve( m, n, radius, X, U, V, data, control, inform )
         ELSE
-          CALL LSTR_solve( 0, nn, radius, X0, U0, V0, data, control, inform )
+          CALL LSTR_solve( 0_ip_, nn, radius, X0, U0, V0, data, control,       &
+                           inform )
         END IF
 
         SELECT CASE( inform%status )  ! Branch as a result of inform%status
@@ -182,5 +183,6 @@
       CALL LSTR_terminate( data, control, inform ) !  delete internal workspace
    END DO
    CLOSE( unit = 23 )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_LSTR_test_deck

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 11:15 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 11:25 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SLLS_TEST_PROGRAM
    USE GALAHAD_KINDS_precision
@@ -88,6 +88,7 @@
 !      DO mode = 5, 6
        DO mode = 1, 6
          CALL SLLS_initialize( data, control, inform )
+         CALL WHICH_sls( control )
 !        control%print_level = 1                     ! print one line/iteration
          control%exact_arc_search = exact_arc_search == 1
 !        control%exact_arc_search = .FALSE.
@@ -256,6 +257,7 @@
 !      DO mode = 1, 1
        DO mode = 1, 5
          CALL SLLS_initialize( data, control, inform )
+         CALL WHICH_sls( control )
 !        control%print_level = 1                     ! print one line/iteration
          control%exact_arc_search = exact_arc_search == 1
 !        control%exact_arc_search = .FALSE.
@@ -341,6 +343,7 @@
    DO status = 1, 24
 
      CALL SLLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      SELECT CASE ( status )
      CASE ( - GALAHAD_error_allocate,                                          &
             - GALAHAD_error_deallocate,                                        &
@@ -431,6 +434,14 @@
    DEALLOCATE( p%B, p%X, p%Z, p%R, p%G, X_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_ptr_row )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( SLLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_SLLS_TEST_PROGRAM
 

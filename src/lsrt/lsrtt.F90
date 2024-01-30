@@ -147,7 +147,8 @@
         IF ( pass /= 4 ) THEN
           CALL LSRT_solve( m, n, p, sigma, X, U, V, data, control, inform )
         ELSE
-          CALL LSRT_solve( 0, nn, p, sigma, X0, U0, V0, data, control, inform )
+          CALL LSRT_solve( 0_ip_, nn, p, sigma, X0, U0, V0, data, control,     &
+                           inform )
         END IF
 
         SELECT CASE( inform%status )  ! Branch as a result of inform%status

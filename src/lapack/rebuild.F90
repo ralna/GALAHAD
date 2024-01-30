@@ -109,6 +109,11 @@
 !  create the header file
 
  100 CONTINUE
+
+#ifndef BLAS
+     WRITE( hout, 1990 )
+1990 FORMAT( '#include "galahad_blas.h"' )
+#endif
      DO i = 1, 4
        SELECT CASE ( i )
        CASE( 1 )
@@ -120,6 +125,7 @@
          WRITE( hout, "( '#elif GALAHAD_DOUBLE_UNDERSCORE_64BIT_INTEGER' )" )
        CASE( 3 )
          WRITE( hout, "( '#elif GALAHAD_NO_SYMBOL_64BIT_INTEGER' )" )
+         CYCLE
        CASE( 4 )
          WRITE( hout, "( '#else' )" )
        END SELECT

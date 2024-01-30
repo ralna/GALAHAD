@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-01-30 AT 15:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LMS_test
    USE GALAHAD_KINDS_precision
@@ -25,7 +25,7 @@
 
    CALL LMS_initialize( data, control, inform ) !  initialize data
    control%print_level = 1
-   CALL LMS_setup( 0, data, control, inform ) ! n <= 0
+   CALL LMS_setup( 0_ip_, data, control, inform ) ! n <= 0
    WRITE( 6, "( ' exit status = ', I0 )" ) inform%status
    CALL LMS_terminate( data, control, inform )  !  delete internal workspace
 

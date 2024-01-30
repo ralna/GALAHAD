@@ -248,6 +248,7 @@
       CALL GLRT_terminate( data, control, inform ) !  delete internal workspace
    END DO
    CLOSE( unit = 23 )
+   WRITE( 6, "( /, ' tests completed' )" )
 
 !  STOP
    END PROGRAM GALAHAD_GLRT_test_deck

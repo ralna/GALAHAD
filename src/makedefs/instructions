@@ -107,30 +107,30 @@ $(PACKAGE)SS4 = $($(PACKAGE)OBJECTSS) $(OBJS)/$(package)s4_single.o
 $(PACKAGE)ST2 = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)t2_single.o
 $(PACKAGE)STI = $($(PACKAGE)OBJECTSS) $(TESTDEPS) $(OBJS)/$(package)ti_single.o
 
-$(PACKAGE)DE64 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)e_double.o
-$(PACKAGE)DS64 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s_double.o
+$(PACKAGE)DE64 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)e_double_64.o
+$(PACKAGE)DS64 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s_double_64.o
 $(PACKAGE)DT64 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
-                 $(OBJD)/$(package)t_double.o
-$(PACKAGE)DS264 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s2_double.o
-$(PACKAGE)DS364 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s3_double.o
-$(PACKAGE)DS464 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s4_double.o
-$(PACKAGE)DS564 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s5_double.o
-$(PACKAGE)DS664 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s6_double.o
-$(PACKAGE)DS764 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s7_double.o
+                 $(OBJD64)/$(package)t_double_64.o
+$(PACKAGE)DS264 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s2_double_64.o
+$(PACKAGE)DS364 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s3_double_64.o
+$(PACKAGE)DS464 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s4_double_64.o
+$(PACKAGE)DS564 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s5_double_64.o
+$(PACKAGE)DS664 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s6_double_64.o
+$(PACKAGE)DS764 = $($(PACKAGE)OBJECTSD64) $(OBJD64)/$(package)s7_double_64.o
 $(PACKAGE)DT264 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
-                  $(OBJD)/$(package)t2_double.o
+                  $(OBJD64)/$(package)t2_double_64.o
 $(PACKAGE)DTI64 = $($(PACKAGE)OBJECTSD64) $(TESTDEPS64) \
-                  $(OBJD)/$(package)ti_double.o
-$(PACKAGE)SS64 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s_single.o
+                  $(OBJD64)/$(package)ti_double_64.o
+$(PACKAGE)SS64 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s_single_64.o
 $(PACKAGE)ST64 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
-                 $(OBJS)/$(package)t_single.o
-$(PACKAGE)SS264 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s2_single.o
-$(PACKAGE)SS364 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s3_single.o
-$(PACKAGE)SS464 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s4_single.o
+                 $(OBJS64)/$(package)t_single_64.o
+$(PACKAGE)SS264 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s2_single_64.o
+$(PACKAGE)SS364 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s3_single_64.o
+$(PACKAGE)SS464 = $($(PACKAGE)OBJECTSS64) $(OBJS64)/$(package)s4_single_64.o
 $(PACKAGE)ST264 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
-                  $(OBJS)/$(package)t2_single.o
+                  $(OBJS64)/$(package)t2_single_64.o
 $(PACKAGE)STI64 = $($(PACKAGE)OBJECTSS64) $(TESTDEPS64) \
-                  $(OBJS)/$(package)ti_single.o
+                  $(OBJS64)/$(package)ti_single_64.o
 
 R$(PACKAGE)DE = $(OBJD)/$(package)e_double.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS = $(OBJD)/$(package)s_double.o -L$(OBJD) $(LIBS)
@@ -151,24 +151,24 @@ R$(PACKAGE)SS4 = $(OBJS)/$(package)s4_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST2 = $(OBJS)/$(package)t2_single.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)STI = $(OBJS)/$(package)ti_single.o -L$(OBJS) $(LIBS)
 
-R$(PACKAGE)DE64 = $(OBJD64)/$(package)e_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS64 = $(OBJD64)/$(package)s_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DT64 = $(OBJD64)/$(package)t_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS264 = $(OBJD64)/$(package)s2_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS364 = $(OBJD64)/$(package)s3_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS464 = $(OBJD64)/$(package)s4_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS564 = $(OBJD64)/$(package)s5_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS664 = $(OBJD64)/$(package)s6_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DS764 = $(OBJD64)/$(package)s7_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DT264 = $(OBJD64)/$(package)t2_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)DTI64 = $(OBJD64)/$(package)ti_double.o -L$(OBJD64) $(LIBS)
-R$(PACKAGE)SS64 = $(OBJS64)/$(package)s_single.o -L$(OBJS64) $(LIBS)
-R$(PACKAGE)ST64 = $(OBJS64)/$(package)t_single.o -L$(OBJS64) $(LIBS)
-R$(PACKAGE)SS264 = $(OBJS64)/$(package)s2_single.o -L$(OBJS64) $(LIBS)
-R$(PACKAGE)SS364 = $(OBJS64)/$(package)s3_single.o -L$(OBJS64) $(LIBS)
-R$(PACKAGE)SS464 = $(OBJS64)/$(package)s4_single.o -L$(OBJS64) $(LIBS)
-R$(PACKAGE)ST264 = $(OBJS64)/$(package)t2_single.o -L$(OBJS64) $(LIBS)
-R$(PACKAGE)STI64 = $(OBJS64)/$(package)ti_single.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)DE64 = $(OBJD64)/$(package)e_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS64 = $(OBJD64)/$(package)s_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DT64 = $(OBJD64)/$(package)t_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS264 = $(OBJD64)/$(package)s2_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS364 = $(OBJD64)/$(package)s3_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS464 = $(OBJD64)/$(package)s4_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS564 = $(OBJD64)/$(package)s5_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS664 = $(OBJD64)/$(package)s6_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DS764 = $(OBJD64)/$(package)s7_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DT264 = $(OBJD64)/$(package)t2_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)DTI64 = $(OBJD64)/$(package)ti_double_64.o -L$(OBJD64) $(LIBS)
+R$(PACKAGE)SS64 = $(OBJS64)/$(package)s_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)ST64 = $(OBJS64)/$(package)t_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)SS264 = $(OBJS64)/$(package)s2_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)SS364 = $(OBJS64)/$(package)s3_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)SS464 = $(OBJS64)/$(package)s4_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)ST264 = $(OBJS64)/$(package)t2_single_64.o -L$(OBJS64) $(LIBS)
+R$(PACKAGE)STI64 = $(OBJS64)/$(package)ti_single_64.o -L$(OBJS64) $(LIBS)
 
 #  test agenda for C interfaces
 
@@ -203,37 +203,37 @@ $(PACKAGE)CDTI = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
 $(PACKAGE)CDTF = $($(PACKAGE)OBJECTSCD) $(TESTDEPS) \
                  $(OBJD)/$(package)ctf_double.o
 
-$(PACKAGE)CSS64 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs_single.o
+$(PACKAGE)CSS64 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs_single_64.o
 $(PACKAGE)CST64 = $($(PACKAGE)OBJECTSCS64) \
-                  $(TESTDEPS) $(OBJS64)/$(package)ct_single.o
-$(PACKAGE)CSS264 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs2_single.o
-$(PACKAGE)CSS364 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs3_single.o
-$(PACKAGE)CSS464 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs4_single.o
-$(PACKAGE)CSS564 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs5_single.o
-$(PACKAGE)CSS664 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs6_single.o
-$(PACKAGE)CSS764 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs7_single.o
+                  $(TESTDEPS) $(OBJS64)/$(package)ct_single_64.o
+$(PACKAGE)CSS264 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs2_single_64.o
+$(PACKAGE)CSS364 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs3_single_64.o
+$(PACKAGE)CSS464 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs4_single_64.o
+$(PACKAGE)CSS564 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs5_single_64.o
+$(PACKAGE)CSS664 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs6_single_64.o
+$(PACKAGE)CSS764 = $($(PACKAGE)OBJECTSCS64) $(OBJS64)/$(package)cs7_single_64.o
 $(PACKAGE)CSTI64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
-                   $(OBJS64)/$(package)cti_single.o
+                   $(OBJS64)/$(package)cti_single_64.o
 $(PACKAGE)CSTF64 = $($(PACKAGE)OBJECTSCS64) $(TESTDEPS) \
-                   $(OBJS64)/$(package)ctf_single.o
+                   $(OBJS64)/$(package)ctf_single_64.o
 
-$(PACKAGE)CDS64 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs_double.o
+$(PACKAGE)CDS64 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs_double_64.o
 $(PACKAGE)CDT64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
-                  $(OBJD64)/$(package)ct_double.o
-$(PACKAGE)CDS264 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs2_double.o
-$(PACKAGE)CDS364 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs3_double.o
-$(PACKAGE)CDS464 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs4_double.o
-$(PACKAGE)CDS564 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs5_double.o
-$(PACKAGE)CDS664 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs6_double.o
-$(PACKAGE)CDS764 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs7_double.o
+                  $(OBJD64)/$(package)ct_double_64.o
+$(PACKAGE)CDS264 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs2_double_64.o
+$(PACKAGE)CDS364 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs3_double_64.o
+$(PACKAGE)CDS464 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs4_double_64.o
+$(PACKAGE)CDS564 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs5_double_64.o
+$(PACKAGE)CDS664 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs6_double_64.o
+$(PACKAGE)CDS764 = $($(PACKAGE)OBJECTSCD64) $(OBJD64)/$(package)cs7_double_64.o
 $(PACKAGE)CDT264 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
-                   $(OBJD64)/$(package)ct2_double.o
+                   $(OBJD64)/$(package)ct2_double_64.o
 $(PACKAGE)CDT364 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
-                   $(OBJD64)/$(package)ct3_double.o
+                   $(OBJD64)/$(package)ct3_double_64.o
 $(PACKAGE)CDTI64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
-                   $(OBJD64)/$(package)cti_double.o
+                   $(OBJD64)/$(package)cti_double_64.o
 $(PACKAGE)CDTF64 = $($(PACKAGE)OBJECTSCD64) $(TESTDEPS) \
-                   $(OBJD64)/$(package)ctf_double.o
+                   $(OBJD64)/$(package)ctf_double_64.o
 
 R$(PACKAGE)CSS = $(OBJS)/$(package)cs_single.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CST = $(OBJS)/$(package)ct_single.o -L$(OBJS) $(CLIBS)
@@ -260,30 +260,30 @@ R$(PACKAGE)CDT3 = $(OBJD)/$(package)ct3_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTI = $(OBJD)/$(package)cti_double.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf_double.o -L$(OBJD) $(CLIBS)
 
-R$(PACKAGE)CSS64 = $(OBJS64)/$(package)cs_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CST64 = $(OBJS64)/$(package)ct_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSS264 = $(OBJS64)/$(package)cs2_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSS364 = $(OBJS64)/$(package)cs3_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSS464 = $(OBJS64)/$(package)cs4_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSS564 = $(OBJS64)/$(package)cs5_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSS664 = $(OBJS64)/$(package)cs6_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSS764 = $(OBJS64)/$(package)cs7_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CTI64 = $(OBJS64)/$(package)cti_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSTI64 = $(OBJS64)/$(package)cti_single.o -L$(OBJS64) $(CLIBS)
-R$(PACKAGE)CSTF64 = $(OBJS64)/$(package)ctf_single.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS64 = $(OBJS64)/$(package)cs_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CST64 = $(OBJS64)/$(package)ct_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS264 = $(OBJS64)/$(package)cs2_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS364 = $(OBJS64)/$(package)cs3_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS464 = $(OBJS64)/$(package)cs4_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS564 = $(OBJS64)/$(package)cs5_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS664 = $(OBJS64)/$(package)cs6_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSS764 = $(OBJS64)/$(package)cs7_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CTI64 = $(OBJS64)/$(package)cti_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSTI64 = $(OBJS64)/$(package)cti_single_64.o -L$(OBJS64) $(CLIBS)
+R$(PACKAGE)CSTF64 = $(OBJS64)/$(package)ctf_single_64.o -L$(OBJS64) $(CLIBS)
 
-R$(PACKAGE)CDS64 = $(OBJD64)/$(package)cs_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDT64 = $(OBJD64)/$(package)ct_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDS264 = $(OBJD64)/$(package)cs2_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDS364 = $(OBJD64)/$(package)cs3_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDS464 = $(OBJD64)/$(package)cs4_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDS564 = $(OBJD64)/$(package)cs5_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDS664 = $(OBJD64)/$(package)cs6_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDS764 = $(OBJD64)/$(package)cs7_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDT264 = $(OBJD64)/$(package)ct2_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDT364 = $(OBJD64)/$(package)ct3_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDTI64 = $(OBJD64)/$(package)cti_double.o -L$(OBJD64) $(CLIBS)
-R$(PACKAGE)CDTF64 = $(OBJD64)/$(package)ctf_double.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS64 = $(OBJD64)/$(package)cs_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDT64 = $(OBJD64)/$(package)ct_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS264 = $(OBJD64)/$(package)cs2_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS364 = $(OBJD64)/$(package)cs3_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS464 = $(OBJD64)/$(package)cs4_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS564 = $(OBJD64)/$(package)cs5_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS664 = $(OBJD64)/$(package)cs6_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDS764 = $(OBJD64)/$(package)cs7_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDT264 = $(OBJD64)/$(package)ct2_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDT364 = $(OBJD64)/$(package)ct3_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDTI64 = $(OBJD64)/$(package)cti_double_64.o -L$(OBJD64) $(CLIBS)
+R$(PACKAGE)CDTF64 = $(OBJD64)/$(package)ctf_double_64.o -L$(OBJD64) $(CLIBS)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================

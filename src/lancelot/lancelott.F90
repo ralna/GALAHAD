@@ -1232,7 +1232,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 1, istat )
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 1_ip_, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
          IF ( info%status == - 1 .OR. info%status == - 5 .OR.                  &
@@ -1241,7 +1241,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 3, istat )
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 3_ip_, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
        END DO
@@ -1260,7 +1260,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 1, istat )
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 1_ip_, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
          IF ( info%status == - 1 .OR. info%status == - 5 .OR.                  &
@@ -1269,7 +1269,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 3, istat )
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, 3_ip_, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
          IF ( info%status == - 2 .OR. info%status == - 4 ) THEN
@@ -1336,7 +1336,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 1,           &
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 1_ip_,       &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
@@ -1347,7 +1347,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 3,           &
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 3_ip_,       &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
@@ -1370,7 +1370,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 1,           &
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 1_ip_,       &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
@@ -1381,7 +1381,7 @@
                prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,&
                ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,&
                prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval,     &
-               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 3,           &
+               prob%n, prob%ISTEPA( prob%nel + 1 ) - 1, prob%nel, 3_ip_,       &
                ELDERS, istat )
            IF ( istat /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
          END IF
