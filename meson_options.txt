@@ -88,6 +88,16 @@ option('libpastix',
        value : 'pastix',
        description : 'PASTIX library against which to link')
 
+option('libsmumps',
+       type : 'string',
+       value : 'smumps',
+       description : 'Single precision MUMPS library against which to link')
+
+option('libdmumps',
+       type : 'string',
+       value : 'dmumps',
+       description : 'Double precision MUMPS library against which to link')
+
 option('libampl',
        type : 'string',
        value : 'ampl',
