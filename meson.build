@@ -630,7 +630,7 @@ if build_tests and build_pythoniface and build_ciface and build_double and host_
 endif
 
 # Fortran examples
-if build_examples and build_double
+if build_examples and build_double and (not galahad_int64)
 
   fortran_examples_folder = 'examples/Fortran'
 
