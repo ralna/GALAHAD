@@ -71,19 +71,21 @@ if not libhsl.found()
 
   libgalahad_f_single_src += files('fa14s.f', 'fd15s.f', 'ma48s.f', 'mc64s.f',
                                    'mc71s.f', 'ma50s.f', 'mc77s.f', 'ma51s.f',
-                                   'ma57s.f', 'ma61s.f', 'mc13s.f', 'mc20s.f',
-                                   'mc21s.f', 'mc22s.f', 'mc23s.f', 'mc29s.f',
-                                   'mc30s.f', 'la04s.f', 'la15s.f', 'mc34s.f',
-                                   'ma27s.f', 'mc47s.f', 'mc59s.f', 'zb01s.f',
-                                   'mc60s.f', 'mc61s.f', 'ma33s.f')
+                                   'ma57s.f', 'mi21s.f', 'ma61s.f', 'mi24s.f',
+                                   'mc13s.f', 'mi26s.f', 'mc20s.f', 'mc21s.f',
+                                   'mc22s.f', 'mc23s.f', 'mc29s.f', 'mc30s.f',
+                                   'la04s.f', 'la15s.f', 'mc34s.f', 'ma27s.f',
+                                   'mc47s.f', 'mc59s.f', 'zb01s.f', 'mc60s.f',
+                                   'mc61s.f', 'ma33s.f')
 
   libgalahad_f_double_src += files('fa14d.f', 'fd15d.f', 'ma48d.f', 'mc64d.f',
                                    'mc71d.f', 'ma50d.f', 'mc77d.f', 'ma51d.f',
-                                   'ma57d.f', 'ma61d.f', 'mc13d.f', 'mc20d.f',
-                                   'mc21d.f', 'mc22d.f', 'mc23d.f', 'mc29d.f',
-                                   'mc30d.f', 'la04d.f', 'la15d.f', 'mc34d.f',
-                                   'ma27d.f', 'mc47d.f', 'mc59d.f', 'zb01d.f',
-                                   'mc60d.f', 'mc61d.f', 'ma33d.f')
+                                   'ma57d.f', 'mi21d.f', 'ma61d.f', 'mi24d.f',
+                                   'mc13d.f', 'mi26d.f', 'mc20d.f', 'mc21d.f',
+                                   'mc22d.f', 'mc23d.f', 'mc29d.f', 'mc30d.f',
+                                   'la04d.f', 'la15d.f', 'mc34d.f', 'ma27d.f',
+                                   'mc47d.f', 'mc59d.f', 'zb01d.f', 'mc60d.f',
+                                   'mc61d.f', 'ma33d.f')
 endif
 
 if not libwsmp.found()

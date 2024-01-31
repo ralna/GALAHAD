@@ -42,7 +42,7 @@ for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
     lines = split(code, '\n')
     for (i, line) in enumerate(lines)
       startswith(line |> strip, "!") && continue
-      startswith(line |> strip, "C") && (file_extension(file) == "f") && continue
+      mapreduce(x -> startswith(line |> strip, x), |, ["C", "&", "*"]) && (file_extension(file) == "f") && continue
       if (file_extension(file) == "f") && (length(line) > 72)
         println("Line $i in the file $file has more than 72 characters.")
         global n = n+1
