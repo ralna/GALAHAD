@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 07:30 GMT.
 #include "galahad_modules.h"
  PROGRAM GALAHAD_SORT_TESTDEC
  USE GALAHAD_KINDS_precision
@@ -13,10 +13,10 @@
  WRITE( 6, "( /, ' Test error returns ', / )" )
 
  A( 1 ) = 1.0
- CALL SORT_heapsort_build( 0, A, inform )
+ CALL SORT_heapsort_build( 0_ip_, A, inform )
  WRITE( 6, "( ' inform =  ', I2 )" ) inform
- CALL SORT_heapsort_build( 1, A, inform )
- CALL SORT_heapsort_smallest( 0, A, inform )
+ CALL SORT_heapsort_build( 1_ip_, A, inform )
+ CALL SORT_heapsort_smallest( 0_ip_, A, inform )
  WRITE( 6, "( ' inform =  ', I2 )" ) inform
 
  A = (/ -5.0, -7.0, 2.0, 9.0, 0.0, -3.0, 3.0, 5.0, -2.0, -6.0,                 &

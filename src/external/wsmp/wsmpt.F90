@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 07:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -111,8 +111,8 @@ PROGRAM TEST_WSMP
 
     IPARM( 2 ) = 1
     IPARM( 3 ) = 2
-    CALL WSSMP( n, IA, JA, A, DIAG, PERM, INVP, bdum, 1, 1, aux, naux, MRP,   &
-                IPARM, DPARM )
+    CALL WSSMP( n, IA, JA, A, DIAG, PERM, INVP, bdum, 1_ip_, 1_ip_, aux, naux, &
+                MRP, IPARM, DPARM )
 
 !  check for error returns
 
@@ -132,8 +132,8 @@ PROGRAM TEST_WSMP
     IPARM( 2 ) = 3
     IPARM( 3 ) = 3
     IPARM( 31 ) = 1
-    CALL WSSMP( n, IA, JA, A, DIAG, PERM, INVP, bdum, 1, 1, aux, naux, MRP,    &
-                IPARM, DPARM )
+    CALL WSSMP( n, IA, JA, A, DIAG, PERM, INVP, bdum, 1_ip_, 1_ip_, aux, naux, &
+                MRP, IPARM, DPARM )
 
 !  check for error returns
 

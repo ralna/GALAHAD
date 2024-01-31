@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_PRESOLVE_TEST  ! needs to be improved !!
    USE GALAHAD_KINDS_precision
@@ -78,7 +78,7 @@
      END IF
 ! problem data complete
 ! write the original formulation
-     CALL QPT_write_problem( 6, problem )
+     CALL QPT_write_problem( 6_ip_, problem )
 ! set the default PRESOLVE control parameters
      CALL PRESOLVE_initialize( control, inform, data )
      IF ( inform%status /= 0 ) STOP
@@ -89,7 +89,7 @@
      CALL PRESOLVE_apply( problem, control, inform, data )
      IF ( inform%status /= 0 ) STOP
 ! write the reduced problem
-     CALL QPT_write_problem( 6, problem )
+     CALL QPT_write_problem( 6_ip_, problem )
 ! solve the reduced problem
    ! CALL QPSOLVER (unnecessary here, because the reduced problem has a
    ! single feasible point in this example)

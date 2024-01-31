@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -48,6 +48,7 @@ PROGRAM test_mop
   USE GALAHAD_KINDS_precision
   USE GALAHAD_SMT_precision
   USE GALAHAD_MOP_precision
+  USE GALAHAD_BLAS_interface, ONLY: IAMAX
 
   IMPLICIT NONE
 
@@ -69,24 +70,6 @@ PROGRAM test_mop
   REAL ( KIND = rp_ ), PARAMETER :: seventyseven   = 77.0_rp_
   REAL ( KIND = rp_ ), PARAMETER :: ninetyfour     = 94.0_rp_
   REAL ( KIND = rp_ ), PARAMETER :: hundredfifteen = 115.0_rp_
-
-! Interfaces
-
-  INTERFACE IAMAX
-     FUNCTION ISAMAX( n, X, incx )
-      USE GALAHAD_KINDS_precision
-      INTEGER ( KIND = ip_ ) :: ISAMAX
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
-      REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
-    END FUNCTION ISAMAX
-
-     FUNCTION IDAMAX( n, X, incx )
-      USE GALAHAD_KINDS_precision
-      INTEGER ( KIND = ip_ ) :: IDAMAX
-      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
-      REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
-    END FUNCTION IDAMAX
-  END INTERFACE
 
 !***************************************************************
 !                                                              !
@@ -227,10 +210,10 @@ PROGRAM test_mop
 
   ! get solution from mop_Ax
 
-  CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+  CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                       &
                print_level_mop_Ax, symm, trans )
 
-  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
+  err_loc   = IAMAX( 5_ip_, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
 
@@ -262,7 +245,7 @@ PROGRAM test_mop
 
   CALL mop_Ax( alpha, B, X, beta, R )
 
-  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
+  err_loc   = IAMAX( 5_ip_, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
 
@@ -302,10 +285,10 @@ PROGRAM test_mop
 
   ! get solution from mop_Ax
 
-  CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+  CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                       &
                print_level_mop_Ax, symm, trans )
 
-  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
+  err_loc   = IAMAX( 5_ip_, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
 
@@ -348,10 +331,10 @@ PROGRAM test_mop
 
   ! get solution from mop_Ax
 
-  CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+  CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                       &
                print_level_mop_Ax, symm, trans )
 
-  err_loc   = IAMAX( 5, R_sol - R, 1_ip_ )
+  err_loc   = IAMAX( 5_ip_, R_sol - R, 1_ip_ )
   err       = ABS( R_sol( err_loc ) - R( err_loc ) )
   max_error = MAX( err, max_error )
 
@@ -1096,7 +1079,7 @@ DO mx_type = 1, 6
 
      trans = .TRUE.
 
-     CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+     CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                    &
                   print_level_mop_Ax, symm, trans )
 
      err_loc   = IAMAX( n, R_sol_trans - R, 1_ip_ )
@@ -1192,7 +1175,7 @@ R_sol = zero
 
 ! get solution from mop_Ax
 
-CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                         &
              print_level_mop_Ax, symm, trans )
 
 ! compute error
@@ -1278,7 +1261,7 @@ R_sol = - fifteen * sqrt3
 
 ! get solution from mop_Ax
 
-CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                         &
              print_level_mop_Ax, symm, trans )
 
 ! compute error
@@ -1321,7 +1304,7 @@ R_sol = twentytwo * sqrt3
 
 ! get solution from mop_Ax
 
-CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt, &
+CALL mop_Ax( alpha, B, X, beta, R, out_opt, error_opt,                         &
              print_level_mop_Ax, symm, trans )
 
 ! compute error
@@ -1463,7 +1446,8 @@ R = Rfx
      ! A2(1,1)
      !********
 
-     CALL mop_getval( B, 1, 1, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 1_ip_, 1_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= zero ) THEN
 
@@ -1486,7 +1470,8 @@ R = Rfx
      ! A2(1,2)
      !********
 
-     CALL mop_getval( B, 1, 2, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 1_ip_, 2_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= one ) THEN
 
@@ -1509,7 +1494,8 @@ R = Rfx
      ! A2(2,1)
      !********
 
-     CALL mop_getval( B, 2, 1, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 2_ip_, 1_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= two ) THEN
 
@@ -1532,7 +1518,8 @@ R = Rfx
      ! A2(2,2)
      !********
 
-     CALL mop_getval( B, 2, 2, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 2_ip_, 2_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= three ) THEN
 
@@ -1628,7 +1615,8 @@ R = Rfx
      ! A2(1,1)
      !********
 
-     CALL mop_getval( B, 1, 1, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 1_ip_, 1_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= zero ) THEN
 
@@ -1651,7 +1639,8 @@ R = Rfx
      ! A2(1,2)
      !********
 
-     CALL mop_getval( B, 1, 2, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 1_ip_, 2_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= one ) THEN
 
@@ -1674,7 +1663,8 @@ R = Rfx
      ! A2(2,1)
      !********
 
-     CALL mop_getval( B, 2, 1, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 2_ip_, 1_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= one ) THEN
 
@@ -1697,7 +1687,8 @@ R = Rfx
      ! A2(2,2)
      !********
 
-     CALL mop_getval( B, 2, 2, value, symm, out, error, print_level_mop_getval)
+     CALL mop_getval( B, 2_ip_, 2_ip_, value, symm, out, error,                &
+                      print_level_mop_getval)
 
      IF ( value /= two ) THEN
 

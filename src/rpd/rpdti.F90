@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RPD_interface_test
    USE GALAHAD_KINDS_precision
@@ -8,7 +8,8 @@
    TYPE ( RPD_inform_type ) :: inform
    TYPE ( RPD_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, m, a_ne, h_ne, h_c_ne
-   INTEGER ( KIND = ip_ ) :: status, length
+   INTEGER ( KIND = ip_ ) :: status
+   INTEGER :: length
    REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u

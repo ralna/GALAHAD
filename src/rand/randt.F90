@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_RAND_test
    USE GALAHAD_KINDS_precision
@@ -20,9 +20,9 @@
 !  Restore the generator word
    CALL RAND_set_seed( seed, value )
 !  Generate a random integer in [1, 100]
-   CALL RAND_random_integer( seed, 100, random_integer )
+   CALL RAND_random_integer( seed, 100_ip_, random_integer )
    WRITE( 6, "( ' random integer in [1,100] = ', I0 )" ) random_integer
 !  Generate another random integer
-   CALL RAND_random_integer( seed, 100, random_integer )
+   CALL RAND_random_integer( seed, 100_ip_, random_integer )
    WRITE( 6, "( ' second random integer in [1,100] = ', I0 )" ) random_integer
    END PROGRAM GALAHAD_RAND_test

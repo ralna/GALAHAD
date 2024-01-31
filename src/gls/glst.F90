@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_test  ! further work needed!!
    USE GALAHAD_KINDS_precision
@@ -46,7 +46,7 @@
         & ( 6ES11.3 ) )" ) X
 ! now solve the transposed system
    B = (/ 32.0_rp_,  66.0_rp_,  56.0_rp_ /)
-   CALL GLS_solve( matrix, factors, B, X, control, sinfo, trans = 1 )
+   CALL GLS_solve( matrix, factors, B, X, control, sinfo, trans = 1_ip_ )
    IF ( SINFO%flag == 0 ) WRITE( 6,                                            &
      "( ' Solution of set of transposed equations without refinement is', /,   &
         & ( 6ES11.3 ) )" ) X

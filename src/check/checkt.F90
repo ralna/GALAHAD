@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2024-01-31 AT 07:40 GMT.
 #include "galahad_modules.h"
 PROGRAM GALAHAD_check_test
   USE GALAHAD_KINDS_precision   ! double precision version
@@ -54,17 +54,18 @@ PROGRAM GALAHAD_check_test
 
   ! Local variables.
 
-  type( NLPT_problem_type ) :: nlp
-  type( GALAHAD_userdata_type ) :: userdata
-  type( CHECK_data_type ) :: data
-  type( CHECK_control_type ) :: control
-  type( CHECK_inform_type ) :: inform
-  integer ( kind = ip_ ) :: stat, Jne, Hne, m, n, nwrong, test
-  integer ( kind = ip_ ), allocatable, dimension(:) :: vwrong
-  real (kind = rp_), parameter :: one = 1.0_rp_, two = 2.0_rp_, three = 3.0_rp_
-  real (kind = rp_), parameter :: four = 4.0_rp_, five = 5.0_rp_
-  real (kind = rp_) :: temp
-  external funF, funC, funG, funJ, funH, funJv, funHv
+  TYPE( NLPT_problem_type ) :: nlp
+  TYPE( GALAHAD_userdata_type ) :: userdata
+  TYPE( CHECK_data_type ) :: data
+  TYPE( CHECK_control_type ) :: control
+  TYPE( CHECK_inform_type ) :: inform
+  INTEGER ( kind = ip_ ) :: stat, Jne, Hne, m, n, nwrong, test
+  INTEGER ( kind = ip_ ), ALLOCATABLE, DIMENSION(:) :: vwrong
+  REAL ( kind = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
+  REAL ( kind = rp_ ), PARAMETER :: three = 3.0_rp_, four = 4.0_rp_
+  REAL ( kind = rp_ ), PARAMETER :: five = 5.0_rp_
+  REAL ( kind = rp_ ) :: temp
+  EXTERNAL :: funF, funC, funG, funJ, funH, funJv, funHv
 
   ! Allocate vector holding indices of problems that are wrong.
 
@@ -125,7 +126,7 @@ PROGRAM GALAHAD_check_test
 
         call CHECK_initialize( control )
 
-        OPEN( 34, FILE = 'RUNCHECK.SPC', FORM = 'FORMATTED', STATUS = 'OLD', &
+        OPEN( 34, FILE = 'RUNCHECK.SPC', FORM = 'FORMATTED', STATUS = 'OLD',   &
               IOSTAT = stat )
         IF ( stat == 0 ) call CHECK_read_specfile( control, 34_ip_ )
 
@@ -498,7 +499,7 @@ PROGRAM GALAHAD_check_test
 
         OPEN( 34, FILE = 'RUNCHECK.SPC', FORM = 'FORMATTED', STATUS = 'OLD',   &
               IOSTAT = stat )
-        IF ( stat == 0 ) call CHECK_read_specfile( control, 34 )
+        IF ( stat == 0 ) call CHECK_read_specfile( control, 34_ip_ )
 
         inform%status = 1
         call CHECK_verify( nlp, data, control, inform, userdata, &

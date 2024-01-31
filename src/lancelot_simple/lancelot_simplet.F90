@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.4 - 2024-01-31 AT 08:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -68,49 +68,50 @@
 !
        WRITE(6,*) '====================================================',      &
                   ' ================'
-       CALL LANCELOT_simple( 0, X, FUN, fx, exit_code )
+       CALL LANCELOT_simple( 0_ip_, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 1: EXIT_CODE = ', exit_code,      &
                   '  ======================'
 !
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code, NEQ = -1 )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code, NEQ = -1_ip_ )
        WRITE(6,*) '==================== TEST 2: EXIT_CODE = ', exit_code,      &
                   ' ======================'
 !
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code, NIN = -1 )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code, NIN = -1_ip_ )
        WRITE(6,*) '==================== TEST 3: EXIT_CODE = ', exit_code,      &
                   '  ======================'
 !
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 4: EXIT_CODE = ', exit_code,      &
                   '  ======================'
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 5: EXIT_CODE = ', exit_code,      &
                   '  ======================'
 !
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 6: EXIT_CODE = ', exit_code,      &
                   '  ======================'
 !
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code, MY_GRAD = GRAD )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code, MY_GRAD = GRAD )
        WRITE(6,*) '==================== TEST 7: EXIT_CODE = ', exit_code,      &
                   '  ======================'
 !
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
-       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code,                         &
-                             MY_GRAD = GRAD, MY_HESS = HESS, PRINT_LEVEL = 0 )
+       CALL LANCELOT_simple( 2_ip_, X, FUN, fx, exit_code,                     &
+                             MY_GRAD = GRAD, MY_HESS = HESS,                   &
+                             PRINT_LEVEL = 0_ip_ )
        WRITE(6,*) '==================== TEST 8: EXIT_CODE = ', exit_code,      &
                   '  ======================'
 !
@@ -132,8 +133,8 @@
        X(1) = -1.2_rp_
        X(2) =  1.0_rp_
        CALL LANCELOT_simple( n,  X, FUN, fx, exit_code,                        &
-                             MY_GRAD = GRAD, MY_HESS =  HESS,                  &
-                             BL  =  BL, BU   =   BU, NIN  =  1, NEQ = 1 )
+                             MY_GRAD = GRAD, MY_HESS = HESS,                   &
+                             BL = BL, BU = BU, NIN = 1_ip_, NEQ = 1_ip_ )
        WRITE(6,*) '==================== Test 10: EXIT_CODE = ', exit_code,     &
                   ' ======================'
 !

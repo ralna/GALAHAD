@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:00 GMT.
 
 #include "spral_procedures.h"
 
@@ -92,7 +92,7 @@
 ! Solve multiple RHS without refinement
 
      X2( : , 1 ) = RHS ; X2( : , 2 ) = RHS
-     CALL ssids_solve( 2, X2, n, akeep, fkeep, options, inform )
+     CALL ssids_solve( 2_ip_, X2, n, akeep, fkeep, options, inform )
 
 !write(6,*) ' status - ', inform%flag
      IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                       &
@@ -107,16 +107,16 @@
 
      X = RHS
 !write(6,*) ' L '
-     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 1 )
+     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 1_ip_ )
      IF (inform%flag /= 0 ) THEN
        WRITE( 6, "( '    fail ' )", advance = 'no' )
        WRITE( 6, "( '' )" )
        CYCLE
      END IF
 !write(6,*) ' D '
-     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 2 )
+     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 2_ip_ )
 !write(6,*) ' U '
-     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 3 )
+     CALL ssids_solve( X, akeep, fkeep, options, inform, job = 3_ip_ )
 !write(6,*) ' E '
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
              <= EPSILON( 1.0_rp_ ) ** 0.333 ) THEN
