@@ -44,6 +44,7 @@
 ! analyse the structure
 
 !    WRITE( 6, * ) ' analyse '
+!    options%print_level = 100
      IF ( ordering == 1 ) THEN
        DO i = 1, n ; ORDER( i ) = n - i + 1 ; END DO
        options%ordering = 0

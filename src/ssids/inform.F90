@@ -168,13 +168,13 @@ contains
     if (this%flag .gt. SSIDS_SUCCESS) then
        ! Warning
        if (options%unit_warning .lt. 0) return ! printing supressed
-       write (options%unit_warning,'(/3a,i3)') ' Warning from ', &
+       write (options%unit_warning,'(/3a,i0)') ' Warning from ', &
             trim(context), '. Warning flag = ', this%flag
        msg = this%flag_to_character()
        write (options%unit_warning, '(a)') msg
     else
        if (options%unit_error .lt. 0) return ! printing supressed
-       write (options%unit_error,'(/3a,i3)') ' Error return from ', &
+       write (options%unit_error,'(/3a,i0)') ' Error return from ', &
             trim(context), '. Error flag = ', this%flag
        msg = this%flag_to_character()
        write (options%unit_error, '(a)') msg

@@ -2,7 +2,7 @@
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CRO_interface_test
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_CRO_double                    ! double precision version
+   USE GALAHAD_CRO_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( CRO_control_type ) :: control

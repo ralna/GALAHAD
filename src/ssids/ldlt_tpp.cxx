@@ -13,18 +13,11 @@
 #include "ssids_cpu_ThreadStats.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
 
-#ifdef SPRAL_SINGLE
-#define precision_ float
-#define ldlt_tpp_factor ldlt_tpp_factor_sgl
-#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_sgl
-#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_sgl
-#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_sgl
-#else
-#define precision_ double
-#define ldlt_tpp_factor ldlt_tpp_factor_dbl
-#define ldlt_tpp_solve_fwd ldlt_tpp_solve_fwd_dbl
-#define ldlt_tpp_solve_diag ldlt_tpp_solve_diag_dbl
-#define ldlt_tpp_solve_bwd ldlt_tpp_solve_bwd_dbl
+#ifdef SPRAL_64BIT_INTEGER
+#define host_gemm host_gemm_64
+#define host_trsv host_trsv_64
+#define host_trsm host_trsm_64
+#define gemv gemv_64
 #endif
 
 namespace spral { namespace ssids { namespace cpu {

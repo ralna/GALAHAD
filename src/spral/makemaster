@@ -120,20 +120,20 @@ SSIDSST = $(SSIDSS) $(OBJS)/ssidst_single.o
 SSIDSDS = $(SSIDSD) $(OBJD)/ssidss_double.o
 SSIDSDT = $(SSIDSD) $(OBJD)/ssidst_double.o
 
-SSIDSSS64 = $(SSIDSS64) $(OBJS64)/ssidss_single.o
-SSIDSST64 = $(SSIDSS64) $(OBJS64)/ssidst_single.o
-SSIDSDS64 = $(SSIDSD64) $(OBJD64)/ssidss_double.o
-SSIDSDT64 = $(SSIDSD64) $(OBJD64)/ssidst_double.o
+SSIDSSS64 = $(SSIDSS64) $(OBJS64)/ssidss_single_64.o
+SSIDSST64 = $(SSIDSS64) $(OBJS64)/ssidst_single_64.o
+SSIDSDS64 = $(SSIDSD64) $(OBJD64)/ssidss_double_64.o
+SSIDSDT64 = $(SSIDSD64) $(OBJD64)/ssidst_double_64.o
 
 RSSIDSSS = $(OBJS)/ssidss_single.o -L$(OBJS) $(SPRAL) $(LIBS)
 RSSIDSST = $(OBJS)/ssidst_single.o -L$(OBJS) $(SPRAL) $(LIBS)
 RSSIDSDS = $(OBJD)/ssidss_double.o -L$(OBJD) $(SPRAL) $(LIBS)
 RSSIDSDT = $(OBJD)/ssidst_double.o -L$(OBJD) $(SPRAL) $(LIBS)
 
-RSSIDSSS64 = $(OBJS64)/ssidss_single.o -L$(OBJS64) $(SPRAL) $(LIBS)
-RSSIDSST64 = $(OBJS64)/ssidst_single.o -L$(OBJS64) $(SPRAL) $(LIBS)
-RSSIDSDS64 = $(OBJD64)/ssidss_double.o -L$(OBJD64) $(SPRAL) $(LIBS)
-RSSIDSDT64 = $(OBJD64)/ssidst_double.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSSS64 = $(OBJS64)/ssidss_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
+RSSIDSST64 = $(OBJS64)/ssidst_single_64.o -L$(OBJS64) $(SPRAL) $(LIBS)
+RSSIDSDS64 = $(OBJD64)/ssidss_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
+RSSIDSDT64 = $(OBJD64)/ssidst_double_64.o -L$(OBJD64) $(SPRAL) $(LIBS)
 
 CUDAS = $(RLGS)(cuda_nocuda_single.o)
 CUDAD = $(RLGD)(cuda_nocuda_double.o)
@@ -446,6 +446,13 @@ ssidsdt: $(SSIDSDT)
 	cat ../ssids/ssidsdt.output
 	rm ../ssids/run_ssids
 
+ssidsdt_gdb: $(SSIDSDT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT)
+	- gdb $(GDB) ./run_ssids
+	rm ../ssids/run_ssids
+
 ssidsdt_cuda: $(SSIDSDT)
 	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
                       $(RSSIDSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
@@ -484,9 +491,16 @@ ssidsdt_64: $(SSIDSDT64)
 	echo " Exhaustive test of subroutine interface to ssids"
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDT64)
-#	- ../ssids/run_ssids
-	- ../ssids/run_ssids  > ../ssids/ssidsdt_64.output 2>&1
-	cat ../ssids/ssidsdt_64.output
+	- ../ssids/run_ssids
+#	- ../ssids/run_ssids  > ../ssids/ssidsdt_64.output 2>&1
+#	cat ../ssids/ssidsdt_64.output
+	rm ../ssids/run_ssids
+
+ssidsdt_64_gdb: $(SSIDSDT64)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT64)
+	- gdb $(GDB) ./run_ssids
 	rm ../ssids/run_ssids
 
 ssidsdt_64_cuda: $(SSIDSDT64)

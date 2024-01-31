@@ -1,14 +1,28 @@
 # Building GALAHAD with [meson](https://mesonbuild.com)
+# This version: GALAHAD 4.3 - 2024-01-31 AT 08:50 GMT.
+# Alexis Montoison, for GALAHAD productions
 
 All commands below are to be run from the top of the GALAHAD source tree.
 
-# If you are in a hurry ... default install and test
+# If you are in a hurry ... default install (using gfortran/gcc) and test
 
 ```
-meson setup builddir/pc64.lnx.gfo --buildtype=debug -Dgalahad_int64=true -Dlibblas= -Dliblapack= -Dlibmetis=
+meson setup builddir/pc64.lnx.gfo
 meson compile -C builddir/pc64.lnx.gfo
+meson install -C builddir/pc64.lnx.gfo 
 meson test -C builddir/pc64.lnx.gfo 
 ```
+
+# If you want to use 64bit integers and tune other things, start with
+
+```
+meson setup builddir --buildtype=debug \ <- compile faster!
+                     -Dgalahad_int64=true \ <- use 64-bit integer
+                     -Dlibblas= \  <- force GALAHAD to use our blas.f90
+                     -Dliblapack= \ <- force GALAHAD to use our lapack.f90
+                     -Dlibmetis=  <- force GALAHAD to use the dummy METIS 
+```
+
 # If you make a mistake!
 
 ```
@@ -28,7 +42,8 @@ The command
 meson setup builddir [options...]
 ```
 creates the build directory `builddir` and populates it in preparation
-for a build.
+for a build. Separate builds may be placed in separate  `builddir` 
+subdirectories, e.g., builddir/pc64.lnx.gfo builddir/pc64.lnx.ifx as above
 
 Currently supported options with their default value:
 * `-Dmodules=true`: install Fortran modules;
@@ -49,8 +64,8 @@ Currently supported options with their default value:
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;
 * `-Dlibspmf=spmf`: SPMF library against which to link;
 * `-Dlibpastix=pastix`: PASTIX library against which to link;
-* `-Dlibsmumps=smumps`: Single precision MUMPS library against which to link;
-* `-Dlibdmumps=dmumps`: Double precision MUMPS library against which to link;
+* `-Dlibsmumps=smumps`: Single-precision MUMPS library against which to link;
+* `-Dlibdmumps=dmumps`: Double-precision MUMPS library against which to link;
 * `-Dlibampl=ampl`: AMPL library against which to link;
 * `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;

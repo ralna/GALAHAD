@@ -23,6 +23,15 @@
 #define cholesky_solve_bwd cholesky_solve_bwd_dbl
 #endif
 
+#ifdef SPRAL_64BIT_INTEGER
+#define host_gemm host_gemm_64
+#define lapack_potrf lapack_potrf_64
+#define host_syrk host_syrk_64
+#define host_trsv host_trsv_64
+#define host_trsm host_trsm_64
+#define gemv gemv_64
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 /** Perform Cholesky factorization of lower triangular matrix a[] in place.

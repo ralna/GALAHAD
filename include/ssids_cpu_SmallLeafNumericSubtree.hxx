@@ -25,6 +25,10 @@
 #define ldlt_tpp_factor ldlt_tpp_factor_dbl
 #endif
 
+#ifdef SPRAL_64BIT_INTEGER
+#define host_gemm host_gemm_64
+#endif
+
 /* SPRAL headers */
 
 namespace spral { namespace ssids { namespace cpu {

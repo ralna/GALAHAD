@@ -15,6 +15,7 @@
 #define gemv sgemv
 #endif
 #else
+
 #ifdef SPRAL_64BIT_INTEGER
 #define trsm dtrsm_64
 #define trsv dtrsv_64
@@ -26,6 +27,10 @@
 #define gemm dgemm
 #define gemv dgemv
 #endif
+#endif
+
+#ifdef SPRAL_64BIT_INTEGER
+#define host_gemm host_gemm_64
 #endif
 
 ! This module provides a way of doing solve on CPU using GPU data structures

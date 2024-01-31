@@ -4,37 +4,106 @@
  *  \author    Jonathan Hogg
  */
 #pragma once
-
+#include <stdint.h>
 #include "ssids_cpu_kernels_common.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
 /* _GEMM */
 template <typename T>
-void host_gemm(enum spral::ssids::cpu::operation transa, enum spral::ssids::cpu::operation transb, int m, int n, int k, T alpha, const T* a, int lda, const T* b, int ldb, T beta, T* c, int ldc);
+void host_gemm(enum spral::ssids::cpu::operation transa, 
+               enum spral::ssids::cpu::operation transb, 
+               int m, int n, int k, T alpha, const T* a, 
+               int lda, const T* b, int ldb, T beta, 
+               T* c, int ldc);
 
 /* _GEMV */
 template <typename T>
-void gemv(enum spral::ssids::cpu::operation trans, int m, int n, T alpha, const T* a, int lda, const T* x, int incx, T beta, T* y, int incy);
+void gemv(enum spral::ssids::cpu::operation trans, 
+         int m, int n, T alpha, const T* a, int lda, 
+         const T* x, int incx, T beta, T* y, int incy);
 
 /* _POTRF */
 template <typename T>
-int lapack_potrf(enum spral::ssids::cpu::fillmode uplo, int n, T* a, int lda);
+int lapack_potrf(enum spral::ssids::cpu::fillmode uplo, int n, 
+                 T* a, int lda);
 
 /* _SYTRF - Bunch-Kaufman factorization */
 template <typename T>
-int lapack_sytrf(enum spral::ssids::cpu::fillmode uplo, int n, T* a, int lda, int* ipiv, T* work, int lwork);
+int lapack_sytrf(enum spral::ssids::cpu::fillmode uplo, 
+                 int n, T* a, int lda, int* ipiv, 
+                 T* work, int lwork);
 
 /* _SYRK */
 template <typename T>
-void host_syrk(enum spral::ssids::cpu::fillmode uplo, enum spral::ssids::cpu::operation trans, int n, int k, T alpha, const T* a, int lda, T beta, T* c, int ldc);
+void host_syrk(enum spral::ssids::cpu::fillmode uplo, 
+              enum spral::ssids::cpu::operation trans, 
+              int n, int k, T alpha, const T* a, int lda, 
+              T beta, T* c, int ldc);
 
 /* _TRSV */
 template <typename T>
-void host_trsv(enum spral::ssids::cpu::fillmode uplo, enum spral::ssids::cpu::operation trans, enum spral::ssids::cpu::diagonal diag, int n, const T* a, int lda, T* x, int incx);
+void host_trsv(enum spral::ssids::cpu::fillmode uplo, 
+               enum spral::ssids::cpu::operation trans, 
+               enum spral::ssids::cpu::diagonal diag, 
+               int n, const T* a, int lda, T* x, int incx);
 
 /* _TRSM */
 template <typename T>
-void host_trsm(enum spral::ssids::cpu::side side, enum spral::ssids::cpu::fillmode uplo, enum spral::ssids::cpu::operation transa, enum spral::ssids::cpu::diagonal diag, int m, int n, T alpha, const T* a, int lda, T* b, int ldb);
+void host_trsm(enum spral::ssids::cpu::side side, 
+               enum spral::ssids::cpu::fillmode uplo, 
+               enum spral::ssids::cpu::operation transa, 
+               enum spral::ssids::cpu::diagonal diag, 
+               int m, int n, T alpha, const T* a, int lda, 
+               T* b, int ldb);
+
+/* _GEMM */
+template <typename T>
+void host_gemm_64(enum spral::ssids::cpu::operation transa, 
+               enum spral::ssids::cpu::operation transb, 
+               int64_t m, int64_t n, int64_t k, T alpha, const T* a, 
+               int64_t lda, const T* b, int64_t ldb, T beta, 
+               T* c, int64_t ldc);
+
+/* _GEMV */
+template <typename T>
+void gemv_64(enum spral::ssids::cpu::operation trans, 
+         int64_t m, int64_t n, T alpha, const T* a, int64_t lda, 
+         const T* x, int64_t incx, T beta, T* y, int64_t incy);
+
+/* _POTRF */
+template <typename T>
+int64_t lapack_potrf_64(enum spral::ssids::cpu::fillmode uplo, int64_t n, 
+                 T* a, int64_t lda);
+
+/* _SYTRF - Bunch-Kaufman factorization */
+template <typename T>
+int64_t lapack_sytrf_64(enum spral::ssids::cpu::fillmode uplo, 
+                 int64_t n, T* a, int64_t lda, int64_t* ipiv, 
+                 T* work, int64_t lwork);
+
+/* _SYRK */
+template <typename T>
+void host_syrk_64(enum spral::ssids::cpu::fillmode uplo, 
+              enum spral::ssids::cpu::operation trans, 
+              int64_t n, int64_t k, T alpha, const T* a, int64_t lda, 
+              T beta, T* c, int64_t ldc);
+
+/* _TRSV */
+template <typename T>
+void host_trsv_64(enum spral::ssids::cpu::fillmode uplo, 
+               enum spral::ssids::cpu::operation trans, 
+               enum spral::ssids::cpu::diagonal diag, 
+               int64_t n, const T* a, int64_t lda, T* x, int64_t incx);
+
+/* _TRSM */
+template <typename T>
+void host_trsm_64(enum spral::ssids::cpu::side side, 
+               enum spral::ssids::cpu::fillmode uplo, 
+               enum spral::ssids::cpu::operation transa, 
+               enum spral::ssids::cpu::diagonal diag, 
+               int64_t m, int64_t n, T alpha, const T* a, int64_t lda, 
+               T* b, int64_t ldb);
 
 }}} /* namespaces spral::ssids::cpu */
+

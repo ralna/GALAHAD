@@ -5,20 +5,6 @@
  */
 #include "ssids_cpu_kernels_ldlt_nopiv.hxx"
 
-#ifdef SPRAL_SINGLE
-#define precision_ float
-#define ldlt_nopiv_factor ldlt_nopiv_factor_sgl
-#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_sgl
-#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_sgl
-#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_sgl
-#else
-#define precision_ double
-#define ldlt_nopiv_factor ldlt_nopiv_factor_dbl
-#define ldlt_nopiv_solve_fwd ldlt_nopiv_solve_fwd_dbl
-#define ldlt_nopiv_solve_diag ldlt_nopiv_solve_diag_dbl
-#define ldlt_nopiv_solve_bwd ldlt_nopiv_solve_bwd_dbl
-#endif
-
 namespace spral { namespace ssids { namespace cpu {
 
 /* We perform a 2x2 blocked LDL^T factorization of an m x n matrix.
