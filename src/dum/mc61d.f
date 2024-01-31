@@ -22,8 +22,8 @@
      &  '   $GALAHAD/src/makedefs/packages for details.' )" )
       END SUBROUTINE MC61ID
 
-      SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw, IW, W,
-     &                   ICNTL, CNTL, INFO, RINFO )
+      SUBROUTINE MC61AD( job, n, lirn, IRN, ICPTR, PERM, liw,
+     &                   IW, W, ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
       INTEGER ( KIND = ip_ ) :: job, n, liw, lirn
