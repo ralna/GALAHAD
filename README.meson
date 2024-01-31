@@ -34,8 +34,8 @@ Currently supported options with their default value:
 * `-Dmodules=true`: install Fortran modules;
 * `-Dciface=true`: build the C interfaces;
 * `-Dpythoniface=false`: build the Python interfaces in double precision;
-* `-Dexamples=true`: generate the examples;
-* `-Dtests=true`: generate the tests;
+* `-Dexamples=false`: generate the examples;
+* `-Dtests=false`: generate the tests;
 * `-Dsingle=true`: generate the single precision library, tests and examples;
 * `-Ddouble=true`: generate the double precision library, tests and examples;
 * `-Dssids=true`: build ssids;
@@ -49,6 +49,8 @@ Currently supported options with their default value:
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;
 * `-Dlibspmf=spmf`: SPMF library against which to link;
 * `-Dlibpastix=pastix`: PASTIX library against which to link;
+* `-Dlibsmumps=smumps`: Single precision MUMPS library against which to link;
+* `-Dlibdmumps=dmumps`: Double precision MUMPS library against which to link;
 * `-Dlibampl=ampl`: AMPL library against which to link;
 * `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
