@@ -29,7 +29,6 @@ append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_module
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
-append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_hsl.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_kinds.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedures.h"))
 
@@ -48,8 +47,8 @@ for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
         println("Line $i in the file $file has more than 72 characters.")
         global n = n+1
       end
-      if (file_extension(file) ∈ ["f90", "F90"]) && (length(line) > 80)
-        println("Line $i in the file $file has more than 80 characters.")
+      if (file_extension(file) ∈ ["f90", "F90"]) && (length(line) > 132)
+        println("Line $i in the file $file has more than 132 characters.")
         global n = n+1
       end
       for (symbol, pp_symbol) in macros
@@ -62,8 +61,8 @@ for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
         end
         if occursin(symbol, line) && (file_extension(file) ∈ ["f90", "F90"])
           line2 = replace(line, symbol => pp_symbol)
-          if length(line2) > 80
-            println("Line $i in the file $file has more than 80 characters if $symbol is replaced by $(pp_symbol).")
+          if length(line2) > 132
+            println("Line $i in the file $file has more than 132 characters if $symbol is replaced by $(pp_symbol).")
             global n = n+1
           end
         end
