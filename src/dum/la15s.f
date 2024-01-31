@@ -1,3 +1,5 @@
+#include "galahad_modules.h"
+
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-24 AT 15:50 GMT.
 
       SUBROUTINE LA15I( ICNTL, CNTL, KEEP )

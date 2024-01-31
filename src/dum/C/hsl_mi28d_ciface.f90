@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-  G A L A H A D  -  D U M M Y   M I 2 8 _ C I F A C E   M O D U L E  -*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
@@ -11,9 +13,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
- MODULE HSL_MI28_double_ciface
+ MODULE hsl_mi28_double_ciface
    USE GALAHAD_KINDS
-   USE HSL_MI28_double, ONLY:                                                  &
+   USE hsl_mi28_double, ONLY:                                                  &
       f_mi28_control => mi28_control,                                          &
       f_mi28_info    => mi28_info
 
@@ -217,4 +219,4 @@
      cinfo%alpha          = finfo%alpha
    END SUBROUTINE copy_info_out
 
- END MODULE HSL_MI28_double_ciface
+ END MODULE hsl_mi28_double_ciface

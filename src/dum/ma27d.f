@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 07:50 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-  G A L A H A D  -  MA27  S U B R O U T I N E S *-*-*-*-
 
 !  Nick Gould, for GALAHAD productions

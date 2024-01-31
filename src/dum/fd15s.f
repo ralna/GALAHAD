@@ -1,2 +1,4 @@
-      subroutine fd15s( )
+#include "galahad_modules.h"
+
+      subroutine FD15S( )
       end subroutine

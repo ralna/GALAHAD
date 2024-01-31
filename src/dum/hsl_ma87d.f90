@@ -1,9 +1,9 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-14 AT 14:15 GMT.
 
-#include "galahad_hsl.h"
+#include "galahad_modules.h"
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 7    M O D U L E  -*-*-*-
-module hsl_MA87_double
+module hsl_ma87_double
 !$ use omp_lib
    use GALAHAD_KINDS
    use hsl_mc78_integer
@@ -616,4 +616,4 @@ pure integer function ma87_get_n_double(keep)
    ma87_get_n_double = keep%n
 end function ma87_get_n_double
 
-end module hsl_MA87_double
+end module hsl_ma87_double

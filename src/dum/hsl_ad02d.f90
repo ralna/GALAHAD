@@ -1,12 +1,14 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 13:10 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*  L A N C E L O T  -B-  DUMMY AD02_FORWARD  M O D U L E S *-*-*-*
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
 !  June 28th 1996
 
-MODULE HSL_AD02_FORWARD_DOUBLE
+MODULE hsl_ad02_forward_double
       USE GALAHAD_KINDS
       IMPLICIT NONE
       PRIVATE
@@ -53,7 +55,7 @@ CONTAINS
 
       END SUBROUTINE AD02_INITIALIZE
 
-END MODULE HSL_AD02_FORWARD_DOUBLE
+END MODULE hsl_ad02_forward_double
 
 !-*-*-*-*-*  L A N C E L O T  -B-  DUMMY AD02_BACKWARD  M O D U L E S *-*-*-*
 
@@ -61,7 +63,7 @@ END MODULE HSL_AD02_FORWARD_DOUBLE
 !  Copyright reserved
 !  June 28th 1996
 
-MODULE HSL_AD02_BACKWARD_DOUBLE
+MODULE hsl_ad02_backward_double
       USE GALAHAD_KINDS
       IMPLICIT NONE
       PRIVATE
@@ -108,4 +110,4 @@ CONTAINS
 
       END SUBROUTINE AD02_INITIALIZE
 
-END MODULE HSL_AD02_BACKWARD_DOUBLE
+END MODULE hsl_ad02_backward_double

@@ -57,14 +57,14 @@
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
      USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF,       &
                                           SYTRS, PBTRF, PBTRS ! , SYEV
-     USE HSL_ZD11_precision
-     USE HSL_MA57_precision
-     USE HSL_MA77_precision
-     USE HSL_MA86_precision
-     USE HSL_MA87_precision
-     USE HSL_MA97_precision
-     USE HSL_MC64_precision
-     USE HSL_MC68_integer
+     USE hsl_zd11_precision
+     USE hsl_ma57_precision
+     USE hsl_ma77_precision
+     USE hsl_ma86_precision
+     USE hsl_ma87_precision
+     USE hsl_ma97_precision
+     USE hsl_mc64_precision
+     USE hsl_mc68_integer
      USE MKL_PARDISO
      USE SPRAL_SSIDS_precision
      USE GALAHAD_MUMPS_TYPES_precision, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD

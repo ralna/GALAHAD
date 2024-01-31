@@ -1,8 +1,10 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 13:30 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 7 7   M O D U L E  -*-*-*-
 
-module hsl_MA77_double
+module hsl_ma77_double
 
    use GALAHAD_KINDS
    use hsl_of01_double, of01_rdata => of01_data
@@ -546,4 +548,4 @@ contains
     info%u = zero
   end subroutine MA77_unavailable
 
-end module hsl_MA77_double
+end module hsl_ma77_double

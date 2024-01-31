@@ -1,2 +1,4 @@
-      subroutine mc71d( )
+#include "galahad_modules.h"
+
+      subroutine MC71D( )
       end subroutine

@@ -1,8 +1,10 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 9 7    M O D U L E  -*-*-*-*-*-
 
-module hsl_MA97_single
+module hsl_ma97_single
 
    USE GALAHAD_KINDS
    USE GALAHAD_SYMBOLS
@@ -527,4 +529,4 @@ pure integer function ma97_get_nz_single(akeep)
    ma97_get_nz_single = akeep%ne
 end function ma97_get_nz_single
 
-end module hsl_MA97_single
+end module hsl_ma97_single

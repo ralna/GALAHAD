@@ -7,7 +7,7 @@
 ! Original date 21 February 2006. Version 1.0.0.
 ! 6 March 2007 Version 1.1.0. Argument stat made non-optional
 
-   MODULE HSL_ZD11_precision
+   MODULE hsl_zd11_precision
 
      USE GALAHAD_KINDS_precision
 
@@ -56,4 +56,4 @@
      END DO
      END FUNCTION ZD11_get
 
-   END MODULE HSL_ZD11_precision
+   END MODULE hsl_zd11_precision

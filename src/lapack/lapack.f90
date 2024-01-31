@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 13:26 GMT
 
-#include "galahad_blas.h"
+#include "galahad_lapack.h"
 
 ! Reference lapack, see http://www.netlib.org/lapack/explore-html/
 

@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-25 AT 09:30 GMT.
 
-#include "galahad_hsl.h"
+#include "galahad_modules.h"
 
 !-*-*-  G A L A H A D  -  D U M M Y   M I 2 0 _ C I F A C E   M O D U L E  -*-*-
 

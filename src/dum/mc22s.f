@@ -1,4 +1,6 @@
+#include "galahad_modules.h"
+
 ! dummy routine
-      subroutine mc22a( )
+      subroutine MC22A( )
       end
 

@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:40 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 2 0   S U B R O U T I N E *-*-*-
 
       SUBROUTINE MC20A( nc, maxa, A, INUM, JPTR, JNUM, jdisp )

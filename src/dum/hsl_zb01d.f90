@@ -1,5 +1,7 @@
+#include "galahad_modules.h"
+
     module hsl_zb01_double
     contains
-      subroutine zb01d( )
-      end subroutine zb01d
+      subroutine ZB01D( )
+      end subroutine ZB01D
     end module hsl_zb01_double

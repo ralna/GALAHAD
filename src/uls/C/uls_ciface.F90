@@ -41,7 +41,7 @@
         copy_gls_finfo_out => copy_finfo_out,                                  &
         copy_gls_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA48_precision_ciface, ONLY:                                       &
+    USE hsl_ma48_precision_ciface, ONLY:                                       &
         ma48_control,                                                          &
         ma48_ainfo,                                                            &
         ma48_finfo,                                                            &
