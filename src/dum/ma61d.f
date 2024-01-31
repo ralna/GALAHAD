@@ -1,6 +1,8 @@
 ! THIS VERSION: 2022-11-03 AT 08:30 GMT.
 ! Updated 25/06/2002: additional warning information added
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-  L A N C E L O T  -B-  MA61  S U B R O U T I N E S *-*-*-*-
 
 !  Nick Gould, for GALAHAD productions
@@ -40,7 +42,8 @@
 
       END SUBROUTINE MA61ID
 
-      SUBROUTINE MA61DD( A, IRN, ia, n, IK, IP, row, ncp, nucl, nual )
+      SUBROUTINE MA61DD( A, IRN, ia, n, IK, IP, row, ncp,
+     *                   nucl, nual )
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s

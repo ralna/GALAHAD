@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-07 AT 14:40 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc68_integer_ciface

@@ -1,5 +1,7 @@
+#include "galahad_modules.h"
+
     module hsl_ma54_double
     contains
-      subroutine ma54d( )
-      end subroutine ma54d
+      subroutine MA54D( )
+      end subroutine MA54D
     end module hsl_ma54_double

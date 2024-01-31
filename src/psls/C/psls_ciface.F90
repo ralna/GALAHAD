@@ -40,7 +40,7 @@
         copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-    USE HSL_MI28_precision_ciface, ONLY:                                       &
+    USE hsl_mi28_precision_ciface, ONLY:                                       &
         mi28_info,                                                             &
         mi28_control,                                                          &
         copy_mi28_control_in  => copy_control_in,                              &

@@ -1,10 +1,10 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-14 AT 14:15 GMT.
 
-#include "galahad_hsl.h"
+#include "galahad_modules.h"
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 6    M O D U L E  -*-*-*-
 
-module hsl_MA86_single
+module hsl_ma86_single
 !$ use omp_lib
    use GALAHAD_KINDS
    use hsl_mc78_integer
@@ -599,4 +599,4 @@ pure integer function ma86_get_n_single(keep)
    ma86_get_n_single = keep%n
 end function ma86_get_n_single
 
-end module hsl_MA86_single
+end module hsl_ma86_single

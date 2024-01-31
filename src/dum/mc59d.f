@@ -1,2 +1,4 @@
-      subroutine mc59d( )
+#include "galahad_modules.h"
+
+      subroutine MC59D( )
       end subroutine

@@ -1,15 +1,17 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 07:50 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 3 3  S U B R O U T I N E *-*-*-
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
 !  April 10th 2006
 
-      SUBROUTINE MA33AD( n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ,
-     *                   IRN, lirn, LENC, IFIRST, LASTR, NEXTR, LASTC,
-     *                   NEXTC, IPTR, IPC, u, iflag, ICNTL, CNTL, INFO,
-     *                   RINFO )
+      SUBROUTINE MA33AD( n, ICN, A, licn, LENR, LENRL, IDISP,
+     *                   IP, IQ, IRN, lirn, LENC, IFIRST, LASTR,
+     *                   NEXTR, LASTC, NEXTC, IPTR, IPC, u, iflag,
+     *                   ICNTL, CNTL, INFO, RINFO )
 
       USE GALAHAD_KINDS
 
@@ -64,8 +66,8 @@
 
       END SUBROUTINE MA33AD
 
-      SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,
-     *                   IP, IQ, X, W, mtype, RINFO )
+      SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF,
+     *                   IDISP, IP, IQ, X, W, mtype, RINFO )
 
       USE GALAHAD_KINDS
 

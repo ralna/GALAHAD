@@ -1,3 +1,5 @@
+#include "galahad_modules.h"
+
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 07:40 GMT.
 
       SUBROUTINE MC77ID( ICNTL, CNTL )
@@ -17,8 +19,8 @@
 !    &    '   $GALAHAD/src/makedefs/packages for details.' )" )
       END
 
-      SUBROUTINE MC77AD( job, m, n, nnz, JCST, IRN, A, IW, liw, DW, ldw,
-     &                   ICNTL, CNTL, INFO, RINFO )
+      SUBROUTINE MC77AD( job, m, n, nnz, JCST, IRN, A, IW,
+     &                   liw, DW, ldw, ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
       INTEGER ( KIND = ip_ ) :: licntl, lcntl, linfo, lrinfo
@@ -39,8 +41,8 @@
        INFO( 1 ) = GALAHAD_unavailable_option
       END
 
-      SUBROUTINE MC77BD( job, m, n, nnz, IRN, JCN, A, IW, liw, DW, ldw,
-     &                   ICNTL, CNTL, INFO, RINFO )
+      SUBROUTINE MC77BD( job, m, n, nnz, IRN, JCN, A, IW,
+     &                   liw, DW, ldw, ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
       INTEGER ( KIND = ip_ ) :: licntl, lcntl, linfo, lrinfo

@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 10:15 GMT.
 
+#include "galahad_modules.h"
+
     module hsl_ma64_single
       use GALAHAD_KINDS
       private

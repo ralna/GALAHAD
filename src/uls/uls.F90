@@ -40,8 +40,8 @@
      USE GALAHAD_STRING, ONLY: STRING_put, STRING_get, STRING_lower_word
      USE GALAHAD_GLS_precision
      USE GALAHAD_LAPACK_interface, ONLY : GETRF, GETRS
-     USE HSL_ZD11_precision
-     USE HSL_MA48_precision
+     USE hsl_zd11_precision
+     USE hsl_ma48_precision
 
      IMPLICIT NONE
 

@@ -37,7 +37,7 @@
       USE GALAHAD_SPECFILE_precision
       USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
       USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
-      USE HSL_MI28_precision
+      USE hsl_mi28_precision
 
       IMPLICIT NONE
 

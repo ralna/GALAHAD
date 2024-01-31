@@ -1,3 +1,5 @@
+#include "galahad_modules.h"
+
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:30 GMT.
 
       REAL FUNCTION FA14A( ix, i )

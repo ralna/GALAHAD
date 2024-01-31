@@ -1,2 +1,4 @@
-      subroutine mc34d( )
+#include "galahad_modules.h"
+
+      subroutine MC34D( )
       end subroutine

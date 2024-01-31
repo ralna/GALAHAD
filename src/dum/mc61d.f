@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-06 AT 07:10 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 1    S U B R O U T I N E S  -*-*-
 
       SUBROUTINE MC61ID( ICNTL, CNTL )

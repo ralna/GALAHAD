@@ -1,3 +1,5 @@
+#include "galahad_modules.h"
+
     module hsl_of01_single
       use GALAHAD_KINDS
       private

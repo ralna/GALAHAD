@@ -44,7 +44,7 @@
         copy_sils_finfo_out => copy_finfo_out,                                 &
         copy_sils_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA57_precision_ciface, ONLY:                                       &
+    USE hsl_ma57_precision_ciface, ONLY:                                       &
         ma57_control,                                                          &
         ma57_ainfo,                                                            &
         ma57_finfo,                                                            &
@@ -53,25 +53,25 @@
         copy_ma57_finfo_out => copy_finfo_out,                                 &
         copy_ma57_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA77_precision_ciface, ONLY:                                       &
+    USE hsl_ma77_precision_ciface, ONLY:                                       &
         ma77_info,                                                             &
         ma77_control,                                                          &
         copy_ma77_info_out => copy_info_out,                                   &
         copy_ma77_control_in => copy_control_in
 
-    USE HSL_MA86_precision_ciface, ONLY:                                       &
+    USE hsl_ma86_precision_ciface, ONLY:                                       &
         ma86_info,                                                             &
         ma86_control,                                                          &
         copy_ma86_info_out => copy_info_out,                                   &
         copy_ma86_control_in => copy_control_in
 
-    USE HSL_MA87_precision_ciface, ONLY:                                       &
+    USE hsl_ma87_precision_ciface, ONLY:                                       &
         ma87_info,                                                             &
         ma87_control,                                                          &
         copy_ma87_info_out => copy_info_out,                                   &
         copy_ma87_control_in => copy_control_in
 
-    USE HSL_MA97_precision_ciface, ONLY:                                       &
+    USE hsl_ma97_precision_ciface, ONLY:                                       &
         ma97_info,                                                             &
         ma97_control,                                                          &
         copy_ma97_info_out => copy_info_out,                                   &
@@ -83,13 +83,13 @@
         copy_ssids_inform_out => copy_inform_out,                              &
         copy_ssids_options_in => copy_options_in
 
-    USE HSL_MC64_precision_ciface, ONLY:                                       &
+    USE hsl_mc64_precision_ciface, ONLY:                                       &
         mc64_info,                                                             &
         mc64_control,                                                          &
         copy_mc64_info_out => copy_info_out,                                   &
         copy_mc64_control_in => copy_control_in
 
-    USE HSL_MC68_integer_ciface, ONLY:                                         &
+    USE hsl_mc68_integer_ciface, ONLY:                                         &
         mc68_info,                                                             &
         mc68_control,                                                          &
         copy_mc68_info_out => copy_info_out,                                   &

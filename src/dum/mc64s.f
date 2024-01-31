@@ -1,2 +1,4 @@
-      subroutine mc64s( )
+#include "galahad_modules.h"
+
+      subroutine MC64S( )
       end subroutine

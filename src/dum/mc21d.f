@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-24 AT 15:55 GMT.
 
-#include "galahad_hsl.h"
+#include "galahad_modules.h"
 
 ! dummy routine
 

@@ -2,11 +2,6 @@
 
 #include "galahad_modules.h"
 
-#ifdef GALAHAD_SINGLE
-#define MC13ED MC13E
-#define MC21BD MC21B
-#endif
-
 !-*-*-*-*-*-*-*-*- G A L A H A D _ G L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
@@ -1272,7 +1267,7 @@
                   inew, iold, irowb, irowe, j, jj, jnew, jnpos, jold, k,       &
                   leni, nz, large, lp, num, numnz
        LOGICAL :: abort
-       EXTERNAL :: MC13ED, MC21BD
+       EXTERNAL :: GLS_MC13ED, GLS_MC21BD
 
        INFO( 1 ) = 0
        INFO( 2 ) = 0
@@ -1296,7 +1291,7 @@
 
 !  Find the row permutation IP to make the diagonal zero-free
 
-       CALL MC21BD( n, ICN, licn, IW11, LENR, IP, numnz, IW1, IW2, IW3, IW4 )
+       CALL GLS_MC21BD( n, ICN, licn, IW11, LENR, IP, numnz, IW1, IW2, IW3, IW4 )
 
 !  Possible error return for structurally singular matrices
 
@@ -1323,7 +1318,7 @@
 !  Find symmetric permutation IQ to block lower triangular form - there
 !  are num blocks
 
-       CALL MC13ED( n, ICN, licn, IW12, LENR, IQ, IW4, num, IW1, IW2, IW3 )
+       CALL GLS_MC13ED( n, ICN, licn, IW12, LENR, IQ, IW4, num, IW1, IW2, IW3 )
 
 !  Move the whole matrix to the end of the storage if it is irreducible
 

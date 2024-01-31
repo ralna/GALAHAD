@@ -1,13 +1,16 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:30 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-  G A L A H A D  -  L A 0 4  S U B R O U T I N E S *-*-*-*-
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
 !  October 19th 2018
 
-      SUBROUTINE LA04A( A, la, IRN, IP, m, n, B, C, BND, kb, lb, job,
-     &           CNTL, IX, JX, X, Z, G, RINFO, WS, lws, IWS, liws )
+      SUBROUTINE LA04A( A, la, IRN, IP, m, n, B, C, BND,
+     &                  kb, lb, job, CNTL, IX, JX, X, Z,
+     &                  G, RINFO, WS, lws, IWS, liws )
 
       USE GALAHAD_KINDS
 

@@ -18,7 +18,7 @@
 
    MODULE GALAHAD_SMT_precision
 
-     USE HSL_ZD11_precision, SMT_type => ZD11_type, SMT_put => ZD11_put,       &
+     USE hsl_zd11_precision, SMT_type => ZD11_type, SMT_put => ZD11_put,       &
                              SMT_get => ZD11_get
 
 !  ==========================

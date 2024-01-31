@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 14:30 GMT
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-  L A N C E L O T  -B-  KB07  S U B R O U T I N E S *-*-*-*-
 
 !  Nick Gould, for GALAHAD productions

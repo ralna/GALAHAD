@@ -1,5 +1,7 @@
+#include "galahad_modules.h"
+
     module hsl_kb22_long_integer
     contains
-      subroutine kb22l( )
-      end subroutine kb22l
+      subroutine KB22L( )
+      end subroutine KB22L
     end module hsl_kb22_long_integer

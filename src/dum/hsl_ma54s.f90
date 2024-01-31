@@ -1,5 +1,7 @@
+#include "galahad_modules.h"
+
     module hsl_ma54_single
     contains
-      subroutine ma54s( )
-      end subroutine ma54s
+      subroutine MA54S( )
+      end subroutine MA54S
     end module hsl_ma54_single
