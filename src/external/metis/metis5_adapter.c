@@ -5,9 +5,9 @@
 #include "metis.h" /* from MeTiS 5 */
 #include "stdio.h"
 
-void metis5_adapter(int* nvtxs, int* xadj, int* adjncy, int* numflag,
-                    int* options, int* perm, int* iperm){
-    int options5[METIS_NOPTIONS];
+void metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy, idx_t* numflag,
+                    idx_t* options, idx_t* perm, idx_t* iperm){
+    idx_t options5[METIS_NOPTIONS];
 
     /* Handle MA57 pathological case */
     if(*nvtxs == 1){

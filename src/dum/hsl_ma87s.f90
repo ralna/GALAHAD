@@ -577,19 +577,6 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    real(sp_), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data.
       ! Overwritten by partial solution (forward substitution performed).
 
-   ! local derived types
-   type(dagtask) :: task ! see description of derived type
-   type(taskstack) :: stack ! see description of derived type
-
-   ! local arrays
-   real(sp_), dimension(:), allocatable :: detlog ! per thread sum of log pivot
-   integer(ip_),  dimension(:), allocatable ::  invp ! holds inverse ordering
-   integer(ip_),  dimension(:), allocatable ::  map ! allocated to have size n.
-     ! used in copying entries of user's matrix a into factor storage
-     ! (keep%fact).
-   real(sp_), dimension(:,:), allocatable ::  rhs_local ! Local right-hand
-     ! side arrays. allocated to have size (nrhs*ldr,0:total_threads)
-
 end subroutine factorize_posdef
 
 subroutine ma87_print_flag(iflag, control, context, st)
