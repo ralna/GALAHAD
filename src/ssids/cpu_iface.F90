@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 07:50 GMT.
 
 #ifdef SPRAL_SINGLE
 #ifdef SPRAL_64BIT_INTEGER
@@ -80,6 +80,11 @@
 #define spral_c_potrf spral_c_dpotrf
 #define spral_c_gemm  spral_c_dgemm
 #endif
+#endif
+
+#ifdef SPRAL_64BIT_INTEGER
+#define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
+#define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
 #endif
 
 !> \file

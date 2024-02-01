@@ -16,7 +16,7 @@ meson test -C builddir/pc64.lnx.gfo
 # If you want to use 64bit integers and tune other things, start with
 
 ```
-meson setup builddir --buildtype=debug \ <- compile faster!
+meson setup builddir/pc64.lnx.gfo --buildtype=debug \ <- compile faster!
                      -Dgalahad_int64=true \ <- use 64-bit integer
                      -Dlibblas= \  <- force GALAHAD to use our blas.f90
                      -Dliblapack= \ <- force GALAHAD to use our lapack.f90

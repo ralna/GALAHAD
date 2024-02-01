@@ -1484,7 +1484,7 @@
 #ifdef DUMMY_SMUMPS
 #define MUMPS_precision GALAHAD_SMUMPS_64
 #else
-#define MUMPS_precision SMUMPS_64
+#define MUMPS_precision SMUMPS
 #endif
 #else
 #define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single
@@ -1502,7 +1502,7 @@
 #ifdef DUMMY_DMUMPS
 #define MUMPS_precision GALAHAD_DMUMPS_64
 #else
-#define MUMPS_precision DMUMPS_64
+#define MUMPS_precision DMUMPS
 #endif
 #else
 #define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double
