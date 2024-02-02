@@ -1,5 +1,11 @@
 using Test
 
+global m = 0
+global n = 0
+excluded_files = ["blas_original.f", "blas_original.f90",
+                  "lapack_original.f", "lapack_original.f90",
+                  "ieeeck_original.f", "noieeeck_original.f"]
+
 # Function to easily get the extension of a file
 function file_extension(file::String)
   pos_dot = findfirst(==('.'), file)
@@ -13,21 +19,24 @@ function append_macros!(macros::Vector{Tuple{String,String}}, path::String)
   for line in lines
     if startswith(line, "#define")
       tab = split(line, " ", keepempty=false)
-      push!(macros, (tab[2], tab[3]))
+      symbol = tab[2]
+      pp_symbol = tab[3]
+      push!(macros, (symbol, pp_symbol))
+      if length(pp_symbol) > 31
+        println("The symbol $(pp_symbol) has more than 31 characters.")
+        global m = m+1
+      end
     end
   end
   return macros
 end
 
-global n = 0
-excluded_files = ["blas_original.f", "blas_original.f90",
-                  "lapack_original.f", "lapack_original.f90",
-                  "ieeeck_original.f", "noieeeck_original.f"]
-
 macros = Tuple{String,String}[]
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_single.h"))
+append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_double.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_kinds.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedures.h"))
