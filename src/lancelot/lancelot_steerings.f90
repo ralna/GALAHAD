@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 14:40 GMT.
    SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp, lw1, lw2 )
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
@@ -141,7 +141,7 @@
    END SUBROUTINE GROUP
 
    PROGRAM LANCELOT_example
-   USE LANCELOT_steering_double
+   USE LANCELOTST_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20

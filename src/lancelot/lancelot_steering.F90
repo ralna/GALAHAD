@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 14:40 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -30,7 +30,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE LANCELOT_steering_precision
+   MODULE LANCELOTST_precision
 
 !  |------------------------------------------------------------------|
 !  |                                                                  |
@@ -8435,7 +8435,7 @@
 
 !  End of module LANCELOT
 
-   END MODULE LANCELOT_steering_precision
+   END MODULE LANCELOTST_precision
 
 
 

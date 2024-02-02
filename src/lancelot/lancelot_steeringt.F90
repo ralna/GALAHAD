@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 14:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -711,7 +711,7 @@
 
    PROGRAM LANCELOT_test_examples
    USE GALAHAD_KINDS_precision
-   USE LANCELOT_steering_precision
+   USE LANCELOTST_precision
    IMPLICIT NONE
    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( LANCELOT_control_type ) :: control
