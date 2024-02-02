@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -23,7 +23,7 @@
      USE GALAHAD_SPACE_precision
      USE GALAHAD_USERDATA_precision
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
-     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CUTEST_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -48,8 +48,8 @@
      TYPE ( ARC_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
      TYPE ( GALAHAD_userdata_type ) :: userdata
-     TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
-     TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
+     TYPE ( CUTEST_control_type ) :: cutest_control
+     TYPE ( CUTEST_inform_type ) :: cutest_inform
 
 !-----------------------------------------------
 !   L o c a l   P a r a m e t e r s

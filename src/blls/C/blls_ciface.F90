@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-29 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -43,7 +43,7 @@
         copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
-    USE GALAHAD_CONVERT_precision_ciface, ONLY:                                &
+    USE GALAHAD_CONVRT_precision_ciface, ONLY:                                 &
         convert_inform_type,                                                   &
         convert_control_type,                                                  &
         copy_convert_inform_in   => copy_inform_in,                            &

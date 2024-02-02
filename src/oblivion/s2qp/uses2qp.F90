@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -23,7 +23,7 @@
      USE GALAHAD_USERDATA_precision
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_SMT_precision
-     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CUTEST_precision
      USE GALAHAD_CHECK_precision
      USE CUTEST_INTERFACE_precision
 
@@ -56,8 +56,8 @@
      TYPE ( S2QP_data_type )                :: data
      TYPE ( GALAHAD_userdata_type )         :: userdata
      TYPE ( NLPT_problem_type )             :: nlp
-     TYPE ( CUTEST_FUNCTIONS_inform_type )  :: cutest_inform
-     TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
+     TYPE ( CUTEST_inform_type )  :: cutest_inform
+     TYPE ( CUTEST_control_type ) :: cutest_control
      TYPE ( CHECK_control_type )            :: CHECK_control
      TYPE ( CHECK_inform_type )             :: CHECK_inform
      TYPE ( CHECK_data_type )               :: CHECK_data

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 08:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -18,7 +18,7 @@
     USE GALAHAD_BLLS_precision
     USE GALAHAD_SLLS_precision
     USE hsl_mi35_precision, ONLY: mi35_control, mi35_info, mi35_check_matrix
-    USE SPRAL_RUTHERFORD_BOEING_precision
+    USE SPRAL_RAL_BOEING_precision
 
     IMPLICIT NONE
 

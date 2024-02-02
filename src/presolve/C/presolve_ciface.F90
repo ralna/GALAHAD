@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-02-02 AT 07:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -14,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_PRESOLVE_precision_ciface
+  MODULE GALAHAD_PRESOL_precision_ciface
     USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_PRESOLVE_precision, ONLY:                                      &
@@ -296,14 +296,14 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_PRESOLVE_precision_ciface
+  END MODULE GALAHAD_PRESOL_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran presolve_initialize
 !  -------------------------------------
 
   SUBROUTINE presolve_initialize( cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -345,7 +345,7 @@
 !  ----------------------------------------
 
   SUBROUTINE presolve_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -400,7 +400,7 @@
                                       f, catype, ane, arow, acol, aptr, aval,  &
                                       cl, cu, xl, xu, n_out, m_out,            &
                                       hne_out, ane_out ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -474,7 +474,7 @@
                                          hne, hcol, hptr, hval, g, f,          &
                                          ane, acol, aptr, aval, cl, cu,        &
                                          xl, xu, yl, yu, zl, zu ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -527,7 +527,7 @@
   SUBROUTINE presolve_restore_solution( cdata, status,                         &
                                         n_in, m_in, x_in, c_in, y_in, z_in,    &
                                         n, m, x, c, y, z ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -569,7 +569,7 @@
 !  -------------------------------------------
 
   SUBROUTINE presolve_information( cdata, cinform, status ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -603,7 +603,7 @@
 !  ------------------------------------
 
   SUBROUTINE presolve_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_PRESOLVE_precision_ciface
+  USE GALAHAD_PRESOL_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-01-01 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -22,7 +22,7 @@
      USE GALAHAD_SPACE_precision
      USE GALAHAD_RAND_precision
      USE GALAHAD_CLOCK
-     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CUTEST_precision
      USE CUTEST_INTERFACE_precision
 
      USE GALAHAD_NORMS_precision, ONLY : TWO_NORM

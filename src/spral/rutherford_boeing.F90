@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:50 GMT.
 
 #include "spral_procedures.h"
 
@@ -7,7 +7,7 @@
 !
 ! Based on modified versions of MC56 and HSL_MC56.
 
-module spral_rutherford_boeing_precision
+module spral_ral_boeing_precision
 
   use spral_kinds_precision
   use spral_matrix_util_precision
@@ -1026,4 +1026,4 @@ contains
     end select
   end function sym_to_matrix_type
 
-end module spral_rutherford_boeing_precision
+end module spral_ral_boeing_precision

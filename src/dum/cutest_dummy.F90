@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -23,7 +23,7 @@
    SUBROUTINE GROUP_r()
    END SUBROUTINE GROUP
 
-   MODULE GALAHAD_CUTEST_FUNCTIONS_precision
+   MODULE GALAHAD_CUTEST_precision
 
      USE GALAHAD_KINDS_precision
 
@@ -110,7 +110,7 @@
      SUBROUTINE CUTEst_timing( )
      END SUBROUTINE CUTEst_timing
 
-   END MODULE GALAHAD_CUTEST_FUNCTIONS_precision
+   END MODULE GALAHAD_CUTEST_precision
 
    SUBROUTINE CUTEST_probname_r( cutest_status, p_name )
    USE GALAHAD_KINDS_precision

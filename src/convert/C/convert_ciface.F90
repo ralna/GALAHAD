@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:50 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -14,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_CONVERT_precision_ciface
+  MODULE GALAHAD_CONVRT_precision_ciface
     USE GALAHAD_KINDS_precision
     USE GALAHAD_common_ciface
     USE GALAHAD_CONVERT_precision, ONLY:                                       &
@@ -207,14 +207,14 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_CONVERT_precision_ciface
+  END MODULE GALAHAD_CONVRT_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran convert_initialize
 !  -------------------------------------
 
   SUBROUTINE convert_initialize( cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_CONVERT_precision_ciface
+  USE GALAHAD_CONVRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -256,7 +256,7 @@
 !  ----------------------------------------
 
   SUBROUTINE convert_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_CONVERT_precision_ciface
+  USE GALAHAD_CONVRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -306,7 +306,7 @@
 !  --------------------------------------
 
   SUBROUTINE convert_information( cdata, cinform, status ) BIND( C )
-  USE GALAHAD_CONVERT_precision_ciface
+  USE GALAHAD_CONVRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -340,7 +340,7 @@
 !  ------------------------------------
 
   SUBROUTINE convert_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_CONVERT_precision_ciface
+  USE GALAHAD_CONVRT_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

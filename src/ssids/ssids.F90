@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 08:00 GMT.
 ! (consistent with SPRAL up to issue #150)
 
 #include "spral_procedures.h"
@@ -29,7 +29,7 @@ module spral_ssids_precision
   use spral_ssids_akeep_precision, only : ssids_akeep
   use spral_ssids_fkeep_precision, only : ssids_fkeep
   use spral_ssids_inform_precision, only : ssids_inform
-  use spral_rutherford_boeing_precision, only : rb_write_options, rb_write
+  use spral_ral_boeing_precision, only : rb_write_options, rb_write
   implicit none
 
   private

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -19,7 +19,7 @@
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_precision
-     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CUTEST_precision
      USE GALAHAD_SYMBOLS
      IMPLICIT NONE
 
@@ -45,8 +45,8 @@
      TYPE ( COLT_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
      TYPE ( GALAHAD_userdata_type ) :: userdata
-     TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
-     TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
+     TYPE ( CUTEST_control_type ) :: cutest_control
+     TYPE ( CUTEST_inform_type ) :: cutest_inform
 
 !-----------------------------------------------
 !   L o c a l   P a r a m e t e r s
@@ -60,7 +60,7 @@
 !  Specfile characteristics
 
      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
-     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 31
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 33
      CHARACTER ( LEN = 16 ) :: specname = 'RUNCOLT'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNCOLT.SPC'
@@ -98,6 +98,9 @@
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
      INTEGER ( KIND = ip_ ) :: istore = 0
+     REAL ( KIND = rp_ ) :: t_lower = 0.0_rp_
+     REAL ( KIND = rp_ ) :: t_upper = 0.0_rp_
+     INTEGER ( KIND = ip_ ) :: n_points = 0
 
 !  Output file characteristics
 
@@ -140,10 +143,12 @@
        spec( 25 )%keyword = 'restart-data-file-name'
        spec( 26 )%keyword = 'restart-data-file-device'
        spec( 27 )%keyword = 'save-data-for-restart-every'
-       spec( 28 )%keyword = ''
-       spec( 29 )%keyword = 'write-solution-vector'
-       spec( 30 )%keyword = 'solution-vector-file-name'
-       spec( 31 )%keyword = 'solution-vector-file-device'
+       spec( 28 )%keyword = 'write-solution-vector'
+       spec( 29 )%keyword = 'solution-vector-file-name'
+       spec( 30 )%keyword = 'solution-vector-file-device'
+       spec( 31 )%keyword = 'number-of-evaluation-points'
+       spec( 32 )%keyword = 'lower-evaluation-point'
+       spec( 33 )%keyword = 'upper-evaluation-point'
 
 !   Read the specfile
 
@@ -178,10 +183,12 @@
        CALL SPECFILE_assign_string ( spec( 25 ), wfilename, errout )
        CALL SPECFILE_assign_integer( spec( 26 ), wfiledevice, errout )
        CALL SPECFILE_assign_integer( spec( 27 ), istore, errout )
-!      CALL SPECFILE_assign_logical( spec( 28 ), equality, errout )
-       CALL SPECFILE_assign_logical( spec( 29 ), write_solution_vector, errout )
-       CALL SPECFILE_assign_string ( spec( 30 ), vfilename, errout )
-       CALL SPECFILE_assign_integer( spec( 31 ), vfiledevice, errout )
+       CALL SPECFILE_assign_logical( spec( 28 ), write_solution_vector, errout )
+       CALL SPECFILE_assign_string ( spec( 29 ), vfilename, errout )
+       CALL SPECFILE_assign_integer( spec( 30 ), vfiledevice, errout )
+       CALL SPECFILE_assign_integer( spec( 31 ), n_points, errout )
+       CALL SPECFILE_assign_real( spec( 32 ), t_lower, errout )
+       CALL SPECFILE_assign_real( spec( 33 ), t_upper, errout )
      END IF
 
      IF ( dechk .OR. testal ) THEN ; dechke = .TRUE. ; dechkg = .TRUE. ; END IF
@@ -245,14 +252,26 @@
 !  Solve the problem
 
      inform%status = 1
-     CALL COLT_solve( nlp, control, inform, data, userdata,                    &
-                      eval_FC = CUTEST_eval_FC,                                &
-                      eval_J = CUTEST_eval_J,                                  &
-                      eval_GJ = CUTEST_eval_SGJ,                               &
-                      eval_HC = CUTEST_eval_HLC,                               &
-                      eval_HJ = CUTEST_eval_HJ,                                &
-                      eval_HCPRODS = CUTEST_eval_HCPRODS,                      &
-                      eval_HOCPRODS = CUTEST_eval_HOCPRODS )
+     IF ( n_points <= 0 ) THEN
+       CALL COLT_solve( nlp, control, inform, data, userdata,                  &
+                        eval_FC = CUTEST_eval_FC,                              &
+                        eval_J = CUTEST_eval_J,                                &
+                        eval_GJ = CUTEST_eval_SGJ,                             &
+                        eval_HC = CUTEST_eval_HLC,                             &
+                        eval_HJ = CUTEST_eval_HJ,                              &
+                        eval_HCPRODS = CUTEST_eval_HCPRODS,                    &
+                        eval_HOCPRODS = CUTEST_eval_HOCPRODS )
+      ELSE
+       CALL COLT_track( nlp, control, inform, data, userdata,                  &
+                        n_points, t_lower, t_upper,                            &
+                        eval_FC = CUTEST_eval_FC,                              &
+                        eval_J = CUTEST_eval_J,                                &
+                        eval_GJ = CUTEST_eval_SGJ,                             &
+                        eval_HC = CUTEST_eval_HLC,                             &
+                        eval_HJ = CUTEST_eval_HJ,                              &
+                        eval_HCPRODS = CUTEST_eval_HCPRODS,                    &
+                        eval_HOCPRODS = CUTEST_eval_HOCPRODS )
+      END IF   
 
 !  If required, append results to a file
 

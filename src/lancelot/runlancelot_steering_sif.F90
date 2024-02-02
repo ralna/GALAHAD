@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -8,9 +8,9 @@
 !  Copyright reserved
 !  March 14th 2003
 
-   PROGRAM RUNLANCELOT_steering_SIF_precision
+   PROGRAM RUNLANCELOTST_SIF_precision
    USE GALAHAD_KINDS_precision
-   USE GALAHAD_USELANCELOT_steering_precision
+   USE GALAHAD_USELANCELOTST_precision
 
 !  Main program for the SIF interface to LANCELOT B, an augmented Lagrangian
 !  algorithm for nonlinear programming
@@ -27,13 +27,13 @@
 
 !  Call the SIF interface
 
-   CALL USE_LANCELOT( input )
+   CALL USE_LANCELOTST( input )
 
 !  Close the data input file
 
    CLOSE( input  )
    STOP
 
-!  End of RUNLANCELOT_SIF_precision
+!  End of RUNLANCELOTST_SIF_precision
 
-   END PROGRAM RUNLANCELOT_steering_SIF_precision
+   END PROGRAM RUNLANCELOTST_SIF_precision

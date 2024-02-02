@@ -5,7 +5,7 @@
     USE GALAHAD_COPYRIGHT
     USE GALAHAD_SPECFILE_precision
     USE GALAHAD_SLS_precision
-    USE SPRAL_RUTHERFORD_BOEING_precision
+    USE SPRAL_RAL_BOEING_precision
 
     IMPLICIT none
 

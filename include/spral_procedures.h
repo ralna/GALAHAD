@@ -40,7 +40,7 @@
 #define spral_ssids_types_precision spral_ssids_types_single_64
 #define spral_match_order_precision spral_match_order_single_64
 #define spral_cuda_precision spral_cuda_single_64
-#define spral_rutherford_boeing_precision spral_rutherford_boeing_single_64
+#define spral_ral_boeing_precision spral_ral_boeing_single_64
 #define spral_random_precision spral_random_single_64
 #define spral_matrix_util_precision spral_matrix_util_single_64
 #else
@@ -61,7 +61,7 @@
 #define spral_ssids_types_precision spral_ssids_types_single
 #define spral_match_order_precision spral_match_order_single
 #define spral_cuda_precision spral_cuda_single
-#define spral_rutherford_boeing_precision spral_rutherford_boeing_single
+#define spral_ral_boeing_precision spral_ral_boeing_single
 #define spral_random_precision spral_random_single
 #define spral_matrix_util_precision spral_matrix_util_single
 #endif
@@ -84,7 +84,7 @@
 #define spral_ssids_types_precision spral_ssids_types_double_64
 #define spral_match_order_precision spral_match_order_double_64
 #define spral_cuda_precision spral_cuda_double_64
-#define spral_rutherford_boeing_precision spral_rutherford_boeing_double_64
+#define spral_ral_boeing_precision spral_ral_boeing_double_64
 #define spral_random_precision spral_random_double_64
 #define spral_matrix_util_precision spral_matrix_util_double_64
 #else
@@ -105,7 +105,7 @@
 #define spral_ssids_types_precision spral_ssids_types_double
 #define spral_match_order_precision spral_match_order_double
 #define spral_cuda_precision spral_cuda_double
-#define spral_rutherford_boeing_precision spral_rutherford_boeing_double
+#define spral_ral_boeing_precision spral_ral_boeing_double
 #define spral_random_precision spral_random_double
 #define spral_matrix_util_precision spral_matrix_util_double
 #endif

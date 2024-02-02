@@ -29,6 +29,9 @@ MAIN
 ! restart-data-file-name                            COLTSAVE.d
 ! restart-data-file-device                          59
 ! save-data-for-restart-every                       0
+! number-of-evaluation-points                       0
+! lower-evaluation-point                            0.0
+! upper-evaluation-point                            0.0
 
 INCLUDE COLT
 

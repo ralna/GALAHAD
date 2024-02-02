@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_elgrra.h"
@@ -13,7 +13,7 @@
 !   March 14th 2003 as uselanb
 !   update released with GALAHAD Version 2.0. May 11th 2006
 
-    MODULE GALAHAD_USELANCELOT_steering_precision
+    MODULE GALAHAD_USELANCELOTST_precision
 
 !  SIF interface to LANCELOT. It opens and closes all the files, allocate
 !  arrays, reads and checks data, and calls the appropriate minimizers
@@ -34,9 +34,9 @@
 
    CONTAINS
 
-!-*-*-*-*-*-*-*-*-*-   U S E _ L A N B  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-   U S E _ L A N C E L O T S T  S U B R O U T I N E   -*-*-*-*-*-
 
-     SUBROUTINE USE_LANCELOT( input )
+     SUBROUTINE USE_LANCELOTST( input )
 
 !  Dummy argument
 
@@ -1598,8 +1598,8 @@
 
 !  End of subroutine USE_LANCELOT
 
-      END SUBROUTINE USE_LANCELOT
+      END SUBROUTINE USE_LANCELOTST
 
 !  End of module USELANCELOT
 
-    END MODULE GALAHAD_USELANCELOT_steering_precision
+    END MODULE GALAHAD_USELANCELOTST_precision

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -16,7 +16,7 @@
 !  checks data, and calls the appropriate minimizers
 
      USE GALAHAD_KINDS_precision
-     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_CUTEST_precision
      USE GALAHAD_TRTN_precision
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT

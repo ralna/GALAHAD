@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 07:20 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:20 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -11,7 +11,7 @@
 !  History -
 !   originally released pre GALAHAD Version 2.2. February 22nd 2008
 !
-   MODULE GALAHAD_CUTEST_FUNCTIONS_precision
+   MODULE GALAHAD_CUTEST_precision
 
      USE GALAHAD_KINDS_precision
      USE GALAHAD_STRING
@@ -44,14 +44,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n
 !------------------------------------------------
 
-     TYPE, PUBLIC :: CUTEst_FUNCTIONS_control_type
+     TYPE, PUBLIC :: CUTEST_control_type
        INTEGER ( KIND = ip_ ) :: input = 5
        INTEGER ( KIND = ip_ ) :: error = 6
        INTEGER ( KIND = ip_ ) :: io_buffer = 11
        LOGICAL :: separate_linear_constraints = .FALSE.
      END TYPE
 
-     TYPE, PUBLIC :: CUTEst_FUNCTIONS_inform_type
+     TYPE, PUBLIC :: CUTEST_inform_type
        INTEGER ( KIND = ip_ ) :: status = 0
        INTEGER ( KIND = ip_ ) :: alloc_status = 0
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
@@ -97,8 +97,8 @@
 
      TYPE ( NLPT_problem_type ), INTENT( OUT ) :: nlp
      TYPE ( GALAHAD_userdata_type ), INTENT( OUT ) :: userdata
-     TYPE ( CUTEst_FUNCTIONS_control_type ), INTENT( IN ) :: control
-     TYPE ( CUTEst_FUNCTIONS_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( CUTEST_control_type ), INTENT( IN ) :: control
+     TYPE ( CUTEST_inform_type ), INTENT( OUT ) :: inform
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_hessian, no_jacobian
      LOGICAL, OPTIONAL, INTENT( IN ) :: hessian_products
      LOGICAL, OPTIONAL, INTENT( IN ) :: sparse_gradient
@@ -2011,7 +2011,7 @@
 
      TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     TYPE ( CUTEst_FUNCTIONS_inform_type ), INTENT( OUT ) :: inform
+     TYPE ( CUTEST_inform_type ), INTENT( OUT ) :: inform
 
      CALL NLPT_cleanup( nlp )
      CALL SPACE_dealloc_array( userdata%integer, inform%status,                &
@@ -2168,4 +2168,4 @@
 
      END SUBROUTINE CUTEst_timing
 
-   END MODULE GALAHAD_CUTEST_FUNCTIONS_precision
+   END MODULE GALAHAD_CUTEST_precision

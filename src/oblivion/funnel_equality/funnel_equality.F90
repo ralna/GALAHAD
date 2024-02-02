@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -13,11 +13,11 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FUNNEL_equality_precision
+   MODULE GALAHAD_FUNNELEQ_precision
 
 !     ----------------------------------------------------------
 !    |                                                          |
-!    | FUNNEL_equality, a trust-funnel method for               |
+!    | FUNNELEQ, a trust-funnel method for                      |
 !    |  equality-constrained nonlinear optimization             |
 !    |                                                          |
 !    | Aim: to find a (local) minimizer of the nonlinear        |
@@ -1708,9 +1708,9 @@
 !
 !     END SUBROUTINE FUNNEL_equality_terminate
 
-!  End of module GALAHAD_FUNNEL_equality
+!  End of module GALAHAD_FUNNELEQ
 
-   END MODULE GALAHAD_FUNNEL_equality_precision
+   END MODULE GALAHAD_FUNNELEQ_precision
 
 
 

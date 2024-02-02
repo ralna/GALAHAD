@@ -31,7 +31,7 @@
 #define GALAHAD_CQP_precision GALAHAD_CQP_single_64
 #define GALAHAD_CQPS_precision GALAHAD_CQPS_single_64
 #define GALAHAD_CRO_precision GALAHAD_CRO_single_64
-#define GALAHAD_CUTEST_FUNCTIONS_precision GALAHAD_CUTEST_FUNCTIONS_single_64
+#define GALAHAD_CUTEST_precision GALAHAD_CUTEST_single_64
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_single_64
 #define GALAHAD_DGO_precision GALAHAD_DGO_single_64
 #define GALAHAD_DLP_precision GALAHAD_DLP_single_64
@@ -49,7 +49,7 @@
 #define GALAHAD_COLT_precision GALAHAD_COLT_single_64
 #define GALAHAD_FIT_precision GALAHAD_FIT_single_64
 #define GALAHAD_FUNNEL_precision GALAHAD_FUNNEL_single_64
-#define GALAHAD_FUNNEL_equality_precision GALAHAD_FUNNEL_equality_single_64
+#define GALAHAD_FUNNELEQ_precision GALAHAD_FUNNELEQ_single_64
 #define GALAHAD_GLRT_precision GALAHAD_GLRT_single_64
 #define GALAHAD_GLS_precision GALAHAD_GLS_single_64
 #define GALAHAD_GLTR_precision GALAHAD_GLTR_single_64
@@ -172,7 +172,7 @@
 #define GALAHAD_USEL1QP_precision GALAHAD_USEL1QP_single_64
 #define GALAHAD_USEL2RT_precision GALAHAD_USEL2RT_single_64
 #define GALAHAD_USELANCELOT_precision GALAHAD_USELANCELOT_single_64
-#define GALAHAD_USELANCELOT_steering_precision GALAHAD_USELANCELOT_steering_single_64
+#define GALAHAD_USELANCELOTST_precision GALAHAD_USELANCELOTST_single_64
 #define GALAHAD_USELCF_precision GALAHAD_USELCF_single_64
 #define GALAHAD_USELLS_precision GALAHAD_USELLS_single_64
 #define GALAHAD_USELPA_precision GALAHAD_USELPA_single
@@ -187,7 +187,7 @@
 #define GALAHAD_USEPDQP_precision GALAHAD_USEPDQP_single
 #define GALAHAD_USEPQP_precision GALAHAD_USEPQP_single
 #define GALAHAD_USEPRESOLVE_precision GALAHAD_USEPRESOLVE_single
-#define GALAHAD_USEQPA_precision GALAHAD_USEQPA_single
+#define GALAHAD_USEQPA_precision GALAHAD_USEQPA_singlergrep 
 #define GALAHAD_USEQPB_precision GALAHAD_USEQPB_single
 #define GALAHAD_USEQPC_precision GALAHAD_USEQPC_single
 #define GALAHAD_USEQP_precision GALAHAD_USEQP_single
@@ -224,7 +224,7 @@
 #define LANCELOT_PRECN_precision LANCELOT_PRECN_single
 #define LANCELOT_SCALN_precision LANCELOT_SCALN_single
 #define LANCELOT_simple_precision LANCELOT_simple_single
-#define LANCELOT_steering_precision LANCELOT_steering_single
+#define LANCELOTST_precision LANCELOTST_single
 #define LANCELOT_STRUTR_precision LANCELOT_STRUTR_single
 #define LANCELOT_TYPES_precision LANCELOT_types_single
 #define GALAHAD_ARC_precision_ciface GALAHAD_ARC_single_ciface_64
@@ -236,7 +236,7 @@
 #define GALAHAD_BSC_precision_ciface GALAHAD_BSC_single_ciface_64
 #define GALAHAD_CCQP_precision_ciface GALAHAD_CCQP_single_ciface_64
 #define GALAHAD_CLLS_precision_ciface GALAHAD_CLLS_single_ciface_64
-#define GALAHAD_CONVERT_precision_ciface GALAHAD_CONVERT_single_ciface_64
+#define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_single_ciface_64
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_single_ciface_64
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_single_ciface_64
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_single_ciface_64
@@ -258,7 +258,7 @@
 #define GALAHAD_LSRT_precision_ciface GALAHAD_LSRT_single_ciface_64
 #define GALAHAD_LSTR_precision_ciface GALAHAD_LSTR_single_ciface_64
 #define GALAHAD_NLS_precision_ciface GALAHAD_NLS_single_ciface_64
-#define GALAHAD_PRESOLVE_precision_ciface GALAHAD_PRESOLVE_single_ciface_64
+#define GALAHAD_PRESOL_precision_ciface GALAHAD_PRESOL_single_ciface_64
 #define GALAHAD_PSLS_precision_ciface GALAHAD_PSLS_single_ciface_64
 #define GALAHAD_QPA_precision_ciface GALAHAD_QPA_single_ciface_64
 #define GALAHAD_QPB_precision_ciface GALAHAD_QPB_single_ciface_64
@@ -281,7 +281,7 @@
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface_64
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64
-#define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_single_64
+#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_single_64
 #define RUNARC_SIF_precision RUNARC_SIF_single_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_single_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_single_64
@@ -305,7 +305,7 @@
 #define RUNL1QP_SIF_precision RUNL1QP_SIF_single_64
 #define RUNL2RT_SIF_precision RUNL2RT_SIF_single_64
 #define RUNLANCELOT_SIF_precision RUNLANCELOT_SIF_single_64
-#define RUNLANCELOT_steering_SIF_precision RUNLANCELOT_steering_SIF_single_64
+#define RUNLANCELOTST_SIF_precision RUNLANCELOTST_SIF_single_64
 #define RUNLLS_SIF_precision RUNLLS_SIF_single_64
 #define RUNLPA_SIF_precision RUNLPA_SIF_single_64
 #define RUNLPB_SIF_precision RUNLPB_SIF_single_64
@@ -342,7 +342,7 @@
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_single_64
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_single_64
-#define RUNFUNNEL_equality_SIF_precision RUNFUNNEL_equality_SIF_single_64
+#define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_single_64
 #define RUNFUNNEL_SIF_precision RUNFUNNEL_SIF_single_64
 #define RUNISM_SIF_precision RUNISM_SIF_single_64
 #define RUNLCF_SIF_precision RUNLCF_SIF_single_64
@@ -397,7 +397,7 @@
 #define GALAHAD_CQP_precision GALAHAD_CQP_single
 #define GALAHAD_CQPS_precision GALAHAD_CQPS_single
 #define GALAHAD_CRO_precision GALAHAD_CRO_single
-#define GALAHAD_CUTEST_FUNCTIONS_precision GALAHAD_CUTEST_FUNCTIONS_single
+#define GALAHAD_CUTEST_precision GALAHAD_CUTEST_single
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_single
 #define GALAHAD_DGO_precision GALAHAD_DGO_single
 #define GALAHAD_DLP_precision GALAHAD_DLP_single
@@ -415,7 +415,7 @@
 #define GALAHAD_COLT_precision GALAHAD_COLT_single
 #define GALAHAD_FIT_precision GALAHAD_FIT_single
 #define GALAHAD_FUNNEL_precision GALAHAD_FUNNEL_single
-#define GALAHAD_FUNNEL_equality_precision GALAHAD_FUNNEL_equality_single
+#define GALAHAD_FUNNELEQ_precision GALAHAD_FUNNELEQ_single
 #define GALAHAD_GLRT_precision GALAHAD_GLRT_single
 #define GALAHAD_GLS_precision GALAHAD_GLS_single
 #define GALAHAD_GLTR_precision GALAHAD_GLTR_single
@@ -538,7 +538,7 @@
 #define GALAHAD_USEL1QP_precision GALAHAD_USEL1QP_single
 #define GALAHAD_USEL2RT_precision GALAHAD_USEL2RT_single
 #define GALAHAD_USELANCELOT_precision GALAHAD_USELANCELOT_single
-#define GALAHAD_USELANCELOT_steering_precision GALAHAD_USELANCELOT_steering_single
+#define GALAHAD_USELANCELOTST_precision GALAHAD_USELANCELOTST_single
 #define GALAHAD_USELCF_precision GALAHAD_USELCF_single
 #define GALAHAD_USELLS_precision GALAHAD_USELLS_single
 #define GALAHAD_USELPA_precision GALAHAD_USELPA_single
@@ -590,7 +590,7 @@
 #define LANCELOT_PRECN_precision LANCELOT_PRECN_single
 #define LANCELOT_SCALN_precision LANCELOT_SCALN_single
 #define LANCELOT_simple_precision LANCELOT_simple_single
-#define LANCELOT_steering_precision LANCELOT_steering_single
+#define LANCELOTST_precision LANCELOTST_single
 #define LANCELOT_STRUTR_precision LANCELOT_STRUTR_single
 #define LANCELOT_TYPES_precision LANCELOT_types_single
 #define GALAHAD_ARC_precision_ciface GALAHAD_ARC_single_ciface
@@ -602,7 +602,7 @@
 #define GALAHAD_BSC_precision_ciface GALAHAD_BSC_single_ciface
 #define GALAHAD_CCQP_precision_ciface GALAHAD_CCQP_single_ciface
 #define GALAHAD_CLLS_precision_ciface GALAHAD_CLLS_single_ciface
-#define GALAHAD_CONVERT_precision_ciface GALAHAD_CONVERT_single_ciface
+#define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_single_ciface
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_single_ciface
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_single_ciface
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_single_ciface
@@ -624,7 +624,7 @@
 #define GALAHAD_LSRT_precision_ciface GALAHAD_LSRT_single_ciface
 #define GALAHAD_LSTR_precision_ciface GALAHAD_LSTR_single_ciface
 #define GALAHAD_NLS_precision_ciface GALAHAD_NLS_single_ciface
-#define GALAHAD_PRESOLVE_precision_ciface GALAHAD_PRESOLVE_single_ciface
+#define GALAHAD_PRESOL_precision_ciface GALAHAD_PRESOLVE_single_ciface
 #define GALAHAD_PSLS_precision_ciface GALAHAD_PSLS_single_ciface
 #define GALAHAD_QPA_precision_ciface GALAHAD_QPA_single_ciface
 #define GALAHAD_QPB_precision_ciface GALAHAD_QPB_single_ciface
@@ -647,7 +647,7 @@
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
-#define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_single
+#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_single
 #define RUNARC_SIF_precision RUNARC_SIF_single
 #define RUNBGO_SIF_precision RUNBGO_SIF_single
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_single
@@ -671,7 +671,7 @@
 #define RUNL1QP_SIF_precision RUNL1QP_SIF_single
 #define RUNL2RT_SIF_precision RUNL2RT_SIF_single
 #define RUNLANCELOT_SIF_precision RUNLANCELOT_SIF_single
-#define RUNLANCELOT_steering_SIF_precision RUNLANCELOT_steering_SIF_single
+#define RUNLANCELOTST_SIF_precision RUNLANCELOTST_SIF_single
 #define RUNLLS_SIF_precision RUNLLS_SIF_single
 #define RUNLPA_SIF_precision RUNLPA_SIF_single
 #define RUNLPB_SIF_precision RUNLPB_SIF_single
@@ -708,7 +708,7 @@
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single
 #define RUNERMO_SIF_precision RUNERMO_SIF_single
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_single
-#define RUNFUNNEL_equality_SIF_precision RUNFUNNEL_equality_SIF_single
+#define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_single
 #define RUNFUNNEL_SIF_precision RUNFUNNEL_SIF_single
 #define RUNISM_SIF_precision RUNISM_SIF_single
 #define RUNLCF_SIF_precision RUNLCF_SIF_single
@@ -768,7 +768,7 @@
 #define GALAHAD_CQP_precision GALAHAD_CQP_double_64
 #define GALAHAD_CQPS_precision GALAHAD_CQPS_double_64
 #define GALAHAD_CRO_precision GALAHAD_CRO_double_64
-#define GALAHAD_CUTEST_FUNCTIONS_precision GALAHAD_CUTEST_FUNCTIONS_double_64
+#define GALAHAD_CUTEST_precision GALAHAD_CUTEST_double_64
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_double_64
 #define GALAHAD_DGO_precision GALAHAD_DGO_double_64
 #define GALAHAD_DLP_precision GALAHAD_DLP_double_64
@@ -786,7 +786,7 @@
 #define GALAHAD_COLT_precision GALAHAD_COLT_double_64
 #define GALAHAD_FIT_precision GALAHAD_FIT_double_64
 #define GALAHAD_FUNNEL_precision GALAHAD_FUNNEL_double_64
-#define GALAHAD_FUNNEL_equality_precision GALAHAD_FUNNEL_equality_double_64
+#define GALAHAD_FUNNELEQ_precision GALAHAD_FUNNELEQ_double_64
 #define GALAHAD_GLRT_precision GALAHAD_GLRT_double_64
 #define GALAHAD_GLS_precision GALAHAD_GLS_double_64
 #define GALAHAD_GLTR_precision GALAHAD_GLTR_double_64
@@ -909,7 +909,7 @@
 #define GALAHAD_USEL1QP_precision GALAHAD_USEL1QP_double_64
 #define GALAHAD_USEL2RT_precision GALAHAD_USEL2RT_double_64
 #define GALAHAD_USELANCELOT_precision GALAHAD_USELANCELOT_double_64
-#define GALAHAD_USELANCELOT_steering_precision GALAHAD_USELANCELOT_steering_double_64
+#define GALAHAD_USELANCELOTST_precision GALAHAD_USELANCELOTST_double_64
 #define GALAHAD_USELCF_precision GALAHAD_USELCF_double_64
 #define GALAHAD_USELLS_precision GALAHAD_USELLS_double_64
 #define GALAHAD_USELPA_precision GALAHAD_USELPA_double_64
@@ -961,7 +961,7 @@
 #define LANCELOT_PRECN_precision LANCELOT_PRECN_double_64
 #define LANCELOT_SCALN_precision LANCELOT_SCALN_double_64
 #define LANCELOT_simple_precision LANCELOT_simple_double_64
-#define LANCELOT_steering_precision LANCELOT_steering_double_64
+#define LANCELOTST_precision LANCELOTST_double_64
 #define LANCELOT_STRUTR_precision LANCELOT_STRUTR_double_64
 #define LANCELOT_TYPES_precision LANCELOT_types_double_64
 #define GALAHAD_ARC_precision_ciface GALAHAD_ARC_double_ciface_64
@@ -973,7 +973,7 @@
 #define GALAHAD_BSC_precision_ciface GALAHAD_BSC_double_ciface_64
 #define GALAHAD_CCQP_precision_ciface GALAHAD_CCQP_double_ciface_64
 #define GALAHAD_CLLS_precision_ciface GALAHAD_CLLS_double_ciface_64
-#define GALAHAD_CONVERT_precision_ciface GALAHAD_CONVERT_double_ciface_64
+#define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_double_ciface_64
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_double_ciface_64
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_double_ciface_64
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_double_ciface_64
@@ -995,7 +995,7 @@
 #define GALAHAD_LSRT_precision_ciface GALAHAD_LSRT_double_ciface_64
 #define GALAHAD_LSTR_precision_ciface GALAHAD_LSTR_double_ciface_64
 #define GALAHAD_NLS_precision_ciface GALAHAD_NLS_double_ciface_64
-#define GALAHAD_PRESOLVE_precision_ciface GALAHAD_PRESOLVE_double_ciface_64
+#define GALAHAD_PRESOL_precision_ciface GALAHAD_PRESOL_double_ciface_64
 #define GALAHAD_PSLS_precision_ciface GALAHAD_PSLS_double_ciface_64
 #define GALAHAD_QPA_precision_ciface GALAHAD_QPA_double_ciface_64
 #define GALAHAD_QPB_precision_ciface GALAHAD_QPB_double_ciface_64
@@ -1018,7 +1018,7 @@
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface_64
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface_64
-#define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_double_64
+#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_double_64
 #define RUNARC_SIF_precision RUNARC_SIF_double_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_double_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_double_64
@@ -1042,7 +1042,7 @@
 #define RUNL1QP_SIF_precision RUNL1QP_SIF_double_64
 #define RUNL2RT_SIF_precision RUNL2RT_SIF_double_64
 #define RUNLANCELOT_SIF_precision RUNLANCELOT_SIF_double_64
-#define RUNLANCELOT_steering_SIF_precision RUNLANCELOT_steering_SIF_double_64
+#define RUNLANCELOTST_SIF_precision RUNLANCELOTST_SIF_double_64
 #define RUNLLS_SIF_precision RUNLLS_SIF_double_64
 #define RUNLPA_SIF_precision RUNLPA_SIF_double_64
 #define RUNLPB_SIF_precision RUNLPB_SIF_double_64
@@ -1079,7 +1079,7 @@
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_double_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_double_64
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_double_64
-#define RUNFUNNEL_equality_SIF_precision RUNFUNNEL_equality_SIF_double_64
+#define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_double_64
 #define RUNFUNNEL_SIF_precision RUNFUNNEL_SIF_double_64
 #define RUNISM_SIF_precision RUNISM_SIF_double_64
 #define RUNLCF_SIF_precision RUNLCF_SIF_double_64
@@ -1132,7 +1132,7 @@
 #define GALAHAD_CQP_precision GALAHAD_CQP_double
 #define GALAHAD_CQPS_precision GALAHAD_CQPS_double
 #define GALAHAD_CRO_precision GALAHAD_CRO_double
-#define GALAHAD_CUTEST_FUNCTIONS_precision GALAHAD_CUTEST_FUNCTIONS_double
+#define GALAHAD_CUTEST_precision GALAHAD_CUTEST_double
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_double
 #define GALAHAD_DGO_precision GALAHAD_DGO_double
 #define GALAHAD_DLP_precision GALAHAD_DLP_double
@@ -1150,7 +1150,7 @@
 #define GALAHAD_COLT_precision GALAHAD_COLT_double
 #define GALAHAD_FIT_precision GALAHAD_FIT_double
 #define GALAHAD_FUNNEL_precision GALAHAD_FUNNEL_double
-#define GALAHAD_FUNNEL_equality_precision GALAHAD_FUNNEL_equality_double
+#define GALAHAD_FUNNELEQ_precision GALAHAD_FUNNELEQ_double
 #define GALAHAD_GLRT_precision GALAHAD_GLRT_double
 #define GALAHAD_GLS_precision GALAHAD_GLS_double
 #define GALAHAD_GLTR_precision GALAHAD_GLTR_double
@@ -1273,7 +1273,7 @@
 #define GALAHAD_USEL1QP_precision GALAHAD_USEL1QP_double
 #define GALAHAD_USEL2RT_precision GALAHAD_USEL2RT_double
 #define GALAHAD_USELANCELOT_precision GALAHAD_USELANCELOT_double
-#define GALAHAD_USELANCELOT_steering_precision GALAHAD_USELANCELOT_steering_double
+#define GALAHAD_USELANCELOTST_precision GALAHAD_USELANCELOTST_double
 #define GALAHAD_USELCF_precision GALAHAD_USELCF_double
 #define GALAHAD_USELLS_precision GALAHAD_USELLS_double
 #define GALAHAD_USELPA_precision GALAHAD_USELPA_double
@@ -1325,7 +1325,7 @@
 #define LANCELOT_PRECN_precision LANCELOT_PRECN_double
 #define LANCELOT_SCALN_precision LANCELOT_SCALN_double
 #define LANCELOT_simple_precision LANCELOT_simple_double
-#define LANCELOT_steering_precision LANCELOT_steering_double
+#define LANCELOTST_precision LANCELOTST_double
 #define LANCELOT_STRUTR_precision LANCELOT_STRUTR_double
 #define LANCELOT_TYPES_precision LANCELOT_types_double
 #define GALAHAD_ARC_precision_ciface GALAHAD_ARC_double_ciface
@@ -1337,7 +1337,7 @@
 #define GALAHAD_BSC_precision_ciface GALAHAD_BSC_double_ciface
 #define GALAHAD_CCQP_precision_ciface GALAHAD_CCQP_double_ciface
 #define GALAHAD_CLLS_precision_ciface GALAHAD_CLLS_double_ciface
-#define GALAHAD_CONVERT_precision_ciface GALAHAD_CONVERT_double_ciface
+#define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_double_ciface
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_double_ciface
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_double_ciface
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_double_ciface
@@ -1359,7 +1359,7 @@
 #define GALAHAD_LSRT_precision_ciface GALAHAD_LSRT_double_ciface
 #define GALAHAD_LSTR_precision_ciface GALAHAD_LSTR_double_ciface
 #define GALAHAD_NLS_precision_ciface GALAHAD_NLS_double_ciface
-#define GALAHAD_PRESOLVE_precision_ciface GALAHAD_PRESOLVE_double_ciface
+#define GALAHAD_PRESOL_precision_ciface GALAHAD_PRESOLVE_double_ciface
 #define GALAHAD_PSLS_precision_ciface GALAHAD_PSLS_double_ciface
 #define GALAHAD_QPA_precision_ciface GALAHAD_QPA_double_ciface
 #define GALAHAD_QPB_precision_ciface GALAHAD_QPB_double_ciface
@@ -1382,7 +1382,7 @@
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
-#define SPRAL_RUTHERFORD_BOEING_precision SPRAL_RUTHERFORD_BOEING_double
+#define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_double
 #define RUNARC_SIF_precision RUNARC_SIF_double
 #define RUNBGO_SIF_precision RUNBGO_SIF_double
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_double
@@ -1406,7 +1406,7 @@
 #define RUNL1QP_SIF_precision RUNL1QP_SIF_double
 #define RUNL2RT_SIF_precision RUNL2RT_SIF_double
 #define RUNLANCELOT_SIF_precision RUNLANCELOT_SIF_double
-#define RUNLANCELOT_steering_SIF_precision RUNLANCELOT_steering_SIF_double
+#define RUNLANCELOTST_SIF_precision RUNLANCELOTST_SIF_double
 #define RUNLLS_SIF_precision RUNLLS_SIF_double
 #define RUNLPA_SIF_precision RUNLPA_SIF_double
 #define RUNLPB_SIF_precision RUNLPB_SIF_double
@@ -1443,7 +1443,7 @@
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_double
 #define RUNERMO_SIF_precision RUNERMO_SIF_double
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_double
-#define RUNFUNNEL_equality_SIF_precision RUNFUNNEL_equality_SIF_double
+#define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_double
 #define RUNFUNNEL_SIF_precision RUNFUNNEL_SIF_double
 #define RUNISM_SIF_precision RUNISM_SIF_double
 #define RUNLCF_SIF_precision RUNLCF_SIF_double
