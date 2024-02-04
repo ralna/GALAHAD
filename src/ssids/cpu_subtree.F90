@@ -394,6 +394,7 @@ contains
     cscaling = C_NULL_PTR
     if (present(scaling)) cscaling = C_LOC(scaling)
     call cpu_copy_options_in(options, coptions)
+
     cpu_factor%csubtree = &
          c_create_numeric_subtree(cpu_factor%posdef, this%csubtree, &
          aval, cscaling, contrib_ptr, coptions, cstats)

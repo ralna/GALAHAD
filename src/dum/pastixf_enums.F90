@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-25 AT 16:25 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:25 GMT.
 
 !-*-  G A L A H A D  -  D U M M Y   P A S T I X F _ E N U M S   M O D U L E  -*-
 
@@ -7,7 +7,7 @@
    USE spmf_enums
    USE iso_c_binding, ONLY : c_double, c_int, c_ptr, c_int32_t, c_int64_t
 
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
   INTEGER, PARAMETER :: pastix_int_t = c_int64_t
 #else
   INTEGER, PARAMETER :: pastix_int_t = c_int32_t

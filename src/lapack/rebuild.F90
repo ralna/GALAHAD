@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:25 GMT.
 
 !  read a file containg a subset of the reference blas, lapack, etc
 !  written in fortran 77, and output a multi-precision version capable
@@ -117,14 +117,14 @@
      DO i = 1, 4
        SELECT CASE ( i )
        CASE( 1 )
-         WRITE( hout, "( '#ifdef GALAHAD_64BIT_INTEGER', /,                    &
+         WRITE( hout, "( '#ifdef INTEGER_64', /,                               &
         &         '#define GALAHAD_', A, '_interface GALAHAD_', A,             &
         &         '_interface_64', /,                                          &
-        &         '#ifdef GALAHAD_NO_UNDERSCORE_64BIT_INTEGER')" ) urefs, urefs
+        &         '#ifdef NO_UNDERSCORE_INTEGER_64')" ) urefs, urefs
        CASE( 2 )
-         WRITE( hout, "( '#elif GALAHAD_DOUBLE_UNDERSCORE_64BIT_INTEGER' )" )
+         WRITE( hout, "( '#elif DOUBLE_UNDERSCORE_INTEGER_64' )" )
        CASE( 3 )
-         WRITE( hout, "( '#elif GALAHAD_NO_SYMBOL_64BIT_INTEGER' )" )
+         WRITE( hout, "( '#elif NO_SYMBOL_INTEGER_64' )" )
          CYCLE
        CASE( 4 )
          WRITE( hout, "( '#else' )" )

@@ -6,6 +6,7 @@
  */
 
 #include "ssids_profile.hxx"
+#include "ssids_rip.hxx"
 
 #ifdef PROFILE
 struct timespec spral::ssids::Profile::tstart;
@@ -14,7 +15,7 @@ struct timespec spral::ssids::Profile::tstart;
 using namespace spral::ssids;
 
 extern "C"
-void spral_ssids_profile_begin(int nregions, void const* regions) {
+void spral_ssids_profile_begin(ipc_ nregions, void const* regions) {
    Profile::init(nregions, (spral::hw_topology::NumaRegion*)regions);
 }
 
@@ -24,7 +25,7 @@ void spral_ssids_profile_end() {
 }
 
 extern "C"
-Profile::Task* spral_ssids_profile_create_task(char const* name, int thread) {
+Profile::Task* spral_ssids_profile_create_task(char const* name, ipc_ thread) {
    // We interpret negative thread values as absent
    if(thread >= 0) {
       return new Profile::Task(name, thread);
@@ -47,6 +48,6 @@ void spral_ssids_profile_set_state(char const* container, char const* type,
 
 extern "C"
 void spral_ssids_profile_add_event(
-      char const* type, char const*val, int thread) {
+      char const* type, char const*val, ipc_ thread) {
    Profile::addEvent(type, val, thread);
 }

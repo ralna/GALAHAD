@@ -2,10 +2,14 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-04 AT 09:10 GMT
  */
+
 #pragma once
 
 #include "spral_config.h"
+#include "ssids_rip.hxx"
+
 #include <time.h>
 
 //#define PROFILE
@@ -56,7 +60,7 @@ public:
        * \param name Predefined name of task, as setup in Profile::init().
        * \param thread Optional thread number, otherwise use best guess.
        */
-      Task(char const* name, int thread=Profile::guess_core())
+      Task(char const* name, ipc_ thread=Profile::guess_core())
       : name(name), thread(thread), t1(Profile::now())
       {}
 
@@ -73,7 +77,7 @@ public:
 
    private:
       char const* name; //< Name of task, one defined in Profile::init().
-      int thread; //< Thread of task.
+      ipc_ thread; //< Thread of task.
       double t1; //< Start time of task.
    };
 
@@ -83,7 +87,7 @@ public:
     * \param thread Optional thread number, otherwise use best guess.
     */
    static
-   void setState(char const* name, int thread=Profile::guess_core()) {
+   void setState(char const* name, ipc_ thread=Profile::guess_core()) {
 #if defined(PROFILE) && defined(HAVE_GTG)
       double t = Profile::now();
       ::setState(t, "ST_TASK", Profile::get_thread_name(thread), name);
@@ -108,7 +112,7 @@ public:
     * \param thread Optional thread number, otherwise use best guess.
     */
    static
-   void setNullState(int thread=Profile::guess_core()) {
+   void setNullState(ipc_ thread=Profile::guess_core()) {
       setState("0", thread);
    }
 
@@ -120,7 +124,7 @@ public:
     */
    static
    void addEvent(char const* type, char const*val,
-         int thread=Profile::guess_core()) {
+         ipc_ thread=Profile::guess_core()) {
 #if defined(PROFILE) && defined(HAVE_GTG)
       ::addEvent(now(), type, get_thread_name(thread), val);
 #endif
@@ -132,8 +136,8 @@ public:
     * \note Times are all measured from the end of this subroutine.
     */
    static
-   // void init(int nregions, spral::hw_topology::NumaRegion* regions) {
-   void init(int nnodes, spral::hw_topology::NumaRegion* nodes) {
+   // void init(ipc_ nregions, spral::hw_topology::NumaRegion* regions) {
+   void init(ipc_ nnodes, spral::hw_topology::NumaRegion* nodes) {
 #if defined(PROFILE) && defined(HAVE_GTG)
       // Initialise profiling
       setTraceType(PAJE);
@@ -142,23 +146,23 @@ public:
       addContType("CT_NODE", "0", "Node");
       addContType("CT_THREAD", "CT_NODE", "Thread");
       addContType("CT_GPU", "CT_NODE", "GPU");
-      // int nnodes = 0;
+      // ipc_ nnodes = 0;
       // spral::hw_topology::NumaRegion* nodes;
       if (!nodes) spral_hw_topology_guess(&nnodes, &nodes);
-      int core_idx=0;
-      for(int node=0; node<nnodes; ++node) {
+      ipc_ core_idx=0;
+      for(ipc_ node=0; node<nnodes; ++node) {
          char node_id[100], node_name[100];
          snprintf(node_id, 100, "C_Node%d", node);
          snprintf(node_name, 100, "Node %d", node);
          addContainer(0.0, node_id, "CT_NODE", "0", node_name, "0");
-         for(int i=0; i<nodes[node].nproc; ++i) {
+         for(ipc_ i=0; i<nodes[node].nproc; ++i) {
             char core_name[100];
             snprintf(core_name, 100, "Core %d", core_idx);
             addContainer(0.0, get_thread_name(core_idx), "CT_THREAD", node_id,
                   core_name, "0");
             core_idx++;
          }
-         for(int gpu=0; gpu<nodes[node].ngpu; ++gpu) {
+         for(ipc_ gpu=0; gpu<nodes[node].ngpu; ++gpu) {
             char gpu_name[100], gpu_id[100];
             snprintf(gpu_id, 100, "C_GPU%d", nodes[node].gpus[gpu]);
             snprintf(gpu_name, 100, "GPU %d", nodes[node].gpus[gpu]);
@@ -225,7 +229,7 @@ public:
 private:
    /** \brief Convert thread index to character string */
    static
-   char const* get_thread_name(int thread) {
+   char const* get_thread_name(ipc_ thread) {
       char const* thread_name[] = {
          "Thread0", "Thread1", "Thread2", "Thread3",
          "Thread4", "Thread5", "Thread6", "Thread7",
@@ -249,7 +253,7 @@ private:
 
    /** \brief Return best guess at processor id. */
    static
-   int guess_core() {
+   ipc_ guess_core() {
 #ifdef HAVE_SCHED_GETCPU
       return sched_getcpu();
 #else /* HAVE_SCHED_GETCPU */

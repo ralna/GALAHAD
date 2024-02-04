@@ -2,8 +2,12 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
  */
+
 #pragma once
+
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -14,7 +18,9 @@ enum cpu_arch {
    CPU_ARCH_AVX2     // Allow use of AVX2 (FMA3)
 };
 
-/** \brief CPU_BEST_ARCH is set to a value of enum cpu_arch that represents the best supported instruction set supported by current compiler and compiler flags */
+/** \brief CPU_BEST_ARCH is set to a value of enum cpu_arch that represents 
+    the best supported instruction set supported by current compiler and 
+    compiler flags */
 #ifdef __AVX2__
 const enum cpu_arch CPU_BEST_ARCH = CPU_ARCH_AVX2;
 #else
@@ -27,7 +33,7 @@ const enum cpu_arch CPU_BEST_ARCH = CPU_ARCH_GENERIC;
 
 
 /** \brief The warpSize for the current architecture as a constant */
-const int WARPSIZE = 32;
+const ipc_ WARPSIZE = 32;
 
 /** \brief bub::operation enumerates operations that can be applied to a matrix
   * argument of a BLAS call.

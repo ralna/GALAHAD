@@ -1,4 +1,13 @@
+/** \file
+ *  \copyright 2016 The Science and Technology Facilities Council (STFC)
+ *  \licence   BSD licence, see LICENCE file for details
+ *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
+ */
+
 #define MAX_CUDA_BLOCKS 65535
+
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace gpu {
 
@@ -6,24 +15,24 @@ namespace spral { namespace ssids { namespace gpu {
  *         (as part of a batched call).
  */
 struct multinode_fact_type {
-  int nrows; ///< number of rows in node
-  int ncols; ///< number of columns in node
-  double *lval; ///< pointer to factors L
-  double *ldval; ///< pointer to workspace for storing L*D
-  double *dval; ///< pointer to factors D
-  int offp; ///< offset into permutation vector for this node
-  int ib; ///< ???
-  int jb; ///< ???
-  int done; ///< number of columns sucessfully factorized?
-  int rght; ///< ???
-  int lbuf; ///< ???
+  ipc_ nrows; ///< number of rows in node
+  ipc_ ncols; ///< number of columns in node
+  rpc_ *lval; ///< pointer to factors L
+  rpc_ *ldval; ///< pointer to workspace for storing L*D
+  rpc_ *dval; ///< pointer to factors D
+  ipc_ offp; ///< offset into permutation vector for this node
+  ipc_ ib; ///< ???
+  ipc_ jb; ///< ???
+  ipc_ done; ///< number of columns sucessfully factorized?
+  ipc_ rght; ///< ???
+  ipc_ lbuf; ///< ???
 };
 
 /** \brief Statistics to be returned to user. */
 struct cuda_stats {
-  int num_two; ///< Number of 2x2 pivots
-  int num_neg; ///< Number of negative pivots
-  int num_zero; ///< Number of zero pivots
+  ipc_ num_two; ///< Number of 2x2 pivots
+  ipc_ num_neg; ///< Number of negative pivots
+  ipc_ num_zero; ///< Number of zero pivots
 };
 
 }}} /* namespace spral::ssids::gpu */

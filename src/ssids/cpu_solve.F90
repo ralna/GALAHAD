@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:40 GMT.
 
 #include "spral_procedures.h"
 
 #ifdef SPRAL_SINGLE
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define trsm strsm_64
 #define trsv strsv_64
 #define gemm sgemm_64
@@ -15,8 +15,7 @@
 #define gemv sgemv
 #endif
 #else
-
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define trsm dtrsm_64
 #define trsv dtrsv_64
 #define gemm dgemm_64
@@ -29,7 +28,7 @@
 #endif
 #endif
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define host_gemm host_gemm_64
 #endif
 

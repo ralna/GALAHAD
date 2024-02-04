@@ -75,7 +75,6 @@ subroutine inner_factor_cpu(fkeep, akeep, val, options, inform)
   logical :: abort, all_region
   type(contrib_type), dimension(:), allocatable :: child_contrib
   type(ssids_inform), dimension(:), allocatable :: thread_inform
-
 #ifdef PROFILE
   ! Begin profile trace (noop if not enabled)
   call profile_begin(akeep%topology)

@@ -30,7 +30,7 @@
  GCC does provides these definitions in stdint.h, but it may require some
  modifications on other architectures.
 --------------------------------------------------------------------------*/
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
   #define IDXTYPEWIDTH 64
 #else
   #define IDXTYPEWIDTH 32

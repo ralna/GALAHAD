@@ -2,8 +2,12 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
  */
+
 #pragma once
+
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -64,11 +68,11 @@ public:
    NumericNode<T, PoolAllocator>* next_child; // Pointer to parent's next child
 
    /* Data that changes during factorize */
-   int ndelay_in; // Number of delays arising from children
-   int ndelay_out; // Number of delays arising to push into parent
-   int nelim; // Number of columns succesfully eliminated
+   ipc_ ndelay_in; // Number of delays arising from children
+   ipc_ ndelay_out; // Number of delays arising to push into parent
+   ipc_ nelim; // Number of columns succesfully eliminated
    T *lcol; // Pointer to start of factor data
-   int *perm; // Pointer to permutation
+   ipc_ *perm; // Pointer to permutation
    T *contrib; // Pointer to contribution block
 private:
    PoolAllocator pool_alloc_; // Our own version of pool allocator for freeing

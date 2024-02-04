@@ -2,12 +2,15 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-04 AT 08:30 GMT
  */
+
 #pragma once
 
 #include <cmath>
 #include <limits>
 
+#include "ssids_rip.hxx"
 #include "ssids_cpu_kernels_common.hxx"
 #include "ssids_cpu_kernels_SimdVec.hxx"
 
@@ -19,18 +22,18 @@ namespace spral { namespace ssids { namespace cpu {
  *  Note this will mostly just fail if sizeof(T) doesn't divide into alignment.
  */
 template <typename T>
-int offset_to_align(T* ptr) {
+ipc_ offset_to_align(T* ptr) {
 #if defined(__AVX512F__)
-  int const align = 64;
+  ipc_ const align = 64;
 #elif defined(__AVX__)
-  int const align = 32;
+  ipc_ const align = 32;
 #else
-  int const align = 16;
+  ipc_ const align = 16;
 #endif
    uintptr_t offset = align - (reinterpret_cast<uintptr_t>(ptr) % align);
    offset /= sizeof(T);
    if((reinterpret_cast<uintptr_t>(ptr+offset) % align) == 0) return offset;
-   else return std::numeric_limits<int>::max();
+   else return std::numeric_limits<ipc_>::max();
 }
 
 /** Calculates LD from L and D.
@@ -39,32 +42,35 @@ int offset_to_align(T* ptr) {
  * multiples of 32 bytes, so we can use AVX.
  */
 template <enum operation op, typename T>
-void calcLD(int m, int n, T const* l, int ldl, T const* d, T* ld, int ldld) {
+void calcLD(ipc_ m, ipc_ n, T const* l, ipc_ ldl, T const* d, T* ld, 
+            ipc_ ldld) {
    typedef SimdVec<T> SimdVecT;
 
-   for(int col=0; col<n; ) {
+   for(ipc_ col=0; col<n; ) {
       if(col+1==n || std::isfinite(d[2*col+2])) {
          // 1x1 pivot
          T d11 = d[2*col];
          if(d11 != 0.0) d11 = 1/d11; // Zero pivots just cause zeroes
          if(op==OP_N) {
-            int const vlen = SimdVecT::vector_length;
-            int const unroll = 4;
-            int offset = offset_to_align(l);
+            ipc_ const vlen = SimdVecT::vector_length;
+            ipc_ const unroll = 4;
+            ipc_ offset = offset_to_align(l);
             if(offset_to_align(ld) != offset) offset = m; // give up on vectors
-            int nvec = std::max(0, (m-offset) / vlen);
-            for(int row=0; row<std::min(offset,m); ++row)
+            ipc_ i0_ = 0;
+            ipc_ nvec = std::max(i0_, (m-offset) / vlen);
+            for(ipc_ row=0; row<std::min(offset,m); ++row)
                ld[col*ldld+row] = d11 * l[col*ldl+row];
             SimdVecT d11v(d11);
             if(nvec < unroll) {
-               for(int row=offset; row<offset+nvec*vlen; row+=vlen) {
+               for(ipc_ row=offset; row<offset+nvec*vlen; row+=vlen) {
                   SimdVecT lv = SimdVecT::load_aligned(&l[col*ldl+row]);
                   lv = lv * d11;
                   lv.store_aligned(&ld[col*ldld+row]);
                }
             } else {
-               int nunroll = nvec / unroll;
-               for(int row=offset; row<offset+nunroll*unroll*vlen; row+=unroll*vlen) {
+               ipc_ nunroll = nvec / unroll;
+               for(ipc_ row=offset; row<offset+nunroll*unroll*vlen; 
+                        row+=unroll*vlen) {
                   SimdVecT lv0 = SimdVecT::load_aligned(&l[col*ldl+row+0*vlen]);
                   SimdVecT lv1 = SimdVecT::load_aligned(&l[col*ldl+row+1*vlen]);
                   SimdVecT lv2 = SimdVecT::load_aligned(&l[col*ldl+row+2*vlen]);
@@ -78,16 +84,17 @@ void calcLD(int m, int n, T const* l, int ldl, T const* d, T* ld, int ldld) {
                   lv2.store_aligned(&ld[col*ldld+row+2*vlen]);
                   lv3.store_aligned(&ld[col*ldld+row+3*vlen]);
                }
-               for(int row=offset+nunroll*unroll*vlen; row<offset+nvec*vlen; row+=vlen) {
+               for(ipc_ row=offset+nunroll*unroll*vlen; 
+                        row<offset+nvec*vlen; row+=vlen) {
                   SimdVecT lv = SimdVecT::load_aligned(&l[col*ldl+row]);
                   lv = lv * d11;
                   lv.store_aligned(&ld[col*ldld+row]);
                }
             }
-            for(int row=offset+nvec*vlen; row<m; row++)
+            for(ipc_ row=offset+nvec*vlen; row<m; row++)
                ld[col*ldld+row] = d11 * l[col*ldl+row];
          } else { /* op==OP_T */
-            for(int row=0; row<m; row++)
+            for(ipc_ row=0; row<m; row++)
                ld[col*ldld+row] = d11 * l[row*ldl+col];
          }
          col++;
@@ -100,7 +107,7 @@ void calcLD(int m, int n, T const* l, int ldl, T const* d, T* ld, int ldld) {
          d11 = d11/det;
          d21 = d21/det;
          d22 = d22/det;
-         for(int row=0; row<m; row++) {
+         for(ipc_ row=0; row<m; row++) {
             T a1, a2;
             if(op==OP_N) {
                a1 = l[col*ldl+row];

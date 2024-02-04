@@ -2,12 +2,15 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-04 AT 08:30 GMT
  */
+
 #pragma once
 
 #include <memory>
 
 #include "spral_compat.hxx" // in case std::align not defined
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -16,11 +19,11 @@ namespace spral { namespace ssids { namespace cpu {
  * given size. */
 class Workspace {
 #if defined(__AVX512F__)
-  static int const align = 64;
+  static ipc_ const align = 64;
 #elif defined(__AVX__)
-  static int const align = 32;
+  static ipc_ const align = 32;
 #else
-  static int const align = 16;
+  static ipc_ const align = 16;
 #endif
 public:
    Workspace(size_t sz)

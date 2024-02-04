@@ -2,7 +2,9 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 09:15 GMT
  */
+
 #include "ssids_cpu_NumericSubtree.hxx"
 
 #include <cassert>
@@ -11,9 +13,9 @@
 
 #include "spral_omp.hxx"
 #include "ssids_cpu_AppendAlloc.hxx"
+#include "ssids_rip.hxx"
 
 #ifdef SPRAL_SINGLE
-#define precision_ float
 #define spral_ssids_cpu_create_num_subtree \
         spral_ssids_cpu_create_num_subtree_sgl
 #define spral_ssids_cpu_destroy_num_subtree \
@@ -35,7 +37,6 @@
 #define spral_ssids_cpu_subtree_free_contrib \
         spral_ssids_cpu_subtree_free_contrib_sgl
 #else
-#define precision_ double
 #define spral_ssids_cpu_create_num_subtree \
         spral_ssids_cpu_create_num_subtree_dbl
 #define spral_ssids_cpu_destroy_num_subtree \
@@ -69,7 +70,7 @@ typedef float T;
 #else
 typedef double T;
 #endif
-const int PAGE_SIZE = 8*1024*1024; // 8MB
+const ipc_ PAGE_SIZE = 8*1024*1024; // 8MB
 typedef NumericSubtree<true, T, PAGE_SIZE, AppendAlloc<T>> NumericSubtreePosdef;
 typedef NumericSubtree<false, T, PAGE_SIZE, AppendAlloc<T>> NumericSubtreeIndef;
 
@@ -80,13 +81,14 @@ extern "C"
 void* spral_ssids_cpu_create_num_subtree(
       bool posdef,
       void const* symbolic_subtree_ptr,
-      const precision_ *const aval, // Values of A
-      const precision_ *const scaling, // Scaling vector (NULL if none)
+      const rpc_ *const aval, // Values of A
+      const rpc_ *const scaling, // Scaling vector (NULL if none)
       void** child_contrib, // Contributions from child subtrees
       struct cpu_factor_options const* options, // Options in
       ThreadStats* stats // Info out
       ) {
-   auto const& symbolic_subtree = *static_cast<SymbolicSubtree const*>(symbolic_subtree_ptr);
+   auto const& symbolic_subtree = 
+      *static_cast<SymbolicSubtree const*>(symbolic_subtree_ptr);
 
    // Perform factorization
    if(posdef) {
@@ -126,9 +128,9 @@ extern "C"
 Flag spral_ssids_cpu_subtree_solve_fwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
-      int nrhs,         // number of right-hand sides
-      precision_* x,        // ldx x nrhs array of right-hand sides
-      int ldx           // leading dimension of x
+      ipc_ nrhs,         // number of right-hand sides
+      rpc_* x,        // ldx x nrhs array of right-hand sides
+      ipc_ ldx           // leading dimension of x
       ) {
 
    // Call method
@@ -153,9 +155,9 @@ extern "C"
 Flag spral_ssids_cpu_subtree_solve_diag(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
-      int nrhs,         // number of right-hand sides
-      precision_* x,        // ldx x nrhs array of right-hand sides
-      int ldx           // leading dimension of x
+      ipc_ nrhs,         // number of right-hand sides
+      rpc_* x,        // ldx x nrhs array of right-hand sides
+      ipc_ ldx           // leading dimension of x
       ) {
 
    // Call method
@@ -178,9 +180,9 @@ extern "C"
 Flag spral_ssids_cpu_subtree_solve_diag_bwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
-      int nrhs,         // number of right-hand sides
-      precision_* x,        // ldx x nrhs array of right-hand sides
-      int ldx           // leading dimension of x
+      ipc_ nrhs,         // number of right-hand sides
+      rpc_* x,        // ldx x nrhs array of right-hand sides
+      ipc_ ldx           // leading dimension of x
       ) {
 
    // Call method
@@ -205,9 +207,9 @@ extern "C"
 Flag spral_ssids_cpu_subtree_solve_bwd(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
-      int nrhs,         // number of right-hand sides
-      precision_* x,        // ldx x nrhs array of right-hand sides
-      int ldx           // leading dimension of x
+      ipc_ nrhs,         // number of right-hand sides
+      rpc_* x,        // ldx x nrhs array of right-hand sides
+      ipc_ ldx           // leading dimension of x
       ) {
 
    // Call method
@@ -232,8 +234,8 @@ extern "C"
 void spral_ssids_cpu_subtree_enquire(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void const* subtree_ptr,// pointer to relevant type of NumericSubtree
-      int* piv_order,   // pivot order, may be null, only used if indef
-      precision_* d         // diagonal entries, may be null
+      ipc_* piv_order,   // pivot order, may be null, only used if indef
+      rpc_* d         // diagonal entries, may be null
       ) {
 
    // Call method
@@ -253,7 +255,7 @@ extern "C"
 void spral_ssids_cpu_subtree_alter(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr,// pointer to relevant type of NumericSubtree
-      precision_ const* d   // new diagonal entries
+      rpc_ const* d   // new diagonal entries
       ) {
 
    assert(!posdef); // Should never be called on positive definite matrices.
@@ -268,14 +270,14 @@ extern "C"
 void spral_ssids_cpu_subtree_get_contrib(
       bool posdef,      // If true, performs A=LL^T, if false do pivoted A=LDL^T
       void* subtree_ptr,// pointer to relevant type of NumericSubtree
-      int* n,           // returned dimension of contribution block
-      precision_ const** val,     // returned pointer to contribution block
-      int* ldval,       // leading dimension of val
-      int const** rlist,      // returned pointer to row list
-      int* ndelay,      // returned number of delays
-      int const** delay_perm,  // returned pointer to delay values
-      precision_ const** delay_val,  // returned pointer to delay values
-      int* lddelay      // leading dimension of delay_val
+      ipc_* n,           // returned dimension of contribution block
+      rpc_ const** val,     // returned pointer to contribution block
+      ipc_* ldval,       // leading dimension of val
+      ipc_ const** rlist,      // returned pointer to row list
+      ipc_* ndelay,      // returned number of delays
+      ipc_ const** delay_perm,  // returned pointer to delay values
+      rpc_ const** delay_val,  // returned pointer to delay values
+      ipc_* lddelay      // leading dimension of delay_val
       ) {
    // Call method
    if(posdef) { // Converting from runtime to compile time posdef value

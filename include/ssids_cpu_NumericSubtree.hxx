@@ -2,9 +2,12 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 07:40 GMT
  */
+
 #pragma once
 
+#include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_factor.hxx"
@@ -77,7 +80,7 @@ public:
    {
       /* Associate symbolic nodes to numeric ones; copy tree structure */
       nodes_.reserve(symbolic_subtree.nnodes_+1);
-      for(int ni=0; ni<symb_.nnodes_+1; ++ni) {
+      for(ipc_ ni=0; ni<symb_.nnodes_+1; ++ni) {
          nodes_.emplace_back(symbolic_subtree[ni], pool_alloc_);
          auto* fc = symbolic_subtree[ni].first_child;
          nodes_[ni].first_child = fc ? &nodes_[fc->idx] : nullptr;
@@ -86,11 +89,11 @@ public:
       }
 
       /* Allocate workspaces */
-      int num_threads = omp_get_num_threads();
+      ipc_ num_threads = omp_get_num_threads();
       std::vector<ThreadStats> thread_stats(num_threads);
       std::vector<Workspace> work;
       work.reserve(num_threads);
-      for(int i=0; i<num_threads; ++i)
+      for(ipc_ i=0; i<num_threads; ++i)
          work.emplace_back(PAGE_SIZE);
 
        // initialise stats already so we can safely early-return in case of
@@ -107,7 +110,7 @@ public:
       #pragma omp taskgroup
       {
          /* Loop over small leaf subtrees */
-         for(unsigned int si=0; si<symb_.small_leafs_.size(); ++si) {
+         for(uipc_ si=0; si<symb_.small_leafs_.size(); ++si) {
             auto* parent_lcol = nodes_.data() + symb_.small_leafs_[si].get_parent();
             #pragma omp task default(none) \
                firstprivate(si) \
@@ -120,7 +123,7 @@ public:
               if (!my_abort) {
                // #pragma omp cancellation point taskgroup
                try {
-                  int this_thread = omp_get_thread_num();
+                  ipc_ this_thread = omp_get_thread_num();
 #ifdef PROFILE
                   Profile::Task task_subtree("TA_SUBTREE");
 #endif
@@ -168,7 +171,7 @@ public:
          }
 
          /* Loop over singleton nodes in order */
-         for(int ni=0; ni<symb_.nnodes_; ++ni) {
+         for(ipc_ ni=0; ni<symb_.nnodes_; ++ni) {
             if(symb_[ni].insmallleaf) continue; // already handled
             auto* this_lcol = &nodes_[ni]; // for depend
             auto* parent_lcol = nodes_.data() + symb_[ni].parent; // for depend
@@ -188,16 +191,16 @@ public:
                   // printf("%d: Node %d parent %d (of %d) size %d x %d\n",
                   //       omp_get_thread_num(), ni, symb_[ni].parent,
                   //       symb_.nnodes_, symb_[ni].nrow, symb_[ni].ncol);
-                  int this_thread = omp_get_thread_num();
+                  ipc_ this_thread = omp_get_thread_num();
                   // Assembly of node (not of contribution block)
                   assemble_pre
                      (posdef, symb_.n, symb_[ni], child_contrib, nodes_[ni],
                       factor_alloc_, pool_alloc_, work, aval, scaling);
                   // Update stats
-                  int nrow = symb_[ni].nrow + nodes_[ni].ndelay_in;
+                  ipc_ nrow = symb_[ni].nrow + nodes_[ni].ndelay_in;
                   thread_stats[this_thread].maxfront =
                      std::max(thread_stats[this_thread].maxfront, nrow);
-                  int ncol = symb_[ni].ncol + nodes_[ni].ndelay_in;
+                  ipc_ ncol = symb_[ni].ncol + nodes_[ni].ndelay_in;
                   thread_stats[this_thread].maxsupernode =
                      std::max(thread_stats[this_thread].maxsupernode, ncol);
 
@@ -250,7 +253,6 @@ public:
          }
       } // taskgroup
 
-
       // Reduce thread_stats (stats already initialised above)
       for(auto tstats : thread_stats)
          stats += tstats;
@@ -261,12 +263,12 @@ public:
       if(posdef) {
          // all stats remain zero
       } else { // indefinite
-         for(int ni=0; ni<symb_.nnodes_; ni++) {
-            int m = symb_[ni].nrow + nodes_[ni].ndelay_in;
-            int n = symb_[ni].ncol + nodes_[ni].ndelay_in;
-            int ldl = align_lda<T>(m);
+         for(ipc_ ni=0; ni<symb_.nnodes_; ni++) {
+            ipc_ m = symb_[ni].nrow + nodes_[ni].ndelay_in;
+            ipc_ n = symb_[ni].ncol + nodes_[ni].ndelay_in;
+            ipc_ ldl = align_lda<T>(m);
             T *d = nodes_[ni].lcol + n*ldl;
-            for(int i=0; i<nodes_[ni].nelim; ) {
+            for(ipc_ i=0; i<nodes_[ni].nelim; ) {
                T a11 = d[2*i];
                T a21 = d[2*i+1];
                if(i+1==nodes_[ni].nelim || std::isfinite(d[2*i+2])) {
@@ -296,28 +298,28 @@ public:
       delete[] small_leafs_;
    }
 
-   void solve_fwd(int nrhs, T* x, int ldx) const {
+   void solve_fwd(ipc_ nrhs, T* x, ipc_ ldx) const {
       /* Allocate memory */
       T* xlocal = new T[nrhs*symb_.n];
-      int* map_alloc = (!posdef) ? new int[symb_.n] : nullptr; // only indef
+      ipc_* map_alloc = (!posdef) ? new ipc_[symb_.n] : nullptr; // only indef
 
       /* Main loop */
-      for(int ni=0; ni<symb_.nnodes_; ++ni) {
-         int m = symb_[ni].nrow;
-         int n = symb_[ni].ncol;
-         int nelim = (posdef) ? n
+      for(ipc_ ni=0; ni<symb_.nnodes_; ++ni) {
+         ipc_ m = symb_[ni].nrow;
+         ipc_ n = symb_[ni].ncol;
+         ipc_ nelim = (posdef) ? n
                               : nodes_[ni].nelim;
-         int ndin = (posdef) ? 0
+         ipc_ ndin = (posdef) ? 0
                              : nodes_[ni].ndelay_in;
-         int ldl = align_lda<T>(m+ndin);
+         ipc_ ldl = align_lda<T>(m+ndin);
 
          /* Build map (indef only) */
-         int const *map;
+         ipc_ const *map;
          if(!posdef) {
             // indef need to allow for permutation and/or delays
-            for(int i=0; i<n+ndin; ++i)
+            for(ipc_ i=0; i<n+ndin; ++i)
                map_alloc[i] = nodes_[ni].perm[i];
-            for(int i=n; i<m; ++i)
+            for(ipc_ i=n; i<m; ++i)
                map_alloc[i+ndin] = symb_[ni].rlist[i];
             map = map_alloc;
          } else {
@@ -328,8 +330,8 @@ public:
          /* Gather into dense vector xlocal */
          // FIXME: don't bother copying elements of x > m, just use beta=0
          //        in dgemm call and then add as we scatter
-         for(int r=0; r<nrhs; ++r)
-         for(int i=0; i<m+ndin; ++i)
+         for(ipc_ r=0; r<nrhs; ++r)
+         for(ipc_ i=0; i<m+ndin; ++i)
             xlocal[r*symb_.n+i] = x[r*ldx + map[i]-1]; // Fortran indexed
 
          /* Perform dense solve */
@@ -341,8 +343,8 @@ public:
          }
 
          /* Scatter result */
-         for(int r=0; r<nrhs; ++r)
-         for(int i=0; i<m+ndin; ++i)
+         for(ipc_ r=0; r<nrhs; ++r)
+         for(ipc_ i=0; i<m+ndin; ++i)
             x[r*ldx + map[i]-1] = xlocal[r*symb_.n+i];
       }
 
@@ -352,31 +354,31 @@ public:
    }
 
    template <bool do_diag, bool do_bwd>
-   void solve_diag_bwd_inner(int nrhs, T* x, int ldx) const {
+   void solve_diag_bwd_inner(ipc_ nrhs, T* x, ipc_ ldx) const {
       if(posdef && !do_bwd) return; // diagonal solve is a no-op for posdef
 
       /* Allocate memory - map only needed for indef bwd/diag_bwd solve */
       T* xlocal = new T[nrhs*symb_.n];
-      int* map_alloc = (!posdef && do_bwd) ? new int[symb_.n]
+      ipc_* map_alloc = (!posdef && do_bwd) ? new ipc_[symb_.n]
                                            : nullptr;
 
       /* Perform solve */
-      for(int ni=symb_.nnodes_-1; ni>=0; --ni) {
-         int m = symb_[ni].nrow;
-         int n = symb_[ni].ncol;
-         int nelim = (posdef) ? n
+      for(ipc_ ni=symb_.nnodes_-1; ni>=0; --ni) {
+         ipc_ m = symb_[ni].nrow;
+         ipc_ n = symb_[ni].ncol;
+         ipc_ nelim = (posdef) ? n
                               : nodes_[ni].nelim;
-         int ndin = (posdef) ? 0
+         ipc_ ndin = (posdef) ? 0
                              : nodes_[ni].ndelay_in;
 
          /* Build map (indef only) */
-         int const *map;
+         ipc_ const *map;
          if(!posdef) {
             // indef need to allow for permutation and/or delays
             if(do_bwd) {
-               for(int i=0; i<n+ndin; ++i)
+               for(ipc_ i=0; i<n+ndin; ++i)
                   map_alloc[i] = nodes_[ni].perm[i];
-               for(int i=n; i<m; ++i)
+               for(ipc_ i=n; i<m; ++i)
                   map_alloc[i+ndin] = symb_[ni].rlist[i];
                map = map_alloc;
             } else { // if only doing diagonal, only need first nelim<=n+ndin
@@ -388,11 +390,11 @@ public:
          }
 
          /* Gather into dense vector xlocal */
-         int blkm = (do_bwd) ? m+ndin
+         ipc_ blkm = (do_bwd) ? m+ndin
                              : nelim;
-         int ldl = align_lda<T>(m+ndin);
-         for(int r=0; r<nrhs; ++r)
-         for(int i=0; i<blkm; ++i)
+         ipc_ ldl = align_lda<T>(m+ndin);
+         for(ipc_ r=0; r<nrhs; ++r)
+         for(ipc_ i=0; i<blkm; ++i)
             xlocal[r*symb_.n+i] = x[r*ldx + map[i]-1];
 
          /* Perform dense solve */
@@ -408,8 +410,8 @@ public:
          }
 
          /* Scatter result (only first nelim entries have changed) */
-         for(int r=0; r<nrhs; ++r)
-         for(int i=0; i<nelim; ++i)
+         for(ipc_ r=0; r<nrhs; ++r)
+         for(ipc_ i=0; i<nelim; ++i)
             x[r*ldx + map[i]-1] = xlocal[r*symb_.n+i];
       }
 
@@ -418,15 +420,15 @@ public:
       delete[] xlocal;
    }
 
-   void solve_diag(int nrhs, T* x, int ldx) const {
+   void solve_diag(ipc_ nrhs, T* x, ipc_ ldx) const {
       solve_diag_bwd_inner<true, false>(nrhs, x, ldx);
    }
 
-   void solve_diag_bwd(int nrhs, T* x, int ldx) const {
+   void solve_diag_bwd(ipc_ nrhs, T* x, ipc_ ldx) const {
       solve_diag_bwd_inner<true, true>(nrhs, x, ldx);
    }
 
-   void solve_bwd(int nrhs, T* x, int ldx) const {
+   void solve_bwd(ipc_ nrhs, T* x, ipc_ ldx) const {
       solve_diag_bwd_inner<false, true>(nrhs, x, ldx);
    }
 
@@ -434,21 +436,21 @@ public:
     * Note that piv_order is only set in indefinite case.
     * One of piv_order or d may be null in indefinite case.
     */
-   void enquire(int *piv_order, T* d) const {
+   void enquire(ipc_ *piv_order, T* d) const {
       if(posdef) {
-         for(int ni=0; ni<symb_.nnodes_; ++ni) {
-            int blkm = symb_[ni].nrow;
-            int nelim = symb_[ni].ncol;
-            int ldl = align_lda<T>(blkm);
-            for(int i=0; i<nelim; ++i)
+         for(ipc_ ni=0; ni<symb_.nnodes_; ++ni) {
+            ipc_ blkm = symb_[ni].nrow;
+            ipc_ nelim = symb_[ni].ncol;
+            ipc_ ldl = align_lda<T>(blkm);
+            for(ipc_ i=0; i<nelim; ++i)
                *(d++) = nodes_[ni].lcol[i*(ldl+1)];
          }
       } else { /*indef*/
-         for(int ni=0, piv=0; ni<symb_.nnodes_; ++ni) {
-            int blkm = symb_[ni].nrow + nodes_[ni].ndelay_in;
-            int blkn = symb_[ni].ncol + nodes_[ni].ndelay_in;
-            int ldl = align_lda<T>(blkm);
-            int nelim = nodes_[ni].nelim;
+         for(ipc_ ni=0, piv=0; ni<symb_.nnodes_; ++ni) {
+            ipc_ blkm = symb_[ni].nrow + nodes_[ni].ndelay_in;
+            ipc_ blkn = symb_[ni].ncol + nodes_[ni].ndelay_in;
+            ipc_ ldl = align_lda<T>(blkm);
+            ipc_ nelim = nodes_[ni].nelim;
             T const* dptr = &nodes_[ni].lcol[blkn*ldl];
 //            if (d) {
 //              printf("d01 = %.1f %.1f\n", dptr[0], dptr[1]);
@@ -457,7 +459,7 @@ public:
 //              printf("d67 = %.1f %.1f\n", dptr[6], dptr[7]);
 //            }
 //          printf("ni = %i, nelim = %i\n", ni+1, nelim);
-            for(int i=0; i<nelim; ) {
+            for(ipc_ i=0; i<nelim; ) {
 //             bool a=i+1==nelim ;
 //             bool b=(std::isfinite(dptr[2*i+2]));
 //             printf(" i = %d a = %d b = %d\n", i, a, b );
@@ -498,30 +500,30 @@ public:
 
    /** Allows user to alter D values, indef case only. */
    void alter(T const* d) {
-      for(int ni=0; ni<symb_.nnodes_; ++ni) {
-         int blkm = symb_[ni].nrow + nodes_[ni].ndelay_in;
-         int blkn = symb_[ni].ncol + nodes_[ni].ndelay_in;
-         int ldl = align_lda<T>(blkm);
-         int nelim = nodes_[ni].nelim;
+      for(ipc_ ni=0; ni<symb_.nnodes_; ++ni) {
+         ipc_ blkm = symb_[ni].nrow + nodes_[ni].ndelay_in;
+         ipc_ blkn = symb_[ni].ncol + nodes_[ni].ndelay_in;
+         ipc_ ldl = align_lda<T>(blkm);
+         ipc_ nelim = nodes_[ni].nelim;
          T* dptr = &nodes_[ni].lcol[blkn*ldl];
-         T dum;
+//         T dum;
 
-         for(int i=0; i<nelim; ) {
+         for(ipc_ i=0; i<nelim; ) {
             if(i+1==nelim || std::isfinite(dptr[2*i+2])) {
                /* 1x1 pivot */
                dptr[2*i+0] = *(d++);
-               dum = *(d++);
+//               dum = *(d++);
                i+=1;
             } else {
                /* 2x2 pivot */
                dptr[2*i+0] = *(d++);
                dptr[2*i+1] = *(d++);
                dptr[2*i+3] = *(d++);
-               dum = *(d++);
+//               dum = *(d++);
                i+=2;
             }
          }
-//       for(int i=0; i<nelim; ++i) {
+//       for(ipc_ i=0; i<nelim; ++i) {
 //          dptr[2*i+0] = *(d++);
 //          dptr[2*i+1] = *(d++);
 //       }
@@ -529,17 +531,29 @@ public:
    }
 
 	void print() const {
-		for(int node=0; node<symb_.nnodes_; node++) {
+		for(ipc_ node=0; node<symb_.nnodes_; node++) {
+#ifdef INTEGER_64
+			printf("== Node %ld ==\n", node);
+#else
 			printf("== Node %d ==\n", node);
-			int m = symb_[node].nrow + nodes_[node].ndelay_in;
-			int n = symb_[node].ncol + nodes_[node].ndelay_in;
-         int ldl = align_lda<T>(m);
-         int nelim = nodes_[node].nelim;
-			int const* rlist = &symb_[node].rlist[ symb_[node].ncol ];
-			for(int i=0; i<m; ++i) {
-				if(i<n) printf("%d%s:", nodes_[node].perm[i], (i<nelim)?"X":"D");
+#endif
+			ipc_ m = symb_[node].nrow + nodes_[node].ndelay_in;
+			ipc_ n = symb_[node].ncol + nodes_[node].ndelay_in;
+         ipc_ ldl = align_lda<T>(m);
+         ipc_ nelim = nodes_[node].nelim;
+			ipc_ const* rlist = &symb_[node].rlist[ symb_[node].ncol ];
+			for(ipc_ i=0; i<m; ++i) {
+#ifdef INTEGER_64
+				if(i<n) printf("%ld%s:", nodes_[node].perm[i], 
+                                               (i<nelim)?"X":"D");
+				else    printf("%ld:", rlist[i-n]);
+#else
+				if(i<n) printf("%d%s:", nodes_[node].perm[i], 
+                                               (i<nelim)?"X":"D");
 				else    printf("%d:", rlist[i-n]);
-				for(int j=0; j<n; j++) printf(" %10.2e", nodes_[node].lcol[j*ldl+i]);
+#endif
+				for(ipc_ j=0; j<n; j++) printf(" %10.2e", 
+                                   nodes_[node].lcol[j*ldl+i]);
             T const* d = &nodes_[node].lcol[n*ldl];
 				if(!posdef && i<nelim)
                printf("  d: %10.2e %10.2e", d[2*i+0], d[2*i+1]);
@@ -549,9 +563,9 @@ public:
 	}
 
    /** Return contribution block from subtree (if not a real root) */
-   void get_contrib(int& n, T const*& val, int& ldval, int const*& rlist,
-         int& ndelay, int const*& delay_perm, T const*& delay_val,
-         int& lddelay) const {
+   void get_contrib(ipc_& n, T const*& val, ipc_& ldval, ipc_ const*& rlist,
+         ipc_& ndelay, ipc_ const*& delay_perm, T const*& delay_val,
+         ipc_& lddelay) const {
       auto& root = *nodes_.back().first_child;
       n = root.symb.nrow - root.symb.ncol;
       val = root.contrib;

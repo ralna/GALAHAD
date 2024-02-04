@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
  */
 #pragma once
 
@@ -10,6 +11,7 @@
 #include <memory>
 
 #include "spral_omp.hxx"
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -36,18 +38,18 @@ namespace buddy_alloc_internal {
 template <typename CharAllocator=std::allocator<char>>
 class Page {
    // \{
-   typedef typename std::allocator_traits<CharAllocator>::template rebind_traits<int> IntAllocTraits;
+   typedef typename std::allocator_traits<CharAllocator>::template rebind_traits<ipc_> IntAllocTraits;
    // \}
-   static int const nlevel=16; ///< Number of divisions to smallest allocation unit.
+   static ipc_ const nlevel=16; ///< Number of divisions to smallest allocation unit.
 
 #if defined(__AVX512F__)
-  static int const align=64; ///< Underlying alignment of all pointers returned
+  static ipc_ const align=64; ///< Underlying alignment of all pointers returned
 #elif defined(__AVX__)
-  static int const align=32; ///< Underlying alignment of all pointers returned
+  static ipc_ const align=32; ///< Underlying alignment of all pointers returned
 #else
-  static int const align=16; ///< Underlying alignment of all pointers returned
+  static ipc_ const align=16; ///< Underlying alignment of all pointers returned
 #endif
-   static int const ISSUED_FLAG = -2; ///< Flag: value is issued
+   static ipc_ const ISSUED_FLAG = -2; ///< Flag: value is issued
 public:
    // \{
    Page(Page const&) =delete; // not copyable
@@ -78,7 +80,7 @@ public:
       next_ = IntAllocTraits::allocate(intAlloc, 1<<(nlevel-1));
       /* Initialize data structures */
       head_[nlevel-1] = 0; next_[0] = -1; // a single free block at top level
-      for(int i=0; i<nlevel-1; ++i)
+      for(ipc_ i=0; i<nlevel-1; ++i)
          head_[i] = -1; // ... and no free blocks at other levels
 #ifdef MEM_STATS
       printf("BuddyAllocator: Creating new page %p size %ld\n", mem_, size_);
@@ -93,7 +95,7 @@ public:
       other.mem_ = nullptr;
       other.base_ = nullptr;
       other.next_ = nullptr;
-      for(int i=0; i<nlevel; ++i)
+      for(ipc_ i=0; i<nlevel; ++i)
          head_[i] = other.head_[i];
 #ifdef MEM_STATS
       used_ = other.used_;
@@ -127,7 +129,7 @@ public:
    void* allocate(std::size_t sz) {
       if(sz > size_) return nullptr; // too big: don't even try
       // Determine which level of block we're trying to find
-      int level = sz_to_level(sz);
+      ipc_ level = sz_to_level(sz);
       void* ptr = addr_to_ptr(get_next_ptr(level));
 #ifdef MEM_STATS
       if(ptr) {
@@ -139,8 +141,8 @@ public:
    }
    /** \brief Release memory associated with ptr for reuse. */
    void deallocate(void* ptr, std::size_t sz) {
-      int idx = ptr_to_addr(ptr);
-      int level = sz_to_level(sz);
+      ipc_ idx = ptr_to_addr(ptr);
+      ipc_ level = sz_to_level(sz);
       mark_free(idx, level);
 #ifdef MEM_STATS
       used_ -= sz;
@@ -148,7 +150,7 @@ public:
    }
    /** \brief Return true if this Page owners given pointer */
    bool is_owner(void* ptr) {
-      int idx = ptr_to_addr(ptr);
+      ipc_ idx = ptr_to_addr(ptr);
       return (idx>=0 && idx<(1<<(nlevel-1)));
    }
    /**
@@ -159,8 +161,8 @@ public:
     * */
    size_t count_free() const {
       size_t free=0;
-      for(int i=0; i<nlevel; ++i) {
-         for(int p=head_[i]; p!=-1; p=next_[p])
+      for(ipc_ i=0; i<nlevel; ++i) {
+         for(ipc_ p=head_[i]; p!=-1; p=next_[p])
             free += (1<<i) * min_size_;
       }
       return free;
@@ -172,25 +174,25 @@ public:
 private:
    /** Returns next ptr at given level, creating one if required.
     *  If we cannot create one, return -1 */
-   int get_next_ptr(int level) {
+   ipc_ get_next_ptr(ipc_ level) {
       if(level<0 || level>=nlevel) return -1; // invalid level
       if(head_[level] == -1) {
          // Need to split next level up to get one
-         int above = get_next_ptr(level+1);
+         ipc_ above = get_next_ptr(level+1);
          if(above==-1) return -1; // couldn't find one
          split_block(level+1, above);
       }
-      int p = head_[level];
+      ipc_ p = head_[level];
       head_[level] = next_[p];
       next_[p] = ISSUED_FLAG;
       return p;
    }
 
    /** Marks given block as free, tries to merge with partner if possible */
-   void mark_free(int idx, int level) {
+   void mark_free(ipc_ idx, ipc_ level) {
       if(level < nlevel-1) {
          // There exists a partner, see if we can merge with it
-         int partner = get_partner(idx, level);
+         ipc_ partner = get_partner(idx, level);
          if(next_[partner] != ISSUED_FLAG) {
             // Partner is free in *some* list, not necessarily this level
             if(remove_from_free_list(partner, level)) {
@@ -208,9 +210,9 @@ private:
    /** Finds the given address in free list for level and removes it.
     *  Returns false if it cannot be found, true otherwise.
     */
-   bool remove_from_free_list(int idx, int level) {
-      int prev = -1;
-      int current = head_[level];
+   bool remove_from_free_list(ipc_ idx, ipc_ level) {
+      ipc_ prev = -1;
+      ipc_ current = head_[level];
       while(current!=-1 && current != idx) {
          prev = current;
          current = next_[current];
@@ -227,36 +229,36 @@ private:
    }
 
    /** Splits the given block */
-   void split_block(int level, int block) {
-      int left = block;
-      int right = get_partner(block, level-1);
+   void split_block(ipc_ level, ipc_ block) {
+      ipc_ left = block;
+      ipc_ right = get_partner(block, level-1);
       next_[right] = head_[level-1];
       next_[left] = right;
       head_[level-1] = left;
    }
 
    /** Given address location, return pointer */
-   void* addr_to_ptr(int idx) {
+   void* addr_to_ptr(ipc_ idx) {
       return (idx==-1) ? nullptr : base_ + idx*min_size_;
    }
 
    /** Given pointer, return address */
-   int ptr_to_addr(void* ptr) {
+   ipc_ ptr_to_addr(void* ptr) {
       return
          static_cast<uintptr_t>(static_cast<char*>(ptr)-base_) / min_size_;
    }
 
    /** Given a size, find the relevant level */
-   int sz_to_level(std::size_t sz) {
-      int val = sz / min_size_;
+   ipc_ sz_to_level(std::size_t sz) {
+      ipc_ val = sz / min_size_;
       // Find next power of 2 higher than val
-      int level = 0;
+      ipc_ level = 0;
       while((val>>level) > 0) ++level;
       return level;
    }
 
    /** Given an index find its partner at given level */
-   int get_partner(int idx, int level) {
+   ipc_ get_partner(ipc_ idx, ipc_ level) {
       return idx ^ (1<<level);
    }
 
@@ -265,8 +267,8 @@ private:
    size_t size_; ///< Maximum size.
    char* mem_; ///< Pointer to memory allocation.
    char* base_; ///< Aligned memory base.
-   int head_[nlevel]; ///< First free block at each level's size.
-   int *next_; ///< Next free block at given level.
+   ipc_ head_[nlevel]; ///< First free block at each level's size.
+   ipc_ *next_; ///< Next free block at given level.
 #ifdef MEM_STATS
    size_t used_ = 0; ///< Total amount used.
    size_t max_used_ = 0; ///< High water mark of used_.
@@ -319,6 +321,7 @@ public:
          if(ptr) break; // allocation suceeded
       }
       if(!ptr) {
+      //if(ptr == NULL) {
          // Failed to alloc on existing page: make a bigger page and use it
 #ifdef MEM_STATS
          printf("Failed to allocate %ld on existing page...\n", sz);

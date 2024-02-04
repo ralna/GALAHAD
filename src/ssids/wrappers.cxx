@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT
  */
 #include "ssids_cpu_kernels_wrappers.hxx"
 
@@ -11,34 +12,34 @@
 
 /* ================ SINGLE PRECISION WITH 64 BIT INTEGERS =================== */
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 
 extern "C" {
    void spral_c_sgemm_64(char* transa, char* transb, 
-                      int64_t* m, int64_t* n, int64_t* k, 
-                      float* alpha, const float* a, int64_t* lda, 
-                      const float* b, int64_t* ldb, float *beta, 
-                      float* c, int64_t* ldc);
+                         int64_t* m, int64_t* n, int64_t* k, 
+                         float* alpha, const float* a, int64_t* lda, 
+                         const float* b, int64_t* ldb, float *beta, 
+                         float* c, int64_t* ldc);
    void spral_c_spotrf_64(char *uplo, int64_t *n, float *a, 
-                       int64_t *lda, int64_t *info);
+                          int64_t *lda, int64_t *info);
    void spral_c_ssytrf_64(char *uplo, int64_t *n, float *a, 
-                       int64_t *lda, int64_t *ipiv, float *work, 
-                       int64_t *lwork, int64_t *info);
+                          int64_t *lda, int64_t *ipiv, float *work, 
+                          int64_t *lwork, int64_t *info);
    void spral_c_strsm_64(char *side, char *uplo, char *transa, 
-                      char *diag, int64_t *m, int64_t *n, 
-                      const float *alpha, const float *a, 
-                      int64_t *lda, float *b, int64_t *ldb);
+                         char *diag, int64_t *m, int64_t *n, 
+                         const float *alpha, const float *a, 
+                         int64_t *lda, float *b, int64_t *ldb);
    void spral_c_ssyrk_64(char *uplo, char *trans, 
-                      int64_t *n, int64_t *k, float *alpha, 
-                      const float *a, int64_t *lda, float *beta, 
-                      float *c, int64_t *ldc);
+                         int64_t *n, int64_t *k, float *alpha, 
+                         const float *a, int64_t *lda, float *beta, 
+                         float *c, int64_t *ldc);
    void spral_c_strsv_64(char *uplo, char *trans, char *diag, 
-                      int64_t *n, const float *a, int64_t *lda, 
-                      float *x, int64_t *incx);
+                         int64_t *n, const float *a, int64_t *lda, 
+                         float *x, int64_t *incx);
    void spral_c_sgemv_64(char *trans, int64_t *m, int64_t *n, 
-                      const float* alpha, const float* a, 
-                      int64_t *lda, const float* x, int64_t* incx, 
-                      const float* beta, float* y, int64_t* incy);
+                         const float* alpha, const float* a, 
+                         int64_t *lda, const float* x, int64_t* incx, 
+                         const float* beta, float* y, int64_t* incy);
 }
 
 namespace spral { namespace ssids { namespace cpu {
@@ -46,10 +47,10 @@ namespace spral { namespace ssids { namespace cpu {
 /* _GEMM */
 template <>
 void host_gemm_64<float>(enum spral::ssids::cpu::operation transa, 
-                      enum spral::ssids::cpu::operation transb, 
-                      int64_t m, int64_t n, int64_t k, float alpha, 
-                      const float* a, int64_t lda, const float* b, 
-                      int64_t ldb, float beta, float* c, int64_t ldc) {
+                         enum spral::ssids::cpu::operation transb, 
+                         int64_t m, int64_t n, int64_t k, float alpha, 
+                         const float* a, int64_t lda, const float* b, 
+                         int64_t ldb, float beta, float* c, int64_t ldc) {
    char ftransa = (transa==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    char ftransb = (transb==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_sgemm_64(&ftransa, &ftransb, &m, &n, &k, &alpha, a, &lda, 
@@ -59,9 +60,9 @@ void host_gemm_64<float>(enum spral::ssids::cpu::operation transa,
 /* _GEMV */
 template <>
 void gemv_64<float>(enum spral::ssids::cpu::operation trans, 
-                 int64_t m, int64_t n, float alpha, const float* a, 
-                 int64_t lda, const float* x, int64_t incx, 
-                 float beta, float* y, int64_t incy) {
+                    int64_t m, int64_t n, float alpha, const float* a, 
+                    int64_t lda, const float* x, int64_t incx, 
+                    float beta, float* y, int64_t incy) {
    char ftrans = (trans==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_sgemv_64(&ftrans, &m, &n, &alpha, a, &lda, x, &incx, 
                  &beta, y, &incy);
@@ -70,7 +71,7 @@ void gemv_64<float>(enum spral::ssids::cpu::operation trans,
 /* _POTRF */
 template<>
 int64_t lapack_potrf_64<float>(enum spral::ssids::cpu::fillmode uplo, 
-                        int64_t n, float* a, int64_t lda) {
+                               int64_t n, float* a, int64_t lda) {
    char fuplo;
    switch(uplo) {
       case spral::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -85,8 +86,8 @@ int64_t lapack_potrf_64<float>(enum spral::ssids::cpu::fillmode uplo,
 /* _SYTRF - Bunch-Kaufman factorization */
 template<>
 int64_t lapack_sytrf_64<float>(enum spral::ssids::cpu::fillmode uplo, 
-                        int64_t n, float* a, int64_t lda, 
-                        int64_t *ipiv, float* work, int64_t lwork) {
+                               int64_t n, float* a, int64_t lda, 
+                               int64_t *ipiv, float* work, int64_t lwork) {
    char fuplo;
    switch(uplo) {
       case spral::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -101,9 +102,9 @@ int64_t lapack_sytrf_64<float>(enum spral::ssids::cpu::fillmode uplo,
 /* _SYRK */
 template <>
 void host_syrk_64<float>(enum spral::ssids::cpu::fillmode uplo, 
-                      enum spral::ssids::cpu::operation trans, 
-                      int64_t n, int64_t k, float alpha, const float* a, 
-                      int64_t lda, float beta, float* c, int64_t ldc) {
+                         enum spral::ssids::cpu::operation trans, 
+                         int64_t n, int64_t k, float alpha, const float* a, 
+                         int64_t lda, float beta, float* c, int64_t ldc) {
    char fuplo = (uplo==spral::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_ssyrk_64(&fuplo, &ftrans, &n, &k, &alpha, a, &lda, &beta, c, &ldc);
@@ -112,10 +113,10 @@ void host_syrk_64<float>(enum spral::ssids::cpu::fillmode uplo,
 /* _TRSV */
 template <>
 void host_trsv_64<float>(enum spral::ssids::cpu::fillmode uplo, 
-                      enum spral::ssids::cpu::operation trans, 
-                      enum spral::ssids::cpu::diagonal diag, 
-                      int64_t n, const float* a, int64_t lda, 
-                      float* x, int64_t incx) {
+                         enum spral::ssids::cpu::operation trans, 
+                         enum spral::ssids::cpu::diagonal diag, 
+                         int64_t n, const float* a, int64_t lda, 
+                         float* x, int64_t incx) {
    char fuplo = (uplo==spral::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    char fdiag = (diag==spral::ssids::cpu::DIAG_UNIT) ? 'U' : 'N';
@@ -125,11 +126,11 @@ void host_trsv_64<float>(enum spral::ssids::cpu::fillmode uplo,
 /* _TRSM */
 template <>
 void host_trsm_64<float>(enum spral::ssids::cpu::side side, 
-                      enum spral::ssids::cpu::fillmode uplo, 
-                      enum spral::ssids::cpu::operation transa, 
-                      enum spral::ssids::cpu::diagonal diag, 
-                      int64_t m, int64_t n, float alpha, const float* a, 
-                      int64_t lda, float* b, int64_t ldb) {
+                         enum spral::ssids::cpu::fillmode uplo, 
+                         enum spral::ssids::cpu::operation transa, 
+                         enum spral::ssids::cpu::diagonal diag, 
+                         int64_t m, int64_t n, float alpha, const float* a, 
+                         int64_t lda, float* b, int64_t ldb) {
    char fside = (side==spral::ssids::cpu::SIDE_LEFT) ? 'L' : 'R';
    char fuplo = (uplo==spral::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftransa = (transa==spral::ssids::cpu::OP_N) ? 'N' : 'T';
@@ -277,34 +278,34 @@ void host_trsm<float>(enum spral::ssids::cpu::side side,
 
 /* ================ DOUBLE PRECISION WITH 64 BIT INTEGERS =================== */
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 
 extern "C" {
    void spral_c_dgemm_64(char* transa, char* transb, 
-                      int64_t* m, int64_t* n, int64_t* k, 
-                      double* alpha, const double* a, int64_t* lda, 
-                      const double* b, int64_t* ldb, double *beta, 
-                      double* c, int64_t* ldc);
+                         int64_t* m, int64_t* n, int64_t* k, 
+                         double* alpha, const double* a, int64_t* lda, 
+                         const double* b, int64_t* ldb, double *beta, 
+                         double* c, int64_t* ldc);
    void spral_c_dpotrf_64(char *uplo, int64_t *n, double *a, 
-                       int64_t *lda, int64_t *info);
+                          int64_t *lda, int64_t *info);
    void spral_c_dsytrf_64(char *uplo, int64_t *n, double *a, 
-                       int64_t *lda, int64_t *ipiv, double *work, 
-                       int64_t *lwork, int64_t *info);
+                          int64_t *lda, int64_t *ipiv, double *work, 
+                          int64_t *lwork, int64_t *info);
    void spral_c_dtrsm_64(char *side, char *uplo, char *transa, 
-                      char *diag, int64_t *m, int64_t *n, 
-                      const double *alpha, const double *a, 
-                      int64_t *lda, double *b, int64_t *ldb);
+                         char *diag, int64_t *m, int64_t *n, 
+                         const double *alpha, const double *a, 
+                         int64_t *lda, double *b, int64_t *ldb);
    void spral_c_dsyrk_64(char *uplo, char *trans, 
-                      int64_t *n, int64_t *k, double *alpha, 
-                      const double *a, int64_t *lda, double *beta, 
-                      double *c, int64_t *ldc);
+                         int64_t *n, int64_t *k, double *alpha, 
+                         const double *a, int64_t *lda, double *beta, 
+                         double *c, int64_t *ldc);
    void spral_c_dtrsv_64(char *uplo, char *trans, char *diag, 
-                      int64_t *n, const double *a, int64_t *lda, 
-                      double *x, int64_t *incx);
+                         int64_t *n, const double *a, int64_t *lda, 
+                         double *x, int64_t *incx);
    void spral_c_dgemv_64(char *trans, int64_t *m, int64_t *n, 
-                      const double* alpha, const double* a, 
-                      int64_t *lda, const double* x, int64_t* incx, 
-                      const double* beta, double* y, int64_t* incy);
+                         const double* alpha, const double* a, 
+                         int64_t *lda, const double* x, int64_t* incx, 
+                         const double* beta, double* y, int64_t* incy);
 }
 
 namespace spral { namespace ssids { namespace cpu {
@@ -312,10 +313,10 @@ namespace spral { namespace ssids { namespace cpu {
 /* _GEMM */
 template <>
 void host_gemm_64<double>(enum spral::ssids::cpu::operation transa, 
-                       enum spral::ssids::cpu::operation transb, 
-                       int64_t m, int64_t n, int64_t k, double alpha, 
-                       const double* a, int64_t lda, const double* b, 
-                       int64_t ldb, double beta, double* c, int64_t ldc) {
+                          enum spral::ssids::cpu::operation transb, 
+                          int64_t m, int64_t n, int64_t k, double alpha, 
+                          const double* a, int64_t lda, const double* b, 
+                          int64_t ldb, double beta, double* c, int64_t ldc) {
    char ftransa = (transa==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    char ftransb = (transb==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_dgemm_64(&ftransa, &ftransb, &m, &n, &k, &alpha, a, &lda, 
@@ -325,9 +326,9 @@ void host_gemm_64<double>(enum spral::ssids::cpu::operation transa,
 /* _GEMV */
 template <>
 void gemv_64<double>(enum spral::ssids::cpu::operation trans, 
-                 int64_t m, int64_t n, double alpha, const double* a, 
-                 int64_t lda, const double* x, int64_t incx, 
-                 double beta, double* y, int64_t incy) {
+                     int64_t m, int64_t n, double alpha, const double* a, 
+                     int64_t lda, const double* x, int64_t incx, 
+                     double beta, double* y, int64_t incy) {
    char ftrans = (trans==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_dgemv_64(&ftrans, &m, &n, &alpha, a, &lda, x, &incx, 
                  &beta, y, &incy);
@@ -336,7 +337,7 @@ void gemv_64<double>(enum spral::ssids::cpu::operation trans,
 /* _POTRF */
 template<>
 int64_t lapack_potrf_64<double>(enum spral::ssids::cpu::fillmode uplo, 
-                         int64_t n, double* a, int64_t lda) {
+                                int64_t n, double* a, int64_t lda) {
    char fuplo;
    switch(uplo) {
       case spral::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -351,8 +352,9 @@ int64_t lapack_potrf_64<double>(enum spral::ssids::cpu::fillmode uplo,
 /* _SYTRF - Bunch-Kaufman factorization */
 template<>
 int64_t lapack_sytrf_64<double>(enum spral::ssids::cpu::fillmode uplo, 
-                         int64_t n, double* a, int64_t lda, int64_t *ipiv, 
-                         double* work, int64_t lwork) {
+                                int64_t n, double* a, 
+                                int64_t lda, int64_t *ipiv, 
+                                double* work, int64_t lwork) {
    char fuplo;
    switch(uplo) {
       case spral::ssids::cpu::FILL_MODE_LWR: fuplo = 'L'; break;
@@ -367,9 +369,9 @@ int64_t lapack_sytrf_64<double>(enum spral::ssids::cpu::fillmode uplo,
 /* _SYRK */
 template <>
 void host_syrk_64<double>(enum spral::ssids::cpu::fillmode uplo, 
-                       enum spral::ssids::cpu::operation trans, 
-                       int64_t n, int64_t k, double alpha, const double* a, 
-                       int64_t lda, double beta, double* c, int64_t ldc) {
+                          enum spral::ssids::cpu::operation trans, 
+                          int64_t n, int64_t k, double alpha, const double* a, 
+                          int64_t lda, double beta, double* c, int64_t ldc) {
    char fuplo = (uplo==spral::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    spral_c_dsyrk_64(&fuplo, &ftrans, &n, &k, &alpha, a, &lda, &beta, c, &ldc);
@@ -378,10 +380,10 @@ void host_syrk_64<double>(enum spral::ssids::cpu::fillmode uplo,
 /* _TRSV */
 template <>
 void host_trsv_64<double>(enum spral::ssids::cpu::fillmode uplo, 
-                       enum spral::ssids::cpu::operation trans, 
-                       enum spral::ssids::cpu::diagonal diag, 
-                       int64_t n, const double* a, int64_t lda, 
-                       double* x, int64_t incx) {
+                          enum spral::ssids::cpu::operation trans, 
+                          enum spral::ssids::cpu::diagonal diag, 
+                          int64_t n, const double* a, int64_t lda, 
+                          double* x, int64_t incx) {
    char fuplo = (uplo==spral::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftrans = (trans==spral::ssids::cpu::OP_N) ? 'N' : 'T';
    char fdiag = (diag==spral::ssids::cpu::DIAG_UNIT) ? 'U' : 'N';
@@ -391,11 +393,11 @@ void host_trsv_64<double>(enum spral::ssids::cpu::fillmode uplo,
 /* _TRSM */
 template <>
 void host_trsm_64<double>(enum spral::ssids::cpu::side side, 
-                       enum spral::ssids::cpu::fillmode uplo, 
-                       enum spral::ssids::cpu::operation transa, 
-                       enum spral::ssids::cpu::diagonal diag, 
-                       int64_t m, int64_t n, double alpha, const double* a, 
-                       int64_t lda, double* b, int64_t ldb) {
+                          enum spral::ssids::cpu::fillmode uplo, 
+                          enum spral::ssids::cpu::operation transa, 
+                          enum spral::ssids::cpu::diagonal diag, 
+                          int64_t m, int64_t n, double alpha, const double* a, 
+                          int64_t lda, double* b, int64_t ldb) {
    char fside = (side==spral::ssids::cpu::SIDE_LEFT) ? 'L' : 'R';
    char fuplo = (uplo==spral::ssids::cpu::FILL_MODE_LWR) ? 'L' : 'U';
    char ftransa = (transa==spral::ssids::cpu::OP_N) ? 'N' : 'T';

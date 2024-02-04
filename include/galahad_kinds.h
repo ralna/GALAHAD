@@ -1,4 +1,4 @@
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
 #define GALAHAD_KINDS_single GALAHAD_KINDS_single_64
 #define GALAHAD_KINDS_double GALAHAD_KINDS_double_64
 #endif

@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-26 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT.
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define SPRAL_KINDS_double spral_kinds_double_64
 #define SPRAL_KINDS_single spral_kinds_single_64
 #endif
@@ -44,7 +44,7 @@ MODULE SPRAL_KINDS
 
 !  integer kinds
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
   INTEGER, PARAMETER :: ip_ = INT64
   INTEGER, PARAMETER :: ipc_ = C_INT64_T
 #else

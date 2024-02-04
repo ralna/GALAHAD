@@ -2,12 +2,15 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
  */
+
 #pragma once
 
 #include <vector>
 
 #include "ssids_cpu_Workspace.hxx"
+#include "ssids_rip.hxx"
 
 #ifdef SPRAL_SINGLE
 #define ldlt_app_factor ldlt_app_factor_sgl
@@ -24,19 +27,19 @@
 namespace spral { namespace ssids { namespace cpu {
 
 template<typename T, typename Allocator>
-int ldlt_app_factor(int m, int n, int *perm, T *a, int lda, T *d, T beta,
-   T* upd, int ldupd, struct cpu_factor_options const& options,
+ipc_ ldlt_app_factor(ipc_ m, ipc_ n, ipc_ *perm, T *a, ipc_ lda, T *d, T beta,
+   T* upd, ipc_ ldupd, struct cpu_factor_options const& options,
    std::vector<Workspace>& work, Allocator const& alloc);
 
 template <typename T>
-void ldlt_app_solve_fwd(int m, int n, T const* l, int ldl, int nrhs, T* x,
-   int ldx);
+void ldlt_app_solve_fwd(ipc_ m, ipc_ n, T const* l, ipc_ ldl, ipc_ nrhs, T* x,
+   ipc_ ldx);
 
 template <typename T>
-void ldlt_app_solve_diag(int n, T const* d, int nrhs, T* x, int ldx);
+void ldlt_app_solve_diag(ipc_ n, T const* d, ipc_ nrhs, T* x, ipc_ ldx);
 
 template <typename T>
-void ldlt_app_solve_bwd(int m, int n, T const* l, int ldl, int nrhs, T* x,
-   int ldx);
+void ldlt_app_solve_bwd(ipc_ m, ipc_ n, T const* l, ipc_ ldl, ipc_ nrhs, T* x,
+   ipc_ ldx);
 
 }}} /* namespaces spral::ssids::cpu */

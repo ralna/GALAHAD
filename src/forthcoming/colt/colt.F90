@@ -3148,7 +3148,7 @@ write(6,*) ' x ', nlp%X
            / REAL( n_points - 1, KIND = rp_ ) ) * (  t_upper -  t_lower )
 
        nlp%X( : nlp%n ) = zero
-       nlp%X( 2 ) = one
+       nlp%X( 1 ) = inform%target
        IF ( data%printd ) THEN
          WRITE( data%out, "( A, ' X ', /, ( 5ES12.4 ) )" )                     &
            prefix, nlp%X( : nlp%n )

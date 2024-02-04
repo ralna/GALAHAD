@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT
  */
 #pragma once
 
@@ -16,6 +17,8 @@
 #endif /* _OPENMP */
 
 /* SPRAL headers */
+
+#include "ssids_rip.hxx"
 #include "ssids_profile.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
@@ -40,7 +43,7 @@
 #define ldlt_tpp_factor ldlt_tpp_factor_dbl
 #endif
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define host_gemm host_gemm_64
 #endif
 
@@ -49,7 +52,7 @@ namespace spral { namespace ssids { namespace cpu {
 /* Factorize a node (indef) */
 template <typename T, typename PoolAlloc>
 void factor_node_indef(
-      int ni, // FIXME: remove post debug
+      ipc_ ni, // FIXME: remove post debug
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
       struct cpu_factor_options const& options,
@@ -58,12 +61,12 @@ void factor_node_indef(
       PoolAlloc& pool_alloc
       ) {
    /* Extract useful information about node */
-   int m = snode.nrow + node.ndelay_in;
-   int n = snode.ncol + node.ndelay_in;
+   ipc_ m = snode.nrow + node.ndelay_in;
+   ipc_ n = snode.ncol + node.ndelay_in;
    size_t ldl = align_lda<T>(m);
    T *lcol = node.lcol;
    T *d = &node.lcol[ n*ldl ];
-   int *perm = node.perm;
+   ipc_ *perm = node.perm;
    T *contrib = node.contrib;
 
    /* Perform factorization */
@@ -87,7 +90,7 @@ void factor_node_indef(
 
    /* Finish factorization worth simplistic code */
    if(node.nelim < n) {
-      int nelim = node.nelim;
+      ipc_ nelim = node.nelim;
       if(options.pivot_method!=PivotMethod::tpp)
          stats.not_first_pass += n-nelim;
       // Only use TPP to finish off if we're a root node, it's not finishing
@@ -104,8 +107,8 @@ void factor_node_indef(
                options.small, nelim, &lcol[nelim], ldl
                );
          if(m-n>0 && node.nelim>nelim) {
-            int nelim2 = node.nelim - nelim;
-            int ldld = align_lda<T>(m-n);
+            ipc_ nelim2 = node.nelim - nelim;
+            ipc_ ldld = align_lda<T>(m-n);
             T *ld = work[omp_get_thread_num()].get_ptr<T>(nelim2*ldld);
             calcLD<OP_N>(
                   m-n, nelim2, &lcol[nelim*ldl+n], ldl, &d[2*nelim], ld, ldld
@@ -132,7 +135,7 @@ void factor_node_indef(
    /* Record information */
    node.ndelay_out = n - node.nelim;
    stats.num_delay += node.ndelay_out;
-   for (int64_t j = m; j >= m-(node.nelim)+1; --j) {
+   for (longc_ j = m; j >= m-(node.nelim)+1; --j) {
        stats.num_factor += j;
        stats.num_flops += j*j;
    }
@@ -144,7 +147,7 @@ void factor_node_indef(
       node.free_contrib();
    } else if(node.nelim==0) {
       // FIXME: If we fix the above, we don't need this explict zeroing
-      long contrib_size = m-n;
+      longc_ contrib_size = m-n;
       memset(node.contrib, 0, contrib_size*contrib_size*sizeof(T));
    }
 }
@@ -158,14 +161,14 @@ void factor_node_posdef(
       ThreadStats& stats
       ) {
    /* Extract useful information about node */
-   int m = snode.nrow;
-   int n = snode.ncol;
-   int ldl = align_lda<T>(m);
+   ipc_ m = snode.nrow;
+   ipc_ n = snode.ncol;
+   ipc_ ldl = align_lda<T>(m);
    T *lcol = node.lcol;
    T *contrib = node.contrib;
 
    /* Perform factorization */
-   int flag;
+   ipc_ flag;
    cholesky_factor(
          m, n, lcol, ldl, beta, contrib, m-n, options.cpu_block_size, &flag
          );
@@ -178,7 +181,7 @@ void factor_node_posdef(
 
    /* Record information */
    node.ndelay_out = 0;
-   for (int64_t j = m; j >= m-(node.nelim)+1; --j) {
+   for (longc_ j = m; j >= m-(node.nelim)+1; --j) {
        stats.num_factor += j;
        stats.num_flops += j*j;
    }
@@ -186,7 +189,7 @@ void factor_node_posdef(
 /* Factorize a node (wrapper) */
 template <bool posdef, typename T, typename PoolAlloc>
 void factor_node(
-      int ni,
+      ipc_ ni,
       SymbolicNode const& snode,
       NumericNode<T, PoolAlloc> &node,
       struct cpu_factor_options const& options,

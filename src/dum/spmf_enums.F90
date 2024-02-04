@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   S P M F _ E N U M S   M O D U L E  -*-*-
 
@@ -7,7 +7,7 @@ MODULE spmf_enums
   USE iso_c_binding, ONLY : c_float, c_double, c_ptr,                          &
                             c_int, c_int32_t, c_int64_t
 
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
   INTEGER, PARAMETER :: spm_int_t = c_int64_t
 #else
   INTEGER, PARAMETER :: spm_int_t = c_int32_t

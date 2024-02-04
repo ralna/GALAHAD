@@ -2,12 +2,16 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
  */
+
 #pragma once
 
 #include <cmath>
 #include <cstdio>
 #include <limits>
+
+#include "ssids_rip.hxx"
 
 #if defined(__AVX2__) || defined(__AVX__)
 #include <immintrin.h>
@@ -35,12 +39,12 @@ public:
 
 #if defined(__AVX2__) || defined(__AVX__)
    /// Length of underlying vector type
-   static const int vector_length = 4; /* this should probably be 8 !! */
+   static const ipc_ vector_length = 4; /* this should probably be 8 !! */
    /// Typedef for underlying vector type containing singles
    typedef __m256 simd_precision_type;
 #else
    /// Length of underlying vector type
-   static const int vector_length = 1;
+   static const ipc_ vector_length = 1;
    /// Typedef for underlying vector type containing floats
    typedef float simd_precision_type;
 #endif
@@ -243,7 +247,7 @@ public:
    /// Returns a vector with all positions idx or above set to true, otherwise
    /// false.
    static
-   SimdVec gt_mask(int idx) {
+   SimdVec gt_mask(ipc_ idx) {
 #if defined(__AVX2__) || defined(__AVX__)
       const float avx_true  = -std::numeric_limits<float>::quiet_NaN();
       const float avx_false = 0.0;
@@ -265,7 +269,7 @@ public:
 
    /// Prints the vector (inefficient, use for debug only)
    void print() {
-      for(int i=0; i<vector_length; i++) printf(" %e", (*this)[i]);
+      for(ipc_ i=0; i<vector_length; i++) printf(" %e", (*this)[i]);
    }
 
 private:
@@ -287,12 +291,12 @@ public:
 
 #if defined(__AVX2__) || defined(__AVX__)
    /// Length of underlying vector type
-   static const int vector_length = 4;
+   static const ipc_ vector_length = 4;
    /// Typedef for underlying vector type containing doubles
    typedef __m256d simd_precision_type;
 #else
    /// Length of underlying vector type
-   static const int vector_length = 1;
+   static const ipc_ vector_length = 1;
    /// Typedef for underlying vector type containing doubles
    typedef double simd_precision_type;
 #endif
@@ -495,7 +499,7 @@ public:
    /// Returns a vector with all positions idx or above set to true, otherwise
    /// false.
    static
-   SimdVec gt_mask(int idx) {
+   SimdVec gt_mask(ipc_ idx) {
 #if defined(__AVX2__) || defined(__AVX__)
       const double avx_true  = -std::numeric_limits<double>::quiet_NaN();
       const double avx_false = 0.0;
@@ -517,7 +521,7 @@ public:
 
    /// Prints the vector (inefficient, use for debug only)
    void print() {
-      for(int i=0; i<vector_length; i++) printf(" %e", (*this)[i]);
+      for(ipc_ i=0; i<vector_length; i++) printf(" %e", (*this)[i]);
    }
 
 private:

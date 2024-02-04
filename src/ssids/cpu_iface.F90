@@ -1,11 +1,36 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-04 AT 11:50 GMT.
 
 #ifdef SPRAL_SINGLE
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define spral_kinds_precision spral_kinds_single_64
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single_64
 #define spral_ssids_inform_precision spral_ssids_inform_single_64
 #define spral_ssids_types_precision spral_ssids_types_single_64
+#ifdef NO_UNDERSCORE_INTEGER_64
+#define gemv  sgemv64
+#define trsv  strsv64
+#define syrk  ssyrk64
+#define trsm  strsm64
+#define sytrf ssytrf64
+#define potrf spotrf64
+#define gemm  sgemm64
+#elif DOUBLE_UNDERSCORE_INTEGER_64
+#define gemv  sgemv__64
+#define trsv  strsv__64
+#define syrk  ssyrk__64
+#define trsm  strsm__64
+#define sytrf ssytrf__64
+#define potrf spotrf__64
+#define gemm  sgemm__64
+#elif NO_SYMBOL_INTEGER_64
+#define gemv  sgemv
+#define trsv  strsv
+#define syrk  ssyrk
+#define trsm  strsm
+#define sytrf ssytrf
+#define potrf spotrf
+#define gemm  sgemm
+#else
 #define gemv  sgemv_64
 #define trsv  strsv_64
 #define syrk  ssyrk_64
@@ -13,6 +38,7 @@
 #define sytrf ssytrf_64
 #define potrf spotrf_64
 #define gemm  sgemm_64
+#endif
 #define spral_c_gemv  spral_c_sgemv_64
 #define spral_c_trsv  spral_c_strsv_64
 #define spral_c_syrk  spral_c_ssyrk_64
@@ -41,11 +67,36 @@
 #define spral_c_gemm  spral_c_sgemm
 #endif
 #else
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define spral_kinds_precision spral_kinds_double_64
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double_64
 #define spral_ssids_inform_precision spral_ssids_inform_double_64
 #define spral_ssids_types_precision spral_ssids_types_double_64
+#ifdef NO_UNDERSCORE_INTEGER_64
+#define gemv  dgemv64
+#define trsv  dtrsv64
+#define syrk  dsyrk64
+#define trsm  dtrsm64
+#define sytrf dsytrf64
+#define potrf dpotrf64
+#define gemm  dgemm64
+#elif DOUBLE_UNDERSCORE_INTEGER_64
+#define gemv  dgemv__64
+#define trsv  dtrsv__64
+#define syrk  dsyrk__64
+#define trsm  dtrsm__64
+#define sytrf dsytrf__64
+#define potrf dpotrf__64
+#define gemm  dgemm__64
+#elif NO_SYMBOL_INTEGER_64
+#define gemv  dgemv
+#define trsv  dtrsv
+#define syrk  dsyrk
+#define trsm  dtrsm
+#define sytrf dsytrf
+#define potrf dpotrf
+#define gemm  dgemm
+#else
 #define gemv  dgemv_64
 #define trsv  dtrsv_64
 #define syrk  dsyrk_64
@@ -53,6 +104,7 @@
 #define sytrf dsytrf_64
 #define potrf dpotrf_64
 #define gemm  dgemm_64
+#endif
 #define spral_c_gemv  spral_c_dgemv_64
 #define spral_c_trsv  spral_c_dtrsv_64
 #define spral_c_syrk  spral_c_dsyrk_64
@@ -82,7 +134,7 @@
 #endif
 #endif
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
 #define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
 #endif

@@ -2,11 +2,15 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 15:00 GMT
  */
+
 #pragma once
 
 #include <cstdint>
 #include <stdexcept>
+
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -14,7 +18,7 @@ namespace spral { namespace ssids { namespace cpu {
  *
  * Must match Fortran definitions in src/ssids/datatypes.f90
  */
-enum Flag : int {
+enum Flag : ipc_ {
    SUCCESS                 = 0,
 
    ERROR_SINGULAR          = -5,
@@ -29,11 +33,11 @@ enum Flag : int {
  */
 class SingularError: public std::runtime_error {
 public:
-   SingularError(int col)
+   SingularError(ipc_ col)
    : std::runtime_error("Matrix is singular"), col(col)
    {}
 
-   int const col;
+   ipc_ const col;
 };
 
 /**
@@ -47,16 +51,16 @@ public:
  */
 struct ThreadStats {
    Flag flag = Flag::SUCCESS; ///< Error flag for thread
-   int num_delay = 0;   ///< Number of delays
-   int64_t num_factor = 0;    ///< Number of entries in factors
-   int64_t num_flops = 0;     ///< Number of floating point operations
-   int num_neg = 0;     ///< Number of negative pivots
-   int num_two = 0;     ///< Number of 2x2 pivots
-   int num_zero = 0;    ///< Number of zero pivots
-   int maxfront = 0;    ///< Maximum front size
-   int maxsupernode = 0;      ///< Maximum supernode size
-   int not_first_pass = 0;    ///< Number of pivots not eliminated in APP
-   int not_second_pass = 0;   ///< Number of pivots not eliminated in APP or TPP
+   ipc_ num_delay = 0;   ///< Number of delays
+   longc_ num_factor = 0;    ///< Number of entries in factors
+   longc_ num_flops = 0;     ///< Number of floating point operations
+   ipc_ num_neg = 0;     ///< Number of negative pivots
+   ipc_ num_two = 0;     ///< Number of 2x2 pivots
+   ipc_ num_zero = 0;    ///< Number of zero pivots
+   ipc_ maxfront = 0;    ///< Maximum front size
+   ipc_ maxsupernode = 0;     ///< Maximum supernode size
+   ipc_ not_first_pass = 0;   ///< Number of pivots not eliminated in APP
+   ipc_ not_second_pass = 0;  ///< Number of pivots not eliminated in APP or TPP
 
    ThreadStats& operator+=(ThreadStats const& other);
 };

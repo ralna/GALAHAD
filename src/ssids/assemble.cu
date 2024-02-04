@@ -1,3 +1,10 @@
+/* Copyright (c) 2013 Science and Technology Facilities Council (STFC)
+ * Copyright (c) 2013 NVIDIA
+ * Authors: Evgueni Ovtchinnikov (STFC)
+ *          Jeremy Appleyard (NVIDIA)
+ * This version: GALAHAD 4.3 - 2024-02-03 AT 09:40 GMT
+ */
+
 #ifdef __cplusplus
 #include <cmath>
 #else
@@ -8,11 +15,11 @@
 #include <cuda_runtime_api.h>
 #include <device_launch_parameters.h>
 
+#include "ssids_rip.hxx"
 #include "spral_cuda_cuda_check.h"
 #include "ssids_gpu_kernels_datatypes.h"
 
 #ifdef SPRAL_SINGLE
-#define precision_ float
 #define load_nodes_type load_nodes_type_single
 #define assemble_cp_type assemble_cp_type_single
 #define assemble_blk_type assemble_blk_type_single
@@ -28,7 +35,6 @@
 #define spral_ssids_load_nodes_sc spral_ssids_load_nodes_sc_single
 #define spral_ssids_max_abs spral_ssids_max_abs_single
 #else
-#define precision_ double
 #define load_nodes_type load_nodes_type_single
 #define assemble_cp_type assemble_cp_type_double
 #define assemble_blk_type assemble_blk_type_double
@@ -55,12 +61,12 @@
 namespace /* anon */ {
 
 struct load_nodes_type {
-  long nnz;    // Number of entries to map
-  int lda;    // Leading dimension of A
-  int ldl;    // Leading dimension of L
-  precision_ *lcol; // Pointer to non-delay part of L
-  long offn;   // Offset into nlist
-  long offr;  // Offset into rlist
+  longc_ nnz;    // Number of entries to map
+  ipc_ lda;    // Leading dimension of A
+  ipc_ ldl;    // Leading dimension of L
+  rpc_ *lcol; // Pointer to non-delay part of L
+  longc_ offn;   // Offset into nlist
+  longc_ offr;  // Offset into rlist
 };
 
 /*
@@ -73,22 +79,22 @@ struct load_nodes_type {
 __global__ void
 cu_load_nodes(
     const struct load_nodes_type *lndata,
-    const long *nlist,
-    const precision_ *aval
+    const longc_ *nlist,
+    const rpc_ *aval
 ) {
    lndata += blockIdx.x;
-   const long nnz = lndata->nnz;
-   const int lda = lndata->lda;
-   const int ldl = lndata->ldl;
+   const longc_ nnz = lndata->nnz;
+   const ipc_ lda = lndata->lda;
+   const ipc_ ldl = lndata->ldl;
 
    nlist += 2*lndata->offn;
-   precision_ *const lval = lndata->lcol;
+   rpc_ *const lval = lndata->lcol;
 
-   for (int i = threadIdx.x; i < nnz; i += blockDim.x) {
+   for (ipc_ i = threadIdx.x; i < nnz; i += blockDim.x) {
      // Note: nlist is 1-indexed, not 0 indexed, so we have to adjust
-     const int r = (nlist[2*i+1] - 1) % lda; // row index
-     const int c = (nlist[2*i+1] - 1) / lda; // col index
-     const long sidx = nlist[2*i+0] - 1; // source index
+     const ipc_ r = (nlist[2*i+1] - 1) % lda; // row index
+     const ipc_ c = (nlist[2*i+1] - 1) / lda; // col index
+     const longc_ sidx = nlist[2*i+0] - 1; // source index
      lval[r + c*ldl] = aval[sidx];
    }
 }
@@ -104,41 +110,41 @@ cu_load_nodes(
 __global__ void
 cu_load_nodes_sc(
     const struct load_nodes_type *lndata,
-    const long *nlist,
-    const int *rlist,
-    const precision_ *scale,
-    const precision_ *aval
+    const longc_ *nlist,
+    const ipc_ *rlist,
+    const rpc_ *scale,
+    const rpc_ *aval
 ) {
    lndata += blockIdx.x;
-   const int nnz = lndata->nnz;
-   const int lda = lndata->lda;
-   const int ldl = lndata->ldl;
+   const ipc_ nnz = lndata->nnz;
+   const ipc_ lda = lndata->lda;
+   const ipc_ ldl = lndata->ldl;
 
    nlist += 2*lndata->offn;
-   precision_ *const lval = lndata->lcol;
+   rpc_ *const lval = lndata->lcol;
    rlist += lndata->offr;
 
-   for (int i = threadIdx.x; i < nnz; i += blockDim.x) {
+   for (ipc_ i = threadIdx.x; i < nnz; i += blockDim.x) {
       // Note: nlist and rlist are 1-indexed, not 0 indexed, so we adjust
-      const int r = (nlist[2*i+1] - 1) % lda; // row index
-      const int c = (nlist[2*i+1] - 1) / lda; // col index
-      const long sidx = nlist[2*i+0] - 1; // source index
-      const precision_ rs = scale[rlist[r] - 1]; // row scaling
-      const precision_ cs = scale[rlist[c] - 1]; // col scaling
+      const ipc_ r = (nlist[2*i+1] - 1) % lda; // row index
+      const ipc_ c = (nlist[2*i+1] - 1) / lda; // col index
+      const longc_ sidx = nlist[2*i+0] - 1; // source index
+      const rpc_ rs = scale[rlist[r] - 1]; // row scaling
+      const rpc_ cs = scale[rlist[c] - 1]; // col scaling
       lval[r + c*ldl] = rs * aval[sidx] * cs;
    }
 }
 
 // BLOCK_SIZE = blockDim.x
 // maxabs must be initialized to zeros
-template< typename ELEMENT_TYPE, unsigned int BLOCK_SIZE >
+template< typename ELEMENT_TYPE, uipc_ BLOCK_SIZE >
 __global__ void
-cu_max_abs( const long n, const ELEMENT_TYPE *const u, ELEMENT_TYPE *const maxabs )
+cu_max_abs( const longc_ n, const ELEMENT_TYPE *const u, ELEMENT_TYPE *const maxabs )
 {
   __shared__ volatile ELEMENT_TYPE tmax[BLOCK_SIZE];
 
   tmax[threadIdx.x] = 0.0;
-  for ( long i = threadIdx.x + blockDim.x*blockIdx.x; i < n;
+  for ( longc_ i = threadIdx.x + blockDim.x*blockIdx.x; i < n;
         i += blockDim.x*gridDim.x ) {
     const ELEMENT_TYPE v = fabs(u[i]);
     if ( v > tmax[threadIdx.x] )
@@ -146,7 +152,7 @@ cu_max_abs( const long n, const ELEMENT_TYPE *const u, ELEMENT_TYPE *const maxab
   }
   __syncthreads();
 
-  for ( int inc = 1; inc < BLOCK_SIZE; inc *= 2 ) {
+  for ( ipc_ inc = 1; inc < BLOCK_SIZE; inc *= 2 ) {
     if ( 2*inc*threadIdx.x + inc < BLOCK_SIZE
         && tmax[2*inc*threadIdx.x + inc] > tmax[2*inc*threadIdx.x] )
       tmax[2*inc*threadIdx.x] = tmax[2*inc*threadIdx.x + inc];
@@ -160,30 +166,30 @@ cu_max_abs( const long n, const ELEMENT_TYPE *const u, ELEMENT_TYPE *const maxab
 /* Following data type describes a single child-parent assembly */
 struct assemble_cp_type {
   // Parent data
-  int pvoffset; // Offset to start of parent node values
-  precision_ *pval; // Pointer to non-delay part of parent L
-  int ldp; // Leading dimension of parent
+  ipc_ pvoffset; // Offset to start of parent node values
+  rpc_ *pval; // Pointer to non-delay part of parent L
+  ipc_ ldp; // Leading dimension of parent
 
   // Child data
-  int cm; // Number of rows in child
-  int cn; // Number of columns in child
-  int ldc; // Leading dimension of child
-  long cvoffset; // Offset to start of child node values
-  precision_ *cv; // Pointer to start of child node values
+  ipc_ cm; // Number of rows in child
+  ipc_ cn; // Number of columns in child
+  ipc_ ldc; // Leading dimension of child
+  longc_ cvoffset; // Offset to start of child node values
+  rpc_ *cv; // Pointer to start of child node values
 
   // Alignment data
-  int *rlist_direct; // Pointer to start of child's rlist
-  int *ind; // Pointer to start of child's contribution index
+  ipc_ *rlist_direct; // Pointer to start of child's rlist
+  ipc_ *ind; // Pointer to start of child's contribution index
 
   // Sync data
-  int sync_offset; // we watch sync[sync_offset]
-  int sync_wait_for; // and wait for it to have value >= sync_wait_for
+  ipc_ sync_offset; // we watch sync[sync_offset]
+  ipc_ sync_wait_for; // and wait for it to have value >= sync_wait_for
 };
 
 /* Following data type describes actions of single CUDA block */
 struct assemble_blk_type {
-  int cp; // node we're assembling into
-  int blk; // block number of that node
+  ipc_ cp; // node we're assembling into
+  ipc_ blk; // block number of that node
 };
 
 /* Used to force volatile load of a declared non-volatile variable */
@@ -201,18 +207,17 @@ __inline__ __device__ T_ELEM loadVolatile(volatile T_ELEM *const vptr) {
  * next_blk is used to ensure all blocks run in exact desired order.
  * sync[] is used to ensure dependencies are completed in the correct order.
  */
-template <unsigned int blk_sz_x, unsigned int blk_sz_y,
-          unsigned int ntx, unsigned nty>
+template <uipc_ blk_sz_x, uipc_ blk_sz_y, uipc_ ntx, unsigned nty>
 void __global__ assemble(
     const struct assemble_blk_type *blkdata, // block mapping
     const struct assemble_cp_type *cpdata, // child-parent data
-    const precision_ *const children, // pointer to array containing children
-    precision_ *const parents, // pointer to array containing parents
-    unsigned int *const next_blk, // gmem location used to determine next block
-    volatile unsigned int *const sync // sync[cp] is #blocks completed so far for cp
+    const rpc_ *const children, // pointer to array containing children
+    rpc_ *const parents, // pointer to array containing parents
+    uipc_ *const next_blk, // gmem location used to determine next block
+    volatile uipc_ *const sync // sync[cp] is #blocks completed so far for cp
 ) {
    // Get block number
-   __shared__ volatile unsigned int mynext_blk;
+   __shared__ volatile uipc_ mynext_blk;
    if(threadIdx.x==0 && threadIdx.y==0)
       mynext_blk = atomicAdd(next_blk, 1);
    __syncthreads();
@@ -220,21 +225,21 @@ void __global__ assemble(
    // Determine global information
    blkdata += mynext_blk;
    cpdata += blkdata->cp;
-   int blk = blkdata->blk;
-   int nx = (cpdata->cm-1) / blk_sz_x + 1; // number of blocks high child is
-   int bx = blk % nx; // coordinate of block in x direction
-   int by = blk / nx; // coordinate of block in y direction
-   int ldc = cpdata->ldc;
-   int ldp = cpdata->ldp;
+   ipc_ blk = blkdata->blk;
+   ipc_ nx = (cpdata->cm-1) / blk_sz_x + 1; // number of blocks high child is
+   ipc_ bx = blk % nx; // coordinate of block in x direction
+   ipc_ by = blk / nx; // coordinate of block in y direction
+   ipc_ ldc = cpdata->ldc;
+   ipc_ ldp = cpdata->ldp;
 
    // Initialize local information
-   int m = min(blk_sz_x, cpdata->cm - bx*blk_sz_x);
-   int n = min(blk_sz_y, cpdata->cn - by*blk_sz_y);
-   const precision_ *src =
+   ipc_ m = min(blk_sz_x, cpdata->cm - bx*blk_sz_x);
+   ipc_ n = min(blk_sz_y, cpdata->cn - by*blk_sz_y);
+   const rpc_ *src =
       cpdata->cv + ldc*by*blk_sz_y + bx*blk_sz_x;
-   precision_ *dest = cpdata->pval;
-   int *rows = cpdata->rlist_direct + bx*blk_sz_x;
-   int *cols = cpdata->rlist_direct + by*blk_sz_y;
+   rpc_ *dest = cpdata->pval;
+   ipc_ *rows = cpdata->rlist_direct + bx*blk_sz_x;
+   ipc_ *cols = cpdata->rlist_direct + by*blk_sz_y;
 
    // Wait for previous child of this parent to complete
    if(threadIdx.x==0 && threadIdx.y==0) {
@@ -243,12 +248,12 @@ void __global__ assemble(
    __syncthreads();
 
    // Perform assembly
-   for(int j=0; j<blk_sz_y/nty; j++) {
+   for(ipc_ j=0; j<blk_sz_y/nty; j++) {
       if( threadIdx.y+j*nty < n ) {
-         int col = cols[threadIdx.y+j*nty]-1;
-         for(int i=0; i<blk_sz_x/ntx; i++) {
+         ipc_ col = cols[threadIdx.y+j*nty]-1;
+         for(ipc_ i=0; i<blk_sz_x/ntx; i++) {
             if( threadIdx.x+i*ntx < m ) {
-               int row = rows[threadIdx.x+i*ntx]-1;
+               ipc_ row = rows[threadIdx.x+i*ntx]-1;
                dest[row + col*ldp] +=
                   src[threadIdx.x+i*ntx + (threadIdx.y+j*nty)*ldc];
             }
@@ -259,19 +264,19 @@ void __global__ assemble(
    // Record that we're done
    __syncthreads();
    if(threadIdx.x==0 && threadIdx.y==0) {
-      atomicAdd((int*)&(sync[blkdata->cp]), 1);
+      atomicAdd((ipc_*)&(sync[blkdata->cp]), 1);
    }
 }
 
 struct assemble_delay_type {
-  int dskip; // Number of rows to skip for delays from later children
-  int m; // Number of rows in child to copy
-  int n; // Number of cols in child to copy
-  int ldd; // Leading dimension of dest (parent)
-  int lds; // Leading dimension of src (child)
-  precision_ *dval; // Pointer to dest (parent)
-  precision_ *sval; // Pointer to src (child)
-  long roffset; // Offset to rlist_direct
+  ipc_ dskip; // Number of rows to skip for delays from later children
+  ipc_ m; // Number of rows in child to copy
+  ipc_ n; // Number of cols in child to copy
+  ipc_ ldd; // Leading dimension of dest (parent)
+  ipc_ lds; // Leading dimension of src (child)
+  rpc_ *dval; // Pointer to dest (parent)
+  rpc_ *sval; // Pointer to src (child)
+  longc_ roffset; // Offset to rlist_direct
 };
 
 /* Copies delays from child to parent using one block per parent
@@ -279,26 +284,26 @@ struct assemble_delay_type {
  */
 void __global__ add_delays(
     struct assemble_delay_type *dinfo, // information on each block
-    const int *rlist_direct // children's rows indices in parents
+    const ipc_ *rlist_direct // children's rows indices in parents
 ) {
    dinfo += blockIdx.x;
-   const int dskip = dinfo->dskip; // number of delays
-   const int m = dinfo->m; // number of rows
-   const int n = dinfo->n; // number of cols
-   const int ldd = dinfo->ldd; // leading dimension of dest
-   const int lds = dinfo->lds; // leading dimension of src
+   const ipc_ dskip = dinfo->dskip; // number of delays
+   const ipc_ m = dinfo->m; // number of rows
+   const ipc_ n = dinfo->n; // number of cols
+   const ipc_ ldd = dinfo->ldd; // leading dimension of dest
+   const ipc_ lds = dinfo->lds; // leading dimension of src
 
-   precision_ *const dest = dinfo->dval;
-   const precision_ *const src = dinfo->sval;
+   rpc_ *const dest = dinfo->dval;
+   const rpc_ *const src = dinfo->sval;
    rlist_direct += dinfo->roffset;
 
-   for ( int y = threadIdx.y; y < n; y += blockDim.y ) {
-      for ( int x = threadIdx.x; x < m; x += blockDim.x ) {
+   for ( ipc_ y = threadIdx.y; y < n; y += blockDim.y ) {
+      for ( ipc_ x = threadIdx.x; x < m; x += blockDim.x ) {
          if ( x < n ) {
             dest[x + y*ldd] = src[x + y*lds];
          }
          else {
-            int xt = dskip + rlist_direct[x - n] - 1;
+            ipc_ xt = dskip + rlist_direct[x - n] - 1;
             dest[xt + y*ldd] = src[x + y*lds];
          }
       }
@@ -314,12 +319,12 @@ void __global__ add_delays(
 extern "C" {
 
 /* Invokes the add_delays<<<>>>() kernel */
-void spral_ssids_add_delays( const cudaStream_t *stream, int ndblk,
-      struct assemble_delay_type *gpu_dinfo, int *rlist_direct ) {
+void spral_ssids_add_delays( const cudaStream_t *stream, ipc_ ndblk,
+      struct assemble_delay_type *gpu_dinfo, ipc_ *rlist_direct ) {
    if ( ndblk == 0 ) return; // Nothing to see here
    dim3 threads(ADD_DELAYS_TX, ADD_DELAYS_TY);
-   for ( int i = 0; i < ndblk; i += MAX_CUDA_BLOCKS ) {
-      int nb = min(MAX_CUDA_BLOCKS, ndblk - i);
+   for ( ipc_ i = 0; i < ndblk; i += MAX_CUDA_BLOCKS ) {
+      ipc_ nb = min(MAX_CUDA_BLOCKS, ndblk - i);
       add_delays
          <<< nb, threads, 0, *stream >>>
          ( gpu_dinfo + i, rlist_direct );
@@ -328,25 +333,25 @@ void spral_ssids_add_delays( const cudaStream_t *stream, int ndblk,
 }
 
 /* Runs the kernel assemble<<<>>>() after setting up memory correctly. */
-/* Requires gpu_next_sync[] to be of size >= (1+ncp)*sizeof(unsigned int) */
-void spral_ssids_assemble(const cudaStream_t *stream, int nblk, int blkoffset,
-      struct assemble_blk_type *blkdata, int ncp,
-      struct assemble_cp_type *cpdata, precision_ *children,
-      precision_ *parents, unsigned int *gpu_next_sync) {
+/* Requires gpu_next_sync[] to be of size >= (1+ncp)*sizeof(uipc_) */
+void spral_ssids_assemble(const cudaStream_t *stream, ipc_ nblk, ipc_ blkoffset,
+      struct assemble_blk_type *blkdata, ipc_ ncp,
+      struct assemble_cp_type *cpdata, rpc_ *children,
+      rpc_ *parents, uipc_ *gpu_next_sync) {
    /* Create and initialize synchronization objects using a single call:
       next_blk[1]
       sync[ncp]
     */
    CudaSafeCall(
-         cudaMemsetAsync(gpu_next_sync,0,(1+ncp)*sizeof(unsigned int),*stream)
+         cudaMemsetAsync(gpu_next_sync,0,(1+ncp)*sizeof(uipc_),*stream)
          );
    /* Note, that we can only have at most 65535 blocks per dimn.
     * For some problems, nblk can exceed this, so we use more than one launch.
     * As the next block we look at is specified by next_blk this works fine.
     */
    dim3 threads(HOGG_ASSEMBLE_NTX, HOGG_ASSEMBLE_NTY);
-   for(int i=0; i<nblk; i+=MAX_CUDA_BLOCKS) {
-      int blocks = min(MAX_CUDA_BLOCKS, nblk-i);
+   for(ipc_ i=0; i<nblk; i+=MAX_CUDA_BLOCKS) {
+      ipc_ blocks = min(MAX_CUDA_BLOCKS, nblk-i);
       assemble
          <HOGG_ASSEMBLE_TX, HOGG_ASSEMBLE_TY,
           HOGG_ASSEMBLE_NTX, HOGG_ASSEMBLE_NTY>
@@ -358,38 +363,38 @@ void spral_ssids_assemble(const cudaStream_t *stream, int nblk, int blkoffset,
 }
 
 // Note: modified value lval is passed in via pointer in lndata, not as argument
-void spral_ssids_load_nodes( const cudaStream_t *stream, int nblocks,
-      const struct load_nodes_type *lndata, const long* list,
-      const precision_* mval ) {
-  for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
-    int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
+void spral_ssids_load_nodes( const cudaStream_t *stream, ipc_ nblocks,
+      const struct load_nodes_type *lndata, const longc_* list,
+      const rpc_* mval ) {
+  for ( ipc_ i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
+    ipc_ nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     cu_load_nodes <<< nb, 128, 0, *stream >>> ( lndata + i, list, mval );
     CudaCheckError();
   }
 }
 
 // Note: modified value lval is passed in via pointer in lndata, not as argument
-void spral_ssids_load_nodes_sc( const cudaStream_t *stream, int nblocks,
-      const struct load_nodes_type *lndata, const long* list, const int* rlist,
-      const precision_* scale, const precision_* mval ) {
-  for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
-    int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
+void spral_ssids_load_nodes_sc( const cudaStream_t *stream, ipc_ nblocks,
+      const struct load_nodes_type *lndata, const longc_* list, const ipc_* rlist,
+      const rpc_* scale, const rpc_* mval ) {
+  for ( ipc_ i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
+    ipc_ nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     cu_load_nodes_sc <<< nb, 128, 0, *stream >>> ( lndata + i, list, rlist, scale, mval );
     CudaCheckError();
   }
 }
 
 void spral_ssids_max_abs( const cudaStream_t *stream,
-      int nb, long n, precision_* u, precision_* buff, precision_* maxabs )
+      ipc_ nb, longc_ n, rpc_* u, rpc_* buff, rpc_* maxabs )
 {
-  cudaMemsetAsync(buff, 0, nb*sizeof(precision_), *stream);
+  cudaMemsetAsync(buff, 0, nb*sizeof(rpc_), *stream);
   cudaStreamSynchronize(*stream);
   if ( n > 1024*nb )
-    cu_max_abs< precision_, 256 ><<< nb, 256, 0, *stream >>>( n, u, buff );
+    cu_max_abs< rpc_, 256 ><<< nb, 256, 0, *stream >>>( n, u, buff );
   else
-    cu_max_abs< precision_, 32 ><<< nb, 32, 0, *stream >>>( n, u, buff );
+    cu_max_abs< rpc_, 32 ><<< nb, 32, 0, *stream >>>( n, u, buff );
   CudaCheckError();
-  cu_max_abs< precision_, 1024 ><<< 1, 1024, 0, *stream >>>( nb, buff, maxabs );
+  cu_max_abs< rpc_, 1024 ><<< 1, 1024, 0, *stream >>>( nb, buff, maxabs );
   CudaCheckError();
 }
 

@@ -2,7 +2,9 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
  */
+
 #pragma once
 
 //#define MEM_STATS
@@ -10,6 +12,7 @@
 #include <memory>
 
 #include "spral_compat.hxx" // for std::align if required
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -22,11 +25,11 @@ namespace append_alloc_internal {
  */
 class Page {
 #if defined(__AVX512F__)
-  static const int align = 64; // 64 byte alignment
+  static const ipc_ align = 64; // 64 byte alignment
 #elif defined(__AVX__)
-  static const int align = 32; // 32 byte alignment
+  static const ipc_ align = 32; // 32 byte alignment
 #else
-  static const int align = 16; // 16 byte alignment
+  static const ipc_ align = 16; // 16 byte alignment
 #endif
 public:
    Page(size_t sz, Page* next=nullptr)

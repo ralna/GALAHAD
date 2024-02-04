@@ -1,4 +1,4 @@
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
 #define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
 #define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
 #define GALAHAD_KINDS_single GALAHAD_KINDS_single_64
@@ -6,7 +6,7 @@
 #endif
 
 #ifdef GALAHAD_SINGLE
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
 
 #define CUTEst_interface_precision CUTEST_interface_single_64
 #define CUTEST_interface_precision CUTEST_interface_single_64
@@ -743,7 +743,7 @@
 
 #else
 
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
 
 #define CUTEst_interface_precision CUTEST_interface_double_64
 #define CUTEST_interface_precision CUTEST_interface_double_64
@@ -1479,7 +1479,7 @@
 #ifdef GALAHAD_SINGLE
 #define mumps_struc smumps_struc
 #define MUMPS_STRUC SMUMPS_STRUC
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
 #define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single_64
 #ifdef DUMMY_SMUMPS
 #define MUMPS_precision GALAHAD_SMUMPS_64
@@ -1497,7 +1497,7 @@
 #else
 #define mumps_struc dmumps_struc
 #define MUMPS_STRUC DMUMPS_STRUC
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
 #define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double_64
 #ifdef DUMMY_DMUMPS
 #define MUMPS_precision GALAHAD_DMUMPS_64

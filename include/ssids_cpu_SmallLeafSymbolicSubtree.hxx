@@ -2,19 +2,17 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 15:00 GMT
  */
+
 #pragma once
 
 #include <memory>
 
+#include "ssids_rip.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_SymbolicNode.hxx"
 
-#ifdef SPRAL_SINGLE
-#define precision_ float
-#else
-#define precision_ double
-#endif
 namespace spral { namespace ssids { namespace cpu {
 
 class SymbolicSubtree;
@@ -33,11 +31,11 @@ class SmallLeafSymbolicSubtree {
 private:
    class Node {
    public:
-      int nrow;
-      int ncol;
-      int sparent;
-      int* rlist;
-      int lcol_offset;
+      ipc_ nrow;
+      ipc_ ncol;
+      ipc_ sparent;
+      ipc_* rlist;
+      ipc_ lcol_offset;
    };
 
 public:
@@ -76,35 +74,40 @@ public:
     *        nlist[2*i+1] of the relevant supernode (as per nptr) of \f$ L \f$.
     * \param symb Underlying SymbolicSubtree for containing parttree.
     */
-   SmallLeafSymbolicSubtree(int sa, int en, int part_offset, int const* sptr, int const* sparent, long const* rptr, int const* rlist, long const* nptr, long const* nlist, SymbolicSubtree const& symb)
-   : sa_(sa), en_(en), nnodes_(en-sa+1), parent_(sparent[part_offset+en]-1-part_offset),
-     nodes_(nnodes_),
-     rlist_(new int[rptr[part_offset+en+1]-rptr[part_offset+sa]], std::default_delete<int[]>()),
+   SmallLeafSymbolicSubtree(ipc_ sa, ipc_ en, ipc_ part_offset, 
+                            ipc_ const* sptr, ipc_ const* sparent, 
+                            longc_ const* rptr, ipc_ const* rlist, 
+                            longc_ const* nptr, longc_ const* nlist, 
+                            SymbolicSubtree const& symb)
+   : sa_(sa), en_(en), nnodes_(en-sa+1), 
+     parent_(sparent[part_offset+en]-1-part_offset), nodes_(nnodes_),
+     rlist_(new ipc_[rptr[part_offset+en+1]-rptr[part_offset+sa]], 
+     std::default_delete<ipc_[]>()),
      nptr_(nptr), nlist_(nlist), symb_(symb)
    {
       /* Setup basic node information */
       nfactor_ = 0;
-      int* newrlist = rlist_.get();
-      for(int ni=sa; ni<=en; ++ni) {
+      ipc_* newrlist = rlist_.get();
+      for(ipc_ ni=sa; ni<=en; ++ni) {
          nodes_[ni-sa].nrow = rptr[part_offset+ni+1] - rptr[part_offset+ni];
          nodes_[ni-sa].ncol = sptr[part_offset+ni+1] - sptr[part_offset+ni];
          nodes_[ni-sa].sparent = sparent[part_offset+ni]-sa-1; // sparent is Fortran indexed
          // FIXME: subtract ncol off rlist for elim'd vars
          nodes_[ni-sa].rlist = &newrlist[rptr[part_offset+ni]-rptr[part_offset+sa]];
          nodes_[ni-sa].lcol_offset = nfactor_;
-         size_t ldl = align_lda<precision_>(nodes_[ni-sa].nrow);
+         size_t ldl = align_lda<rpc_>(nodes_[ni-sa].nrow);
          nfactor_ += nodes_[ni-sa].ncol*ldl;
       }
       /* Construct rlist_ being offsets into parent node */
-      for(int ni=sa; ni<=en; ++ni) {
+      for(ipc_ ni=sa; ni<=en; ++ni) {
          if(nodes_[ni-sa].ncol == nodes_[ni-sa].nrow) continue; // is root
-         int const* ilist = &rlist[rptr[part_offset+ni]-1]; // rptr is Fortran indexed
+         ipc_ const* ilist = &rlist[rptr[part_offset+ni]-1]; // rptr is Fortran indexed
          ilist += nodes_[ni-sa].ncol; // Skip eliminated vars
-         int pnode = sparent[part_offset+ni]-1; //Fortran indexed
-         int const* jlist = &rlist[rptr[pnode]-1]; // rptr is Fortran indexed
-         int const* jstart = jlist;
-         int *outlist = nodes_[ni-sa].rlist;
-         for(int i=nodes_[ni-sa].ncol; i<nodes_[ni-sa].nrow; ++i) {
+         ipc_ pnode = sparent[part_offset+ni]-1; //Fortran indexed
+         ipc_ const* jlist = &rlist[rptr[pnode]-1]; // rptr is Fortran indexed
+         ipc_ const* jstart = jlist;
+         ipc_ *outlist = nodes_[ni-sa].rlist;
+         for(ipc_ i=nodes_[ni-sa].ncol; i<nodes_[ni-sa].nrow; ++i) {
             for(; *ilist != *jlist; ++jlist); // Finds match in jlist
             *(outlist++) = jlist - jstart;
             ++ilist;
@@ -113,19 +116,19 @@ public:
    }
 
    /** \brief Return parent node of subtree in parttree indexing. */
-   int get_parent() const { return parent_; }
+   ipc_ get_parent() const { return parent_; }
    /** \brief Return given node of this tree. */
-   Node const& operator[](int idx) const { return nodes_[idx]; }
+   Node const& operator[](ipc_ idx) const { return nodes_[idx]; }
 protected:
-   int sa_; //< First node in subtree.
-   int en_; //< Last node in subtree.
-   int nnodes_; //< Number of nodes in subtree.
-   int nfactor_; //< Number of entries in factor for subtree.
-   int parent_; //< Parent of subtree in parttree.
+   ipc_ sa_; //< First node in subtree.
+   ipc_ en_; //< Last node in subtree.
+   ipc_ nnodes_; //< Number of nodes in subtree.
+   ipc_ nfactor_; //< Number of entries in factor for subtree.
+   ipc_ parent_; //< Parent of subtree in parttree.
    std::vector<Node> nodes_; //< Nodes of this subtree.
-   std::shared_ptr<int> rlist_; //< Row entries of this subtree.
-   long const* nptr_; //< Node mapping into nlist_.
-   long const* nlist_; //< Mapping from \f$ A \f$ to \f$ L \f$.
+   std::shared_ptr<ipc_> rlist_; //< Row entries of this subtree.
+   longc_ const* nptr_; //< Node mapping into nlist_.
+   longc_ const* nlist_; //< Mapping from \f$ A \f$ to \f$ L \f$.
    SymbolicSubtree const& symb_; //< Underlying parttree
 
    template <bool posdef, typename T, typename FactorAllocator,

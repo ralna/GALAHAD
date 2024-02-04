@@ -2,11 +2,14 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 15:00 GMT
  */
+
 #pragma once
 
 #include <memory>
 
+#include "ssids_rip.hxx"
 #include "ssids_cpu_cpu_iface.hxx"
 #include "ssids_cpu_factor.hxx"
 #include "ssids_cpu_NumericNode.hxx"
@@ -14,18 +17,16 @@
 #include "ssids_cpu_ThreadStats.hxx"
 
 #ifdef SPRAL_SINGLE
-#define precision_ float
 #define FAPrecisionTraits FASingleTraits
 #define factor_alloc_precision factor_alloc_single
 #define ldlt_tpp_factor ldlt_tpp_factor_sgl
 #else
-#define precision_ double
 #define FAPrecisionTraits FADoubleTraits
 #define factor_alloc_precision factor_alloc_double
 #define ldlt_tpp_factor ldlt_tpp_factor_dbl
 #endif
 
-#ifdef SPRAL_64BIT_INTEGER
+#ifdef INTEGER_64
 #define host_gemm host_gemm_64
 #endif
 
@@ -46,8 +47,8 @@ template <typename T,
           typename PoolAllocator // Allocator for pool memory usage
           >
 class SmallLeafNumericSubtree<true, T, FactorAllocator, PoolAllocator> {
-   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<precision_> FAPrecisionTraits;
-   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<int> FAIntTraits;
+   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<rpc_> FAPrecisionTraits;
+   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<ipc_> FAIntTraits;
    typedef std::allocator_traits<PoolAllocator> PATraits;
 public:
    SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_options const& options, ThreadStats& stats)
@@ -55,30 +56,30 @@ public:
    {
       Workspace& work = work_vec[omp_get_thread_num()];
       /* Initialize nodes */
-      for(int ni=symb_.sa_; ni<=symb_.en_; ++ni) {
+      for(ipc_ ni=symb_.sa_; ni<=symb_.en_; ++ni) {
          old_nodes_[ni].ndelay_in = 0;
          old_nodes_[ni].lcol = lcol_ + symb_[ni-symb_.sa_].lcol_offset;
       }
       memset(lcol_, 0, symb_.nfactor_*sizeof(T));
 
       /* Add aval entries */
-      for(int ni=symb_.sa_; ni<=symb_.en_; ++ni)
+      for(ipc_ ni=symb_.sa_; ni<=symb_.en_; ++ni)
          add_a(ni-symb_.sa_, symb_.symb_[ni], aval, scaling);
 
       /* Perform factorization */
-      for(int ni=symb_.sa_; ni<=symb_.en_; ++ni) {
+      for(ipc_ ni=symb_.sa_; ni<=symb_.en_; ++ni) {
          // Assembly
-         int* map = work.get_ptr<int>(symb_.symb_.n+1);
+         ipc_* map = work.get_ptr<ipc_>(symb_.symb_.n+1);
          assemble
             (ni-symb_.sa_, symb_.symb_[ni], &old_nodes_[ni], factor_alloc,
              pool_alloc, map, aval, scaling);
          // Update stats
-         int nrow = symb_.symb_[ni].nrow;
+         ipc_ nrow = symb_.symb_[ni].nrow;
          stats.maxfront = std::max(stats.maxfront, nrow);
-         int ncol = symb_.symb_[ni].ncol;
+         ipc_ ncol = symb_.symb_[ni].ncol;
          stats.maxsupernode = std::max(stats.maxsupernode, ncol);
          // Factorization
-         precision_ one_val = 1.0;
+         rpc_ one_val = 1.0;
          factor_node_posdef
             (one_val, symb_.symb_[ni], old_nodes_[ni], options, stats);
          if(stats.flag<Flag::SUCCESS) return;
@@ -87,20 +88,20 @@ public:
 
 private:
 void add_a(
-      int si,
+      ipc_ si,
       SymbolicNode const& snode,
       T const* aval,
       T const* scaling
       ) {
-   precision_ *lcol = lcol_ + symb_[si].lcol_offset;
-   size_t ldl = align_lda<precision_>(snode.nrow);
+   rpc_ *lcol = lcol_ + symb_[si].lcol_offset;
+   size_t ldl = align_lda<rpc_>(snode.nrow);
    if(scaling) {
       /* Scaling to apply */
-      for(int i=0; i<snode.num_a; i++) {
-         long src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
-         long dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
-         int c = dest / snode.nrow;
-         int r = dest % snode.nrow;
+      for(ipc_ i=0; i<snode.num_a; i++) {
+         longc_ src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
+         longc_ dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
+         ipc_ c = dest / snode.nrow;
+         ipc_ r = dest % snode.nrow;
          T rscale = scaling[ snode.rlist[r]-1 ];
          T cscale = scaling[ snode.rlist[c]-1 ];
          size_t k = c*ldl + r;
@@ -108,11 +109,11 @@ void add_a(
       }
    } else {
       /* No scaling to apply */
-      for(int i=0; i<snode.num_a; i++) {
-         long src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
-         long dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
-         int c = dest / snode.nrow;
-         int r = dest % snode.nrow;
+      for(ipc_ i=0; i<snode.num_a; i++) {
+         longc_ src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
+         longc_ dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
+         ipc_ c = dest / snode.nrow;
+         ipc_ r = dest % snode.nrow;
          size_t k = c*ldl + r;
          lcol[k] = aval[src];
       }
@@ -120,12 +121,12 @@ void add_a(
 }
 
 void assemble(
-      int si,
+      ipc_ si,
       SymbolicNode const& snode,
       NumericNode<T,PoolAllocator>* node,
       FactorAllocator& factor_alloc,
       PoolAllocator& pool_alloc,
-      int* map,
+      ipc_* map,
       T const* aval,
       T const* scaling
       ) {
@@ -133,18 +134,19 @@ void assemble(
    typename FAIntTraits::allocator_type factor_alloc_int(factor_alloc);
 
    /* Count incoming delays and determine size of node */
-   int nrow = snode.nrow;
-   int ncol = snode.ncol;
+   ipc_ nrow = snode.nrow;
+   ipc_ ncol = snode.ncol;
 
    /* Get space for contribution block + zero it */
-   long contrib_dimn = snode.nrow - snode.ncol;
-   node->contrib = (contrib_dimn > 0) ? PATraits::allocate(pool_alloc, contrib_dimn*contrib_dimn) : nullptr;
+   longc_ contrib_dimn = snode.nrow - snode.ncol;
+   node->contrib = (contrib_dimn > 0) ? PATraits::allocate(pool_alloc, 
+      contrib_dimn*contrib_dimn) : nullptr;
    if(node->contrib)
       memset(node->contrib, 0, contrib_dimn*contrib_dimn*sizeof(T));
 
    /* Alloc + set perm */
    node->perm = FAIntTraits::allocate(factor_alloc_int, ncol); // ncol fully summed variables
-   for(int i=0; i<snode.ncol; i++)
+   for(ipc_ i=0; i<snode.ncol; i++)
       node->perm[i] = snode.rlist[i];
 
    /* Add children */
@@ -152,32 +154,32 @@ void assemble(
       /* Build lookup vector, allowing for insertion of delayed vars */
       /* Note that while rlist[] is 1-indexed this is fine so long as lookup
        * is also 1-indexed (which it is as it is another node's rlist[] */
-      for(int i=0; i<snode.nrow; i++)
+      for(ipc_ i=0; i<snode.nrow; i++)
          map[ snode.rlist[i] ] = i;
       /* Loop over children adding contributions */
       for(auto* child=node->first_child; child!=NULL; child=child->next_child) {
          SymbolicNode const& csnode = child->symb;
          /* Handle expected contributions (only if something there) */
          if(child->contrib) {
-            int cm = csnode.nrow - csnode.ncol;
-            for(int i=0; i<cm; i++) {
-               int c = map[ csnode.rlist[csnode.ncol+i] ];
+            ipc_ cm = csnode.nrow - csnode.ncol;
+            for(ipc_ i=0; i<cm; i++) {
+               ipc_ c = map[ csnode.rlist[csnode.ncol+i] ];
                T *src = &child->contrib[i*cm];
                if(c < snode.ncol) {
                   // Contribution added to lcol
-                  int ldd = align_lda<precision_>(nrow);
+                  ipc_ ldd = align_lda<rpc_>(nrow);
                   T *dest = &node->lcol[c*ldd];
-                  for(int j=i; j<cm; j++) {
-                     int r = map[ csnode.rlist[csnode.ncol+j] ];
+                  for(ipc_ j=i; j<cm; j++) {
+                     ipc_ r = map[ csnode.rlist[csnode.ncol+j] ];
                      dest[r] += src[j];
                   }
                } else {
                   // Contribution added to contrib
                   // FIXME: Add after contribution block established?
-                  int ldd = snode.nrow - snode.ncol;
+                  ipc_ ldd = snode.nrow - snode.ncol;
                   T *dest = &node->contrib[(c-ncol)*ldd];
-                  for(int j=i; j<cm; j++) {
-                     int r = map[ csnode.rlist[csnode.ncol+j] ] - ncol;
+                  for(ipc_ j=i; j<cm; j++) {
+                     ipc_ r = map[ csnode.rlist[csnode.ncol+j] ] - ncol;
                      dest[r] += src[j];
                   }
                }
@@ -201,27 +203,27 @@ template <typename T,
           typename PoolAllocator // Allocator for pool memory usage
           >
 class SmallLeafNumericSubtree<false, T, FactorAllocator, PoolAllocator> {
-   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<precision_> FAPrecisionTraits;
-   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<int> FAIntTraits;
+   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<rpc_> FAPrecisionTraits;
+   typedef typename std::allocator_traits<FactorAllocator>::template rebind_traits<ipc_> FAIntTraits;
    typedef std::allocator_traits<PoolAllocator> PATraits;
 public:
    SmallLeafNumericSubtree(SmallLeafSymbolicSubtree const& symb, std::vector<NumericNode<T,PoolAllocator>>& old_nodes, T const* aval, T const* scaling, FactorAllocator& factor_alloc, PoolAllocator& pool_alloc, std::vector<Workspace>& work_vec, struct cpu_factor_options const& options, ThreadStats& stats)
    : old_nodes_(old_nodes), symb_(symb)
    {
       Workspace& work = work_vec[omp_get_thread_num()];
-      for(int ni=symb_.sa_; ni<=symb_.en_; ++ni) {
+      for(ipc_ ni=symb_.sa_; ni<=symb_.en_; ++ni) {
          /*printf("%d: Node %d parent %d (of %d) size %d x %d\n",
                omp_get_thread_num(), ni, symb_[ni].parent, symb_.nnodes_,
                symb_[ni].nrow, symb_[ni].ncol);*/
          // Assembly of node (not of contribution block)
-         int* map = work.get_ptr<int>(symb_.symb_.n+1);
+         ipc_* map = work.get_ptr<ipc_>(symb_.symb_.n+1);
          assemble_pre
             (symb_.symb_[ni], old_nodes_[ni], factor_alloc,
              pool_alloc, map, aval, scaling);
          // Update stats
-         int nrow = symb_.symb_[ni].nrow + old_nodes_[ni].ndelay_in;
+         ipc_ nrow = symb_.symb_[ni].nrow + old_nodes_[ni].ndelay_in;
          stats.maxfront = std::max(stats.maxfront, nrow);
-         int ncol = symb_.symb_[ni].ncol + old_nodes_[ni].ndelay_in;
+         ipc_ ncol = symb_.symb_[ni].ncol + old_nodes_[ni].ndelay_in;
          stats.maxsupernode = std::max(stats.maxsupernode, ncol);
 
          // Factorization
@@ -241,7 +243,7 @@ private:
          NumericNode<T,PoolAllocator>& node,
          FactorAllocator& factor_alloc,
          PoolAllocator& pool_alloc,
-         int* map,
+         ipc_* map,
          T const* aval,
          T const* scaling
          ) {
@@ -254,35 +256,35 @@ private:
       for(auto* child=node.first_child; child!=NULL; child=child->next_child) {
          node.ndelay_in += child->ndelay_out;
       }
-      int nrow = snode.nrow + node.ndelay_in;
-      int ncol = snode.ncol + node.ndelay_in;
+      ipc_ nrow = snode.nrow + node.ndelay_in;
+      ipc_ ncol = snode.ncol + node.ndelay_in;
 
       /* Get space for node now we know it size using Fortran allocator + zero it*/
       // NB L is  nrow x ncol and D is 2 x ncol (but no D if posdef)
-      size_t ldl = align_lda<precision_>(nrow);
+      size_t ldl = align_lda<rpc_>(nrow);
       size_t len = (ldl+2) * ncol; // +2 is for D
       node.lcol = FAPrecisionTraits::allocate(factor_alloc_precision, len);
       memset(node.lcol, 0, len*sizeof(T));
 
       /* Get space for contribution block + (explicitly do not zero it!) */
-      long contrib_dimn = snode.nrow - snode.ncol;
+      longc_ contrib_dimn = snode.nrow - snode.ncol;
       node.contrib = (contrib_dimn > 0) ? PATraits::allocate(pool_alloc, contrib_dimn*contrib_dimn) : nullptr;
 
       /* Alloc + set perm for expected eliminations at this node (delays are set
        * when they are imported from children) */
       node.perm = FAIntTraits::allocate(factor_alloc_int, ncol); // ncol fully summed variables
-      for(int i=0; i<snode.ncol; i++)
+      for(ipc_ i=0; i<snode.ncol; i++)
          node.perm[i] = snode.rlist[i];
 
       /* Add A */
       if(scaling) {
          /* Scaling to apply */
-         for(int i=0; i<snode.num_a; i++) {
-            long src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
-            long dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
-            int c = dest / snode.nrow;
-            int r = dest % snode.nrow;
-            long k = c*ldl + r;
+         for(ipc_ i=0; i<snode.num_a; i++) {
+            longc_ src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
+            longc_ dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
+            ipc_ c = dest / snode.nrow;
+            ipc_ r = dest % snode.nrow;
+            longc_ k = c*ldl + r;
             if(r >= snode.ncol) k += node.ndelay_in;
             T rscale = scaling[ snode.rlist[r]-1 ];
             T cscale = scaling[ snode.rlist[c]-1 ];
@@ -290,12 +292,12 @@ private:
          }
       } else {
          /* No scaling to apply */
-         for(int i=0; i<snode.num_a; i++) {
-            long src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
-            long dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
-            int c = dest / snode.nrow;
-            int r = dest % snode.nrow;
-            long k = c*ldl + r;
+         for(ipc_ i=0; i<snode.num_a; i++) {
+            longc_ src  = snode.amap[2*i+0] - 1; // amap contains 1-based values
+            longc_ dest = snode.amap[2*i+1] - 1; // amap contains 1-based values
+            ipc_ c = dest / snode.nrow;
+            ipc_ r = dest % snode.nrow;
+            longc_ k = c*ldl + r;
             if(r >= snode.ncol) k += node.ndelay_in;
             node.lcol[k] = aval[src];
          }
@@ -306,30 +308,30 @@ private:
          /* Build lookup vector, allowing for insertion of delayed vars */
          /* Note that while rlist[] is 1-indexed this is fine so long as lookup
           * is also 1-indexed (which it is as it is another node's rlist[] */
-         for(int i=0; i<snode.ncol; i++)
+         for(ipc_ i=0; i<snode.ncol; i++)
             map[ snode.rlist[i] ] = i;
-         for(int i=snode.ncol; i<snode.nrow; i++)
+         for(ipc_ i=snode.ncol; i<snode.nrow; i++)
             map[ snode.rlist[i] ] = i + node.ndelay_in;
          /* Loop over children adding contributions */
-         int delay_col = snode.ncol;
+         ipc_ delay_col = snode.ncol;
          for(auto* child=node.first_child; child!=NULL; child=child->next_child) {
             SymbolicNode const& csnode = child->symb;
             /* Handle delays - go to back of node
              * (i.e. become the last rows as in lower triangular format) */
-            for(int i=0; i<child->ndelay_out; i++) {
+            for(ipc_ i=0; i<child->ndelay_out; i++) {
                // Add delayed rows (from delayed cols)
                T *dest = &node.lcol[delay_col*(ldl+1)];
-               int lds = align_lda<T>(csnode.nrow + child->ndelay_in);
+               ipc_ lds = align_lda<T>(csnode.nrow + child->ndelay_in);
                T *src = &child->lcol[(child->nelim+i)*(lds+1)];
                node.perm[delay_col] = child->perm[child->nelim+i];
-               for(int j=0; j<child->ndelay_out-i; j++) {
+               for(ipc_ j=0; j<child->ndelay_out-i; j++) {
                   dest[j] = src[j];
                }
                // Add child's non-fully summed rows (from delayed cols)
                dest = node.lcol;
                src = &child->lcol[child->nelim*lds + child->ndelay_in +i*lds];
-               for(int j=csnode.ncol; j<csnode.nrow; j++) {
-                  int r = map[ csnode.rlist[j] ];
+               for(ipc_ j=csnode.ncol; j<csnode.nrow; j++) {
+                  ipc_ r = map[ csnode.rlist[j] ];
                   if(r < ncol) dest[r*ldl+delay_col] = src[j];
                   else         dest[delay_col*ldl+r] = src[j];
                }
@@ -338,17 +340,17 @@ private:
 
             /* Handle expected contributions (only if something there) */
             if(child->contrib) {
-               int cm = csnode.nrow - csnode.ncol;
-               for(int i=0; i<cm; i++) {
-                  int c = map[ csnode.rlist[csnode.ncol+i] ];
+               ipc_ cm = csnode.nrow - csnode.ncol;
+               for(ipc_ i=0; i<cm; i++) {
+                  ipc_ c = map[ csnode.rlist[csnode.ncol+i] ];
                   T *src = &child->contrib[i*cm];
                   // NB: we handle contribution to contrib in assemble_post()
                   if(c < snode.ncol) {
                      // Contribution added to lcol
-                     int ldd = align_lda<T>(nrow);
+                     ipc_ ldd = align_lda<T>(nrow);
                      T *dest = &node.lcol[c*ldd];
-                     for(int j=i; j<cm; j++) {
-                        int r = map[ csnode.rlist[csnode.ncol+j] ];
+                     for(ipc_ j=i; j<cm; j++) {
+                        ipc_ r = map[ csnode.rlist[csnode.ncol+j] ];
                         dest[r] += src[j];
                      }
                   }
@@ -368,12 +370,12 @@ private:
          PoolAllocator& pool_alloc
          ) {
       /* Extract useful information about node */
-      int m = snode.nrow + node->ndelay_in;
-      int n = snode.ncol + node->ndelay_in;
+      ipc_ m = snode.nrow + node->ndelay_in;
+      ipc_ n = snode.ncol + node->ndelay_in;
       size_t ldl = align_lda<T>(m);
       T *lcol = node->lcol;
       T *d = &node->lcol[ n*ldl ];
-      int *perm = node->perm;
+      ipc_ *perm = node->perm;
 
       /* Perform factorization */
       //Verify<T> verifier(m, n, perm, lcol, ldl);
@@ -385,8 +387,8 @@ private:
       //verifier.verify(node->nelim, perm, lcol, ldl, d);
 
       if(m-n>0 && node->nelim>0) {
-         int nelim = node->nelim;
-         int ldld = align_lda<T>(m-n);
+         ipc_ nelim = node->nelim;
+         ipc_ ldld = align_lda<T>(m-n);
          T *ld = work.get_ptr<T>(nelim*ldld);
          calcLD<OP_N>(m-n, nelim, &lcol[n], ldl, d, ld, ldld);
          host_gemm<T>(OP_N, OP_T, m-n, m-n, nelim,
@@ -397,7 +399,7 @@ private:
       /* Record information */
       node->ndelay_out = n - node->nelim;
       stats.num_delay += node->ndelay_out;
-      for (int64_t j = m; j >= m-(node->nelim)+1; --j) {
+      for (longc_ j = m; j >= m-(node->nelim)+1; --j) {
           stats.num_factor += j;
           stats.num_flops += j*j;
       }
@@ -409,7 +411,7 @@ private:
          node->free_contrib();
       } else if(node->nelim==0) {
          // FIXME: If we fix the above, we don't need this explict zeroing
-         long contrib_size = m-n;
+         longc_ contrib_size = m-n;
          memset(node->contrib, 0, contrib_size*contrib_size*sizeof(T));
       }
    }
@@ -418,35 +420,35 @@ private:
          SymbolicNode const& snode,
          NumericNode<T,PoolAllocator>& node,
          PoolAllocator& pool_alloc,
-         int* map
+         ipc_* map
          ) {
       /* Initialise variables */
-      int ncol = snode.ncol + node.ndelay_in;
+      ipc_ ncol = snode.ncol + node.ndelay_in;
 
       /* Add children */
       if(node.first_child != NULL) {
          /* Build lookup vector, allowing for insertion of delayed vars */
          /* Note that while rlist[] is 1-indexed this is fine so long as lookup
           * is also 1-indexed (which it is as it is another node's rlist[] */
-         for(int i=0; i<snode.ncol; i++)
+         for(ipc_ i=0; i<snode.ncol; i++)
             map[ snode.rlist[i] ] = i;
-         for(int i=snode.ncol; i<snode.nrow; i++)
+         for(ipc_ i=snode.ncol; i<snode.nrow; i++)
             map[ snode.rlist[i] ] = i + node.ndelay_in;
          /* Loop over children adding contributions */
          for(auto* child=node.first_child; child!=NULL; child=child->next_child) {
             SymbolicNode const& csnode = child->symb;
             if(!child->contrib) continue;
-            int cm = csnode.nrow - csnode.ncol;
-            for(int i=0; i<cm; i++) {
-               int c = map[ csnode.rlist[csnode.ncol+i] ];
+            ipc_ cm = csnode.nrow - csnode.ncol;
+            for(ipc_ i=0; i<cm; i++) {
+               ipc_ c = map[ csnode.rlist[csnode.ncol+i] ];
                T *src = &child->contrib[i*cm];
                // NB: only interested in contribution to generated element
                if(c >= snode.ncol) {
                   // Contribution added to contrib
-                  int ldd = snode.nrow - snode.ncol;
+                  ipc_ ldd = snode.nrow - snode.ncol;
                   T *dest = &node.contrib[(c-ncol)*ldd];
-                  for(int j=i; j<cm; j++) {
-                     int r = map[ csnode.rlist[csnode.ncol+j] ] - ncol;
+                  for(ipc_ j=i; j<cm; j++) {
+                     ipc_ r = map[ csnode.rlist[csnode.ncol+j] ] - ncol;
                      dest[r] += src[j];
                   }
                }

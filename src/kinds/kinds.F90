@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-26 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -41,7 +41,7 @@ MODULE GALAHAD_KINDS
 
 !  integer and logical kinds (replace the latter in fortran 2023)
 
-#ifdef GALAHAD_64BIT_INTEGER
+#ifdef INTEGER_64
   INTEGER, PARAMETER :: ip_ = INT64
   INTEGER, PARAMETER :: ipc_ = C_INT64_T
 #else

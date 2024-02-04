@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
  */
 #pragma once
 
@@ -16,27 +17,27 @@ namespace block_ldlt_internal {
 
 /** Swaps two columns of A */
 /* NB: ldwork only well defined for c<idx1 */
-template<typename T, int BLOCK_SIZE>
-void swap_cols(int idx1, int idx2, int n, T *a, int lda, T *ldwork, int *perm) {
+template<typename T, ipc_ BLOCK_SIZE>
+void swap_cols(ipc_ idx1, ipc_ idx2, ipc_ n, T *a, ipc_ lda, T *ldwork, ipc_ *perm) {
    if(idx1==idx2) return; // noop
 
    /* Ensure wlog idx1 < idx2 */
    if(idx1 > idx2) {
-      int temp = idx1;
+      ipc_ temp = idx1;
       idx1 = idx2;
       idx2 = temp;
    }
 
    /* Swap perm */
    if(perm) {
-      int temp = perm[idx1];
+      ipc_ temp = perm[idx1];
       perm[idx1] = perm[idx2];
       perm[idx2] = temp;
    }
 
    /* Swap ldwork */
    if(ldwork) {
-      for(int c=0; c<idx1; c++) {
+      for(ipc_ c=0; c<idx1; c++) {
          T temp = ldwork[c*BLOCK_SIZE+idx1];
          ldwork[c*BLOCK_SIZE+idx1] = ldwork[c*BLOCK_SIZE+idx2];
          ldwork[c*BLOCK_SIZE+idx2] = temp;
@@ -44,14 +45,14 @@ void swap_cols(int idx1, int idx2, int n, T *a, int lda, T *ldwork, int *perm) {
    }
 
    /* Swap row portions */
-   for(int c=0; c<idx1; c++) {
+   for(ipc_ c=0; c<idx1; c++) {
       T temp = a[c*lda+idx1];
       a[c*lda+idx1] = a[c*lda+idx2];
       a[c*lda+idx2] = temp;
    }
 
    /* Swap row of idx2 with col of idx1 */
-   for(int i=idx1+1; i<idx2; i++) {
+   for(ipc_ i=idx1+1; i<idx2; i++) {
       T temp = a[idx1*lda+i];
       a[idx1*lda+i] = a[i*lda+idx2];
       a[i*lda+idx2] = temp;
@@ -65,7 +66,7 @@ void swap_cols(int idx1, int idx2, int n, T *a, int lda, T *ldwork, int *perm) {
    }
 
    /* Swap col portions */
-   for(int r=idx2+1; r<n; r++) {
+   for(ipc_ r=idx2+1; r<n; r++) {
       T temp = a[idx1*lda+r];
       a[idx1*lda+r] = a[idx2*lda+r];
       a[idx2*lda+r] = temp;
@@ -73,8 +74,8 @@ void swap_cols(int idx1, int idx2, int n, T *a, int lda, T *ldwork, int *perm) {
 }
 
 
-template <typename T, int BLOCK_SIZE>
-void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, int &cloc) {
+template <typename T, ipc_ BLOCK_SIZE>
+void find_maxloc(const ipc_ from, const T *a, ipc_ lda, T &bestv_out, ipc_ &rloc, ipc_ &cloc) {
    typedef SimdVec<T> SimdVecT;
 
    /* Handle special cases:
@@ -85,8 +86,8 @@ void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, i
          BLOCK_SIZE % (2*SimdVecT::vector_length) != 0) {
       T bestv = -1.0;
       rloc = BLOCK_SIZE; cloc = BLOCK_SIZE;
-      for(int c=from; c<BLOCK_SIZE; c++) {
-         for(int r=c; r<BLOCK_SIZE; r++) {
+      for(ipc_ c=from; c<BLOCK_SIZE; c++) {
+         for(ipc_ r=c; r<BLOCK_SIZE; r++) {
             double v = a[c*lda+r];
             if(fabs(v) > bestv) {
                bestv = fabs(v);
@@ -104,7 +105,7 @@ void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, i
    // Define a union that lets us abuse T to store ints and still use
    // avx blend.
    union intT {
-      int i;
+      ipc_ i;
       T d;
    };
 
@@ -112,19 +113,19 @@ void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, i
    SimdVecT bestv(-1.0);
    SimdVecT bestv2(-1.0);
    intT imax;
-   imax.i = std::numeric_limits<int>::max();
+   imax.i = std::numeric_limits<ipc_>::max();
    SimdVecT bestr(imax.d);
    SimdVecT bestr2(imax.d);
    SimdVecT bestc(imax.d);
    SimdVecT bestc2(imax.d);
    // Loop over array at stride equal to vector length
-   for(int c=from; c<BLOCK_SIZE; c++) {
+   for(ipc_ c=from; c<BLOCK_SIZE; c++) {
       // Coerce c to be treated as a T then scatter it
       intT c_d;
       c_d.i = c;
       SimdVecT c_vec(c_d.d);
       // First iteration must be careful as we only want the lower triangle
-      const int vlen = SimdVecT::vector_length;
+      const ipc_ vlen = SimdVecT::vector_length;
       {
          intT r_d;
          r_d.i = vlen *(c / vlen);
@@ -195,7 +196,7 @@ void find_maxloc(const int from, const T *a, int lda, T &bestv_out, int &rloc, i
    bestv_out = bv2[0];
    rloc = br2[0].i;
    cloc = bc2[0].i;
-   for(int i=1; i<SimdVecT::vector_length; i++) {
+   for(ipc_ i=1; i<SimdVecT::vector_length; i++) {
       if(bv2[i] > bestv_out) {
          bestv_out = bv2[i];
          rloc = br2[i].i + i; // NB rloc only stores base of vector, so need +i
@@ -218,51 +219,51 @@ bool test_2x2(T a11, T a21, T a22, T &detpiv, T &detscale) {
 }
 
 /** Updates the trailing submatrix (2x2 case) */
-template <typename T, int BLOCK_SIZE>
-void update_2x2(int p, T *a, int lda, const T *ld) {
-   for(int c=p+2; c<BLOCK_SIZE; c++) {
+template <typename T, ipc_ BLOCK_SIZE>
+void update_2x2(ipc_ p, T *a, ipc_ lda, const T *ld) {
+   for(ipc_ c=p+2; c<BLOCK_SIZE; c++) {
       #pragma omp simd
-      for(int r=c; r<BLOCK_SIZE; r++) {
+      for(ipc_ r=c; r<BLOCK_SIZE; r++) {
          a[c*lda+r] -= ld[c]*a[p*lda+r] + ld[BLOCK_SIZE+c]*a[(p+1)*lda+r];
       }
    }
 }
 
 /** Updates the trailing submatrix (1x1 case) */
-template <typename T, int BLOCK_SIZE>
-void update_1x1(int p, T *a, int lda, const T *ld) {
+template <typename T, ipc_ BLOCK_SIZE>
+void update_1x1(ipc_ p, T *a, ipc_ lda, const T *ld) {
 #if 0
-   for(int c=p+1; c<BLOCK_SIZE; c++)
+   for(ipc_ c=p+1; c<BLOCK_SIZE; c++)
       #pragma omp simd
-      for(int r=c; r<BLOCK_SIZE; r++)
+      for(ipc_ r=c; r<BLOCK_SIZE; r++)
          a[c*lda+r] -= ld[c]*a[p*lda+r];
 #else
-   const int vlen = SimdVec<T>::vector_length;
-   const int unroll=4; // How many iteration of loop we're doing
+   const ipc_ vlen = SimdVec<T>::vector_length;
+   const ipc_ unroll=4; // How many iteration of loop we're doing
 
    // Handle case of small BLOCK_SIZE safely
    if(BLOCK_SIZE < vlen || BLOCK_SIZE%vlen != 0 || BLOCK_SIZE < unroll) {
-      for(int c=p+1; c<BLOCK_SIZE; c++)
-         for(int r=c; r<BLOCK_SIZE; r++)
+      for(ipc_ c=p+1; c<BLOCK_SIZE; c++)
+         for(ipc_ r=c; r<BLOCK_SIZE; r++)
             a[c*lda+r] -= ld[c]*a[p*lda+r];
       return;
    }
-   for(int c=p+1; c<unroll*((p+1-1)/unroll+1); c++) {
+   for(ipc_ c=p+1; c<unroll*((p+1-1)/unroll+1); c++) {
       SimdVec<T> ldvec( -ld[c] ); // NB minus so we can use fma below
-      for(int r=vlen*(c/vlen); r<BLOCK_SIZE; r+=vlen) {
+      for(ipc_ r=vlen*(c/vlen); r<BLOCK_SIZE; r+=vlen) {
          SimdVec<T> lvec = SimdVec<T>::load_aligned(&a[p*lda+r]);
          SimdVec<T> avec = SimdVec<T>::load_aligned(&a[c*lda+r]);
          avec = fmadd(avec, lvec, ldvec);
          avec.store_aligned(&a[c*lda+r]);
       }
    }
-   for(int c=unroll*((p+1-1)/unroll+1); c<BLOCK_SIZE; c+=unroll) {
+   for(ipc_ c=unroll*((p+1-1)/unroll+1); c<BLOCK_SIZE; c+=unroll) {
       // NB we use minus ld[c] below to allow fma afterwards
       SimdVec<T> ldvec0( -ld[c] ); // NB minus so we can use fma below
       SimdVec<T> ldvec1( -ld[c+1] ); // NB minus so we can use fma below
       SimdVec<T> ldvec2( -ld[c+2] ); // NB minus so we can use fma below
       SimdVec<T> ldvec3( -ld[c+3] ); // NB minus so we can use fma below
-      for(int r=vlen*(c/vlen); r<BLOCK_SIZE; r+=vlen) {
+      for(ipc_ r=vlen*(c/vlen); r<BLOCK_SIZE; r+=vlen) {
          SimdVec<T> lvec = SimdVec<T>::load_aligned(&a[p*lda+r]);
          SimdVec<T> avec0 = SimdVec<T>::load_aligned(&a[(c+0)*lda+r]);
          SimdVec<T> avec1 = SimdVec<T>::load_aligned(&a[(c+1)*lda+r]);
@@ -286,16 +287,16 @@ void update_1x1(int p, T *a, int lda, const T *ld) {
 /** Factorize a square block without restricting pivots
  *  Expects to be given a square block of size BLOCK_SIZE with numbers of
  *  interest in bottom right part. */
-template<typename T, int BLOCK_SIZE>
-void block_ldlt(int from, int *perm, T *a, int lda, T *d, T *ldwork,
-      bool action, const T u, const T small, int *lperm=nullptr) {
+template<typename T, ipc_ BLOCK_SIZE>
+void block_ldlt(ipc_ from, ipc_ *perm, T *a, ipc_ lda, T *d, T *ldwork,
+      bool action, const T u, const T small, ipc_ *lperm=nullptr) {
    using namespace block_ldlt_internal;
 
    /* Main loop */
-   for(int p=from; p<BLOCK_SIZE; ) {
+   for(ipc_ p=from; p<BLOCK_SIZE; ) {
       // Find largest uneliminated entry
       T bestv; // Value of maximum entry
-      int t, m; // row and col location of maximum entry
+      ipc_ t, m; // row and col location of maximum entry
       find_maxloc<T,BLOCK_SIZE>(p, a, lda, bestv, t, m);
 
       // Handle case where everything remaining is small
@@ -306,9 +307,9 @@ void block_ldlt(int from, int *perm, T *a, int lda, T *d, T *ldwork,
          for(; p<BLOCK_SIZE; ) {
             // Zero out col
             d[2*p] = 0.0; d[2*p+1] = 0.0;
-            for(int r=p; r<BLOCK_SIZE; r++)
+            for(ipc_ r=p; r<BLOCK_SIZE; r++)
                a[p*lda+r] = 0.0;
-            for(int r=p; r<BLOCK_SIZE; r++)
+            for(ipc_ r=p; r<BLOCK_SIZE; r++)
                ldwork[p*BLOCK_SIZE+r] = 0.0;
             // NB: lperm remains unchanged
             p++;
@@ -317,8 +318,8 @@ void block_ldlt(int from, int *perm, T *a, int lda, T *d, T *ldwork,
       }
 
       // Figure out pivot size
-      int pivsiz = 0;
-      int m2=m, t2=t; // FIXME: debug remove
+      ipc_ pivsiz = 0;
+      ipc_ m2=m, t2=t; // FIXME: debug remove
       T a11, a21, a22, detscale, detpiv;
       if(t==m) {
          a11 = a[t*lda+t];
@@ -349,9 +350,17 @@ void block_ldlt(int from, int *perm, T *a, int lda, T *d, T *ldwork,
       if(pivsiz == 0) {
          // FIXME: debug remove
          printf("broken!\n");
+#ifdef INTEGER_64
+         printf("t = %ld m = %ld\n", t2, m2);
+#else
          printf("t = %d m = %d\n", t2, m2);
+#endif
          a11 = a[m2*lda+m2];
+#ifdef INTEGER_64
+         printf("[%ld] = %e\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
+#else
          printf("[%d] = %e\n", m2*BLOCK_SIZE+m2, a[m2*lda+m2]);
+#endif
          a22 = a[t2*lda+t2];
          a21 = a[m2*lda+t2];
          printf("a11 = %e a21 = %e a22 = %e\n", a11, a21, a22);
@@ -362,10 +371,10 @@ void block_ldlt(int from, int *perm, T *a, int lda, T *d, T *ldwork,
          T d11 = 1.0/a11;
          swap_cols<T, BLOCK_SIZE>
             (p, t, BLOCK_SIZE, a, lda, ldwork, perm);
-         if(lperm) { int temp=lperm[p]; lperm[p]=lperm[t]; lperm[t]=temp; }
+         if(lperm) { ipc_ temp=lperm[p]; lperm[p]=lperm[t]; lperm[t]=temp; }
          /* Divide through, preserving a copy */
          T *work = &ldwork[p*BLOCK_SIZE];
-         for(int r=p+1; r<BLOCK_SIZE; r++) {
+         for(ipc_ r=p+1; r<BLOCK_SIZE; r++) {
             work[r] = a[p*lda+r];
             a[p*lda+r] *= d11;
          }
@@ -381,17 +390,17 @@ void block_ldlt(int from, int *perm, T *a, int lda, T *d, T *ldwork,
          /* NB t > m by construction. Hence m>=p, t>=p+1 and swaps are safe */
          swap_cols<T, BLOCK_SIZE>
             (p,   m, BLOCK_SIZE, a, lda, ldwork, perm);
-         if(lperm) { int temp=lperm[p]; lperm[p]=lperm[m]; lperm[m]=temp; }
+         if(lperm) { ipc_ temp=lperm[p]; lperm[p]=lperm[m]; lperm[m]=temp; }
          swap_cols<T, BLOCK_SIZE>
             (p+1, t, BLOCK_SIZE, a, lda, ldwork, perm);
-         if(lperm) { int temp=lperm[p+1]; lperm[p+1]=lperm[t]; lperm[t]=temp; }
+         if(lperm) { ipc_ temp=lperm[p+1]; lperm[p+1]=lperm[t]; lperm[t]=temp; }
          /* Calculate 2x2 inverse */
          T d11 = (a22*detscale)/detpiv;
          T d22 = (a11*detscale)/detpiv;
          T d21 = (-a21*detscale)/detpiv;
          /* Divide through, preserving a copy */
          T *work = &ldwork[p*BLOCK_SIZE];
-         for(int r=p+2; r<BLOCK_SIZE; r++) {
+         for(ipc_ r=p+2; r<BLOCK_SIZE; r++) {
             work[r]   = a[p*lda+r];
             work[BLOCK_SIZE+r] = a[(p+1)*lda+r];
             a[p*lda+r]     = d11*work[r] + d21*work[BLOCK_SIZE+r];

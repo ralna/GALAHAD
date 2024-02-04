@@ -293,8 +293,8 @@ endif
 
 # Compile GALAHAD with 64-bit integer
 if galahad_int64
-  extra_args_single += ['-DGALAHAD_64BIT_INTEGER', '-DSPRAL_64BIT_INTEGER']
-  extra_args_double += ['-DGALAHAD_64BIT_INTEGER', '-DSPRAL_64BIT_INTEGER']
+  extra_args_single += '-DINTEGER_64'
+  extra_args_double += '-DINTEGER_64'
 endif
 
 # Sources

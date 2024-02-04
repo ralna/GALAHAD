@@ -2,10 +2,15 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \version   GALAHAD 4.3 - 2024-02-03 AT 11:00 GMT
  */
+
 #pragma once
+
 #include <stdint.h>
+
 #include "ssids_cpu_kernels_common.hxx"
+#include "ssids_rip.hxx"
 
 namespace spral { namespace ssids { namespace cpu {
 
@@ -57,53 +62,53 @@ void host_trsm(enum spral::ssids::cpu::side side,
                int m, int n, T alpha, const T* a, int lda, 
                T* b, int ldb);
 
-/* _GEMM */
+/* _GEMM_64 */
 template <typename T>
 void host_gemm_64(enum spral::ssids::cpu::operation transa, 
                enum spral::ssids::cpu::operation transb, 
-               int64_t m, int64_t n, int64_t k, T alpha, const T* a, 
-               int64_t lda, const T* b, int64_t ldb, T beta, 
-               T* c, int64_t ldc);
+               longc_ m, longc_ n, longc_ k, T alpha, const T* a, 
+               longc_ lda, const T* b, longc_ ldb, T beta, 
+               T* c, longc_ ldc);
 
-/* _GEMV */
+/* _GEMV_64 */
 template <typename T>
 void gemv_64(enum spral::ssids::cpu::operation trans, 
-         int64_t m, int64_t n, T alpha, const T* a, int64_t lda, 
-         const T* x, int64_t incx, T beta, T* y, int64_t incy);
+         longc_ m, longc_ n, T alpha, const T* a, longc_ lda, 
+         const T* x, longc_ incx, T beta, T* y, longc_ incy);
 
-/* _POTRF */
+/* _POTRF_64 */
 template <typename T>
-int64_t lapack_potrf_64(enum spral::ssids::cpu::fillmode uplo, int64_t n, 
-                 T* a, int64_t lda);
+longc_ lapack_potrf_64(enum spral::ssids::cpu::fillmode uplo, longc_ n, 
+                 T* a, longc_ lda);
 
-/* _SYTRF - Bunch-Kaufman factorization */
+/* _SYTRF_64 - Bunch-Kaufman factorization */
 template <typename T>
-int64_t lapack_sytrf_64(enum spral::ssids::cpu::fillmode uplo, 
-                 int64_t n, T* a, int64_t lda, int64_t* ipiv, 
-                 T* work, int64_t lwork);
+longc_ lapack_sytrf_64(enum spral::ssids::cpu::fillmode uplo, 
+                 longc_ n, T* a, longc_ lda, longc_* ipiv, 
+                 T* work, longc_ lwork);
 
-/* _SYRK */
+/* _SYRK_64 */
 template <typename T>
 void host_syrk_64(enum spral::ssids::cpu::fillmode uplo, 
               enum spral::ssids::cpu::operation trans, 
-              int64_t n, int64_t k, T alpha, const T* a, int64_t lda, 
-              T beta, T* c, int64_t ldc);
+              longc_ n, longc_ k, T alpha, const T* a, longc_ lda, 
+              T beta, T* c, longc_ ldc);
 
-/* _TRSV */
+/* _TRSV_64 */
 template <typename T>
 void host_trsv_64(enum spral::ssids::cpu::fillmode uplo, 
                enum spral::ssids::cpu::operation trans, 
                enum spral::ssids::cpu::diagonal diag, 
-               int64_t n, const T* a, int64_t lda, T* x, int64_t incx);
+               longc_ n, const T* a, longc_ lda, T* x, longc_ incx);
 
-/* _TRSM */
+/* _TRSM_64 */
 template <typename T>
 void host_trsm_64(enum spral::ssids::cpu::side side, 
                enum spral::ssids::cpu::fillmode uplo, 
                enum spral::ssids::cpu::operation transa, 
                enum spral::ssids::cpu::diagonal diag, 
-               int64_t m, int64_t n, T alpha, const T* a, int64_t lda, 
-               T* b, int64_t ldb);
+               longc_ m, longc_ n, T alpha, const T* a, longc_ lda, 
+               T* b, longc_ ldb);
 
 }}} /* namespaces spral::ssids::cpu */
 

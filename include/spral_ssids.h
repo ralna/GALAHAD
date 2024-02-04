@@ -1,4 +1,7 @@
 //* \file spral_ssids.h */
+/**  
+ * \version   GALAHAD 4.3 - 2024-02-04 AT 10:10 GMT
+ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,62 +16,63 @@ extern "C" {
 
 // precision
 #include "galahad_precision.h"
+#include "ssids_rip.hxx"
 
 /************************************
  * Derived types
  ************************************/
 
 struct spral_ssids_options {
-   int array_base; // Not in Fortran type
-   int print_level;
-   int unit_diagnostics;
-   int unit_error;
-   int unit_warning;
-   int ordering;
-   int nemin;
+   ipc_ array_base; // Not in Fortran type
+   ipc_ print_level;
+   ipc_ unit_diagnostics;
+   ipc_ unit_error;
+   ipc_ unit_warning;
+   ipc_ ordering;
+   ipc_ nemin;
    bool ignore_numa;
    bool use_gpu;
    bool gpu_only;
-   int64_t min_gpu_work;
+   longc_ min_gpu_work;
    float max_load_inbalance;
    float gpu_perf_coeff;
-   int scaling;
-   int64_t small_subtree_threshold;
-   int cpu_block_size;
+   ipc_ scaling;
+   longc_ small_subtree_threshold;
+   ipc_ cpu_block_size;
    bool action;
-   int pivot_method;
+   ipc_ pivot_method;
    real_wp_ small;
    real_wp_ u;
-   int nstream;
+   ipc_ nstream;
    real_wp_ multiplier;
    float min_loadbalance;
-   int failed_pivot_method;
+   ipc_ failed_pivot_method;
    // char unused[80]; // Allow for future expansion
 };
 
 struct spral_ssids_inform {
-   int flag;
-   int matrix_dup;
-   int matrix_missing_diag;
-   int matrix_outrange;
-   int matrix_rank;
-   int maxdepth;
-   int maxfront;
-   int maxsupernode;
-   int num_delay;
-   int64_t num_factor;
-   int64_t num_flops;
-   int num_neg;
-   int num_sup;
-   int num_two;
-   int stat;
-   int cuda_error;
-   int cublas_error;
-   int not_first_pass;
-   int not_second_pass;
-   int nparts;
-   int64_t cpu_flops;
-   int64_t gpu_flops;
+   ipc_ flag;
+   ipc_ matrix_dup;
+   ipc_ matrix_missing_diag;
+   ipc_ matrix_outrange;
+   ipc_ matrix_rank;
+   ipc_ maxdepth;
+   ipc_ maxfront;
+   ipc_ maxsupernode;
+   ipc_ num_delay;
+   longc_ num_factor;
+   longc_ num_flops;
+   ipc_ num_neg;
+   ipc_ num_sup;
+   ipc_ num_two;
+   ipc_ stat;
+   ipc_ cuda_error;
+   ipc_ cublas_error;
+   ipc_ not_first_pass;
+   ipc_ not_second_pass;
+   ipc_ nparts;
+   longc_ cpu_flops;
+   longc_ gpu_flops;
    // char unused[76]; // Allow for future expansion
 };
 
@@ -79,40 +83,40 @@ struct spral_ssids_inform {
 /* Initialize options to defaults */
 void spral_ssids_default_options(struct spral_ssids_options *options);
 /* Perform analysis phase for CSC data */
-void spral_ssids_analyse(bool check, int n, int *order, const int64_t *ptr,
-      const int *row, const real_wp_ *val, void **akeep,
+void spral_ssids_analyse(bool check, ipc_ n, ipc_ *order, const longc_ *ptr,
+      const ipc_ *row, const real_wp_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
-void spral_ssids_analyse_ptr32(bool check, int n, int *order, const int *ptr,
-      const int *row, const real_wp_ *val, void **akeep,
+void spral_ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const int *ptr,
+      const ipc_ *row, const real_wp_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Perform analysis phase for coordinate data */
-void spral_ssids_analyse_coord(int n, int *order, int64_t ne, const int *row,
-      const int *col, const real_wp_ *val, void **akeep,
+void spral_ssids_analyse_coord(ipc_ n, ipc_ *order, longc_ ne, const ipc_ *row,
+      const ipc_ *col, const real_wp_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Perform numerical factorization */
-void spral_ssids_factor(bool posdef, const int64_t *ptr, const int *row,
+void spral_ssids_factor(bool posdef, const longc_ *ptr, const ipc_ *row,
       const real_wp_ *val, real_wp_ *scale, void *akeep, void **fkeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
-void spral_ssids_factor_ptr32(bool posdef, const int *ptr, const int *row,
+void spral_ssids_factor_ptr32(bool posdef, const int *ptr, const ipc_ *row,
       const real_wp_ *val, real_wp_ *scale, void *akeep, void **fkeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Perform triangular solve(s) for single rhs */
-void spral_ssids_solve1(int job, real_wp_ *x1, void *akeep, void *fkeep,
+void spral_ssids_solve1(ipc_ job, real_wp_ *x1, void *akeep, void *fkeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Perform triangular solve(s) for one or more rhs */
-void spral_ssids_solve(int job, int nrhs, real_wp_ *x, int ldx, void *akeep,
+void spral_ssids_solve(ipc_ job, ipc_ nrhs, real_wp_ *x, ipc_ ldx, void *akeep,
       void *fkeep, const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
 /* Free memory */
-int spral_ssids_free_akeep(void **akeep);
-int spral_ssids_free_fkeep(void **fkeep);
-int spral_ssids_free(void **akeep, void **fkeep);
+ipc_ spral_ssids_free_akeep(void **akeep);
+ipc_ spral_ssids_free_fkeep(void **fkeep);
+ipc_ spral_ssids_free(void **akeep, void **fkeep);
 
 /************************************
  * Advanced subroutines
@@ -125,7 +129,7 @@ void spral_ssids_enquire_posdef(const void *akeep, const void *fkeep,
 /* Retrieve information on pivots (indefinite case) */
 void spral_ssids_enquire_indef(const void *akeep, const void *fkeep,
       const struct spral_ssids_options *options,
-      struct spral_ssids_inform *inform, int *piv_order, real_wp_ *d);
+      struct spral_ssids_inform *inform, ipc_ *piv_order, real_wp_ *d);
 /* Alter pivots (indefinite case only) */
 void spral_ssids_alter(const real_wp_ *d, const void *akeep, void *fkeep,
       const struct spral_ssids_options *options,
