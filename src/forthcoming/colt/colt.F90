@@ -68,6 +68,8 @@
 !    LOGICAL, PARAMETER :: print_debug = .TRUE.
      LOGICAL, PARAMETER :: print_debug = .FALSE.
 
+     INTEGER ( KIND = ip_ ), PARAMETER :: track_out = 29
+
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
@@ -3147,7 +3149,6 @@ write(6,*) ' x ', nlp%X
        inform%target = t_lower + ( REAL( n_points - data%i_point, KIND = rp_ ) &
            / REAL( n_points - 1, KIND = rp_ ) ) * (  t_upper -  t_lower )
 
-       nlp%X( : nlp%n ) = zero
        nlp%X( 1 ) = inform%target
        IF ( data%printd ) THEN
          WRITE( data%out, "( A, ' X ', /, ( 5ES12.4 ) )" )                     &
@@ -3409,6 +3410,7 @@ write(6,*) ' x ', nlp%X
            "( ' i, it, target, phi, ||g|| = ', 2I4, F7.2, 2ES16.8 )" )         &
          data%i_point, inform%nls_inform%iter, inform%target,                  &
          inform%nls_inform%obj, inform%nls_inform%norm_g
+write(6,"( ' X = ', ( 4ES14.6 ) )" ) nlp%X
 
         data%t( data%i_point ) = inform%target
         data%f( data%i_point ) = nlp%f
@@ -3435,21 +3437,23 @@ write(6,*) ' x ', nlp%X
 
  900 CONTINUE
 
-     WRITE( data%out, "( 't = [' )" )
-     WRITE( data%out, "( ( 1P4E16.8, '...' ) )" )  data%t( : n_points - 1 )
-     WRITE( data%out, "( 1PE16.8, '];' )" )  data%t( n_points )
+     OPEN( UNIT = track_out, FILE = 'track.m' )
+     WRITE( track_out, "( 't = [' )" )
+     WRITE( track_out, "( ( 1P4E16.8, '...' ) )" )  data%t( : n_points - 1 )
+     WRITE( track_out, "( 1PE16.8, '];' )" )  data%t( n_points )
 
-     WRITE( data%out, "( 'f = [' )" )
-     WRITE( data%out, "( ( 1P4E16.8, '...' ) )" )  data%f( : n_points - 1 )
-     WRITE( data%out, "( 1PE16.8, '];' )" )  data%f( n_points )
+     WRITE( track_out, "( 'f = [' )" )
+     WRITE( track_out, "( ( 1P4E16.8, '...' ) )" )  data%f( : n_points - 1 )
+     WRITE( track_out, "( 1PE16.8, '];' )" )  data%f( n_points )
 
-     WRITE( data%out, "( 'c = [' )" )
-     WRITE( data%out, "( ( 1P4E16.8, '...' ) )" )  data%c( : n_points - 1 )
-     WRITE( data%out, "( 1PE16.8, '];' )" )  data%c( n_points )
+     WRITE( track_out, "( 'c = [' )" )
+     WRITE( track_out, "( ( 1P4E16.8, '...' ) )" )  data%c( : n_points - 1 )
+     WRITE( track_out, "( 1PE16.8, '];' )" )  data%c( n_points )
 
-     WRITE( data%out, "( 'phi = [' )" )
-     WRITE( data%out, "( ( 1P4E16.8, '...' ) )" )  data%phi( : n_points - 1 )
-     WRITE( data%out, "( 1PE16.8, '];' )" )  data%phi( n_points )
+     WRITE( track_out, "( 'phi = [' )" )
+     WRITE( track_out, "( ( 1P4E16.8, '...' ) )" )  data%phi( : n_points - 1 )
+     WRITE( track_out, "( 1PE16.8, '];' )" )  data%phi( n_points )
+     CLOSE( UNIT = track_out )
 
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
      inform%time%total = REAL( data%time_now - data%time_start, rp_ )
