@@ -9,11 +9,11 @@ All commands below are to be run from the top of the GALAHAD source tree.
 ```
 meson setup builddir/pc64.lnx.gfo
 meson compile -C builddir/pc64.lnx.gfo
-meson install -C builddir/pc64.lnx.gfo 
-meson test -C builddir/pc64.lnx.gfo 
+meson install -C builddir/pc64.lnx.gfo
+meson test -C builddir/pc64.lnx.gfo
 ```
 
-# If you want to use 64bit integers and tune other things, start with
+# If you want to use 64-bit integers and tune other things, start with
 
 ```
 meson setup builddir/pc64.lnx.gfo --buildtype=debug \ <- compile faster!

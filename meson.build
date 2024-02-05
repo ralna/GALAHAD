@@ -256,6 +256,14 @@ endif
 extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
 extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
 
+if not libblas.found()
+  extra_args_single += '-DGALAHAD_BLAS'
+  extra_args_double += '-DGALAHAD_BLAS'
+endif
+if not liblapack.found()
+  extra_args_single += '-DGALAHAD_LAPACK'
+  extra_args_double += '-DGALAHAD_LAPACK'
+endif
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'
 endif

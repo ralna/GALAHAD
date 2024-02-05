@@ -22,10 +22,10 @@ function append_macros!(macros::Vector{Tuple{String,String}}, path::String)
       symbol = tab[2]
       pp_symbol = tab[3]
       push!(macros, (symbol, pp_symbol))
-      if length(pp_symbol) > 31
-        println("The symbol $(pp_symbol) has more than 31 characters.")
-        global m = m+1
-      end
+      # if length(pp_symbol) > 31
+      #   println("The symbol $(pp_symbol) has more than 31 characters.")
+      #   global m = m+1
+      # end
     end
   end
   return macros
@@ -35,8 +35,8 @@ macros = Tuple{String,String}[]
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
-append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_single.h"))
-append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_double.h"))
+# append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_single.h"))
+# append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "cutest_routines_double.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_cfunctions.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_kinds.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "spral_procedures.h"))

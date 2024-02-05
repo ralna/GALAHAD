@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 13:00 GMT.
 
+#include "spral_procedures.h"
+
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   S S I D S   M O D U L E  -*-*-*-*-*-
 
 MODULE SPRAL_SSIDS_single

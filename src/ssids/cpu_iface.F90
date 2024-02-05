@@ -1,44 +1,10 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-02-04 AT 11:50 GMT.
 
+#include "galahad_lapack.h"
+#include "spral_procedures.h"
+
 #ifdef SPRAL_SINGLE
 #ifdef INTEGER_64
-#define spral_kinds_precision spral_kinds_single_64
-#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single_64
-#define spral_ssids_inform_precision spral_ssids_inform_single_64
-#define spral_ssids_types_precision spral_ssids_types_single_64
-#ifdef NO_UNDERSCORE_INTEGER_64
-#define gemv  sgemv64
-#define trsv  strsv64
-#define syrk  ssyrk64
-#define trsm  strsm64
-#define sytrf ssytrf64
-#define potrf spotrf64
-#define gemm  sgemm64
-#elif DOUBLE_UNDERSCORE_INTEGER_64
-#define gemv  sgemv__64
-#define trsv  strsv__64
-#define syrk  ssyrk__64
-#define trsm  strsm__64
-#define sytrf ssytrf__64
-#define potrf spotrf__64
-#define gemm  sgemm__64
-#elif NO_SYMBOL_INTEGER_64
-#define gemv  sgemv
-#define trsv  strsv
-#define syrk  ssyrk
-#define trsm  strsm
-#define sytrf ssytrf
-#define potrf spotrf
-#define gemm  sgemm
-#else
-#define gemv  sgemv_64
-#define trsv  strsv_64
-#define syrk  ssyrk_64
-#define trsm  strsm_64
-#define sytrf ssytrf_64
-#define potrf spotrf_64
-#define gemm  sgemm_64
-#endif
 #define spral_c_gemv  spral_c_sgemv_64
 #define spral_c_trsv  spral_c_strsv_64
 #define spral_c_syrk  spral_c_ssyrk_64
@@ -47,17 +13,6 @@
 #define spral_c_potrf spral_c_spotrf_64
 #define spral_c_gemm  spral_c_sgemm_64
 #else
-#define spral_kinds_precision spral_kinds_single
-#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
-#define spral_ssids_inform_precision spral_ssids_inform_single
-#define spral_ssids_types_precision spral_ssids_types_single
-#define gemv  sgemv
-#define trsv  strsv
-#define syrk  ssyrk
-#define trsm  strsm
-#define sytrf ssytrf
-#define potrf spotrf
-#define gemm  sgemm
 #define spral_c_gemv  spral_c_sgemv
 #define spral_c_trsv  spral_c_strsv
 #define spral_c_syrk  spral_c_ssyrk
@@ -68,43 +23,6 @@
 #endif
 #else
 #ifdef INTEGER_64
-#define spral_kinds_precision spral_kinds_double_64
-#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double_64
-#define spral_ssids_inform_precision spral_ssids_inform_double_64
-#define spral_ssids_types_precision spral_ssids_types_double_64
-#ifdef NO_UNDERSCORE_INTEGER_64
-#define gemv  dgemv64
-#define trsv  dtrsv64
-#define syrk  dsyrk64
-#define trsm  dtrsm64
-#define sytrf dsytrf64
-#define potrf dpotrf64
-#define gemm  dgemm64
-#elif DOUBLE_UNDERSCORE_INTEGER_64
-#define gemv  dgemv__64
-#define trsv  dtrsv__64
-#define syrk  dsyrk__64
-#define trsm  dtrsm__64
-#define sytrf dsytrf__64
-#define potrf dpotrf__64
-#define gemm  dgemm__64
-#elif NO_SYMBOL_INTEGER_64
-#define gemv  dgemv
-#define trsv  dtrsv
-#define syrk  dsyrk
-#define trsm  dtrsm
-#define sytrf dsytrf
-#define potrf dpotrf
-#define gemm  dgemm
-#else
-#define gemv  dgemv_64
-#define trsv  dtrsv_64
-#define syrk  dsyrk_64
-#define trsm  dtrsm_64
-#define sytrf dsytrf_64
-#define potrf dpotrf_64
-#define gemm  dgemm_64
-#endif
 #define spral_c_gemv  spral_c_dgemv_64
 #define spral_c_trsv  spral_c_dtrsv_64
 #define spral_c_syrk  spral_c_dsyrk_64
@@ -113,17 +31,6 @@
 #define spral_c_potrf spral_c_dpotrf_64
 #define spral_c_gemm  spral_c_dgemm_64
 #else
-#define spral_kinds_precision spral_kinds_double
-#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
-#define spral_ssids_inform_precision spral_ssids_inform_double
-#define spral_ssids_types_precision spral_ssids_types_double
-#define gemv  dgemv
-#define trsv  dtrsv
-#define syrk  dsyrk
-#define trsm  dtrsm
-#define sytrf dsytrf
-#define potrf dpotrf
-#define gemm  dgemm
 #define spral_c_gemv  spral_c_dgemv
 #define spral_c_trsv  spral_c_dtrsv
 #define spral_c_syrk  spral_c_dsyrk
@@ -132,11 +39,6 @@
 #define spral_c_potrf spral_c_dpotrf
 #define spral_c_gemm  spral_c_dgemm
 #endif
-#endif
-
-#ifdef INTEGER_64
-#define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
-#define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
 #endif
 
 !> \file
@@ -148,6 +50,8 @@ module spral_ssids_cpu_iface_precision
    use, intrinsic :: iso_c_binding
    use spral_ssids_types_precision, only : ssids_options
    use spral_ssids_inform_precision, only : ssids_inform
+   use GALAHAD_BLAS_interface, only : GEMV, GEMM, TRSV, TRSM, SYRK
+   use GALAHAD_LAPACK_interface, only : SYTRF, POTRF
    implicit none
 
    private
@@ -241,7 +145,6 @@ end subroutine cpu_copy_stats_out
 subroutine spral_c_gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
 bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_blas_iface, only : dgemm
    character(C_CHAR), intent(in) :: ta, tb
    integer(C_IP_), intent(in) :: m, n, k
    integer(C_IP_), intent(in) :: lda, ldb, ldc
@@ -249,75 +152,69 @@ bind(C)
    real(C_RP_), intent(in   ), dimension(lda, *) :: a
    real(C_RP_), intent(in   ), dimension(ldb, *) :: b
    real(C_RP_), intent(inout), dimension(ldc, *) :: c
-   call gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
+   call GEMM(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
 end subroutine spral_c_gemm
 
 subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_lapack_iface, only : dpotrf
    character(C_CHAR), intent(in) :: uplo
    integer(C_IP_), intent(in) :: n, lda
    integer(C_IP_), intent(out) :: info
    real(C_RP_), intent(inout), dimension(lda, *) :: a
-   call potrf(uplo, n, a, lda, info)
+   call POTRF(uplo, n, a, lda, info)
 end subroutine spral_c_potrf
 
 subroutine spral_c_sytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_lapack_iface, only : dsytrf
    character(C_CHAR), intent(in) :: uplo
    integer(C_IP_), intent(in) :: n, lda, lwork
    integer(C_IP_), intent(out), dimension(n) :: ipiv
    integer(C_IP_), intent(out) :: info
    real(C_RP_), intent(inout), dimension(lda, *) :: a
    real(C_RP_), intent(out  ), dimension(*) :: work
-   call sytrf(uplo, n, a, lda, ipiv, work, lwork, info)
+   call SYTRF(uplo, n, a, lda, ipiv, work, lwork, info)
 end subroutine spral_c_sytrf
 
 subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
                          ldb) bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_blas_iface, only : dtrsm
    character(C_CHAR), intent(in) :: side, uplo, transa, diag
    integer(C_IP_), intent(in) :: m, n, lda, ldb
    real(C_RP_), intent(in   ) :: alpha
    real(C_RP_), intent(in   ) :: a(lda, *)
    real(C_RP_), intent(inout) :: b(ldb, n)
-   call trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
+   call TRSM(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
 end subroutine spral_c_trsm
 
 subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_blas_iface, only : dsyrk
    character(C_CHAR), intent(in) :: uplo, trans
    integer(C_IP_), intent(in) :: n, k, lda, ldc
    real(C_RP_), intent(in) :: alpha, beta
    real(C_RP_), intent(in   ), dimension(lda, *) :: a
    real(C_RP_), intent(inout), dimension(ldc, n) :: c
-   call syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
+   call SYRK(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
 end subroutine spral_c_syrk
 
 subroutine spral_c_trsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_blas_iface, only : dtrsv
    character(C_CHAR), intent(in) :: uplo, trans, diag
    integer(C_IP_), intent(in) :: n, lda, incx
    real(C_RP_), intent(in   ), dimension(lda, n) :: a
    real(C_RP_), intent(inout), dimension(*) :: x
-   call trsv(uplo, trans, diag, n, a, lda, x, incx)
+   call TRSV(uplo, trans, diag, n, a, lda, x, incx)
 end subroutine spral_c_trsv
 
 subroutine spral_c_gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
 bind(C)
    use spral_kinds_precision, only: C_IP_, C_RP_
-   use spral_ssids_blas_iface, only : dgemv
    character(C_CHAR), intent(in) :: trans
    integer(C_IP_), intent(in) :: m, n, lda, incx, incy
    real(C_RP_), intent(in) :: alpha, beta
    real(C_RP_), intent(in   ), dimension(lda, n) :: a
    real(C_RP_), intent(in   ), dimension(*) :: x
    real(C_RP_), intent(inout), dimension(*) :: y
-   call gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
+   call GEMV(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
 end subroutine spral_c_gemv
 
 end module spral_ssids_cpu_iface_precision

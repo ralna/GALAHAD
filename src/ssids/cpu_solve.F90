@@ -1,7 +1,35 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:40 GMT.
 
+#include "galahad_lapack.h"
 #include "spral_procedures.h"
 
+#ifdef GALAHAD_BLAS
+#ifdef SPRAL_SINGLE
+#ifdef INTEGER_64
+#define trsm galahad_strsm_64
+#define trsv galahad_strsv_64
+#define gemm galahad_sgemm_64
+#define gemv galahad_sgemv_64
+#else
+#define trsm galahad_strsm
+#define trsv galahad_strsv
+#define gemm galahad_sgemm
+#define gemv galahad_sgemv
+#endif
+#else
+#ifdef INTEGER_64
+#define trsm galahad_dtrsm_64
+#define trsv galahad_dtrsv_64
+#define gemm galahad_dgemm_64
+#define gemv galahad_dgemv_64
+#else
+#define trsm galahad_dtrsm
+#define trsv galahad_dtrsv
+#define gemm galahad_dgemm
+#define gemv galahad_dgemv
+#endif
+#endif
+#else
 #ifdef SPRAL_SINGLE
 #ifdef INTEGER_64
 #define trsm strsm_64
@@ -25,6 +53,7 @@
 #define trsv dtrsv
 #define gemm dgemm
 #define gemv dgemv
+#endif
 #endif
 #endif
 
@@ -345,10 +374,10 @@ contains
        ! Work with xlocal
 
        if (pos_def) then
-          call trsm('Left', 'Lower', 'Non-Trans', 'Non-Unit', nelim, nrhs, &
+          call trsm('L', 'L', 'N', 'N', nelim, nrhs, &
                one, lcol, blkm, xlocal, blkm)
        else
-          call trsm('Left', 'Lower', 'Non-Trans', 'Unit', nelim, nrhs, &
+          call trsm('L', 'L', 'N', 'U', nelim, nrhs, &
                one, lcol, blkm, xlocal, blkm)
        end if
 
@@ -617,16 +646,16 @@ contains
           end do
        end do
        if ((blkm-nelim) .gt. 0) then
-          call gemm('Trans', 'Non-trans', nelim, nrhs, blkm-nelim, -one, &
+          call gemm('T', 'N', nelim, nrhs, blkm-nelim, -one, &
                lcol(nelim+1), blkm, xlocal(nelim+1,1), blkm, one, xlocal, &
                blkm)
        end if
 
        if (pos_def) then
-          call trsm('Left','Lower','Trans','Non-Unit', nelim, nrhs, one, &
+          call trsm('L','L','T','N', nelim, nrhs, one, &
                lcol, blkm, xlocal, blkm)
        else
-          call trsm('Left','Lower','Trans','Unit', nelim, nrhs, one, lcol, &
+          call trsm('L','L','T','U', nelim, nrhs, one, lcol, &
                blkm, xlocal, blkm)
        end if
        do r = 1, nrhs
