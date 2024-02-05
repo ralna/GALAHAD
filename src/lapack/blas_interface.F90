@@ -318,6 +318,30 @@
 
      END INTERFACE GER
 
+!  symmetric rank-k update
+
+  INTERFACE SYRK
+
+    SUBROUTINE SSYRK( uplo, trans, n, k, alpha, A, lda, beta, C, ldc )
+    USE GALAHAD_KINDS_precision
+    CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, k, lda, ldc
+    REAL, INTENT( IN ) :: alpha, beta
+    REAL, INTENT( IN ) :: A( lda, * )
+    REAL, INTENT( INOUT ) :: C( ldc, * )
+    END SUBROUTINE SSYRK
+
+    SUBROUTINE DSYRK( uplo, trans, n, k, alpha, A, lda, beta, C, ldc )
+    USE GALAHAD_KINDS_precision
+    CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo, trans
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, k, lda, ldc
+    DOUBLE PRECISION, INTENT( IN ) :: alpha, beta
+    DOUBLE PRECISION, INTENT( IN ) :: A( lda, * )
+    DOUBLE PRECISION, INTENT( INOUT ) :: C( ldc, * )
+    END SUBROUTINE DSYRK
+
+  END INTERFACE SYRK
+
 !  End of module GALAHAD_BLAS_interface
 
    END MODULE GALAHAD_BLAS_interface
