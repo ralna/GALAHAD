@@ -1955,7 +1955,6 @@
        data%n_or_gn = .FALSE.
      END IF
 !    WRITE( 6, * ) ' branch ', data%branch
-     SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10
      CASE ( 20 )  ! re-entry without initialization

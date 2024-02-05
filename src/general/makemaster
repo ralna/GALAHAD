@@ -561,7 +561,7 @@ $(RLG)(ssids_$(PRECIS).o): ../dum/ssidss.F90
 	cd $(OBJ); $(RARR) ssids_$(PRECIS).o ; $(RM) ssids.F90 ssids_$(PRECIS).o
 	$(MVMODS)
 	$(RMARFILE) sls_$(PRECIS).o
-	$(RANLIB) $(RLGS)
+	$(RANLIB) $(RLG)
 	@printf '[ OK ]\n'
 
 ssids_ciface.o: $(CLG)(ssids_ciface.o)

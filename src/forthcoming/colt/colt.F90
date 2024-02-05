@@ -32,7 +32,7 @@
 !     ----------------------------------------------------------
 
      USE GALAHAD_KINDS_precision
-!$    USE omp_lib
+!$   USE omp_lib
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING
@@ -1190,7 +1190,7 @@
 
 !  functions
 
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$   INTEGER :: OMP_GET_MAX_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -1226,7 +1226,7 @@
   10 CONTINUE
 
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
-!$   inform%threads = OMP_GET_MAX_THREADS( )
+!$   inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
      inform%status = GALAHAD_ok
      inform%alloc_status = 0 ; inform%bad_alloc = ''
      inform%iter = 0
@@ -1797,7 +1797,7 @@
 
        inform%NLS_inform%status = 1
        data%nls%X( : data%nls%n ) = nlp%X
-write(6,*) ' x ', nlp%X
+!      WRITE(6,*) ' x ', nlp%X
        data%control%NLS_control%jacobian_available = 2
        data%control%NLS_control%subproblem_control%jacobian_available = 2
        data%control%NLS_control%hessian_available = 2
@@ -2704,14 +2704,14 @@ write(6,*) ' x ', nlp%X
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 !  COLT_track, a method to track the value of "the" minimizer of
-!      1/2 (f(x)-t)^2 + 1/2 ||c(x)||^2 
+!      1/2 (f(x)-t)^2 + 1/2 ||c(x)||^2
 !  for a sequence of equi-distributed values of t in [t_lower,t_upper]
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
 !  All arguments as for COLT_solve, with additionally
 !
-!  n_points is a scalar variable of type default integer, that holds the 
+!  n_points is a scalar variable of type default integer, that holds the
 !   number of equi-distributed points t in [t_lower,t_upper] including
 !   the end points
 !
@@ -2830,7 +2830,7 @@ write(6,*) ' x ', nlp%X
 
 !  functions
 
-!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
+!$   INTEGER :: OMP_GET_MAX_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -2864,7 +2864,7 @@ write(6,*) ' x ', nlp%X
   10 CONTINUE
 
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
-!$   inform%threads = OMP_GET_MAX_THREADS( )
+!$   inform%threads = INT( OMP_GET_MAX_THREADS( ), KIND = ip_ )
      inform%status = GALAHAD_ok
      inform%alloc_status = 0 ; inform%bad_alloc = ''
      inform%iter = 0
@@ -3123,7 +3123,7 @@ write(6,*) ' x ', nlp%X
      data%target_upper = inform%obj
      data%target_lower = - infinity
      inform%target = t_lower
-     data%i_point = 1     
+     data%i_point = 1
      data%target_bounded = .FALSE.
      data%converged = .FALSE.
      data%nt = 0
