@@ -17,8 +17,8 @@
      CHARACTER ( len = max_line ) :: in_line, line
      CHARACTER ( len = 8 ) :: date
      CHARACTER ( len = 10 ) :: time
-     CHARACTER ( len = 6 ) :: sub( 1000 )
-     CHARACTER ( len = 6 ) :: fun( 1000 )
+     CHARACTER ( len = 8 ) :: sub( 1000 )
+     CHARACTER ( len = 8 ) :: fun( 1000 )
      CHARACTER ( len = 4 ) :: suff64( 4 ) = (/ '64  ', '__64', '    ', '_64 ' /)
      INTEGER :: i, ib, j, k, l, l_end, l_new, l_next, line_max, lsame
      INTEGER :: nsub, nfun, lost, nz, nz2
@@ -64,7 +64,7 @@
                IF ( new_line( i + 1 : i + 1 ) == '(' ) EXIT
              END DO
              nsub = nsub + 1
-             sub( nsub ) = '      '
+             sub( nsub ) = '        '
              sub( nsub ) = new_line( l + 17 : i )
            END IF
          END IF
@@ -77,7 +77,7 @@
                IF ( new_line( i + 1 : i + 1 ) == '(' ) EXIT
              END DO
              nsub = nsub + 1
-             sub( nsub ) = '      '
+             sub( nsub ) = '        '
              sub( nsub ) = new_line( l + 21 : i )
            END IF
          END IF
@@ -98,7 +98,7 @@
 !            IF ( new_line( l + 11 : i ) /= 'XERBLA' .AND.                     &
 !                 new_line( l + 11 : i ) /= 'LSAME' ) THEN
                nfun = nfun + 1
-               fun( nfun ) = '      '
+               fun( nfun ) = '        '
                fun( nfun ) = new_line( l + 11 : i )
 !            END IF
            END IF
@@ -149,13 +149,19 @@
 
        DO l = 1, nsub
          IF ( LEN_TRIM( sub( l ) ) == 4 ) THEN
-           WRITE( hout, "( '#define ', A, '   ', A, A )" )                     &
+           WRITE( hout, "( '#define ', A, '     ', A, A )" )                   &
              TRIM( sub( l ) ), TRIM( sub( l ) ), TRIM( suff64( i ) )
          ELSE IF ( LEN_TRIM( sub( l ) ) == 5 ) THEN
+           WRITE( hout, "( '#define ', A, '    ', A, A )" )                    &
+             TRIM( sub( l ) ), TRIM( sub( l ) ), TRIM( suff64( i ) )
+         ELSE IF ( LEN_TRIM( sub( l ) ) == 7 ) THEN
            WRITE( hout, "( '#define ', A, '  ', A, A )" )                      &
              TRIM( sub( l ) ), TRIM( sub( l ) ), TRIM( suff64( i ) )
-         ELSE
+         ELSE IF ( LEN_TRIM( sub( l ) ) == 8 ) THEN
            WRITE( hout, "( '#define ', A, ' ', A, A )" )                       &
+             TRIM( sub( l ) ), TRIM( sub( l ) ), TRIM( suff64( i ) )
+         ELSE
+           WRITE( hout, "( '#define ', A, '   ', A, A )" )                     &
              TRIM( sub( l ) ), TRIM( sub( l ) ), TRIM( suff64( i ) )
          END IF
        END DO

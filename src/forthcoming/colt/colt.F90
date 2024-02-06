@@ -346,7 +346,7 @@
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header, accepted
        LOGICAL :: reverse_fc, reverse_gj, reverse_hj, reverse_hocprods
-       LOGICAL :: target_bounded, converged
+       LOGICAL :: target_bounded, converged, got_fc, got_gj
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SLACKS
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: t, f, c, phi
@@ -1801,6 +1801,7 @@
        data%control%NLS_control%jacobian_available = 2
        data%control%NLS_control%subproblem_control%jacobian_available = 2
        data%control%NLS_control%hessian_available = 2
+       data%got_fc = .TRUE. ; data%got_gj = .TRUE.
 
 !      DO        ! loop to solve problem
    300 CONTINUE  ! mock loop to solve problem
@@ -1821,8 +1822,12 @@
              nlp%X = data%nls%X( : data%nls%n )
              data%branch = 300 ; inform%status = 2 ; RETURN
            ELSE
-             CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
-                           nlp%f, nlp%C )
+             IF ( data%got_fc ) THEN ! skip eval_fc if f and c are already known
+               data%got_fc = .FALSE.
+             ELSE
+               CALL eval_FC( data%eval_status, data%nls%X, userdata,           &
+                             nlp%f, nlp%C )
+             END IF
              data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
              data%nls%C( data%nls%m ) = nlp%f - inform%target
              IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )    &
@@ -1836,8 +1841,12 @@
              nlp%X = data%nls%X( : data%nls%n )
              data%branch = 300 ; inform%status = 4 ; RETURN
            ELSE
-             CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
-                           nlp%Go%val, nlp%J%val )
+             IF ( data%got_gj ) THEN ! skip eval_gj if g and j are already known
+               data%got_gj = .FALSE.
+             ELSE
+               CALL eval_GJ( data%eval_status, data%nls%X, userdata,           &
+                             nlp%Go%val, nlp%J%val )
+             END IF
              SELECT CASE ( SMT_get( data%nls%J%type ) )
              CASE ( 'DENSE' )
                j_ne = 0 ; l = 0
