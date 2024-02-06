@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 11:15 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ E R R O R   P R O G R A M  *-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
