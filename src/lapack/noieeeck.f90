@@ -1,3 +1,5 @@
+#include "galahad_lapack.h"
+
        INTEGER(ip_) FUNCTION IEEECK(ispec, zero, one)
          USE GALAHAD_KINDS
          INTEGER(ip_) :: ispec

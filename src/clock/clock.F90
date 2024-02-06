@@ -1,5 +1,7 @@
 ! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 08:50 GMT.
 
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-*-*- G A L A H A D _ C L O C K    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
