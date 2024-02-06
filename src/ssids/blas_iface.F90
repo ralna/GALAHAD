@@ -1,6 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2023-02-06 AT 11:30 GMT.
 
 ! Define BLAS API in Fortran module
+
+#ifdef INTEGER_64
+#define spral_ssids_blas_iface spral_ssids_blas_iface_64
+#define spral_kinds spral_kinds_64
+#endif
 
 module spral_ssids_blas_iface
   implicit none

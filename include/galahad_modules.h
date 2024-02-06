@@ -1,6 +1,7 @@
 #ifdef INTEGER_64
 #define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
 #define GALAHAD_LAPACK_interface GALAHAD_LAPACK_interface_64
+#define GALAHAD_KINDS GALAHAD_KINDS_64
 #define GALAHAD_KINDS_single GALAHAD_KINDS_single_64
 #define GALAHAD_KINDS_double GALAHAD_KINDS_double_64
 #define GALAHAD_HASH GALAHAD_HASH_64
@@ -12,6 +13,12 @@
 #define GALAHAD_TOOLS GALAHAD_TOOLS_64
 #define GALAHAD_common_ciface GALAHAD_common_ciface_64
 #define LANCELOT_HSL_routines LANCELOT_HSL_routines_64
+#define MKL_PARDISO_PRIVATE MKL_PARDISO_PRIVATE_64
+#define MKL_PARDISO MKL_PARDISO_64
+#define spmf_interfaces spmf_interfaces_64
+#define spmf_enums spmf_enums_64
+#define pastixf_interfaces pastixf_interfaces_64
+#define pastixf_enums pastixf_enums_64
 #endif
 
 #ifdef GALAHAD_SINGLE

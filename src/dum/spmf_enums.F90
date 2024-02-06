@@ -1,4 +1,8 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 10:25 GMT.
+
+#ifdef INTEGER_64
+#define spmf_enums spmf_enums_64
+#endif
 
 !-*-*-  G A L A H A D  -  D U M M Y   S P M F _ E N U M S   M O D U L E  -*-*-
 

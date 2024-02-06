@@ -1,3 +1,2 @@
    SUBROUTINE GALAHAD_hsl_c_dummy( )
-   USE GALAHAD_KINDS
    END SUBROUTINE GALAHAD_hsl_c_dummy

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-28 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 10:10 GMT.
 
 #include "spral_procedures.h"
 
@@ -11,6 +11,7 @@
 ! The matrix may be held in assembled form.
 !
 ! Routines originally based on HSL_MC78 v1.2.0
+
 module spral_core_analyse
   use spral_kinds
   implicit none

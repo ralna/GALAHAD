@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-15 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 11:10 GMT.
 
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
@@ -11,8 +11,13 @@
 #include "config.h"
 #endif
 
+#ifdef INTEGER_64
+#define spral_metis_wrapper spral_metis_wrapper_64
+#define spral_kinds spral_kinds_64
+#endif
+
 module spral_metis_wrapper
-   use spral_kinds_precision
+   use spral_kinds
    use, intrinsic :: iso_c_binding
    implicit none
 

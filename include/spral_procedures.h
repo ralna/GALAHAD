@@ -1,3 +1,16 @@
+#ifdef INTEGER_64
+#define GALAHAD_SYMBOLS galahad_symbols_64
+#define SPRAL_KINDS spral_kinds_64
+#define spral_kinds spral_kinds_64
+#define spral_ssids_lapack_iface spral_ssids_lapack_iface_64
+#define spral_ssids_blas_iface spral_ssids_blas_iface_64
+#define spral_core_analyse spral_core_analyse_64
+#define spral_hw_topology spral_hw_topology_64
+#define spral_ssids_profile spral_ssids_profile_64
+#define spral_metis_wrapper spral_metis_wrapper_64
+#define spral_pgm spral_pgm_64
+#endif
+
 #ifdef GALAHAD_SINGLE
 #ifdef INTEGER_64
 #define GALAHAD_KINDS_single galahad_kinds_single_64
@@ -24,11 +37,6 @@
 #endif
 #endif
 
-#ifdef INTEGER_64
-#define spral_ssids_lapack_iface spral_ssids_lapack_iface_64
-#define spral_ssids_blas_iface spral_ssids_blas_iface_64
-#endif
-
 #ifdef SPRAL_SINGLE
 #ifdef INTEGER_64
 #define SPRAL_KINDS_precision spral_kinds_single_64
@@ -38,6 +46,7 @@
 #define spral_ssids_contrib_fsub_precision spral_ssids_contrib_fsub_single_64
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_single_64
 #define spral_ssids_anal_precision spral_ssids_anal_single_64
+#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_single_64
 #define spral_ssids_gpu_subtree_precision spral_ssids_gpu_subtree_single_64
 #define spral_ssids_cpu_subtree_precision spral_ssids_cpu_subtree_single_64
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single_64
@@ -59,6 +68,7 @@
 #define spral_ssids_contrib_fsub_precision spral_ssids_contrib_fsub_single
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_single
 #define spral_ssids_anal_precision spral_ssids_anal_single
+#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_single
 #define spral_ssids_gpu_subtree_precision spral_ssids_gpu_subtree_single
 #define spral_ssids_cpu_subtree_precision spral_ssids_cpu_subtree_single
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
@@ -82,6 +92,7 @@
 #define spral_ssids_contrib_fsub_precision spral_ssids_contrib_fsub_double_64
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_double_64
 #define spral_ssids_anal_precision spral_ssids_anal_double_64
+#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_double_64
 #define spral_ssids_gpu_subtree_precision spral_ssids_gpu_subtree_double_64
 #define spral_ssids_cpu_subtree_precision spral_ssids_cpu_subtree_double_64
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double_64
@@ -103,6 +114,7 @@
 #define spral_ssids_contrib_fsub_precision spral_ssids_contrib_fsub_double
 #define spral_ssids_fkeep_precision spral_ssids_fkeep_double
 #define spral_ssids_anal_precision spral_ssids_anal_double
+#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_double
 #define spral_ssids_gpu_subtree_precision spral_ssids_gpu_subtree_double
 #define spral_ssids_cpu_subtree_precision spral_ssids_cpu_subtree_double
 #define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
@@ -179,7 +191,6 @@
 #define spral_ssids_cuda_collect_stats_precision spral_ssids_cuda_collect_stats_single
 #define spral_ssids_dsyrk_precision spral_ssids_dsyrk_single
 #define spral_ssids_gpu_alloc_precision spral_ssids_gpu_alloc_single
-#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_single
 #define spral_ssids_gpu_denfact_precision spral_ssids_gpu_denfact_single
 #define spral_ssids_gpu_factor_precision spral_ssids_gpu_factor_single
 #define spral_ssids_gpu_ifaces_precision spral_ssids_gpu_ifaces_single
@@ -281,7 +292,6 @@
 #define spral_ssids_cuda_collect_stats_precision spral_ssids_cuda_collect_stats_double
 #define spral_ssids_dsyrk_precision spral_ssids_dsyrk_double
 #define spral_ssids_gpu_alloc_precision spral_ssids_gpu_alloc_double
-#define spral_ssids_gpu_cpu_solve_precision spral_ssids_gpu_cpu_solve_double
 #define spral_ssids_gpu_denfact_precision spral_ssids_gpu_denfact_double
 #define spral_ssids_gpu_factor_precision spral_ssids_gpu_factor_double
 #define spral_ssids_gpu_ifaces_precision spral_ssids_gpu_ifaces_double

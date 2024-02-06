@@ -4,6 +4,12 @@
 ! Authors: Sue Thorne and Jonathan Hogg
 ! Origin: Heavily modified version of hsl_mc68
 !
+
+#ifdef INTEGER_64
+#define spral_metis_wrapper spral_metis_wrapper_64
+#define spral_kinds spral_kinds_64
+#endif
+
 module spral_metis_wrapper
 
   use, intrinsic :: iso_c_binding

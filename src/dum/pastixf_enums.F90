@@ -1,4 +1,9 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 10:25 GMT.
+
+#ifdef INTEGER_64
+#define pastixf_enums pastixf_enums_64
+#define spmf_enums spmf_enums_64
+#endif
 
 !-*-  G A L A H A D  -  D U M M Y   P A S T I X F _ E N U M S   M O D U L E  -*-
 
@@ -12,6 +17,7 @@
 #else
   INTEGER, PARAMETER :: pastix_int_t = c_int32_t
 #endif
+
    PUBLIC :: MPI_COMM_WORLD
 
    TYPE, BIND( C ) :: pastix_data_t

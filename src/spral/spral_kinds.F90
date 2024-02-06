@@ -1,6 +1,7 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT.
 
 #ifdef INTEGER_64
+#define SPRAL_KINDS spral_kinds_64
 #define SPRAL_KINDS_double spral_kinds_double_64
 #define SPRAL_KINDS_single spral_kinds_single_64
 #endif

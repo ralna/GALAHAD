@@ -1,4 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-27 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 11:30 GMT.
+
+#ifdef INTEGER_64
+#define spral_ssids_lapack_iface spral_ssids_lapack_iface_64
+#define spral_kinds spral_kinds_64
+#endif
 
 ! Definition of LAPACK API in module
 

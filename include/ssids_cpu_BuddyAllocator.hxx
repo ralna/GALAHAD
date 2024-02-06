@@ -315,7 +315,7 @@ public:
    void* allocate(std::size_t sz) {
       // Try allocating in existing pages
       spral::omp::AcquiredLock scopeLock(lock_);
-      void* ptr;
+      void* ptr = nullptr;
       for(auto& page: pages_) {
          ptr = page.allocate(sz);
          if(ptr) break; // allocation suceeded

@@ -1,4 +1,5 @@
 #ifdef INTEGER_64
+#define GALAHAD_KINDS GALAHAD_KINDS_64
 #define GALAHAD_BLAS_interface GALAHAD_BLAS_interface_64
 #endif
 

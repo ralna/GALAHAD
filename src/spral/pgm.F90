@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-25 AT 09:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 09:50 GMT.
+
+#include "spral_procedures.h"
 
 module spral_pgm
    use spral_kinds, only: ip_
