@@ -7,7 +7,6 @@
    TYPE ( UGO_inform_type ) :: inform
    TYPE ( UGO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   EXTERNAL :: FGH
    REAL ( KIND = wp ) :: x_l, x_u, x, f, g, h
    REAL ( KIND = wp ), PARAMETER :: a = 10.0_wp
    REAL ( KIND = wp ) :: ax, sax, cax
