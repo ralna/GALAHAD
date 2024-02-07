@@ -134,7 +134,7 @@ function test_llst()
                                                                      32, 32,
                                                                      32, 32, 32, 32, 32, 32,
                                                                      32, 0))
-    # @reset control[].print_level = 1
+    # @reset control[].print_level = Cint(1)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing

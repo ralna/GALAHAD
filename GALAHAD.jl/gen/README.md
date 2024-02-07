@@ -108,3 +108,20 @@ include("wrappers/abcd.jl")
 
 Now, the Julia wrappers for the `abcd` package are accessible upon
 loading the Julia interface with `using GALAHAD`.
+
+# Tests
+
+The file `examples.jl` help to generate Julia tests based on the C tests of a GALAHAD package.
+- Create symbolic link
+- Explain "tf", "t" or ""
+- Call clean_example(...)
+
+```julia
+(name == "abcd") && examples("abcd", "tf")
+```
+
+To test the new package named `abcd`, insert the following line in `GALAHAD.jl/test/runtests.jl`:
+
+```julia
+include("test_abcd.jl")
+```
