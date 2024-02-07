@@ -498,7 +498,8 @@ make_sls_deps_single: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_svt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \
                make_mc61 make_mc64 make_mc68 make_copyright \
-               make_spralrb make_amd make_ssids_dum
+               make_spralrb make_amd make_$(SSIDS)
+#               make_spralrb make_amd make_ssids_dum
 make_sls_deps_double: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_svt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \

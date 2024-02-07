@@ -696,7 +696,8 @@
 
 !    control%print_level = 4
      CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
-     CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
+     IF ( info%status == 0 )                                                   &
+       CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
 !    write(6,"('x=', 2ES12.4)") X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I5, I9, A9 )" )                                            &
@@ -763,7 +764,8 @@
    control%sls_control%ordering = 7
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
-   CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
+   IF ( info%status == 0 )                                                     &
+     CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
      WRITE( 6, "( I5, I9, A9 )" )                                              &
@@ -815,7 +817,8 @@
 !  control%sls_control%ordering = 7
 !  control%unsymmetric_linear_solver = 'getr'
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
-   CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
+   IF ( info%status == 0 )                                                     &
+     CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
    IF ( info%status == 0 ) THEN
      WRITE( 6, "( I5, I9, A9 )" )                                              &
        2, info%status, type_residual( info%norm_residual )
@@ -880,7 +883,8 @@
    control%preconditioner = 2 ; control%factorization = 1
    control%min_diagonal = 1.0_rp_
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
-   CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
+   IF ( info%status == 0 )                                                     &
+     CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
 !  ALLOCATE( SOL1( n + m ) )
 !  SOL1 = SOL
 !  WRITE( 6, "( ' solution ', /, ( 3ES24.16 ) )" ) SOL
@@ -934,7 +938,8 @@
    control%preconditioner = 2 ; control%factorization = 3
    control%min_diagonal = 1.0_rp_
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
-   CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
+   IF ( info%status == 0 )                                                     &
+     CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
 !  WRITE( 6, "( ' solution ', /, ( 3ES24.16 ) )" ) SOL
 !  WRITE(6,*) ' diff ', MAXVAL( ABS( SOL - SOL1 ) )
 !     WRITE( 25,"( ' solution ', /, ( 5ES24.16 ) )" ) SOL
