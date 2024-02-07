@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_BGO_EXAMPLE2  !  GALAHAD 4.0 - 2022-03-07 AT 13:30 GMT
+   PROGRAM GALAHAD_BGO_EXAMPLE2  !  GALAHAD 4.3 - 2024-02-07 AT 07:30 GMT
    USE GALAHAD_BGO_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -7,7 +7,6 @@
    TYPE ( BGO_inform_type ) :: inform
    TYPE ( BGO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   EXTERNAL :: FUN, GRAD, HESS, HESSPROD
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
