@@ -171,6 +171,9 @@ jobs:
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
           fi
+          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "macos-latest" ) ]]; then
+            PYTHON_INTERFACE="false"
+          fi
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SSIDS="false"
           fi
@@ -182,7 +185,7 @@ jobs:
                                -Dexamples=true \
                                -Dtests=true \
                                -Dssids=$SSIDS \
-                               -Dpythoniface=true \
+                               -Dpythoniface=${PYTHON_INTERFACE} \
                                -Dgalahad_int64=$INT64 \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
