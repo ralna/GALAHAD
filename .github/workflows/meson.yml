@@ -182,7 +182,7 @@ jobs:
             SSIDS="false"
           fi
 
-          meson setup builddir -Ddefault_library=${SHARED_STATIC} \ 
+          meson setup builddir -Ddefault_library=${SHARED_STATIC} \
                                --buildtype=debug \
                                --prefix=$GITHUB_WORKSPACE/galahad \
                                -Dc_std=$CSTD \
