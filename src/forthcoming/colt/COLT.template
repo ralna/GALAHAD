@@ -7,6 +7,7 @@
 ! iterations-between-printing                       1
 ! maximum-number-of-iterations                      100
 ! scale-constraints                                 0
+! use-initial-target                                0
 ! infinity-value                                    1.0D+19
 ! absolute-primal-accuracy                          6.0D-6
 ! relative-primal-accuracy                          2.0D-16
@@ -18,6 +19,8 @@
 ! relative-infeasiblity-tolerated                   2.0D-16
 ! minimum-constraint-scaling-factor                 1.0D-5
 ! maximum-constraint-scaling-factor                 1.0D+5
+! initial-target                                    -1.0D+4
+! initial-target-weight                             1.0D-8
 ! maximum-cpu-time-limit                            -1.0
 ! maximum-clock-time-limit                          -1.0
 ! print-full-solution                               no

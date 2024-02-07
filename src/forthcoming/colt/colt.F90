@@ -123,6 +123,13 @@
 
        INTEGER ( KIND = ip_ ) :: scale_constraints = 0
 
+!   should the initial target be used or ignored?
+!    = 0 no
+!    = 1 yes, aim for given initial f(x_0)
+!    = 2 yes, aim for initial target value (below)
+
+       INTEGER :: use_initial_target = 0
+
 !   any bound larger than infinity in modulus will be regarded as infinite
 
        REAL ( KIND = rp_ ) :: infinity = ten ** 19
@@ -167,6 +174,11 @@
 
        REAL ( KIND = rp_ ) :: min_constraint_scaling = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: max_constraint_scaling = ten ** 5
+
+!  if an inital target is sought, sets its value and weight
+
+       REAL ( KIND = rp_ ) :: initial_target = - ten ** 4
+       REAL ( KIND = rp_ ) :: initial_target_weight = ten ** ( - 8 )
 
 !   the maximum CPU time allowed (-ve means infinite)
 
@@ -348,7 +360,7 @@
        LOGICAL :: reverse_fc, reverse_gj, reverse_hj, reverse_hocprods
        LOGICAL :: target_bounded, converged, got_fc, got_gj
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SLACKS
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale, W
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: t, f, c, phi
 
 !  copy of controls
@@ -418,6 +430,7 @@
 ! iterations-between-printing                       1
 ! maximum-number-of-iterations                      50
 ! scale-constraints                                 0
+! use-initial-target                                0
 ! infinity-value                                    1.0D+19
 ! absolute-primal-accuracy                          6.0D-6
 ! relative-primal-accuracy                          2.0D-16
@@ -431,6 +444,8 @@
 ! maximum-relative-infeasibility                    10.0
 ! minimum-constraint-scaling-factor                 1.0D-5
 ! maximum-constraint-scaling-factor                 1.0D+5
+! initial-target                                    -1.0D+4
+! initial-target-weight                             1.0D-8
 ! maximum-cpu-time-limit                            -1.0
 ! maximum-clock-time-limit                          -1.0
 ! print-full-solution                               no
@@ -463,7 +478,9 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: scale_constraints = maxit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = scale_constraints + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: use_initial_target                   &
+                                             = scale_constraints + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = use_initial_target + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_p = infinity + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_p = stop_abs_p + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_d = stop_rel_p + 1
@@ -477,12 +494,17 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_abs_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_constraint_scaling               &
                                             = min_constraint_scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_target                       &
+                                            = max_constraint_scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_target_weight                &
+                                            = initial_target + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
-                                            =  max_constraint_scaling + 1
+                                            = initial_target_weight + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: full_solution                        &
                                             = clock_time_limit + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = full_solution + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = full_solution + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: alive_file                           &
@@ -507,6 +529,7 @@
      spec( print_gap )%keyword = 'iterations-between-printing'
      spec( maxit )%keyword = 'maximum-number-of-iterations'
      spec( scale_constraints )%keyword = 'scale-constraints'
+     spec( use_initial_target )%keyword = 'use-initial-target'
 
 !  real key-words
 
@@ -523,6 +546,8 @@
        = 'minimum-constraint-scaling-factor'
      spec( max_constraint_scaling )%keyword                                    &
        = 'maximum-constraint-scaling-factor'
+     spec( initial_target )%keyword = 'initial-target'
+     spec( initial_target_weight )%keyword = 'initial-target-weight'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
@@ -577,6 +602,9 @@
                                  control%scale_constraints,                    &
                                  control%error )
 
+     CALL SPECFILE_assign_value( spec( use_initial_target ),                   &
+                                 control%use_initial_target,                   &
+                                 control%error )
 !  set real values
 
      CALL SPECFILE_assign_value( spec( infinity ),                             &
@@ -611,6 +639,12 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( max_constraint_scaling ),               &
                                  control%max_constraint_scaling,               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( initial_target ),                       &
+                                 control%initial_target,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( initial_target_weight ),                &
+                                 control%initial_target_weight,                &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -1211,12 +1245,14 @@
        GO TO 20
      CASE ( 100 ) ! various evaluations
        GO TO 100
-     CASE ( 210 ) ! gradient and Jacobian evaluation
-       GO TO 210
-!    CASE ( 240 ) ! Hessian evaluation
-!      GO TO 240
-     CASE ( 300 ) ! various evaluations
-       GO TO 300
+     CASE ( 200 ) ! various evaluations
+       GO TO 200
+     CASE ( 310 ) ! gradient and Jacobian evaluation
+       GO TO 310
+!    CASE ( 340 ) ! Hessian evaluation
+!      GO TO 340
+     CASE ( 400 ) ! various evaluations
+       GO TO 400
      END SELECT
 
 !  =================
@@ -1445,8 +1481,11 @@
         &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )          &
              prefix, data%stop_p, prefix, data%stop_d, prefix, data%stop_c
 
+
+     IF ( control%use_initial_target > 0 ) GO TO 190
+
 !  ----------------------------------------------------------------------------
-!                           INITIAL TARGET PHASE
+!                 INITIAL TARGET PHASE: AIM FOR FEASIBLE POINT
 !  ----------------------------------------------------------------------------
 
 !  solve the feasibility problem: min 1/2||c(x)||^2 using the nls solver.
@@ -1589,16 +1628,15 @@
 
        CASE DEFAULT
          nlp%X = data%nls%X( : data%nls%n )
-         GO TO 190
+         GO TO 180
        END SELECT
 
 !  perform another iteration
 
-       GO TO 100
+       GO TO 100 ! end of mock loop to solve the feasibility problem
 
 !    END DO ! end of loop to solve the feasibility problem
- 190 CONTINUE
-!stop
+ 180 CONTINUE
 
      inform%obj = nlp%f
      inform%primal_infeasibility = inform%nls_inform%norm_c
@@ -1623,7 +1661,7 @@
      inform%target = data%target_upper - one
      data%target_bounded = .FALSE.
      data%converged = .FALSE.
-     WRITE( data%out, 2070 ) data%target_lower, inform%target, data%target_upper
+!    WRITE( data%out, 2070 ) data%target_lower, inform%target, data%target_upper
      data%nt = 0
 
 !  restore dimensions for target problem
@@ -1632,16 +1670,223 @@
      data%nls%J%ne = data%nls_dims%j_ne ; data%nls%H%ne = data%nls_dims%h_ne
      data%nls%P%ne = data%nls_dims%p_ne
 
+     GO TO 290
+
+!  ----------------------------------------------------------------------------
+!                 INITIAL TARGET PHASE: AIM FOR SPECIFIED TARGET
+!  ----------------------------------------------------------------------------
+
+ 190 CONTINUE
+
+!  set up weight and target values
+
+     array_name = 'colt: data%W'
+     CALL SPACE_resize_array( data%nls%m, data%W,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( inform%status /= 0 ) GO TO 910
+     data%W( : nlp%m ) = one
+     data%W( data%nls%m ) = control%initial_target_weight
+     inform%target = control%initial_target
+
+!  solve the target problem: min 1/2||c(x)||^2 + omega/2 (f(x)-t)^2 for 
+!  a given target t and weight omega
+
+     inform%NLS_inform%status = 1
+     data%nls%X( : data%nls%n ) = nlp%X
+!    WRITE(6,*) ' x ', nlp%X
+     data%control%NLS_control%jacobian_available = 2
+     data%control%NLS_control%subproblem_control%jacobian_available = 2
+     data%control%NLS_control%hessian_available = 2
+     data%got_fc = .TRUE.
+
+!    DO        ! loop to solve problem
+ 200   CONTINUE  ! mock loop to solve problem
+
+!  call the least-squares solver to find x(t)
+
+       CALL NLS_solve( data%nls, data%control%NLS_control,                     &
+                       inform%NLS_inform, data%NLS_data, data%NLS_userdata,    &
+                       W = data%W )
+
+!  respond to requests for further details
+
+       SELECT CASE ( inform%NLS_inform%status )
+
+!  obtain the residuals
+
+       CASE ( 2 )
+         IF ( data%reverse_fc ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 200 ; inform%status = 2 ; RETURN
+         ELSE
+           IF ( data%got_fc ) THEN ! skip eval_fc if f and c are already known
+             data%got_fc = .FALSE.
+           ELSE
+             CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
+                           nlp%f, nlp%C )
+           END IF
+           data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
+           data%nls%C( data%nls%m ) = nlp%f - inform%target
+           IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )      &
+             data%nls%C( : data%nls%m )
+         END IF
+
+!  obtain the Jacobian
+
+       CASE ( 3 )
+         IF ( data%reverse_gj ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 200 ; inform%status = 4 ; RETURN
+         ELSE
+           CALL eval_GJ( data%eval_status, data%nls%X, userdata,               &
+                         nlp%Go%val, nlp%J%val )
+           SELECT CASE ( SMT_get( data%nls%J%type ) )
+           CASE ( 'DENSE' )
+             j_ne = 0 ; l = 0
+             DO i = 1, nlp%m  ! from each row of J(x) in turn
+               data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                       &
+                 = nlp%J%val( l + 1 : l + nlp%n )
+               j_ne = j_ne + data%nls%n ; l = l + nlp%n
+             END DO
+             IF ( nlp%Go%sparse ) THEN ! from g(x)
+               DO i = 1, nlp%Go%ne
+                 data%nls%J%val( j_ne + nlp%Go%ind( i ) ) = nlp%Go%val( i )
+               END DO
+             ELSE
+               data%nls%J%val( j_ne + 1 : j_ne + nlp%n )                       &
+                 = nlp%Go%val( 1 : nlp%n )
+             END IF
+           CASE ( 'SPARSE_BY_ROWS' )
+             DO i = 1, nlp%m  ! from each row of J(x) in turn
+               j_ne = data%nls%J%ptr( i ) - 1
+               DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+                 j_ne = j_ne + 1
+                 data%nls%J%val( j_ne ) = nlp%J%val( l )
+               END DO
+             END DO
+             j_ne = data%nls%J%ptr( data%nls%m ) - 1
+             DO j = 1, nlp%Go%ne
+               j_ne = j_ne + 1
+               data%nls%J%val( j_ne ) = nlp%Go%val( j )
+             END DO
+           CASE ( 'COORDINATE' )
+             data%nls%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne ) ! from J
+             j_ne = nlp%J%ne + data%n_slacks
+             DO j = 1, nlp%Go%ne
+               j_ne = j_ne + 1
+               data%nls%J%val( j_ne ) = nlp%Go%val( j )
+             END DO
+             IF ( print_debug ) WRITE(6,"( ' nls%J', / ( 3( 2I6, ES12.4 )))")  &
+              ( data%nls%J%row( i ), data%nls%J%col( i ),                      &
+                data%nls%J%val( i ), i = 1, data%nls%J%ne )
+           END SELECT
+         END IF
+
+!  obtain the Hessian
+
+       CASE ( 4 )
+         IF ( data%reverse_hj ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 200 ; inform%status = 6 ; RETURN
+         ELSE
+           CALL eval_HJ( data%eval_status, data%nls%X,                         &
+                         data%NLS_data%Y( data%nls%m ),                        &
+                         data%NLS_data%Y( 1 : nlp%m ),                         &
+                         userdata, data%nls%H%val )
+           IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )   &
+            ( data%nls%H%row( i ), data%nls%H%col( i ),                        &
+              data%nls%H%val( i ), i = 1, data%nls%H%ne )
+         END IF
+
+!  form a Jacobian-vector product
+
+       CASE ( 5 )
+         write(6,*) ' no nls_status = 5 as yet, stopping'
+         stop
+!        CALL JACPROD( data%eval_status, data%nls%X,                           &
+!                      data%NLS_userdata, data%NLS_data%transpose,             &
+!                      data%NLS_data%U, data%NLS_data%V )
+
+!  form a Hessian-vector product
+
+       CASE ( 6 )
+         write(6,*) ' no nls_status = 6 as yet, stopping'
+         stop
+!        CALL HESSPROD( data%eval_status, data%nls%X, data%NLS_data%Y,         &
+!                       data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
+
+!  form residual Hessian-vector products
+
+       CASE ( 7 )
+         IF ( data%reverse_hocprods ) THEN
+           nlp%X = data%nls%X( : data%nls%n )
+           data%branch = 200 ; inform%status = 8 ; RETURN
+         ELSE
+           CALL eval_HOCPRODS( data%eval_status, data%nls%X,                   &
+                               data%nls_data%V, userdata,                      &
+                               data%nls%P%val( nlp%P%ne + 1 :                  &
+                                               data%nls%P%ne ),                &
+                               data%nls%P%val( 1 : nlp%P%ne ) )
+           IF ( print_debug ) THEN
+             WRITE(6,"( ' nls%P' )" )
+             DO j = 1, data%nls%n
+               WRITE(6,"( 'column ',  I0, /, / ( 4( I6, ES12.4 ) ) )" ) &
+                 j, ( data%nls%P%row( i ), data%nls%P%val( i ), i = &
+                      data%nls%P%ptr( j ), data%nls%P%ptr( j + 1 ) - 1 )
+             END DO
+           END IF
+         END IF
+
+!  apply the preconditioner
+
+       CASE ( 8 )
+         write(6,*) ' no nls_status = 8 as yet, stopping'
+         stop
+!        CALL SCALE( data%eval_status, data%nls%X,                             &
+!                    data%NLS_userdata, data%NLS_data%U, data%NLS_data%V )
+
+!  terminal exit from the minimization loop
+
+       CASE DEFAULT
+         nlp%X = data%nls%X( : data%nls%n )
+         GO TO 280
+       END SELECT
+       GO TO 200
+!    END DO ! end of loop to solve the target problem
+
+ 280 CONTINUE
+
+     inform%primal_infeasibility = TWO_NORM( nlp%C )
+     WRITE( data%out, "( /, ' f, ||c||, evals = ', 2ES13.5, 1X, I0 )" )        &
+       nlp%f, inform%primal_infeasibility, inform%NLS_inform%iter
+
+stop
+
+
+
+
+
+
+
+
+
+
+
 !  ----------------------------------------------------------------------------
 !                  START OF MAIN LOOP OVER EVOLVING TARGETS
 !  ----------------------------------------------------------------------------
 
-!  solve the target problem: min 1/2||c(x),f)x)-t||^2 for a given target t
+ 290 CONTINUE
+
+!  solve the target problem: min 1/2||c(x),f(x)-t||^2 for a given target t
 
      IF ( data%printd ) WRITE( data%out, "( A, ' (A1:3)' )" ) prefix
 
 !    DO
-  200   CONTINUE
+ 300   CONTINUE
 !      IF ( inform%status == GALAHAD_ok ) GO TO 900
 
        IF ( data%printd ) THEN
@@ -1657,7 +1902,7 @@
        IF ( data%accepted ) THEN
          inform%gj_eval = inform%gj_eval + 1
          IF ( data%reverse_gj ) THEN
-           data%branch = 210 ; inform%status = 3 ; RETURN
+           data%branch = 310 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%Go%val,        &
                          nlp%J%val )
@@ -1670,7 +1915,7 @@
 
 !  return from reverse communication to obtain the gradient and Jacobian
 
-  210  CONTINUE
+  310  CONTINUE
 !    write( 6, "( ' sparse gradient ( ind, val )', /, ( 3( I6, ES12.4 ) ) )" ) &
 !      ( nlp%Go%ind( i ), nlp%Go%val( i ), i = 1, nlp%Go%ne )
 
@@ -1722,12 +1967,12 @@
              prefix, inform%iter, inform%obj,                                  &
              inform%primal_infeasibility, inform%dual_infeasibility,           &
              inform%complementary_slackness, data%s_norm,                      &
-             inform%target, data%clock_now
+             inform%target, inform%NLS_inform%iter, data%clock_now
          ELSE
            WRITE( data%out, 2020 ) prefix, inform%iter,                        &
              inform%obj, inform%primal_infeasibility,                          &
              inform%dual_infeasibility, inform%complementary_slackness,        &
-             inform%target, data%clock_now
+             inform%target, inform%NLS_inform%iter, data%clock_now
          END IF
 
 !        IF ( mod( inform%iter, 200 ) == 0 ) WRITE( data%out, 2100 )
@@ -1776,7 +2021,7 @@
 !           nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
 
 !         IF ( data%reverse_hj ) THEN
-!            data%branch = 240 ; inform%status = 4 ; RETURN
+!            data%branch = 340 ; inform%status = 4 ; RETURN
 !         ELSE
 !            CALL eval_HJ( data%eval_status, nlp%X, y0, nlp%Y, userdata,       &
 !                          nlp%H%val )
@@ -1789,7 +2034,7 @@
 
 !  return from reverse communication to obtain the Hessian of the Lagrangian
 
-! 240  CONTINUE
+! 340  CONTINUE
 
 !  solve the target problem: find x(t) = (local) argmin 1/2||c(x),f)x)-t||^2
 !  using the the nls solver.  All function evlautions are for the vector of
@@ -1804,7 +2049,7 @@
        data%got_fc = .TRUE. ; data%got_gj = .TRUE.
 
 !      DO        ! loop to solve problem
-   300 CONTINUE  ! mock loop to solve problem
+   400 CONTINUE  ! mock loop to solve problem
 
 !  call the least-squares solver to find x(t)
 
@@ -1820,7 +2065,7 @@
          CASE ( 2 )
            IF ( data%reverse_fc ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 2 ; RETURN
+             data%branch = 400 ; inform%status = 2 ; RETURN
            ELSE
              IF ( data%got_fc ) THEN ! skip eval_fc if f and c are already known
                data%got_fc = .FALSE.
@@ -1839,7 +2084,7 @@
          CASE ( 3 )
            IF ( data%reverse_gj ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 4 ; RETURN
+             data%branch = 400 ; inform%status = 4 ; RETURN
            ELSE
              IF ( data%got_gj ) THEN ! skip eval_gj if g and j are already known
                data%got_gj = .FALSE.
@@ -1894,7 +2139,7 @@
          CASE ( 4 )
            IF ( data%reverse_hj ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 6 ; RETURN
+             data%branch = 400 ; inform%status = 6 ; RETURN
            ELSE
              CALL eval_HJ( data%eval_status, data%nls%X,                       &
                            data%NLS_data%Y( data%nls%m ),                      &
@@ -1927,7 +2172,7 @@
          CASE ( 7 )
            IF ( data%reverse_hocprods ) THEN
              nlp%X = data%nls%X( : data%nls%n )
-             data%branch = 300 ; inform%status = 8 ; RETURN
+             data%branch = 400 ; inform%status = 8 ; RETURN
            ELSE
              CALL eval_HOCPRODS( data%eval_status, data%nls%X,                 &
                                  data%nls_data%V, userdata,                    &
@@ -1958,14 +2203,14 @@
            nlp%X = data%nls%X( : data%nls%n )
            GO TO 390
          END SELECT
-         GO TO 300
+         GO TO 400
 !      END DO ! end of loop to solve the target problem
 
    390  CONTINUE
 
         inform%primal_infeasibility = TWO_NORM( nlp%C )
-        WRITE( data%out, "( /, ' f, ||c|| = ', 2ES13.5, / )" )                 &
-         nlp%f, inform%primal_infeasibility
+!       WRITE( data%out, "( /, ' f, ||c||, evals = ', 2ES13.5, 1X, I0 )" )     &
+!        nlp%f, inform%primal_infeasibility, inform%NLS_inform%iter
 
 !  adjust the target
 
@@ -1997,7 +2242,7 @@
              data%tu = inform%target ; data%cu = inform%primal_infeasibility
              t_star = ( data%tu * data%cl - data%tl * data%cu ) /              &
                       ( data%cl - data%cu )
-             WRITE( 6, "( ' t_* = ', ES16.8 )" ) t_star
+!            WRITE( 6, "( ' t_* = ', ES16.8 )" ) t_star
              inform%target                                                     &
                = inform%target + 0.99_rp_ * ( t_star - inform%target )
            END IF
@@ -2006,8 +2251,8 @@
 
 !write(6,*) ' x ', nlp%X
 
-       WRITE( data%out, 2070 ) data%target_lower, inform%target,               &
-                               data%target_upper
+!      WRITE( data%out, 2070 ) data%target_lower, inform%target,               &
+!                              data%target_upper
        IF ( data%converged ) THEN
          write(6,*) ' forcing stop'
          stop
@@ -2042,7 +2287,7 @@
 !                      END OF MAIN LOOP TARGET LOOP
 !  ----------------------------------------------------------------------------
 
-       GO TO 200
+       GO TO 300
 !    END DO
 
 !  summarize the final results
@@ -2077,12 +2322,12 @@
              prefix, inform%iter, inform%obj,                                  &
              inform%primal_infeasibility, inform%dual_infeasibility,           &
              inform%complementary_slackness, data%s_norm,                      &
-             inform%target, inform%time%clock_total
+             inform%target, inform%NLS_inform%iter, inform%time%clock_total
          ELSE
            WRITE( data%out, 2020 ) prefix, inform%iter, inform%obj,            &
              inform%primal_infeasibility, inform%dual_infeasibility,           &
              inform%complementary_slackness,                                   &
-             inform%target, inform%time%clock_total
+             inform%target, inform%NLS_inform%iter, inform%time%clock_total
          END IF
 
          IF ( inform%status == GALAHAD_ok ) THEN
@@ -2237,15 +2482,15 @@
 
 !  non-executable statements
 
- 2000 FORMAT( /, A, ' iter    obj fun  pr_feas du_feas cmp_slk ',              &
-                    '  step    target    time' )
- 2010 FORMAT( A, I5, ES12.4, 3ES8.1, ES8.1, ES9.1, F8.1 )
- 2020 FORMAT( A, I5, ES12.4, 3ES8.1, '     -  ', ES9.1, F8.1 )
+ 2000 FORMAT( /, A, ' iter     obj fun   pr_feas du_feas cmp_slk ',            &
+                    '  step      target      its  time' )
+ 2010 FORMAT( A, I5, ES14.6, 3ES8.1, ES8.1, ES14.6, I4, F8.1 )
+ 2020 FORMAT( A, I5, ES14.6, 3ES8.1, '     -  ', ES14.6, I4, F8.1 )
  2030 FORMAT( A, I7, 1X, A10, 4ES12.4 )
  2040 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2050 FORMAT( A, I7, 4ES12.4 )
  2060 FORMAT( A, 6X, '.', 4( 2X, 10( '.' ) ) )
- 2070 FORMAT( ' lower, new target, upper = ', 3ES16.8 )
+!2070 FORMAT( ' lower, new target, upper = ', 3ES16.8 )
 
 !  end of subroutine COLT_solve
 
@@ -2860,8 +3105,6 @@
        GO TO 20
      CASE ( 210 ) ! gradient and Jacobian evaluation
        GO TO 210
-!    CASE ( 240 ) ! Hessian evaluation
-!      GO TO 240
      CASE ( 300 ) ! various evaluations
        GO TO 300
      END SELECT
@@ -3224,30 +3467,6 @@
          inform%status = GALAHAD_error_time_limit ; GO TO 900
        END IF
 
-!  compute the Hessian
-
-!       inform%h_eval = inform%h_eval + 1
-!       IF ( data%accepted ) THEN
-!!        data%WORK_m( : nlp%m ) = nlp%Y( : nlp%m )  ! temporary copy
-!         IF ( data%control%scale_constraints > 0 )                            &
-!           nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
-
-!         IF ( data%reverse_hj ) THEN
-!            data%branch = 240 ; inform%status = 4 ; RETURN
-!         ELSE
-!            CALL eval_HJ( data%eval_status, nlp%X, y0, nlp%Y, userdata,       &
-!                          nlp%H%val )
-!            IF ( data%eval_status /= 0 ) THEN
-!              inform%bad_eval = 'eval_HJ'
-!              inform%status = GALAHAD_error_evaluation ; GO TO 900
-!            END IF
-!         END IF
-!       END IF
-
-!  return from reverse communication to obtain the Hessian of the Lagrangian
-
-! 240  CONTINUE
-
 !  solve the target problem: find x(t) = (local) argmin 1/2||c(x),f)x)-t||^2
 !  using the the nls solver.  All function evlautions are for the vector of
 !  residuals (c(x),f(x)-t)
@@ -3539,6 +3758,12 @@ write(6,"( ' X = ', ( 4ES14.6 ) )" ) nlp%X
 
      array_name = 'colt: data%C_scale'
      CALL SPACE_dealloc_array( data%C_scale,                                   &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%W'
+     CALL SPACE_dealloc_array( data%W,                                         &
             inform%status, inform%alloc_status, array_name = array_name,       &
             bad_alloc = inform%bad_alloc, out = data%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
