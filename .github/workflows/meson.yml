@@ -183,7 +183,7 @@ jobs:
           fi
 
           meson setup builddir --buildtype=debug \
-                               --default_library=${SHARED_STATIC} \ 
+                               --default-library=${SHARED_STATIC} \ 
                                --prefix=$GITHUB_WORKSPACE/galahad \
                                -Dc_std=$CSTD \
                                -Dcpp_std=$CPPSTD \
