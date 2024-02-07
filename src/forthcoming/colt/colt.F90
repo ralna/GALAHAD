@@ -175,6 +175,10 @@
        REAL ( KIND = rp_ ) :: min_constraint_scaling = ten ** ( - 5 )
        REAL ( KIND = rp_ ) :: max_constraint_scaling = ten ** 5
 
+!   the fraction of the predicted target improvement allowed
+
+       REAL ( KIND = rp_ ) :: target_fraction = 0.999_rp_
+
 !  if an inital target is sought, sets its value and weight
 
        REAL ( KIND = rp_ ) :: initial_target = - ten ** 4
@@ -444,6 +448,7 @@
 ! maximum-relative-infeasibility                    10.0
 ! minimum-constraint-scaling-factor                 1.0D-5
 ! maximum-constraint-scaling-factor                 1.0D+5
+! target-fraction                                   0.999
 ! initial-target                                    -1.0D+4
 ! initial-target-weight                             1.0D-8
 ! maximum-cpu-time-limit                            -1.0
@@ -494,8 +499,10 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: min_constraint_scaling = max_abs_i + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: max_constraint_scaling               &
                                             = min_constraint_scaling + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: initial_target                       &
+     INTEGER ( KIND = ip_ ), PARAMETER :: target_fraction                      &
                                             = max_constraint_scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_target                       &
+                                            = target_fraction + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: initial_target_weight                &
                                             = initial_target + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
@@ -546,6 +553,7 @@
        = 'minimum-constraint-scaling-factor'
      spec( max_constraint_scaling )%keyword                                    &
        = 'maximum-constraint-scaling-factor'
+     spec( target_fraction )%keyword = 'target-fraction'
      spec( initial_target )%keyword = 'initial-target'
      spec( initial_target_weight )%keyword = 'initial-target-weight'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
@@ -639,6 +647,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( max_constraint_scaling ),               &
                                  control%max_constraint_scaling,               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( target_fraction ),                      &
+                                 control%target_fraction,                      &
                                  control%error )
      CALL SPECFILE_assign_value( spec( initial_target ),                       &
                                  control%initial_target,                       &
@@ -1880,6 +1891,9 @@ stop
 !  ----------------------------------------------------------------------------
 
  290 CONTINUE
+     IF ( data%printt ) WRITE( data%out, 2070 ) data%target_lower,             &
+       inform%target, data%target_upper, nlp%f, inform%primal_infeasibility, 0
+     IF ( data%printm ) WRITE( data%out, 2080 ) nlp%X
 
 !  solve the target problem: min 1/2||c(x),f(x)-t||^2 for a given target t
 
@@ -2207,10 +2221,7 @@ stop
 !      END DO ! end of loop to solve the target problem
 
    390  CONTINUE
-
         inform%primal_infeasibility = TWO_NORM( nlp%C )
-!       WRITE( data%out, "( /, ' f, ||c||, evals = ', 2ES13.5, 1X, I0 )" )     &
-!        nlp%f, inform%primal_infeasibility, inform%NLS_inform%iter
 
 !  adjust the target
 
@@ -2223,7 +2234,7 @@ stop
               inform%target = half * ( data%target_upper + data%target_lower )
             END IF
          ELSE
-           inform%target = inform%target - one
+           inform%target = inform%target - two ** ( inform%iter - 1 )
          END IF
        ELSE
          data%target_lower = inform%target
@@ -2243,16 +2254,22 @@ stop
              t_star = ( data%tu * data%cl - data%tl * data%cu ) /              &
                       ( data%cl - data%cu )
 !            WRITE( 6, "( ' t_* = ', ES16.8 )" ) t_star
-             inform%target                                                     &
-               = inform%target + 0.99_rp_ * ( t_star - inform%target )
+!            inform%target                                                     &
+!              = MIN( inform%target + 0.999_rp_ *                              &
+!                       ( data%target_upper - inform%target ),                 &
+!                     inform%target + 0.999_rp_ * ( t_star - inform%target ) )
+             inform%target = inform%target + control%target_fraction *         &
+               ( MIN( data%target_upper, t_star ) - inform%target )
+
            END IF
          END IF
        END IF
 
-!write(6,*) ' x ', nlp%X
+       IF ( data%printt ) WRITE( data%out, 2070 ) data%target_lower,           &
+                            inform%target, data%target_upper, nlp%f,           &
+                            inform%primal_infeasibility, inform%NLS_inform%iter
+       IF ( data%printm ) WRITE( data%out, 2080 ) nlp%X
 
-!      WRITE( data%out, 2070 ) data%target_lower, inform%target,               &
-!                              data%target_upper
        IF ( data%converged ) THEN
          write(6,*) ' forcing stop'
          stop
@@ -2490,7 +2507,10 @@ stop
  2040 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2050 FORMAT( A, I7, 4ES12.4 )
  2060 FORMAT( A, 6X, '.', 4( 2X, 10( '.' ) ) )
-!2070 FORMAT( ' lower, new target, upper = ', 3ES16.8 )
+ 2070 FORMAT( '      lower         new target         upper     ',             &
+              '       f          ||c||   eval', /, 4ES16.8, ES9.2, I6 )
+ 2080 FORMAT( ' X = ', 5ES12.4, /, ( 5X,  5ES12.4 ) )
+
 
 !  end of subroutine COLT_solve
 
@@ -3396,12 +3416,12 @@ stop
 
 !    DO
   200  CONTINUE
-!      inform%target = t_lower + ( REAL( data%i_point - 1, KIND = rp_ ) /      &
-!          REAL( n_points - 1, KIND = rp_ ) ) * (  t_upper -  t_lower )
-       inform%target = t_lower + ( REAL( n_points - data%i_point, KIND = rp_ ) &
-           / REAL( n_points - 1, KIND = rp_ ) ) * (  t_upper -  t_lower )
+       inform%target = t_lower + ( REAL( data%i_point - 1, KIND = rp_ ) /      &
+           REAL( n_points - 1, KIND = rp_ ) ) * (  t_upper -  t_lower )
+!      inform%target = t_lower + ( REAL( n_points - data%i_point, KIND = rp_ ) &
+!          / REAL( n_points - 1, KIND = rp_ ) ) * (  t_upper -  t_lower )
 
-       nlp%X( 1 ) = inform%target
+!      nlp%X( 1 ) = inform%target
        IF ( data%printd ) THEN
          WRITE( data%out, "( A, ' X ', /, ( 5ES12.4 ) )" )                     &
            prefix, nlp%X( : nlp%n )
@@ -3635,10 +3655,10 @@ stop
 !       WRITE( data%out, "( ' i, target, f, ||c|| = ', I6, 3ES16.8 )" )        &
 !        data%i_point, inform%target, nlp%f, inform%primal_infeasibility
         WRITE( data%out,                                                       &
-           "( ' i, it, target, phi, ||g|| = ', 2I4, F7.2, 2ES16.8 )" )         &
+           "( ' i, it, target, phi, ||g|| = ', 2I5, F7.2, 2ES16.8 )" )         &
          data%i_point, inform%nls_inform%iter, inform%target,                  &
          inform%nls_inform%obj, inform%nls_inform%norm_g
-write(6,"( ' X = ', ( 4ES14.6 ) )" ) nlp%X
+!write(6,"( ' X = ', ( 4ES14.6 ) )" ) nlp%X
 
         data%t( data%i_point ) = inform%target
         data%f( data%i_point ) = nlp%f

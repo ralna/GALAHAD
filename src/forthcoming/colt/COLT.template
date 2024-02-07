@@ -19,6 +19,7 @@
 ! relative-infeasiblity-tolerated                   2.0D-16
 ! minimum-constraint-scaling-factor                 1.0D-5
 ! maximum-constraint-scaling-factor                 1.0D+5
+! target-fraction                                   0.999
 ! initial-target                                    -1.0D+4
 ! initial-target-weight                             1.0D-8
 ! maximum-cpu-time-limit                            -1.0
