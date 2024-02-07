@@ -616,9 +616,14 @@ if build_tests
 
       if not (name == 'croti_single')
         test(name,
-             executable(name, file, fortran_args : args_precision, link_with : libgalahad_precision, dependencies : deps_tests,
-                                    link_language : 'fortran', include_directories: include_tests, install : true,
-                                    install_dir : fortran_tests_folder),
+             executable(name, file,
+                        fortran_args : pp_flag + args_precision,
+                        link_with : libgalahad_precision,
+                        dependencies : deps_tests,
+                        link_language : 'fortran',
+                        include_directories: include_tests,
+                        install : true,
+                        install_dir : fortran_tests_folder),
              suite : [package, precision, 'fortran'],
              is_parallel : false)
       endif

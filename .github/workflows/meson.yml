@@ -156,6 +156,7 @@ jobs:
           BLAS_PATH=""
           LAPACK_PATH=""
           PYTHON_INTERFACE="true"
+          SHARED_STATIC="shared"
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" ]]; then
             CSTD="none"
             CPPSTD="none"
@@ -171,18 +172,25 @@ jobs:
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
           fi
+          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
+            SHARED_STATIC="static"
+          fi
+          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "macos-latest" ) ]]; then
+            PYTHON_INTERFACE="false"
+          fi
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SSIDS="false"
           fi
 
-          meson setup builddir --buildtype=debug \
+          meson setup builddir -Ddefault_library=${SHARED_STATIC} \
+                               --buildtype=debug \
                                --prefix=$GITHUB_WORKSPACE/galahad \
                                -Dc_std=$CSTD \
                                -Dcpp_std=$CPPSTD \
                                -Dexamples=true \
                                -Dtests=true \
                                -Dssids=$SSIDS \
-                               -Dpythoniface=true \
+                               -Dpythoniface=${PYTHON_INTERFACE} \
                                -Dgalahad_int64=$INT64 \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
