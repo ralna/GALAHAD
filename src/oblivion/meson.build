@@ -4,7 +4,7 @@
 # subdir('fastr')
 # subdir('funnel')
 # subdir('funnel_equality')
-subdir('gsm')
+# subdir('gsm')
 subdir('ism')
 # subdir('lcf')
 # subdir('lpqpa')
