@@ -8,10 +8,10 @@
 #include "galahad_precision.h"
 #include "galahad_nls.h"
 
-#define max(a,b)  \
-({  __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a > _b ? _a : _b; })
+// Define imax
+int imax(int a, int b) {
+    return (a > b) ? a : b;
+};
 
 // Custom userdata struct
 struct userdata_type {
@@ -75,7 +75,7 @@ int main(void) {
     real_wp_ c[m]; // residual
     real_wp_ y[m]; // multipliers
     real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
-    real_wp_ u[max(m,n)], v[max(m,n)];
+    real_wp_ u[imax(m,n)], v[imax(m,n)];
     real_wp_ J_val[j_ne], J_dense[m*n];
     real_wp_ H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n];
     real_wp_ P_val[p_ne], P_dense[m*n];

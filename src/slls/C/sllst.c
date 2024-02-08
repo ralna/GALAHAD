@@ -8,14 +8,10 @@
 #include "galahad_cfunctions.h"
 #include "galahad_slls.h"
 
-// define max
-
-#define max(a,b)             \
-({                           \
-    __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a > _b ? _a : _b;       \
-})
+// Define imax
+int imax(int a, int b) {
+    return (a > b) ? a : b;
+};
 
 // Custom userdata struct
 struct userdata_type {
@@ -218,7 +214,7 @@ int main(void) {
 
     // reverse-communication input/output
     int on;
-    on = max( n, o );
+    on = imax( n, o );
     int eval_status, nz_v_start, nz_v_end, nz_p_end;
     int nz_v[on], nz_p[o], mask[o];
     real_wp_ v[on], p[on];
