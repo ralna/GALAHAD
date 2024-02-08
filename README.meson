@@ -4,30 +4,50 @@
 
 All commands below are to be run from the top of the GALAHAD source tree.
 
-# If you are in a hurry ... default install (using gfortran/gcc) and test
+# Cheat sheet
 
-```
-meson setup builddir/pc64.lnx.gfo
+## If you are in a hurry ... default install (using gfortran/gcc) with tests
+
+```shell
+meson setup builddir/pc64.lnx.gfo -Dtests=true
 meson compile -C builddir/pc64.lnx.gfo
 meson install -C builddir/pc64.lnx.gfo
 meson test -C builddir/pc64.lnx.gfo
 ```
 
-# If you want to use 64-bit integers and tune other things, start with
+## If you make a mistake!
 
-```
-meson setup builddir/pc64.lnx.gfo --buildtype=debug \ <- compile faster!
-                     -Dgalahad_int64=true \ <- use 64-bit integer
-                     -Dlibblas= \  <- force GALAHAD to use our blas.f90
-                     -Dliblapack= \ <- force GALAHAD to use our lapack.f90
-                     -Dlibmetis=  <- force GALAHAD to use the dummy METIS 
-```
-
-# If you make a mistake!
-
-```
+```shell
 meson setup --wipe builddir/pc64.lnx.gfo
 ```
+
+## Performance of debugging?
+
+meson setup builddir/pc64.lnx.gfo --buildtype=release (default)
+meson setup builddir/pc64.lnx.gfo --buildtype=debug
+
+## Static or shared libraries?
+
+meson setup builddir/pc64.lnx.gfo -Ddefault_library=shared (default)
+meson setup builddir/pc64.lnx.gfo -Ddefault_library=static
+meson setup builddir/pc64.lnx.gfo -Ddefault_library=both
+
+## 32-bit or 64-bit integers?
+
+```shell
+meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=false (default)
+meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true
+```
+
+Note that all dependencies (BLAS, LAPACK, METIS, etc...) must also be compiled with 64-bit integers.
+To force Meson to not use a dependency compiled with 32-bit integers, you can use the option `-Dlibdep=`
+where `libdep` is an option described below to provide the name of the library.
+
+```shell
+meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true -Dlibblas= -Dliblapack= -Dlibmetis=
+```
+
+For instance, GALAHAD is compiled without METIS and our own version of BLAS and LAPACK.
 
 # Details
 
@@ -38,7 +58,7 @@ Refer to https://mesonbuild.com/Getting-meson.html
 ## Set up the build directory and select build options
 
 The command
-```
+```shell
 meson setup builddir [options...]
 ```
 creates the build directory `builddir` and populates it in preparation
@@ -91,7 +111,7 @@ This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
-```
+```shell
 CC=icc CXX=icpc FC=ifort meson setup builddir -Dssids=false [options...]
 CC=icx CXX=icpx FC=ifx meson setup builddir [options...]
 CC=nvc CXX=nvc++ FC=nvfortran meson setup builddir -Dc_std=none -Dcpp_std=none [options...]
@@ -102,18 +122,18 @@ and linkers.
 ## Build
 
 The command
-```
+```shell
 meson compile -C builddir
 ```
 should result in several shared libraries and executables in `builddir`.
 The executables are the example programs and unit tests.
 They can be run right away:
-```
+```shell
 ./builddir/glrts
 ```
 
 It is also possible (and equivalent) to build directly with Ninja:
-```
+```shell
 ninja -C builddir
 ```
 
@@ -124,24 +144,24 @@ force Meson to regenerate.  If build failures persist, run "meson setup
 ## Run Tests
 
 The command
-```
+```shell
 meson test -C builddir
 ```
 runs the unit tests.
 A unit test succeeds when the return code of the test executable is zero.
 
 Similarly, the tests can be executed directly with Ninja:
-```
+```shell
 ninja test -C builddir
 ```
 
 Specify test(s) by name like:
-```
+```shell
 meson test -C builddir ugo_single
 ```
 
 Tests belonging to a suite can be run as follows:
-```
+```shell
 meson test -C builddir --suite ugo
 meson test -C builddir --suite single
 meson test -C builddir --suite C
