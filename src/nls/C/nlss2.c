@@ -8,11 +8,6 @@
 #include "galahad_precision.h"
 #include "galahad_nls.h"
 
-#define max(a,b)  \
-({  __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a > _b ? _a : _b; })
-
 // Custom userdata struct
 struct userdata_type {
    real_wp_ p;
