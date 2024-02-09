@@ -55,53 +55,53 @@ extern "C" {
 
 /* Derived type to hold control parameters for hsl_mi20 */
 struct mi20_control {
-   ipc_ f_arrays;           /* Use 1-based indexing if true(!=0) else 0-based */
-   ipc_ aggressive;         /* number of coarsening steps per coarse level */
-   ipc_ c_fail;             /* conditions for coarsening failure */
-   ipc_ max_levels;         /* size of mi20_data object */
-   ipc_ max_points;         /* max number of points allowed on a coarse level */
-   real_wp_ reduction; /* definition of stagnation */
-   ipc_ st_method;          /* method to find strong transpose connections */
-   real_wp_ st_parameter;  /* defines 'strong' connections */
-   ipc_ testing;            /* test for validity? */
+   ipc_ f_arrays;            /* Use 1-based indexing if true(!=0) else 0-based */
+   ipc_ aggressive;          /* number of coarsening steps per coarse level */
+   ipc_ c_fail;              /* conditions for coarsening failure */
+   ipc_ max_levels;          /* size of mi20_data object */
+   ipc_ max_points;          /* max number of points allowed on a coarse level */
+   real_wp_ reduction;       /* definition of stagnation */
+   ipc_ st_method;           /* method to find strong transpose connections */
+   real_wp_ st_parameter;    /* defines 'strong' connections */
+   ipc_ testing;             /* test for validity? */
    real_wp_ trunc_parameter; /* interpolation truncation parameter */
-   ipc_ coarse_solver;      /* coarse solver to use */
-   ipc_ coarse_solver_its;  /* number of coarse solver itr (itr methods only) */
-   real_wp_ damping; /* damping factor for Jacobi smoother */
-   real_wp_ err_tol; /* error tolerance for preconditioner */
-   ipc_ levels;             /* number of coarse levels used */
-   ipc_ pre_smoothing;      /* number of pre-smoothing iterations */
-   ipc_ smoother;           /* smoother type */
-   ipc_ post_smoothing;     /* number of post-smoothing iterations */
-   ipc_ v_iterations;       /* number of AMG iterations for preconditoner */
-   ipc_ print_level;        /* levels of messages output */
-   ipc_ print;              /* Fortran output stream for general messages */
-   ipc_ error;              /* Fortran output stream for error messages */
-   ipc_ one_pass_coarsen;   /* use one pass coarsening */
+   ipc_ coarse_solver;       /* coarse solver to use */
+   ipc_ coarse_solver_its;   /* number of coarse solver itr (itr methods only) */
+   real_wp_ damping;         /* damping factor for Jacobi smoother */
+   real_wp_ err_tol;         /* error tolerance for preconditioner */
+   ipc_ levels;              /* number of coarse levels used */
+   ipc_ pre_smoothing;       /* number of pre-smoothing iterations */
+   ipc_ smoother;            /* smoother type */
+   ipc_ post_smoothing;      /* number of post-smoothing iterations */
+   ipc_ v_iterations;        /* number of AMG iterations for preconditoner */
+   ipc_ print_level;         /* levels of messages output */
+   ipc_ print;               /* Fortran output stream for general messages */
+   ipc_ error;               /* Fortran output stream for error messages */
+   ipc_ one_pass_coarsen;    /* use one pass coarsening */
 };
 
 /* Derived type to hold control parameters for hsl_mi20_solve */
 struct mi20_solve_control {
-  real_wp_ abs_tol; /* absolute convergence tolerance */
-  real_wp_ breakdown_tol; /* tolerance to determine breakdown in Krylov solver */
-  ipc_ gmres_restart; /* number of iterations before restart*/
-  _Bool init_guess; /* initial guess supplied? */
-  ipc_ krylov_solver; /* choice of krylov solver to use */
-  ipc_ max_its; /* max no of iterations allowed */
-  ipc_ preconditioner_side; /* left (<0) or right (>=0) preconditioning? */
-  real_wp_ rel_tol; /* relative tolerance? */
+  real_wp_ abs_tol;          /* absolute convergence tolerance */
+  real_wp_ breakdown_tol;    /* tolerance to determine breakdown in Krylov solver */
+  ipc_ gmres_restart;        /* number of iterations before restart*/
+  _Bool init_guess;          /* initial guess supplied? */
+  ipc_ krylov_solver;        /* choice of krylov solver to use */
+  ipc_ max_its;              /* max no of iterations allowed */
+  ipc_ preconditioner_side;  /* left (<0) or right (>=0) preconditioning? */
+  real_wp_ rel_tol;          /* relative tolerance? */
 };
 
 /* Communucates errors and information to the user. */
 struct mi20_info {
-   ipc_ flag;               /* error/warning information */
-   ipc_ clevels;            /* number of levels actually generated */
-   ipc_ cpoints;            /* number of points on the coarsest level */
-   ipc_ cnnz;               /* number of non-zeros in coarsest matrix */
-   ipc_ stat;               /* Fortran stat parameter */
-   ipc_ getrf_info;         /* getrf return code */
-  ipc_ iterations;          /* number of iterations */
-  real_wp_ residual;      /* norm of the residual */
+   ipc_ flag;                /* error/warning information */
+   ipc_ clevels;             /* number of levels actually generated */
+   ipc_ cpoints;             /* number of points on the coarsest level */
+   ipc_ cnnz;                /* number of non-zeros in coarsest matrix */
+   ipc_ stat;                /* Fortran stat parameter */
+   ipc_ getrf_info;          /* getrf return code */
+  ipc_ iterations;           /* number of iterations */
+  real_wp_ residual;         /* norm of the residual */
 };
 #endif
 

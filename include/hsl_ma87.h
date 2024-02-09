@@ -69,17 +69,17 @@ struct ma87_control {
                      1: as 0 plus basic diagnostic printing.
                      2: as 1 plus some more detailed diagnostic messages.
                      3: as 2 plus all entries of user-supplied arrays.       */
-   ipc_ unit_diagnostics;   /* unit for diagnostic messages
+   ipc_ unit_diagnostics;  /* unit for diagnostic messages
                               Printing is suppressed if unit_diagnostics < 0. */
-   ipc_ unit_error;         /* unit for error messages
+   ipc_ unit_error;        /* unit for error messages
                               Printing is suppressed if unit_error  <  0.     */
-   ipc_ unit_warning;       /* unit for warning messages
+   ipc_ unit_warning;      /* unit for warning messages
                               Printing is suppressed if unit_warning  <  0.   */
 
    /* Controls used by ma87_analyse */
-   ipc_ nemin;  /* Node amalgamation parameter. A child node is merged with its
+   ipc_ nemin; /* Node amalgamation parameter. A child node is merged with its
                   parent if they both involve fewer than nemin eliminations.*/
-   ipc_ nb;     /* Controls the size of the blocks used within each node (used to
+   ipc_ nb;    /* Controls the size of the blocks used within each node (used to
                   set nb within node_type)*/
 
    /* Controls used by ma87_factor and ma87_factor_solve */
@@ -94,15 +94,15 @@ struct ma87_control {
 
 /* data type for returning information to user.*/
 struct ma87_info {
-   real_wp_ detlog;       /* Holds logarithm of abs det A (or 0) */
-   ipc_ flag;            /* Error return flag (0 on success) */
-   ipc_ maxdepth;        /* Maximum depth of the tree. */
+   real_wp_ detlog;     /* Holds logarithm of abs det A (or 0) */
+   ipc_ flag;           /* Error return flag (0 on success) */
+   ipc_ maxdepth;       /* Maximum depth of the tree. */
    long num_factor;     /* Number of entries in the factor. */
    long num_flops;      /* Number of flops for factor. */
-   ipc_ num_nodes;       /* Number of nodes in factors */
-   ipc_ pool_size;       /* Maximum size of task pool used */
-   ipc_ stat;            /* STAT value on error return -1. */
-   ipc_ num_zero;        /* Number of zero pivots. */
+   ipc_ num_nodes;      /* Number of nodes in factors */
+   ipc_ pool_size;      /* Maximum size of task pool used */
+   ipc_ stat;           /* STAT value on error return -1. */
+   ipc_ num_zero;       /* Number of zero pivots. */
 
    char unused[40];
 };
