@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-09 AT 07:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -613,7 +613,7 @@
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: x, z
   REAL ( KIND = rpc_ ), DIMENSION( o ), INTENT( OUT ) :: r
   REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: g
-  INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ), DIMENSION( n ) :: xstat
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
 
 !  local variables
