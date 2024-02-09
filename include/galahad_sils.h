@@ -133,45 +133,45 @@ struct sils_control_type {
 
     /// \brief
     /// MA27 internal integer controls
-    int ICNTL[30];
+    ipc_ ICNTL[30];
 
     /// \brief
     /// Unit for error messages
-    int lp;
+    ipc_ lp;
 
     /// \brief
     /// Unit for warning messages
-    int wp;
+    ipc_ wp;
 
     /// \brief
     /// Unit for monitor output
-    int mp;
+    ipc_ mp;
 
     /// \brief
     /// Unit for statistical output
-    int sp;
+    ipc_ sp;
 
     /// \brief
     /// Controls level of diagnostic output
-    int ldiag;
+    ipc_ ldiag;
 
     /// \brief
     /// Initial size for real array for the factors. If less than nrlnec,
     /// default size used.
-    int la;
+    ipc_ la;
 
     /// \brief
     /// Initial size for integer array for the factors. If less than nirnec,
     /// default size used.
-    int liw;
+    ipc_ liw;
 
     /// \brief
     /// Max. size for real array for the factors.
-    int maxla;
+    ipc_ maxla;
 
     /// \brief
     /// Max. size for integer array for the factors.
-    int maxliw;
+    ipc_ maxliw;
 
     /// \brief
     /// Controls pivoting. Possible values are:
@@ -181,24 +181,24 @@ struct sils_control_type {
     /// \li 3  No pivoting will be performed and an error exit will occur if a
     ///        zero pivot is detected.
     /// \li 4  No pivoting is performed but pivots are changed to all be positive.
-    int pivoting;
+    ipc_ pivoting;
 
     /// \brief
     /// Minimum number of eliminations in a step (unused)
-    int nemin;
+    ipc_ nemin;
 
     /// \brief
     /// Level 3 blocking in factorize (unused)
-    int factorblocking;
+    ipc_ factorblocking;
 
     /// \brief
     /// Level 2 and 3 blocking in solve
-    int solveblocking;
+    ipc_ solveblocking;
 
     /// \brief
     /// Controls threshold for detecting full rows in  analyse, registered as
     /// percentage of N, 100 Only fully dense rows detected (default)
-    int thresh;
+    ipc_ thresh;
 
     /// \brief
     /// Controls ordering: Possible values are:
@@ -210,13 +210,13 @@ struct sils_control_type {
     /// \li 5  Ordering chosen depending on matrix characteristics.
     ///        At the moment choices are HSL's MC50 or Metis_nodend
     /// \li >5  Presently equivalent to 5 but may chnage
-    int ordering;
+    ipc_ ordering;
 
     /// \brief
     /// Controls scaling: Possible values are:
     /// \li 0  No scaling
     /// \li >0  Scaling using HSL's MC64 but may change for > 1
-    int scaling;
+    ipc_ scaling;
 
     /// \brief
     /// MA27 internal real controls
@@ -260,63 +260,63 @@ struct sils_ainfo_type {
 
     /// \brief
     /// Flags success or failure case
-    int flag;
+    ipc_ flag;
 
     /// \brief
     /// More information on failure
-    int more;
+    ipc_ more;
 
     /// \brief
     /// Number of elimination steps
-    int nsteps;
+    ipc_ nsteps;
 
     /// \brief
     /// Size for a without compression
-    int nrltot;
+    ipc_ nrltot;
 
     /// \brief
     /// Size for iw without compression
-    int nirtot;
+    ipc_ nirtot;
 
     /// \brief
     /// Size for a with compression
-    int nrlnec;
+    ipc_ nrlnec;
 
     /// \brief
     /// Size for iw with compression
-    int nirnec;
+    ipc_ nirnec;
 
     /// \brief
     /// Number of reals to hold factors
-    int nrladu;
+    ipc_ nrladu;
 
     /// \brief
     /// Number of integers to hold factors
-    int niradu;
+    ipc_ niradu;
 
     /// \brief
     /// Number of compresses
-    int ncmpa;
+    ipc_ ncmpa;
 
     /// \brief
     /// Number of indices out-of-range
-    int oor;
+    ipc_ oor;
 
     /// \brief
     /// Number of duplicates
-    int dup;
+    ipc_ dup;
 
     /// \brief
     /// Forecast maximum front size
-    int maxfrt;
+    ipc_ maxfrt;
 
     /// \brief
     /// STAT value after allocate failure
-    int stat;
+    ipc_ stat;
 
     /// \brief
     /// legacy component, now not used
-    int faulty;
+    ipc_ faulty;
 
     /// \brief
     /// Anticipated number of operations in assembly
@@ -334,91 +334,91 @@ struct sils_finfo_type {
 
     /// \brief
     /// Flags success or failure case
-    int flag;
+    ipc_ flag;
 
     /// \brief
     /// More information on failure
-    int more;
+    ipc_ more;
 
     /// \brief
     /// Largest front size
-    int maxfrt;
+    ipc_ maxfrt;
 
     /// \brief
     /// Number of entries in factors
-    int nebdu;
+    ipc_ nebdu;
 
     /// \brief
     /// Number of reals that hold factors
-    int nrlbdu;
+    ipc_ nrlbdu;
 
     /// \brief
     /// Number of integers that hold factors
-    int nirbdu;
+    ipc_ nirbdu;
 
     /// \brief
     /// Size for a without compression
-    int nrltot;
+    ipc_ nrltot;
 
     /// \brief
     /// Size for iw without compression
-    int nirtot;
+    ipc_ nirtot;
 
     /// \brief
     /// Size for a with compression
-    int nrlnec;
+    ipc_ nrlnec;
 
     /// \brief
     /// Size for iw with compression
-    int nirnec;
+    ipc_ nirnec;
 
     /// \brief
     /// Number of compresses of real data
-    int ncmpbr;
+    ipc_ ncmpbr;
 
     /// \brief
     /// Number of compresses of integer data
-    int ncmpbi;
+    ipc_ ncmpbi;
 
     /// \brief
     /// Number of 2x2 pivots
-    int ntwo;
+    ipc_ ntwo;
 
     /// \brief
     /// Number of negative eigenvalues
-    int neig;
+    ipc_ neig;
 
     /// \brief
     /// Number of delayed pivots (total)
-    int delay;
+    ipc_ delay;
 
     /// \brief
     /// Number of pivot sign changes when control.pivoting=3
-    int signc;
+    ipc_ signc;
 
     /// \brief
     /// Number of static pivots chosen
-    int nstatic;
+    ipc_ nstatic;
 
     /// \brief
     /// First pivot modification when control.pivoting=4
-    int modstep;
+    ipc_ modstep;
 
     /// \brief
     /// Rank of original factorization
-    int rank;
+    ipc_ rank;
 
     /// \brief
     /// STAT value after allocate failure
-    int stat;
+    ipc_ stat;
 
     /// \brief
     /// legacy component, now not used
-    int faulty;
+    ipc_ faulty;
 
     /// \brief
     /// legacy component, now not used
-    int step;
+    ipc_ step;
 
     /// \brief
     /// # operations in assembly
@@ -452,11 +452,11 @@ struct sils_sinfo_type {
 
     /// \brief
     /// Flags success or failure case
-    int flag;
+    ipc_ flag;
 
     /// \brief
     /// STAT value after allocate failure
-    int stat;
+    ipc_ stat;
 
     /// \brief
     /// Condition number of matrix (category 1 eqs)
@@ -483,7 +483,7 @@ struct sils_sinfo_type {
 
 void sils_initialize( void **data,
                       struct sils_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -520,7 +520,7 @@ void sils_read_specfile( struct sils_control_type *control,
 
 void sils_import( struct sils_control_type *control,
                   void **data,
-                  int *status );
+                  ipc_ *status );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -552,7 +552,7 @@ void sils_import( struct sils_control_type *control,
 
 void sils_reset_control( struct sils_control_type *control,
                          void **data,
-                         int *status );
+                         ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -573,7 +573,7 @@ void sils_information( void **data,
                        struct sils_ainfo_type *ainfo,
                        struct sils_finfo_type *finfo,
                        struct sils_sinfo_type *sinfo,
-                       int *status );
+                       ipc_ *status );
 
 /*!<
   Provides output information
@@ -599,7 +599,7 @@ void sils_information( void **data,
 
 void sils_finalize( void **data,
                      struct sils_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
   Deallocate all internal private storage

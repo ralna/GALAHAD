@@ -159,27 +159,27 @@ struct scu_inform_type {
     /// \brief
     /// return status. A non-zero value indicates an error or a request for
     /// further information. See SCU_solve for details.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the return status from the last attempted internal workspace array
     /// allocation or deallocation. A non-zero value indicates that the
     /// allocation or deallocation was unsuccessful, and corresponds to the
     /// fortran STAT= value on the user’s system.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the inertia of \f$S\f$ when the extended matrix is symmetric.
     /// Specifically, inertia(i), i=0,1,2 give the number of positive,
     /// negative and zero eigenvalues of \f$S\f$ respectively.
-    int inertia[3];
+    ipc_ inertia[3];
 };
 
 // *-*-*-*-*-*-*-*-*-*-    S C U  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void scu_information( void **data,
                       struct scu_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

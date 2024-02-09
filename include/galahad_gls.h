@@ -132,56 +132,56 @@ struct gls_control {
 
     /// \brief
     /// Unit for error messages
-    int lp;
+    ipc_ lp;
 
     /// \brief
     /// Unit for warning messages
-    int wp;
+    ipc_ wp;
 
     /// \brief
     /// Unit for monitor output
-    int mp;
+    ipc_ mp;
 
     /// \brief
     /// Controls level of diagnostic output
-    int ldiag;
+    ipc_ ldiag;
 
     /// \brief
     /// Minimum block size for block-triangular form (BTF). Set to \f$n\f$
     /// to avoid
-    int btf;
+    ipc_ btf;
 
     /// \brief
     /// Maximum number of iterations
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// Level 3 blocking in factorize
-    int factor_blocking;
+    ipc_ factor_blocking;
 
     /// \brief
     /// Switch for using Level 1 or 2 BLAS in solve.
-    int solve_blas;
+    ipc_ solve_blas;
 
     /// \brief
     /// Initial size for real array for the factors.
-    int la;
+    ipc_ la;
 
     /// \brief
     /// Initial size for integer array for the factors.
-    int la_int;
+    ipc_ la_int;
 
     /// \brief
     /// Maximum size for real array for the factors.
-    int maxla;
+    ipc_ maxla;
 
     /// \brief
     /// Controls pivoting:  Number of columns searched.  Zero for Markowitz
-    int pivoting;
+    ipc_ pivoting;
 
     /// \brief
     /// Initially fill_in * ne space allocated for factors
-    int fill_in;
+    ipc_ fill_in;
 
     /// \brief
     /// Factor by which arrays sizes are to be increased if they are too small
@@ -229,59 +229,59 @@ struct gls_ainfo {
 
     /// \brief
     /// Flags success or failure case
-    int flag;
+    ipc_ flag;
 
     /// \brief
     /// More information on failure
-    int more;
+    ipc_ more;
 
     /// \brief
     /// Size for analysis
-    int len_analyse;
+    ipc_ len_analyse;
 
     /// \brief
     /// Size for factorize
-    int len_factorize;
+    ipc_ len_factorize;
 
     /// \brief
     /// Number of compresses
-    int ncmpa;
+    ipc_ ncmpa;
 
     /// \brief
     /// Estimated rank
-    int rank;
+    ipc_ rank;
 
     /// \brief
     /// Number of entries dropped
-    int drop;
+    ipc_ drop;
 
     /// \brief
     /// Structural rank of matrix
-    int struc_rank;
+    ipc_ struc_rank;
 
     /// \brief
     /// Number of indices out-of-range
-    int oor;
+    ipc_ oor;
 
     /// \brief
     /// Number of duplicates
-    int dup;
+    ipc_ dup;
 
     /// \brief
     /// STAT value after allocate failure
-    int stat;
+    ipc_ stat;
 
     /// \brief
     /// Size largest non-triangular block
-    int lblock;
+    ipc_ lblock;
 
     /// \brief
     /// Sum of orders of non-triangular blocks
-    int sblock;
+    ipc_ sblock;
 
     /// \brief
     /// Total entries in all non-tringular blocks
-    int tblock;
+    ipc_ tblock;
 
     /// \brief
     /// Number of operations in elimination
@@ -295,31 +295,31 @@ struct gls_finfo {
 
     /// \brief
     /// Flags success or failure case
-    int flag;
+    ipc_ flag;
 
     /// \brief
     /// More information on failure
-    int more;
+    ipc_ more;
 
     /// \brief
     /// Number of words to hold factors
-    int size_factor;
+    ipc_ size_factor;
 
     /// \brief
     /// Size for subsequent factorization
-    int len_factorize;
+    ipc_ len_factorize;
 
     /// \brief
     /// Number of entries dropped
-    int drop;
+    ipc_ drop;
 
     /// \brief
     /// Estimated rank
-    int rank;
+    ipc_ rank;
 
     /// \brief
     /// Status value after allocate failure
-    int stat;
+    ipc_ stat;
 
     /// \brief
     /// Number of operations in elimination
@@ -333,15 +333,15 @@ struct gls_sinfo {
 
     /// \brief
     /// Flags success or failure case
-    int flag;
+    ipc_ flag;
 
     /// \brief
     /// More information on failure
-    int more;
+    ipc_ more;
 
     /// \brief
     /// Status value after allocate failure
-    int stat;
+    ipc_ stat;
 };
 
 
@@ -383,7 +383,7 @@ void gls_read_specfile( struct gls_control *control,
 
 void gls_import( struct gls_control *control,
                  void **data,
-                 int *status );
+                 ipc_ *status );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -415,7 +415,7 @@ void gls_import( struct gls_control *control,
 
 void gls_reset_control( struct gls_control *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -436,7 +436,7 @@ void gls_information( void **data,
                       struct gls_ainfo *ainfo,
                       struct gls_finfo *finfo,
                       struct gls_sinfo *sinfo,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information
@@ -462,7 +462,7 @@ void gls_information( void **data,
 
 void gls_finalize( void **data,
                    struct gls_control *control,
-                   int *status );
+                   ipc_ *status );
 
 /*!<
   Deallocate all internal private storage

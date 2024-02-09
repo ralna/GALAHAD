@@ -126,23 +126,23 @@ struct fdc_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// initial estimate of integer workspace for sls (obsolete)
-    int indmin;
+    ipc_ indmin;
 
     /// \brief
     /// initial estimate of real workspace for sls (obsolete)
-    int valmin;
+    ipc_ valmin;
 
     /// \brief
     /// the relative pivot tolerance (obsolete)
@@ -236,11 +236,11 @@ struct fdc_inform_type {
 
     /// \brief
     /// return status. See FDC_find_dependent for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -249,7 +249,7 @@ struct fdc_inform_type {
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -281,7 +281,7 @@ struct fdc_inform_type {
 
 void fdc_initialize( void **data,
                      struct fdc_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -321,16 +321,16 @@ void fdc_read_specfile( struct fdc_control_type *control,
 void fdc_find_dependent_rows( struct fdc_control_type *control,
                               void **data,
                               struct fdc_inform_type *inform,
-                              int *status,
-                              int m,
-                              int n,
-                              int A_ne,
-                              const int A_col[],
-                              const int A_ptr[],
+                              ipc_ *status,
+                              ipc_ m,
+                              ipc_ n,
+                              ipc_ A_ne,
+                              const ipc_ A_col[],
+                              const ipc_ A_ptr[],
                               const real_wp_ A_val[],
                               const real_wp_ b[],
-                              int *n_depen,
-                              int depen[] );
+                              ipc_ *n_depen,
+                              ipc_ depen[] );
 
 /*!<
  Find dependent rows and, if any, check if \f$A x = b\f$ is consistent

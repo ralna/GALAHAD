@@ -69,20 +69,20 @@ struct icfs_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// number of extra vectors of length n required by the incomplete
     /// Cholesky preconditioner
-    int icfs_vectors;
+    ipc_ icfs_vectors;
 
     /// \brief
     /// an initial estimate of the shift $\alpha$ used so that the incomplete
@@ -151,11 +151,11 @@ struct icfs_inform_type {
     /// \li -1  allocation error
     /// \li -2  deallocation error
     /// \li -3  matrix data faulty (.n < 1, .ne < 0)
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
     /// \brief
 
     /// name of array which provoked an allocate failure
@@ -163,7 +163,7 @@ struct icfs_inform_type {
 
     /// \brief
     /// the integer and real output arrays from mc61
-    int mc61_info[10];
+    ipc_ mc61_info[10];
     /// see mc61_info
     real_wp_ mc61_rinfo[15];
 
@@ -176,7 +176,7 @@ struct icfs_inform_type {
 
 void icfs_initialize( void **data,
                       struct icfs_control_type *control,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -214,7 +214,7 @@ void icfs_read_specfile( struct icfs_control_type *control,
 
 void icfs_reset_control( struct icfs_control_type *control,
                          void **data,
-                         int *status );
+                         ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -232,10 +232,10 @@ void icfs_reset_control( struct icfs_control_type *control,
 //  *-*-*-*-*-*- I C F S _ f o r m _ p r e c o n d i t i o n e r  -*-*-*-*-*-*-
 
 void icfs_factorize_matrix( void **data,
-                            int *status,
-                            int n,
-                            const int ptr[] );
-                            const int row[],
+                            ipc_ *status,
+                            ipc_ n,
+                            const ipc_ ptr[] );
+                            const ipc_ row[],
                             const real_wp_ diag[] );
                             const real_wp_ val[] );
 
@@ -288,8 +288,8 @@ void icfs_factorize_matrix( void **data,
 //  *-*-*-*-*-*-*-*-*-  I C F S _ s o l v e _ s y s t e m  -*-*-*-*-*-*-*-*-
 
 void icfs_solve_system( void **data,
-                        int *status,
-                        int n,
+                        ipc_ *status,
+                        ipc_ n,
                         real_wp_ sol[],
                         bool trans );
 
@@ -328,7 +328,7 @@ void icfs_solve_system( void **data,
 
 void icfs_information( void **data,
                       struct icfs_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provide output information

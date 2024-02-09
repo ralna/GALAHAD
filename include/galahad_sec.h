@@ -68,15 +68,15 @@ struct sec_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required. <= 0 gives no output, >= 1 warning message
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// the initial Hessian approximation will be h_initial * \f$I\f$
@@ -103,13 +103,13 @@ struct sec_inform_type {
     /// return status. Possible valuesa are:
     /// \li 0 successful return
     /// \li -85 an update is inappropriate and has been skipped
-    int status;
+    ipc_ status;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    S E C  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
 void sec_initialize( struct sec_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -126,7 +126,7 @@ void sec_initialize( struct sec_control_type *control,
 
 void sec_information( void **data,
                       struct sec_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

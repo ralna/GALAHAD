@@ -279,19 +279,19 @@ struct trs_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// unit to write problem data into file problem_file
-    int problem;
+    ipc_ problem;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// should the problem be solved by dense factorization?
@@ -300,7 +300,7 @@ struct trs_control_type {
     /// \li 1 dense factorization will be used
     /// \li   other the choice is made automatically depending on the dimension
     ///       & sparsity
-    int dense_factorization;
+    ipc_ dense_factorization;
 
     /// \brief
     /// how much of \f$H\f$ has changed since the previous call.
@@ -308,7 +308,7 @@ struct trs_control_type {
     /// \li 0  unchanged
     /// \li 1  values but not indices have changed
     /// \li 2  values and indices have changed
-    int new_h;
+    ipc_ new_h;
 
     /// \brief
     /// how much of \f$M\f$ has changed since the previous call.
@@ -316,7 +316,7 @@ struct trs_control_type {
     /// \li 0  unchanged
     /// \li 1  values but not indices have changed
     /// \li 2  values and indices have changed
-    int new_m;
+    ipc_ new_m;
 
     /// \brief
     /// how much of \f$A\f$ has changed since the previous call.
@@ -324,20 +324,20 @@ struct trs_control_type {
     /// \li 0  unchanged
     /// \li 1  values but not indices have changed
     /// \li 2  values and indices have changed
-    int new_a;
+    ipc_ new_a;
 
     /// \brief
     /// the maximum number of factorizations (=iterations) allowed.
     /// -ve implies no limit
-    int max_factorizations;
+    ipc_ max_factorizations;
 
     /// \brief
     /// the number of inverse iterations performed in the "maybe hard" case
-    int inverse_itmax;
+    ipc_ inverse_itmax;
 
     /// \brief
     /// maximum degree of Taylor approximant allowed
-    int taylor_max_degree;
+    ipc_ taylor_max_degree;
 
     /// \brief
     /// initial estimate of the Lagrange multipler
@@ -502,15 +502,15 @@ struct trs_inform_type {
     /// \li -10 the factorization of \f$H + \lambda M\f$ failed
     /// \li -15 \f$M\f$ does not appear to be strictly diagonally dominant
     /// \li -16 ill-conditioning has prevented further progress
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the number of factorizations performed
-    int factorizations;
+    ipc_ factorizations;
 
     /// \brief
     /// the maximum number of entries in the factors
@@ -518,7 +518,7 @@ struct trs_inform_type {
 
     /// \brief
     /// the number of \f$(||x||_M,\lambda)\f$ pairs in the history
-    int len_history;
+    ipc_ len_history;
 
     /// \brief
     /// the value of the quadratic function
@@ -564,7 +564,7 @@ struct trs_inform_type {
 
 void trs_initialize( void **data,
                      struct trs_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -603,13 +603,13 @@ void trs_read_specfile( struct trs_control_type *control,
 
 void trs_import( struct trs_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
+                 ipc_ *status,
+                 ipc_ n,
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[] );
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -670,13 +670,13 @@ void trs_import( struct trs_control_type *control,
 // *-*-*-*-*-*-*-*-*-*-*-*-    T R S _ I M P O R T _ M  -*-*-*-*-*-*-*-*-*-*-
 
 void trs_import_m( void **data,
-                   int *status,
-                   int n,
+                   ipc_ *status,
+                   ipc_ n,
                    const char M_type[],
-                   int M_ne,
-                   const int M_row[],
-                   const int M_col[],
-                   const int M_ptr[] );
+                   ipc_ M_ne,
+                   const ipc_ M_row[],
+                   const ipc_ M_col[],
+                   const ipc_ M_ptr[] );
 
 /*!<
  Import data for the scaling matrix M into internal storage prior to solution.
@@ -734,13 +734,13 @@ void trs_import_m( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    T R S _ I M P O R T _ A  -*-*-*-*-*-*-*-*-*-*-
 
 void trs_import_a( void **data,
-                   int *status,
-                   int m,
+                   ipc_ *status,
+                   ipc_ m,
                    const char A_type[],
-                   int A_ne,
-                   const int A_row[],
-                   const int A_col[],
-                   const int A_ptr[] );
+                   ipc_ A_ne,
+                   const ipc_ A_row[],
+                   const ipc_ A_col[],
+                   const ipc_ A_ptr[] );
 
 /*!<
  Import data for the constraint matrix A into internal storage prior
@@ -800,7 +800,7 @@ void trs_import_a( void **data,
 
 void trs_reset_control( struct trs_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -818,18 +818,18 @@ void trs_reset_control( struct trs_control_type *control,
 //  *-*-*-*-*-*-*-*-*-   T R S _ S O L V E _ P R O B L E M   -*-*-*-*-*-*-*-*-*-
 
 void trs_solve_problem( void **data,
-                        int *status,
-                        int n,
+                        ipc_ *status,
+                        ipc_ n,
                         const real_wp_ radius,
                         const real_wp_ f,
                         const real_wp_ c[],
-                        int H_ne,
+                        ipc_ H_ne,
                         const real_wp_ H_val[],
                         real_wp_ x[],
-                        int M_ne,
+                        ipc_ M_ne,
                         const real_wp_ M_val[],
-                        int m,
-                        int A_ne,
+                        ipc_ m,
+                        ipc_ A_ne,
                         const real_wp_ A_val[],
                         real_wp_ y[] );
 
@@ -921,7 +921,7 @@ void trs_solve_problem( void **data,
 
 void trs_information( void **data,
                       struct trs_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

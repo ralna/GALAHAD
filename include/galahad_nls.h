@@ -422,38 +422,38 @@ struct nls_subproblem_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief the level of output required.
     /// \li \f$\leq\f$ 0 gives no output,
     /// \li  = 1 gives a one-line summary for every iteration,
     /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// the number of iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// the maximum number of iterations performed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
-    int alive_unit;
+    ipc_ alive_unit;
     /// see alive_unit
     char alive_file[31];
 
@@ -461,13 +461,13 @@ struct nls_subproblem_control_type {
     /// is the Jacobian matrix of first derivatives available (\f$\geq\f$ 2),
     /// is access only via matrix-vector products (=1) or is it not available
     /// (\f$\leq\f$ 0) ?
-    int jacobian_available;
+    ipc_ jacobian_available;
 
     /// \brief
     /// is the Hessian matrix of second derivatives available (\f$\geq\f$ 2),
     /// is access only via matrix-vector products (=1) or is it not available
     /// (\f$\leq\f$ 0) ?
-    int hessian_available;
+    ipc_ hessian_available;
 
     /// \brief
     /// the model used.
@@ -483,7 +483,7 @@ struct nls_subproblem_control_type {
     /// \li 7  tensor Gauss-Newton treated as a general model
     /// \li 8  tensor Gauss-Newton transition from a least-squares
     ///        to a general mode
-    int model;
+    ipc_ model;
 
     /// \brief
     /// the regularization norm used.
@@ -514,18 +514,18 @@ struct nls_subproblem_control_type {
     /// \li  9  incomplete factorization of Hessian, Munskgaard
     ///         (*not yet implemented*)
     /// \li 10  expanding band of Hessian (*not yet implemented*)
-    int norm;
+    ipc_ norm;
 
     /// \brief
     /// non-monotone \f$\leq\f$ 0 monotone strategy used, anything else
     /// non-monotone strategy with this history length used
-    int non_monotone;
+    ipc_ non_monotone;
 
     /// \brief
     /// define the weight-update strategy:
     /// 1 (basic), 2 (reset to zero when very successful),
     /// 3 (imitate TR), 4 (increase lower bound), 5 (GPT)
-    int weight_update_strategy;
+    ipc_ weight_update_strategy;
 
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when
@@ -680,38 +680,38 @@ struct nls_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief the level of output required.
     /// \li \f$\leq\f$ 0 gives no output,
     /// \li  = 1 gives a one-line summary for every iteration,
     /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// the number of iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// the maximum number of iterations performed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
-    int alive_unit;
+    ipc_ alive_unit;
     /// see alive_unit
     char alive_file[31];
 
@@ -719,13 +719,13 @@ struct nls_control_type {
     /// is the Jacobian matrix of first derivatives available (\f$\geq\f$ 2),
     /// is access only via matrix-vector products (=1) or is it not
     /// available (\f$\leq\f$ 0) ?
-    int jacobian_available;
+    ipc_ jacobian_available;
 
     /// \brief
     /// is the Hessian matrix of second derivatives available (\f$\geq\f$ 2),
     /// is access only via matrix-vector products (=1) or is it not
     /// available (\f$\leq\f$ 0) ?
-    int hessian_available;
+    ipc_ hessian_available;
 
     /// \brief
     /// the model used.
@@ -741,7 +741,7 @@ struct nls_control_type {
     /// \li 7  tensor Gauss-Newton treated as a general model
     /// \li 8  tensor Gauss-Newton transition from a least-squares
     ///        to a general mode
-    int model;
+    ipc_ model;
 
     /// \brief
     /// the regularization norm used.
@@ -772,18 +772,18 @@ struct nls_control_type {
     /// \li  9  incomplete factorization of Hessian, Munskgaard
     ///         (*not yet implemented*)
     /// \li 10  expanding band of Hessian (*not yet implemented*)
-    int norm;
+    ipc_ norm;
 
     /// \brief
     /// non-monotone \f$\leq\f$ 0 monotone strategy used, anything else
     /// non-monotone strategy with this history length used
-    int non_monotone;
+    ipc_ non_monotone;
 
     /// \brief
     /// define the weight-update strategy:
     /// 1 (basic), 2 (reset to zero when very successful),
     /// 3 (imitate TR), 4 (increase lower bound), 5 (GPT)
-    int weight_update_strategy;
+    ipc_ weight_update_strategy;
 
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when
@@ -989,11 +989,11 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// return status. See NLS_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -1007,31 +1007,31 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// the total number of iterations performed
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of CG iterations performed
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// the total number of evaluations of the residual function c(x)
-    int c_eval;
+    ipc_ c_eval;
 
     /// \brief
     /// the total number of evaluations of the Jacobian J(x) of c(x)
-    int j_eval;
+    ipc_ j_eval;
 
     /// \brief
     /// the total number of evaluations of the scaled Hessian H(x,y) of c(x)
-    int h_eval;
+    ipc_ h_eval;
 
     /// \brief
     /// the maximum number of factorizations in a sub-problem solve
-    int factorization_max;
+    ipc_ factorization_max;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the maximum number of entries in the factors
@@ -1100,11 +1100,11 @@ struct nls_inform_type {
 
     /// \brief
     /// return status. See NLS_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -1118,31 +1118,31 @@ struct nls_inform_type {
 
     /// \brief
     /// the total number of iterations performed
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of CG iterations performed
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// the total number of evaluations of the residual function c(x)
-    int c_eval;
+    ipc_ c_eval;
 
     /// \brief
     /// the total number of evaluations of the Jacobian J(x) of c(x)
-    int j_eval;
+    ipc_ j_eval;
 
     /// \brief
     /// the total number of evaluations of the scaled Hessian H(x,y) of c(x)
-    int h_eval;
+    ipc_ h_eval;
 
     /// \brief
     /// the maximum number of factorizations in a sub-problem solve
-    int factorization_max;
+    ipc_ factorization_max;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the maximum number of entries in the factors
@@ -1247,24 +1247,24 @@ void nls_read_specfile( struct nls_control_type *control,
 
 void nls_import( struct nls_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char J_type[],
-                 int J_ne,
-                 const int J_row[],
-                 const int J_col[],
-                 const int J_ptr[],
+                 ipc_ J_ne,
+                 const ipc_ J_row[],
+                 const ipc_ J_col[],
+                 const ipc_ J_ptr[],
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[],
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[],
                  const char P_type[],
-                 int P_ne,
-                 const int P_row[],
-                 const int P_col[],
-                 const int P_ptr[],
+                 ipc_ P_ne,
+                 const ipc_ P_row[],
+                 const ipc_ P_col[],
+                 const ipc_ P_ptr[],
                  const real_wp_ w[] );
 
 /*!<
@@ -1389,7 +1389,7 @@ void nls_import( struct nls_control_type *control,
 
 void nls_reset_control( struct nls_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -1408,26 +1408,26 @@ void nls_reset_control( struct nls_control_type *control,
 
 void nls_solve_with_mat( void **data,
                          void *userdata,
-                         int *status,
-                         int n,
-                         int m,
+                         ipc_ *status,
+                         ipc_ n,
+                         ipc_ m,
                          real_wp_ x[],
                          real_wp_ c[],
                          real_wp_ g[],
-                         int (*eval_c)(
-                           int, int, const real_wp_[], real_wp_[],
+                         ipc_ (*eval_c)(
+                           ipc_, ipc_, const real_wp_[], real_wp_[],
                            const void * ),
-                         int j_ne,
-                         int (*eval_j)(
-                           int, int, int, const real_wp_[], real_wp_[],
+                         ipc_ j_ne,
+                         ipc_ (*eval_j)(
+                           ipc_, ipc_, ipc_, const real_wp_[], real_wp_[],
                            const void * ),
-                         int h_ne,
-                         int (*eval_h)(
-                           int, int, int, const real_wp_[], const real_wp_[],
+                         ipc_ h_ne,
+                         ipc_ (*eval_h)(
+                           ipc_, ipc_, ipc_, const real_wp_[], const real_wp_[],
                            real_wp_[], const void * ),
-                         int p_ne,
-                         int (*eval_hprods)(
-                           int, int, int, const real_wp_[],
+                         ipc_ p_ne,
+                         ipc_ (*eval_hprods)(
+                           ipc_, ipc_, ipc_, const real_wp_[],
                            const real_wp_[], real_wp_[], bool,
                            const void * ) );
 
@@ -1501,7 +1501,7 @@ void nls_solve_with_mat( void **data,
  @param eval_c is a user-supplied function that must have the following
    signature:
    \code
-        int eval_c( int n, const double x[], double c[], const void *userdata )
+        ipc_ eval_c( ipc_ n, const double x[], double c[], const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to c, and the function return value set to 0. If the
@@ -1514,7 +1514,7 @@ void nls_solve_with_mat( void **data,
  @param eval_j is a user-supplied function that must have the following
    signature:
    \code
-      int eval_j( int n, int m, int jne, const double x[], double j[],
+      ipc_ eval_j( ipc_ n, ipc_ m, ipc_ jne, const double x[], double j[],
                   const void *userdata )
    \endcode
    The components of the Jacobian \f$J = \nabla_x c(x\f$) of the residuals must
@@ -1530,7 +1530,7 @@ void nls_solve_with_mat( void **data,
  @param eval_h is a user-supplied function that must have the following
    signature:
    \code
-        int eval_h( int n, int m, int hne, const double x[], const double y[],
+        ipc_ eval_h( ipc_ n, ipc_ m, ipc_ hne, const double x[], const double y[],
                     double h[], const void *userdata )
    \endcode
    The nonzeros of the matrix \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
@@ -1548,7 +1548,7 @@ void nls_solve_with_mat( void **data,
    If non-NULL, it must have the following signature:
    \code
 
-       int eval_hprods( int n, int m, int pne, const double x[],
+       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ pne, const double x[],
                            const double v[], double p[], bool got_h,
                            const void *userdata ) );
 
@@ -1566,26 +1566,26 @@ void nls_solve_with_mat( void **data,
 
 void nls_solve_without_mat( void **data,
                             void *userdata,
-                            int *status,
-                            int n,
-                            int m,
+                            ipc_ *status,
+                            ipc_ n,
+                            ipc_ m,
                             real_wp_ x[],
                             real_wp_ c[],
                             real_wp_ g[],
-                            int (*eval_c)(
-                              int, int, const real_wp_[], real_wp_[],
+                            ipc_ (*eval_c)(
+                              ipc_, ipc_, const real_wp_[], real_wp_[],
                               const void * ),
-                            int (*eval_jprod)(
-                              int, int, const real_wp_[], const bool,
+                            ipc_ (*eval_jprod)(
+                              ipc_, ipc_, const real_wp_[], const bool,
                               real_wp_[], const real_wp_[], bool,
                               const void * ),
-                            int (*eval_hprod)(
-                              int, int, const real_wp_[], const real_wp_[],
+                            ipc_ (*eval_hprod)(
+                              ipc_, ipc_, const real_wp_[], const real_wp_[],
                               real_wp_[], const real_wp_[], bool,
                               const void * ),
-                            int p_ne,
-                            int (*eval_hprods)(
-                              int, int, int, const real_wp_[],
+                            ipc_ p_ne,
+                            ipc_ (*eval_hprods)(
+                              ipc_, ipc_, ipc_, const real_wp_[],
                               const real_wp_[], real_wp_[], bool,
                               const void * ) );
 
@@ -1659,7 +1659,7 @@ void nls_solve_without_mat( void **data,
  @param eval_c is a user-supplied function that must have the following
    signature:
    \code
-        int eval_c( int n, const double x[], double c[], const void *userdata )
+        ipc_ eval_c( ipc_ n, const double x[], double c[], const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to c, and the function return value set to 0. If the
@@ -1669,7 +1669,7 @@ void nls_solve_without_mat( void **data,
  @param eval_jprod is a user-supplied function that must have the following
    signature:
    \code
-      int eval_jprod( int n, int m, const double x[], bool transpose,
+      ipc_ eval_jprod( ipc_ n, ipc_ m, const double x[], bool transpose,
                       double u[], const double v[], bool got_j,
                       const void *userdata )
    \endcode
@@ -1684,7 +1684,7 @@ void nls_solve_without_mat( void **data,
  @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_hprod( int n, int m, const double x[], const double y[],
+        ipc_ eval_hprod( ipc_ n, ipc_ m, const double x[], const double y[],
                         double u[], const double v[], bool got_h,
                         const void *userdata )
    \endcode
@@ -1704,7 +1704,7 @@ void nls_solve_without_mat( void **data,
  @param  eval_hprods is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_hprods( int n, int m, int p_ne, const double x[],
+       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ p_ne, const double x[],
                         const double v[], double pval[], bool got_h,
                         const void *userdata )
    \endcode
@@ -1720,20 +1720,20 @@ void nls_solve_without_mat( void **data,
 //  *-*-*-*-*-   N L S _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*
 
 void nls_solve_reverse_with_mat( void **data,
-                                 int *status,
-                                 int *eval_status,
-                                 int n,
-                                 int m,
+                                 ipc_ *status,
+                                 ipc_ *eval_status,
+                                 ipc_ n,
+                                 ipc_ m,
                                  real_wp_ x[],
                                  real_wp_ c[],
                                  real_wp_ g[],
-                                 int j_ne,
+                                 ipc_ j_ne,
                                  real_wp_ J_val[],
                                  const real_wp_ y[],
-                                 int h_ne,
+                                 ipc_ h_ne,
                                  real_wp_ H_val[],
                                  real_wp_ v[],
-                                 int p_ne,
+                                 ipc_ p_ne,
                                  real_wp_ P_val[] );
 
 /*!<
@@ -1887,10 +1887,10 @@ void nls_solve_reverse_with_mat( void **data,
 //  *-*-*-   N L S _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*
 
 void nls_solve_reverse_without_mat( void **data,
-                                    int *status,
-                                    int *eval_status,
-                                    int n,
-                                    int m,
+                                    ipc_ *status,
+                                    ipc_ *eval_status,
+                                    ipc_ n,
+                                    ipc_ m,
                                     real_wp_ x[],
                                     real_wp_ c[],
                                     real_wp_ g[],
@@ -1898,7 +1898,7 @@ void nls_solve_reverse_without_mat( void **data,
                                     real_wp_ u[],
                                     real_wp_ v[],
                                     real_wp_ y[],
-                                    int p_ne,
+                                    ipc_ p_ne,
                                     real_wp_ P_val[] );
 
 /*!<
@@ -2047,7 +2047,7 @@ void nls_solve_reverse_without_mat( void **data,
 
 void nls_information( void **data,
                       struct nls_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

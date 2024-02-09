@@ -48,7 +48,7 @@
   (approximating) lower bound function is constructed on each subinterval
   using the function and derivative values at each end, and an estimate of
   the first- and second-derivative Lipschitz constant. This surrogate is
-  minimized, the true objective evaluated at the best predicted point,
+  minimized, the true objective evaluated at the best predicted poipc_,
   and the corresponding interval split again at this point.
   Any interval whose surrogate lower bound value exceeds an evaluated
   actual value is discarded. The method continues until only one interval
@@ -120,11 +120,11 @@ struct ugo_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required. Possible values are:
@@ -132,58 +132,58 @@ struct ugo_control_type {
     /// \li 1 a one-line summary for every improvement
     /// \li 2 a summary of each iteration
     /// \li \f$\geq\f$ 3 increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// the number of iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// the maximum number of iterations allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// the number of initial (uniformly-spaced) evaluation points
     /// (<2 reset to 2)
-    int initial_points;
+    ipc_ initial_points;
 
     /// \brief
     /// incremenets of storage allocated (less that 1000 will be reset to 1000)
-    int storage_increment;
+    ipc_ storage_increment;
 
     /// \brief
     /// unit for any out-of-core writing when expanding arrays
-    int buffer;
+    ipc_ buffer;
 
     /// \brief
     /// what sort of Lipschitz constant estimate will be used:
     /// \li 1 = global contant provided
     /// \li 2 = global contant estimated
     /// \li 3 = local costants estimated
-    int lipschitz_estimate_used;
+    ipc_ lipschitz_estimate_used;
 
     /// \brief
     /// how is the next interval for examination chosen:
     /// \li 1 = traditional
     /// \li 2 = local_improvement
-    int next_interval_selection;
+    ipc_ next_interval_selection;
 
     /// \brief
     /// try refine_with_newton Newton steps from the vacinity of the global
     /// minimizer to try to improve the estimate
-    int refine_with_newton;
+    ipc_ refine_with_newton;
 
     /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
-    int alive_unit;
+    ipc_ alive_unit;
     /// see alive_unit
     char alive_file[31];
 
@@ -275,15 +275,15 @@ struct ugo_inform_type {
 
     /// \brief
     ///  return status. See UGO_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// evaluation status for reverse communication interface
-    int eval_status;
+    ipc_ eval_status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status ;
+    ipc_ alloc_status ;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -292,20 +292,20 @@ struct ugo_inform_type {
 
     /// \brief
     /// the total number of iterations performed
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of evaluations of the objective function
-    int f_eval;
+    ipc_ f_eval;
 
     /// \brief
     /// the total number of evaluations of the gradient of the objective
     /// function
-    int g_eval;
+    ipc_ g_eval;
 
     /// \brief
     /// the total number of evaluations of the Hessian of the objective function
-    int h_eval;
+    ipc_ h_eval;
 
     /// \brief
     /// timings (see above)
@@ -319,7 +319,7 @@ struct ugo_inform_type {
 
 void ugo_initialize( void **data,
                      struct ugo_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -357,7 +357,7 @@ void ugo_read_specfile( struct ugo_control_type *control,
 
 void ugo_import( struct ugo_control_type *control,
                  void **data,
-                 int *status,
+                 ipc_ *status,
                  const real_wp_ *x_l,
                  const real_wp_ *x_u );
 
@@ -396,7 +396,7 @@ void ugo_import( struct ugo_control_type *control,
 
 void ugo_reset_control( struct ugo_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -432,12 +432,12 @@ void ugo_reset_control( struct ugo_control_type *control,
 
 void ugo_solve_direct( void **data,
                        void *userdata,
-                       int *status,
+                       ipc_ *status,
                        real_wp_ *x,
                        real_wp_ *f,
                        real_wp_ *g,
                        real_wp_ *h,
-                       int (*eval_fgh)(
+                       ipc_ (*eval_fgh)(
                           real_wp_, real_wp_*, real_wp_*, real_wp_*,
                           const void * ) );
 
@@ -498,7 +498,7 @@ void ugo_solve_direct( void **data,
    @param eval_fgh is a user-provided function that must have the following
    signature:
    \code
-     int eval_fgh( double x,
+     ipc_ eval_fgh( double x,
                    double *f,
                    double *g,
                    double *h,
@@ -518,8 +518,8 @@ void ugo_solve_direct( void **data,
 //  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ R E V E R S E   -*-*-*-*-*-*-*-*
 
 void ugo_solve_reverse( void **data,
-                        int *status,
-                        int *eval_status,
+                        ipc_ *status,
+                        ipc_ *eval_status,
                         real_wp_ *x,
                         real_wp_ *f,
                         real_wp_ *g,
@@ -612,7 +612,7 @@ void ugo_solve_reverse( void **data,
 
 void ugo_information( void **data,
                       struct ugo_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

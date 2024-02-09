@@ -75,15 +75,15 @@ struct roots_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// the required accuracy of the roots
@@ -137,11 +137,11 @@ struct roots_inform_type {
     /// \li -3. Either the specified degree of the polynomial in degree
     /// is less than 0, or the declared dimension of the array roots
     /// is smaller than the specified degree.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -153,7 +153,7 @@ struct roots_inform_type {
 
 void roots_initialize( void **data,
                      struct roots_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -172,7 +172,7 @@ void roots_initialize( void **data,
 
 void roots_information( void **data,
                       struct roots_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

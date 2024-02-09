@@ -268,11 +268,11 @@ struct bgo_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required. Possible values are:
@@ -280,30 +280,30 @@ struct bgo_control_type {
     /// \li 1 a one-line summary for every improvement
     /// \li 2 a summary of each iteration
     /// \li \f$\geq\f$ 3 increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// the maximum number of random searches from the best point found so far
-    int attempts_max;
+    ipc_ attempts_max;
 
     /// \brief
     /// the maximum number of function evaluations made
-    int max_evals;
+    ipc_ max_evals;
 
     /// \brief
     /// sampling strategy used. Possible values are
     /// \li 1 uniformly spread
     /// \li 2 Latin hypercube sampling
     /// \li 3 niformly spread within a Latin hypercube
-    int sampling_strategy;
+    ipc_ sampling_strategy;
 
     /// \brief
     /// hyper-cube discretization (for sampling stategies 2 and 3)
-    int hypercube_discretization;
+    ipc_ hypercube_discretization;
 
     /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
-    int alive_unit;
+    ipc_ alive_unit;
     /// see alive_unit
     char alive_file[31];
 
@@ -399,11 +399,11 @@ struct bgo_inform_type {
 
     /// \brief
     /// return status. See BGO_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status ;
+    ipc_ alloc_status ;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -412,16 +412,16 @@ struct bgo_inform_type {
 
     /// \brief
     /// the total number of evaluations of the objective function
-    int f_eval;
+    ipc_ f_eval;
 
     /// \brief
     /// the total number of evaluations of the gradient of the objective
     /// function
-    int g_eval;
+    ipc_ g_eval;
 
     /// \brief
     /// the total number of evaluations of the Hessian of the objective function
-    int h_eval;
+    ipc_ h_eval;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -457,7 +457,7 @@ struct bgo_inform_type {
 
 void bgo_initialize( void **data,
                      struct bgo_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -495,15 +495,15 @@ void bgo_read_specfile( struct bgo_control_type *control,
 
 void bgo_import( struct bgo_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
+                 ipc_ *status,
+                 ipc_ n,
                  const real_wp_ x_l[],
                  const real_wp_ x_u[],
                  const char H_type[],
-                 int ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[] );
+                 ipc_ ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -574,7 +574,7 @@ void bgo_import( struct bgo_control_type *control,
 
 void bgo_reset_control( struct bgo_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -593,23 +593,23 @@ void bgo_reset_control( struct bgo_control_type *control,
 
 void bgo_solve_with_mat( void **data,
                          void *userdata,
-                         int *status,
-                         int n,
+                         ipc_ *status,
+                         ipc_ n,
                          real_wp_ x[],
                          real_wp_ g[],
-                         int ne,
-                         int (*eval_f)(
-                           int, const real_wp_[], real_wp_*, const void * ),
-                         int (*eval_g)(
-                           int, const real_wp_[], real_wp_[], const void * ),
-                         int (*eval_h)(
-                           int, int, const real_wp_[], real_wp_[],
+                         ipc_ ne,
+                         ipc_ (*eval_f)(
+                           ipc_, const real_wp_[], real_wp_*, const void * ),
+                         ipc_ (*eval_g)(
+                           ipc_, const real_wp_[], real_wp_[], const void * ),
+                         ipc_ (*eval_h)(
+                           ipc_, ipc_, const real_wp_[], real_wp_[],
                            const void * ),
-                         int (*eval_hprod)(
-                           int, const real_wp_[], real_wp_[], const real_wp_[],
+                         ipc_ (*eval_hprod)(
+                           ipc_, const real_wp_[], real_wp_[], const real_wp_[],
                            bool, const void * ),
-                         int (*eval_prec)(
-                           int, const real_wp_[], real_wp_[], const real_wp_[],
+                         ipc_ (*eval_prec)(
+                           ipc_, const real_wp_[], real_wp_[], const real_wp_[],
                            const void * ) );
 
 /*!<
@@ -679,7 +679,7 @@ void bgo_solve_with_mat( void **data,
  @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        int eval_f( int n, const double x[], double *f, const void *userdata )
+        ipc_ eval_f( ipc_ n, const double x[], double *f, const void *userdata )
    \endcode
    The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
    be assigned to f, and the function return value set to 0. If the
@@ -689,7 +689,7 @@ void bgo_solve_with_mat( void **data,
  @param eval_g is a user-supplied function that must have the following
    signature:
    \code
-      int eval_g( int n, const double x[], double g[], const void *userdata )
+      ipc_ eval_g( ipc_ n, const double x[], double g[], const void *userdata )
    \endcode
    The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
    function evaluated at x=\f$x\f$ must be assigned to g, and the function
@@ -700,7 +700,7 @@ void bgo_solve_with_mat( void **data,
  @param eval_h is a user-supplied function that must have the following
    signature:
    \code
-        int eval_h( int n, int ne, const double x[], double h[],
+        ipc_ eval_h( ipc_ n, ipc_ ne, const double x[], double h[],
                     const void *userdata )
    \endcode
    The nonzeros of the Hessian \f$H = \nabla_{xx}f(x)\f$ of the objective
@@ -713,7 +713,7 @@ void bgo_solve_with_mat( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_prec( int n, const double x[], double u[], const double v[],
+       ipc_ eval_prec( ipc_ n, const double x[], double u[], const double v[],
                       const void *userdata )
    \endcode
    The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
@@ -727,22 +727,22 @@ void bgo_solve_with_mat( void **data,
 
 void bgo_solve_without_mat( void **data,
                             void *userdata,
-                            int *status,
-                            int n,
+                            ipc_ *status,
+                            ipc_ n,
                             real_wp_ x[],
                             real_wp_ g[],
-                            int (*eval_f)(
-                              int, const real_wp_[], real_wp_*, const void * ),
-                            int (*eval_g)(
-                              int, const real_wp_[], real_wp_[], const void * ),
-                            int (*eval_hprod)(
-                              int, const real_wp_[], real_wp_[],
+                            ipc_ (*eval_f)(
+                              ipc_, const real_wp_[], real_wp_*, const void * ),
+                            ipc_ (*eval_g)(
+                              ipc_, const real_wp_[], real_wp_[], const void * ),
+                            ipc_ (*eval_hprod)(
+                              ipc_, const real_wp_[], real_wp_[],
                               const real_wp_[], bool, const void * ),
-                            int (*eval_shprod)(int, const real_wp_[], int,
+                            ipc_ (*eval_shprod)(ipc_, const real_wp_[], ipc_,
                               const int[], const real_wp_[], int*, int[],
                               real_wp_[], bool, const void * ),
-                            int (*eval_prec)(
-                              int, const real_wp_[], real_wp_[],
+                            ipc_ (*eval_prec)(
+                              ipc_, const real_wp_[], real_wp_[],
                               const real_wp_[], const void * ) );
 
 /*!<
@@ -809,7 +809,7 @@ void bgo_solve_without_mat( void **data,
  @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        int eval_f( int n, const double x[], double *f, const void *userdata )
+        ipc_ eval_f( ipc_ n, const double x[], double *f, const void *userdata )
    \endcode
    The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
    be assigned to f, and the function return value set to 0. If the
@@ -819,7 +819,7 @@ void bgo_solve_without_mat( void **data,
  @param eval_g is a user-supplied function that must have the following
    signature:
    \code
-      int eval_g( int n, const double x[], double g[], const void *userdata )
+      ipc_ eval_g( ipc_ n, const double x[], double g[], const void *userdata )
    \endcode
    The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
    function evaluated at x=\f$x\f$ must be assigned to g, and the function
@@ -830,7 +830,7 @@ void bgo_solve_without_mat( void **data,
  @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_hprod( int n, const double x[], double u[], const double v[],
+        ipc_ eval_hprod( ipc_ n, const double x[], double u[], const double v[],
                         bool got_h, const void *userdata )
    \endcode
    The sum \f$u + \nabla_{xx}f(x) v\f$ of the product of the Hessian
@@ -844,9 +844,9 @@ void bgo_solve_without_mat( void **data,
  @param eval_shprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_shprod( int n, const double x[], int nnz_v,
-                         const int index_nz_v[], const double v[],
-                         int *nnz_u, int index_nz_u[], double u[],
+        ipc_ eval_shprod( ipc_ n, const double x[], ipc_ nnz_v,
+                         const ipc_ index_nz_v[], const double v[],
+                         ipc_ *nnz_u, ipc_ index_nz_u[], double u[],
                          bool got_h, const void *userdata )
    \endcode
    The product \f$u = \nabla_{xx}f(x) v\f$ of the Hessian
@@ -863,7 +863,7 @@ void bgo_solve_without_mat( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_prec( int n, const double x[], double u[], const double v[],
+       ipc_ eval_prec( ipc_ n, const double x[], double u[], const double v[],
                       const void *userdata )
    \endcode
    The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
@@ -876,13 +876,13 @@ void bgo_solve_without_mat( void **data,
 //  *-*-*-*-*-   B G O _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*
 
 void bgo_solve_reverse_with_mat( void **data,
-                                 int *status,
-                                 int *eval_status,
-                                 int n,
+                                 ipc_ *status,
+                                 ipc_ *eval_status,
+                                 ipc_ n,
                                  real_wp_ x[],
                                  real_wp_ f,
                                  real_wp_ g[],
-                                 int ne,
+                                 ipc_ ne,
                                  real_wp_ H_val[],
                                  const real_wp_ u[],
                                  real_wp_ v[] );
@@ -1021,18 +1021,18 @@ void bgo_solve_reverse_with_mat( void **data,
 //  *-*-*-   B G O _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*
 
 void bgo_solve_reverse_without_mat( void **data,
-                                  int *status,
-                                  int *eval_status,
-                                  int n,
+                                  ipc_ *status,
+                                  ipc_ *eval_status,
+                                  ipc_ n,
                                   real_wp_ x[],
                                   real_wp_ f,
                                   real_wp_ g[],
                                   real_wp_ u[],
                                   real_wp_ v[],
-                                  int index_nz_v[],
-                                  int *nnz_v,
-                                  const int index_nz_u[],
-                                  int nnz_u );
+                                  ipc_ index_nz_v[],
+                                  ipc_ *nnz_v,
+                                  const ipc_ index_nz_u[],
+                                  ipc_ nnz_u );
 
 /*!<
  Find an approximation to the global minimizer of a given function subject to
@@ -1180,7 +1180,7 @@ void bgo_solve_reverse_without_mat( void **data,
 
 void bgo_information( void **data,
                       struct bgo_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

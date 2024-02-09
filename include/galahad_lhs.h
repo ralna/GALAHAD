@@ -63,22 +63,22 @@ struct lhs_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error.
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out.
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required. Possible values are:
     ///  \li < 1 no output.
     ///  \li > 0 debugging.
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// the duplication factor. This must be at least 1, a value of 5 is
     /// reasonable.
-    int duplication;
+    ipc_ duplication;
 
     /// \brief
     /// if .space_critical true, every effort will be made to use as little
@@ -116,11 +116,11 @@ struct lhs_inform_type {
     /// name of the offending array are held in
     /// inform.alloc_status and inform.bad_alloc respectively.
     /// \li -3. The random number seed has not been set.
-     int status;
+     ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -167,10 +167,10 @@ void lhs_read_specfile( struct lhs_control_type *control,
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   L H S _ I H S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-void lhs_ihs( int n_dimen,
-              int n_points,
-              int *seed,
-              int **X,
+void lhs_ihs( ipc_ n_dimen,
+              ipc_ n_points,
+              ipc_ *seed,
+              ipc_ **X,
               const struct lhs_control_type *control,
               struct lhs_inform_type *inform, void **data );
 
@@ -198,16 +198,16 @@ void lhs_ihs( int n_dimen,
   Improved Distributed Hypercube Sampling,
   American Institute of Aeronautics and Astronautics Paper 2002-1274
 
-  @param[in] n_dimen is a scalar variable of type int that specifies
+  @param[in] n_dimen is a scalar variable of type ipc_ that specifies
              the spatial dimension
 
-  @param[in] n_points is a scalar variable of type int that specifies
+  @param[in] n_points is a scalar variable of type ipc_ that specifies
              the number of points to be generated
 
   @param[in,out] seed is a scalar variable of type int, that gives a seed
                  for the random number generator used
 
-  @param[out] X is an array variable of type int with dimensions
+  @param[out] X is an array variable of type ipc_ with dimensions
               [n_dimen][n_points] that gives the hyper-cube points
 
   @param[in,out] control, inform, data - see lhs_initialize
@@ -217,12 +217,12 @@ void lhs_ihs( int n_dimen,
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   L H S _ G E T _ S E E D  -*-*-*-*-*-*-*-*-*-*-*
 
-void lhs_get_seed( int *seed );
+void lhs_get_seed( ipc_ *seed );
 
 /*!<
   Get a seed for the random number generator.
 
-  @param[out] seed is a scalar variable of type int that gives the
+  @param[out] seed is a scalar variable of type ipc_ that gives the
               pseudorandom seed value.
 */
 
@@ -230,7 +230,7 @@ void lhs_get_seed( int *seed );
 
 void lhs_information( void **data,
                       struct lhs_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

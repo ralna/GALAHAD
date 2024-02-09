@@ -365,27 +365,27 @@ struct dqp_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// printing will only occur every print_gap iterations
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// which starting point should be used for the dual problem
@@ -395,38 +395,38 @@ struct dqp_control_type {
     /// \li 2 minimize simplified quadratic dual
     /// \li 3 all free (= all active primal costraints)
     /// \li 4 all fixed on bounds (= no active primal costraints)
-    int dual_starting_point;
+    ipc_ dual_starting_point;
 
     /// \brief
     /// at most maxit inner iterations are allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// the maximum permitted size of the Schur complement before a
     /// refactorization is performed (used in the case where there is no
     /// Fredholm Alternative, 0 = refactor every iteration)
-    int max_sc;
+    ipc_ max_sc;
 
     /// \brief
     /// a subspace step will only be taken when the current Cauchy step has
     /// changed no more than than cauchy_only active constraints; the subspace
     /// step will always be taken if cauchy_only < 0
-    int cauchy_only;
+    ipc_ cauchy_only;
 
     /// \brief
     /// how many iterations are allowed per arc search (-ve = as many as require
-    int arc_search_maxit;
+    ipc_ arc_search_maxit;
 
     /// \brief
     /// how many CG iterations to perform per DQP iteration (-ve reverts to n+1)
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// once a potentially optimal subspace has been found, investigate it
     /// \li 0 as per an ordinary subspace
     /// \li 1 by increasing the maximum number of allowed CG iterations
     /// \li 2 by switching to a direct method
-    int explore_optimal_subspace;
+    ipc_ explore_optimal_subspace;
 
     /// \brief
     /// indicate whether and how much of the input problem
@@ -434,17 +434,17 @@ struct dqp_control_type {
     /// \li 0 nothing restored
     /// \li 1 scalar and vector parameters
     /// \li 2 all parameters
-    int restore_problem;
+    ipc_ restore_problem;
 
     /// \brief
     /// specifies the unit number to write generated SIF file describing the
     /// current problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// specifies the unit number to write generated QPLIB file describing the
     /// current problem
-    int qplib_file_device;
+    ipc_ qplib_file_device;
 
     /// \brief
     /// the penalty weight, rho. The general constraints are not enforced
@@ -691,11 +691,11 @@ struct dqp_inform_type {
 
     /// \brief
     /// return status. See DQP_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -704,15 +704,15 @@ struct dqp_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of iterations required
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -724,11 +724,11 @@ struct dqp_inform_type {
 
     /// \brief
     /// the total number of factorizations performed
-    int nfacts;
+    ipc_ nfacts;
 
     /// \brief
     /// the number of threads used
-    int threads;
+    ipc_ threads;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -759,7 +759,7 @@ struct dqp_inform_type {
     /// \brief
     /// checkpoints(i) records the iteration at which the criticality measures
     /// first fall below \f$10^{-i-1}\f$, i = 0, ..., 15 (-1 means not achieved)
-    int checkpointsIter[16];
+    ipc_ checkpointsIter[16];
     /// see checkpointsIter
     real_wp_ checkpointsTime[16];
 
@@ -785,7 +785,7 @@ struct dqp_inform_type {
 
     /// \brief
     /// inform parameters for SCU
-    int scu_status;
+    ipc_ scu_status;
     /// see scu_status
     struct scu_inform_type scu_inform;
 
@@ -798,7 +798,7 @@ struct dqp_inform_type {
 
 void dqp_initialize( void **data,
                      struct dqp_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -836,19 +836,19 @@ void dqp_read_specfile( struct dqp_control_type *control,
 
 void dqp_import( struct dqp_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[],
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[],
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -941,7 +941,7 @@ void dqp_import( struct dqp_control_type *control,
 
 void dqp_reset_control( struct dqp_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -959,14 +959,14 @@ void dqp_reset_control( struct dqp_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-*-   D Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
 
 void dqp_solve_qp( void **data,
-                   int *status,
-                   int n,
-                   int m,
-                   int h_ne,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ m,
+                   ipc_ h_ne,
                    const real_wp_ H_val[],
                    const real_wp_ g[],
                    const real_wp_ f,
-                   int a_ne,
+                   ipc_ a_ne,
                    const real_wp_ A_val[],
                    const real_wp_ c_l[],
                    const real_wp_ c_u[],
@@ -976,8 +976,8 @@ void dqp_solve_qp( void **data,
                    real_wp_ c[],
                    real_wp_ y[],
                    real_wp_ z[],
-                   int x_stat[],
-                   int c_stat[] );
+                   ipc_ x_stat[],
+                   ipc_ c_stat[] );
 
 /*!<
  Solve the quadratic program when the Hessian \f$H\f$ is available.
@@ -1099,14 +1099,14 @@ void dqp_solve_qp( void **data,
 //  *-*-*-*-*-*-*-*-*-*-   D Q P _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-
 
 void dqp_solve_sldqp( void **data,
-                      int *status,
-                      int n,
-                      int m,
+                      ipc_ *status,
+                      ipc_ n,
+                      ipc_ m,
                       const real_wp_ w[],
                       const real_wp_ x0[],
                       const real_wp_ g[],
                       const real_wp_ f,
-                      int a_ne,
+                      ipc_ a_ne,
                       const real_wp_ A_val[],
                       const real_wp_ c_l[],
                       const real_wp_ c_u[],
@@ -1116,8 +1116,8 @@ void dqp_solve_sldqp( void **data,
                       real_wp_ c[],
                       real_wp_ y[],
                       real_wp_ z[],
-                      int x_stat[],
-                      int c_stat[] );
+                      ipc_ x_stat[],
+                      ipc_ c_stat[] );
 
 /*!<
  Solve the shifted least-distance quadratic program
@@ -1239,7 +1239,7 @@ void dqp_solve_sldqp( void **data,
 
 void dqp_information( void **data,
                       struct dqp_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

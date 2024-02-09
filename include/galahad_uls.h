@@ -197,36 +197,36 @@ struct uls_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for warning messages
-    int warning;
+    ipc_ warning;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// controls level of diagnostic output from external solver
-    int print_level_solver;
+    ipc_ print_level_solver;
 
     /// \brief
     /// prediction of factor by which the fill-in will exceed the initial
     /// number of nonzeros in \f$A\f$
-    int initial_fill_in_factor;
+    ipc_ initial_fill_in_factor;
 
     /// \brief
     /// initial size for real array for the factors and other data
-    int min_real_factor_size;
+    ipc_ min_real_factor_size;
 
     /// \brief
     /// initial size for integer array for the factors and other data
-    int min_integer_factor_size;
+    ipc_ min_integer_factor_size;
 
     /// \brief
     /// maximum size for real array for the factors and other data
@@ -234,11 +234,11 @@ struct uls_control_type {
 
     /// \brief
     /// level 3 blocking in factorize
-    int blas_block_size_factorize;
+    ipc_ blas_block_size_factorize;
 
     /// \brief
     /// level 2 and 3 blocking in solve
-    int blas_block_size_solve;
+    ipc_ blas_block_size_solve;
 
     /// \brief
     /// pivot control:
@@ -247,20 +247,20 @@ struct uls_control_type {
     /// \li 3  Threshold Complete Pivoting is desired
     /// \li 4  Threshold Symmetric Pivoting is desired
     /// \li 5  Threshold Diagonal Pivoting is desired
-    int pivot_control;
+    ipc_ pivot_control;
 
     /// \brief
     /// number of rows/columns pivot selection restricted to
     /// (0 = no restriction)
-    int pivot_search_limit;
+    ipc_ pivot_search_limit;
 
     /// \brief
     /// the minimum permitted size of blocks within the block-triangular form
-    int minimum_size_for_btf;
+    ipc_ minimum_size_for_btf;
 
     /// \brief
     /// maximum number of iterative refinements allowed
-    int max_iterative_refinements;
+    ipc_ max_iterative_refinements;
 
     /// \brief
     /// stop if the matrix is found to be structurally singular
@@ -325,11 +325,11 @@ struct uls_inform_type {
     /// \li -32  error with integer workspace
     /// \li -33  error with real workspace
     /// \li -50  solver-specific error; see the solver's info parameter
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// name of array which provoked an allocate failure
@@ -337,7 +337,7 @@ struct uls_inform_type {
 
     /// \brief
     /// further information on failure
-    int more_info;
+    ipc_ more_info;
 
     /// \brief
     /// number of indices out-of-range
@@ -357,7 +357,7 @@ struct uls_inform_type {
 
     /// \brief
     /// number of compresses of data required
-    int compresses;
+    ipc_ compresses;
 
     /// \brief
     /// number of entries in factors
@@ -365,11 +365,11 @@ struct uls_inform_type {
 
     /// \brief
     /// estimated rank of the matrix
-    int rank;
+    ipc_ rank;
 
     /// \brief
     /// structural rank of the matrix
-    int structural_rank;
+    ipc_ structural_rank;
 
     /// \brief
     /// pivot control:
@@ -378,11 +378,11 @@ struct uls_inform_type {
     /// \li 3  Threshold Complete Pivoting has been desired
     /// \li 4  Threshold Symmetric Pivoting has been desired
     /// \li 5  Threshold Diagonal Pivoting has been desired
-    int pivot_control;
+    ipc_ pivot_control;
 
     /// \brief
     /// number of iterative refinements performed
-    int iterative_refinements;
+    ipc_ iterative_refinements;
 
     /// \brief
     /// has an "alternative" y: A^T y = 0 and yT b > 0 been found when
@@ -411,7 +411,7 @@ struct uls_inform_type {
 
     /// \brief
     /// the LAPACK error return code
-    int lapack_error;
+    ipc_ lapack_error;
 
 };
 
@@ -420,7 +420,7 @@ struct uls_inform_type {
 void uls_initialize( const char solver[],
                      void **data,
                      struct uls_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -466,15 +466,15 @@ void uls_read_specfile( struct uls_control_type *control,
 
 void uls_factorize_matrix( struct uls_control_type *control,
                            void **data,
-                           int *status,
-                           int m,
-                           int n,
+                           ipc_ *status,
+                           ipc_ m,
+                           ipc_ n,
                            const char type[],
-                           int ne,
+                           ipc_ ne,
                            const real_wp_ val[],
-                           const int row[],
-                           const int col[],
-                           const int ptr[] );
+                           const ipc_ row[],
+                           const ipc_ col[],
+                           const ipc_ ptr[] );
 
 /*!<
  Import matrix data into internal storage prior to solution, analyse
@@ -551,7 +551,7 @@ void uls_factorize_matrix( struct uls_control_type *control,
 
 void uls_reset_control( struct uls_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -569,9 +569,9 @@ void uls_reset_control( struct uls_control_type *control,
 //  *-*-*-*-*-*-*-*-   U L S _ s o l v e _ s y s t e m   -*-*-*-*-*-*-*-*-*-
 
 void uls_solve_system( void **data,
-                       int *status,
-                       int m,
-                       int n,
+                       ipc_ *status,
+                       ipc_ m,
+                       ipc_ n,
                        real_wp_ sol[],
                        bool trans );
 
@@ -619,7 +619,7 @@ void uls_solve_system( void **data,
 
 void uls_information( void **data,
                       struct uls_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

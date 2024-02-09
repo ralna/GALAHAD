@@ -135,7 +135,7 @@
   LSQP is used for this purpose, and offers the options of either
   accepting the first strictly feasible point found, or preferably of
   aiming for the so-called "analytic center" of the feasible region.
-  Having found such a suitable initial feasible point, the second
+  Having found such a suitable initial feasible poipc_, the second
   "optimality" phase ensures that \req{4.1a} remains satisfied while
   iterating to satisfy dual feasibility (2a) and complementary
   slackness (3).  The optimality phase proceeds by approximately
@@ -408,37 +408,37 @@ struct qpb_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// at most maxit inner iterations are allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// the maximum number of iterative refinements allowed
-    int itref_max;
+    ipc_ itref_max;
 
     /// \brief
     /// the maximum number of CG iterations allowed. If cg_maxit < 0,
     /// this number will be reset to the dimension of the system + 1
     ///
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// specifies the type of indicator function used. Pssible values are
@@ -449,7 +449,7 @@ struct qpb_control_type {
     /// \li 3 primal-dual indicator: constraint active <=> distance to nearest
     ///     bound <= .indicator_tol_tapia * distance to same bound at previous
     ///     iteration
-    int indicator_type;
+    ipc_ indicator_type;
 
     /// \brief
     /// indicate whether and how much of the input problem
@@ -457,44 +457,44 @@ struct qpb_control_type {
     /// \li 0 nothing restored
     /// \li 1 scalar and vector parameters
     /// \li 2 all parameters
-    int restore_problem;
+    ipc_ restore_problem;
 
     /// \brief
     /// should extrapolation be used to track the central path? Possible values
     /// \li 0 never
     /// \li 1 after the final major iteration
     /// \li 2 at each major iteration
-    int extrapolate;
+    ipc_ extrapolate;
 
     /// \brief
     /// the maximum number of previous path points to use when fitting the data
-    int path_history;
+    ipc_ path_history;
 
     /// \brief
     /// the factorization to be used. Possible values are
     /// \li 0  automatic
     /// \li 1  Schur-complement factorization
     /// \li 2  augmented-system factorization
-    int factor;
+    ipc_ factor;
 
     /// \brief
     /// the maximum number of nonzeros in a column of A which is permitted
     /// with the Schur-complement factorization
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// an initial guess as to the integer workspace required by SBLS
-    int indmin;
+    ipc_ indmin;
 
     /// \brief
     /// an initial guess as to the real workspace required by SBLS
-    int valmin;
+    ipc_ valmin;
 
     /// \brief
     /// the number of iterations for which the overall infeasibility
     /// of the problem is not reduced by at least a factor .reduce_infeas
     /// before the problem is flagged as infeasible (see reduce_infeas)
-    int infeas_max;
+    ipc_ infeas_max;
 
     /// \brief
     /// the preconditioner to be used for the CG is defined by precon.
@@ -504,26 +504,26 @@ struct qpb_control_type {
     /// \li 2  full factorization
     /// \li 3  band within full factorization
     /// \li 4  diagonal using the barrier terms within full factorization
-    int precon;
+    ipc_ precon;
 
     /// \brief
     /// the semi-bandwidth of a band preconditioner, if appropriate
-    int nsemib;
+    ipc_ nsemib;
 
     /// \brief
     /// the maximum order of path derivative to use
     ///
-    int path_derivatives;
+    ipc_ path_derivatives;
 
     /// \brief
     /// the order of (Puiseux) series to fit to the path data:
     ///  <=0 to fit all data
-    int fit_order;
+    ipc_ fit_order;
 
     /// \brief
     /// specifies the unit number to write generated SIF file describing the
     /// current problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -824,11 +824,11 @@ struct qpb_inform_type {
 
     /// \brief
     /// return status. See QPB_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -837,15 +837,15 @@ struct qpb_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of conjugate gradient iterations required
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -857,16 +857,16 @@ struct qpb_inform_type {
 
     /// \brief
     /// the total number of factorizations performed
-    int nfacts;
+    ipc_ nfacts;
 
     /// \brief
     /// the total number of "wasted" function evaluations during the linesearch
-    int nbacts;
+    ipc_ nbacts;
 
     /// \brief
     /// the total number of factorizations which were modified to ensure that th
     /// matrix was an appropriate preconditioner
-    int nmods;
+    ipc_ nmods;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -911,7 +911,7 @@ struct qpb_inform_type {
 
 void qpb_initialize( void **data,
                      struct qpb_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -950,19 +950,19 @@ void qpb_read_specfile( struct qpb_control_type *control,
 
 void qpb_import( struct qpb_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[],
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[],
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -1057,7 +1057,7 @@ void qpb_import( struct qpb_control_type *control,
 
 void qpb_reset_control( struct qpb_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -1075,14 +1075,14 @@ void qpb_reset_control( struct qpb_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-*-   Q P B _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
 
 void qpb_solve_qp( void **data,
-                   int *status,
-                   int n,
-                   int m,
-                   int h_ne,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ m,
+                   ipc_ h_ne,
                    const real_wp_ H_val[],
                    const real_wp_ g[],
                    const real_wp_ f,
-                   int a_ne,
+                   ipc_ a_ne,
                    const real_wp_ A_val[],
                    const real_wp_ c_l[],
                    const real_wp_ c_u[],
@@ -1092,8 +1092,8 @@ void qpb_solve_qp( void **data,
                    real_wp_ c[],
                    real_wp_ y[],
                    real_wp_ z[],
-                   int x_stat[],
-                   int c_stat[] );
+                   ipc_ x_stat[],
+                   ipc_ c_stat[] );
 
 /*!<
  Solve the quadratic program when the Hessian \f$H\f$ is available.
@@ -1216,7 +1216,7 @@ void qpb_solve_qp( void **data,
 
 void qpb_information( void **data,
                       struct qpb_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

@@ -111,19 +111,19 @@ struct lms_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// limited memory length
-    int memory_length;
+    ipc_ memory_length;
 
     /// \brief
     /// limited-memory formula required (others may be added in due course):
@@ -132,7 +132,7 @@ struct lms_control_type {
     /// \li 3 The inverse of the BFGS formula.
     /// \li 4 The inverse of the shifted BFGS formula. This should be used
     ///       instead of .method = 3 whenever a shift is planned.
-    int method;
+    ipc_ method;
 
     /// \brief
     /// allow space to permit different methods if required (less efficient)
@@ -221,16 +221,16 @@ struct lms_inform_type {
     /// has been called when control.method = 3, or
     /// lhs_change_method has been called after
     /// control.any_method = false was specified when calling lhs_setup.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the number of pairs (s,y) currently used to represent the limited-memory
     /// matrix.
-    int length;
+    ipc_ length;
 
     /// \brief
     /// have (s,y) pairs been skipped when forming the limited-memory matrix?
@@ -250,7 +250,7 @@ struct lms_inform_type {
 
 void lms_initialize( void **data,
                      struct lms_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -269,7 +269,7 @@ void lms_initialize( void **data,
 
 void lms_information( void **data,
                       struct lms_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

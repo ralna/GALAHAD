@@ -66,17 +66,17 @@ struct hash_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required. Possible values are:
     /// \li \f$\leq\f$ 0 no output,
     /// \li \f$\geq\f$ 1 debugging
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// if %space_critical true, every effort will be made to use as little
@@ -115,11 +115,11 @@ struct hash_inform_type {
     /// inform.alloc_status and inform.bad_alloc respectively.
     /// \li -99. The current dictionary is full and should be rebuilt with
     /// more space.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -129,8 +129,8 @@ struct hash_inform_type {
 
 // *-*-*-*-*-*-*-*-*-    H A S H  _ I N I T I A L I Z E    -*-*--*-*-*-*-
 
-void hash_initialize( int nchar,
-                      int length,
+void hash_initialize( ipc_ nchar,
+                      ipc_ length,
                       void **data,
                       struct hash_control_type *control,
                       struct hash_inform_type *inform );
@@ -157,7 +157,7 @@ void hash_initialize( int nchar,
 
 void hash_information( void **data,
                        struct hash_inform_type *inform,
-                       int *status );
+                       ipc_ *status );
 
 /*!<
   Provides output information

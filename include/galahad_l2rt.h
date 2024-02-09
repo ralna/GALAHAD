@@ -222,52 +222,52 @@ struct l2rt_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// the number of iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// the minimum number of iterations allowed (-ve = no bound)
-    int itmin;
+    ipc_ itmin;
 
     /// \brief
     /// the maximum number of iterations allowed (-ve = no bound)
-    int itmax;
+    ipc_ itmax;
 
     /// \brief
     /// the maximum number of Newton inner iterations per outer iteration
     /// allowed (-ve = no bound)
-    int bitmax;
+    ipc_ bitmax;
 
     /// \brief
     /// the number of extra work vectors of length n used
-    int extra_vectors;
+    ipc_ extra_vectors;
 
     /// \brief
     /// the stopping rule used: 0=1.0, 1=norm step, 2=norm step/sigma (NOT USED)
-    int stopping_rule;
+    ipc_ stopping_rule;
 
     /// \brief
     /// frequency for solving the reduced tri-diagonal problem        (NOT USED)
-    int freq;
+    ipc_ freq;
 
     /// \brief
     /// the iteration stops successfully when \f$\|A^Tr\|\f$ is less than
@@ -309,11 +309,11 @@ struct l2rt_inform_type {
 
     /// \brief
     /// return status. See \link l2rt_solve_problem \endlink for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -322,25 +322,25 @@ struct l2rt_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of pass-2 iterations required
-    int iter_pass2;
+    ipc_ iter_pass2;
 
     /// \brief
     /// the total number of inner iterations performed
-    int biters;
+    ipc_ biters;
 
     /// \brief
     /// the smallest number of inner iterations performed during an
     /// outer iteration
-    int biter_min;
+    ipc_ biter_min;
 
     /// \brief
     /// the largest number of inner iterations performed during an
     /// outer iteration
-    int biter_max;
+    ipc_ biter_max;
 
     /// \brief
     /// the value of the objective function
@@ -372,7 +372,7 @@ struct l2rt_inform_type {
 
 void l2rt_initialize( void **data,
                      struct l2rt_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -409,7 +409,7 @@ void l2rt_read_specfile( struct l2rt_control_type *control,
 
 void l2rt_import_control( struct l2rt_control_type *control,
                           void **data,
-                          int *status );
+                          ipc_ *status );
 
 /*!<
  Import control parameters prior to solution.
@@ -427,9 +427,9 @@ void l2rt_import_control( struct l2rt_control_type *control,
 //  *-*-*-*-*-*-*-*-*-  L 2 R T _ S O L V E _ P R O B L E M   -*-*-*-*-*-*-*-*-
 
 void l2rt_solve_problem( void **data,
-                         int *status,
-                         int m,
-                         int n,
+                         ipc_ *status,
+                         ipc_ m,
+                         ipc_ n,
                          const real_wp_ power,
                          const real_wp_ weight,
                          const real_wp_ shift,
@@ -516,7 +516,7 @@ void l2rt_solve_problem( void **data,
 
 void l2rt_information( void **data,
                       struct l2rt_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information
