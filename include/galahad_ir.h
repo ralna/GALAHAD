@@ -69,19 +69,19 @@ struct ir_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// maximum number of iterative refinements allowed
-    int itref_max;
+    ipc_ itref_max;
 
     /// \brief
     /// refinement will cease as soon as the residual \f$\|Ax-b\|\f$ falls below
@@ -137,11 +137,11 @@ struct ir_inform_type {
     /// inform.alloc_status and inform.bad_alloc respectively.
     /// \li -11. Iterative refinement has not reduced the
     /// relative residual by more than control.required_relative_residual.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -161,7 +161,7 @@ struct ir_inform_type {
 
 void ir_initialize( void **data,
                     struct ir_control_type *control,
-                    int *status );
+                    ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -180,7 +180,7 @@ void ir_initialize( void **data,
 
 void ir_information( void **data,
                      struct ir_inform_type *inform,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
   Provides output information

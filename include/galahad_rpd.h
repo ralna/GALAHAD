@@ -81,7 +81,7 @@
 \endmanonly
    where vec\f$( x . H_c . x )\f$ is the vector whose
    \f$i\f$-th component is  \f$x^T (H_c)_i x\f$ for the \f$i\f$-th
-   constraint, from and to a QPLIB-format data file.
+   constraipc_, from and to a QPLIB-format data file.
    Variables may be continuous, binary or integer.
 
   \subsection rpd_authors Authors
@@ -229,21 +229,21 @@ struct rpd_control_type {
 
     /// \brief
     /// QPLIB file input stream number
-    int qplib;
+    ipc_ qplib;
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
     /// \li \f$\leq\f$ 0 gives no output,
     /// \li \f$\geq\f$ 1 gives increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// if .space_critical true, every effort will be made to use as little
@@ -276,11 +276,11 @@ struct rpd_inform_type {
     /// \li -22 An input/outpur error occurred.
     /// \li -25 The end of the input file was reached prematurely.
     /// \li -29 The problem type was not recognised.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation or deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation or deallocation
@@ -289,11 +289,11 @@ struct rpd_inform_type {
 
     /// \brief
     /// status from last read attempt
-    int io_status;
+    ipc_ io_status;
 
     /// \brief
     /// number of last line read from i/o file
-    int line;
+    ipc_ line;
 
     /// \brief
     /// problem type
@@ -304,7 +304,7 @@ struct rpd_inform_type {
 
 void rpd_initialize( void **data,
                      struct rpd_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -322,16 +322,16 @@ void rpd_initialize( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ S T A T S   -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_stats( char qplib_file[],
-                    int qplib_file_len,
+                    ipc_ qplib_file_len,
                     struct rpd_control_type *control,
                     void **data,
-                    int *status,
+                    ipc_ *status,
                     char p_type[4],
-                    int *n,
-                    int *m,
-                    int *h_ne,
-                    int *a_ne,
-                    int *h_c_ne );
+                    ipc_ *n,
+                    ipc_ *m,
+                    ipc_ *h_ne,
+                    ipc_ *a_ne,
+                    ipc_ *h_c_ne );
 
 /*!<
  Read the data from a specified QPLIB file into internal storage,
@@ -433,8 +433,8 @@ The third character indicates the type of the (most extreme)
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ G  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_g( void **data,
-                int *status,
-                int n,
+                ipc_ *status,
+                ipc_ n,
                 real_wp_ g[]
                 );
 
@@ -460,7 +460,7 @@ void rpd_get_g( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ F  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_f( void **data,
-                int *status,
+                ipc_ *status,
                 real_wp_ *f
                 );
 
@@ -482,8 +482,8 @@ void rpd_get_f( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ X L U  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_xlu( void **data,
-                  int *status,
-                  int n,
+                  ipc_ *status,
+                  ipc_ n,
                   real_wp_ x_l[],
                   real_wp_ x_u[] );
 
@@ -513,8 +513,8 @@ void rpd_get_xlu( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ C L U  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_clu( void **data,
-                  int *status,
-                  int m,
+                  ipc_ *status,
+                  ipc_ m,
                   real_wp_ c_l[],
                   real_wp_ c_u[] );
 
@@ -544,10 +544,10 @@ void rpd_get_clu( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ H  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_h( void **data,
-                int *status,
-                int h_ne,
-                int h_row[],
-                int h_col[],
+                ipc_ *status,
+                ipc_ h_ne,
+                ipc_ h_row[],
+                ipc_ h_col[],
                 real_wp_ h_val[]
                 );
 
@@ -581,10 +581,10 @@ void rpd_get_h( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ A  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_a( void **data,
-                int *status,
-                int a_ne,
-                int a_row[],
-                int a_col[],
+                ipc_ *status,
+                ipc_ a_ne,
+                ipc_ a_row[],
+                ipc_ a_col[],
                 real_wp_ a_val[]
                 );
 
@@ -618,11 +618,11 @@ void rpd_get_a( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ H _ C  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_h_c( void **data,
-                  int *status,
-                  int h_c_ne,
-                  int h_c_ptr[],
-                  int h_c_row[],
-                  int h_c_col[],
+                  ipc_ *status,
+                  ipc_ h_c_ne,
+                  ipc_ h_c_ptr[],
+                  ipc_ h_c_row[],
+                  ipc_ h_c_col[],
                   real_wp_ h_c_val[]
                   );
 
@@ -660,9 +660,9 @@ void rpd_get_h_c( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ X _ T Y P E  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_x_type( void **data,
-                     int *status,
-                     int n,
-                     int x_type[] );
+                     ipc_ *status,
+                     ipc_ n,
+                     ipc_ x_type[] );
 
 /*!<
  Recover the types of the variables \f$x\f$.
@@ -688,8 +688,8 @@ void rpd_get_x_type( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ X  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_x( void **data,
-                int *status,
-                int n,
+                ipc_ *status,
+                ipc_ n,
                 real_wp_ x[]
                 );
 
@@ -714,8 +714,8 @@ void rpd_get_x( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ Y  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_y( void **data,
-                int *status,
-                int m,
+                ipc_ *status,
+                ipc_ m,
                 real_wp_ y[] );
 
 /*!<
@@ -741,8 +741,8 @@ void rpd_get_y( void **data,
 // *-*-*-*-*-*-*-*-*-*-*-*-    R P D _ G E T _ Z  -*-*-*-*-*-*-*-*-*-*
 
 void rpd_get_z( void **data,
-                int *status,
-                int n,
+                ipc_ *status,
+                ipc_ n,
                 real_wp_ z[] );
 
 /*!<
@@ -768,7 +768,7 @@ void rpd_get_z( void **data,
 
 void rpd_information( void **data,
                       struct rpd_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

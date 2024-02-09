@@ -257,20 +257,20 @@ struct cro_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// the maximum permitted size of the Schur complement before a
     /// refactorization is performed
-    int max_schur_complement;
+    ipc_ max_schur_complement;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -376,11 +376,11 @@ struct cro_inform_type {
 
     /// \brief
     /// return status. See CRO_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -389,7 +389,7 @@ struct cro_inform_type {
 
     /// \brief
     /// the number of dependent active constraints
-    int dependent;
+    ipc_ dependent;
 
     /// \brief
     /// timings (see above)
@@ -409,7 +409,7 @@ struct cro_inform_type {
 
     /// \brief
     /// information from SCU
-    int scu_status;
+    ipc_ scu_status;
     /// see scu_status
     struct scu_inform_type scu_inform;
 
@@ -422,7 +422,7 @@ struct cro_inform_type {
 
 void cro_initialize( void **data,
                      struct cro_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -459,17 +459,17 @@ void cro_read_specfile( struct cro_control_type *control,
 void cro_crossover_solution( void **data,
                              struct cro_control_type *control,
                              struct cro_inform_type *inform,
-                             int n,
-                             int m,
-                             int m_equal,
-                             int h_ne,
+                             ipc_ n,
+                             ipc_ m,
+                             ipc_ m_equal,
+                             ipc_ h_ne,
                              const real_wp_ H_val[],
-                             const int H_col[],
-                             const int H_ptr[],
-                             int a_ne,
+                             const ipc_ H_col[],
+                             const ipc_ H_ptr[],
+                             ipc_ a_ne,
                              const real_wp_ A_val[],
-                             const int A_col[],
-                             const int A_ptr[],
+                             const ipc_ A_col[],
+                             const ipc_ A_ptr[],
                              const real_wp_ g[],
                              const real_wp_ c_l[],
                              const real_wp_ c_u[],
@@ -479,8 +479,8 @@ void cro_crossover_solution( void **data,
                              real_wp_ c[],
                              real_wp_ y[],
                              real_wp_ z[],
-                             int x_stat[],
-                             int c_stat[] );
+                             ipc_ x_stat[],
+                             ipc_ c_stat[] );
 
 /*!<
  Crosover the solution from a primal-dual to a basic one.

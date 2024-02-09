@@ -283,15 +283,15 @@ struct llst_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// how much of \f$A\f$ has changed since the previous call.
@@ -299,7 +299,7 @@ struct llst_control_type {
     /// \li 0  unchanged
     /// \li 1  values but not indices have changed
     /// \li 2  values and indices have changed
-    int new_a;
+    ipc_ new_a;
 
     /// \brief
     /// how much of \f$S\f$ has changed since the previous call.
@@ -307,16 +307,16 @@ struct llst_control_type {
     /// \li 0  unchanged
     /// \li 1  values but not indices have changed
     /// \li 2  values and indices have changed
-    int new_s;
+    ipc_ new_s;
 
     /// \brief
     /// the maximum number of factorizations (=iterations) allowed.
     /// -ve implies no limit
-    int max_factorizations;
+    ipc_ max_factorizations;
 
     /// \brief
     /// maximum degree of Taylor approximant allowed (<= 3)
-    int taylor_max_degree;
+    ipc_ taylor_max_degree;
 
     /// \brief
     /// initial estimate of the Lagrange multipler
@@ -456,19 +456,19 @@ struct llst_inform_type {
     /// \li -10 the factorization of \f$K(\lambda)\f$ failed
     /// \li -15 \f$S\f$ does not appear to be strictly diagonally dominant
     /// \li -16 ill-conditioning has prevented furthr progress
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the number of factorizations performed
-    int factorizations;
+    ipc_ factorizations;
 
     /// \brief
     /// the number of (\f$\|x\|_S\f$,\f$\lambda\f$) pairs in the history
-    int len_history;
+    ipc_ len_history;
 
     /// \brief
     /// corresponding value of the two-norm of the residual,
@@ -515,7 +515,7 @@ struct llst_inform_type {
 
 void llst_initialize( void **data,
                      struct llst_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -549,14 +549,14 @@ void llst_read_specfile( struct llst_control_type *control,
 
 void llst_import( struct llst_control_type *control,
                  void **data,
-                 int *status,
-                 int m,
-                 int n,
+                 ipc_ *status,
+                 ipc_ m,
+                 ipc_ n,
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -620,13 +620,13 @@ void llst_import( struct llst_control_type *control,
 
 void llst_import_scaling( struct llst_control_type *control,
                           void **data,
-                          int *status,
-                          int n,
+                          ipc_ *status,
+                          ipc_ n,
                           const char S_type[],
-                          int S_ne,
-                          const int S_row[],
-                          const int S_col[],
-                          const int S_ptr[] );
+                          ipc_ S_ne,
+                          const ipc_ S_row[],
+                          const ipc_ S_col[],
+                          const ipc_ S_ptr[] );
 
 /*!<
  Import the scaling matrix \f$S\f$ into internal storage prior to solution.
@@ -690,7 +690,7 @@ void llst_import_scaling( struct llst_control_type *control,
 
 void llst_reset_control( struct llst_control_type *control,
                          void **data,
-                         int *status );
+                         ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -708,15 +708,15 @@ void llst_reset_control( struct llst_control_type *control,
 //  -*-*-*-*-*-*-*-*-*-   L L S T _ S O L V E _ P R O B L E M  -*-*-*-*-*-*-*-*-*-
 
 void llst_solve_problem( void **data,
-                         int *status,
-                         int m,
-                         int n,
+                         ipc_ *status,
+                         ipc_ m,
+                         ipc_ n,
                          const real_wp_ radius,
-                         int A_ne,
+                         ipc_ A_ne,
                          const real_wp_ A_val[],
                          const real_wp_ b[],
                          real_wp_ x[],
-                         int S_ne,
+                         ipc_ S_ne,
                          const real_wp_ S_val[] );
 
 /*!<
@@ -793,7 +793,7 @@ void llst_solve_problem( void **data,
 
 void llst_information( void **data,
                        struct llst_inform_type *inform,
-                       int *status );
+                       ipc_ *status );
 
 /*!<
   Provides output information

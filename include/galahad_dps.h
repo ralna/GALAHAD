@@ -232,19 +232,19 @@ struct dps_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// unit to write problem data into file problem_file
-    int problem;
+    ipc_ problem;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// how much of \f$H\f$ has changed since the previous call.
@@ -252,11 +252,11 @@ struct dps_control_type {
     /// \li 0  unchanged
     /// \li 1  values but not indices have changed
     /// \li 2  values and indices have changed
-    int new_h;
+    ipc_ new_h;
 
     /// \brief
     /// maximum degree of Taylor approximant allowed
-    int taylor_max_degree;
+    ipc_ taylor_max_degree;
 
     /// \brief
     /// smallest allowable value of an eigenvalue of the block diagonal factor
@@ -354,21 +354,21 @@ struct dps_inform_type {
 
     /// \brief
     /// return status. See DPS_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the number of 1 by 1 blocks from the factorization of H that were
     /// modified when constructing \f$M\f$
-    int mod_1by1;
+    ipc_ mod_1by1;
 
     /// \brief
     /// the number of 2 by 2 blocks from the factorization of H that were
     /// modified when constructing \f$M\f$
-    int mod_2by2;
+    ipc_ mod_2by2;
 
     /// \brief
     /// the value of the quadratic function
@@ -412,7 +412,7 @@ struct dps_inform_type {
 
 void dps_initialize( void **data,
                      struct dps_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -450,13 +450,13 @@ void dps_read_specfile( struct dps_control_type *control,
 
 void dps_import( struct dps_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
+                 ipc_ *status,
+                 ipc_ n,
                  const char H_type[],
-                 int ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[] );
+                 ipc_ ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[] );
 
 
 /*!<
@@ -518,7 +518,7 @@ void dps_import( struct dps_control_type *control,
 
 void dps_reset_control( struct dps_control_type *control,
                  void **data,
-                 int *status );
+                 ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -536,9 +536,9 @@ void dps_reset_control( struct dps_control_type *control,
 //  *-*-*-*-*-*-*-   D P S _ S O L V E _ T R _ P R O B L E M   -*-*-*-*-*-*-
 
 void dps_solve_tr_problem( void **data,
-                           int *status,
-                           int n,
-                           int ne,
+                           ipc_ *status,
+                           ipc_ n,
+                           ipc_ ne,
                            real_wp_ H_val[],
                            real_wp_ c[],
                            real_wp_ f,
@@ -606,9 +606,9 @@ void dps_solve_tr_problem( void **data,
 //  *-*-*-*-*-*-*-   D P S _ S O L V E _ R Q _ P R O B L E M   -*-*-*-*-*-*-
 
 void dps_solve_rq_problem( void **data,
-                           int *status,
-                           int n,
-                           int ne,
+                           ipc_ *status,
+                           ipc_ n,
+                           ipc_ ne,
                            real_wp_ H_val[],
                            real_wp_ c[],
                            real_wp_ f,
@@ -681,8 +681,8 @@ void dps_solve_rq_problem( void **data,
 //  *-*-*-*-*-*-*-   D P S _ R E S O L V E _ T R _ P R O B L E M   -*-*-*-*-*-*-
 
 void dps_resolve_tr_problem( void **data,
-                             int *status,
-                             int n,
+                             ipc_ *status,
+                             ipc_ n,
                              real_wp_ c[],
                              real_wp_ f,
                              real_wp_ radius,
@@ -737,8 +737,8 @@ void dps_resolve_tr_problem( void **data,
 //  *-*-*-*-*-*-*-   D P S _ S O L V E _ R Q _ P R O B L E M   -*-*-*-*-*-*-
 
 void dps_resolve_rq_problem( void **data,
-                             int *status,
-                             int n,
+                             ipc_ *status,
+                             ipc_ n,
                              real_wp_ c[],
                              real_wp_ f,
                              real_wp_ power,
@@ -796,7 +796,7 @@ void dps_resolve_rq_problem( void **data,
 
 void dps_information( void **data,
                       struct dps_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

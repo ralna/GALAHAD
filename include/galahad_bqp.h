@@ -229,55 +229,55 @@ struct bqp_control_type {
 
     /// \brief
     /// unit number for error and warning diagnostics
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output unit number
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// on which iteration to start printing
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// on which iteration to stop printing
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// how many iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// how many iterations to perform (-ve reverts to HUGE(1)-1)
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// cold_start should be set to 0 if a warm start is required (with variable
     /// assigned according to B_stat, see below), and to any other value if the
     /// values given in prob.X suffice
-    int cold_start;
+    ipc_ cold_start;
 
     /// \brief
     /// the ratio of how many iterations use CG rather steepest descent
-    int ratio_cg_vs_sd;
+    ipc_ ratio_cg_vs_sd;
 
     /// \brief
     /// the maximum number of per-iteration changes in the working set permitted
     /// when allowing CG rather than steepest descent
-    int change_max;
+    ipc_ change_max;
 
     /// \brief
     /// how many CG iterations to perform per BQP iteration (-ve reverts to n+1)
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// the unit number to write generated SIF file describing the current
     /// problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -389,23 +389,23 @@ struct bqp_inform_type {
     /// \li -2  deallocation error
     /// \li -3  matrix data faulty (.n < 1, .ne < 0)
     /// \li -20  alegedly +ve definite matrix is not
-    int status;
+    ipc_ status;
 
     /// \brief
     /// Fortran STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// status return from factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// number of CG iterations required
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// current value of the objective function
@@ -432,7 +432,7 @@ struct bqp_inform_type {
 
 void bqp_initialize( void **data,
                      struct bqp_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -470,13 +470,13 @@ void bqp_read_specfile( struct bqp_control_type *control,
 
 void bqp_import( struct bqp_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
+                 ipc_ *status,
+                 ipc_ n,
                  const char H_type[],
-                 int ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[] );
+                 ipc_ ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[] );
 
 
 /*!<
@@ -540,8 +540,8 @@ void bqp_import( struct bqp_control_type *control,
 
 void bqp_import_without_h( struct bqp_control_type *control,
                            void **data,
-                           int *status,
-                           int n );
+                           ipc_ *status,
+                           ipc_ n );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -575,7 +575,7 @@ void bqp_import_without_h( struct bqp_control_type *control,
 
 void bqp_reset_control( struct bqp_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -593,9 +593,9 @@ void bqp_reset_control( struct bqp_control_type *control,
 //  *-*-*-*-*-*-*-*-*-   B Q P _ S O L V E _ G I V E N _ H   -*-*-*-*-*-*-*-*-
 
 void bqp_solve_given_h( void **data,
-                        int *status,
-                        int n,
-                        int h_ne,
+                        ipc_ *status,
+                        ipc_ n,
+                        ipc_ h_ne,
                         const real_wp_ H_val[],
                         const real_wp_ g[],
                         const real_wp_ f,
@@ -603,7 +603,7 @@ void bqp_solve_given_h( void **data,
                         const real_wp_ x_u[],
                         real_wp_ x[],
                         real_wp_ z[],
-                        int x_stat[] );
+                        ipc_ x_stat[] );
 
 /*!<
  Solve the bound-constrained quadratic program when the Hessian \f$H\f$
@@ -693,22 +693,22 @@ is available.
 //  *-*-*-*-*-*-   B Q P _ S O L V E _ R E V E R S E _ H + P R O D   -*-*-*-*-*-
 
 void bqp_solve_reverse_h_prod( void **data,
-                                int *status,
-                                int n,
+                                ipc_ *status,
+                                ipc_ n,
                                 const real_wp_ g[],
                                 const real_wp_ f,
                                 const real_wp_ x_l[],
                                 const real_wp_ x_u[],
                                 real_wp_ x[],
                                 real_wp_ z[],
-                                int x_stat[],
+                                ipc_ x_stat[],
                                 real_wp_ v[],
                                 const real_wp_ prod[],
-                                int nz_v[],
-                                int *nz_v_start,
-                                int *nz_v_end,
-                                const int nz_prod[],
-                                int nz_prod_end );
+                                ipc_ nz_v[],
+                                ipc_ *nz_v_start,
+                                ipc_ *nz_v_end,
+                                const ipc_ nz_prod[],
+                                ipc_ nz_prod_end );
 
 /*!<
  Solve the bound-constrained quadratic program when the products of the
@@ -838,7 +838,7 @@ program.
 
 void bqp_information( void **data,
                       struct bqp_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

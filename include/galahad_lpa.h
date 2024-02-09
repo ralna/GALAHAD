@@ -322,54 +322,54 @@ struct lpa_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
     /// (>= 2 turns on LA04 output)
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// at most maxit inner iterations are allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// maximum number of iterative refinements allowed
-    int max_iterative_refinements;
+    ipc_ max_iterative_refinements;
 
     /// \brief
     /// initial size for real array for the factors and other data
-    int min_real_factor_size;
+    ipc_ min_real_factor_size;
 
     /// \brief
     /// initial size for integer array for the factors and other data
-    int min_integer_factor_size;
+    ipc_ min_integer_factor_size;
 
     /// \brief
     /// the initial seed used when generating random numbers
-    int random_number_seed;
+    ipc_ random_number_seed;
 
     /// \brief
     /// specifies the unit number to write generated SIF file describing the
     /// current problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// specifies the unit number to write generated QPLIB file describing the
     /// current problem
-    int qplib_file_device;
+    ipc_ qplib_file_device;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -500,11 +500,11 @@ struct lpa_inform_type {
 
     /// \brief
     /// return status. See LPA_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -513,16 +513,16 @@ struct lpa_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the final value of la04's job argument
-    int la04_job;
+    ipc_ la04_job;
 
     /// \brief
     /// any extra information from an unsuccesfull call to LA04 (LA04's
     /// RINFO(35)
-    int la04_job_info;
+    ipc_ la04_job_info;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -554,7 +554,7 @@ struct lpa_inform_type {
 
 void lpa_initialize( void **data,
                      struct lpa_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -592,14 +592,14 @@ void lpa_read_specfile( struct lpa_control_type *control,
 
 void lpa_import( struct lpa_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -663,7 +663,7 @@ void lpa_import( struct lpa_control_type *control,
 
 void lpa_reset_control( struct lpa_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -681,12 +681,12 @@ void lpa_reset_control( struct lpa_control_type *control,
 //  -*-*-*-*-*-*-*-*-*-*-*-   L P A _ S O L V E _ L P  -*-*-*-*-*-*-*-*-*-*-*-*-
 
 void lpa_solve_lp( void **data,
-                   int *status,
-                   int n,
-                   int m,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ m,
                    const real_wp_ g[],
                    const real_wp_ f,
-                   int a_ne,
+                   ipc_ a_ne,
                    const real_wp_ A_val[],
                    const real_wp_ c_l[],
                    const real_wp_ c_u[],
@@ -696,8 +696,8 @@ void lpa_solve_lp( void **data,
                    real_wp_ c[],
                    real_wp_ y[],
                    real_wp_ z[],
-                   int x_stat[],
-                   int c_stat[] );
+                   ipc_ x_stat[],
+                   ipc_ c_stat[] );
 
 /*!<
  Solve the linear program.
@@ -810,7 +810,7 @@ void lpa_solve_lp( void **data,
 
 void lpa_information( void **data,
                       struct lpa_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

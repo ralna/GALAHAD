@@ -174,17 +174,17 @@ struct sha_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required. <= 0 gives no output, = 1 gives a one-line
     /// summary for every iteration, = 2 gives a summary of the inner iteration
     /// for each iteration, >= 3 gives increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// which approximation algorithm should be used?
@@ -193,7 +193,7 @@ struct sha_control_type {
     /// \li 3 : composite (alg 2.3 in paper)
     /// \li 4 : composite 2 (alg 2.4 in paper)
     /// \li 5 : cautious (alg 2.5 in paper)
-    int approximation_algorithm;
+    ipc_ approximation_algorithm;
 
     /// \brief
     /// which dense linear equation solver should be used?
@@ -201,15 +201,15 @@ struct sha_control_type {
     /// \li 2 : QR factorization
     /// \li 3 : singular-value decomposition
     /// \li 4 : singular-value decomposition with divide-and-conquer
-    int dense_linear_solver;
+    ipc_ dense_linear_solver;
 
     /// \brief
     /// the maximum sparse degree if the combined version is used
-    int max_sparse_degree;
+    ipc_ max_sparse_degree;
 
     /// \brief
     /// if available use an addition extra_differences differences
-    int extra_differences;
+    ipc_ extra_differences;
 
     /// \brief
     /// if space is critical, ensure allocated arrays are no bigger than needed
@@ -233,31 +233,31 @@ struct sha_inform_type {
 
     /// \brief
     /// return status. See SHA_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the maximum degree in the adgacency graph.
-    int max_degree;
+    ipc_ max_degree;
 
     /// \brief
     /// which approximation algorithm has been used
-    int approximation_algorithm_used;
+    ipc_ approximation_algorithm_used;
 
     /// \brief
     /// the number of differences that will be needed.
-    int differences_needed;
+    ipc_ differences_needed;
 
     /// \brief
     /// the maximum reduced degree in the adgacency graph.
-    int max_reduced_degree;
+    ipc_ max_reduced_degree;
 
     /// \brief
     /// a failure occured when forming the bad_row-th row (0 = no failure).
-    int bad_row;
+    ipc_ bad_row;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -269,7 +269,7 @@ struct sha_inform_type {
 
 void sha_initialize( void **data,
                      struct sha_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -288,7 +288,7 @@ void sha_initialize( void **data,
 
 void sha_reset_control( struct sha_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -307,12 +307,12 @@ void sha_reset_control( struct sha_control_type *control,
 
 void sha_analyse_matrix( struct sha_control_type *control,
                          void **data,
-                         int *status,
-                         int n,
-                         int ne,
-                         const int row[],
-                         const int col[],
-                         int *m );
+                         ipc_ *status,
+                         ipc_ n,
+                         ipc_ ne,
+                         const ipc_ row[],
+                         const ipc_ col[],
+                         ipc_ *m );
 
 /*!<
  Import structural matrix data into internal storage prior to solution
@@ -361,17 +361,17 @@ void sha_analyse_matrix( struct sha_control_type *control,
 //  *-*-*-*-*-*-*-   S H A _ R E C O V E R _ m a t r i x   -*-*-*-*-*-*-*-
 
 void sha_recover_matrix( void **data,
-                         int *status,
-                         int ne,
-                         int m,
-                         int ls1,
-                         int ls2,
+                         ipc_ *status,
+                         ipc_ ne,
+                         ipc_ m,
+                         ipc_ ls1,
+                         ipc_ ls2,
                          const real_wp_ strans[][ls2],
-                         int ly1,
-                         int ly2,
+                         ipc_ ly1,
+                         ipc_ ly2,
                          const real_wp_ ytrans[][ly2],
                          real_wp_ val[],
-                         const int precedence[] );
+                         const ipc_ precedence[] );
 
 /*!<
  Form and factorize the symmetric matrix \f$A\f$.
@@ -435,7 +435,7 @@ void sha_recover_matrix( void **data,
 
 void sha_information( void **data,
                       struct sha_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

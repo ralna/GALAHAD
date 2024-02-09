@@ -477,27 +477,27 @@ struct wcp_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// at most maxit inner iterations are allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// how to choose the initial point. Possible values are
@@ -505,37 +505,37 @@ struct wcp_control_type {
     ///     their nearest bound, will be used
     /// \li 1  the nearest point to the "bound average" 0.5(X_l+X_u) that
     ///     satisfies the linear constraints will be used
-    int initial_point;
+    ipc_ initial_point;
 
     /// \brief
     /// the factorization to be used. Possible values are
     /// \li 0  automatic
     /// \li 1  Schur-complement factorization
     /// \li 2  augmented-system factorization
-    int factor;
+    ipc_ factor;
 
     /// \brief
     /// the maximum number of nonzeros in a column of A which is permitted
     /// with the Schur-complement factorization
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// an initial guess as to the integer workspace required by SBLS
-    int indmin;
+    ipc_ indmin;
 
     /// \brief
     /// an initial guess as to the real workspace required by SBLS
-    int valmin;
+    ipc_ valmin;
 
     /// \brief
     /// the maximum number of iterative refinements allowed
-    int itref_max;
+    ipc_ itref_max;
 
     /// \brief
     /// the number of iterations for which the overall infeasibility of the
     /// problem is not reduced by at least a factor .required_infeas_reduction
     /// before the problem is flagged as infeasible (see required_infeas_reducti
-    int infeas_max;
+    ipc_ infeas_max;
 
     /// \brief
     /// the strategy used to reduce relaxed constraint bounds.
@@ -547,7 +547,7 @@ struct wcp_control_type {
     ///       reduction
     /// \li 4 reduce each perturbation as much as possible with superlinear
     ///       reduction
-    int perturbation_strategy;
+    ipc_ perturbation_strategy;
 
     /// \brief
     /// indicate whether and how much of the input problem should be restored
@@ -555,7 +555,7 @@ struct wcp_control_type {
     /// \li 0 nothing restored
     /// \li 1 scalar and vector parameters
     /// \li 2 all parameters
-    int restore_problem;
+    ipc_ restore_problem;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -802,11 +802,11 @@ struct wcp_inform_type {
 
     /// \brief
     /// return status. See WCP_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -815,11 +815,11 @@ struct wcp_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -831,27 +831,27 @@ struct wcp_inform_type {
 
     /// \brief
     /// the total number of factorizations performed
-    int nfacts;
+    ipc_ nfacts;
 
     /// \brief
     /// the number of general constraints that lie on (one) of their bounds for
     /// feasible solutions
-    int c_implicit;
+    ipc_ c_implicit;
 
     /// \brief
     /// the number of variables that lie on (one) of their bounds for all
     /// feasible solutions
-    int x_implicit;
+    ipc_ x_implicit;
 
     /// \brief
     /// the number of Lagrange multipliers for general constraints that lie on
     /// (one) of their bounds for all feasible solutions
-    int y_implicit;
+    ipc_ y_implicit;
 
     /// \brief
     /// the number of dual variables that lie on (one) of their bounds for all
     /// feasible solutions
-    int z_implicit;
+    ipc_ z_implicit;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -888,7 +888,7 @@ struct wcp_inform_type {
 
 void wcp_initialize( void **data,
                      struct wcp_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -927,14 +927,14 @@ void wcp_read_specfile( struct wcp_control_type *control,
 
 void wcp_import( struct wcp_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -999,7 +999,7 @@ void wcp_import( struct wcp_control_type *control,
 
 void wcp_reset_control( struct wcp_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -1017,11 +1017,11 @@ void wcp_reset_control( struct wcp_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-*-   W C P _ F I N D _ W C P   -*-*-*-*-*-*-*-*-*-*-
 
 void wcp_find_wcp( void **data,
-                   int *status,
-                   int n,
-                   int m,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ m,
                    const real_wp_ g[],
-                   int a_ne,
+                   ipc_ a_ne,
                    const real_wp_ A_val[],
                    const real_wp_ c_l[],
                    const real_wp_ c_u[],
@@ -1033,8 +1033,8 @@ void wcp_find_wcp( void **data,
                    real_wp_ y_u[],
                    real_wp_ z_l[],
                    real_wp_ z_u[],
-                   int x_stat[],
-                   int c_stat[] );
+                   ipc_ x_stat[],
+                   ipc_ c_stat[] );
 
 /*!<
  Find a well-centered point in the feasible region
@@ -1156,7 +1156,7 @@ void wcp_find_wcp( void **data,
 
 void wcp_information( void **data,
                       struct wcp_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information.

@@ -252,15 +252,15 @@ struct psls_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// which preconditioner to use:
@@ -291,27 +291,27 @@ struct psls_control_type {
     ///
     /// <b>N.B.</b> Options 3-8 may require additional external software that
     /// is not part of the package, and that must be obtained separately.
-    int preconditioner;
+    ipc_ preconditioner;
 
     /// \brief
     /// the semi-bandwidth for band(H) when .preconditioner = 2,3
-    int semi_bandwidth;
+    ipc_ semi_bandwidth;
 
     /// \brief
     /// not used at present
-    int scaling;
+    ipc_ scaling;
     /// see scaling
-    int ordering;
+    ipc_ ordering;
 
     /// \brief
     /// maximum number of nonzeros in a column of \f$A\f$ for Schur-complement
     /// factorization to accommodate newly deleted rpws and columns
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// number of extra vectors of length n required by the Lin-More'
     /// incomplete Cholesky preconditioner when .preconditioner = 6
-    int icfs_vectors;
+    ipc_ icfs_vectors;
 
     /// \brief
     /// the maximum number of fill entries within each column of the incomplete
@@ -319,7 +319,7 @@ struct psls_control_type {
     /// increasing mi28_lsize improve
     /// the quality of the preconditioner but increases the time to compute
     /// and then apply the preconditioner. Values less than 0 are treated as 0
-    int mi28_lsize;
+    ipc_ mi28_lsize;
 
     /// \brief
     /// the maximum number of entries within each column of the strictly lower
@@ -331,7 +331,7 @@ struct psls_control_type {
     /// mi28_rsize > 0 generally leads to a higher quality preconditioner than
     /// using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally
     /// recommended
-    int mi28_rsize;
+    ipc_ mi28_rsize;
 
     /// \brief
     /// the minimum permitted diagonal in diag(max(H,.min_diagonal))
@@ -450,23 +450,23 @@ struct psls_inform_type {
     /// \li -1  allocation error
     /// \li -2  deallocation error
     /// \li -3  matrix data faulty (.n < 1, .ne < 0)
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// status return from factorization
-    int analyse_status;
+    ipc_ analyse_status;
 
     /// \brief
     /// status return from factorization
-    int factorize_status;
+    ipc_ factorize_status;
 
     /// \brief
     /// status return from solution phase
-    int solve_status;
+    ipc_ solve_status;
 
     /// \brief
     /// number of integer words to hold factors
@@ -478,43 +478,43 @@ struct psls_inform_type {
 
     /// \brief
     /// code for the actual preconditioner used (see control.preconditioner)
-    int preconditioner;
+    ipc_ preconditioner;
 
     /// \brief
     /// the actual semi-bandwidth
-    int semi_bandwidth;
+    ipc_ semi_bandwidth;
 
     /// \brief
     /// the semi-bandwidth following reordering (if any)
-    int reordered_semi_bandwidth;
+    ipc_ reordered_semi_bandwidth;
 
     /// \brief
     /// number of indices out-of-range
-    int out_of_range;
+    ipc_ out_of_range;
 
     /// \brief
     /// number of duplicates
-    int duplicates;
+    ipc_ duplicates;
 
     /// \brief
     /// number of entries from the strict upper triangle
-    int upper;
+    ipc_ upper;
 
     /// \brief
     /// number of missing diagonal entries for an allegedly-definite matrix
-    int missing_diagonals;
+    ipc_ missing_diagonals;
 
     /// \brief
     /// the semi-bandwidth used
-    int semi_bandwidth_used;
+    ipc_ semi_bandwidth_used;
 
     /// \brief
     /// number of 1 by 1 pivots in the factorization
-    int neg1;
+    ipc_ neg1;
 
     /// \brief
     /// number of 2 by 2 pivots in the factorization
-    int neg2;
+    ipc_ neg2;
 
     /// \brief
     /// has the preconditioner been perturbed during the fctorization?
@@ -534,7 +534,7 @@ struct psls_inform_type {
 
     /// \brief
     /// the integer and real output arrays from mc61
-    int mc61_info[10];
+    ipc_ mc61_info[10];
     /// see mc61_info
     real_wp_ mc61_rinfo[15];
 
@@ -555,7 +555,7 @@ struct psls_inform_type {
 
 void psls_initialize( void **data,
                      struct psls_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -593,13 +593,13 @@ void psls_read_specfile( struct psls_control_type *control,
 
 void psls_import( struct psls_control_type *control,
                   void **data,
-                  int *status,
-                  int n,
+                  ipc_ *status,
+                  ipc_ n,
                   const char type[],
-                  int ne,
-                  const int row[],
-                  const int col[],
-                  const int ptr[] );
+                  ipc_ ne,
+                  const ipc_ row[],
+                  const ipc_ col[],
+                  const ipc_ ptr[] );
 
 /*!<
  Import structural matrix data into internal storage prior to solution.
@@ -661,7 +661,7 @@ void psls_import( struct psls_control_type *control,
 
 void psls_reset_control( struct psls_control_type *control,
                  void **data,
-                 int *status );
+                 ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -679,8 +679,8 @@ void psls_reset_control( struct psls_control_type *control,
 //  *-*-*-*-*-*- P S L S _ f o r m _ p r e c o n d i t i o n e r  -*-*-*-*-*-*-
 
 void psls_form_preconditioner( void **data,
-                               int *status,
-                               int ne,
+                               ipc_ *status,
+                               ipc_ ne,
                                const real_wp_ val[] );
 
 /*!<
@@ -715,11 +715,11 @@ void psls_form_preconditioner( void **data,
 //  *-*-*- P S L S _ f o r m _ s u b s e t _ p r e c o n d i t i o n e r  -*-*-
 
 void psls_form_subset_preconditioner( void **data,
-                                      int *status,
-                                      int ne,
+                                      ipc_ *status,
+                                      ipc_ ne,
                                       const real_wp_ val[],
-                                      int n_sub,
-                                      const int sub[] );
+                                      ipc_ n_sub,
+                                      const ipc_ sub[] );
 
 /*!<
  Form and factorize a \f$P\f$ preconditioner of a symmetric submatrix of
@@ -760,11 +760,11 @@ void psls_form_subset_preconditioner( void **data,
 //  *-*-*-*-*- P S L S _ u p d a t e _ p r e c o n d i t i o n e r  -*-*-*-*-
 
 void psls_update_preconditioner( void **data,
-                                 int *status,
-                                 int ne,
+                                 ipc_ *status,
+                                 ipc_ ne,
                                  const real_wp_ val[],
-                                 int n_del,
-                                 const int del[] );
+                                 ipc_ n_del,
+                                 const ipc_ del[] );
 
 /*!<
  Update the preconditioner \f$P\f$ when rows (amd columns) are removed.
@@ -804,8 +804,8 @@ void psls_update_preconditioner( void **data,
 //  *-*-*-*-*- P S L S _ a p p l y _ p r e c o n d i t i o n e r  -*-*-*-*-
 
 void psls_apply_preconditioner( void **data,
-                                int *status,
-                                int n,
+                                ipc_ *status,
+                                ipc_ n,
                                 real_wp_ sol[] );
 
 /*!<
@@ -842,7 +842,7 @@ void psls_apply_preconditioner( void **data,
 
 void psls_information( void **data,
                       struct psls_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provide output information

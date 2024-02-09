@@ -315,49 +315,49 @@ struct eqp_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// the factorization to be used. Possible values are
     /// /li 0  automatic
     /// /li 1  Schur-complement factorization
     /// /li 2  augmented-system factorization                         (OBSOLETE)
-    int factorization;
+    ipc_ factorization;
 
     /// \brief
     /// the maximum number of nonzeros in a column of A which is permitted
     /// with the Schur-complement factorization                       (OBSOLETE)
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// an initial guess as to the integer workspace required by SBLS (OBSOLETE)
-    int indmin;
+    ipc_ indmin;
 
     /// \brief
     /// an initial guess as to the real workspace required by SBLS    (OBSOLETE)
-    int valmin;
+    ipc_ valmin;
 
     /// \brief
     /// an initial guess as to the workspace required by ULS          (OBSOLETE)
-    int len_ulsmin;
+    ipc_ len_ulsmin;
 
     /// \brief
     /// the maximum number of iterative refinements allowed           (OBSOLETE)
-    int itref_max;
+    ipc_ itref_max;
 
     /// \brief
     /// the maximum number of CG iterations allowed. If cg_maxit < 0,
     /// this number will be reset to the dimension of the system + 1
     ///
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// the preconditioner to be used for the CG. Possible values are
@@ -368,26 +368,26 @@ struct eqp_control_type {
     /// \li 4  diagonal using the barrier terms within full factorization
     ///        (OBSOLETE)
     /// \li 5  optionally supplied diagonal, G = D
-    int preconditioner;
+    ipc_ preconditioner;
 
     /// \brief
     /// the semi-bandwidth of a band preconditioner, if appropriate   (OBSOLETE)
-    int semi_bandwidth;
+    ipc_ semi_bandwidth;
 
     /// \brief
     /// how much has A changed since last problem solved:
     /// 0 = not changed, 1 = values changed, 2 = structure changed
-    int new_a;
+    ipc_ new_a;
 
     /// \brief
     /// how much has H changed since last problem solved:
     /// 0 = not changed, 1 = values changed, 2 = structure changed
-    int new_h;
+    ipc_ new_h;
 
     /// \brief
     /// specifies the unit number to write generated SIF file describing the
     /// current problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization.
@@ -537,11 +537,11 @@ struct eqp_inform_type {
 
     /// \brief
     /// return status. See EQP_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -550,9 +550,9 @@ struct eqp_inform_type {
 
     /// \brief
     /// the total number of conjugate gradient iterations required
-    int cg_iter;
+    ipc_ cg_iter;
     /// see cg_iter
-    int cg_iter_inter;
+    ipc_ cg_iter_inter;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -588,7 +588,7 @@ struct eqp_inform_type {
 
 void eqp_initialize( void **data,
                      struct eqp_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -627,19 +627,19 @@ void eqp_read_specfile( struct eqp_control_type *control,
 
 void eqp_import( struct eqp_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[],
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[],
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -734,7 +734,7 @@ void eqp_import( struct eqp_control_type *control,
 
 void eqp_reset_control( struct eqp_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -752,14 +752,14 @@ void eqp_reset_control( struct eqp_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-*-   E Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
 
 void eqp_solve_qp( void **data,
-                   int *status,
-                   int n,
-                   int m,
-                   int h_ne,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ m,
+                   ipc_ h_ne,
                    const real_wp_ H_val[],
                    const real_wp_ g[],
                    const real_wp_ f,
-                   int a_ne,
+                   ipc_ a_ne,
                    const real_wp_ A_val[],
                    real_wp_ c[],
                    real_wp_ x[],
@@ -853,14 +853,14 @@ void eqp_solve_qp( void **data,
 //  *-*-*-*-*-*-*-*-*-*-   E Q P _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-
 
 void eqp_solve_sldqp( void **data,
-                      int *status,
-                      int n,
-                      int m,
+                      ipc_ *status,
+                      ipc_ n,
+                      ipc_ m,
                       const real_wp_ w[],
                       const real_wp_ x0[],
                       const real_wp_ g[],
                       const real_wp_ f,
-                      int a_ne,
+                      ipc_ a_ne,
                       const real_wp_ A_val[],
                       real_wp_ c[],
                       real_wp_ x[],
@@ -953,9 +953,9 @@ void eqp_solve_sldqp( void **data,
 //  *-*-*-*-*-*-*-*-*-*-   E Q P _ R E S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-
 
 void eqp_resolve_qp( void **data,
-                     int *status,
-                     int n,
-                     int m,
+                     ipc_ *status,
+                     ipc_ n,
+                     ipc_ m,
                      const real_wp_ g[],
                      const real_wp_ f,
                      real_wp_ c[],
@@ -1033,7 +1033,7 @@ void eqp_resolve_qp( void **data,
 
 void eqp_information( void **data,
                       struct eqp_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

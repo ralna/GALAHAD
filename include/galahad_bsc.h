@@ -161,20 +161,20 @@ struct bsc_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// maximum permitted number of nonzeros in a column of \f$A\f$;
     /// -ve means unlimit
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// how much has \f$A\f$ changed since it was last accessed:
@@ -182,12 +182,12 @@ struct bsc_control_type {
     /// \li 1 = values changed,
     /// \li 2 = structure changed
     /// \li 3 = structure changed but values not required
-    int new_a;
+    ipc_ new_a;
 
     /// \brief
     /// how much extra space is to be allocated in \f$S\f$ above that needed to
     /// hold the Schur complement
-    int extra_space_s;
+    ipc_ extra_space_s;
 
     /// \brief
     /// should s.ptr also be set to indicate the first entry in each column
@@ -233,11 +233,11 @@ struct bsc_inform_type {
     /// contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
     /// has been violated.
 
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -246,12 +246,12 @@ struct bsc_inform_type {
 
     /// \brief
     /// the maximum number of entries in a column of \f$A\f$
-    int max_col_a;
+    ipc_ max_col_a;
 
     /// \brief
     /// the number of columns of \f$A\f$ that have more than control.max_col
     /// entries
-    int exceeds_max_col;
+    ipc_ exceeds_max_col;
 
     /// \brief
     /// the total CPU time spent in the package
@@ -266,7 +266,7 @@ struct bsc_inform_type {
 
 void bsc_initialize( void **data,
                      struct bsc_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -285,7 +285,7 @@ void bsc_initialize( void **data,
 
 void bsc_information( void **data,
                       struct bsc_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

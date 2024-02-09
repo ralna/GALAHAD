@@ -218,49 +218,49 @@ struct lstr_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// the number of iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// the minimum number of iterations allowed (-ve = no bound)
-    int itmin;
+    ipc_ itmin;
 
     /// \brief
     /// the maximum number of iterations allowed (-ve = no bound)
-    int itmax;
+    ipc_ itmax;
 
     /// \brief
     /// the maximum number of iterations allowed once the boundary has been
     /// encountered (-ve = no bound)
-    int itmax_on_boundary;
+    ipc_ itmax_on_boundary;
 
     /// \brief
     /// the maximum number of Newton inner iterations per outer iteration allowe
     /// (-ve = no bound)
-    int bitmax;
+    ipc_ bitmax;
 
     /// \brief
     /// the number of extra work vectors of length n used
-    int extra_vectors;
+    ipc_ extra_vectors;
 
     /// \brief
     /// the iteration stops successfully when \f$\|A^Tr\|\f$ is less than
@@ -306,11 +306,11 @@ struct lstr_inform_type {
 
     /// \brief
     /// return status. See \link lstr_solve_problem \endlink for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -319,26 +319,26 @@ struct lstr_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of pass-2 iterations required if the solution lies on
     /// the trust-region boundary
-    int iter_pass2;
+    ipc_ iter_pass2;
 
     /// \brief
     /// the total number of inner iterations performed
-    int biters;
+    ipc_ biters;
 
     /// \brief
     /// the smallest number of inner iterations performed during an
     /// outer iteration
-    int biter_min;
+    ipc_ biter_min;
 
     /// \brief
     /// the largestt number of inner iterations performed during an
     /// outer iteration
-    int biter_max;
+    ipc_ biter_max;
 
     /// \brief
     /// the Lagrange multiplier, \f$\lambda\f$, corresponding to the
@@ -367,7 +367,7 @@ struct lstr_inform_type {
 
 void lstr_initialize( void **data,
                      struct lstr_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -405,7 +405,7 @@ void lstr_read_specfile( struct lstr_control_type *control,
 
 void lstr_import_control( struct lstr_control_type *control,
                           void **data,
-                          int *status );
+                          ipc_ *status );
 
 /*!<
  Import control parameters prior to solution.
@@ -423,9 +423,9 @@ void lstr_import_control( struct lstr_control_type *control,
 //  *-*-*-*-*-*-*-*-*-  L S T R _ S O L V E _ P R O B L E M   -*-*-*-*-*-*-*-*-
 
 void lstr_solve_problem( void **data,
-                         int *status,
-                         int m,
-                         int n,
+                         ipc_ *status,
+                         ipc_ m,
+                         ipc_ n,
                          const real_wp_ radius,
                          real_wp_ x[],
                          real_wp_ u[],
@@ -506,7 +506,7 @@ void lstr_solve_problem( void **data,
 
 void lstr_information( void **data,
                       struct lstr_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

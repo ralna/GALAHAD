@@ -309,11 +309,11 @@ struct clls_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
@@ -321,31 +321,31 @@ struct clls_control_type {
     /// \li  = 1 gives a one-line summary for every iteration,
     /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// at most maxit inner iterations are allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// the number of iterations for which the overall infeasibility
     /// of the problem is not reduced by at least a factor .reduce_infeas
     /// before the problem is flagged as infeasible (see reduce_infeas)
-    int infeas_max;
+    ipc_ infeas_max;
 
     /// \brief
     /// the initial value of the barrier parameter will not be changed for the
     /// first muzero_fixed iterations
     ///
-    int muzero_fixed;
+    ipc_ muzero_fixed;
 
     /// \brief
     /// indicate whether and how much of the input problem
@@ -353,7 +353,7 @@ struct clls_control_type {
     /// \li 0 nothing restored
     /// \li 1 scalar and vector parameters
     /// \li 2 all parameters
-    int restore_problem;
+    ipc_ restore_problem;
 
     /// \brief
     /// specifies the type of indicator function used. Possible values are
@@ -365,7 +365,7 @@ struct clls_control_type {
     /// \li 3 primal-dual indicator: a constraint is active if and only if
     ///      the distance to its nearest bound \f$\leq\f$
     ///      .indicator_tol_tapia * distance to same bound at previous iteration
-    int indicator_type;
+    ipc_ indicator_type;
 
     /// \brief
     /// which residual trajectory should be used to aim from the current iterate
@@ -377,21 +377,21 @@ struct clls_control_type {
     /// \li 4 the mixed linear-quadratic residual trajectory
     /// \li 5 the Zhang arc ultimately switching to the mixed linear-quadratic
     ///       residual trajectory
-    int arc;
+    ipc_ arc;
 
     /// \brief
     /// the order of (Taylor/Puiseux) series to fit to the path data
-    int series_order;
+    ipc_ series_order;
 
     /// \brief
     /// specifies the unit number to write generated SIF file describing the
     /// current problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// specifies the unit number to write generated QPLIB file describing the
     /// current problem
-    int qplib_file_device;
+    ipc_ qplib_file_device;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -672,11 +672,11 @@ struct clls_inform_type {
 
     /// \brief
     /// return status. See CLLS_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -685,11 +685,11 @@ struct clls_inform_type {
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -701,15 +701,15 @@ struct clls_inform_type {
 
     /// \brief
     /// the total number of factorizations performed
-    int nfacts;
+    ipc_ nfacts;
 
     /// \brief
     /// the total number of "wasted" function evaluations during the linesearch
-    int nbacts;
+    ipc_ nbacts;
 
     /// \brief
     /// the number of threads used
-    int threads;
+    ipc_ threads;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -740,7 +740,7 @@ struct clls_inform_type {
     /// \brief
     /// checkpoints(i) records the iteration at which the criticality measures
     /// first fall below \f$10^{-i-1}\f$, i = 0, ..., 15 (-1 means not achieved)
-    int checkpointsIter[16];
+    ipc_ checkpointsIter[16];
     /// see checkpointsIter
     real_wp_ checkpointsTime[16];
 
@@ -781,7 +781,7 @@ struct clls_inform_type {
 
 void clls_initialize( void **data,
                       struct clls_control_type *control,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -820,22 +820,22 @@ void clls_read_specfile( struct clls_control_type *control,
 
 void clls_import( struct clls_control_type *control,
                   void **data,
-                  int *status,
-                  int n,
-                  int o,
-                  int m,
+                  ipc_ *status,
+                  ipc_ n,
+                  ipc_ o,
+                  ipc_ m,
                   const char Ao_type[],
-                  int Ao_ne,
-                  const int Ao_row[],
-                  const int Ao_col[],
-                  int Ao_ptr_ne,
-                  const int Ao_ptr[],
+                  ipc_ Ao_ne,
+                  const ipc_ Ao_row[],
+                  const ipc_ Ao_col[],
+                  ipc_ Ao_ptr_ne,
+                  const ipc_ Ao_ptr[],
                   const char A_type[],
-                  int A_ne,
-                  const int A_row[],
-                  const int A_col[],
-                  int A_ptr_ne,
-                  const int A_ptr[] );
+                  ipc_ A_ne,
+                  const ipc_ A_row[],
+                  const ipc_ A_col[],
+                  ipc_ A_ptr_ne,
+                  const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -948,7 +948,7 @@ void clls_import( struct clls_control_type *control,
 
 void clls_reset_control( struct clls_control_type *control,
                          void **data,
-                         int *status );
+                         ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -966,15 +966,15 @@ void clls_reset_control( struct clls_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   C L L S _ S O L V E _ C L L S   -*-*-*-*-*-*-*-*-*-*-
 
 void clls_solve_clls( void **data,
-                      int *status,
-                      int n,
-                      int o,
-                      int m,
-                      int Ao_ne,
+                      ipc_ *status,
+                      ipc_ n,
+                      ipc_ o,
+                      ipc_ m,
+                      ipc_ Ao_ne,
                       const real_wp_ Ao_val[],
                       const real_wp_ b[],
                       real_wp_ regularization_weight,
-                      int A_ne,
+                      ipc_ A_ne,
                       const real_wp_ A_val[],
                       const real_wp_ c_l[],
                       const real_wp_ c_u[],
@@ -985,8 +985,8 @@ void clls_solve_clls( void **data,
                       real_wp_ c[],
                       real_wp_ y[],
                       real_wp_ z[],
-                      int x_stat[],
-                      int c_stat[],
+                      ipc_ x_stat[],
+                      ipc_ c_stat[],
                       real_wp_ w[] );
 
 /*!<
@@ -1122,7 +1122,7 @@ void clls_solve_clls( void **data,
 
 void clls_information( void **data,
                        struct clls_inform_type *inform,
-                       int *status );
+                       ipc_ *status );
 
 /*!<
   Provides output information

@@ -599,67 +599,67 @@ struct qpa_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// at most maxit inner iterations are allowed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// the factorization to be used. Possible values are
     /// 0  automatic
     /// 1  Schur-complement factorization
     /// 2  augmented-system factorization
-    int factor;
+    ipc_ factor;
 
     /// \brief
     /// the maximum number of nonzeros in a column of A which is permitted
     /// with the Schur-complement factorization
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// the maximum permitted size of the Schur complement before a
     /// refactorization is performed
-    int max_sc;
+    ipc_ max_sc;
 
     /// \brief
     /// an initial guess as to the integer workspace required by SLS  (OBSOLETE)
-    int indmin;
+    ipc_ indmin;
 
     /// \brief
     /// an initial guess as to the real workspace required by SLS     (OBSOLETE)
-    int valmin;
+    ipc_ valmin;
 
     /// \brief
     /// the maximum number of iterative refinements allowed           (OBSOLETE)
-    int itref_max;
+    ipc_ itref_max;
 
     /// \brief
     /// the infeasibility will be checked for improvement every
     /// infeas_check_interval iterations (see infeas_g_improved_by_factor
     /// and infeas_b_improved_by_factor below)
-    int infeas_check_interval;
+    ipc_ infeas_check_interval;
 
     /// \brief
     /// the maximum number of CG iterations allowed. If cg_maxit < 0,
     /// this number will be reset to the dimension of the system + 1
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// the preconditioner to be used for the CG is defined by precon.
@@ -669,18 +669,18 @@ struct qpa_control_type {
     /// 2  full factorization
     /// 3  band within full factorization
     /// 4  diagonal using the barrier terms within full factorization
-    int precon;
+    ipc_ precon;
 
     /// \brief
     /// the semi-bandwidth of a band preconditioner, if appropriate
-    int nsemib;
+    ipc_ nsemib;
 
     /// \brief
     /// if the ratio of the number of nonzeros in the factors of the reference
     /// matrix to the number of nonzeros in the matrix itself exceeds
     /// full_max_fill, and the preconditioner is being selected automatically
     /// (precon = 0), a banded approximation will be used instead
-    int full_max_fill;
+    ipc_ full_max_fill;
 
     /// \brief
     /// the constraint deletion strategy to be used. Possible values are:
@@ -688,7 +688,7 @@ struct qpa_control_type {
     /// 0  most violated of all
     /// 1  LIFO (last in, first out)
     /// k  LIFO(k) most violated of the last k in LIFO
-    int deletion_strategy;
+    ipc_ deletion_strategy;
 
     /// \brief
     /// indicate whether and how much of the input problem should be restored
@@ -696,11 +696,11 @@ struct qpa_control_type {
     /// 0 nothing restored
     /// 1 scalar and vector parameters
     /// 2 all parameters
-    int restore_problem;
+    ipc_ restore_problem;
 
     /// \brief
     /// the frequency at which residuals will be monitored
-    int monitor_residuals;
+    ipc_ monitor_residuals;
 
     /// \brief
     ///
@@ -714,12 +714,12 @@ struct qpa_control_type {
     /// 2 cold start with no active constraints
     /// 3 cold start with only equality constraints active
     /// 4 cold start with as many active constraints as possible
-    int cold_start;
+    ipc_ cold_start;
 
     /// \brief
     /// specifies the unit number to write generated SIF file describing the
     /// current problem
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -925,11 +925,11 @@ struct qpa_inform_type {
 
     /// \brief
     /// return status. See QPA_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -938,19 +938,19 @@ struct qpa_inform_type {
 
     /// \brief
     /// the total number of major iterations required
-    int major_iter;
+    ipc_ major_iter;
 
     /// \brief
     /// the total number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of conjugate gradient iterations required
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -962,20 +962,20 @@ struct qpa_inform_type {
 
     /// \brief
     /// the total number of factorizations performed
-    int nfacts;
+    ipc_ nfacts;
 
     /// \brief
     /// the total number of factorizations which were modified to ensure that th
     /// matrix was an appropriate preconditioner
-    int nmods;
+    ipc_ nmods;
 
     /// \brief
     /// the number of infeasible general constraints
-    int num_g_infeas;
+    ipc_ num_g_infeas;
 
     /// \brief
     /// the number of infeasible simple-bound constraints
-    int num_b_infeas;
+    ipc_ num_b_infeas;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -1007,7 +1007,7 @@ struct qpa_inform_type {
 
 void qpa_initialize( void **data,
                      struct qpa_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -1046,19 +1046,19 @@ void qpa_read_specfile( struct qpa_control_type *control,
 
 void qpa_import( struct qpa_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[],
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[],
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[] );
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -1153,7 +1153,7 @@ void qpa_import( struct qpa_control_type *control,
 
 void qpa_reset_control( struct qpa_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -1171,14 +1171,14 @@ void qpa_reset_control( struct qpa_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
 
 void qpa_solve_qp( void **data,
-                   int *status,
-                   int n,
-                   int m,
-                   int h_ne,
+                   ipc_ *status,
+                   ipc_ n,
+                   ipc_ m,
+                   ipc_ h_ne,
                    const real_wp_ H_val[],
                    const real_wp_ g[],
                    const real_wp_ f,
-                   int a_ne,
+                   ipc_ a_ne,
                    const real_wp_ A_val[],
                    const real_wp_ c_l[],
                    const real_wp_ c_u[],
@@ -1188,8 +1188,8 @@ void qpa_solve_qp( void **data,
                    real_wp_ c[],
                    real_wp_ y[],
                    real_wp_ z[],
-                   int x_stat[],
-                   int c_stat[] );
+                   ipc_ x_stat[],
+                   ipc_ c_stat[] );
 
 /*!<
  Solve the quadratic program (2)-(4).
@@ -1312,16 +1312,16 @@ void qpa_solve_qp( void **data,
 //  *-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ L 1 Q P   -*-*-*-*-*-*-*-*-*-*-
 
 void qpa_solve_l1qp( void **data,
-                     int *status,
-                     int n,
-                     int m,
-                     int h_ne,
+                     ipc_ *status,
+                     ipc_ n,
+                     ipc_ m,
+                     ipc_ h_ne,
                      const real_wp_ H_val[],
                      const real_wp_ g[],
                      const real_wp_ f,
                      const real_wp_ rho_g,
                      const real_wp_ rho_b,
-                     int a_ne,
+                     ipc_ a_ne,
                      const real_wp_ A_val[],
                      const real_wp_ c_l[],
                      const real_wp_ c_u[],
@@ -1331,8 +1331,8 @@ void qpa_solve_l1qp( void **data,
                      real_wp_ c[],
                      real_wp_ y[],
                      real_wp_ z[],
-                     int x_stat[],
-                     int c_stat[] );
+                     ipc_ x_stat[],
+                     ipc_ c_stat[] );
 
 /*!<
  Solve the l_1 quadratic program (1).
@@ -1461,15 +1461,15 @@ void qpa_solve_l1qp( void **data,
 //  *-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ B C L 1 Q P   -*-*-*-*-*-*-*-*-
 
 void qpa_solve_bcl1qp( void **data,
-                       int *status,
-                       int n,
-                       int m,
-                       int h_ne,
+                       ipc_ *status,
+                       ipc_ n,
+                       ipc_ m,
+                       ipc_ h_ne,
                        const real_wp_ H_val[],
                        const real_wp_ g[],
                        const real_wp_ f,
                        const real_wp_ rho_g,
-                       int a_ne,
+                       ipc_ a_ne,
                        const real_wp_ A_val[],
                        const real_wp_ c_l[],
                        const real_wp_ c_u[],
@@ -1479,8 +1479,8 @@ void qpa_solve_bcl1qp( void **data,
                        real_wp_ c[],
                        real_wp_ y[],
                        real_wp_ z[],
-                       int x_stat[],
-                       int c_stat[] );
+                       ipc_ x_stat[],
+                       ipc_ c_stat[] );
 
 /*!<
  Solve the bound-constrained l_1 quadratic program (4)-(5)
@@ -1607,7 +1607,7 @@ void qpa_solve_bcl1qp( void **data,
 
 void qpa_information( void **data,
                       struct qpa_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

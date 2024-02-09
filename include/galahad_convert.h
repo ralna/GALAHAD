@@ -66,15 +66,15 @@ struct convert_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// obtain the transpose of the input matrix?
@@ -145,15 +145,15 @@ struct convert_inform_type {
     /// \li -73 an input matrix entry has been repeated.
     /// \li -79 there are missing optional arguments.
     /// \li -90 a requested output format is not recognised.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the number of duplicates found (-ve = not checked).
-    int duplicates;
+    ipc_ duplicates;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -169,7 +169,7 @@ struct convert_inform_type {
 
 void convert_initialize( void **data,
                      struct convert_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -188,7 +188,7 @@ void convert_initialize( void **data,
 
 void convert_information( void **data,
                       struct convert_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

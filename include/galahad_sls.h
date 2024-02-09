@@ -365,64 +365,64 @@ struct sls_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for warning messages
-    int warning;
+    ipc_ warning;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// unit for statistical output
-    int statistics;
+    ipc_ statistics;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// controls level of diagnostic output from external solver
-    int print_level_solver;
+    ipc_ print_level_solver;
 
     /// \brief
     /// number of bits used in architecture
-    int bits;
+    ipc_ bits;
 
     /// \brief
     /// the target blocksize for kernel factorization
-    int block_size_kernel;
+    ipc_ block_size_kernel;
 
     /// \brief
     /// the target blocksize for parallel elimination
-    int block_size_elimination;
+    ipc_ block_size_elimination;
 
     /// \brief
     /// level 3 blocking in factorize
-    int blas_block_size_factorize;
+    ipc_ blas_block_size_factorize;
 
     /// \brief
     /// level 2 and 3 blocking in solve
-    int blas_block_size_solve;
+    ipc_ blas_block_size_solve;
 
     /// \brief
     /// a child node is merged with its parent if they both involve fewer than
     /// node_amalgamation eliminations
-    int node_amalgamation;
+    ipc_ node_amalgamation;
 
     /// \brief
     /// initial size of task-pool arrays for parallel elimination
-    int initial_pool_size;
+    ipc_ initial_pool_size;
 
     /// \brief
     /// initial size for real array for the factors and other data
-    int min_real_factor_size;
+    ipc_ min_real_factor_size;
 
     /// \brief
     /// initial size for integer array for the factors and other data
-    int min_integer_factor_size;
+    ipc_ min_integer_factor_size;
 
     /// \brief
     /// maximum size for real array for the factors and other data
@@ -455,7 +455,7 @@ struct sls_control_type {
     ///        occur if a zero pivot is detected.
     /// \li 4  No pivoting is performed but pivots are changed to all be
     ///        positive
-    int pivot_control;
+    ipc_ pivot_control;
 
     /// \brief
     /// controls ordering (ignored if explicit PERM argument present)
@@ -473,16 +473,16 @@ struct sls_control_type {
     /// \li 6  Bandwidth reduction
     /// \li >6  ordering chosen depending on matrix characteristics
     ///        (not yet implemented)
-    int ordering;
+    ipc_ ordering;
 
     /// \brief
     /// controls threshold for detecting full rows in analyse, registered as
     /// percentage of matrix order. If 100, only fully dense rows detected (defa
-    int full_row_threshold;
+    ipc_ full_row_threshold;
 
     /// \brief
     /// number of rows searched for pivot when using indefinite ordering
-    int row_search_indefinite;
+    ipc_ row_search_indefinite;
 
     /// \brief
     /// controls scaling (ignored if explicit SCALE argument present)
@@ -492,12 +492,12 @@ struct sls_control_type {
     /// \li 1  Scaling using HSL's MC64
     /// \li 2  Scaling using HSL's MC77 based on the row one-norm
     /// \li 3  Scaling using HSL's MC77 based on the row infinity-norm
-    int scaling;
+    ipc_ scaling;
 
     /// \brief
     /// the number of scaling iterations performed (default 10 used if
     /// .scale_maxit < 0)
-    int scale_maxit;
+    ipc_ scale_maxit;
 
     /// \brief
     /// the scaling iteration stops as soon as the row/column norms are less
@@ -543,7 +543,7 @@ struct sls_control_type {
 
     /// \brief
     /// maximum number of iterative refinements allowed
-    int max_iterative_refinements;
+    ipc_ max_iterative_refinements;
 
     /// \brief
     /// refinement will cease as soon as the residual ||Ax-b|| falls below
@@ -565,7 +565,7 @@ struct sls_control_type {
 
     /// \brief
     /// specifies the unit number to write the input matrix (in co-ordinate form
-    int matrix_file_device;
+    ipc_ matrix_file_device;
 
     /// \brief
     /// name of generated matrix file containing input problem
@@ -689,11 +689,11 @@ struct sls_inform_type {
     /// -43  direct-access file error
     /// -50  solver-specific error; see the solver's info parameter
     /// -101  unknown solver
-    int status;
+    ipc_ status;
 
     /// \brief
     /// STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// name of array which provoked an allocate failure
@@ -701,35 +701,35 @@ struct sls_inform_type {
 
     /// \brief
     /// further information on failure
-    int more_info;
+    ipc_ more_info;
 
     /// \brief
     /// number of entries
-    int entries;
+    ipc_ entries;
 
     /// \brief
     /// number of indices out-of-range
-    int out_of_range;
+    ipc_ out_of_range;
 
     /// \brief
     /// number of duplicates
-    int duplicates;
+    ipc_ duplicates;
 
     /// \brief
     /// number of entries from the strict upper triangle
-    int upper;
+    ipc_ upper;
 
     /// \brief
     /// number of missing diagonal entries for an allegedly-definite matrix
-    int missing_diagonals;
+    ipc_ missing_diagonals;
 
     /// \brief
     /// maximum depth of the assembly tree
-    int max_depth_assembly_tree;
+    ipc_ max_depth_assembly_tree;
 
     /// \brief
     /// nodes in the assembly tree (= number of elimination steps)
-    int nodes_assembly_tree;
+    ipc_ nodes_assembly_tree;
 
     /// \brief
     /// desirable or actual size for real array for the factors and other data
@@ -761,59 +761,59 @@ struct sls_inform_type {
 
     /// \brief
     /// maximum number of tasks in the factorization task pool
-    int max_task_pool_size;
+    ipc_ max_task_pool_size;
 
     /// \brief
     /// forecast or actual size of largest front
-    int max_front_size;
+    ipc_ max_front_size;
 
     /// \brief
     /// number of compresses of real data
-    int compresses_real;
+    ipc_ compresses_real;
 
     /// \brief
     /// number of compresses of integer data
-    int compresses_integer;
+    ipc_ compresses_integer;
 
     /// \brief
     /// number of 2x2 pivots
-    int two_by_two_pivots;
+    ipc_ two_by_two_pivots;
 
     /// \brief
     /// semi-bandwidth of matrix following bandwidth reduction
-    int semi_bandwidth;
+    ipc_ semi_bandwidth;
 
     /// \brief
     /// number of delayed pivots (total)
-    int delayed_pivots;
+    ipc_ delayed_pivots;
 
     /// \brief
     /// number of pivot sign changes if no pivoting is used successfully
-    int pivot_sign_changes;
+    ipc_ pivot_sign_changes;
 
     /// \brief
     /// number of static pivots chosen
-    int static_pivots;
+    ipc_ static_pivots;
 
     /// \brief
     /// first pivot modification when static pivoting
-    int first_modified_pivot;
+    ipc_ first_modified_pivot;
 
     /// \brief
     /// estimated rank of the matrix
-    int rank;
+    ipc_ rank;
 
     /// \brief
     /// number of negative eigenvalues
-    int negative_eigenvalues;
+    ipc_ negative_eigenvalues;
 
     /// \brief
     /// number of pivots that are considered zero (and ignored)
-    int num_zero;
+    ipc_ num_zero;
 
     /// \brief
     /// number of iterative refinements performed
-    int iterative_refinements;
+    ipc_ iterative_refinements;
 
     /// \brief
     /// anticipated or actual number of floating-point operations in assembly
@@ -910,7 +910,7 @@ struct sls_inform_type {
 
     /// \brief
     /// the integer and real output arrays from mc61
-    int mc61_info[10];
+    ipc_ mc61_info[10];
     /// see mc61_info
     real_wp_ mc61_rinfo[15];
 
@@ -924,7 +924,7 @@ struct sls_inform_type {
 
     /// \brief
     /// the integer output array from mc77
-    int mc77_info[10];
+    ipc_ mc77_info[10];
 
     /// \brief
     /// the real output status from mc77
@@ -932,45 +932,45 @@ struct sls_inform_type {
 
     /// \brief
     /// the output scalars and arrays from mumps
-    int mumps_error;
+    ipc_ mumps_error;
     /// see mumps_error
-    int mumps_info[80];
+    ipc_ mumps_info[80];
     /// see mumps_error
     real_wp_ mumps_rinfo[40];
 
     /// \brief
     /// the output scalars and arrays from pardiso
-    int pardiso_error;
+    ipc_ pardiso_error;
     /// see pardiso_error
-    int pardiso_IPARM[64];
+    ipc_ pardiso_IPARM[64];
     /// see pardiso_error
     real_wp_ pardiso_DPARM[64];
 
     /// \brief
     /// the output scalars and arrays from mkl_pardiso
-    int mkl_pardiso_error;
+    ipc_ mkl_pardiso_error;
     /// see mkl_pardiso_error
-    int mkl_pardiso_IPARM[64];
+    ipc_ mkl_pardiso_IPARM[64];
 
     /// \brief
     /// the output flag from pastix
-    int pastix_info;
+    ipc_ pastix_info;
 
     /// \brief
     /// the output scalars and arrays from wsmp
-    int wsmp_error;
+    ipc_ wsmp_error;
     /// see wsmp_error
-    int wsmp_iparm[64];
+    ipc_ wsmp_iparm[64];
     /// see wsmp_error
     real_wp_ wsmp_dparm[64];
 
     /// \brief
     /// the output flag from MPI routines
-    int mpi_ierr;
+    ipc_ mpi_ierr;
 
     /// \brief
     /// the output flag from LAPACK routines
-    int lapack_error;
+    ipc_ lapack_error;
 
 };
 
@@ -979,7 +979,7 @@ struct sls_inform_type {
 void sls_initialize( const char solver[],
                      void **data,
                      struct sls_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Select solver, set default control values and initialize private data
@@ -1025,13 +1025,13 @@ void sls_read_specfile( struct sls_control_type *control,
 
 void sls_analyse_matrix( struct sls_control_type *control,
                          void **data,
-                         int *status,
-                         int n,
+                         ipc_ *status,
+                         ipc_ n,
                          const char type[],
-                         int ne,
-                         const int row[],
-                         const int col[],
-                         const int ptr[] );
+                         ipc_ ne,
+                         const ipc_ row[],
+                         const ipc_ col[],
+                         const ipc_ ptr[] );
 
 /*!<
  Import structural matrix data into internal storage prior to solution
@@ -1116,7 +1116,7 @@ void sls_analyse_matrix( struct sls_control_type *control,
 
 void sls_reset_control( struct sls_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -1134,8 +1134,8 @@ void sls_reset_control( struct sls_control_type *control,
 //  *-*-*-*-*-*-   S L S _ f a c t o r i z e _ m a t r i x   -*-*-*-*-*-*-*-
 
 void sls_factorize_matrix( void **data,
-                           int *status,
-                           int ne,
+                           ipc_ *status,
+                           ipc_ ne,
                            const real_wp_ val[] );
 
 /*!<
@@ -1194,8 +1194,8 @@ void sls_factorize_matrix( void **data,
 //  *-*-*-*-*-*-*-*-   S L S _ s o l v e _ s y s t e m   -*-*-*-*-*-*-*-*-*-
 
 void sls_solve_system( void **data,
-                       int *status,
-                       int n,
+                       ipc_ *status,
+                       ipc_ n,
                        real_wp_ sol[] );
 
 /*!<
@@ -1235,8 +1235,8 @@ void sls_solve_system( void **data,
 
 void sls_partial_solve_system( const char part[],
                                void **data,
-                               int *status,
-                               int n,
+                               ipc_ *status,
+                               ipc_ n,
                                real_wp_ sol[] );
 
 /*!<
@@ -1287,7 +1287,7 @@ void sls_partial_solve_system( const char part[],
 
 void sls_information( void **data,
                       struct sls_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provide output information

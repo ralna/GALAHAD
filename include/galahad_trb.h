@@ -110,7 +110,7 @@
   The iteration is terminated as soon as the Euclidean norm of the
   projected gradient,
   \f[\|\min(\max( x_k - \nabla_x f(x_k), x^l), x^u) -x_k\|_2,\f]
-  is sufficiently small. At such a point, \f$\nabla_x f(x_k) = z_k\f$,
+  is sufficiently small. At such a poipc_, \f$\nabla_x f(x_k) = z_k\f$,
   where the \f$i\f$-th dual variable \f$z_i\f$ is non-negative if
   \f$x_i\f$ is on its lower bound \f$x^l_i\f$, non-positive if \f$x_i\f$
   is on its upper bound \f$x^u_i\f$, and zero if \f$x_i\f$ lies strictly
@@ -250,51 +250,51 @@ struct trb_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief the level of output required.
     /// \li \f$\leq\f$ 0 gives no output,
     /// \li  = 1 gives a one-line summary for every iteration,
     /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// any printing will start on this iteration
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// any printing will stop on this iteration
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// the number of iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// the maximum number of iterations performed
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
-    int alive_unit;
+    ipc_ alive_unit;
     /// see alive_unit
     char alive_file[31];
 
     /// \brief
     /// more_toraldo >= 1 gives the number of More'-Toraldo projected searches
-    /// to be used to improve upon the Cauchy point, anything else is for the
+    /// to be used to improve upon the Cauchy poipc_, anything else is for the
     /// standard add-one-at-a-time CG search
-    int more_toraldo;
+    ipc_ more_toraldo;
 
     /// \brief
     /// non-monotone <= 0 monotone strategy used, anything else non-monotone
     /// strategy with this history length used
-    int non_monotone;
+    ipc_ non_monotone;
 
     /// \brief
     /// the model used.
@@ -309,7 +309,7 @@ struct trb_control_type {
     ///        history) (*not yet implemented*)
     /// \li 6  secant second-order (limited-memory SR1, with .lbfgs_vectors
     ///        history) (*not yet implemented*)
-    int model;
+    ipc_ model;
 
     /// \brief
     /// The norm is defined via \f$\|v\|^2 = v^T P v\f$,
@@ -334,24 +334,24 @@ struct trb_control_type {
     /// \li  8  incomplete factorization of Hessian, Munskgaard
     ///         (*not yet implemented*)
     /// \li  9  expanding band of Hessian (*not yet implemented*)
-    int norm;
+    ipc_ norm;
 
     /// \brief
     /// specify the semi-bandwidth of the band matrix P if required
-    int semi_bandwidth;
+    ipc_ semi_bandwidth;
 
     /// \brief
     /// number of vectors used by the L-BFGS matrix P if required
-    int lbfgs_vectors;
+    ipc_ lbfgs_vectors;
 
     /// \brief
     /// number of vectors used by the sparsity-based secant Hessian if required
-    int max_dxg;
+    ipc_ max_dxg;
 
     /// \brief
     /// number of vectors used by the Lin-More' incomplete factorization
     /// matrix P if required
-    int icfs_vectors;
+    ipc_ icfs_vectors;
 
     /// \brief
     /// the maximum number of fill entries within each column of the incomplete
@@ -359,7 +359,7 @@ struct trb_control_type {
     /// improve the quality of the preconditioner but increases the time to
     /// compute and then apply the preconditioner. Values less than 0 are
     /// treated as 0
-    int mi28_lsize;
+    ipc_ mi28_lsize;
 
     /// \brief
     /// the maximum number of entries within each column of the strictly lower
@@ -370,12 +370,12 @@ struct trb_control_type {
     /// depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to
     /// a higher quality preconditioner than using .mi28_rsize = 0, and
     /// choosing .mi28_rsize >= .mi28_lsize is generally recommended
-    int mi28_rsize;
+    ipc_ mi28_rsize;
 
     /// \brief
     /// iterates of a variant on the strategy of Sartenaer
     /// SISC 18(6)1990:1788-1803
-    int advanced_start;
+    ipc_ advanced_start;
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
@@ -570,11 +570,11 @@ struct trb_inform_type {
 
     /// \brief
     /// return status. See TRB_solve for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -583,40 +583,40 @@ struct trb_inform_type {
 
     /// \brief
     /// the total number of iterations performed
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// the total number of CG iterations performed
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// the maximum number of CG iterations allowed per iteration
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// the total number of evaluations of the objective function
-    int f_eval;
+    ipc_ f_eval;
 
     /// \brief
     /// the total number of evaluations of the gradient of the objective
     /// function
-    int g_eval;
+    ipc_ g_eval;
 
     /// \brief
     /// the total number of evaluations of the Hessian of the objective function
-    int h_eval;
+    ipc_ h_eval;
 
     /// \brief
     /// the number of variables that are free from their bounds
-    int n_free;
+    ipc_ n_free;
 
     /// \brief
     /// the maximum number of factorizations in a sub-problem solve
-    int factorization_max;
+    ipc_ factorization_max;
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// the maximum number of entries in the factors
@@ -677,7 +677,7 @@ struct trb_inform_type {
 
 void trb_initialize( void **data,
                      struct trb_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -717,15 +717,15 @@ void trb_read_specfile( struct trb_control_type *control,
 
 void trb_import( struct trb_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
+                 ipc_ *status,
+                 ipc_ n,
                  const real_wp_ x_l[],
                  const real_wp_ x_u[],
                  const char H_type[],
-                 int ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[] );
+                 ipc_ ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -795,7 +795,7 @@ void trb_import( struct trb_control_type *control,
 
 void trb_reset_control( struct trb_control_type *control,
                         void **data,
-                        int *status );
+                        ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -814,20 +814,20 @@ void trb_reset_control( struct trb_control_type *control,
 
 void trb_solve_with_mat( void **data,
                          void *userdata,
-                         int *status,
-                         int n,
+                         ipc_ *status,
+                         ipc_ n,
                          real_wp_ x[],
                          real_wp_ g[],
-                         int ne,
-                         int (*eval_f)(
-                           int, const real_wp_[], real_wp_*, const void * ),
-                         int (*eval_g)(
-                           int, const real_wp_[], real_wp_[], const void * ),
-                         int (*eval_h)(
-                           int, int, const real_wp_[], real_wp_[],
+                         ipc_ ne,
+                         ipc_ (*eval_f)(
+                           ipc_, const real_wp_[], real_wp_*, const void * ),
+                         ipc_ (*eval_g)(
+                           ipc_, const real_wp_[], real_wp_[], const void * ),
+                         ipc_ (*eval_h)(
+                           ipc_, ipc_, const real_wp_[], real_wp_[],
                            const void * ),
-                         int (*eval_prec)(
-                           int, const real_wp_[], real_wp_[], const real_wp_[],
+                         ipc_ (*eval_prec)(
+                           ipc_, const real_wp_[], real_wp_[], const real_wp_[],
                            const void * ) );
 
 /*!<
@@ -897,7 +897,7 @@ void trb_solve_with_mat( void **data,
  @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        int eval_f( int n, const double x[], double *f, const void *userdata )
+        ipc_ eval_f( ipc_ n, const double x[], double *f, const void *userdata )
    \endcode
    The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
    be assigned to f, and the function return value set to 0. If the
@@ -907,7 +907,7 @@ void trb_solve_with_mat( void **data,
  @param eval_g is a user-supplied function that must have the following
    signature:
    \code
-      int eval_g( int n, const double x[], double g[], const void *userdata )
+      ipc_ eval_g( ipc_ n, const double x[], double g[], const void *userdata )
    \endcode
    The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
    function evaluated at x=\f$x\f$ must be assigned to g, and the function
@@ -918,7 +918,7 @@ void trb_solve_with_mat( void **data,
  @param eval_h is a user-supplied function that must have the following
    signature:
    \code
-        int eval_h( int n, int ne, const double x[], double h[],
+        ipc_ eval_h( ipc_ n, ipc_ ne, const double x[], double h[],
                     const void *userdata )
    \endcode
    The nonzeros of the Hessian \f$H = \nabla_{xx}f(x)\f$ of the objective
@@ -931,7 +931,7 @@ void trb_solve_with_mat( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_prec( int n, const double x[], double u[], const double v[],
+       ipc_ eval_prec( ipc_ n, const double x[], double u[], const double v[],
                       const void *userdata )
    \endcode
    The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
@@ -945,23 +945,23 @@ void trb_solve_with_mat( void **data,
 
 void trb_solve_without_mat( void **data,
                             void *userdata,
-                            int *status,
-                            int n,
+                            ipc_ *status,
+                            ipc_ n,
                             real_wp_ x[],
                             real_wp_ g[],
-                            int (*eval_f)(
-                              int, const real_wp_[], real_wp_*, const void * ),
-                            int (*eval_g)(
-                              int, const real_wp_[], real_wp_[], const void * ),
-                            int (*eval_hprod)(
-                              int, const real_wp_[], real_wp_[],
+                            ipc_ (*eval_f)(
+                              ipc_, const real_wp_[], real_wp_*, const void * ),
+                            ipc_ (*eval_g)(
+                              ipc_, const real_wp_[], real_wp_[], const void * ),
+                            ipc_ (*eval_hprod)(
+                              ipc_, const real_wp_[], real_wp_[],
                               const real_wp_[], bool, const void * ),
-                            int (*eval_shprod)(
-                              int, const real_wp_[], int, const int[],
+                            ipc_ (*eval_shprod)(
+                              ipc_, const real_wp_[], ipc_, const int[],
                               const real_wp_[], int*, int[],
                               real_wp_[], bool, const void * ),
-                            int (*eval_prec)(
-                              int, const real_wp_[], real_wp_[],
+                            ipc_ (*eval_prec)(
+                              ipc_, const real_wp_[], real_wp_[],
                                const real_wp_[], const void * ) );
 
 /*!<
@@ -1028,7 +1028,7 @@ void trb_solve_without_mat( void **data,
  @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        int eval_f( int n, const double x[], double *f, const void *userdata )
+        ipc_ eval_f( ipc_ n, const double x[], double *f, const void *userdata )
    \endcode
    The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
    be assigned to f, and the function return value set to 0. If the
@@ -1039,7 +1039,7 @@ void trb_solve_without_mat( void **data,
    signature:
 
    \code
-      int eval_g( int n, const double x[], double g[], const void *userdata )
+      ipc_ eval_g( ipc_ n, const double x[], double g[], const void *userdata )
    \endcode
    The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
    function evaluated at x=\f$x\f$ must be assigned to g, and the function
@@ -1050,7 +1050,7 @@ void trb_solve_without_mat( void **data,
  @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_hprod( int n, const double x[], double u[], const double v[],
+        ipc_ eval_hprod( ipc_ n, const double x[], double u[], const double v[],
                         bool got_h, const void *userdata )
    \endcode
    The sum \f$u + \nabla_{xx}f(x) v\f$ of the product of the Hessian
@@ -1064,9 +1064,9 @@ void trb_solve_without_mat( void **data,
  @param eval_shprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_shprod( int n, const double x[], int nnz_v,
-                         const int index_nz_v[], const double v[],
-                         int *nnz_u, int index_nz_u[], double u[],
+        ipc_ eval_shprod( ipc_ n, const double x[], ipc_ nnz_v,
+                         const ipc_ index_nz_v[], const double v[],
+                         ipc_ *nnz_u, ipc_ index_nz_u[], double u[],
                          bool got_h, const void *userdata )
    \endcode
    The product \f$u = \nabla_{xx}f(x) v\f$ of the Hessian
@@ -1083,7 +1083,7 @@ void trb_solve_without_mat( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_prec( int n, const double x[], double u[], const double v[],
+       ipc_ eval_prec( ipc_ n, const double x[], double u[], const double v[],
                       const void *userdata )
    \endcode
    The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
@@ -1096,13 +1096,13 @@ void trb_solve_without_mat( void **data,
 //  *-*-*-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*
 
 void trb_solve_reverse_with_mat( void **data,
-                                 int *status,
-                                 int *eval_status,
-                                 int n,
+                                 ipc_ *status,
+                                 ipc_ *eval_status,
+                                 ipc_ n,
                                  real_wp_ x[],
                                  real_wp_ f,
                                  real_wp_ g[],
-                                 int ne,
+                                 ipc_ ne,
                                  real_wp_ H_val[],
                                  const real_wp_ u[],
                                  real_wp_ v[] );
@@ -1224,18 +1224,18 @@ void trb_solve_reverse_with_mat( void **data,
 //  *-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*
 
 void trb_solve_reverse_without_mat( void **data,
-                                    int *status,
-                                    int *eval_status,
-                                    int n,
+                                    ipc_ *status,
+                                    ipc_ *eval_status,
+                                    ipc_ n,
                                     real_wp_ x[],
                                     real_wp_ f,
                                     real_wp_ g[],
                                     real_wp_ u[],
                                     real_wp_ v[],
-                                    int index_nz_v[],
-                                    int *nnz_v,
-                                    const int index_nz_u[],
-                                    int nnz_u );
+                                    ipc_ index_nz_v[],
+                                    ipc_ *nnz_v,
+                                    const ipc_ index_nz_u[],
+                                    ipc_ nnz_u );
 
 /*!<
  Find a local minimizer of a given function subject to simple bounds on
@@ -1375,7 +1375,7 @@ void trb_solve_reverse_without_mat( void **data,
 
 void trb_information( void **data,
                       struct trb_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

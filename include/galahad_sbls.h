@@ -342,50 +342,50 @@ struct sbls_control_type {
 
     /// \brief
     /// unit for error messages
-    int error;
+    ipc_ error;
 
     /// \brief
     /// unit for monitor output
-    int out;
+    ipc_ out;
 
     /// \brief
     /// controls level of diagnostic output
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// initial estimate of integer workspace for SLS (obsolete)
-    int indmin;
+    ipc_ indmin;
 
     /// \brief
     /// initial estimate of real workspace for SLS (obsolete)
-    int valmin;
+    ipc_ valmin;
 
     /// \brief
     /// initial estimate of workspace for ULS (obsolete)
-    int len_ulsmin;
+    ipc_ len_ulsmin;
 
     /// \brief
     /// maximum number of iterative refinements with preconditioner allowed
-    int itref_max;
+    ipc_ itref_max;
 
     /// \brief
     /// maximum number of projected CG iterations allowed
-    int maxit_pcg;
+    ipc_ maxit_pcg;
 
     /// \brief
     /// how much has \f$A\f$ changed since last factorization:
     /// 0 = not changed, 1 = values changed, 2 = structure changed
-    int new_a;
+    ipc_ new_a;
 
     /// \brief
     /// how much has \f$H\f$ changed since last factorization:
     /// 0 = not changed, 1 = values changed, 2 = structure changed
-    int new_h;
+    ipc_ new_h;
 
     /// \brief
     /// how much has \f$C\f$ changed since last factorization:
     /// 0 = not changed, 1 = values changed, 2 = structure changed
-    int new_c;
+    ipc_ new_c;
 
     /// \brief
     /// which preconditioner to use:
@@ -403,11 +403,11 @@ struct sbls_control_type {
     /// \f$G_{22} = I\f$
     /// \li -2 implicit with \f$G_{11} = 0\f$, \f$G_{21} = 0\f$,
     /// \f$G_{22} = H_{22}\f$
-    int preconditioner;
+    ipc_ preconditioner;
 
     /// \brief
     /// the semi-bandwidth for band(H)
-    int semi_bandwidth;
+    ipc_ semi_bandwidth;
 
     /// \brief
     /// the explicit factorization used:
@@ -420,18 +420,18 @@ struct sbls_control_type {
     ///       otherwise failure
     /// \li 5 Schur-complement with pivoting if \f$G\f$ is diagonal and
     ///       successful otherwise failure
-    int factorization;
+    ipc_ factorization;
 
     /// \brief
     /// maximum number of nonzeros in a column of \f$A\f$ for Schur-complement
     /// factorization
-    int max_col;
+    ipc_ max_col;
 
     /// \brief
     /// not used at present
-    int scaling;
+    ipc_ scaling;
     /// see scaling
-    int ordering;
+    ipc_ ordering;
 
     /// \brief
     /// the relative pivot tolerance used by ULS (obsolete)
@@ -575,11 +575,11 @@ struct sbls_inform_type {
 
     /// \brief
     /// return status. See SBLS_form_and_factorize for details
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -588,7 +588,7 @@ struct sbls_inform_type {
 
     /// \brief
     /// the return status from the sorting routines
-    int sort_status;
+    ipc_ sort_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -600,19 +600,19 @@ struct sbls_inform_type {
 
     /// \brief
     /// the preconditioner used
-    int preconditioner;
+    ipc_ preconditioner;
 
     /// \brief
     /// the factorization used
-    int factorization;
+    ipc_ factorization;
 
     /// \brief
     /// how many of the diagonals in the factorization are positive
-    int d_plus;
+    ipc_ d_plus;
 
     /// \brief
     /// the computed rank of \f$A\f$
-    int rank;
+    ipc_ rank;
 
     /// \brief
     /// is the matrix A rank defficient?
@@ -624,7 +624,7 @@ struct sbls_inform_type {
 
     /// \brief
     /// the total number of projected CG iterations required
-    int iter_pcg;
+    ipc_ iter_pcg;
 
     /// \brief
     /// the norm of the residual
@@ -652,7 +652,7 @@ struct sbls_inform_type {
 
 void sbls_initialize( void **data,
                      struct sbls_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -690,24 +690,24 @@ void sbls_read_specfile( struct sbls_control_type *control,
 
 void sbls_import( struct sbls_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char H_type[],
-                 int H_ne,
-                 const int H_row[],
-                 const int H_col[],
-                 const int H_ptr[],
+                 ipc_ H_ne,
+                 const ipc_ H_row[],
+                 const ipc_ H_col[],
+                 const ipc_ H_ptr[],
                  const char A_type[],
-                 int A_ne,
-                 const int A_row[],
-                 const int A_col[],
-                 const int A_ptr[],
+                 ipc_ A_ne,
+                 const ipc_ A_row[],
+                 const ipc_ A_col[],
+                 const ipc_ A_ptr[],
                  const char C_type[],
-                 int C_ne,
-                 const int C_row[],
-                 const int C_col[],
-                 const int C_ptr[] );
+                 ipc_ C_ne,
+                 const ipc_ C_row[],
+                 const ipc_ C_col[],
+                 const ipc_ C_ptr[] );
 
 /*!<
  Import structural matrix data into internal storage prior to solution.
@@ -828,7 +828,7 @@ void sbls_import( struct sbls_control_type *control,
 
 void sbls_reset_control( struct sbls_control_type *control,
                  void **data,
-                 int *status );
+                 ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -846,13 +846,13 @@ void sbls_reset_control( struct sbls_control_type *control,
 //  *-*-*-*-*-*-   S B L S _ f a c t o r i z e _ m a t r i x   -*-*-*-*-*-*-*-
 
 void sbls_factorize_matrix( void **data,
-                            int *status,
-                            int n,
-                            int h_ne,
+                            ipc_ *status,
+                            ipc_ n,
+                            ipc_ h_ne,
                             const real_wp_ H_val[],
-                            int a_ne,
+                            ipc_ a_ne,
                             const real_wp_ A_val[],
-                            int c_ne,
+                            ipc_ c_ne,
                             const real_wp_ C_val[],
                             const real_wp_ D[] );
 
@@ -942,9 +942,9 @@ for some appropriate matrix \f$G\f$.
 //  *-*-*-*-*-*-*-*-   S B L S _ s o l v e _ s y s t e m   -*-*-*-*-*-*-*-*-*-
 
 void sbls_solve_system( void **data,
-                        int *status,
-                        int n,
-                        int m,
+                        ipc_ *status,
+                        ipc_ n,
+                        ipc_ m,
                         real_wp_ sol[] );
 
 /*!<
@@ -1000,7 +1000,7 @@ void sbls_solve_system( void **data,
 
 void sbls_information( void **data,
                       struct sbls_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

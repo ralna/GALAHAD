@@ -67,15 +67,15 @@ struct fit_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output occurs on stream out
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required is specified by print_level
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// if space_critical is true, every effort will be made to use as little
@@ -113,11 +113,11 @@ struct fit_inform_type {
     /// name of the offending array are held in
     /// inform.alloc_status and inform.bad_alloc respectively.
     /// \li -3. the restriction n >= 1 has been violated.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// the status of the last attempted allocation/deallocation.
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error
@@ -129,7 +129,7 @@ struct fit_inform_type {
 
 void fit_initialize( void **data,
                      struct fit_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -148,7 +148,7 @@ void fit_initialize( void **data,
 
 void fit_information( void **data,
                       struct fit_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

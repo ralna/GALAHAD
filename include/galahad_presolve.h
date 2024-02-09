@@ -487,17 +487,17 @@ struct presolve_control_type {
     /// irrespective of the choice of control.termination.
     /// The only effect of this latter parameter is to allow
     /// for early termination.
-    int termination;
+    ipc_ termination;
 
     /// \brief
     /// The maximum number of problem transformations, cumulated
     /// over all calls to \p presolve.
-    int max_nbr_transforms;
+    ipc_ max_nbr_transforms;
 
     /// \brief
     /// The maximum number of analysis passes for problem analysis
     /// during a single call of \p presolve_transform_problem.
-    int max_nbr_passes;
+    ipc_ max_nbr_passes;
 
     /// \brief
     /// The relative accuracy at which the general linear
@@ -522,12 +522,12 @@ struct presolve_control_type {
     /// \brief
     /// The unit number associated with the device used for
     /// printout.
-    int out;
+    ipc_ out;
 
     /// \brief
     /// The unit number associated with the device used for
     /// error ouput.
-    int errout;
+    ipc_ errout;
 
     /// \brief
     /// The level of printout requested by the user. Can take
@@ -539,7 +539,7 @@ struct presolve_control_type {
     /// \li 3 reports more details
     /// \li 4 reports lots of information.
     /// \li 5 reports a completely silly amount of information
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// true if dual transformations of the problem are allowed.
@@ -567,28 +567,28 @@ struct presolve_control_type {
     /// presolving passes.  A value of j = 2 indicates that primal
     /// constraints are analyzed every 2 presolving passes. A zero
     /// value indicates that they are never analyzed.
-    int primal_constraints_freq;
+    ipc_ primal_constraints_freq;
 
     /// \brief
     /// The frequency of dual constraints analysis in terms of
     /// presolving passes.  A value of j = 2 indicates that dual
     /// constraints are analyzed every 2 presolving passes.  A zero
     /// value indicates that they are never analyzed.
-    int dual_constraints_freq;
+    ipc_ dual_constraints_freq;
 
     /// \brief
     /// The frequency of singleton column analysis in terms of
     /// presolving passes.  A value of j = 2 indicates that
     /// singleton columns are analyzed every 2 presolving passes.
     /// A zero value indicates that they are never analyzed.
-    int singleton_columns_freq;
+    ipc_ singleton_columns_freq;
 
     /// \brief
     /// The frequency of doubleton column analysis in terms of
     /// presolving passes.  A value of j indicates that doubleton
     /// columns are analyzed every 2 presolving passes.  A zero
     /// value indicates that they are never analyzed.
-    int doubleton_columns_freq;
+    ipc_ doubleton_columns_freq;
 
     /// \brief
     /// The frequency of the attempts to fix linearly unconstrained
@@ -596,7 +596,7 @@ struct presolve_control_type {
     /// value of j = 2 indicates that attempts are made every 2
     /// presolving passes.  A zero value indicates that no attempt
     /// is ever made.
-    int unc_variables_freq;
+    ipc_ unc_variables_freq;
 
     /// \brief
     /// The frequency of search for dependent variables in terms of
@@ -604,14 +604,14 @@ struct presolve_control_type {
     /// dependent variables are searched for every 2 presolving
     /// passes.  A zero value indicates that they are never
     /// searched for.
-    int dependent_variables_freq;
+    ipc_ dependent_variables_freq;
 
     /// \brief
     /// The frequency of the attempts to make A sparser in terms of
     /// presolving passes.  A value of j = 2 indicates that attempts
     /// are made every 2 presolving passes.  A zero value indicates
     /// that no attempt is ever made.
-    int sparsify_rows_freq;
+    ipc_ sparsify_rows_freq;
 
     /// \brief
     /// The maximum percentage of fill in each row of A. Note that
@@ -619,24 +619,24 @@ struct presolve_control_type {
     /// the storage initially used for A, no matter how large
     /// control.max_fill is chosen. If max_fill is negative,
     /// no limit is put on row fill.
-    int max_fill;
+    ipc_ max_fill;
 
     /// \brief
     /// The unit number to be associated with the file(s) used
     /// for saving problem transformations on a disk file.
-    int transf_file_nbr;
+    ipc_ transf_file_nbr;
 
     /// \brief
     /// The number of transformations that can be kept in memory
     /// at once (that is without being saved on a disk file).
-    int transf_buffer_size;
+    ipc_ transf_buffer_size;
 
     /// \brief
     /// The exit status of the file where problem transformations
     /// are saved:
     /// \li 0 the file is not deleted after program termination
     /// \li 1 the file is not deleted after program termination
-    int transf_file_status;
+    ipc_ transf_file_status;
 
     /// \brief
     /// The name of the file (to be) used for storing
@@ -657,7 +657,7 @@ struct presolve_control_type {
     ///     inequality constraints are non-positive for
     ///     lower bound constraints and non-negative for
     ///     upper bounds constraints.
-    int y_sign;
+    ipc_ y_sign;
 
     /// \brief
     /// Determines whether or not the multipliers corresponding
@@ -671,7 +671,7 @@ struct presolve_control_type {
     ///     dual feasibility condition.
     /// \li 1 Multipliers corresponding to inactive
     ///     inequality constraints are left unaltered.
-    int inactive_y;
+    ipc_ inactive_y;
 
     /// \brief
     /// Determines the convention of sign used for the dual
@@ -682,7 +682,7 @@ struct presolve_control_type {
     /// \li -1 All dual variables corresponding to
     ///     active lower bounds are non-positive, and
     ///     non-negative for active upper bounds.
-    int z_sign;
+    ipc_ z_sign;
 
     /// \brief
     /// Determines whether or not the dual variables corresponding
@@ -696,7 +696,7 @@ struct presolve_control_type {
     ///     dual feasibility condition.
     /// \li 1 Dual variables corresponding to inactive
     ///     bounds are left unaltered.
-    int inactive_z;
+    ipc_ inactive_z;
 
     /// \brief
     /// The type of final bounds on the variables returned by the
@@ -718,7 +718,7 @@ struct presolve_control_type {
     ///
     /// NOTE: this parameter must be identical for all calls to
     /// presolve (except presolve_initialize).
-    int final_x_bounds;
+    ipc_ final_x_bounds;
 
     /// \brief
     /// The type of final bounds on the dual variables returned by
@@ -739,7 +739,7 @@ struct presolve_control_type {
     ///
     /// NOTE: this parameter must be identical for all calls to
     /// presolve (except presolve_initialize).
-    int final_z_bounds;
+    ipc_ final_z_bounds;
 
     /// \brief
     /// The type of final bounds on the constraints returned by the
@@ -764,7 +764,7 @@ struct presolve_control_type {
     /// presolve (except presolve_initialize).
     /// 2) If different from 0, its value must be identical
     /// to that of control.final_x_bounds.
-    int final_c_bounds;
+    ipc_ final_c_bounds;
 
     /// \brief
     /// The type of final bounds on the multipliers returned by the
@@ -786,7 +786,7 @@ struct presolve_control_type {
     ///
     /// NOTE: this parameter must be identical for all calls to
     /// presolve (except presolve_initialize).
-    int final_y_bounds;
+    ipc_ final_y_bounds;
 
     /// \brief
     /// The level of feasibility check (on the values of x) at
@@ -799,7 +799,7 @@ struct presolve_control_type {
     ///     out of bounds (if control.print_level >= 2);
     /// \li 2 the same as for 1, but presolve is
     ///     terminated if an incompatibilty is detected.
-    int check_primal_feasibility;
+    ipc_ check_primal_feasibility;
 
     /// \brief
     /// The level of dual feasibility check (on the values of x,
@@ -815,7 +815,7 @@ struct presolve_control_type {
     ///     The last two values imply the allocation of an additional
     ///     real workspace vector of size equal to the number of
     ///     variables in the reduced problem.
-    int check_dual_feasibility;
+    ipc_ check_dual_feasibility;
 
     /// \brief
     /// The relative pivot tolerance above which pivoting is
@@ -925,7 +925,7 @@ struct presolve_inform_type {
     /// \li -37 (WRONG_ZU_DIMENSION)
     ///   the dimension of the vector of upper bounds on the
     ///   dual variables is incompatible with the problem dimension;
-    int status;
+    ipc_ status;
 
     /// \brief
     /// continuation of status (name in previous column should be status,
@@ -994,7 +994,7 @@ struct presolve_inform_type {
     ///   \f$(x, y, z)\f$ is incompatible with its declared value.
     ///   This may caused the restored problem to be infeasible
     ///   or suboptimal.
-    int status_continue;
+    ipc_ status_continue;
 
     /// \brief
     /// continuation of status (name in previous column should be status,
@@ -1054,12 +1054,12 @@ struct presolve_inform_type {
     ///   incompatible value of A_ne
     /// \li -74 (WRONG_HNE)
     ///   incompatible value of H_ne
-    int status_continued;
+    ipc_ status_continued;
 
     /// \brief
     /// The final number of problem transformations, as reported
     /// to the user at exit.
-    int nbr_transforms;
+    ipc_ nbr_transforms;
 
     /// \brief
     /// A few lines containing a description of the exit condition
@@ -1074,7 +1074,7 @@ struct presolve_inform_type {
 
 void presolve_initialize( void **data,
                      struct presolve_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -1108,31 +1108,31 @@ void presolve_read_specfile( struct presolve_control_type *control,
 
 void presolve_import_problem( struct presolve_control_type *control,
                               void **data,
-                              int *status,
-                              int n,
-                              int m,
+                              ipc_ *status,
+                              ipc_ n,
+                              ipc_ m,
                               const char H_type[],
-                              int H_ne,
-                              const int H_row[],
-                              const int H_col[],
-                              const int H_ptr[],
+                              ipc_ H_ne,
+                              const ipc_ H_row[],
+                              const ipc_ H_col[],
+                              const ipc_ H_ptr[],
                               const real_wp_ H_val[],
                               const real_wp_ g[],
                               const real_wp_ f,
                               const char A_type[],
-                              int A_ne,
-                              const int A_row[],
-                              const int A_col[],
-                              const int A_ptr[],
+                              ipc_ A_ne,
+                              const ipc_ A_row[],
+                              const ipc_ A_col[],
+                              const ipc_ A_ptr[],
                               const real_wp_ A_val[],
                               const real_wp_ c_l[],
                               const real_wp_ c_u[],
                               const real_wp_ x_l[],
                               const real_wp_ x_u[],
-                              int *n_out,
-                              int *m_out,
-                              int *H_ne_out,
-                              int *A_ne_out );
+                              ipc_ *n_out,
+                              ipc_ *m_out,
+                              ipc_ *H_ne_out,
+                              ipc_ *A_ne_out );
 
 /*!<
  Import the initial data, and apply the presolve algorithm to report
@@ -1270,18 +1270,18 @@ void presolve_import_problem( struct presolve_control_type *control,
 // *-*-*-*-*-   P R E S O L V E _ T R A N S F O R M _ P R O B L E M  -*-*-*-*-
 
 void presolve_transform_problem( void **data,
-                                 int *status,
-                                 int n,
-                                 int m,
-                                 int H_ne,
-                                 int H_col[],
-                                 int H_ptr[],
+                                 ipc_ *status,
+                                 ipc_ n,
+                                 ipc_ m,
+                                 ipc_ H_ne,
+                                 ipc_ H_col[],
+                                 ipc_ H_ptr[],
                                  real_wp_ H_val[],
                                  real_wp_ g[],
                                  real_wp_ *f,
-                                 int A_ne,
-                                 int A_col[],
-                                 int A_ptr[],
+                                 ipc_ A_ne,
+                                 ipc_ A_col[],
+                                 ipc_ A_ptr[],
                                  real_wp_ A_val[],
                                  real_wp_ c_l[],
                                  real_wp_ c_u[],
@@ -1406,15 +1406,15 @@ void presolve_transform_problem( void **data,
 // *-*-*-*-*-   P R E S O L V E _ R E S T O R E + S O L U T I O N  -*-*-*-*-*-
 
 void presolve_restore_solution( void **data,
-                                int *status,
-                                int n_in,
-                                int m_in,
+                                ipc_ *status,
+                                ipc_ n_in,
+                                ipc_ m_in,
                                 const real_wp_ x_in[],
                                 const real_wp_ c_in[],
                                 const real_wp_ y_in[],
                                 const real_wp_ z_in[],
-                                int n,
-                                int m,
+                                ipc_ n,
+                                ipc_ m,
                                 real_wp_ x[],
                                 real_wp_ c[],
                                 real_wp_ y[],
@@ -1498,7 +1498,7 @@ void presolve_restore_solution( void **data,
 
 void presolve_information( void **data,
                       struct presolve_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information

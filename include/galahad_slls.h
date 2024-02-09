@@ -259,37 +259,37 @@ struct slls_control_type {
 
     /// \brief
     /// unit number for error and warning diagnostics
-    int error;
+    ipc_ error;
 
     /// \brief
     /// general output unit number
-    int out;
+    ipc_ out;
 
     /// \brief
     /// the level of output required
-    int print_level;
+    ipc_ print_level;
 
     /// \brief
     /// on which iteration to start printing
-    int start_print;
+    ipc_ start_print;
 
     /// \brief
     /// on which iteration to stop printing
-    int stop_print;
+    ipc_ stop_print;
 
     /// \brief
     /// how many iterations between printing
-    int print_gap;
+    ipc_ print_gap;
 
     /// \brief
     /// how many iterations to perform (-ve reverts to HUGE(1)-1)
-    int maxit;
+    ipc_ maxit;
 
     /// \brief
     /// cold_start should be set to 0 if a warm start is required (with variable
     /// assigned according to X_stat, see below), and to any other value if the
     /// values given in prob.X suffice
-    int cold_start;
+    ipc_ cold_start;
 
     /// \brief
     /// the preconditioner (scaling) used. Possible values are:
@@ -297,29 +297,29 @@ struct slls_control_type {
     /// /li 1. a diagonal preconditioner that normalizes the rows of \f$A_o\f$.
     /// /li anything else. a preconditioner supplied by the user either via
     ///     a subroutine call of eval_prec} or via reverse communication.
-    int preconditioner;
+    ipc_ preconditioner;
 
     /// \brief
     /// the ratio of how many iterations use CGLS rather than steepest descent
-    int ratio_cg_vs_sd;
+    ipc_ ratio_cg_vs_sd;
 
     /// \brief
     /// the maximum number of per-iteration changes in the working set
     /// permitted when allowing CGLS rather than steepest descent
-    int change_max;
+    ipc_ change_max;
 
     /// \brief
     /// how many CG iterations to perform per SLLS iteration
     /// (-ve reverts to n+1)
-    int cg_maxit;
+    ipc_ cg_maxit;
 
     /// \brief
     /// the maximum number of steps allowed in a piecewise arcsearch (-ve=infini
-    int arcsearch_max_steps;
+    ipc_ arcsearch_max_steps;
 
     /// \brief
     /// the unit number to write generated SIF file describing the current probl
-    int sif_file_device;
+    ipc_ sif_file_device;
 
     /// \brief
     /// the objective function will be regularized by adding 1/2 weight ||x||^2
@@ -437,23 +437,23 @@ struct slls_inform_type {
 
     /// \brief
     /// reported return status.
-    int status;
+    ipc_ status;
 
     /// \brief
     /// Fortran STAT value after allocate failure
-    int alloc_status;
+    ipc_ alloc_status;
 
     /// \brief
     /// status return from factorization
-    int factorization_status;
+    ipc_ factorization_status;
 
     /// \brief
     /// number of iterations required
-    int iter;
+    ipc_ iter;
 
     /// \brief
     /// number of CG iterations required
-    int cg_iter;
+    ipc_ cg_iter;
 
     /// \brief
     /// current value of the objective function
@@ -484,7 +484,7 @@ struct slls_inform_type {
 
 void slls_initialize( void **data,
                      struct slls_control_type *control,
-                     int *status );
+                     ipc_ *status );
 
 /*!<
  Set default control values and initialize private data
@@ -522,15 +522,15 @@ void slls_read_specfile( struct slls_control_type *control,
 
 void slls_import( struct slls_control_type *control,
                  void **data,
-                 int *status,
-                 int n,
-                 int m,
+                 ipc_ *status,
+                 ipc_ n,
+                 ipc_ m,
                  const char Ao_type[],
-                 int Ao_ne,
-                 const int Ao_row[],
-                 const int Ao_col[],
-                 int Ao_ptr_ne,
-                 const int Ao_ptr[] );
+                 ipc_ Ao_ne,
+                 const ipc_ Ao_row[],
+                 const ipc_ Ao_col[],
+                 ipc_ Ao_ptr_ne,
+                 const ipc_ Ao_ptr[] );
 
 
 /*!<
@@ -606,9 +606,9 @@ void slls_import( struct slls_control_type *control,
 
 void slls_import_without_a( struct slls_control_type *control,
                             void **data,
-                            int *status,
-                            int n,
-                            int o );
+                            ipc_ *status,
+                            ipc_ n,
+                            ipc_ o );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -644,7 +644,7 @@ void slls_import_without_a( struct slls_control_type *control,
 
 void slls_reset_control( struct slls_control_type *control,
                          void **data,
-                         int *status );
+                         ipc_ *status );
 
 /*!<
  Reset control parameters after import if required.
@@ -663,19 +663,19 @@ void slls_reset_control( struct slls_control_type *control,
 
 void slls_solve_given_a( void **data,
                          void *userdata,
-                         int *status,
-                         int n,
-                         int o,
-                         int Ao_ne,
+                         ipc_ *status,
+                         ipc_ n,
+                         ipc_ o,
+                         ipc_ Ao_ne,
                          const real_wp_ Ao_val[],
                          const real_wp_ b[],
                          real_wp_ x[],
                          real_wp_ z[],
                          real_wp_ r[],
                          real_wp_ g[],
-                         int x_stat[],
-                         int (*eval_prec)(
-                              int, const real_wp_[],
+                         ipc_ x_stat[],
+                         ipc_ (*eval_prec)(
+                              ipc_, const real_wp_[],
                               real_wp_[], const void * ) );
 
 /*!<
@@ -759,7 +759,7 @@ void slls_solve_given_a( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_prec( int n, const double v[], double p[],
+       ipc_ eval_prec( ipc_ n, const double v[], double p[],
                       const void *userdata )
    \endcode
    The product \f$p = P^{-1} v\f$ involving the user's preconditioner \f$P\f$
@@ -773,23 +773,23 @@ void slls_solve_given_a( void **data,
 //  *-*-*-*-*-*-   B L L S _ S O L V E _ R E V E R S E _ A _ P R O D   -*-*-*-*-
 
 void slls_solve_reverse_a_prod( void **data,
-                                int *status,
-                                int *eval_status,
-                                int n,
-                                int o,
+                                ipc_ *status,
+                                ipc_ *eval_status,
+                                ipc_ n,
+                                ipc_ o,
                                 const real_wp_ b[],
                                 real_wp_ x[],
                                 real_wp_ z[],
                                 real_wp_ r[],
                                 real_wp_ g[],
-                                int x_stat[],
+                                ipc_ x_stat[],
                                 real_wp_ v[],
                                 const real_wp_ p[],
-                                int nz_v[],
-                                int *nz_v_start,
-                                int *nz_v_end,
-                                const int nz_p[],
-                                int nz_p_end );
+                                ipc_ nz_v[],
+                                ipc_ *nz_v_start,
+                                ipc_ *nz_v_end,
+                                const ipc_ nz_p[],
+                                ipc_ nz_p_end );
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
@@ -961,7 +961,7 @@ void slls_solve_reverse_a_prod( void **data,
 
 void slls_information( void **data,
                       struct slls_inform_type *inform,
-                      int *status );
+                      ipc_ *status );
 
 /*!<
   Provides output information
