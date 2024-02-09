@@ -12,15 +12,15 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
-int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
+ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
+ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void * );
-int shessprod( int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
-               const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[],
+ipc_ shessprod( ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
+               const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[], real_wp_ u[],
                bool got_h, const void * );
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -28,7 +28,7 @@ int main(void) {
     struct dgo_inform_type inform;
 
     // Initialize DGO
-    int status;
+    ipc_ status;
     dgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
@@ -42,8 +42,8 @@ int main(void) {
     userdata.p = 4.0;
 
     // Set problem data
-    int n = 3; // dimension
-    int ne = 5; // Hesssian elements
+    ipc_ n = 3; // dimension
+    ipc_ ne = 5; // Hesssian elements
     real_wp_ x[] = {1,1,1}; // start from one
     real_wp_ x_l[] = {-10.0,-10.0,-10.0};
     real_wp_ x_u[] = {1.0,1.0,1.0};
@@ -71,11 +71,11 @@ int main(void) {
         }
         printf("TR iter: %d \n", inform.trb_inform.iter);
         printf("x: ");
-        for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         printf("\n");
         printf("objective: %f \n", inform.obj);
         printf("gradient: ");
-        for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         printf("\n");
         printf("f_eval: %d \n", inform.f_eval);
         printf("time: %f \n", inform.time.clock_total);
@@ -92,7 +92,7 @@ int main(void) {
 }
 
 // Objective function
-int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
+ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
     real_wp_ freq = 10.0;
@@ -104,7 +104,7 @@ int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
+ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
     real_wp_ freq = 10.0;
@@ -117,7 +117,7 @@ int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void *userdata){
     real_wp_ freq = 10.0;
     real_wp_ mag = 1000.0;
@@ -128,15 +128,15 @@ int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
-              const real_wp_ v[], int *nnz_u, int index_nz_u[], real_wp_ u[],
+ipc_ shessprod(ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
+              const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[], real_wp_ u[],
               bool got_h, const void *userdata){
     real_wp_ freq = 10.0;
     real_wp_ mag = 1000.0;
     real_wp_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
-    for(int i = 0; i < nnz_v; i++){
-        int j = index_nz_v[i];
+    for(ipc_ i = 0; i < nnz_v; i++){
+        ipc_ j = index_nz_v[i];
         switch(j){
             case 0:
                 p[0] = p[0] + 2.0 * v[0] - mag*freq*freq*cos(freq*x[0]) * v[0];
@@ -161,7 +161,7 @@ int shessprod(int n, const real_wp_ x[], int nnz_v, const int index_nz_v[],
         }
     }
     *nnz_u = 0;
-    for(int j = 0; j < 3; j++){
+    for(ipc_ j = 0; j < 3; j++){
         if(used[j]){
         u[j] = p[j];
         *nnz_u = *nnz_u + 1;

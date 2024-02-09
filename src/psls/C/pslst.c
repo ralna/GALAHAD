@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_psls.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,25 +16,25 @@ int main(void) {
     struct psls_inform_type inform;
 
     // Set problem data
-    int n = 5; // dimension of A
-    int ne = 7; // number of elements of A
-    int dense_ne = n * ( n + 1 ) / 2; // number of elements of dense A
+    ipc_ n = 5; // dimension of A
+    ipc_ ne = 7; // number of elements of A
+    ipc_ dense_ne = n * ( n + 1 ) / 2; // number of elements of dense A
 
-    int row[] = {0, 1, 1, 2, 2, 3, 4}; // A indices & values, NB lower triangle
-    int col[] = {0, 0, 4, 1, 2, 2, 4};
-    int ptr[] = {0, 1, 3, 5, 6, 7};
+    ipc_ row[] = {0, 1, 1, 2, 2, 3, 4}; // A indices & values, NB lower triangle
+    ipc_ col[] = {0, 0, 4, 1, 2, 2, 4};
+    ipc_ ptr[] = {0, 1, 3, 5, 6, 7};
     real_wp_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0};
     real_wp_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                       0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0};
     char st;
-    int status;
-    int status_apply;
+    ipc_ status;
+    ipc_ status_apply;
 
     printf(" C sparse matrix indexing\n\n");
 
     printf(" basic tests of storage formats\n\n");
 
-    for( int d=1; d <= 3; d++){
+    for( ipc_ d=1; d <= 3; d++){
 
         // Initialize PSLS
         psls_initialize( &data, &control, &status );
@@ -81,7 +81,7 @@ int main(void) {
                    st, status, status_apply );
 
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
 
         // Delete internal workspace
         psls_terminate( &data, &control, &inform );

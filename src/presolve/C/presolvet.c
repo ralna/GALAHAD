@@ -7,7 +7,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_presolve.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -15,19 +15,19 @@ int main(void) {
     struct presolve_inform_type inform;
 
     // Set problem data
-    int n = 6; // dimension
-    int m = 5; // number of general constraints
-    int H_ne = 1; // Hesssian elements
-    int H_row[] = {0};   // row indices, NB lower triangle
-    int H_col[] = {0};    // column indices, NB lower triangle
-    int H_ptr[] = {0, 1, 1, 1, 1, 1, 1}; // row pointers
+    ipc_ n = 6; // dimension
+    ipc_ m = 5; // number of general constraints
+    ipc_ H_ne = 1; // Hesssian elements
+    ipc_ H_row[] = {0};   // row indices, NB lower triangle
+    ipc_ H_col[] = {0};    // column indices, NB lower triangle
+    ipc_ H_ptr[] = {0, 1, 1, 1, 1, 1, 1}; // row pointers
     real_wp_ H_val[] = {1.0};   // values
     real_wp_ g[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // linear term in the objective
     real_wp_ f = 1.0;  // constant term in the objective
-    int A_ne = 8; // Jacobian elements
-    int A_row[] = {2, 2, 2, 3, 3, 4, 4, 4}; // row indices
-    int A_col[] = {2, 3, 4, 2, 5, 3, 4, 5}; // column indices
-    int A_ptr[] = {0, 0, 0, 3, 5, 8}; // row pointers
+    ipc_ A_ne = 8; // Jacobian elements
+    ipc_ A_row[] = {2, 2, 2, 3, 3, 4, 4, 4}; // row indices
+    ipc_ A_col[] = {2, 3, 4, 2, 5, 3, 4, 5}; // column indices
+    ipc_ A_ptr[] = {0, 0, 0, 3, 5, 8}; // row pointers
     real_wp_ A_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // values
     real_wp_ c_l[] = { 0.0, 0.0, 2.0, 1.0, 3.0};   // constraint lower bound
     real_wp_ c_u[] = {1.0, 1.0, 3.0, 3.0, 3.0};   // constraint upper bound
@@ -36,15 +36,15 @@ int main(void) {
 
     // Set output storage
     char st;
-    int status;
+    ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
 
     printf(" basic tests of qp storage formats\n\n");
 
-    for( int d=1; d <= 7; d++){
+    for( ipc_ d=1; d <= 7; d++){
 
-      int n_trans, m_trans, H_ne_trans, A_ne_trans;
+      ipc_ n_trans, m_trans, H_ne_trans, A_ne_trans;
 
         // Initialize PRESOLVE
         presolve_initialize( &data, &control, &status );
@@ -72,8 +72,8 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                int H_dense_ne = n*(n+1)/2; // number of elements of H
-                int A_dense_ne = m*n; // number of elements of A
+                ipc_ H_dense_ne = n*(n+1)/2; // number of elements of H
+                ipc_ A_dense_ne = m*n; // number of elements of A
                 real_wp_ H_dense[] = {1.0,
                                     0.0, 0.0,
                                     0.0, 0.0, 0.0,
@@ -129,12 +129,12 @@ int main(void) {
         //printf("%c: n, m, h_ne, a_ne = %2i, %2i, %2i, %2i\n",
         //           st, n_trans, m_trans, H_ne_trans, A_ne_trans);
         real_wp_ f_trans;  // transformed constant term in the objective
-        int H_ptr_trans[n_trans+1]; // transformed Hessian row pointers
-        int H_col_trans[H_ne_trans]; // transformed Hessian column indices
+        ipc_ H_ptr_trans[n_trans+1]; // transformed Hessian row pointers
+        ipc_ H_col_trans[H_ne_trans]; // transformed Hessian column indices
         real_wp_ H_val_trans[H_ne_trans]; // transformed Hessian values
         real_wp_ g_trans[n_trans]; // transformed gradient
-        int A_ptr_trans[m_trans+1]; // transformed Jacobian row pointers
-        int A_col_trans[A_ne_trans]; // transformed Jacobian column indices
+        ipc_ A_ptr_trans[m_trans+1]; // transformed Jacobian row pointers
+        ipc_ A_col_trans[A_ne_trans]; // transformed Jacobian column indices
         real_wp_ A_val_trans[A_ne_trans]; // transformed Jacobian values
         real_wp_ x_l_trans[n_trans]; // transformed lower variable bounds
         real_wp_ x_u_trans[n_trans]; // transformed upper variable bounds
@@ -153,13 +153,13 @@ int main(void) {
                                y_l_trans, y_u_trans, z_l_trans, z_u_trans );
 
         real_wp_ x_trans[n_trans]; // transformed variables
-        for( int i = 0; i < n_trans; i++) x_trans[i] = 0.0;
+        for( ipc_ i = 0; i < n_trans; i++) x_trans[i] = 0.0;
         real_wp_ c_trans[m_trans]; // transformed constraints
-        for( int i = 0; i < m_trans; i++) c_trans[i] = 0.0;
+        for( ipc_ i = 0; i < m_trans; i++) c_trans[i] = 0.0;
         real_wp_ y_trans[m_trans]; // transformed Lagrange multipliers
-        for( int i = 0; i < m_trans; i++) y_trans[i] = 0.0;
+        for( ipc_ i = 0; i < m_trans; i++) y_trans[i] = 0.0;
         real_wp_ z_trans[n_trans]; // transformed dual variables
-        for( int i = 0; i < n_trans; i++) z_trans[i] = 0.0;
+        for( ipc_ i = 0; i < n_trans; i++) z_trans[i] = 0.0;
 
         real_wp_ x[n]; // primal variables
         real_wp_ c[m]; // constraint values
@@ -180,10 +180,10 @@ int main(void) {
             printf("%c: PRESOLVE_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace

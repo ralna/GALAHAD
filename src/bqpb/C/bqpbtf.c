@@ -7,7 +7,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_bqpb.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -15,11 +15,11 @@ int main(void) {
     struct bqpb_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension
-    int H_ne = 3; // Hesssian elements
-    int H_row[] = {1, 2, 3 };   // row indices, NB lower triangle
-    int H_col[] = {1, 2, 3};    // column indices, NB lower triangle
-    int H_ptr[] = {1, 2, 3, 4}; // row pointers
+    ipc_ n = 3; // dimension
+    ipc_ H_ne = 3; // Hesssian elements
+    ipc_ H_row[] = {1, 2, 3 };   // row indices, NB lower triangle
+    ipc_ H_col[] = {1, 2, 3};    // column indices, NB lower triangle
+    ipc_ H_ptr[] = {1, 2, 3, 4}; // row pointers
     real_wp_ H_val[] = {1.0, 1.0, 1.0 };   // values
     real_wp_ g[] = {2.0, 0.0, 0.0};   // linear term in the objective
     real_wp_ f = 1.0;  // constant term in the objective
@@ -27,15 +27,15 @@ int main(void) {
     real_wp_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
 
     // Set output storage
-    int x_stat[n]; // variable status
+    ipc_ x_stat[n]; // variable status
     char st;
-    int status;
+    ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" basic tests of qp storage formats\n\n");
 
-    for( int d=1; d <= 7; d++){
+    for( ipc_ d=1; d <= 7; d++){
 
         // Initialize BQPB
         bqpb_initialize( &data, &control, &status );
@@ -65,7 +65,7 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                int H_dense_ne = 6; // number of elements of H
+                ipc_ H_dense_ne = 6; // number of elements of H
                 real_wp_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
                 bqpb_import( &control, &data, &status, n,
                              "dense", H_ne, NULL, NULL, NULL );
@@ -114,10 +114,10 @@ int main(void) {
             printf("%c: BQPB_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -125,7 +125,7 @@ int main(void) {
     }
 
     // test shifted least-distance interface
-    for( int d=1; d <= 1; d++){
+    for( ipc_ d=1; d <= 1; d++){
 
         // Initialize BQPB
         bqpb_initialize( &data, &control, &status );
@@ -161,10 +161,10 @@ int main(void) {
             printf("%c: BQPB_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace

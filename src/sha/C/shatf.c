@@ -9,7 +9,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sha.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -17,26 +17,26 @@ int main(void) {
     struct sha_inform_type inform;
 
     // Set problem data
-    int n = 5; // dimension of H
-    int ne = 9; // number of entries in upper triangle of H
-    int m_max = 9; // upper bound on max # differences required
-    int row[] = {1, 1, 1, 1, 1, 2, 3, 4, 5}; // row indices, NB upper triangle
-    int col[] = {1, 2, 3, 4, 5, 2, 3, 4, 5}; // column indices
+    ipc_ n = 5; // dimension of H
+    ipc_ ne = 9; // number of entries in upper triangle of H
+    ipc_ m_max = 9; // upper bound on max # differences required
+    ipc_ row[] = {1, 1, 1, 1, 1, 2, 3, 4, 5}; // row indices, NB upper triangle
+    ipc_ col[] = {1, 2, 3, 4, 5, 2, 3, 4, 5}; // column indices
     real_wp_ val[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}; // values
-    int i, j, k, l, m, status;
+    ipc_ i, j, k, l, m, status;
     real_wp_ rr, v;
     real_wp_ val_est[ne];
-    int ls1 = m_max, ls2 = n; // dimensions of s
-    int ly1 = m_max, ly2 = n; // dimensions of y
+    ipc_ ls1 = m_max, ls2 = n; // dimensions of s
+    ipc_ ly1 = m_max, ly2 = n; // dimensions of y
     real_wp_ strans[ls1][ls2];
     real_wp_ ytrans[ly1][ly2];
-    int order[m_max]; // diffference precedence order
+    ipc_ order[m_max]; // diffference precedence order
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" basic tests of storage formats\n\n");
 
-    for( int algorithm=1; algorithm <= 5; algorithm++){
+    for( ipc_ algorithm=1; algorithm <= 5; algorithm++){
 
         // Initialize SHA - use the sytr solver
         sha_initialize( &data, &control, &status );
@@ -53,15 +53,15 @@ int main(void) {
         m = m + control.extra_differences;
 
         srand(1);
-        for( int k = 0; k < m; k++) {
+        for( ipc_ k = 0; k < m; k++) {
           // set up random differences strans
-          for( int i = 0; i < n; i++) {
+          for( ipc_ i = 0; i < n; i++) {
             rr = ((real_wp_) rand()/ RAND_MAX);
             strans[k][i] = -1.0 + 2.0 * rr;
             ytrans[k][i] = 0.0; // initialize ytrans as the zero matrix
           }
           // form y = H s
-          for( int l = 0; l < ne; l++) {
+          for( ipc_ l = 0; l < ne; l++) {
             i = row[l]-1;
             j = col[l]-1;
             v = val[l];
@@ -78,7 +78,7 @@ int main(void) {
         //                  if the natural order is ok
 
         printf(" H from %i differences:\n", m);
-        for( int i = 0; i < ne; i++) printf(" %1.2f", val_est[i]);
+        for( ipc_ i = 0; i < ne; i++) printf(" %1.2f", val_est[i]);
 
         sha_information( &data, &inform, &status );
 

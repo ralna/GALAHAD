@@ -9,9 +9,9 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sls.h"
 
-int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs);
+ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs);
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -19,18 +19,18 @@ int main(void) {
     struct sls_inform_type inform;
 
     // Set problem data
-    int n = 5; // dimension of A
-    int ne = 7; // number of entries of A
-    int dense_ne = 15; // number of elements of A as a dense matrix
-    int row[] = {0, 1, 1, 2, 2, 3, 4}; // row indices, NB lower triangle
-    int col[] = {0, 0, 4, 1, 2, 2, 4}; // column indices
-    int ptr[] = {0, 1, 3, 5, 6, 7}; // pointers to indices
+    ipc_ n = 5; // dimension of A
+    ipc_ ne = 7; // number of entries of A
+    ipc_ dense_ne = 15; // number of elements of A as a dense matrix
+    ipc_ row[] = {0, 1, 1, 2, 2, 3, 4}; // row indices, NB lower triangle
+    ipc_ col[] = {0, 0, 4, 1, 2, 2, 4}; // column indices
+    ipc_ ptr[] = {0, 1, 3, 5, 6, 7}; // pointers to indices
     real_wp_ val[] = {2.0, 3.0, 6.0, 4.0,  1.0, 5.0, 1.0}; // values
     real_wp_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                       0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0};
     real_wp_ rhs[] = {8.0, 45.0, 31.0, 15.0, 17.0};
     real_wp_ sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
-    int i, status;
+    ipc_ i, status;
     real_wp_ x[n];
     real_wp_ error[n];
 
@@ -42,7 +42,7 @@ int main(void) {
     printf(" basic tests of storage formats\n\n");
 
     printf(" storage          RHS   refine  partial\n");
-    for( int d=1; d <= 3; d++){
+    for( ipc_ d=1; d <= 3; d++){
 
         // Initialize SLS - use the sytr solver
         sls_initialize( "sytr", &data, &control, &status );
@@ -88,7 +88,7 @@ int main(void) {
             printf(" SLS_solve exit status = %1i\n", inform.status);
         }
         //printf("sol: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
 
         // resolve, this time using iterative refinement
         control.max_iterative_refinements = 1;
@@ -134,9 +134,9 @@ int main(void) {
     }
 }
 
-int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs)
+ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs)
  {
-    int i;
+    ipc_ i;
     real_wp_ b, max;
     max=abs(a[0]);
     for(i=1; i<n; i++)

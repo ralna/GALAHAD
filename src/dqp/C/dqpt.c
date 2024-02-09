@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_dqp.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,24 +16,24 @@ int main(void) {
     struct dqp_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension
-    int m = 2; // number of general constraints
-    int H_ne = 3; // Hesssian elements
-    int H_row[] = {0, 1, 2 };   // row indices, NB lower triangle
-    int H_col[] = {0, 1, 2};    // column indices, NB lower triangle
-    int H_ptr[] = {0, 1, 2, 3}; // row pointers
+    ipc_ n = 3; // dimension
+    ipc_ m = 2; // number of general constraints
+    ipc_ H_ne = 3; // Hesssian elements
+    ipc_ H_row[] = {0, 1, 2 };   // row indices, NB lower triangle
+    ipc_ H_col[] = {0, 1, 2};    // column indices, NB lower triangle
+    ipc_ H_ptr[] = {0, 1, 2, 3}; // row pointers
     real_wp_ H_val[] = {1.0, 1.0, 1.0 };   // values
-//    int H_ne = 4; // Hesssian elements
-//    int H_row[] = {0, 1, 2, 2 };   // row indices, NB lower triangle
-//    int H_col[] = {0, 1, 1, 2};    // column indices, NB lower triangle
-//    int H_ptr[] = {0, 1, 3, 4}; // row pointers
+//    ipc_ H_ne = 4; // Hesssian elements
+//    ipc_ H_row[] = {0, 1, 2, 2 };   // row indices, NB lower triangle
+//    ipc_ H_col[] = {0, 1, 1, 2};    // column indices, NB lower triangle
+//    ipc_ H_ptr[] = {0, 1, 3, 4}; // row pointers
 //    real_wp_ H_val[] = {1.0, 2.0, 1.0, 3.0 };   // values
     real_wp_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
     real_wp_ f = 1.0;  // constant term in the objective
-    int A_ne = 4; // Jacobian elements
-    int A_row[] = {0, 0, 1, 1}; // row indices
-    int A_col[] = {0, 1, 1, 2}; // column indices
-    int A_ptr[] = {0, 2, 4}; // row pointers
+    ipc_ A_ne = 4; // Jacobian elements
+    ipc_ A_row[] = {0, 0, 1, 1}; // row indices
+    ipc_ A_col[] = {0, 1, 1, 2}; // column indices
+    ipc_ A_ptr[] = {0, 2, 4}; // row pointers
     real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
     real_wp_ c_l[] = {1.0, 2.0};   // constraint lower bound
     real_wp_ c_u[] = {2.0, 2.0};   // constraint upper bound
@@ -42,16 +42,16 @@ int main(void) {
 
     // Set output storage
     real_wp_ c[m]; // constraint values
-    int x_stat[n]; // variable status
-    int c_stat[m]; // constraint status
+    ipc_ x_stat[n]; // variable status
+    ipc_ c_stat[m]; // constraint status
     char st;
-    int status;
+    ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
 
     printf(" basic tests of qp storage formats\n\n");
 
-    for( int d=1; d <= 6; d++){
+    for( ipc_ d=1; d <= 6; d++){
 
         // Initialize DQP
         dqp_initialize( &data, &control, &status );
@@ -92,8 +92,8 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                int H_dense_ne = 6; // number of elements of H
-                int A_dense_ne = 6; // number of elements of A
+                ipc_ H_dense_ne = 6; // number of elements of H
+                ipc_ A_dense_ne = 6; // number of elements of A
                 real_wp_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
                 real_wp_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 dqp_import( &control, &data, &status, n, m,
@@ -141,10 +141,10 @@ int main(void) {
             printf("%c: DQP_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -154,8 +154,8 @@ int main(void) {
     printf("\n separate test of sldqp\n\n");
 
     // test shifted least-distance interface
-//  for( int d=1; d <= 0; d++){
-    for( int d=1; d <= 1; d++){
+//  for( ipc_ d=1; d <= 0; d++){
+    for( ipc_ d=1; d <= 1; d++){
 
         // Initialize DQP
         dqp_initialize( &data, &control, &status );
@@ -200,10 +200,10 @@ int main(void) {
             printf("%c: DQP_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace

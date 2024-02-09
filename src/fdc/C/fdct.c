@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_fdc.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,18 +16,18 @@ int main(void) {
     struct fdc_inform_type inform;
 
     // Set problem data
-    int m = 3; // number of rows
-    int n = 4; // number of columns
-    int A_ne = 10; // number of nonzeros
-    int A_col[] = {0, 1, 2, 3, 0, 1, 2, 3, 1, 3}; // column indices
-    int A_ptr[] = {0, 4, 8, 10}; // row pointers
+    ipc_ m = 3; // number of rows
+    ipc_ n = 4; // number of columns
+    ipc_ A_ne = 10; // number of nonzeros
+    ipc_ A_col[] = {0, 1, 2, 3, 0, 1, 2, 3, 1, 3}; // column indices
+    ipc_ A_ptr[] = {0, 4, 8, 10}; // row pointers
     real_wp_ A_val[] = {1.0, 2.0, 3.0, 4.0, 2.0, -4.0, 6.0, -8.0, 5.0, 10.0};
     real_wp_ b[] = {5.0, 10.0, 0.0};
 
     // Set output storage
-    int depen[m]; // dependencies, if any
-    int n_depen;
-    int status;
+    ipc_ depen[m]; // dependencies, if any
+    ipc_ n_depen;
+    ipc_ status;
 
     printf(" C sparse matrix indexing\n");
 
@@ -50,7 +50,7 @@ int main(void) {
                status);
       }else{
         printf("FDC_find_dependent - dependent rows(s):" );
-        for( int i = 0; i < n_depen; i++) printf(" %i", depen[i]);
+        for( ipc_ i = 0; i < n_depen; i++) printf(" %i", depen[i]);
         printf(", status = %i\n", status);
       }
     }else{

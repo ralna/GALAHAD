@@ -7,7 +7,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_l2rt.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -15,10 +15,10 @@ int main(void) {
     struct l2rt_inform_type inform;
 
     // Set problem data
-    int n = 50; // dimensions
-    int m = 2 * n;
+    ipc_ n = 50; // dimensions
+    ipc_ m = 2 * n;
 
-    int status;
+    ipc_ status;
     real_wp_ power = 3.0;
     real_wp_ weight = 1.0;
     real_wp_ shift = 1.0;
@@ -33,7 +33,7 @@ int main(void) {
     control.print_level = 0;
     l2rt_import_control( &control, &data, &status );
 
-    for( int i = 0; i < m; i++) u[i] = 1.0; // b = 1
+    for( ipc_ i = 0; i < m; i++) u[i] = 1.0; // b = 1
 
     // iteration loop to find the minimizer with A^T = (I:diag(1:n))
     while(true){ // reverse-communication loop
@@ -43,14 +43,14 @@ int main(void) {
       } else if ( status < 0 ) { // error exit
           break;
       } else if ( status == 2 ) { // form u <- u + A * v
-        for( int i = 0; i < n; i++) {
+        for( ipc_ i = 0; i < n; i++) {
           u[i] = u[i] + v[i];
           u[n+i] = u[n+i] + (i+1)*v[i];
         }
       } else if ( status == 3 ) { // form v <- v + A^T * u
-        for( int i = 0; i < n; i++) v[i] = v[i] + u[i] + (i+1) * u[n+i];
+        for( ipc_ i = 0; i < n; i++) v[i] = v[i] + u[i] + (i+1) * u[n+i];
       } else if ( status == 4 ) { // restart
-        for( int i = 0; i < m; i++) u[i] = 1.0;
+        for( ipc_ i = 0; i < m; i++) u[i] = 1.0;
       }else{
           printf(" the value %1i of status should not occur\n",
             status);

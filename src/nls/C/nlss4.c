@@ -9,7 +9,7 @@
 #include "galahad_nls.h"
 
 // Define imax
-int imax(int a, int b) {
+ipc_ imax(ipc_ a, ipc_ b) {
     return (a > b) ? a : b;
 };
 
@@ -20,28 +20,28 @@ struct userdata_type {
 
 // Function prototypes
 
-int res( int n, int m, const real_wp_ x[], real_wp_ c[], const void * );
-int jac( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[],
+ipc_ res( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ c[], const void * );
+ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
          const void * );
-int hess( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[],
+ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
           real_wp_ hval[], const void * );
-int jacprod( int n, int m, const real_wp_ x[], const bool transpose,
+ipc_ jacprod( ipc_ n, ipc_ m, const real_wp_ x[], const bool transpose,
              real_wp_ u[], const real_wp_ v[], bool got_j, const void * );
-int hessprod( int n, int m, const real_wp_ x[], const real_wp_ y[],
+ipc_ hessprod( ipc_ n, ipc_ m, const real_wp_ x[], const real_wp_ y[],
               real_wp_ u[], const real_wp_ v[], bool got_h, const void * );
-int rhessprods( int n, int m, int pne, const real_wp_ x[], const real_wp_ v[],
+ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[], const real_wp_ v[],
                 real_wp_ pval[], bool got_h, const void * );
-int scale( int n, int m, const real_wp_ x[], real_wp_ u[],
+ipc_ scale( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ u[],
            const real_wp_ v[], const void * );
-int jac_dense( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[],
+ipc_ jac_dense( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
                const void * );
-int hess_dense( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[],
+ipc_ hess_dense( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
                 real_wp_ hval[], const void * );
-int rhessprods_dense( int n, int m, int pne, const real_wp_ x[],
+ipc_ rhessprods_dense( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[],
                       const real_wp_ v[], real_wp_ pval[], bool got_h,
                       const void * );
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -53,23 +53,23 @@ int main(void) {
     userdata.p = 1.0;
 
     // Set problem data
-    int n = 2; // # variables
-    int m = 3; // # residuals
-    int j_ne = 5; // Jacobian elements
-    int h_ne = 2; // Hesssian elements
-    int p_ne = 2; // residual-Hessians-vector products elements
-    int J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
-    int J_col[] = {0, 0, 1, 0, 1}; //
-    int J_ptr[] = {0, 1, 3, 5};    // row pointers
-    int H_row[] = {0, 1};          // Hessian H
-    int H_col[] = {0, 1};          // NB lower triangle
-    int H_ptr[] = {0, 1, 2};       // row pointers
-    int P_row[] = {0, 1};          // residual-Hessians-vector product matrix
-    int P_ptr[] = {0, 1, 2, 2};    // column pointers
+    ipc_ n = 2; // # variables
+    ipc_ m = 3; // # residuals
+    ipc_ j_ne = 5; // Jacobian elements
+    ipc_ h_ne = 2; // Hesssian elements
+    ipc_ p_ne = 2; // residual-Hessians-vector products elements
+    ipc_ J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
+    ipc_ J_col[] = {0, 0, 1, 0, 1}; //
+    ipc_ J_ptr[] = {0, 1, 3, 5};    // row pointers
+    ipc_ H_row[] = {0, 1};          // Hessian H
+    ipc_ H_col[] = {0, 1};          // NB lower triangle
+    ipc_ H_ptr[] = {0, 1, 2};       // row pointers
+    ipc_ P_row[] = {0, 1};          // residual-Hessians-vector product matrix
+    ipc_ P_ptr[] = {0, 1, 2, 2};    // column pointers
 
     // Set storage
-    int status;
-    int eval_status;
+    ipc_ status;
+    ipc_ eval_status;
     real_wp_ x[n]; // variables
     real_wp_ g[n]; // gradient
     real_wp_ c[m]; // residual
@@ -245,7 +245,7 @@ int main(void) {
 }
 
 // compute the residuals
-int res( int n, int m, const real_wp_ x[], real_wp_ c[], const void *userdata ){
+ipc_ res( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ c[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     real_wp_ p = myuserdata->p;
     c[0] = pow(x[0],2.0) + p;
@@ -255,7 +255,7 @@ int res( int n, int m, const real_wp_ x[], real_wp_ c[], const void *userdata ){
 }
 
 // compute the Jacobian
-int jac( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[],
+ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     jval[0] = 2.0 * x[0];
@@ -267,7 +267,7 @@ int jac( int n, int m, int jne, const real_wp_ x[], real_wp_ jval[],
 }
 
 // compute the Hessian
-int hess( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[],
+ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
            real_wp_ hval[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     hval[0] = 2.0 * y[0];
@@ -276,7 +276,7 @@ int hess( int n, int m, int hne, const real_wp_ x[], const real_wp_ y[],
 }
 
 // compute Jacobian-vector products
-int jacprod( int n, int m, const real_wp_ x[], const bool transpose,
+ipc_ jacprod( ipc_ n, ipc_ m, const real_wp_ x[], const bool transpose,
              real_wp_ u[], const real_wp_ v[], bool got_j,
              const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
@@ -292,7 +292,7 @@ int jacprod( int n, int m, const real_wp_ x[], const bool transpose,
 }
 
 // compute Hessian-vector products
-int hessprod( int n, int m, const real_wp_ x[], const real_wp_ y[],
+ipc_ hessprod( ipc_ n, ipc_ m, const real_wp_ x[], const real_wp_ y[],
               real_wp_ u[], const real_wp_ v[], bool got_h,
               const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
@@ -302,7 +302,7 @@ int hessprod( int n, int m, const real_wp_ x[], const real_wp_ y[],
 }
 
 // compute residual-Hessians-vector products
-int rhessprods( int n, int m, int pne, const real_wp_ x[], const real_wp_ v[],
+ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[], const real_wp_ v[],
                 real_wp_ pval[], bool got_h, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     pval[0] = 2.0 * v[0];

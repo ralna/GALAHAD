@@ -9,7 +9,7 @@
 #include "galahad_slls.h"
 
 // Define imax
-int imax(int a, int b) {
+ipc_ imax(ipc_ a, ipc_ b) {
     return (a > b) ? a : b;
 };
 
@@ -19,9 +19,9 @@ struct userdata_type {
 };
 
 // Function prototypes
-int prec( int n, const real_wp_ v[], real_wp_ p[], const void * );
+ipc_ prec( ipc_ n, const real_wp_ v[], real_wp_ p[], const void * );
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -33,21 +33,21 @@ int main(void) {
     userdata.scale = 1.0;
 
     // Set problem data
-    int n = 10; // dimension
-    int o = n + 1; // number of residuals
-    int Ao_ne = 2 * n; // sparse Jacobian elements
-    int Ao_dense_ne = o * n; // dense Jacobian elements
+    ipc_ n = 10; // dimension
+    ipc_ o = n + 1; // number of residuals
+    ipc_ Ao_ne = 2 * n; // sparse Jacobian elements
+    ipc_ Ao_dense_ne = o * n; // dense Jacobian elements
     // row-wise storage
-    int Ao_row[Ao_ne]; // row indices,
-    int Ao_col[Ao_ne]; // column indices
-    int Ao_ptr_ne = o+1; // row pointer length
-    int Ao_ptr[Ao_ptr_ne]; // row pointers
+    ipc_ Ao_row[Ao_ne]; // row indices,
+    ipc_ Ao_col[Ao_ne]; // column indices
+    ipc_ Ao_ptr_ne = o+1; // row pointer length
+    ipc_ Ao_ptr[Ao_ptr_ne]; // row pointers
     real_wp_ Ao_val[Ao_ne]; // values
     real_wp_ Ao_dense[Ao_dense_ne]; // dense values
     // column-wise storage
-    int Ao_by_col_row[Ao_ne]; // row indices,
-    int Ao_by_col_ptr_ne = n+1; // column pointer length
-    int Ao_by_col_ptr[Ao_by_col_ptr_ne]; // column pointers
+    ipc_ Ao_by_col_row[Ao_ne]; // row indices,
+    ipc_ Ao_by_col_ptr_ne = n+1; // column pointer length
+    ipc_ Ao_by_col_ptr[Ao_by_col_ptr_ne]; // column pointers
     real_wp_ Ao_by_col_val[Ao_ne]; // values
     real_wp_ Ao_by_col_dense[Ao_dense_ne]; // dense values
     real_wp_ b[o];  // linear term in the objective
@@ -57,33 +57,33 @@ int main(void) {
     real_wp_ g[n]; // gradient
 
     // Set output storage
-    int x_stat[n]; // variable status
+    ipc_ x_stat[n]; // variable status
     char st[3];
-    int i, l, status;
+    ipc_ i, l, status;
 
     //   A = (  I  )  and b = ( i * e )
     //       ( e^T )          ( n + 1 )
 
-    for( int i = 0; i < n; i++) b[i] = i + 1;
+    for( ipc_ i = 0; i < n; i++) b[i] = i + 1;
     b[n] = n+1;
 
     // A by rows
 
-    for( int i = 0; i < n; i++)
+    for( ipc_ i = 0; i < n; i++)
     {
       Ao_ptr[i] = i;
       Ao_row[i] = i; Ao_col[i] = i; Ao_val[i] = 1.0;
     }
     Ao_ptr[n] = n;
-    for( int i = 0; i < n; i++)
+    for( ipc_ i = 0; i < n; i++)
     {
       Ao_row[n+i] = n; Ao_col[n+i] = i; Ao_val[n+i] = 1.0;
     }
     Ao_ptr[o] = Ao_ne;
     l = - 1;
-    for( int i = 0; i < n; i++)
+    for( ipc_ i = 0; i < n; i++)
     {
-      for( int j = 0; j < n; j++)
+      for( ipc_ j = 0; j < n; j++)
       {
         l = l + 1;
         if ( i == j ) {
@@ -94,7 +94,7 @@ int main(void) {
         }
       }
     }
-    for( int j = 0; j < n; j++)
+    for( ipc_ j = 0; j < n; j++)
     {
       l = l + 1;
       Ao_dense[l] = 1.0;
@@ -103,7 +103,7 @@ int main(void) {
     // A by columns
 
     l = - 1;
-    for( int j = 0; j < n; j++)
+    for( ipc_ j = 0; j < n; j++)
     {
       l = l + 1;  Ao_by_col_ptr[j] = l ;
       Ao_by_col_row[l] = j ; Ao_by_col_val[l] = 1.0;
@@ -112,9 +112,9 @@ int main(void) {
     }
     Ao_by_col_ptr[n] = Ao_ne;
     l = - 1;
-    for( int j = 0; j < n; j++)
+    for( ipc_ j = 0; j < n; j++)
     {
-      for( int i = 0; i < n; i++)
+      for( ipc_ i = 0; i < n; i++)
       {
         l = l + 1;
         if ( i == j ) {
@@ -132,7 +132,7 @@ int main(void) {
 
     printf(" basic tests of slls storage formats\n\n");
 
-    for( int d=1; d <= 5; d++){
+    for( ipc_ d=1; d <= 5; d++){
 
         // Initialize SLLS
         slls_initialize( &data, &control, &status );
@@ -141,8 +141,8 @@ int main(void) {
         control.f_indexing = false; // C sparse matrix indexing
 
         // Start from 0
-        for( int i = 0; i < n; i++) x[i] = 0.0;
-        for( int i = 0; i < n; i++) z[i] = 0.0;
+        for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
+        for( ipc_ i = 0; i < n; i++) z[i] = 0.0;
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -200,10 +200,10 @@ int main(void) {
             printf("%s: SLLS_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -213,10 +213,10 @@ int main(void) {
     printf("\n tests reverse-communication options\n\n");
 
     // reverse-communication input/output
-    int on;
+    ipc_ on;
     on = imax( n, o );
-    int eval_status, nz_v_start, nz_v_end, nz_p_end;
-    int nz_v[on], nz_p[o], mask[o];
+    ipc_ eval_status, nz_v_start, nz_v_end, nz_p_end;
+    ipc_ nz_v[on], nz_p[o], mask[o];
     real_wp_ v[on], p[on];
 
     nz_p_end = 0;
@@ -228,12 +228,12 @@ int main(void) {
     control.f_indexing = false; // C sparse matrix indexing
 
     // Start from 0
-    for( int i = 0; i < n; i++) x[i] = 0.0;
-    for( int i = 0; i < n; i++) z[i] = 0.0;
+    for( ipc_ i = 0; i < n; i++) x[i] = 0.0;
+    for( ipc_ i = 0; i < n; i++) z[i] = 0.0;
 
     strcpy( st, "RC" );
 
-    for( int i = 0; i < o; i++) mask[i] = 0;
+    for( ipc_ i = 0; i < o; i++) mask[i] = 0;
     slls_import_without_a( &control, &data, &status, n, o ) ;
     while(true){ // reverse-communication loop
         slls_solve_reverse_a_prod( &data, &status, &eval_status, n, o, b,
@@ -246,23 +246,23 @@ int main(void) {
             break;
         }else if(status == 2){ // evaluate p = Av
           p[n]=0.0;
-          for( int i = 0; i < n; i++){
+          for( ipc_ i = 0; i < n; i++){
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
         }else if(status == 3){ // evaluate p = A^Tv
-          for( int i = 0; i < n; i++) p[i] = v[i] + v[n];
+          for( ipc_ i = 0; i < n; i++) p[i] = v[i] + v[n];
         }else if(status == 4){ // evaluate p = Av for sparse v
           p[n]=0.0;
-          for( int i = 0; i < n; i++) p[i] = 0.0;
-          for( int l = nz_v_start - 1; l < nz_v_end; l++){
+          for( ipc_ i = 0; i < n; i++) p[i] = 0.0;
+          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
             i = nz_v[l];
             p[i] = v[i];
             p[n] = p[n] + v[i];
           }
         }else if(status == 5){ // evaluate p = sparse Av for sparse v
           nz_p_end = 0;
-          for( int l = nz_v_start - 1; l < nz_v_end; l++){
+          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
             i = nz_v[l];
             if (mask[i] == 0){
               mask[i] = 1;
@@ -279,14 +279,14 @@ int main(void) {
               p[n] = p[n] + v[i];
             }
           }
-          for( int l = 0; l < nz_p_end; l++) mask[nz_p[l]] = 0;
+          for( ipc_ l = 0; l < nz_p_end; l++) mask[nz_p[l]] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
-          for( int l = nz_v_start - 1; l < nz_v_end; l++){
+          for( ipc_ l = nz_v_start - 1; l < nz_v_end; l++){
             i = nz_v[l];
             p[i] = v[i] + v[n];
           }
         }else if(status == 7){ // evaluate p = P^{-}v
-          for( int i = 0; i < n; i++) p[i] = userdata.scale * v[i];
+          for( ipc_ i = 0; i < n; i++) p[i] = userdata.scale * v[i];
         }else{
             printf(" the value %1i of status should not occur\n", status);
             break;
@@ -306,10 +306,10 @@ int main(void) {
         printf("%s: SLLS_solve exit status = %1i\n", st, inform.status);
     }
     //printf("x: ");
-    //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+    //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
     //printf("\n");
     //printf("gradient: ");
-    //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+    //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
     //printf("\n");
 
     // Delete internal workspace
@@ -317,9 +317,9 @@ int main(void) {
 }
 
 // Apply preconditioner
-int prec( int n, const real_wp_ v[], real_wp_ p[], const void *userdata ){
+ipc_ prec( ipc_ n, const real_wp_ v[], real_wp_ p[], const void *userdata ){
   struct userdata_type *myuserdata = (struct userdata_type *) userdata;
   real_wp_ scale = myuserdata->scale;
-  for( int i = 0; i < n; i++) p[i] = scale * v[i];
+  for( ipc_ i = 0; i < n; i++) p[i] = scale * v[i];
    return 0;
 }

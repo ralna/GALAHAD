@@ -7,7 +7,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_wcp.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -15,13 +15,13 @@ int main(void) {
     struct wcp_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension
-    int m = 2; // number of general constraints
+    ipc_ n = 3; // dimension
+    ipc_ m = 2; // number of general constraints
     real_wp_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
-    int A_ne = 4; // Jacobian elements
-    int A_row[] = {0, 0, 1, 1}; // row indices
-    int A_col[] = {0, 1, 1, 2}; // column indices
-    int A_ptr[] = {0, 2, 4}; // row pointers
+    ipc_ A_ne = 4; // Jacobian elements
+    ipc_ A_row[] = {0, 0, 1, 1}; // row indices
+    ipc_ A_col[] = {0, 1, 1, 2}; // column indices
+    ipc_ A_ptr[] = {0, 2, 4}; // row pointers
     real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
     real_wp_ c_l[] = {1.0, 2.0};   // constraint lower bound
     real_wp_ c_u[] = {2.0, 2.0};   // constraint upper bound
@@ -30,16 +30,16 @@ int main(void) {
 
     // Set output storage
     real_wp_ c[m]; // constraint values
-    int x_stat[n]; // variable status
-    int c_stat[m]; // constraint status
+    ipc_ x_stat[n]; // variable status
+    ipc_ c_stat[m]; // constraint status
     char st;
-    int status;
+    ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
 
     printf(" basic tests of wcp storage formats\n\n");
 
-    for( int d=1; d <= 3; d++){
+    for( ipc_ d=1; d <= 3; d++){
 
         // Initialize WCP
         wcp_initialize( &data, &control, &status );
@@ -74,7 +74,7 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
-                int A_dense_ne = 6; // number of elements of A
+                ipc_ A_dense_ne = 6; // number of elements of A
                 real_wp_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 wcp_import( &control, &data, &status, n, m,
                              "dense", A_dense_ne, NULL, NULL, NULL );
@@ -92,10 +92,10 @@ int main(void) {
             printf("%c: WCP_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace

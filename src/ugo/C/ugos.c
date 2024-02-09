@@ -12,7 +12,7 @@ struct userdata_type {
 };
 
 // Evaluate test problem objective, first and second derivatives
-int fgh(real_wp_ x, real_wp_ *f, real_wp_ *g, real_wp_ *h, const void *userdata){
+ipc_ fgh(real_wp_ x, real_wp_ *f, real_wp_ *g, real_wp_ *h, const void *userdata){
    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
    real_wp_ a = myuserdata->a;
 
@@ -23,7 +23,7 @@ int fgh(real_wp_ x, real_wp_ *f, real_wp_ *g, real_wp_ *h, const void *userdata)
    return 0;
 }
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -32,7 +32,7 @@ int main(void) {
 
     // Initialize UGO
 
-    int status;
+    ipc_ status;
     ugo_initialize( &data, &control, &status );
 
     // Set user-defined control options

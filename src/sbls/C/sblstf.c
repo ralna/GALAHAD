@@ -7,7 +7,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sbls.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -15,23 +15,23 @@ int main(void) {
     struct sbls_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension of H
-    int m = 2; // dimension of C
-    int H_ne = 4; // number of elements of H
-    int A_ne = 3; // number of elements of A
-    int C_ne = 3; // number of elements of C
-    int H_dense_ne = 6; // number of elements of H
-    int A_dense_ne = 6; // number of elements of A
-    int C_dense_ne = 3; // number of elements of C
-    int H_row[] = {1, 2, 3, 3}; // row indices, NB lower triangle
-    int H_col[] = {1, 2, 3, 1};
-    int H_ptr[] = {1, 2, 3, 5};
-    int A_row[] = {1, 1, 2};
-    int A_col[] = {1, 2, 3};
-    int A_ptr[] = {1, 3, 4};
-    int C_row[] = {1, 2, 2}; // row indices, NB lower triangle
-    int C_col[] = {1, 1, 2};
-    int C_ptr[] = {1, 2, 4};
+    ipc_ n = 3; // dimension of H
+    ipc_ m = 2; // dimension of C
+    ipc_ H_ne = 4; // number of elements of H
+    ipc_ A_ne = 3; // number of elements of A
+    ipc_ C_ne = 3; // number of elements of C
+    ipc_ H_dense_ne = 6; // number of elements of H
+    ipc_ A_dense_ne = 6; // number of elements of A
+    ipc_ C_dense_ne = 3; // number of elements of C
+    ipc_ H_row[] = {1, 2, 3, 3}; // row indices, NB lower triangle
+    ipc_ H_col[] = {1, 2, 3, 1};
+    ipc_ H_ptr[] = {1, 2, 3, 5};
+    ipc_ A_row[] = {1, 1, 2};
+    ipc_ A_col[] = {1, 2, 3};
+    ipc_ A_ptr[] = {1, 3, 4};
+    ipc_ C_row[] = {1, 2, 2}; // row indices, NB lower triangle
+    ipc_ C_col[] = {1, 1, 2};
+    ipc_ C_ptr[] = {1, 2, 4};
     real_wp_ H_val[] = {1.0, 2.0, 3.0, 1.0};
     real_wp_ A_val[] = {2.0, 1.0, 1.0};
     real_wp_ C_val[] = {4.0, 1.0, 2.0};
@@ -44,13 +44,13 @@ int main(void) {
     real_wp_ C_scid[] = {2.0};
 
     char st;
-    int status;
+    ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" basic tests of storage formats\n\n");
 
-    for( int d=1; d <= 7; d++){
+    for( ipc_ d=1; d <= 7; d++){
 
         // Initialize SBLS
         sbls_initialize( &data, &control, &status );
@@ -160,7 +160,7 @@ int main(void) {
             printf("%c: SBLS_solve exit status = %1i\n", st, inform.status);
         }
         //printf("sol: ");
-        //for( int i = 0; i < n+m; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);
 
         // Delete internal workspace
         sbls_terminate( &data, &control, &inform );

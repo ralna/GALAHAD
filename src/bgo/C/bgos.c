@@ -12,13 +12,13 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun( int n, const real_wp_ x[], real_wp_ *f, const void * );
-int grad( int n, const real_wp_ x[], real_wp_ g[], const void * );
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void * );
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
+ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
+ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void * );
+ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void * );
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -26,7 +26,7 @@ int main(void) {
     struct bgo_inform_type inform;
 
     // Initialize BGO
-    int status;
+    ipc_ status;
     bgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
@@ -43,14 +43,14 @@ int main(void) {
     userdata.mag = 1000.0;
 
     // Set problem data
-    int n = 3; // dimension
-    int ne = 5; // Hesssian elements
+    ipc_ n = 3; // dimension
+    ipc_ ne = 5; // Hesssian elements
     real_wp_ x[] = {0,0,0}; // start from zero
     real_wp_ x_l[] = {-10.0,-10.0,-10.0};
     real_wp_ x_u[] = {0.5,0.5,0.5};
     char H_type[] = "coordinate"; // specify co-ordinate storage
-    int H_row[] = {0, 1, 2, 2, 2}; // Hessian H
-    int H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
+    ipc_ H_row[] = {0, 1, 2, 2, 2}; // Hessian H
+    ipc_ H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
 
     // Set storage
     real_wp_ g[n]; // gradient
@@ -72,11 +72,11 @@ int main(void) {
         printf("BGO successful solve\n");
         printf("TR iter: %d \n", inform.trb_inform.iter);
         printf("x: ");
-        for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         printf("\n");
         printf("objective: %f \n", inform.obj);
         printf("gradient: ");
-        for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         printf("\n");
         printf("f_eval: %d \n", inform.f_eval);
         printf("time: %f \n", inform.time.clock_total);
@@ -93,7 +93,7 @@ int main(void) {
 }
 
 // Objective function
-int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
+ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
     real_wp_ freq = myuserdata->freq;
@@ -105,7 +105,7 @@ int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
+ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
     real_wp_ freq = myuserdata->freq;
@@ -118,7 +118,7 @@ int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
           const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ freq = myuserdata->freq;
