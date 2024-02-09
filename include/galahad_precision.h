@@ -30,9 +30,9 @@ typedef double real_wp_;  // working precision
 #endif
 
 #ifdef INTEGER_64
-typedef int ipc_;  // integer precision
-#else
 typedef int64_t ipc_;  // integer precision
+#else
+typedef int ipc_;  // integer precision
 #endif
 
 // end include guard
