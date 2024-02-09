@@ -13,6 +13,8 @@
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
 
+#include <stdint.h>
+
 // include guard
 #ifndef GALAHAD_PRECISION_H
 #define GALAHAD_PRECISION_H
