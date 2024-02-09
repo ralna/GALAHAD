@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-09 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -182,7 +182,7 @@
    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_arrays )
      TYPE( MI28_control ), INTENT( IN ) :: ccontrol
      TYPE( f_mi28_control), INTENT( OUT ) :: fcontrol
-     LOGICAL, INTENT( OUT ) :: f_arrays
+     LOGICAL ( KIND = lp_ ), INTENT( OUT ) :: f_arrays
      f_arrays               = ccontrol%f_arrays /= 0
      fcontrol%alpha         = ccontrol%alpha
      fcontrol%check         = ccontrol%check

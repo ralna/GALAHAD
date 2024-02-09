@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-05 AT 11:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-09 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -131,7 +131,7 @@ contains
   subroutine copy_control_in(ccontrol, fcontrol, f_arrays)
     type(ma57_control), intent(in)              :: ccontrol
     type(f_ma57_control), optional, intent(out) :: fcontrol
-    logical, optional, intent(out)              :: f_arrays
+    logical(lp_), optional, intent(out)         :: f_arrays
 
     if (present(f_arrays)) f_arrays = (ccontrol%f_arrays.ne.0)
 

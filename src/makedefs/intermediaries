@@ -1839,7 +1839,8 @@ make_ciface_sils:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
 make_ciface_sls_deps: make_ciface_sls_deps_$(PRECIS)
-make_ciface_sls_deps_single: make_ciface_sils make_ciface_ssids_dum \
+#make_ciface_sls_deps_single: make_ciface_sils make_ciface_ssids_dum \
+make_ciface_sls_deps_single: make_ciface_sils make_ciface_$(SSIDS) \
                       make_ciface_ma57 make_ciface_ma77 \
                       make_ciface_ma86 make_ciface_ma87 \
                       make_ciface_ma97 make_ciface_mc64 \

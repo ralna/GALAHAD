@@ -1,12 +1,11 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-07 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-09 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 8 6 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_ma86_single_ciface
-!  use GALAHAD_KINDS ! replace by the following lines marked ! ***
-   use GALAHAD_KINDS, ONLY: ipc_, spc_, C_LONG               ! ***
+   use GALAHAD_KINDS, ONLY: ipc_, spc_, lp_, C_LONG
    use hsl_ma86_single, only :                     &
       f_ma86_keep          => ma86_keep,           &
       f_ma86_control       => ma86_control,        &
@@ -19,7 +18,7 @@ module hsl_ma86_single_ciface
       f_ma86_get_n__       => ma86_get_n__
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                     ! ***
+   integer, parameter :: longc_ = C_LONG
 
    ! Data type for user controls
    type, bind(C) :: ma86_control
@@ -69,7 +68,7 @@ contains
    subroutine copy_control_in(ccontrol, fcontrol, f_arrays)
       type(ma86_control), intent(in) :: ccontrol
       type(f_ma86_control), intent(out) :: fcontrol
-      logical, intent(out) :: f_arrays
+      logical(lp_), intent(out) :: f_arrays
 
       f_arrays                   = (ccontrol%f_arrays .ne. 0)
       fcontrol%diagnostics_level = ccontrol%diagnostics_level

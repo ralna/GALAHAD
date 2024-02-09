@@ -569,10 +569,10 @@ ssids_ciface.o: $(CLG)(ssids_ciface.o)
 $(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
 	$(CP) ../dum/C/ssids_ciface.F90 $(OBJ)/ssids_ciface.F90
-	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGS) \
+	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface_$(PRECIS).o $(FFLAGS) \
                       ssids_ciface.F90
-	cd $(OBJ) ; $(RARR) ssids_ciface.o ; \
-                    $(RM) ssids_ciface.F90 ssids_ciface.o
+	cd $(OBJ) ; $(CARR) ssids_ciface_$(PRECIS).o ; \
+                    $(RM) ssids_ciface.F90 ssids_ciface_$(PRECIS).o
 	$(CRMARFILE) sls_ciface_$(PRECIS).o
 	$(MVMODS)
 	@printf '[ OK ]\n'

@@ -1,19 +1,18 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-07 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-09 AT 09:50 GMT.
 
 #include "galahad_modules.h"
 
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc68_integer_ciface
-!  use GALAHAD_KINDS ! replace by the following lines marked          !**
-   use GALAHAD_KINDS, ONLY: ipc_, C_LONG                              !**
+   use GALAHAD_KINDS, ONLY: ipc_, lp_, C_LONG
    use hsl_mc68_integer, only:              &
       f_mc68_control       => mc68_control, &
       f_mc68_info          => mc68_info,    &
       f_mc68_order         => mc68_order
    implicit none
 
-   integer, parameter :: longc_ = C_LONG                              !**
+   integer, parameter :: longc_ = C_LONG
 
    type, bind(C) :: mc68_control
       integer(ipc_) :: f_array_in ! 0 is false, otherwise true
@@ -45,8 +44,8 @@ contains
          min_l_workspace)
       type(mc68_control), intent(in) :: ccontrol
       type(f_mc68_control), intent(out) :: fcontrol
-      logical, intent(out) :: f_array_in
-      logical, intent(out) :: f_array_out
+      logical(lp_), intent(out) :: f_array_in
+      logical(lp_), intent(out) :: f_array_out
       integer, intent(out) :: min_l_workspace
 
       f_array_in                 = (ccontrol%f_array_in .ne. 0)
