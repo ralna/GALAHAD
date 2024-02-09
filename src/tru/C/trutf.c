@@ -13,23 +13,23 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun( int n, const real_wp_ x[], real_wp_ *f, const void *);
-int grad( int n, const real_wp_ x[], real_wp_ g[], const void *);
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[], const void *);
-int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void *);
+ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void *);
+ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void *);
+ipc_ hess_dense( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
                 const void *);
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void *);
-int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ prec( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
           const void *);
-int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void *);
-int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void *);
-int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ fun_diag( ipc_ n, const real_wp_ x[], real_wp_ *f, const void *);
+ipc_ grad_diag( ipc_ n, const real_wp_ x[], real_wp_ g[], const void *);
+ipc_ hess_diag( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
                const void *);
-int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                   bool got_h, const void *);
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -41,22 +41,22 @@ int main(void) {
     userdata.p = 4.0;
 
     // Set problem data
-    int n = 3; // dimension
-    int ne = 5; // Hesssian elements
-    int H_row[] = {1, 2, 3, 3, 3}; // Hessian H
-    int H_col[] = {1, 2, 1, 2, 3}; // NB lower triangle
-    int H_ptr[] = {1, 2, 3, 6};    // row pointers
+    ipc_ n = 3; // dimension
+    ipc_ ne = 5; // Hesssian elements
+    ipc_ H_row[] = {1, 2, 3, 3, 3}; // Hessian H
+    ipc_ H_col[] = {1, 2, 1, 2, 3}; // NB lower triangle
+    ipc_ H_ptr[] = {1, 2, 3, 6};    // row pointers
 
     // Set storage
     real_wp_ g[n]; // gradient
     char st;
-    int status;
+    ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" tests options for all-in-one storage format\n\n");
 
-    for( int d=1; d <= 5; d++){
+    for( ipc_ d=1; d <= 5; d++){
 
         // Initialize TRU
         tru_initialize( &data, &control, &status );
@@ -115,10 +115,10 @@ int main(void) {
             printf("%c: TRU_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -128,13 +128,13 @@ int main(void) {
     printf("\n tests reverse-communication options\n\n");
 
     // reverse-communication input/output
-    int eval_status;
+    ipc_ eval_status;
     real_wp_ f = 0.0;
     real_wp_ u[n], v[n];
-    int index_nz_u[n], index_nz_v[n];
+    ipc_ index_nz_u[n], index_nz_v[n];
     real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
 
-    for( int d=1; d <= 5; d++){
+    for( ipc_ d=1; d <= 5; d++){
 
         // Initialize TRU
         tru_initialize( &data, &control, &status );
@@ -289,10 +289,10 @@ int main(void) {
             printf("%c: TRU_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -302,7 +302,7 @@ int main(void) {
 }
 
 // Objective function
-int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
+ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
 
@@ -311,7 +311,7 @@ int fun( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
 }
 
 // Gradient of the objective
-int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
+ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
 
@@ -322,7 +322,7 @@ int grad( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
 }
 
 // Hessian of the objective
-int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
           const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
@@ -333,7 +333,7 @@ int hess( int n, int ne, const real_wp_ x[], real_wp_ hval[],
 }
 
 // Dense Hessian
-int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ hess_dense( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
                 const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 0.0;
@@ -345,7 +345,7 @@ int hess_dense( int n, int ne, const real_wp_ x[], real_wp_ hval[],
 }
 
 // Hessian-vector product
-int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
               bool got_h, const void *userdata ){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
@@ -354,7 +354,7 @@ int hessprod( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
 }
 
 // Apply preconditioner
-int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ prec( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
           const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
@@ -363,7 +363,7 @@ int prec( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
 }
 
  // Objective function
-int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
+ipc_ fun_diag( ipc_ n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
 
@@ -372,7 +372,7 @@ int fun_diag( int n, const real_wp_ x[], real_wp_ *f, const void *userdata ){
 }
 
 // Gradient of the objective
-int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
+ipc_ grad_diag( ipc_ n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     real_wp_ p = myuserdata->p;
 
@@ -383,7 +383,7 @@ int grad_diag( int n, const real_wp_ x[], real_wp_ g[], const void *userdata ){
 }
 
 // Hessian of the objective
-int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ hess_diag( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
                const void *userdata ){
     hval[0] = -cos(x[0]);
     hval[1] = 2.0;
@@ -392,7 +392,7 @@ int hess_diag( int n, int ne, const real_wp_ x[], real_wp_ hval[],
 }
 
 // Hessian-vector product
-int hessprod_diag( int n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                   bool got_h, const void *userdata ){
     u[0] = u[0] + - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * v[1];

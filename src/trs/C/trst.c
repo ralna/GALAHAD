@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_trs.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,22 +16,22 @@ int main(void) {
     struct trs_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension of H
-    int m = 1; // dimension of A
-    int H_ne = 4; // number of elements of H
-    int M_ne = 3; // number of elements of M
-    int A_ne = 3; // number of elements of A
-    int H_dense_ne = 6; // number of elements of H
-    int M_dense_ne = 6; // number of elements of M
-    int H_row[] = {0, 1, 2, 2}; // row indices, NB lower triangle
-    int H_col[] = {0, 1, 2, 0};
-    int H_ptr[] = {0, 1, 2, 4};
-    int M_row[] = {0, 1, 2}; // row indices, NB lower triangle
-    int M_col[] = {0, 1, 2};
-    int M_ptr[] = {0, 1, 2, 3};
-    int A_row[] = {0, 0, 0} ;
-    int A_col[] = {0, 1, 2};
-    int A_ptr[] = {0, 3};
+    ipc_ n = 3; // dimension of H
+    ipc_ m = 1; // dimension of A
+    ipc_ H_ne = 4; // number of elements of H
+    ipc_ M_ne = 3; // number of elements of M
+    ipc_ A_ne = 3; // number of elements of A
+    ipc_ H_dense_ne = 6; // number of elements of H
+    ipc_ M_dense_ne = 6; // number of elements of M
+    ipc_ H_row[] = {0, 1, 2, 2}; // row indices, NB lower triangle
+    ipc_ H_col[] = {0, 1, 2, 0};
+    ipc_ H_ptr[] = {0, 1, 2, 4};
+    ipc_ M_row[] = {0, 1, 2}; // row indices, NB lower triangle
+    ipc_ M_col[] = {0, 1, 2};
+    ipc_ M_ptr[] = {0, 1, 2, 3};
+    ipc_ A_row[] = {0, 0, 0} ;
+    ipc_ A_col[] = {0, 1, 2};
+    ipc_ A_ptr[] = {0, 3};
     real_wp_ H_val[] = {1.0, 2.0, 3.0, 4.0};
     real_wp_ M_val[] = {1.0, 2.0, 1.0};
     real_wp_ A_val[] = {1.0, 1.0, 1.0};
@@ -44,7 +44,7 @@ int main(void) {
     real_wp_ c[] = {0.0, 2.0, 0.0};
 
     char st;
-    int status;
+    ipc_ status;
     real_wp_ x[n];
     char ma[3];
 
@@ -52,8 +52,8 @@ int main(void) {
 
     printf(" basic tests of storage formats\n\n");
 
-    for( int a_is=0; a_is <= 1; a_is++){ // add a linear constraint?
-      for( int m_is=0; m_is <= 1; m_is++){ // include a scaling matrix?
+    for( ipc_ a_is=0; a_is <= 1; a_is++){ // add a linear constraint?
+      for( ipc_ m_is=0; m_is <= 1; m_is++){ // include a scaling matrix?
 
         if (a_is == 1 && m_is == 1 ) {
           strcpy(ma, "MA");
@@ -68,7 +68,7 @@ int main(void) {
           strcpy(ma, "  ");
         }
 
-        for( int storage_type=1; storage_type <= 4; storage_type++){
+        for( ipc_ storage_type=1; storage_type <= 4; storage_type++){
 
           // Initialize TRS
           trs_initialize( &data, &control, &status );
@@ -225,7 +225,7 @@ int main(void) {
           printf("format %c%s: TRS_solve_problem exit status = %1i, f = %.2f\n",
                  st, ma, inform.status, inform.obj );
           //printf("x: ");
-          //for( int i = 0; i < n+m; i++) printf("%f ", x[i]);
+          //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);
 
           // Delete internal workspace
           trs_terminate( &data, &control, &inform );

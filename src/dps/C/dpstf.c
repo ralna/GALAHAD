@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_dps.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,13 +16,13 @@ int main(void) {
     struct dps_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension of H
-    int m = 1; // dimension of A
-    int H_ne = 4; // number of elements of H
-    int H_dense_ne = 6; // number of elements of H
-    int H_row[] = {1, 2, 3, 3}; // row indices, NB lower triangle
-    int H_col[] = {1, 2, 3, 1};
-    int H_ptr[] = {1, 2, 3, 5};
+    ipc_ n = 3; // dimension of H
+    ipc_ m = 1; // dimension of A
+    ipc_ H_ne = 4; // number of elements of H
+    ipc_ H_dense_ne = 6; // number of elements of H
+    ipc_ H_row[] = {1, 2, 3, 3}; // row indices, NB lower triangle
+    ipc_ H_col[] = {1, 2, 3, 1};
+    ipc_ H_ptr[] = {1, 2, 3, 5};
     real_wp_ H_val[] = {1.0, 2.0, 3.0, 4.0};
     real_wp_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
     real_wp_ f = 0.96;
@@ -31,14 +31,14 @@ int main(void) {
     real_wp_ c[] = {0.0, 2.0, 0.0};
 
     char st;
-    int status;
+    ipc_ status;
     real_wp_ x[n];
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" basic tests of storage formats\n\n");
 
-    for( int storage_type=1; storage_type <= 3; storage_type++){
+    for( ipc_ storage_type=1; storage_type <= 3; storage_type++){
 
     // Initialize DPS
       dps_initialize( &data, &control, &status );
@@ -102,7 +102,7 @@ int main(void) {
       printf("format %c: DPS_resolve_problem exit status = %1i, f = %.2f\n",
              st, inform.status, inform.obj );
       //printf("x: ");
-      //for( int i = 0; i < n+m; i++) printf("%f ", x[i]);
+      //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);
 
       // Delete internal workspace
       dps_terminate( &data, &control, &inform );

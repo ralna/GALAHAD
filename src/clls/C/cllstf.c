@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_clls.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,9 +16,9 @@ int main(void) {
     struct clls_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension
-    int o = 4; // number of observations
-    int m = 2; // number of general constraints
+    ipc_ n = 3; // dimension
+    ipc_ o = 4; // number of observations
+    ipc_ m = 2; // number of general constraints
     real_wp_ sigma = 1.0; // regularization weight
     real_wp_ b[] = {2.0, 2.0, 3.0, 1.0};   // observations
     real_wp_ c_l[] = {1.0, 2.0};   // constraint lower bound
@@ -30,16 +30,16 @@ int main(void) {
     // Set output storage
     real_wp_ r[o]; // residual values
     real_wp_ c[m]; // constraint values
-    int x_stat[n]; // variable status
-    int c_stat[m]; // constraint status
+    ipc_ x_stat[n]; // variable status
+    ipc_ c_stat[m]; // constraint status
     char st[3];
-    int status;
+    ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" basic tests of clls storage formats\n\n");
 
-    for( int d=1; d <= 5; d++){
+    for( ipc_ d=1; d <= 5; d++){
 
         // Initialize CLLS
         clls_initialize( &data, &control, &status );
@@ -59,13 +59,13 @@ int main(void) {
             case 1: // sparse co-ordinate storage
                 strcpy(st, "CO");
                 {
-                int Ao_ne = 7; // objective Jacobian elements
-                int Ao_row[] = {1, 1, 2, 2, 3, 3, 4};   // row indices
-                int Ao_col[] = {1, 2, 2, 3, 1, 3, 2};    // column indices
+                ipc_ Ao_ne = 7; // objective Jacobian elements
+                ipc_ Ao_row[] = {1, 1, 2, 2, 3, 3, 4};   // row indices
+                ipc_ Ao_col[] = {1, 2, 2, 3, 1, 3, 2};    // column indices
                 real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
-                int A_ne = 4; // constraint Jacobian elements
-                int A_row[] = {1, 1, 2, 2}; // row indices
-                int A_col[] = {1, 2, 2, 3}; // column indices
+                ipc_ A_ne = 4; // constraint Jacobian elements
+                ipc_ A_row[] = {1, 1, 2, 2}; // row indices
+                ipc_ A_col[] = {1, 2, 2, 3}; // column indices
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0}; // values
                 clls_import( &control, &data, &status, n, o, m,
                             "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL,
@@ -78,15 +78,15 @@ int main(void) {
             case 2: // sparse by rows
                 strcpy(st, "SR");
                 {
-                int Ao_ne = 7; // objective Jacobian elements
-                int Ao_col[] = {1, 2, 2, 3, 1, 3, 2};    // column indices
-                int Ao_ptr_ne = o + 1; // number of row pointers
-                int Ao_ptr[] = {1, 3, 5, 7, 8}; // row pointers
+                ipc_ Ao_ne = 7; // objective Jacobian elements
+                ipc_ Ao_col[] = {1, 2, 2, 3, 1, 3, 2};    // column indices
+                ipc_ Ao_ptr_ne = o + 1; // number of row pointers
+                ipc_ Ao_ptr[] = {1, 3, 5, 7, 8}; // row pointers
                 real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
-                int A_ne = 4; // constraint Jacobian elements
-                int A_col[] = {1, 2, 2, 3}; // column indices
-                int A_ptr_ne = m + 1; // number of row pointers
-                int A_ptr[] = {1, 3, 5}; // row pointers
+                ipc_ A_ne = 4; // constraint Jacobian elements
+                ipc_ A_col[] = {1, 2, 2, 3}; // column indices
+                ipc_ A_ptr_ne = m + 1; // number of row pointers
+                ipc_ A_ptr[] = {1, 3, 5}; // row pointers
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
                 clls_import( &control, &data, &status, n, o, m,
                              "sparse_by_rows", Ao_ne, NULL, Ao_col,
@@ -101,15 +101,15 @@ int main(void) {
             case 3: // sparse by columns
                 strcpy(st, "SC");
                 {
-                int Ao_ne = 7; // objective Jacobian elements
-                int Ao_row[] = {1, 3, 1, 2, 4, 2, 3};   // row indices
-                int Ao_ptr_ne = n + 1; // number of column pointers
-                int Ao_ptr[] = {1, 3, 6, 8}; // column pointers
+                ipc_ Ao_ne = 7; // objective Jacobian elements
+                ipc_ Ao_row[] = {1, 3, 1, 2, 4, 2, 3};   // row indices
+                ipc_ Ao_ptr_ne = n + 1; // number of column pointers
+                ipc_ Ao_ptr[] = {1, 3, 6, 8}; // column pointers
                 real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
-                int A_ne = 4; // constraint Jacobian elements
-                int A_row[] = {1, 1, 2, 2}; // row indices
-                int A_ptr_ne = n + 1; // number of column pointers
-                int A_ptr[] = {1, 2, 4, 5}; // column pointers
+                ipc_ A_ne = 4; // constraint Jacobian elements
+                ipc_ A_row[] = {1, 1, 2, 2}; // row indices
+                ipc_ A_ptr_ne = n + 1; // number of column pointers
+                ipc_ A_ptr[] = {1, 2, 4, 5}; // column pointers
                 real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
                 clls_import( &control, &data, &status, n, o, m,
                              "sparse_by_columns", Ao_ne, Ao_row, NULL,
@@ -124,10 +124,10 @@ int main(void) {
             case 4: // dense by rows
                 strcpy(st, "DR");
                 {
-                int Ao_ne = 12; // objective Jacobian elements
+                ipc_ Ao_ne = 12; // objective Jacobian elements
                 real_wp_ Ao_dense[] = {1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
                                        1.0, 0.0, 1.0, 0.0, 1.0, 0.0};
-                int A_ne = 6; // constraint Jacobian elements
+                ipc_ A_ne = 6; // constraint Jacobian elements
                 real_wp_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 clls_import( &control, &data, &status, n, o, m,
                              "dense", Ao_ne, NULL, NULL, 0, NULL,
@@ -140,10 +140,10 @@ int main(void) {
             case 5: // dense by cols
                 strcpy(st, "DC");
                 {
-                int Ao_ne = 12; // objective Jacobian elements
+                ipc_ Ao_ne = 12; // objective Jacobian elements
                 real_wp_ Ao_dense[] = {1.0, 0.0, 1.0, 0.0, 1.0, 1.0,
                                        0.0, 1.0, 0.0, 1.0, 1.0, 0.0};
-                int A_ne = 6; // constraint Jacobian elements
+                ipc_ A_ne = 6; // constraint Jacobian elements
                 real_wp_ A_dense[] = {2.0, 0.0, 1.0, 1.0, 0.0, 1.0};
                 clls_import( &control, &data, &status, n, o, m,
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL,
@@ -163,10 +163,10 @@ int main(void) {
             printf("%s: CLLS_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace

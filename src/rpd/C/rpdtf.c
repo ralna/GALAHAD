@@ -10,7 +10,7 @@
 #include "galahad_rpd.h"
 #define BUFSIZE 1000
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -19,7 +19,7 @@ int main(void) {
 
     char qplib_file[BUFSIZE];
     char *galahad = "GALAHAD";
-    int qplib_file_len;
+    ipc_ qplib_file_len;
 
     // make sure the GALAHAD environment variable actually exists
     if(!getenv(galahad)){
@@ -42,12 +42,12 @@ int main(void) {
 
     printf( " QPLIB file: %s\n", qplib_file );
 
-    int status;
-    int n;
-    int m;
-    int h_ne;
-    int a_ne;
-    int h_c_ne;
+    ipc_ status;
+    ipc_ n;
+    ipc_ m;
+    ipc_ h_ne;
+    ipc_ a_ne;
+    ipc_ h_c_ne;
     char p_type[4];
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -94,35 +94,35 @@ int main(void) {
     printf( " c_u = %.1f %.1f\n", c_u[0], c_u[1] );
 
     // Recover H
-    int h_row[h_ne];
-    int h_col[h_ne];
+    ipc_ h_row[h_ne];
+    ipc_ h_col[h_ne];
     real_wp_ h_val[h_ne];
     rpd_get_h( &data, &status, h_ne, h_row, h_col, h_val );
     printf( " h_row, h_col, h_val =\n");
-    for( int i = 0; i < h_ne; i++) printf("   %i %i %.1f\n",
+    for( ipc_ i = 0; i < h_ne; i++) printf("   %i %i %.1f\n",
          h_row[i], h_col[i], h_val[i]);
 
     // Recover A
-    int a_row[a_ne];
-    int a_col[a_ne];
+    ipc_ a_row[a_ne];
+    ipc_ a_col[a_ne];
     real_wp_ a_val[a_ne];
     rpd_get_a( &data, &status, a_ne, a_row, a_col, a_val );
     printf( " a_row, a_col, a_val =\n");
-    for( int i = 0; i < a_ne; i++) printf("   %i %i %.1f\n",
+    for( ipc_ i = 0; i < a_ne; i++) printf("   %i %i %.1f\n",
          a_row[i], a_col[i], a_val[i]);
 
     // Recover H_c
-    int h_c_ptr[h_c_ne];
-    int h_c_row[h_c_ne];
-    int h_c_col[h_c_ne];
+    ipc_ h_c_ptr[h_c_ne];
+    ipc_ h_c_row[h_c_ne];
+    ipc_ h_c_col[h_c_ne];
     real_wp_ h_c_val[h_c_ne];
     rpd_get_h_c( &data, &status, h_c_ne, h_c_ptr, h_c_row, h_c_col, h_c_val );
     printf( " h_c_row, h_c_col, h_c_val =\n");
-    for( int i = 0; i < h_c_ne; i++) printf("   %i %i %i %.1f\n",
+    for( ipc_ i = 0; i < h_c_ne; i++) printf("   %i %i %i %.1f\n",
          h_c_ptr[i], h_c_row[i], h_c_col[i], h_c_val[i]);
 
     // Recover x_type
-    int x_type[n];
+    ipc_ x_type[n];
     rpd_get_x_type( &data, &status, n, x_type );
     printf( " x_type = %i %i %i %i %i\n", x_type[0], x_type[1], x_type[2],
             x_type[3], x_type[4] );

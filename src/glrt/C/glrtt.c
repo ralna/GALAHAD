@@ -7,7 +7,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_glrt.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -15,9 +15,9 @@ int main(void) {
     struct glrt_inform_type inform;
 
     // Set problem data
-    int n = 100; // dimension
+    ipc_ n = 100; // dimension
 
-    int status;
+    ipc_ status;
     real_wp_ weight;
     real_wp_ power = 3.0;
     real_wp_ x[n];
@@ -29,7 +29,7 @@ int main(void) {
     glrt_initialize( &data, &control, &status );
 
     // use a unit M ?
-    for( int unit_m=0; unit_m <= 1; unit_m++){
+    for( ipc_ unit_m=0; unit_m <= 1; unit_m++){
       if ( unit_m == 0 ){
         control.unitm = false;
       } else {
@@ -37,7 +37,7 @@ int main(void) {
       }
       glrt_import_control( &control, &data, &status );
       // resolve with a larger weight ?
-      for( int new_weight=0; new_weight <= 1; new_weight++){
+      for( ipc_ new_weight=0; new_weight <= 1; new_weight++){
         if ( new_weight == 0 ){
            weight = 1.0;
            status = 1;
@@ -45,7 +45,7 @@ int main(void) {
            weight = 10.0;
            status = 6;
         }
-        for( int i = 0; i < n; i++) r[i] = 1.0;
+        for( ipc_ i = 0; i < n; i++) r[i] = 1.0;
 
         // iteration loop to find the minimizer
         while(true){ // reverse-communication loop
@@ -55,16 +55,16 @@ int main(void) {
           } else if ( status < 0 ) { // error exit
               break;
           } else if ( status == 2 ) { // form the preconditioned vector
-            for( int i = 0; i < n; i++) vector[i] = vector[i] / 2.0;
+            for( ipc_ i = 0; i < n; i++) vector[i] = vector[i] / 2.0;
           } else if ( status == 3 ) { // form the Hessian-vector product
             h_vector[0] =  2.0 * vector[0] + vector[1];
-            for( int i = 1; i < n-1; i++){
+            for( ipc_ i = 1; i < n-1; i++){
               h_vector[i] = vector[i-1] + 2.0 * vector[i] + vector[i+1];
             }
             h_vector[n-1] = vector[n-2] + 2.0 * vector[n-1];
-            for( int i = 0; i < n; i++) vector[i] = h_vector[i];
+            for( ipc_ i = 0; i < n; i++) vector[i] = h_vector[i];
           } else if ( status == 4 ) { // restart
-            for( int i = 0; i < n; i++) r[i] = 1.0;
+            for( ipc_ i = 0; i < n; i++) r[i] = 1.0;
           }else{
               printf(" the value %1i of status should not occur\n",
                 status);

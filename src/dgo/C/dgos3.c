@@ -6,7 +6,7 @@
 #include "galahad_precision.h"
 #include "galahad_dgo.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -14,7 +14,7 @@ int main(void) {
     struct dgo_inform_type inform;
 
     // Initialize DGO
-    int status;
+    ipc_ status;
     dgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
@@ -23,17 +23,17 @@ int main(void) {
     // control.print_level = 1;
 
     // Set problem data
-    int n = 3; // dimension
-    int ne = 5; // Hesssian elements
+    ipc_ n = 3; // dimension
+    ipc_ ne = 5; // Hesssian elements
     real_wp_ x[] = {1.,1.,1.}; // start from one
     real_wp_ x_l[] = {-10.0,-10.0,-10.0};
     real_wp_ x_u[] = {1.0,1.0,1.0};
     char H_type[] = "coordinate"; // specify co-ordinate storage
-    int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
-    int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
+    ipc_ H_row[] = {0, 2, 1, 2, 2}; // Hessian H
+    ipc_ H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
 
     // Reverse-communication input/output
-    int eval_status;
+    ipc_ eval_status;
     real_wp_ f;
     real_wp_ g[n];
     real_wp_ u[n], v[n];
@@ -131,11 +131,11 @@ int main(void) {
     // Print solution details
     printf("iter: %d \n", inform.trb_inform.iter);
     printf("x: ");
-    for(int i = 0; i < n; i++) printf("%f ", x[i]);
+    for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
     printf("\n");
     printf("objective: %f \n", inform.obj);
     printf("gradient: ");
-    for(int i = 0; i < n; i++) printf("%f ", g[i]);
+    for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
     printf("\n");
     printf("f_eval: %d \n", inform.f_eval);
     printf("time: %f \n", inform.time.clock_total);

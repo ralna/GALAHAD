@@ -8,23 +8,23 @@
 #include "galahad_cfunctions.h"
 #include "galahad_llsr.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
     struct llsr_control_type control;
     struct llsr_inform_type inform;
-    int i, l;
+    ipc_ i, l;
 
     // Set problem data
     // set dimensions
-    int m = 100;
-    int n = 2*m+1;
+    ipc_ m = 100;
+    ipc_ n = 2*m+1;
     // A = ( I : Diag(1:n) : e )
-    int A_ne = 3*m;
-    int A_row[A_ne];
-    int A_col[A_ne];
-    int A_ptr[m+1];
+    ipc_ A_ne = 3*m;
+    ipc_ A_row[A_ne];
+    ipc_ A_col[A_ne];
+    ipc_ A_ptr[m+1];
     real_wp_ A_val[A_ne];
 
     // store A in sparse formats
@@ -47,7 +47,7 @@ int main(void) {
     A_ptr[m] = l+1;
 
     // store A in dense format
-    int A_dense_ne = m * n;
+    ipc_ A_dense_ne = m * n;
     real_wp_ A_dense_val[A_dense_ne];
     for( i=0; i < A_dense_ne; i++) A_dense_val[i] = 0.0;
     l=-1;
@@ -59,10 +59,10 @@ int main(void) {
     }
 
     // S = diag(1:n)**2
-    int S_ne = n;
-    int S_row[S_ne];
-    int S_col[S_ne];
-    int S_ptr[n+1];
+    ipc_ S_ne = n;
+    ipc_ S_row[S_ne];
+    ipc_ S_col[S_ne];
+    ipc_ S_ptr[n+1];
     real_wp_ S_val[S_ne];
 
     // store S in sparse formats
@@ -75,7 +75,7 @@ int main(void) {
     S_ptr[n] = n+1;
 
     // store S in dense format
-    int S_dense_ne = n*(n+1)/2;
+    ipc_ S_dense_ne = n*(n+1)/2;
     real_wp_ S_dense_val[S_dense_ne];
     for( i=0; i < S_dense_ne; i++) S_dense_val[i] = 0.0;
     l=-1;
@@ -97,14 +97,14 @@ int main(void) {
     // Set output storage
     real_wp_ x[n]; // solution
     char st;
-    int status;
+    ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" basic tests of problem storage formats\n\n");
 
     // loop over storage formats
-    for( int d=1; d<=4; d++){
+    for( ipc_ d=1; d<=4; d++){
 
         // Initialize LLSR
         llsr_initialize( &data, &control, &status );
@@ -117,7 +117,7 @@ int main(void) {
         control.f_indexing = true; // Fortran sparse matrix indexing
 
         // use s or not (1 or 0)
-        for( int use_s=0; use_s<=1; use_s++){
+        for( ipc_ use_s=0; use_s<=1; use_s++){
            switch(d){
                case 1: // sparse co-ordinate storage
                    st = 'C';
@@ -192,7 +192,7 @@ int main(void) {
            }
         }
         //printf("x: ");
-        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
 
         // Delete internal workspace

@@ -5,7 +5,7 @@
 #include <math.h>
 #include "galahad_lhs.h"
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -16,10 +16,10 @@ int main(void) {
     lhs_initialize(&data, &control, &inform);
 
     // Parameters
-    int n_dimen = 7; // dimension
-    int n_points = 2; // points required
-    int X[n_dimen][n_points]; // points
-    int seed;
+    ipc_ n_dimen = 7; // dimension
+    ipc_ n_points = 2; // points required
+    ipc_ X[n_dimen][n_points]; // points
+    ipc_ seed;
 
     // Set a random seed
     lhs_get_seed(&seed);
@@ -28,9 +28,9 @@ int main(void) {
     lhs_ihs(n_dimen, n_points, &seed, (int**)X, &control, &inform, &data);
     if(inform.status == 0){ // successful return
         printf("LHS successful\n");
-        for(int j = 0; j < n_points; j++){
+        for(ipc_ j = 0; j < n_points; j++){
             printf("Point %d = ", j);
-            for(int i = 0; i < n_dimen; i++){
+            for(ipc_ i = 0; i < n_dimen; i++){
                 printf("%d ", X[i][j]);
             }
             printf("\n");

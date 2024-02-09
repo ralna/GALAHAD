@@ -9,9 +9,9 @@
 #include "galahad_cfunctions.h"
 #include "galahad_uls.h"
 
-int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs);
+ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs);
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -19,13 +19,13 @@ int main(void) {
     struct uls_inform_type inform;
 
     // Set problem data
-    int m = 5; // column dimension of A
-    int n = 5; // column dimension of A
-    int ne = 7; // number of entries of A
-    int dense_ne = 25; // number of elements of A as a dense matrix
-    int row[] = {0, 1, 1, 2, 2, 3, 4}; // row indices
-    int col[] = {0, 0, 4, 1, 2, 2, 3}; // column indices
-    int ptr[] = {0, 1, 3, 5, 6, 7}; // pointers to indices
+    ipc_ m = 5; // column dimension of A
+    ipc_ n = 5; // column dimension of A
+    ipc_ ne = 7; // number of entries of A
+    ipc_ dense_ne = 25; // number of elements of A as a dense matrix
+    ipc_ row[] = {0, 1, 1, 2, 2, 3, 4}; // row indices
+    ipc_ col[] = {0, 0, 4, 1, 2, 2, 3}; // column indices
+    ipc_ ptr[] = {0, 1, 3, 5, 6, 7}; // pointers to indices
     real_wp_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0}; // values
     real_wp_ dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0,
                       0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0,
@@ -33,7 +33,7 @@ int main(void) {
     real_wp_ rhs[] = {2.0, 33.0, 11.0, 15.0, 4.0};
     real_wp_ rhst[] = {8.0, 12.0, 23.0, 5.0, 12.0};
     real_wp_ sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
-    int i, status;
+    ipc_ i, status;
     real_wp_ x[n];
     real_wp_ error[n];
     _Bool trans;
@@ -47,7 +47,7 @@ int main(void) {
 
     printf(" storage          RHS   refine   RHST  refine\n");
 
-    for( int d=1; d <= 3; d++){
+    for( ipc_ d=1; d <= 3; d++){
         // Initialize ULS - use the gls solver
         uls_initialize( "getr", &data, &control, &status );
 
@@ -90,7 +90,7 @@ int main(void) {
             printf(" ULS_solve exit status = %1i\n", inform.status);
         }
         // printf("sol: ");
-        // for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        // for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
 
         // resolve, this time using iterative refinement
         control.max_iterative_refinements = 1;
@@ -129,7 +129,7 @@ int main(void) {
             printf(" ULS_solve exit status = %1i\n", inform.status);
         }
         // printf("sol: ");
-        // for( int i = 0; i < n; i++) printf("%f ", x[i]);
+        // for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
 
         // resolve, this time using iterative refinement
         control.max_iterative_refinements = 1;
@@ -156,9 +156,9 @@ int main(void) {
     }
 }
 
-int maxabsarray(real_wp_ a[], int n, real_wp_ *maxabs)
+ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs)
  {
-    int i;
+    ipc_ i;
     real_wp_ b, max;
     max=abs(a[0]);
     for(i=1; i<n; i++)

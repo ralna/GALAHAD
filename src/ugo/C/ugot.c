@@ -27,7 +27,7 @@ real_wp_ hessf(real_wp_ x){
             + 2.0 * cos( a*x );
 }
 
-int main(void) {
+ipc_ main(void) {
 
     // Derived types
     void *data;
@@ -35,7 +35,7 @@ int main(void) {
     struct ugo_inform_type inform;
 
     // Initialize UGO
-    int status, eval_status;
+    ipc_ status, eval_status;
     ugo_initialize( &data, &control, &status );
 
     // Set user-defined control options
