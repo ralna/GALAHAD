@@ -662,7 +662,7 @@ if build_tests and build_ciface
 endif
 
 # Python tests
-if build_tests and build_pythoniface and build_ciface and build_double and host_system != 'windows'
+if build_tests and build_pythoniface and build_ciface and build_double and (not galahad_int64) and (host_system != 'windows')
 
   foreach test: galahad_python_tests
     package = test[0]
