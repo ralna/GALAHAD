@@ -75,7 +75,7 @@ int main(void) {
     // Record solution information
     arc_information( &data, &inform, &status );
 
-    // Pripc_ solution details
+    // Print solution details
     printf("iter: %d \n", inform.iter);
     printf("x: ");
     for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
