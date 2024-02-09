@@ -8,7 +8,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sbls.h"
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

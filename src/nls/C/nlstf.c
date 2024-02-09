@@ -41,7 +41,7 @@ ipc_ rhessprods_dense( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[],
                       const real_wp_ v[], real_wp_ pval[], bool got_h,
                       const void * );
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

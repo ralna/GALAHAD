@@ -21,7 +21,7 @@ struct userdata_type {
 // Function prototypes
 ipc_ prec( ipc_ n, const real_wp_ v[], real_wp_ p[], const void * );
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

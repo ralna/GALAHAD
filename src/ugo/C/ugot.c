@@ -27,7 +27,7 @@ real_wp_ hessf(real_wp_ x){
             + 2.0 * cos( a*x );
 }
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

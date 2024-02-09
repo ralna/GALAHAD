@@ -9,7 +9,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sha.h"
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;
