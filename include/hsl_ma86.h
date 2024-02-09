@@ -58,40 +58,40 @@ struct ma86_control {
    /* Note: 0 is false, non-zero is true */
 
    /* C/Fortran interface related controls */
-   int f_arrays; /* Treat arrays as 1-based (Fortran) if true or 0-based (C) if
+   ipc_ f_arrays; /* Treat arrays as 1-based (Fortran) if true or 0-based (C) if
                     false. */
 
    /* Printing controls */
-   int diagnostics_level; /* Controls diagnostic printing.*/
+   ipc_ diagnostics_level; /* Controls diagnostic printing.*/
                /* Possible values are:
                    < 0: no printing.
                      0: error and warning messages only.
                      1: as 0 plus basic diagnostic printing.
                      2: as 1 plus some more detailed diagnostic messages.
                      3: as 2 plus all entries of user-supplied arrays.       */
-   int unit_diagnostics;   /* unit for diagnostic messages
+   ipc_ unit_diagnostics;   /* unit for diagnostic messages
                               Printing is suppressed if unit_diagnostics < 0. */
-   int unit_error;         /* unit for error messages
+   ipc_ unit_error;         /* unit for error messages
                               Printing is suppressed if unit_error  <  0.     */
-   int unit_warning;       /* unit for warning messages
+   ipc_ unit_warning;       /* unit for warning messages
                               Printing is suppressed if unit_warning  <  0.   */
 
    /* Controls used by ma86_analyse */
-   int nemin;  /* Node amalgamation parameter. A child node is merged with its
+   ipc_ nemin;  /* Node amalgamation parameter. A child node is merged with its
                   parent if they both involve fewer than nemin eliminations.*/
-   int nb;     /* Controls the size of the blocks used within each node (used to
+   ipc_ nb;     /* Controls the size of the blocks used within each node (used to
                   set nb within node_type)*/
 
    /* Controls used by ma86_factor and ma86_factor_solve */
-   int action; /* Keep going even if matrix is singular if true, or abort
+   ipc_ action; /* Keep going even if matrix is singular if true, or abort
                   if false */
-   int nbi;    /* Inner block size for use with ma64*/
-   int pool_size; /* Size of task pool arrays*/
+   ipc_ nbi;    /* Inner block size for use with ma64*/
+   ipc_ pool_size; /* Size of task pool arrays*/
    real_wp_ small_; /* Pivots less than small are treated as zero*/
    real_wp_ static_;/* Control static pivoting*/
    real_wp_ u;      /* Pivot tolerance*/
    real_wp_ umin;   /* Minimum pivot tolerance*/
-   int scaling;     /* Scaling algorithm to use */
+   ipc_ scaling;     /* Scaling algorithm to use */
 };
 
 /***************************************************/
@@ -99,20 +99,20 @@ struct ma86_control {
 /* data type for returning information to user.*/
 struct ma86_info {
    real_wp_ detlog;     /* Holds logarithm of abs det A (or 0) */
-   int detsign;         /* Holds sign of determinant (+/-1 or 0) */
-   int flag;            /* Error return flag (0 on success) */
-   int matrix_rank;     /* Rank of matrix */
-   int maxdepth;        /* Maximum depth of the tree. */
-   int num_delay;       /* Number of delayed pivots */
+   ipc_ detsign;         /* Holds sign of determinant (+/-1 or 0) */
+   ipc_ flag;            /* Error return flag (0 on success) */
+   ipc_ matrix_rank;     /* Rank of matrix */
+   ipc_ maxdepth;        /* Maximum depth of the tree. */
+   ipc_ num_delay;       /* Number of delayed pivots */
    long num_factor;     /* Number of entries in the factor. */
    long num_flops;      /* Number of flops for factor. */
-   int num_neg;         /* Number of negative pivots */
-   int num_nodes;       /* Number of nodes */
-   int num_nothresh;    /* Number of pivots not satisfying u */
-   int num_perturbed;   /* Number of perturbed pivots */
-   int num_two;         /* Number of 2x2 pivots */
-   int pool_size;       /* Maximum size of task pool used */
-   int stat;            /* STAT value on error return -1. */
+   ipc_ num_neg;         /* Number of negative pivots */
+   ipc_ num_nodes;       /* Number of nodes */
+   ipc_ num_nothresh;    /* Number of pivots not satisfying u */
+   ipc_ num_perturbed;   /* Number of perturbed pivots */
+   ipc_ num_two;         /* Number of 2x2 pivots */
+   ipc_ pool_size;       /* Maximum size of task pool used */
+   ipc_ stat;            /* STAT value on error return -1. */
    real_wp_ usmall;     /* smallest threshold parameter used */
 };
 

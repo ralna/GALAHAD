@@ -58,44 +58,44 @@ struct ma77_control {
    /* Note: 0 is false, non-zero is true */
 
    /* C/Fortran interface related controls */
-   int f_arrays; /* Treat arrays as 1-based (Fortran) if true or 0-based (C) if
+   ipc_ f_arrays; /* Treat arrays as 1-based (Fortran) if true or 0-based (C) if
                     false. */
 
    /* Printing controls */
-   int print_level;
-   int unit_diagnostics;   /* unit for diagnostic messages
+   ipc_ print_level;
+   ipc_ unit_diagnostics;   /* unit for diagnostic messages
                               Printing is suppressed if unit_diagnostics < 0. */
-   int unit_error;         /* unit for error messages
+   ipc_ unit_error;         /* unit for error messages
                               Printing is suppressed if unit_error  <  0.     */
-   int unit_warning;       /* unit for warning messages
+   ipc_ unit_warning;       /* unit for warning messages
                               Printing is suppressed if unit_warning  <  0.   */
 
    /* Controls used by MA77_open */
-   int bits;
-   int buffer_lpage[2];
-   int buffer_npage[2];
+   ipc_ bits;
+   ipc_ buffer_lpage[2];
+   ipc_ buffer_npage[2];
    long file_size;
    long maxstore;
    long storage[3];
 
    /* Controls used by MA77_analyse */
-   int nemin;  /* Node amalgamation parameter. A child node is merged with its
+   ipc_ nemin;  /* Node amalgamation parameter. A child node is merged with its
                   parent if they both involve fewer than nemin eliminations.*/
 
    /* Controls used by MA77_scale */
-   int maxit;
-   int infnorm;
+   ipc_ maxit;
+   ipc_ infnorm;
    real_wp_ thresh;
 
    /* Controls used by MA77_factor with posdef true */
-   int nb54;
+   ipc_ nb54;
 
    /* Controls used by MA77_factor with posdef false */
-   int action;    /* Keep going even if matrix is singular if true, or abort
+   ipc_ action;    /* Keep going even if matrix is singular if true, or abort
                      if false */
    real_wp_ multiplier;
-   int nb64;
-   int nbi;
+   ipc_ nb64;
+   ipc_ nbi;
    real_wp_ small;
    real_wp_ static_;
    long storage_indef;
@@ -106,7 +106,7 @@ struct ma77_control {
    real_wp_ consist_tol;   /* Tolerance for consistent singular system */
 
    /* Pad data structure to allow for future growth */
-   int ispare[5]; long lspare[5]; real_wp_ rspare[5];
+   ipc_ ispare[5]; long lspare[5]; real_wp_ rspare[5];
 };
 
 /***************************************************/
@@ -114,39 +114,39 @@ struct ma77_control {
 /* data type for returning information to user.*/
 struct ma77_info {
    real_wp_ detlog;
-   int detsign;
-   int flag;
-   int iostat;
-   int matrix_dup;
-   int matrix_rank;
-   int matrix_outrange;
-   int maxdepth;
-   int maxfront;
+   ipc_ detsign;
+   ipc_ flag;
+   ipc_ iostat;
+   ipc_ matrix_dup;
+   ipc_ matrix_rank;
+   ipc_ matrix_outrange;
+   ipc_ maxdepth;
+   ipc_ maxfront;
    long minstore;
-   int ndelay;
+   ipc_ ndelay;
    long nfactor;
    long nflops;
-   int niter;
-   int nsup;
-   int num_neg;
-   int num_nothresh;
-   int num_perturbed;
-   int ntwo;
-   int stat;
-   int index[4];
+   ipc_ niter;
+   ipc_ nsup;
+   ipc_ num_neg;
+   ipc_ num_nothresh;
+   ipc_ num_perturbed;
+   ipc_ ntwo;
+   ipc_ stat;
+   ipc_ index[4];
    long nio_read[2];
    long nio_write[2];
    long nwd_read[2];
    long nwd_write[2];
-   int num_file[4];
+   ipc_ num_file[4];
    long storage[4];
-   int tree_nodes;
-   int unit_restart;
-   int unused;
+   ipc_ tree_nodes;
+   ipc_ unit_restart;
+   ipc_ unused;
    real_wp_ usmall;
 
    /* Pad data structure to allow for future growth */
-   int ispare[5]; long lspare[5]; real_wp_ rspare[5];
+   ipc_ ispare[5]; long lspare[5]; real_wp_ rspare[5];
 };
 
 #endif

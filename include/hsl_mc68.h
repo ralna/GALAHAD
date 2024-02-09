@@ -54,32 +54,32 @@ extern "C" {
 
 struct mc68_control {
    /* Extra options for C version */
-   int f_array_in;      /* 0 for C array indexing, 1 for Fortran indexing */
-   int f_array_out;     /* 0 for C array indexing, 1 for Fortran indexing
+   ipc_ f_array_in;      /* 0 for C array indexing, 1 for Fortran indexing */
+   ipc_ f_array_out;     /* 0 for C array indexing, 1 for Fortran indexing
                          * NOTE: 2x2 pivot information discarded if C indexing
                          * is used for output! */
-   int min_l_workspace; /* Initial size of workspace, as argument in Fortran */
+   ipc_ min_l_workspace; /* Initial size of workspace, as argument in Fortran */
    /* Options from Fortran version */
-   int lp;              /* stream number for error messages */
-   int wp;              /* stream number for warning messages */
-   int mp;              /* stream number for diagnostic messages */
-   int nemin;           /* stream number for diagnostic messages */
-   int print_level;     /* amount of informational output required */
-   int row_full_thresh; /* percentage threshold for full row */
-   int row_search;      /* Number of rows searched for pivot with ord=6 */
+   ipc_ lp;              /* stream number for error messages */
+   ipc_ wp;              /* stream number for warning messages */
+   ipc_ mp;              /* stream number for diagnostic messages */
+   ipc_ nemin;           /* stream number for diagnostic messages */
+   ipc_ print_level;     /* amount of informational output required */
+   ipc_ row_full_thresh; /* percentage threshold for full row */
+   ipc_ row_search;      /* Number of rows searched for pivot with ord=6 */
 };
 
 struct mc68_info {
-   int flag;            /* error/warning flag */
-   int iostat;          /* holds Fortran iostat parameter */
-   int stat;            /* holds Fortran stat parameter */
-   int out_range;       /* holds number of out of range entries ignored */
-   int duplicate;       /* holds number of duplicate entries */
-   int n_compressions;  /* holds number of compressions in order */
-   int n_zero_eigs;     /* holds the number of zero eigs from ma47 */
+   ipc_ flag;            /* error/warning flag */
+   ipc_ iostat;          /* holds Fortran iostat parameter */
+   ipc_ stat;            /* holds Fortran stat parameter */
+   ipc_ out_range;       /* holds number of out of range entries ignored */
+   ipc_ duplicate;       /* holds number of duplicate entries */
+   ipc_ n_compressions;  /* holds number of compressions in order */
+   ipc_ n_zero_eigs;     /* holds the number of zero eigs from ma47 */
    long l_workspace;     /* holds length of workspace iw used in order */
-   int zb01_info;       /* holds flag from zb01_expand1 call */
-   int n_dense_rows;    /* holds number of dense rows from amdd */
+   ipc_ zb01_info;       /* holds flag from zb01_expand1 call */
+   ipc_ n_dense_rows;    /* holds number of dense rows from amdd */
 };
 
 #endif

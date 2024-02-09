@@ -56,19 +56,19 @@ extern "C" {
 #include "galahad_precision.h"
 
 struct mc64_control {
-   int f_arrays;
-   int lp;
-   int wp;
-   int sp;
-   int ldiag;
-   int checking;
+   ipc_ f_arrays;
+   ipc_ lp;
+   ipc_ wp;
+   ipc_ sp;
+   ipc_ ldiag;
+   ipc_ checking;
 };
 
 struct mc64_info {
-   int flag;
-   int more;
-   int strucrank;
-   int stat;
+   ipc_ flag;
+   ipc_ more;
+   ipc_ strucrank;
+   ipc_ stat;
 };
 
 #endif

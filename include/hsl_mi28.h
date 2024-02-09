@@ -30,40 +30,40 @@ extern "C" {
 
 /* Derived type to hold control parameters for hsl_mi28 */
 struct mi28_control {
-   int f_arrays;
+   ipc_ f_arrays;
    real_wp_ alpha;
    bool check ;
-   int iorder;
-   int iscale;
+   ipc_ iorder;
+   ipc_ iscale;
    real_wp_ lowalpha;
-   int maxshift;
+   ipc_ maxshift;
    bool rrt;
    real_wp_ shift_factor;
    real_wp_ shift_factor2;
    real_wp_ small;
    real_wp_ tau1;
    real_wp_ tau2;
-   int unit_error;
-   int unit_warning;
+   ipc_ unit_error;
+   ipc_ unit_warning;
 };
 
 /* Communucates errors and information to the user. */
 struct mi28_info {
-   int band_after;
-   int band_before;
-   int dup;
-   int flag;
-   int flag61;
-   int flag64;
-   int flag68;
-   int flag77;
-   int nrestart;
-   int nshift;
-   int oor;
+   ipc_ band_after;
+   ipc_ band_before;
+   ipc_ dup;
+   ipc_ flag;
+   ipc_ flag61;
+   ipc_ flag64;
+   ipc_ flag68;
+   ipc_ flag77;
+   ipc_ nrestart;
+   ipc_ nshift;
+   ipc_ oor;
    real_wp_ profile_before;
    real_wp_ profile_after;
    long size_r;
-   int stat;
+   ipc_ stat;
    real_wp_ alpha;
 };
 

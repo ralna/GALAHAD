@@ -54,66 +54,66 @@ extern "C" {
 #include "galahad_precision.h"
 
 struct ma48_control {
-   int f_arrays; /* If eval to true, use 1-based indexing, else 0-based */
+   ipc_ f_arrays; /* If eval to true, use 1-based indexing, else 0-based */
    real_wp_ multiplier; /* If arrays are too small, increase by factor */
    real_wp_ u; /* Pivot threshold */
    real_wp_ switch_; /* Density for switch to full code */
    real_wp_ drop; /* Drop tolerance */
    real_wp_ tolerance; /* Anything less than this is considered zero */
    real_wp_ cgce; /* Ratio for required reduction using IR */
-   int lp; /* Fortran unit for error messages */
-   int wp; /* Fortran unit for warning messages */
-   int mp; /* Fortran unit for monitor output */
-   int ldiag; /* Controls level of diagnostic output */
-   int btf; /* Minimum block size for BTF ... >=N to avoid */
-   int struct_; /* Abort if eval to true and structurally singular */
-   int maxit; /* Maximum number of iterations */
-   int factor_blocking; /* Level 3 blocking in factorize */
-   int solve_blas; /* Switch for using Level 1 or 2 BLAS in solve. */
-   int pivoting; /* Number of columns searched in pivoting. Markowitz=0 */
-   int diagonal_pivoting; /* Use diagonal pivoting if eval to true */
-   int fill_in; /* Initially fill_in * ne space allocated for factors */
-   int switch_mode; /* If eval to true, switch to slow if fast mode unstable */
+   ipc_ lp; /* Fortran unit for error messages */
+   ipc_ wp; /* Fortran unit for warning messages */
+   ipc_ mp; /* Fortran unit for monitor output */
+   ipc_ ldiag; /* Controls level of diagnostic output */
+   ipc_ btf; /* Minimum block size for BTF ... >=N to avoid */
+   ipc_ struct_; /* Abort if eval to true and structurally singular */
+   ipc_ maxit; /* Maximum number of iterations */
+   ipc_ factor_blocking; /* Level 3 blocking in factorize */
+   ipc_ solve_blas; /* Switch for using Level 1 or 2 BLAS in solve. */
+   ipc_ pivoting; /* Number of columns searched in pivoting. Markowitz=0 */
+   ipc_ diagonal_pivoting; /* Use diagonal pivoting if eval to true */
+   ipc_ fill_in; /* Initially fill_in * ne space allocated for factors */
+   ipc_ switch_mode; /* If eval to true, switch to slow if fast mode unstable */
 };
 
 
 struct ma48_ainfo {
    real_wp_ ops; /* Number of operations in elimination */
-   int flag; /* Return code */
-   int more; /* More information on failure */
+   ipc_ flag; /* Return code */
+   ipc_ more; /* More information on failure */
    long lena_analyse; /* Size for analysis (main arrays) */
    long lenj_analyse; /* Size for analysis (integer aux array) */
    long lena_factorize; /* Size for factorize (real array) */
    long leni_factorize; /* Size for factorize (integer array) */
-   int ncmpa; /* Number of compresses in analyse */
-   int rank; /* Estimated rank */
+   ipc_ ncmpa; /* Number of compresses in analyse */
+   ipc_ rank; /* Estimated rank */
    long drop; /* Number of entries dropped */
-   int struc_rank; /* Structural rank of matrix */
+   ipc_ struc_rank; /* Structural rank of matrix */
    long oor; /* Number of indices out-of-range */
    long dup; /* Number of duplicates */
-   int stat; /* Fortran STAT value after allocate failure */
-   int lblock; /* Size largest non-triangular block */
-   int sblock; /* Sum of orders of non-triangular blocks */
+   ipc_ stat; /* Fortran STAT value after allocate failure */
+   ipc_ lblock; /* Size largest non-triangular block */
+   ipc_ sblock; /* Sum of orders of non-triangular blocks */
    long tblock; /* Total entries in all non-triangular blocks */
 };
 
 
 struct ma48_finfo {
    real_wp_ ops; /* Number of operations in elimination */
-   int flag; /* Return code */
-   int more; /* More information on failure */
+   ipc_ flag; /* Return code */
+   ipc_ more; /* More information on failure */
    long size_factor; /* Number of words to hold factors */
    long lena_factorize; /* Size for factorize (real array) */
    long leni_factorize; /* Size for factorize (integer array) */
    long drop; /* Number of entries dropped */
-   int rank; /* Estimated rank */
-   int stat; /* Fortran STAT value after allocate failure */
+   ipc_ rank; /* Estimated rank */
+   ipc_ stat; /* Fortran STAT value after allocate failure */
 };
 
 struct ma48_sinfo {
-   int flag; /* Return code */
-   int more; /* More information on failure */
-   int stat; /* Fortran STAT value after allocate failure */
+   ipc_ flag; /* Return code */
+   ipc_ more; /* More information on failure */
+   ipc_ stat; /* Fortran STAT value after allocate failure */
 };
 
 #endif

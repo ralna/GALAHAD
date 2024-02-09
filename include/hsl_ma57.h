@@ -55,7 +55,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 struct ma57_control {
-  int f_arrays;        /* Use C or Fortran based indexing for sparse matrices */
+  ipc_ f_arrays;        /* Use C or Fortran based indexing for sparse matrices */
   real_wp_ multiplier; /* Factor by which arrays sizes are to be */
                        /* increased if they are too small */
   real_wp_ reduce;     /* if previously allocated internal workspace arrays */
@@ -69,21 +69,21 @@ struct ma57_control {
                                 /* refinement */
   real_wp_ consist;      /* used in test for consistency when using */
                          /* fredholm alternative */
-  int lp;                /* Unit for error messages */
-  int wp;                /* Unit for warning messages */
-  int mp;                /* Unit for monitor output */
-  int sp;                /* Unit for statistical output */
-  int ldiag;             /* Controls level of diagnostic output */
-  int nemin;             /* Minimum number of eliminations in a step */
-  int factorblocking;    /* Level 3 blocking in factorize */
-  int solveblocking;     /* Level 2 and 3 blocking in solve */
-  int la;     		 /* Initial size for real array for the factors. */
+  ipc_ lp;                /* Unit for error messages */
+  ipc_ wp;                /* Unit for warning messages */
+  ipc_ mp;                /* Unit for monitor output */
+  ipc_ sp;                /* Unit for statistical output */
+  ipc_ ldiag;             /* Controls level of diagnostic output */
+  ipc_ nemin;             /* Minimum number of eliminations in a step */
+  ipc_ factorblocking;    /* Level 3 blocking in factorize */
+  ipc_ solveblocking;     /* Level 2 and 3 blocking in solve */
+  ipc_ la;     		 /* Initial size for real array for the factors. */
               		 /* If less than nrlnec, default size used. */
-  int liw;    		 /* Initial size for integer array for the factors. */
+  ipc_ liw;    		 /* Initial size for integer array for the factors. */
               		 /* If less than nirnec, default size used. */
-  int maxla;  		 /* Max. size for real array for the factors. */
-  int maxliw; 		 /* Max. size for integer array for the factors. */
-  int pivoting;  	 /* Controls pivoting: */
+  ipc_ maxla;  		 /* Max. size for real array for the factors. */
+  ipc_ maxliw; 		 /* Max. size for integer array for the factors. */
+  ipc_ pivoting;  	 /* Controls pivoting: */
                  	 /*  1  Numerical pivoting will be performed. */
                  	 /*  2 No pivoting will be performed and an error exit will */
                  	 /*    occur immediately a pivot sign change is detected. */
@@ -91,10 +91,10 @@ struct ma57_control {
                  	 /*     occur if a zero pivot is detected. */
                  	 /*  4 No pivoting is performed but pivots are changed to */
                  	 /*     all be positive. */
-  int thresh;            /* Controls threshold for detecting full rows in analyse */
+  ipc_ thresh;            /* Controls threshold for detecting full rows in analyse */
                          /*     Registered as percentage of N */
                          /* 100 Only fully dense rows detected (default) */
-  int ordering;  	 /* Controls ordering: */
+  ipc_ ordering;  	 /* Controls ordering: */
                  	 /*  Note that this is overridden by using optional parameter */
                  	 /* perm in analyse call with equivalent action to 1. */
                  	 /*  0  AMD using MC47 */
@@ -103,38 +103,38 @@ struct ma57_control {
                  	 /*  3  Min deg as in MA57 */
                  	 /*  4  Metis_nodend ordering */
                  	 /* >4  Presently equivalent to 0 but may chnage */
-  int scaling;           /* Controls scaling: */
+  ipc_ scaling;           /* Controls scaling: */
   			 /*  0  No scaling */
   			 /* >0  Scaling using MC64 but may change for > 1 */
-  int rank_deficient;    /* Controls handling rank deficiency: */
+  ipc_ rank_deficient;    /* Controls handling rank deficiency: */
   			 /*  0  No control */
   			 /* >0  Small entries removed during factorization */
 
   /* Reserve space for future interface changes */
-  int ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; real_wp_ rspare[10];
 };
 
 struct ma57_ainfo {
   real_wp_ opsa;         /* Anticipated # operations in assembly */
   real_wp_ opse;         /* Anticipated # operations in elimination */
-  int flag;        	 /* Flags success or failure case */
-  int more;        	 /* More information on failure */
-  int nsteps;      	 /* Number of elimination steps */
-  int nrltot;      	 /* Size for a without compression */
-  int nirtot;      	 /* Size for iw without compression */
-  int nrlnec;      	 /* Size for a with compression */
-  int nirnec;      	 /* Size for iw with compression */
-  int nrladu;      	 /* Number of reals to hold factors */
-  int niradu;      	 /* Number of integers to hold factors */
-  int ncmpa;       	 /* Number of compresses */
-  int ordering;    	 /* Indicates the ordering actually used */
-  int oor;         	 /* Number of indices out-of-range */
-  int dup;         	 /* Number of duplicates */
-  int maxfrt;      	 /* Forecast maximum front size */
-  int stat;        	 /* STAT value after allocate failure */
+  ipc_ flag;        	 /* Flags success or failure case */
+  ipc_ more;        	 /* More information on failure */
+  ipc_ nsteps;      	 /* Number of elimination steps */
+  ipc_ nrltot;      	 /* Size for a without compression */
+  ipc_ nirtot;      	 /* Size for iw without compression */
+  ipc_ nrlnec;      	 /* Size for a with compression */
+  ipc_ nirnec;      	 /* Size for iw with compression */
+  ipc_ nrladu;      	 /* Number of reals to hold factors */
+  ipc_ niradu;      	 /* Number of integers to hold factors */
+  ipc_ ncmpa;       	 /* Number of compresses */
+  ipc_ ordering;    	 /* Indicates the ordering actually used */
+  ipc_ oor;         	 /* Number of indices out-of-range */
+  ipc_ dup;         	 /* Number of duplicates */
+  ipc_ maxfrt;      	 /* Forecast maximum front size */
+  ipc_ stat;        	 /* STAT value after allocate failure */
 
   /* Reserve space for future interface changes */
-  int ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; real_wp_ rspare[10];
 };
 
 struct ma57_finfo {
@@ -144,29 +144,29 @@ struct ma57_finfo {
   real_wp_ maxchange;  /* Largest pivot modification when pivoting=4 */
   real_wp_ smin;       /* Minimum scaling factor */
   real_wp_ smax;       /* Maximum scaling factor */
-  int flag;            /* Flags success or failure case */
-  int more;            /* More information on failure */
-  int maxfrt;          /* Largest front size */
-  int nebdu;           /* Number of entries in factors */
-  int nrlbdu;          /* Number of reals that hold factors */
-  int nirbdu;          /* Number of integers that hold factors */
-  int nrltot;          /* Size for a without compression */
-  int nirtot;          /* Size for iw without compression */
-  int nrlnec;          /* Size for a with compression */
-  int nirnec;          /* Size for iw with compression */
-  int ncmpbr;          /* Number of compresses of real data */
-  int ncmpbi;          /* Number of compresses of integer data */
-  int ntwo;            /* Number of 2x2 pivots */
-  int neig;            /* Number of negative eigenvalues */
-  int delay;           /* Number of delayed pivots (total) */
-  int signc;           /* Number of pivot sign changes (pivoting=3) */
-  int static_;         /* Number of static pivots chosen */
-  int modstep;         /* First pivot modification when pivoting=4 */
-  int rank;            /* Rank of original factorization */
-  int stat;            /* STAT value after allocate failure */
+  ipc_ flag;            /* Flags success or failure case */
+  ipc_ more;            /* More information on failure */
+  ipc_ maxfrt;          /* Largest front size */
+  ipc_ nebdu;           /* Number of entries in factors */
+  ipc_ nrlbdu;          /* Number of reals that hold factors */
+  ipc_ nirbdu;          /* Number of integers that hold factors */
+  ipc_ nrltot;          /* Size for a without compression */
+  ipc_ nirtot;          /* Size for iw without compression */
+  ipc_ nrlnec;          /* Size for a with compression */
+  ipc_ nirnec;          /* Size for iw with compression */
+  ipc_ ncmpbr;          /* Number of compresses of real data */
+  ipc_ ncmpbi;          /* Number of compresses of integer data */
+  ipc_ ntwo;            /* Number of 2x2 pivots */
+  ipc_ neig;            /* Number of negative eigenvalues */
+  ipc_ delay;           /* Number of delayed pivots (total) */
+  ipc_ signc;           /* Number of pivot sign changes (pivoting=3) */
+  ipc_ static_;         /* Number of static pivots chosen */
+  ipc_ modstep;         /* First pivot modification when pivoting=4 */
+  ipc_ rank;            /* Rank of original factorization */
+  ipc_ stat;            /* STAT value after allocate failure */
 
   /* Reserve space for future interface changes */
-  int ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; real_wp_ rspare[10];
 };
 
 struct ma57_sinfo {
@@ -175,11 +175,11 @@ struct ma57_sinfo {
   real_wp_ berr;   /* Condition number of matrix (category 1 equations) */
   real_wp_ berr2;  /* Condition number of matrix (category 2 equations) */
   real_wp_ error;  /* Estimate of forward error using above data */
-  int flag;       	  /* Flags success or failure case */
-  int stat;       	  /* STAT value after allocate failure */
+  ipc_ flag;       	  /* Flags success or failure case */
+  ipc_ stat;       	  /* STAT value after allocate failure */
 
   /* Reserve space for future interface changes */
-  int ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; real_wp_ rspare[10];
 };
 
 #endif
