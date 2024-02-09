@@ -16,7 +16,7 @@
 /*
  * Check and handle general status error codes
  */
-static inline bool check_error_codes(ipc_ status){
+static inline bool check_error_codes(int status){
     switch(status){
         case -1: // NB this is a RutimeError as opposed to a warning
             PyErr_SetString(PyExc_RuntimeError,
@@ -234,7 +234,7 @@ static inline bool check_callable(PyObject *arg){
  */
 
 /* Check that ndarray is 1D, double and of correct length */
-static inline bool check_array_double(char *name, PyArrayObject *arr, ipc_ n){
+static inline bool check_array_double(char *name, PyArrayObject *arr, int n){
     if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) &&
          PyArray_TYPE(arr)==NPY_DOUBLE &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
@@ -247,7 +247,7 @@ static inline bool check_array_double(char *name, PyArrayObject *arr, ipc_ n){
 
 /* Check that ndarray is 2D, double and of correct length */
 static inline bool check_2darray_double(char *name, PyArrayObject *arr,
-                                        ipc_ m, ipc_ n){
+                                        int m, int n){
     if(!(PyArray_Check(arr) && PyArray_ISFLOAT(arr) &&
          PyArray_TYPE(arr)==NPY_DOUBLE && PyArray_NDIM(arr)==2 &&
          PyArray_DIM(arr,0)==m && PyArray_DIM(arr,1)==n)){
@@ -258,15 +258,15 @@ static inline bool check_2darray_double(char *name, PyArrayObject *arr,
     return true;
 }
 
-/* Check that ndarray is 1D, ipc_ and of correct length */
-static inline bool check_array_int(char *name, PyArrayObject *arr, ipc_ n){
+/* Check that ndarray is 1D, int and of correct length */
+static inline bool check_array_int(char *name, PyArrayObject *arr, int n){
     if((PyObject *) arr == Py_None) // allowed to be None
         return true;
     if(!(PyArray_Check(arr) && PyArray_ISINTEGER(arr) &&
          PyArray_TYPE(arr)==NPY_LONG &&
          PyArray_NDIM(arr)==1 && PyArray_DIM(arr,0)==n)){
         PyErr_Format(PyExc_TypeError,
-                     "%s must be a 1D ipc_ array of length %i", name, n);
+                     "%s must be a 1D int array of length %i", name, n);
         return false;
     }
     return true;
@@ -301,9 +301,9 @@ static inline bool parse_options_key(PyObject *key, const char **key_name){
     return true;
 }
 
-/* Parse ipc_ option from Python value to C out */
+/* Parse int option from Python value to C out */
 static inline bool parse_int_option(PyObject *value, char *option_name,
-                                    ipc_ *out){
+                                    int *out){
     *out = PyLong_AsLong(value);
     if(*out == -1 && PyErr_Occurred()){
         PyErr_Format(PyExc_TypeError,
@@ -345,7 +345,7 @@ static inline bool parse_bool_option(PyObject *value, char *option_name,
                      "options['%s'] must be a bool", option_name);
         return false;
     }
-    ipc_ vint = PyObject_IsTrue(value);
+    int vint = PyObject_IsTrue(value);
     if(vint == 1){
 	    *out = true;
 	}else if(vint == 0){
@@ -377,26 +377,26 @@ static inline bool parse_char_option(PyObject *value, char *option_name,
     return true;
 }
 
-/* Parse ipc_ array from Python value to C out */
+/* Parse int array from Python value to C out */
 static inline bool parse_int_array_option(PyArrayObject *value,
-                                          char *option_name, ipc_ *out,
-                                          ipc_ outsize){
+                                          char *option_name, int *out,
+                                          int outsize){
     if(!(PyArray_Check(value) && PyArray_ISINTEGER(value) &&
          PyArray_TYPE(value)==NPY_LONG &&
          PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
            PyErr_Format(PyExc_TypeError,
-              "%s must be a 1D ipc_ array of length %i", option_name, outsize);
+              "%s must be a 1D int array of length %i", option_name, outsize);
         return false;
     }
-    const ipc_ *data = (ipc_ *) PyArray_DATA(value);
-    for(ipc_ i=0; i<outsize; i++) out[i] = data[i];
+    const int *data = (int *) PyArray_DATA(value);
+    for(int i=0; i<outsize; i++) out[i] = data[i];
     return true;
 }
 
 /* Parse double array from Python value to C out */
 static inline bool parse_double_array_option(PyArrayObject *value,
                                              char *option_name, double *out,
-                                             ipc_ outsize){
+                                             int outsize){
     if(!(PyArray_Check(value) && PyArray_ISFLOAT(value) &&
          PyArray_TYPE(value)==NPY_DOUBLE &&
          PyArray_NDIM(value)==1 && PyArray_DIM(value,0)==outsize)){
@@ -405,7 +405,7 @@ static inline bool parse_double_array_option(PyArrayObject *value,
         return false;
     }
     const double *data = (double *) PyArray_DATA(value);
-    for(ipc_ i=0; i<outsize; i++) out[i] = data[i];
+    for(int i=0; i<outsize; i++) out[i] = data[i];
     return true;
 }
 
