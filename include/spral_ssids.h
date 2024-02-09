@@ -87,7 +87,7 @@ void spral_ssids_analyse(bool check, ipc_ n, ipc_ *order, const longc_ *ptr,
       const ipc_ *row, const real_wp_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
-void spral_ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const int *ptr,
+void spral_ssids_analyse_ptr32(bool check, ipc_ n, ipc_ *order, const ipc_ *ptr,
       const ipc_ *row, const real_wp_ *val, void **akeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
@@ -101,7 +101,7 @@ void spral_ssids_factor(bool posdef, const longc_ *ptr, const ipc_ *row,
       const real_wp_ *val, real_wp_ *scale, void *akeep, void **fkeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
-void spral_ssids_factor_ptr32(bool posdef, const int *ptr, const ipc_ *row,
+void spral_ssids_factor_ptr32(bool posdef, const ipc_ *ptr, const ipc_ *row,
       const real_wp_ *val, real_wp_ *scale, void *akeep, void **fkeep,
       const struct spral_ssids_options *options,
       struct spral_ssids_inform *inform);
