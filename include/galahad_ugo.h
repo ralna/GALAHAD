@@ -48,7 +48,7 @@
   (approximating) lower bound function is constructed on each subinterval
   using the function and derivative values at each end, and an estimate of
   the first- and second-derivative Lipschitz constant. This surrogate is
-  minimized, the true objective evaluated at the best predicted poipc_,
+  minimized, the true objective evaluated at the best predicted point,
   and the corresponding interval split again at this point.
   Any interval whose surrogate lower bound value exceeds an evaluated
   actual value is discarded. The method continues until only one interval

@@ -110,7 +110,7 @@
   The iteration is terminated as soon as the Euclidean norm of the
   projected gradient,
   \f[\|\min(\max( x_k - \nabla_x f(x_k), x^l), x^u) -x_k\|_2,\f]
-  is sufficiently small. At such a poipc_, \f$\nabla_x f(x_k) = z_k\f$,
+  is sufficiently small. At such a point, \f$\nabla_x f(x_k) = z_k\f$,
   where the \f$i\f$-th dual variable \f$z_i\f$ is non-negative if
   \f$x_i\f$ is on its lower bound \f$x^l_i\f$, non-positive if \f$x_i\f$
   is on its upper bound \f$x^u_i\f$, and zero if \f$x_i\f$ lies strictly
@@ -287,7 +287,7 @@ struct trb_control_type {
 
     /// \brief
     /// more_toraldo >= 1 gives the number of More'-Toraldo projected searches
-    /// to be used to improve upon the Cauchy poipc_, anything else is for the
+    /// to be used to improve upon the Cauchy point, anything else is for the
     /// standard add-one-at-a-time CG search
     ipc_ more_toraldo;
 

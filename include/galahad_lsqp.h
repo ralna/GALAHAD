@@ -165,7 +165,7 @@
   but may be inefficient if any of the columns of \f$A\f$ is too dense.
 
   When \f$w = 0\f$ and \f$g = 0\f$, the method aims instead firstly to find an
-  interior primal feasible poipc_, that is to ensure that (1a) is
+  interior primal feasible point, that is to ensure that (1a) is
   satisfied.
   One this has been achieved, attention is switched to mninizing the
   potential function

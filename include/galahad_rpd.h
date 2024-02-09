@@ -81,7 +81,7 @@
 \endmanonly
    where vec\f$( x . H_c . x )\f$ is the vector whose
    \f$i\f$-th component is  \f$x^T (H_c)_i x\f$ for the \f$i\f$-th
-   constraipc_, from and to a QPLIB-format data file.
+   constraint, from and to a QPLIB-format data file.
    Variables may be continuous, binary or integer.
 
   \subsection rpd_authors Authors

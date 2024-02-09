@@ -135,7 +135,7 @@
   LSQP is used for this purpose, and offers the options of either
   accepting the first strictly feasible point found, or preferably of
   aiming for the so-called "analytic center" of the feasible region.
-  Having found such a suitable initial feasible poipc_, the second
+  Having found such a suitable initial feasible point, the second
   "optimality" phase ensures that \req{4.1a} remains satisfied while
   iterating to satisfy dual feasibility (2a) and complementary
   slackness (3).  The optimality phase proceeds by approximately
