@@ -26,7 +26,7 @@ ipc_ hess_diag( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void
 ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
                   bool got_h, const void *);
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

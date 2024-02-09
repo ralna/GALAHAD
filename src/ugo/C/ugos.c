@@ -23,7 +23,7 @@ ipc_ fgh(real_wp_ x, real_wp_ *f, real_wp_ *g, real_wp_ *h, const void *userdata
    return 0;
 }
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

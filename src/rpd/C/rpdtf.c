@@ -10,7 +10,7 @@
 #include "galahad_rpd.h"
 #define BUFSIZE 1000
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

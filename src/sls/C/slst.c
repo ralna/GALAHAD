@@ -11,7 +11,7 @@
 
 ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs);
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

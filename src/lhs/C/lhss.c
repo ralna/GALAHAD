@@ -5,7 +5,7 @@
 #include <math.h>
 #include "galahad_lhs.h"
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

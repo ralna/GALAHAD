@@ -6,7 +6,7 @@
 #include "galahad_precision.h"
 #include "galahad_dgo.h"
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

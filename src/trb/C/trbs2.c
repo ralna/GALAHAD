@@ -20,7 +20,7 @@ ipc_ shessprod( ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
                const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[],
                real_wp_ u[], bool got_h, const void * );
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;

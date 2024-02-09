@@ -16,7 +16,7 @@ ipc_ fun(ipc_ n, const real_wp_ x[], real_wp_ *f, const void *);
 ipc_ grad(ipc_ n, const real_wp_ x[], real_wp_ g[], const void *);
 ipc_ hess(ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void *);
 
-ipc_ main(void) {
+int main(void) {
 
     // Derived types
     void *data;
