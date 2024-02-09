@@ -13,42 +13,50 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         version: ['12']
+        julia: true
         include:
           - compiler: gcc
             int64: false
           - os: ubuntu-latest
             compiler: gcc
             version: '13'
+            julia: true
             int64: true
             allow_failure: true
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
+            julia: false
             int64: false
             allow_failure: true
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
+            julia: true
             int64: false
             allow_failure: true
           - os: macos-latest
             compiler: intel-classic
             version: '2021.10'
+            julia: true
             int64: false
             allow_failure: true
           - os: windows-latest
             compiler: intel
             version: '2023.2'
+            julia: false
             int64: false
             allow_failure: true
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
+            julia: true
             int64: false
             allow_failure: true
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
+          #   julia: true
           #   int64: false
           #   allow_failure: true
     runs-on: ${{ matrix.os }}
@@ -96,10 +104,10 @@ jobs:
             PLATFORM="x86_64-w64-mingw32"
             choco install wget
           fi
-          if [[ "${{matrix.int64}}" == "true" ]]; then
-            wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
-            tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
-          fi
+          # if [[ "${{matrix.int64}}" == "true" ]]; then
+          #   wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
+          #   tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
+          # fi
           # wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v0.3.26%2B0/OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz
           # tar -xzvf OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
 
@@ -228,8 +236,10 @@ jobs:
           path: builddir/meson-logs/testlog.txt
 
       - name: Install Julia
+        if: matrix.julia == true
         uses: julia-actions/setup-julia@v1
 
       - name: Test GALAHAD.jl
+        if: matrix.julia == true
         shell: bash
         run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
