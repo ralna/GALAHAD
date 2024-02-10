@@ -71,7 +71,7 @@ int main(void) {
     printf("fdc sls status %" i_ipc_ "\n", inform.fdc_inform.sls_inform.status);
     printf("fdc sls nodes %" i_ipc_ "\n", inform.fdc_inform.sls_inform.nodes_assembly_tree);
     printf("fdc sls flops %li\n", inform.fdc_inform.sls_inform.flops_blas);
-    printf("fdc sls alt %" d_ipc_ "\n", inform.fdc_inform.sls_inform.alternative);
+    printf("fdc sls alt %d\n", inform.fdc_inform.sls_inform.alternative);
 
     printf("fdc sls ma97 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.ma97_info.flag);
 

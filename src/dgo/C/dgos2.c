@@ -17,7 +17,7 @@ ipc_ grad( ipc_ n, const rpc_ x[], rpc_ g[], const void * );
 ipc_ hessprod( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[],
               bool got_h, const void * );
 ipc_ shessprod( ipc_ n, const rpc_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
-               const rpc_ v[], int *nnz_u, ipc_ index_nz_u[], rpc_ u[],
+               const rpc_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], rpc_ u[],
                bool got_h, const void * );
 
 int main(void) {
@@ -129,7 +129,7 @@ ipc_ hessprod( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[],
 
 // Sparse Hessian-vector product
 ipc_ shessprod(ipc_ n, const rpc_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
-              const rpc_ v[], int *nnz_u, ipc_ index_nz_u[], rpc_ u[],
+              const rpc_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], rpc_ u[],
               bool got_h, const void *userdata){
     rpc_ freq = 10.0;
     rpc_ mag = 1000.0;
