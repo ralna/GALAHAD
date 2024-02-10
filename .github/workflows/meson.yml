@@ -13,47 +13,70 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         version: ['12']
-        int64: [false, true]
         julia: [true]
+        int64: [false, true]
         include:
           - compiler: gcc
-            int64: ${{ matrix.int64 }}
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
-            int64: ${{ matrix.int64 }}
             julia: false
-            allow_failure: true
+            int64: false
+          - os: windows-latest
+            compiler: intel-classic
+            version: '2021.10'
+            julia: false
+            int64: true
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
-            int64: ${{ matrix.int64 }}
             julia: true
-            allow_failure: true
+            int64: false
+          - os: ubuntu-latest
+            compiler: intel-classic
+            version: '2021.10'
+            julia: true
+            int64: true
           - os: macos-latest
             compiler: intel-classic
             version: '2021.10'
-            int64: ${{ matrix.int64 }}
             julia: true
-            allow_failure: true
+            int64: false
+          - os: macos-latest
+            compiler: intel-classic
+            version: '2021.10'
+            julia: true
+            int64: true
           - os: windows-latest
             compiler: intel
             version: '2023.2'
-            int64: ${{ matrix.int64 }}
             julia: false
-            allow_failure: true
+            int64: false
+          - os: windows-latest
+            compiler: intel
+            version: '2023.2'
+            julia: false
+            int64: true
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
-            int64: ${{ matrix.int64 }}
             julia: true
-            allow_failure: true
+            int64: false
+          - os: ubuntu-latest
+            compiler: intel
+            version: '2023.2'
+            julia: true
+            int64: true
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
-          #   int64: ${{ matrix.int64 }}
           #   julia: true
-          #   allow_failure: true
+          #   int64: false
+          # - os: ubuntu-latest
+          #   compiler: nvidia-hpc
+          #   version: '23.11'
+          #   julia: true
+          #   int64: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
