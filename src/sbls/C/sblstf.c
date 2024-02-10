@@ -117,9 +117,9 @@ int main(void) {
                             "dense", A_ne, NULL, NULL, NULL,
                             "scaled_identity", C_ne, NULL, NULL, NULL );
                 sbls_factorize_matrix( &data, &status, n,
-                                       1, H_scid,
+                                       (ipc_)1, H_scid,
                                        A_dense_ne, A_dense,
-                                       1, C_scid,
+                                       (ipc_)1, C_scid,
                                        NULL );
                 break;
             case 6: // identity
@@ -129,9 +129,9 @@ int main(void) {
                             "dense", A_ne, NULL, NULL, NULL,
                             "identity", C_ne, NULL, NULL, NULL );
                 sbls_factorize_matrix( &data, &status, n,
-                                       0, H_val,
+                                       (ipc_)0, H_val,
                                        A_dense_ne, A_dense,
-                                       0, C_val, NULL );
+                                       (ipc_)0, C_val, NULL );
                 break;
             case 7: // zero
                 st = 'Z';
@@ -140,9 +140,9 @@ int main(void) {
                             "dense", A_ne, NULL, NULL, NULL,
                             "zero", C_ne, NULL, NULL, NULL );
                 sbls_factorize_matrix( &data, &status, n,
-                                       0, H_val,
+                                       (ipc_)0, H_val,
                                        A_dense_ne, A_dense,
-                                       0, NULL, NULL );
+                                       (ipc_)0, NULL, NULL );
                 break;
             }
 
