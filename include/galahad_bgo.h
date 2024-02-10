@@ -1,7 +1,7 @@
 /** \file galahad_bgo.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-12 AT 16:15 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 12:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -739,7 +739,7 @@ void bgo_solve_without_mat( void **data,
                               ipc_, const real_wp_[], real_wp_[],
                               const real_wp_[], bool, const void * ),
                             ipc_ (*eval_shprod)(ipc_, const real_wp_[], ipc_,
-                              const int[], const real_wp_[], int*, int[],
+                              const ipc_[], const real_wp_[], ipc_*, ipc_[],
                               real_wp_[], bool, const void * ),
                             ipc_ (*eval_prec)(
                               ipc_, const real_wp_[], real_wp_[],

@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-06-04 AT 12:05 GMT
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 10:24 GMT
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD C INTERFACE PRECISION  *-*-*-*-*-*-*-*-*-*-
  *
@@ -31,8 +31,12 @@ typedef double real_wp_;  // working precision
 
 #ifdef INTEGER_64
 typedef int64_t ipc_;  // integer precision
+#define d_ipc_ "ld"
+#define i_ipc_ "li"
 #else
 typedef int ipc_;  // integer precision
+#define d_ipc_ "d"
+#define i_ipc_ "i"
 #endif
 
 // end include guard

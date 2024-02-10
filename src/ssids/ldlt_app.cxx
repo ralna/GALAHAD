@@ -47,6 +47,14 @@
 #define gemv gemv_64
 #endif
 
+#ifdef INTEGER_64
+#define d_ipc_ "ld"
+#define i_ipc_ "li"
+#else
+#define d_ipc_ "d"
+#define i_ipc_ "i"
+#endif
+
 namespace spral { namespace ssids { namespace cpu {
 
 namespace ldlt_app_internal {
@@ -1336,11 +1344,7 @@ private:
 #ifdef PROFILE
                Profile::Task task("TA_LDLT_DIAG");
 #endif
-#ifdef INTEGER_64
-               if (debug) printf("Factor(%ld)\n", blk);
-#else
-               if (debug) printf("Factor(%d)\n", blk);
-#endif
+               if (debug) printf("Factor(%" d_ipc_ ")\n", blk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // Store a copy for recovery in case of a failed column
                dblk.backup(backup);
@@ -1404,11 +1408,8 @@ private:
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
-#ifdef INTEGER_64
-                if (debug) printf("ApplyT(%ld,%ld)\n", blk, jblk);
-#else
-                if (debug) printf("ApplyT(%d,%d)\n", blk, jblk);
-#endif
+                if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
+                                   blk, jblk);
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
                 // Apply row permutation from factorization of dblk and in
@@ -1418,7 +1419,7 @@ private:
                 // Perform elimination and determine number of rows in block
                 // passing a posteori threshold pivot test
                 ipc_ blkpass = cblk.apply_pivot_app(dblk, options.u,
-                                                   options.small);
+                                                    options.small);
                 // Update column's passed pivot count
                 cdata[blk].update_passed(blkpass);
 #ifdef PROFILE
@@ -1442,11 +1443,8 @@ private:
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
-#ifdef INTEGER_64
-                if (debug) printf("ApplyN(%ld,%ld)\n", iblk, blk);
-#else
-                if (debug) printf("ApplyN(%d,%d)\n", iblk, blk);
-#endif
+                if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
+                                  iblk, blk);
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
                 // Apply column permutation from factorization of dblk and in
@@ -1480,11 +1478,7 @@ private:
 #ifdef PROFILE
              Profile::Task task("TA_LDLT_ADJUST");
 #endif
-#ifdef INTEGER_64
-             if (debug) printf("Adjust(%ld)\n", blk);
-#else
-             if (debug) printf("Adjust(%d)\n", blk);
-#endif
+             if (debug) printf("Adjust(%" d_ipc_ ")\n", blk);
              cdata[blk].adjust(next_elim);
 #ifdef PROFILE
              task.done();
@@ -1514,11 +1508,8 @@ private:
 #ifdef PROFILE
                   Profile::Task task("TA_LDLT_UPDA");
 #endif
-#ifdef INTEGER_64
-                  if (debug) printf("UpdateT(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-                  if (debug) printf("UpdateT(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+                  if (debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
+                                             ")\n", iblk, jblk, blk);
                   ipc_ thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   ipc_ isrc_row = (blk<=iblk) ? iblk : blk;
@@ -1555,11 +1546,8 @@ private:
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDA");
 #endif
-#ifdef INTEGER_64
-                   if (debug) printf("UpdateN(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-                   if (debug) printf("UpdateN(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+                   if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
+                                     ")\n", iblk, jblk, blk);
                    ipc_ thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1599,11 +1587,8 @@ private:
 #ifdef PROFILE
                     Profile::Task task("TA_LDLT_UPDC");
 #endif
-#ifdef INTEGER_64
-                    if (debug) printf("FormContrib(%ld,%ld,%ld)\n", iblk,jblk,blk);
-#else
-                    if (debug) printf("FormContrib(%d,%d,%d)\n", iblk,jblk,blk);
-#endif
+                    if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
+                                      ",%" d_ipc_ ")\n", iblk,jblk,blk);
                     ipc_ thread_num = omp_get_thread_num();
                     BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                     BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1658,11 +1643,7 @@ private:
 
             // Factor diagonal: depend on perm[blk*block_size] as we init npass
             {
-#ifdef INTEGER_64
-               if(debug) printf("Factor(%ld)\n", blk);
-#else
-               if(debug) printf("Factor(%d)\n", blk);
-#endif
+               if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // Store a copy for recovery in case of a failed column
                dblk.backup(backup);
@@ -1677,11 +1658,7 @@ private:
 
             // Loop over off-diagonal blocks applying pivot
             for(ipc_ jblk=0; jblk<blk; jblk++) {
-#ifdef INTEGER_64
-               if(debug) printf("ApplyT(%ld,%ld)\n", blk, jblk);
-#else
-               if(debug) printf("ApplyT(%d,%d)\n", blk, jblk);
-#endif
+               if(debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", blk, jblk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
                // Apply row permutation from factorization of dblk and in
@@ -1697,11 +1674,7 @@ private:
                cdata[blk].update_passed(blkpass);
             }
             for(ipc_ iblk=blk+1; iblk<mblk; iblk++) {
-#ifdef INTEGER_64
-               if(debug) printf("ApplyN(%ld,%ld)\n", iblk, blk);
-#else
-               if(debug) printf("ApplyN(%d,%d)\n", iblk, blk);
-#endif
+               if(debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", iblk, blk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
                // Apply column permutation from factorization of dblk and in
@@ -1718,21 +1691,14 @@ private:
 
             // Adjust column once all applys have finished and we know final
             // number of passed columns.
-#ifdef INTEGER_64
-            if(debug) printf("Adjust(%ld)\n", blk);
-#else
-            if(debug) printf("Adjust(%d)\n", blk);
-#endif
+            if(debug) printf("Adjust(%" d_ipc_ ")\n", blk);
             cdata[blk].adjust(next_elim);
 
             // Update uneliminated columns
             for(ipc_ jblk=0; jblk<blk; jblk++) {
                for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
-#ifdef INTEGER_64
-                  if(debug) printf("UpdateT(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-                  if(debug) printf("UpdateT(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+                  if(debug) printf("UpdateT(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
+                                   ")\n", iblk, jblk, blk);
                   ipc_ thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   ipc_ isrc_row = (blk<=iblk) ? iblk : blk;
@@ -1749,11 +1715,8 @@ private:
             }
             for(ipc_ jblk=blk; jblk<nblk; jblk++) {
                for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
-#ifdef INTEGER_64
-                  if(debug) printf("UpdateN(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-                  if(debug) printf("UpdateN(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+                  if(debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
+                                   ")\n", iblk, jblk, blk);
                   ipc_ thread_num = omp_get_thread_num();
                   BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                   BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1776,13 +1739,8 @@ private:
                   T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                                     (iblk-nblk)*block_size];
                   {
-#ifdef INTEGER_64
-                     if(debug) printf("FormContrib(%ld,%ld,%ld)\n", 
-                                      iblk, jblk, blk);
-#else
-                     if(debug) printf("FormContrib(%d,%d,%d)\n",
-                                      iblk, jblk, blk);
-#endif
+                     if(debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
+                                       ",%" d_ipc_ ")\n", iblk, jblk, blk);
                      ipc_ thread_num = omp_get_thread_num();
                      BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda,block_size);
                      BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -1855,11 +1813,7 @@ private:
 #ifdef PROFILE
                Profile::Task task("TA_LDLT_DIAG");
 #endif
-#ifdef INTEGER_64
-               if(debug) printf("Factor(%ld)\n", blk);
-#else
-               if(debug) printf("Factor(%d)\n", blk);
-#endif
+               if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
                BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                // On first access to this block, store copy in case of failure
                if (blk == 0) dblk.backup(backup);
@@ -1923,11 +1877,8 @@ private:
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
-#ifdef INTEGER_64
-                if (debug) printf("ApplyT(%ld,%ld)\n", blk, jblk);
-#else
-                if (debug) printf("ApplyT(%d,%d)\n", blk, jblk);
-#endif
+                if (debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", 
+                                  blk, jblk);
                 ipc_ thread_num = omp_get_thread_num();
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
@@ -1957,11 +1908,8 @@ private:
 #ifdef PROFILE
                 Profile::Task task("TA_LDLT_APPLY");
 #endif
-#ifdef INTEGER_64
-                if (debug) printf("ApplyN(%ld,%ld)\n", iblk, blk);
-#else
-                if (debug) printf("ApplyN(%d,%d)\n", iblk, blk);
-#endif
+                if (debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", 
+                                  iblk, blk);
                 ipc_ thread_num = omp_get_thread_num();
                 BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
                 BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2010,11 +1958,8 @@ private:
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDA");
 #endif
-#ifdef INTEGER_64
-                   if (debug) printf("UpdateN(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-                   if (debug) printf("UpdateN(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+                   if (debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_
+                                     ")\n", iblk, jblk, blk);
                    ipc_ thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2054,11 +1999,8 @@ private:
 #ifdef PROFILE
                    Profile::Task task("TA_LDLT_UPDC");
 #endif
-#ifdef INTEGER_64
-                   if (debug) printf("FormContrib(%ld,%ld,%ld)\n", iblk, jblk,blk);
-#else
-                   if (debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk,blk);
-#endif
+                   if (debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ 
+                                     ",%" d_ipc_ ")\n", iblk, jblk,blk);
                    ipc_ thread_num = omp_get_thread_num();
                    BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                    BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2114,11 +2056,7 @@ private:
 
          // Factor diagonal
          try {
-#ifdef INTEGER_64
-            if(debug) printf("Factor(%ld)\n", blk);
-#else
-            if(debug) printf("Factor(%d)\n", blk);
-#endif
+            if(debug) printf("Factor(%" d_ipc_ ")\n", blk);
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             // On first access to this block, store copy in case of failure
             if(blk==0) dblk.backup(backup);
@@ -2144,11 +2082,7 @@ private:
 
          // Loop over off-diagonal blocks applying pivot
          for(ipc_ jblk=0; jblk<blk; jblk++) {
-#ifdef INTEGER_64
-            if(debug) printf("ApplyT(%ld,%ld)\n", blk, jblk);
-#else
-            if(debug) printf("ApplyT(%d,%d)\n", blk, jblk);
-#endif
+            if(debug) printf("ApplyT(%" d_ipc_ ",%" d_ipc_ ")\n", blk, jblk);
             ipc_ thread_num = omp_get_thread_num();
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             BlockSpec cblk(blk, jblk, m, n, cdata, a, lda, block_size);
@@ -2160,11 +2094,7 @@ private:
             // assuming everything has passed...
          }
          for(ipc_ iblk=blk+1; iblk<mblk; iblk++) {
-#ifdef INTEGER_64
-            if(debug) printf("ApplyN(%ld,%ld)\n", iblk, blk);
-#else
-            if(debug) printf("ApplyN(%d,%d)\n", iblk, blk);
-#endif
+            if(debug) printf("ApplyN(%" d_ipc_ ",%" d_ipc_ ")\n", iblk, blk);
             ipc_ thread_num = omp_get_thread_num();
             BlockSpec dblk(blk, blk, m, n, cdata, a, lda, block_size);
             BlockSpec rblk(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2187,11 +2117,8 @@ private:
          ipc_ jsa = (upd) ? blk : blk + 1;
          for(ipc_ jblk=jsa; jblk<nblk; jblk++) {
             for(ipc_ iblk=jblk; iblk<mblk; iblk++) {
-#ifdef INTEGER_64
-               if(debug) printf("UpdateN(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-               if(debug) printf("UpdateN(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+               if(debug) printf("UpdateN(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
+                                ")\n", iblk, jblk, blk);
                ipc_ thread_num = omp_get_thread_num();
                BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2213,11 +2140,8 @@ private:
             for(ipc_ iblk=jblk; iblk<mblk; ++iblk) {
             T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                               (iblk-nblk)*block_size];
-#ifdef INTEGER_64
-               if(debug) printf("FormContrib(%ld,%ld,%ld)\n", iblk, jblk, blk);
-#else
-               if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
-#endif
+               if(debug) printf("FormContrib(%" d_ipc_ ",%" d_ipc_ ",%" d_ipc_ 
+                                ")\n", iblk, jblk, blk);
                ipc_ thread_num = omp_get_thread_num();
                BlockSpec ublk(iblk, jblk, m, n, cdata, a, lda, block_size);
                BlockSpec isrc(iblk, blk, m, n, cdata, a, lda, block_size);
@@ -2374,17 +2298,9 @@ private:
                   std::vector<bool> const& eliminated, const T *a, ipc_ lda) {
       for(ipc_ row=0; row<m; row++) {
          if(row < n)
-#ifdef INTEGER_64
-            printf("%ld%s:", perm[row], eliminated[row]?"X":" ");
-#else
-            printf("%d%s:", perm[row], eliminated[row]?"X":" ");
-#endif
+            printf("%" d_ipc_ "%s:", perm[row], eliminated[row]?"X":" ");
          else
-#ifdef INTEGER_64
-            printf("%ld%s:", row, "U");
-#else
-            printf("%d%s:", row, "U");
-#endif
+            printf("%" d_ipc_ "%s:", row, "U");
          for(ipc_ col=0; col<std::min(n,row+1); col++)
             printf(" %10.4f", a[col*lda+row]);
          printf("\n");

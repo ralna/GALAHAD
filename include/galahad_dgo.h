@@ -1,7 +1,7 @@
 //* \file galahad_dgo.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-13 AT 16:15 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 12:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -757,12 +757,13 @@ void dgo_solve_without_mat( void **data,
                             ipc_ (*eval_f)(
                               ipc_, const real_wp_[], real_wp_*, const void * ),
                             ipc_ (*eval_g)(
-                              ipc_, const real_wp_[], real_wp_[], const void * ),
+                              ipc_, const real_wp_[], real_wp_[], 
+                              const void * ),
                             ipc_ (*eval_hprod)(
                               ipc_, const real_wp_[], real_wp_[],
                               const real_wp_[], bool, const void * ),
                             ipc_ (*eval_shprod)(ipc_, const real_wp_[], ipc_,
-                              const int[], const real_wp_[], int*, int[],
+                              const ipc_[], const real_wp_[], ipc_*, ipc_[],
                               real_wp_[], bool, const void * ),
                             ipc_ (*eval_prec)(
                               ipc_, const real_wp_[], real_wp_[],

@@ -17,23 +17,23 @@ ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
 ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
 ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void * );
 ipc_ hess_dense( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
-                const void * );
+                 const void * );
 ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
-              bool got_h, const void * );
+               bool got_h, const void * );
 ipc_ shessprod( ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
-               const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[], real_wp_ u[],
-              bool got_h, const void * );
+                const real_wp_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], 
+                real_wp_ u[], bool got_h, const void * );
 ipc_ prec( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
           const void * );
 ipc_ fun_diag( ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
 ipc_ grad_diag( ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
 ipc_ hess_diag( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
-               const void * );
-ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
-                   bool got_h, const void * );
+                const void * );
+ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], 
+                    const real_wp_ v[], bool got_h, const void * );
 ipc_ shessprod_diag( ipc_ n, const real_wp_ x[], ipc_ nnz_v,
                     const ipc_ index_nz_v[],
-                    const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[],
+                    const real_wp_ v[], ipc_ *nnz_u, ipc_ index_nz_u[],
                     real_wp_ u[], bool got_h, const void * );
 
 int main(void) {
@@ -58,7 +58,7 @@ int main(void) {
 
     // Set storage
     real_wp_ g[n]; // gradient
-    char st;
+    char st = ' ';
     ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -371,7 +371,7 @@ ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
 
 // Sparse Hessian-vector product
 ipc_ shessprod( ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
-               const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[], real_wp_ u[],
+               const real_wp_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], real_wp_ u[],
                bool got_h, const void *userdata ){
     real_wp_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
@@ -461,7 +461,7 @@ ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[]
 // Sparse Hessian-vector product
 ipc_ shessprod_diag( ipc_ n, const real_wp_ x[], ipc_ nnz_v,
                     const ipc_ index_nz_v[],
-                    const real_wp_ v[], int *nnz_u, ipc_ index_nz_u[],
+                    const real_wp_ v[], ipc_ *nnz_u, ipc_ index_nz_u[],
                     real_wp_ u[], bool got_h, const void *userdata ){
     real_wp_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};

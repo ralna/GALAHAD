@@ -16,7 +16,7 @@ ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
 ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
 ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void * );
 ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
-              bool got_h, const void * );
+               bool got_h, const void * );
 
 int main(void) {
 

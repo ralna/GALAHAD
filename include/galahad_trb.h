@@ -1,7 +1,7 @@
 /** \file galahad_trb.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 19/08/2021 AT 10:45 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 12:00 GMT.
  *
  *-*-*-*-*-*-*-  G A L A H A D _ T R B  C  I N T E R F A C E  -*-*-*-*-*-*-*-
  *
@@ -952,13 +952,14 @@ void trb_solve_without_mat( void **data,
                             ipc_ (*eval_f)(
                               ipc_, const real_wp_[], real_wp_*, const void * ),
                             ipc_ (*eval_g)(
-                              ipc_, const real_wp_[], real_wp_[], const void * ),
+                              ipc_, const real_wp_[], real_wp_[], 
+                              const void * ),
                             ipc_ (*eval_hprod)(
                               ipc_, const real_wp_[], real_wp_[],
                               const real_wp_[], bool, const void * ),
                             ipc_ (*eval_shprod)(
-                              ipc_, const real_wp_[], ipc_, const int[],
-                              const real_wp_[], int*, int[],
+                              ipc_, const real_wp_[], ipc_, const ipc_[],
+                              const real_wp_[], ipc_*, ipc_[],
                               real_wp_[], bool, const void * ),
                             ipc_ (*eval_prec)(
                               ipc_, const real_wp_[], real_wp_[],
