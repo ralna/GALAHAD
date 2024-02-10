@@ -41,7 +41,6 @@ jobs:
             compiler: intel
             version: '2023.2'
             julia: true
-            int64: false
             allow_failure: true
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
