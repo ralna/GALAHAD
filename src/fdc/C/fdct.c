@@ -50,8 +50,8 @@ int main(void) {
                status);
       }else{
         printf("FDC_find_dependent - dependent rows(s):" );
-        for( ipc_ i = 0; i < n_depen; i++) printf(" %i", depen[i]);
-        printf(", status = %i\n", status);
+        for( ipc_ i = 0; i < n_depen; i++) printf(" %" i_ipc_ "", depen[i]);
+        printf(", status = %" i_ipc_ "\n", status);
       }
     }else{
         printf("FDC_find_dependent - exit status = %1" i_ipc_ "\n", status);

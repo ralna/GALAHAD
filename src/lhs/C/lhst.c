@@ -31,14 +31,14 @@ int main(void) {
     if(inform.status == 0){ // successful return
         printf("LHS successful\n");
         for(ipc_ j = 0; j < n_points; j++){
-            printf("Point %d = ", j);
+            printf("Point %" d_ipc_ " = ", j);
             for(ipc_ i = 0; i < n_dimen; i++){
-                printf("%d ", X[i][j]);
+                printf("%" d_ipc_ " ", X[i][j]);
             }
             printf("\n");
         }
     }else{ // error returns
-        printf("LHS exit status = %d \n", inform.status);
+        printf("LHS exit status = %" d_ipc_ " \n", inform.status);
     }
 
     // Delete internal workspace

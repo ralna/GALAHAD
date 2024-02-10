@@ -485,7 +485,7 @@ int main(void) {
                    " status = %1" i_ipc_ "\n",
                    model, inform.iter, inform.obj, inform.status);
         }else{
-            printf(" %i: NLS_solve exit status = %1" i_ipc_ "\n", model, inform.status);
+            printf(" %" i_ipc_ ": NLS_solve exit status = %1" i_ipc_ "\n", model, inform.status);
         }
         // Delete internal workspace
         nls_terminate( &data, &control, &inform );
@@ -544,7 +544,7 @@ int main(void) {
                    " status = %1" i_ipc_ "\n",
                    model, inform.iter, inform.obj, inform.status);
         }else{
-            printf("P%i: NLS_solve exit status = %1" i_ipc_ "\n", model, inform.status);
+            printf("P%" i_ipc_ ": NLS_solve exit status = %1" i_ipc_ "\n", model, inform.status);
         }
         // Delete internal workspace
         nls_terminate( &data, &control, &inform );

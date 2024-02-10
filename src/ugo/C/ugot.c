@@ -87,7 +87,7 @@ int main(void) {
         printf("%" i_ipc_ "evaluations. Optimal objective value = %5.2f"
           " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
     }else{
-        printf("BGO_solve exit status = %1" i_ipc_ "\n", inform.status);
+        printf("UGO_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
 
     // Delete internal workspace

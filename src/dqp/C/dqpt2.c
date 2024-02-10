@@ -63,46 +63,46 @@ int main(void) {
                   A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                   x_stat, c_stat );
     dqp_information( &data, &inform, &status );
-    printf("status %i\n", inform.status);
-    printf("alloc_status %i\n", inform.alloc_status);
+    printf("status %" i_ipc_ "\n", inform.status);
+    printf("alloc_status %" i_ipc_ "\n", inform.alloc_status);
     printf("bad_alloc %s\n", inform.bad_alloc);
-    printf("fdc status %i\n", inform.fdc_inform.status);
+    printf("fdc status %" i_ipc_ "\n", inform.fdc_inform.status);
     printf("fdc pivot %f\n", inform.fdc_inform.non_negligible_pivot);
-    printf("fdc sls status %i\n", inform.fdc_inform.sls_inform.status);
-    printf("fdc sls nodes %i\n", inform.fdc_inform.sls_inform.nodes_assembly_tree);
+    printf("fdc sls status %" i_ipc_ "\n", inform.fdc_inform.sls_inform.status);
+    printf("fdc sls nodes %" i_ipc_ "\n", inform.fdc_inform.sls_inform.nodes_assembly_tree);
     printf("fdc sls flops %li\n", inform.fdc_inform.sls_inform.flops_blas);
     printf("fdc sls alt %" d_ipc_ "\n", inform.fdc_inform.sls_inform.alternative);
 
-    printf("fdc sls ma97 %i\n", inform.fdc_inform.sls_inform.ma97_info.flag);
+    printf("fdc sls ma97 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.ma97_info.flag);
 
-//    printf("fdc sls ssids %i\n", inform.fdc_inform.sls_inform.ssids_inform.flag);
-      printf("fdc sls mc61(0) %i\n", inform.fdc_inform.sls_inform.mc61_info[0]);
-      printf("fdc sls mc61(1) %i\n", inform.fdc_inform.sls_inform.mc61_info[1]);
-      printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.flag);
-//    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.more);
-//    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.strucrank);
-//    printf("fdc sls mc64 %i\n", inform.fdc_inform.sls_inform.mc64_info.stat);
-      printf("fdc sls mc68 %i\n", inform.fdc_inform.sls_inform.mc68_info.flag);
+//    printf("fdc sls ssids %" i_ipc_ "\n", inform.fdc_inform.sls_inform.ssids_inform.flag);
+      printf("fdc sls mc61(0) %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc61_info[0]);
+      printf("fdc sls mc61(1) %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc61_info[1]);
+      printf("fdc sls mc64 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc64_info.flag);
+//    printf("fdc sls mc64 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc64_info.more);
+//    printf("fdc sls mc64 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc64_info.strucrank);
+//    printf("fdc sls mc64 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc64_info.stat);
+      printf("fdc sls mc68 %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mc68_info.flag);
 
-    printf("fdc sls mumps %i\n", inform.fdc_inform.sls_inform.mumps_error);
-//    printf("fdc sls pard %i\n", inform.fdc_inform.sls_inform.pardiso_error);
-    printf("fdc sls wsmp %i\n", inform.fdc_inform.sls_inform.wsmp_error);
-    printf("fdc sls pastix %i\n", inform.fdc_inform.sls_inform.pastix_info);
-    printf("fdc sls mpi %i\n", inform.fdc_inform.sls_inform.mpi_ierr);
-    printf("fdc sls lapack %i\n", inform.fdc_inform.sls_inform.lapack_error);
-
-
-
-
-
-    printf("fdc uls status %i\n", inform.fdc_inform.uls_inform.status);
+    printf("fdc sls mumps %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mumps_error);
+//    printf("fdc sls pard %" i_ipc_ "\n", inform.fdc_inform.sls_inform.pardiso_error);
+    printf("fdc sls wsmp %" i_ipc_ "\n", inform.fdc_inform.sls_inform.wsmp_error);
+    printf("fdc sls pastix %" i_ipc_ "\n", inform.fdc_inform.sls_inform.pastix_info);
+    printf("fdc sls mpi %" i_ipc_ "\n", inform.fdc_inform.sls_inform.mpi_ierr);
+    printf("fdc sls lapack %" i_ipc_ "\n", inform.fdc_inform.sls_inform.lapack_error);
 
 
 
 
-    printf("sls status %i\n", inform.sls_inform.status);
-    printf("sbls status %i\n", inform.sbls_inform.status);
-    printf("sbls alloc_status %i\n", inform.sbls_inform.alloc_status);
+
+    printf("fdc uls status %" i_ipc_ "\n", inform.fdc_inform.uls_inform.status);
+
+
+
+
+    printf("sls status %" i_ipc_ "\n", inform.sls_inform.status);
+    printf("sbls status %" i_ipc_ "\n", inform.sbls_inform.status);
+    printf("sbls alloc_status %" i_ipc_ "\n", inform.sbls_inform.alloc_status);
     printf("sbls bad_alloc %s\n", inform.sbls_inform.bad_alloc);
 
     if(inform.status == 0){
