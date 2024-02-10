@@ -30,7 +30,7 @@ int main(void) {
     // make sure the buffer is large enough to hold the environment variable
     // value, and if so, copy it into qplib_file
     if( snprintf( qplib_file, BUFSIZE, "%s", getenv(galahad) ) >= BUFSIZE){
-      fprintf (stderr, " BUFSIZE of %" d_ipc_ " was too small. Aborting\n", BUFSIZE );
+      fprintf (stderr, " BUFSIZE of %d was too small. Aborting\n", BUFSIZE );
       exit( 1 );
     }
     // extend the qplib_file string to include the actual position of the

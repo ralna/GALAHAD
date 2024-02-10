@@ -27,7 +27,7 @@ int main(void) {
     lhs_get_seed(&seed);
 
     // Generate points
-    lhs_ihs(n_dimen, n_points, &seed, (int**)X, &control, &inform, &data);
+    lhs_ihs(n_dimen, n_points, &seed, (ipc_**)X, &control, &inform, &data);
     if(inform.status == 0){ // successful return
         printf("LHS successful\n");
         for(ipc_ j = 0; j < n_points; j++){
