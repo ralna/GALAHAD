@@ -1,7 +1,7 @@
 //* \file galahad_cro.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-02-01 AT 09:00 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CRO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -274,11 +274,11 @@ struct cro_control_type {
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
-    real_wp_ infinity;
+    rpc_ infinity;
 
     /// \brief
     /// feasibility tolerance for KKT violation
-    real_wp_ feasibility_tolerance;
+    rpc_ feasibility_tolerance;
 
     /// \brief
     /// if .check_io is true, the input (x,y,z) will be fully tested for
@@ -354,19 +354,19 @@ struct cro_time_type {
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the clock time spent analysing the required matrices prior to factorizat
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// the clock time spent factorizing the required matrices
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// the clock time spent computing corrections
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -432,7 +432,7 @@ void cro_initialize( void **data,
   @param[out] control is a struct containing control information
               (see cro_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -463,22 +463,22 @@ void cro_crossover_solution( void **data,
                              ipc_ m,
                              ipc_ m_equal,
                              ipc_ h_ne,
-                             const real_wp_ H_val[],
+                             const rpc_ H_val[],
                              const ipc_ H_col[],
                              const ipc_ H_ptr[],
                              ipc_ a_ne,
-                             const real_wp_ A_val[],
+                             const rpc_ A_val[],
                              const ipc_ A_col[],
                              const ipc_ A_ptr[],
-                             const real_wp_ g[],
-                             const real_wp_ c_l[],
-                             const real_wp_ c_u[],
-                             const real_wp_ x_l[],
-                             const real_wp_ x_u[],
-                             real_wp_ x[],
-                             real_wp_ c[],
-                             real_wp_ y[],
-                             real_wp_ z[],
+                             const rpc_ g[],
+                             const rpc_ c_l[],
+                             const rpc_ c_u[],
+                             const rpc_ x_l[],
+                             const rpc_ x_u[],
+                             rpc_ x[],
+                             rpc_ c[],
+                             rpc_ y[],
+                             rpc_ z[],
                              ipc_ x_stat[],
                              ipc_ c_stat[] );
 
@@ -515,88 +515,88 @@ void cro_crossover_solution( void **data,
   \li -14 an error has occured in ULS_solve.
   \li -16 the residuals are large; the factorization may be unsatisfactory.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
    variables.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
    general linear constraints.
 
- @param[in] m_equal is a scalar variable of type int, that holds the number of
+ @param[in] m_equal is a scalar variable of type ipc_, that holds the number of
    general linear equality constraints. Such constraints must occur first in
    \f$A\f$.
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of
+ @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
    entries in the <b>lower triangular</b> part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of type double,
+ @param[in] H_val is a one-dimensional array of type rpc_,
    that holds the values of the entries of the lower triangular part
    of the Hessian matrix \f$H\f$. The entries are stored by consecutive rows,
    the order within each row is unimportant.
 
- @param[in]  H_col is a one-dimensional array of type int,
+ @param[in]  H_col is a one-dimensional array of type ipc_,
    that holds the column indices of the lower triangular part of \f$H\f$,
    in the same order as those in H_val.
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$H\f$. The n+1-st component holds the total number of
    entries (plus one if fortran indexing is used).
 
- @param[in] a_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type ipc_, that holds the number of
    entries in the constraint Jacobian matrix \f$A\f$.
 
- @param[in] A_val is a one-dimensional array of type double,
+ @param[in] A_val is a one-dimensional array of type rpc_,
    that holds the values of the entries of the constraint Jacobian matrix
    \f$A\f$. The entries are stored by consecutive rows,
    the order within each row is unimportant. <b>Equality constraints must be
    ordered first.</b>
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in the same order as those in A_val.
 
- @param[in]  A_ptr is a one-dimensional array of size m+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size m+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$. The
    m+1-st component holds the total number of  entries (plus one if fortran
    indexing is used).
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] c_l is a one-dimensional array of size m and type double, that
+ @param[in] c_l is a one-dimensional array of size m and type rpc_, that
     holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
 
- @param[in] c_u is a one-dimensional array of size m and type double, that
+ @param[in] c_u is a one-dimensional array of size m and type rpc_, that
     holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
 
- @param[in] x_l is a one-dimensional array of size n and type double, that
+ @param[in] x_l is a one-dimensional array of size n and type rpc_, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in] x_u is a one-dimensional array of size n and type double, that
+ @param[in] x_u is a one-dimensional array of size n and type rpc_, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] c is a one-dimensional array of size m and type double, that
+ @param[in,out] c is a one-dimensional array of size m and type rpc_, that
     holds the residual \f$c(x) = A x\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[in,out] y is a one-dimensional array of size n and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the general
     linear constraints. The j-th component
     of y, j = 0, ... , n-1, contains \f$y_j\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type double, that
+ @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that
+ @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
     must be set on entry to give the status of the problem variables.
     If x_stat(j) is negative, the variable \f$x_j\f$ is active on its lower
     bound, if it is  positive, it is active and lies on its upper bound, and
@@ -606,7 +606,7 @@ void cro_crossover_solution( void **data,
     is basic and active on its upper bound, 2 it is non-basic but active on its
     upper bound, and 0 if it is inactive.
 
- @param[in,out] c_stat is a one-dimensional array of size m and type int, that
+ @param[in,out] c_stat is a one-dimensional array of size m and type ipc_, that
     must be set on entry to give the status of the general linear constraints.
     If c_stat(i) is negative, the constraint value \f$a_i^Tx\f$ is active on its
     lower  bound, if it is positive, it is active and lies on its upper bound,

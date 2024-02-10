@@ -25,7 +25,7 @@ int main(void) {
     ipc_ A_row[A_ne];
     ipc_ A_col[A_ne];
     ipc_ A_ptr[m+1];
-    real_wp_ A_val[A_ne];
+    rpc_ A_val[A_ne];
 
     // store A in sparse formats
     l=0;
@@ -48,7 +48,7 @@ int main(void) {
 
     // store A in dense format
     ipc_ A_dense_ne = m * n;
-    real_wp_ A_dense_val[A_dense_ne];
+    rpc_ A_dense_val[A_dense_ne];
     for( i=0; i < A_dense_ne; i++) A_dense_val[i] = 0.0;
     l=-1;
     for( i=1; i <= m; i++){
@@ -63,7 +63,7 @@ int main(void) {
     ipc_ S_row[S_ne];
     ipc_ S_col[S_ne];
     ipc_ S_ptr[n+1];
-    real_wp_ S_val[S_ne];
+    rpc_ S_val[S_ne];
 
     // store S in sparse formats
     for( i=0; i < n; i++){
@@ -76,7 +76,7 @@ int main(void) {
 
     // store S in dense format
     ipc_ S_dense_ne = n*(n+1)/2;
-    real_wp_ S_dense_val[S_dense_ne];
+    rpc_ S_dense_val[S_dense_ne];
     for( i=0; i < S_dense_ne; i++) S_dense_val[i] = 0.0;
     l=-1;
     for( i=1; i <= n; i++){
@@ -85,18 +85,18 @@ int main(void) {
     }
 
    // b is a vector of ones
-    real_wp_ b[m]; // observations
+    rpc_ b[m]; // observations
     for( i=0; i < m; i++){
       b[i] = 1.0;
     }
 
    // cubic regularization, weight is one
-    real_wp_ power = 3.0;
-    real_wp_ weight = 1.0;
+    rpc_ power = 3.0;
+    rpc_ weight = 1.0;
 
     // Set output storage
-    real_wp_ x[n]; // solution
-    char st;
+    rpc_ x[n]; // solution
+    char st = ' ';
     ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -184,10 +184,10 @@ int main(void) {
            llsr_information( &data, &inform, &status );
 
            if(inform.status == 0){
-               printf("storage type %c%1i:  status = %1i, ||r|| = %5.2f\n",
+               printf("storage type %c%1" i_ipc_ ":  status = %1" i_ipc_ ", ||r|| = %5.2f\n",
                       st, use_s, inform.status, inform.r_norm );
            }else{
-               printf("storage type %c%1i: LLSR_solve exit status = %1i\n",
+               printf("storage type %c%1" i_ipc_ ": LLSR_solve exit status = %1" i_ipc_ "\n",
                       st, use_s, inform.status);
            }
         }

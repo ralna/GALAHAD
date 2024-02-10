@@ -1,7 +1,7 @@
 //* \file galahad_rpd.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-05-05 AT 09:40 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_RPD C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -314,7 +314,7 @@ void rpd_initialize( void **data,
   @param[out] control is a struct containing control information
               (see rpd_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -341,7 +341,7 @@ void rpd_get_stats( char qplib_file[],
  @param[in] qplib_file is a one-dimensional array of type char that
   specifies the name of the QPLIB file that is to be read.
 
- @param[in] qplib_file_len is a scalar variable of type int, that gives
+ @param[in] qplib_file_len is a scalar variable of type ipc_, that gives
     the number of characters in the name encoded in qplib_file.
 
  @param[in] control is a struct whose members provide control
@@ -349,7 +349,7 @@ void rpd_get_stats( char qplib_file[],
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -1. An allocation error occurred. A message indicating the
@@ -412,20 +412,20 @@ The third character indicates the type of the (most extreme)
      For integer problems, the second character would be I rather than C,
      and for mixed integer problems, the second character would by M or G.
 
- @param[out] n is a scalar variable of type int, that holds the number of
+ @param[out] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[out] m is a scalar variable of type int, that holds the number of
+ @param[out] m is a scalar variable of type ipc_, that holds the number of
     general constraints.
 
- @param[out]  h_ne is a scalar variable of type int, that holds the number of
+ @param[out]  h_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$H\f$ stored in the sparse
    symmetric co-ordinate storage scheme.
 
- @param[out]  a_ne is a scalar variable of type int, that holds the number of
+ @param[out]  a_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$ stored in the sparse co-ordinate storage scheme.
 
- @param[out]  h_c_ne is a scalar variable of type int, that holds the number of
+ @param[out]  h_c_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$H_c\f$ stored in the joint
    sparse co-ordinate storage scheme.
 */
@@ -435,7 +435,7 @@ The third character indicates the type of the (most extreme)
 void rpd_get_g( void **data,
                 ipc_ *status,
                 ipc_ n,
-                real_wp_ g[]
+                rpc_ g[]
                 );
 
 /*!<
@@ -443,15 +443,15 @@ void rpd_get_g( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[out] g is a one-dimensional array of size n and type double, that
+ @param[out] g is a one-dimensional array of size n and type rpc_, that
     gives the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
@@ -461,7 +461,7 @@ void rpd_get_g( void **data,
 
 void rpd_get_f( void **data,
                 ipc_ *status,
-                real_wp_ *f
+                rpc_ *f
                 );
 
 /*!<
@@ -469,12 +469,12 @@ void rpd_get_f( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[out] f is a scalar of type double, that
+ @param[out] f is a scalar of type rpc_, that
     gives the constant term \f$f\f$ from the objective function.
 
 */
@@ -484,27 +484,27 @@ void rpd_get_f( void **data,
 void rpd_get_xlu( void **data,
                   ipc_ *status,
                   ipc_ n,
-                  real_wp_ x_l[],
-                  real_wp_ x_u[] );
+                  rpc_ x_l[],
+                  rpc_ x_u[] );
 
 /*!<
  Recover the variable lower and upper bounds \f$x_l\f$ and \f$x_u\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-  @param[out] x_l is a one-dimensional array of size n and type double, that
+  @param[out] x_l is a one-dimensional array of size n and type rpc_, that
     gives the lower bounds \f$x_l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$(x_l)_j\f$.
 
-  @param[out] x_u is a one-dimensional array of size n and type double, that
+  @param[out] x_u is a one-dimensional array of size n and type rpc_, that
     gives the upper bounds \f$x_u\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$(x_u)_j\f$.
 
@@ -515,27 +515,27 @@ void rpd_get_xlu( void **data,
 void rpd_get_clu( void **data,
                   ipc_ *status,
                   ipc_ m,
-                  real_wp_ c_l[],
-                  real_wp_ c_u[] );
+                  rpc_ c_l[],
+                  rpc_ c_u[] );
 
 /*!<
  Recover the constraint lower and upper bounds \f$c_l\f$ and \f$c_u\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general constraints.
 
- @param[out] c_l is a one-dimensional array of size m and type double,
+ @param[out] c_l is a one-dimensional array of size m and type rpc_,
     that gives the lower bounds \f$c_l\f$ on the constraints \f$A x\f$.
     The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$(c_l)_i\f$.
 
- @param[out] c_u is a one-dimensional array of size m and type double,
+ @param[out] c_u is a one-dimensional array of size m and type rpc_,
     that gives the upper bounds \f$c_u\f$ on the constraints \f$A x\f$.
     The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$(c_u)_i\f$.
 
@@ -548,7 +548,7 @@ void rpd_get_h( void **data,
                 ipc_ h_ne,
                 ipc_ h_row[],
                 ipc_ h_col[],
-                real_wp_ h_val[]
+                rpc_ h_val[]
                 );
 
 /*!<
@@ -556,23 +556,23 @@ void rpd_get_h( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
-  @param[in] h_ne is a scalar variable of type int, that holds the number of
+  @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[out] h_row is a one-dimensional array of size h_ne and type int, that
+ @param[out] h_row is a one-dimensional array of size h_ne and type ipc_, that
    gives the row indices of the lower triangular part of \f$H\f$ in the
    \ref symmetric_matrix_coordinate "sparse co-ordinate storage scheme".
 
- @param[out] h_col is a one-dimensional array of size h_ne and type int,
+ @param[out] h_col is a one-dimensional array of size h_ne and type ipc_,
    that gives the column indices of the lower triangular part of \f$H\f$ in
    the sparse co-ordinate storage scheme.
 
-  @param[out] h_val is a one-dimensional array of size h_ne and type double,
+  @param[out] h_val is a one-dimensional array of size h_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in the sparse co-ordinate storage scheme.
 
@@ -585,7 +585,7 @@ void rpd_get_a( void **data,
                 ipc_ a_ne,
                 ipc_ a_row[],
                 ipc_ a_col[],
-                real_wp_ a_val[]
+                rpc_ a_val[]
                 );
 
 /*!<
@@ -593,23 +593,23 @@ void rpd_get_a( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] a_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type ipc_, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
- @param[out] a_row is a one-dimensional array of size a_ne and type int, that
+ @param[out] a_row is a one-dimensional array of size a_ne and type ipc_, that
    gives the row indices of \f$A\f$ in the
   \ref unsymmetric_matrix_coordinate "sparse co-ordinate storage scheme".
 
- @param[out] a_col is a one-dimensional array of size a_ne and type int,
+ @param[out] a_col is a one-dimensional array of size a_ne and type ipc_,
    that gives the column indices of \f$A\f$ in the sparse co-ordinate,
    storage scheme.
 
- @param[out] a_val is a one-dimensional array of size a_ne and type double,
+ @param[out] a_val is a one-dimensional array of size a_ne and type rpc_,
     that gives the values of the entries of the constraint Jacobian matrix
     \f$A\f$ in the sparse co-ordinate scheme.
 
@@ -623,7 +623,7 @@ void rpd_get_h_c( void **data,
                   ipc_ h_c_ptr[],
                   ipc_ h_c_row[],
                   ipc_ h_c_col[],
-                  real_wp_ h_c_val[]
+                  rpc_ h_c_val[]
                   );
 
 /*!<
@@ -631,28 +631,28 @@ void rpd_get_h_c( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
-  @param[in] h_c_ne is a scalar variable of type int, that holds the number of
+  @param[in] h_c_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[out] h_c_ptr is a one-dimensional array of size h_c_ne and type int,
+ @param[out] h_c_ptr is a one-dimensional array of size h_c_ne and type ipc_,
    that gives the constraint indices of the lower triangular part of
    \f$H_c\f$ in the
   \ref joint_symmetric_matrix_coordinate "joint sparse co-ordinate storage scheme".
 
- @param[out] h_c_row is a one-dimensional array of size h_c_ne and type int,
+ @param[out] h_c_row is a one-dimensional array of size h_c_ne and type ipc_,
   that gives the row indices of the lower triangular part of \f$H_c\f$ in the
   joint sparse co-ordinate storage scheme.
 
- @param[out] h_c_col is a one-dimensional array of size h_c_ne and type int,
+ @param[out] h_c_col is a one-dimensional array of size h_c_ne and type ipc_,
    that gives the column indices of the lower triangular part of \f$H_c\f$ in
    the sparse co-ordinate storage scheme.
 
-  @param[out] h_c_val is a one-dimensional array of size h_c_ne and type double,
+  @param[out] h_c_val is a one-dimensional array of size h_c_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H_c\f$ in the sparse co-ordinate storage scheme.
 */
@@ -669,15 +669,15 @@ void rpd_get_x_type( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-  @param[out] x_type is a one-dimensional array of size n and type int, that
+  @param[out] x_type is a one-dimensional array of size n and type ipc_, that
     specifies the type of each variable \f$x\f$. Specifically,
     for j = 0, ... , n-1, x(j) =
     \li 0 variable \f$x_j\f$ is continuous,
@@ -690,7 +690,7 @@ void rpd_get_x_type( void **data,
 void rpd_get_x( void **data,
                 ipc_ *status,
                 ipc_ n,
-                real_wp_ x[]
+                rpc_ x[]
                 );
 
 /*!<
@@ -698,15 +698,15 @@ void rpd_get_x( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-  @param[out] x is a one-dimensional array of size n and type double, that
+  @param[out] x is a one-dimensional array of size n and type rpc_, that
     gives the initial values \f$x\f$ of the optimization variables. The
     j-th component of x, j = 0, ... , n-1, contains \f$x_j\f$.
 */
@@ -716,22 +716,22 @@ void rpd_get_x( void **data,
 void rpd_get_y( void **data,
                 ipc_ *status,
                 ipc_ m,
-                real_wp_ y[] );
+                rpc_ y[] );
 
 /*!<
  Recover the initial values of the Lagrange multipliers \f$y\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general constraints.
 
- @param[out] y is a one-dimensional array of size n and type double, that
+ @param[out] y is a one-dimensional array of size n and type rpc_, that
     gives the initial values \f$y\f$ of the Lagrange multipliers for the
     general constraints. The j-th component of y, j = 0, ... , n-1,
     contains \f$y_j\f$.
@@ -743,22 +743,22 @@ void rpd_get_y( void **data,
 void rpd_get_z( void **data,
                 ipc_ *status,
                 ipc_ n,
-                real_wp_ z[] );
+                rpc_ z[] );
 
 /*!<
  Recover the initial values of the dual variables \f$z\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The statistics have been recovered succesfully.
   \li -93. The QPLIB file did not contain the required data.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[out] z is a one-dimensional array of size n and type double, that
+ @param[out] z is a one-dimensional array of size n and type rpc_, that
     gives the initial values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
@@ -778,7 +778,7 @@ void rpd_information( void **data,
   @param[out] inform is a struct containing output information
               (see rpd_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

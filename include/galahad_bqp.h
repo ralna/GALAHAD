@@ -1,7 +1,7 @@
 //* \file galahad_bqp.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-02-21 AT 12:40 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -281,42 +281,42 @@ struct bqp_control_type {
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
-    real_wp_ infinity;
+    rpc_ infinity;
 
     /// \brief
     /// the required accuracy for the primal infeasibility
-    real_wp_ stop_p;
+    rpc_ stop_p;
 
     /// \brief
     /// the required accuracy for the dual infeasibility
-    real_wp_ stop_d;
+    rpc_ stop_d;
 
     /// \brief
     /// the required accuracy for the complementary slackness
-    real_wp_ stop_c;
+    rpc_ stop_c;
 
     /// \brief
     /// any pair of constraint bounds (x_l,x_u) that are closer than i
     /// dentical_bounds_tol will be reset to the average of their values
     ///
-    real_wp_ identical_bounds_tol;
+    rpc_ identical_bounds_tol;
 
     /// \brief
     /// the CG iteration will be stopped as soon as the current norm of the
     /// preconditioned gradient is smaller than
     /// max( stop_cg_relative * initial preconditioned gradient,
     /// stop_cg_absolute)
-    real_wp_ stop_cg_relative;
+    rpc_ stop_cg_relative;
     /// see stop_cg_relative
-    real_wp_ stop_cg_absolute;
+    rpc_ stop_cg_absolute;
 
     /// \brief
     /// threshold below which curvature is regarded as zero
-    real_wp_ zero_curvature;
+    rpc_ zero_curvature;
 
     /// \brief
     /// the maximum CPU time allowed (-ve = no limit)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// exact_arcsearch is true if an exact arcsearch is required, and false if
@@ -409,11 +409,11 @@ struct bqp_inform_type {
 
     /// \brief
     /// current value of the objective function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// current value of the projected gradient
-    real_wp_ norm_pg;
+    rpc_ norm_pg;
 
     /// \brief
     /// name of array which provoked an allocate failure
@@ -442,7 +442,7 @@ void bqp_initialize( void **data,
   @param[out] control is a struct containing control information
               (see bqp_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -487,7 +487,7 @@ void bqp_import( struct bqp_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -504,7 +504,7 @@ void bqp_import( struct bqp_control_type *control,
        its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
        'diagonal' has been violated.
 
-@param[in] n is a scalar variable of type int, that holds the number of
+@param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
@@ -513,22 +513,22 @@ void bqp_import( struct bqp_control_type *control,
   'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
   via matrix-vector products; lower or upper case variants are allowed.
 
- @param[in]  ne is a scalar variable of type int, that holds the number of
+ @param[in]  ne is a scalar variable of type ipc_, that holds the number of
    entries in the  lower triangular part of H in the sparse co-ordinate
    storage scheme. It need not be set for any of the other three schemes.
 
- @param[in]  H_row is a one-dimensional array of size ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the lower triangular part of H in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL
 
- @param[in]  H_col is a one-dimensional array of size ne and type int,
+ @param[in]  H_col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the  lower triangular part of H in either
    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
    be set when the dense or diagonal storage schemes are used, and in this
    case can be NULL
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of H, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -551,7 +551,7 @@ void bqp_import_without_h( struct bqp_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -566,7 +566,7 @@ void bqp_import_without_h( struct bqp_control_type *control,
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 has been violated.
 
-@param[in] n is a scalar variable of type int, that holds the number of
+@param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
 */
@@ -585,7 +585,7 @@ void bqp_reset_control( struct bqp_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -596,13 +596,13 @@ void bqp_solve_given_h( void **data,
                         ipc_ *status,
                         ipc_ n,
                         ipc_ h_ne,
-                        const real_wp_ H_val[],
-                        const real_wp_ g[],
-                        const real_wp_ f,
-                        const real_wp_ x_l[],
-                        const real_wp_ x_u[],
-                        real_wp_ x[],
-                        real_wp_ z[],
+                        const rpc_ H_val[],
+                        const rpc_ g[],
+                        const rpc_ f,
+                        const rpc_ x_l[],
+                        const rpc_ x_u[],
+                        rpc_ x[],
+                        rpc_ z[],
                         ipc_ x_stat[] );
 
 /*!<
@@ -611,7 +611,7 @@ is available.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -650,40 +650,40 @@ is available.
            specified.
   \li -23. An entry from the strict upper triangle of \f$H\f$ has been
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of
+ @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size h_ne and type double,
+ @param[in] H_val is a one-dimensional array of size h_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] x_l is a one-dimensional array of size n and type double, that
+ @param[in] x_l is a one-dimensional array of size n and type rpc_, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in] x_u is a one-dimensional array of size n and type double, that
+ @param[in] x_u is a one-dimensional array of size n and type rpc_, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type double, that
+ @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that
+ @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
@@ -695,15 +695,15 @@ is available.
 void bqp_solve_reverse_h_prod( void **data,
                                 ipc_ *status,
                                 ipc_ n,
-                                const real_wp_ g[],
-                                const real_wp_ f,
-                                const real_wp_ x_l[],
-                                const real_wp_ x_u[],
-                                real_wp_ x[],
-                                real_wp_ z[],
+                                const rpc_ g[],
+                                const rpc_ f,
+                                const rpc_ x_l[],
+                                const rpc_ x_u[],
+                                rpc_ x[],
+                                rpc_ z[],
                                 ipc_ x_stat[],
-                                real_wp_ v[],
-                                const real_wp_ prod[],
+                                rpc_ v[],
+                                const rpc_ prod[],
                                 ipc_ nz_v[],
                                 ipc_ *nz_v_start,
                                 ipc_ *nz_v_end,
@@ -717,7 +717,7 @@ program.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -779,57 +779,57 @@ program.
        arguments unchanged. Typically v will be very sparse
        (i.e., nz_p_end-nz_p_start will be small).
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] x_l is a one-dimensional array of size n and type double, that
+ @param[in] x_l is a one-dimensional array of size n and type rpc_, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in] x_u is a one-dimensional array of size n and type double, that
+ @param[in] x_u is a one-dimensional array of size n and type rpc_, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type double, that
+ @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that
+ @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] v is a one-dimensional array of size n and type double, that
+ @param[out] v is a one-dimensional array of size n and type rpc_, that
     is used for reverse communication (see status=2-4 above for details)
 
- @param[in] prod is a one-dimensional array of size n and type double, that
+ @param[in] prod is a one-dimensional array of size n and type rpc_, that
     is used for reverse communication (see status=2-4 above for details)
 
- @param[out] nz_v is a one-dimensional array of size n and type int, that
+ @param[out] nz_v is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[out] nz_v_start is a scalar of type int, that
+ @param[out] nz_v_start is a scalar of type ipc_, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[out] nz_v_end is a scalar of type int, that
+ @param[out] nz_v_end is a scalar of type ipc_, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[in] nz_prod is a one-dimensional array of size n and type int, that
+ @param[in] nz_prod is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=4 above for details)
 
- @param[in] nz_prod_end is a scalar of type int, that
+ @param[in] nz_prod_end is a scalar of type ipc_, that
     is used for reverse communication (see status=4 above for details)
 
 */
@@ -848,7 +848,7 @@ void bqp_information( void **data,
   @param[out] inform is a struct containing output information
               (see bqp_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

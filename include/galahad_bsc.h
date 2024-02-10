@@ -1,7 +1,7 @@
 //* \file galahad_bsc.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 16:56 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BSC C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -255,11 +255,11 @@ struct bsc_inform_type {
 
     /// \brief
     /// the total CPU time spent in the package
-    real_wp_ time;
+    rpc_ time;
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_time;
+    rpc_ clock_time;
 };
 
 // *-*-*-*-*-*-*-*-*-    B S C  _ I N I T I A L I Z E    -*-*--*-*-*-*-
@@ -276,7 +276,7 @@ void bsc_initialize( void **data,
   @param[out] control is a struct containing control information
               (see bsc_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -295,7 +295,7 @@ void bsc_information( void **data,
   @param[out] inform is a struct containing output information
               (see bsc_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

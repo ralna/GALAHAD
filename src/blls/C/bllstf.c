@@ -15,11 +15,11 @@ ipc_ imax(ipc_ a, ipc_ b) {
 
 // Custom userdata struct
 struct userdata_type {
-   real_wp_ scale;
+   rpc_ scale;
 };
 
 // Function prototypes
-ipc_ prec( ipc_ n, const real_wp_ v[], real_wp_ p[], const void * );
+ipc_ prec( ipc_ n, const rpc_ v[], rpc_ p[], const void * );
 
 int main(void) {
 
@@ -42,22 +42,22 @@ int main(void) {
     ipc_ Ao_col[Ao_ne]; // column indices
     ipc_ Ao_ptr_ne = o+1; // number of row pointers
     ipc_ Ao_ptr[ Ao_ptr_ne];  // row pointers
-    real_wp_ Ao_val[Ao_ne]; // values
-    real_wp_ Ao_dense[Ao_dense_ne]; // dense values
+    rpc_ Ao_val[Ao_ne]; // values
+    rpc_ Ao_dense[Ao_dense_ne]; // dense values
     // column-wise storage
     ipc_ Ao_by_col_row[Ao_ne]; // row indices,
     ipc_ Ao_by_col_ptr_ne = n+1; // number of column pointers
     ipc_ Ao_by_col_ptr[Ao_by_col_ptr_ne];  // column pointers
-    real_wp_ Ao_by_col_val[Ao_ne]; // values
-    real_wp_ Ao_by_col_dense[Ao_dense_ne]; // dense values
-    real_wp_ b[o];  // linear term in the objective
-    real_wp_ x_l[n]; // variable lower bound
-    real_wp_ x_u[n]; // variable upper bound
-    real_wp_ x[n]; // variables
-    real_wp_ z[n]; // dual variables
-    real_wp_ r[o]; // residual
-    real_wp_ g[n]; // gradient
-    real_wp_ w[o]; // weights
+    rpc_ Ao_by_col_val[Ao_ne]; // values
+    rpc_ Ao_by_col_dense[Ao_dense_ne]; // dense values
+    rpc_ b[o];  // linear term in the objective
+    rpc_ x_l[n]; // variable lower bound
+    rpc_ x_u[n]; // variable upper bound
+    rpc_ x[n]; // variables
+    rpc_ z[n]; // dual variables
+    rpc_ r[o]; // residual
+    rpc_ g[n]; // gradient
+    rpc_ w[o]; // weights
 
     // Set output storage
     ipc_ x_stat[n]; // variable status
@@ -206,11 +206,11 @@ int main(void) {
         blls_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%s:%6i iterations. Optimal objective value = %5.2f"
-                   " status = %1i\n",
+            printf("%s:%6" i_ipc_ " iterations. Optimal objective value = %5.2f"
+                   " status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
-            printf("%s: BLLS_solve exit status = %1i\n", st, inform.status);
+            printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -230,7 +230,7 @@ int main(void) {
     on = imax( o, n );
     ipc_ eval_status, nz_v_start, nz_v_end, nz_p_end;
     ipc_ nz_v[on], nz_p[o], mask[o];
-    real_wp_ v[on], p[on];
+    rpc_ v[on], p[on];
 
     nz_p_end = 0;
 
@@ -300,7 +300,7 @@ int main(void) {
         }else if(status == 7){ // evaluate p = P^{-}v
           for( ipc_ i = 0; i < n; i++) p[i] = userdata.scale * v[i];
         }else{
-            printf(" the value %1i of status should not occur\n", status);
+            printf(" the value %1" i_ipc_ " of status should not occur\n", status);
             break;
         }
         eval_status = 0;
@@ -311,11 +311,11 @@ int main(void) {
 
     // Print solution details
     if(inform.status == 0){
-        printf("%s:%6i iterations. Optimal objective value = %5.2f"
-               " status = %1i\n",
+        printf("%s:%6" i_ipc_ " iterations. Optimal objective value = %5.2f"
+               " status = %1" i_ipc_ "\n",
                st, inform.iter, inform.obj, inform.status);
     }else{
-        printf("%s: BLLS_solve exit status = %1i\n", st, inform.status);
+        printf("%s: BLLS_solve exit status = %1" i_ipc_ "\n", st, inform.status);
     }
     //printf("x: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -329,9 +329,9 @@ int main(void) {
 }
 
 // Apply preconditioner
-ipc_ prec( ipc_ n, const real_wp_ v[], real_wp_ p[], const void *userdata ){
+ipc_ prec( ipc_ n, const rpc_ v[], rpc_ p[], const void *userdata ){
   struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-  real_wp_ scale = myuserdata->scale;
+  rpc_ scale = myuserdata->scale;
   for( ipc_ i = 0; i < n; i++) p[i] = scale * v[i];
   return 0;
 }

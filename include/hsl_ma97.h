@@ -60,7 +60,7 @@ struct ma97_control {
                                  otherwise abort */
     ipc_ nemin;                /* Supernode amalgamation if parent and child
                                  have fewer than nemin eliminations */
-    real_wp_ multiplier;       /* Amount of extra memory to allow for delays */
+    rpc_ multiplier;       /* Amount of extra memory to allow for delays */
     ipc_ ordering;             /* Control scaling algorithm used:
                                  0 - user supplied order (order absent=identity)
                                  1 - AMD
@@ -70,8 +70,8 @@ struct ma97_control {
                                  5 - Automatic choice between 1 and 3 */
     ipc_ print_level;          /* <0 for no printing, 0 for basic, >1 for most */
     ipc_ scaling;              /* 0 user/none, 1 mc64, 2 mc77 */
-    real_wp_ small;            /* Minimum value to count as non-zero */
-    real_wp_ u;                /* Pivoting parameter */
+    rpc_ small;            /* Minimum value to count as non-zero */
+    rpc_ u;                /* Pivoting parameter */
     ipc_ unit_diagnostics;     /* Fortran unit for diagnostics (<0 disables) */
     ipc_ unit_error;           /* Fortran unit for error msgs (<0 disables) */
     ipc_ unit_warning;         /* Fortran unit for warning msgs (<0 disables) */
@@ -79,10 +79,10 @@ struct ma97_control {
     ipc_ solve_blas3;          /* Use BLAS3 in solve in true, else BLAS2 */
     long solve_min;            /* Min number of entries for parallel exection */
     ipc_ solve_mf;             /* If true use m/f solve, else use s/n */
-    real_wp_ consist_tol;      /* Consistent equation tolerance */
+    rpc_ consist_tol;      /* Consistent equation tolerance */
 
     /* Reserve space for future interface changes */
-    ipc_ ispare[5]; real_wp_ rspare[10];
+    ipc_ ispare[5]; rpc_ rspare[10];
 };
 
 struct ma97_info {
@@ -105,7 +105,7 @@ struct ma97_info {
     ipc_ stat;                 /* error code from failed memory allocation */
 
     /* Reserve space for future interface changes */
-    ipc_ ispare[5]; real_wp_ rspare[10];
+    ipc_ ispare[5]; rpc_ rspare[10];
 };
 
 #endif

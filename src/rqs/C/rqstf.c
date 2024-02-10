@@ -32,21 +32,21 @@ int main(void) {
     ipc_ A_row[] = {1, 1, 1} ;
     ipc_ A_col[] = {1, 2, 3};
     ipc_ A_ptr[] = {1, 4};
-    real_wp_ H_val[] = {1.0, 2.0, 3.0, 4.0};
-    real_wp_ M_val[] = {1.0, 2.0, 1.0};
-    real_wp_ A_val[] = {1.0, 1.0, 1.0};
-    real_wp_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
-    real_wp_ M_dense[] = {1.0, 0.0, 2.0, 0.0, 0.0, 1.0};
-    real_wp_ H_diag[] = {1.0, 0.0, 2.0};
-    real_wp_ M_diag[] = {1.0, 2.0, 1.0};
-    real_wp_ f = 0.96;
-    real_wp_ power = 3.0;
-    real_wp_ weight = 1.0;
-    real_wp_ c[] = {0.0, 2.0, 0.0};
+    rpc_ H_val[] = {1.0, 2.0, 3.0, 4.0};
+    rpc_ M_val[] = {1.0, 2.0, 1.0};
+    rpc_ A_val[] = {1.0, 1.0, 1.0};
+    rpc_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
+    rpc_ M_dense[] = {1.0, 0.0, 2.0, 0.0, 0.0, 1.0};
+    rpc_ H_diag[] = {1.0, 0.0, 2.0};
+    rpc_ M_diag[] = {1.0, 2.0, 1.0};
+    rpc_ f = 0.96;
+    rpc_ power = 3.0;
+    rpc_ weight = 1.0;
+    rpc_ c[] = {0.0, 2.0, 0.0};
 
-    char st;
+    char st = ' ';
     ipc_ status;
-    real_wp_ x[n];
+    rpc_ x[n];
     char ma[3];
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -113,7 +113,7 @@ int main(void) {
                                        0, NULL, 0, 0, NULL, NULL );
                   }
                   break;
-              printf(" case %1i break\n", storage_type );
+              printf(" case %1" i_ipc_ " break\n", storage_type );
               case 2: // sparse by rows
                   st = 'R';
                   // import the control parameters and structural data
@@ -224,7 +224,7 @@ int main(void) {
 
           rqs_information( &data, &inform, &status );
 
-          printf("format %c%s: RQS_solve_problem exit status = %1i, f = %.2f\n",
+          printf("format %c%s: RQS_solve_problem exit status = %1" i_ipc_ ", f = %.2f\n",
                  st, ma, inform.status, inform.obj_regularized );
           //printf("x: ");
           //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);

@@ -9,32 +9,32 @@
 
 // Custom userdata struct
 struct userdata_type {
-   real_wp_ p;
-   real_wp_ freq;
-   real_wp_ mag;
+   rpc_ p;
+   rpc_ freq;
+   rpc_ mag;
 };
 
 // Function prototypes
-ipc_ fun( ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
-ipc_ grad( ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
-ipc_ hess( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void * );
-ipc_ hess_dense( ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], 
+ipc_ fun( ipc_ n, const rpc_ x[], rpc_ *f, const void * );
+ipc_ grad( ipc_ n, const rpc_ x[], rpc_ g[], const void * );
+ipc_ hess( ipc_ n, ipc_ ne, const rpc_ x[], rpc_ hval[], const void * );
+ipc_ hess_dense( ipc_ n, ipc_ ne, const rpc_ x[], rpc_ hval[], 
                  const void * );
-ipc_ hessprod( ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[],
+ipc_ hessprod( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[],
               bool got_h, const void * );
-ipc_ shessprod( ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
-               const real_wp_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], real_wp_ u[],
+ipc_ shessprod( ipc_ n, const rpc_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
+               const rpc_ v[], ipc_ *nnz_u, ipc_ index_nz_u[], rpc_ u[],
                bool got_h, const void * );
-ipc_ prec(ipc_ n, const real_wp_ x[], real_wp_ u[], const real_wp_ v[], 
+ipc_ prec(ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[], 
           const void * );
-ipc_ fun_diag(ipc_ n, const real_wp_ x[], real_wp_ *f, const void * );
-ipc_ grad_diag(ipc_ n, const real_wp_ x[], real_wp_ g[], const void * );
-ipc_ hess_diag(ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void * );
-ipc_ hessprod_diag( ipc_ n, const real_wp_ x[], real_wp_ u[], 
-                    const real_wp_ v[], bool got_h, const void * );
-ipc_ shessprod_diag( ipc_ n, const real_wp_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
-                    const real_wp_ v[], ipc_ *nnz_u, ipc_ index_nz_u[],
-                    real_wp_ u[], bool got_h, const void * );
+ipc_ fun_diag(ipc_ n, const rpc_ x[], rpc_ *f, const void * );
+ipc_ grad_diag(ipc_ n, const rpc_ x[], rpc_ g[], const void * );
+ipc_ hess_diag(ipc_ n, ipc_ ne, const rpc_ x[], rpc_ hval[], const void * );
+ipc_ hessprod_diag( ipc_ n, const rpc_ x[], rpc_ u[], 
+                    const rpc_ v[], bool got_h, const void * );
+ipc_ shessprod_diag( ipc_ n, const rpc_ x[], ipc_ nnz_v, const ipc_ index_nz_v[],
+                    const rpc_ v[], ipc_ *nnz_u, ipc_ index_nz_u[],
+                    rpc_ u[], bool got_h, const void * );
 
 int main(void) {
 
@@ -52,14 +52,14 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
-    real_wp_ x_l[] = {-10,-10,-10};
-    real_wp_ x_u[] = {0.5,0.5,0.5};
+    rpc_ x_l[] = {-10,-10,-10};
+    rpc_ x_u[] = {0.5,0.5,0.5};
     ipc_ H_row[] = {0, 1, 2, 2, 2}; // Hessian H
     ipc_ H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
     ipc_ H_ptr[] = {0, 1, 2, 5};    // row pointers
 
     // Set storage
-    real_wp_ g[n]; // gradient
+    rpc_ g[n]; // gradient
     char st = ' ';
     ipc_ status;
 
@@ -79,7 +79,7 @@ int main(void) {
         //control.print_level = 1;
 
         // Start from 0
-        real_wp_ x[] = {0,0,0};
+        rpc_ x[] = {0,0,0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -124,13 +124,13 @@ int main(void) {
         dgo_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i evaluations. Optimal objective value = %5.2f"
-              " status = %1i\n", st, inform.f_eval, inform.obj, inform.status);
+            printf("%c:%6" i_ipc_ " evaluations. Optimal objective value = %5.2f"
+              " status = %1" i_ipc_ "\n", st, inform.f_eval, inform.obj, inform.status);
         }else if(inform.status == -18){
-            printf("%c:%6i evaluations. Best objective value = %5.2f"
-              " status = %1i\n", st, inform.f_eval, inform.obj, inform.status);
+            printf("%c:%6" i_ipc_ " evaluations. Best objective value = %5.2f"
+              " status = %1" i_ipc_ "\n", st, inform.f_eval, inform.obj, inform.status);
         }else{
-            printf("%c: DGO_solve exit status = %1i\n", st, inform.status);
+            printf("%c: DGO_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -147,10 +147,10 @@ int main(void) {
 
     // reverse-communication input/output
     ipc_ eval_status, nnz_u, nnz_v;
-    real_wp_ f = 0.0;
-    real_wp_ u[n], v[n];
+    rpc_ f = 0.0;
+    rpc_ u[n], v[n];
     ipc_ index_nz_u[n], index_nz_v[n];
-    real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
+    rpc_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
 
     for(ipc_ d=1; d <= 5; d++){
 
@@ -164,7 +164,7 @@ int main(void) {
         //control.print_level = 1;
 
         // Start from 0
-        real_wp_ x[] = {0,0,0};
+        rpc_ x[] = {0,0,0};
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
@@ -201,7 +201,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n",
+                        printf(" the value %1" i_ipc_ " of status should not occur\n",
                                status );
                         break;
                     }
@@ -242,7 +242,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n",
+                        printf(" the value %1" i_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -285,7 +285,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n",
+                        printf(" the value %1" i_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -330,7 +330,7 @@ int main(void) {
                         eval_status = hessprod_diag( n, x, u, v, false,
                                                      &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n",
+                        printf(" the value %1" i_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -375,7 +375,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                         eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n",
+                        printf(" the value %1" i_ipc_ " of status should not occur\n",
                                status);
                         break;
                     }
@@ -387,13 +387,13 @@ int main(void) {
         dgo_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i evaluations. Optimal objective value = %5.2f"
-              " status = %1i\n", st, inform.f_eval, inform.obj, inform.status);
+            printf("%c:%6" i_ipc_ " evaluations. Optimal objective value = %5.2f"
+              " status = %1" i_ipc_ "\n", st, inform.f_eval, inform.obj, inform.status);
         }else if(inform.status == -18){
-            printf("%c:%6i evaluations. Best objective value = %5.2f"
-              " status = %1i\n", st, inform.f_eval, inform.obj, inform.status);
+            printf("%c:%6" i_ipc_ " evaluations. Best objective value = %5.2f"
+              " status = %1" i_ipc_ "\n", st, inform.f_eval, inform.obj, inform.status);
         }else{
-            printf("%c: DGO_solve exit status = %1i\n", st, inform.status);
+            printf("%c: DGO_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -410,13 +410,13 @@ int main(void) {
 
 // Objective function
 ipc_ fun( ipc_ n,
-         const real_wp_ x[],
-         real_wp_ *f,
+         const rpc_ x[],
+         rpc_ *f,
          const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ p = myuserdata->p;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ p = myuserdata->p;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + mag * cos(freq*x[0])
          + x[0] + x[1] + x[2];
@@ -425,13 +425,13 @@ ipc_ fun( ipc_ n,
 
 // Gradient of the objective
 ipc_ grad( ipc_ n,
-          const real_wp_ x[],
-          real_wp_ g[],
+          const rpc_ x[],
+          rpc_ g[],
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ p = myuserdata->p;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ p = myuserdata->p;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - mag * freq * sin(freq*x[0]) + 1;
     g[1] = 2.0 * ( x[1] + x[2] ) + 1;
@@ -442,12 +442,12 @@ ipc_ grad( ipc_ n,
 // Hessian of the objective
 ipc_ hess( ipc_ n,
           ipc_ ne,
-          const real_wp_ x[],
-          real_wp_ hval[],
+          const rpc_ x[],
+          rpc_ hval[],
           const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 2.0;
@@ -460,12 +460,12 @@ ipc_ hess( ipc_ n,
 // Dense Hessian
 ipc_ hess_dense( ipc_ n,
                 ipc_ ne,
-                const real_wp_ x[],
-                real_wp_ hval[],
+                const rpc_ x[],
+                rpc_ hval[],
                 const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0]);
     hval[1] = 0.0;
@@ -478,14 +478,14 @@ ipc_ hess_dense( ipc_ n,
 
 // Hessian-vector product
 ipc_ hessprod( ipc_ n,
-              const real_wp_ x[],
-              real_wp_ u[],
-              const real_wp_ v[],
+              const rpc_ x[],
+              rpc_ u[],
+              const rpc_ v[],
               bool got_h,
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     u[0] = u[0] + 2.0 * ( v[0] + v[2] )
            - mag * freq * freq * cos(freq*x[0]) * v[0];
@@ -496,20 +496,20 @@ ipc_ hessprod( ipc_ n,
 
 // Sparse Hessian-vector product
 ipc_ shessprod( ipc_ n,
-               const real_wp_ x[],
+               const rpc_ x[],
                ipc_ nnz_v,
                const ipc_ index_nz_v[],
-               const real_wp_ v[],
+               const rpc_ v[],
                ipc_ *nnz_u,
                ipc_ index_nz_u[],
-               real_wp_ u[],
+               rpc_ u[],
                bool got_h,
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
-    real_wp_ p[] = {0., 0., 0.};
+    rpc_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
     for(ipc_ i = 0; i < nnz_v; i++){
         ipc_ j = index_nz_v[i];
@@ -550,9 +550,9 @@ ipc_ shessprod( ipc_ n,
 
 // Apply preconditioner
 ipc_ prec( ipc_ n,
-          const real_wp_ x[],
-          real_wp_ u[],
-          const real_wp_ v[],
+          const rpc_ x[],
+          rpc_ u[],
+          const rpc_ v[],
           const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
@@ -562,13 +562,13 @@ ipc_ prec( ipc_ n,
 
 // Objective function
 ipc_ fun_diag( ipc_ n,
-              const real_wp_ x[],
-              real_wp_ *f,
+              const rpc_ x[],
+              rpc_ *f,
               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ p = myuserdata->p;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ p = myuserdata->p;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     *f = pow(x[2] + p, 2) + pow(x[1], 2) + mag * cos(freq*x[0])
          + x[0] + x[1] + x[2];
@@ -577,13 +577,13 @@ ipc_ fun_diag( ipc_ n,
 
 // Gradient of the objective
 ipc_ grad_diag( ipc_ n,
-               const real_wp_ x[],
-               real_wp_ g[],
+               const rpc_ x[],
+               rpc_ g[],
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ p = myuserdata->p;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ p = myuserdata->p;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     g[0] = -mag * freq * sin(freq*x[0]) + 1;
     g[1] = 2.0 * x[1] + 1;
@@ -594,12 +594,12 @@ ipc_ grad_diag( ipc_ n,
 // Hessian of the objective
 ipc_ hess_diag( ipc_ n,
                ipc_ ne,
-               const real_wp_ x[],
-               real_wp_ hval[],
+               const rpc_ x[],
+               rpc_ hval[],
                const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     hval[0] = -mag * freq * freq * cos(freq*x[0]);
     hval[1] = 2.0;
@@ -609,14 +609,14 @@ ipc_ hess_diag( ipc_ n,
 
 // Hessian-vector product
 ipc_ hessprod_diag( ipc_ n,
-                   const real_wp_ x[],
-                   real_wp_ u[],
-                   const real_wp_ v[],
+                   const rpc_ x[],
+                   rpc_ u[],
+                   const rpc_ v[],
                    bool got_h,
                    const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
     u[0] = u[0] + -mag * freq * freq * cos(freq*x[0]) * v[0];
     u[1] = u[1] + 2.0 * v[1];
@@ -626,20 +626,20 @@ ipc_ hessprod_diag( ipc_ n,
 
 // Sparse Hessian-vector product
 ipc_ shessprod_diag( ipc_ n,
-                    const real_wp_ x[],
+                    const rpc_ x[],
                     ipc_ nnz_v,
                     const ipc_ index_nz_v[],
-                    const real_wp_ v[],
+                    const rpc_ v[],
                     ipc_ *nnz_u,
                     ipc_ index_nz_u[],
-                    real_wp_ u[],
+                    rpc_ u[],
                     bool got_h,
                     const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ freq = myuserdata->freq;
-    real_wp_ mag = myuserdata->mag;
+    rpc_ freq = myuserdata->freq;
+    rpc_ mag = myuserdata->mag;
 
-    real_wp_ p[] = {0., 0., 0.};
+    rpc_ p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
     for(ipc_ i = 0; i < nnz_v; i++){
         ipc_ j = index_nz_v[i];

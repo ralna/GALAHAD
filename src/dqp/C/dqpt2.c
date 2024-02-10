@@ -21,23 +21,23 @@ int main(void) {
     ipc_ H_ne = 4; // Hesssian elements
     ipc_ H_row[] = {0, 1, 2, 2 };   // row indices, NB lower triangle
     ipc_ H_col[] = {0, 1, 1, 2};    // column indices, NB lower triangle
-    real_wp_ H_val[] = {1.0, 2.0, 1.0, 3.0 };   // values
-    real_wp_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
-    real_wp_ f = 1.0;  // constant term in the objective
+    rpc_ H_val[] = {1.0, 2.0, 1.0, 3.0 };   // values
+    rpc_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
+    rpc_ f = 1.0;  // constant term in the objective
     ipc_ A_ne = 4; // Jacobian elements
     ipc_ A_row[] = {0, 0, 1, 1}; // row indices
     ipc_ A_col[] = {0, 1, 1, 2}; // column indices
-    real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
-    real_wp_ c_l[] = {1.0, 2.0};   // constraint lower bound
-    real_wp_ c_u[] = {2.0, 2.0};   // constraint upper bound
-    real_wp_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
-    real_wp_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
+    rpc_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
+    rpc_ c_l[] = {1.0, 2.0};   // constraint lower bound
+    rpc_ c_u[] = {2.0, 2.0};   // constraint upper bound
+    rpc_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
+    rpc_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
 
     // Set output storage
-    real_wp_ c[m]; // constraint values
+    rpc_ c[m]; // constraint values
     ipc_ x_stat[n]; // variable status
     ipc_ c_stat[m]; // constraint status
-    char st;
+    char st = ' ';
     ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
@@ -51,9 +51,9 @@ int main(void) {
     strcpy(control.definite_linear_solver, "sytr ") ;
 
     // Start from 0
-    real_wp_ x[] = {0.0,0.0,0.0};
-    real_wp_ y[] = {0.0,0.0};
-    real_wp_ z[] = {0.0,0.0,0.0};
+    rpc_ x[] = {0.0,0.0,0.0};
+    rpc_ y[] = {0.0,0.0};
+    rpc_ z[] = {0.0,0.0,0.0};
 
     st = 'C';
     dqp_import( &control, &data, &status, n, m,
@@ -71,7 +71,7 @@ int main(void) {
     printf("fdc sls status %i\n", inform.fdc_inform.sls_inform.status);
     printf("fdc sls nodes %i\n", inform.fdc_inform.sls_inform.nodes_assembly_tree);
     printf("fdc sls flops %li\n", inform.fdc_inform.sls_inform.flops_blas);
-    printf("fdc sls alt %d\n", inform.fdc_inform.sls_inform.alternative);
+    printf("fdc sls alt %" d_ipc_ "\n", inform.fdc_inform.sls_inform.alternative);
 
     printf("fdc sls ma97 %i\n", inform.fdc_inform.sls_inform.ma97_info.flag);
 
@@ -106,10 +106,10 @@ int main(void) {
     printf("sbls bad_alloc %s\n", inform.sbls_inform.bad_alloc);
 
     if(inform.status == 0){
-        printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+        printf("%c:%6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
                st, inform.iter, inform.obj, inform.status);
     }else{
-        printf("%c: DQP_solve exit status = %1i\n", st, inform.status);
+        printf("%c: DQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
     }
     //printf("x: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

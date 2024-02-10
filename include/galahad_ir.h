@@ -1,7 +1,7 @@
 //* \file galahad_ir.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 12:30 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_IR C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -87,15 +87,15 @@ struct ir_control_type {
     /// refinement will cease as soon as the residual \f$\|Ax-b\|\f$ falls below
     /// max( acceptable_residual_relative * \f$\|b\|\f$,
     ///      acceptable_residual_absolute )
-    real_wp_ acceptable_residual_relative;
+    rpc_ acceptable_residual_relative;
     /// see acceptable_residual_relative
-    real_wp_ acceptable_residual_absolute;
+    rpc_ acceptable_residual_absolute;
 
     /// \brief
     /// refinement will be judged to have failed if the residual
     /// \f$\|Ax-b\| \geq \f$ required_residual_relative * \f$\|b\|\f$.
     /// No checking if required_residual_relative < 0
-    real_wp_ required_residual_relative;
+    rpc_ required_residual_relative;
 
     /// \brief
     /// record the initial and final residual
@@ -150,11 +150,11 @@ struct ir_inform_type {
 
     /// \brief
     /// the infinity norm of the initial residual
-    real_wp_ norm_initial_residual;
+    rpc_ norm_initial_residual;
 
     /// \brief
     /// the infinity norm of the final residual
-    real_wp_ norm_final_residual;
+    rpc_ norm_final_residual;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    I R  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
@@ -171,7 +171,7 @@ void ir_initialize( void **data,
   @param[out] control is a struct containing control information
               (see ir_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -190,7 +190,7 @@ void ir_information( void **data,
   @param[out] inform is a struct containing output information
               (see ir_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

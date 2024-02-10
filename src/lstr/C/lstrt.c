@@ -19,10 +19,10 @@ int main(void) {
     ipc_ m = 2 * n;
 
     ipc_ status;
-    real_wp_ radius;
-    real_wp_ x[n];
-    real_wp_ u[m];
-    real_wp_ v[n];
+    rpc_ radius;
+    rpc_ x[n];
+    rpc_ u[m];
+    rpc_ v[n];
 
     // Initialize lstr
     lstr_initialize( &data, &control, &status );
@@ -58,14 +58,14 @@ int main(void) {
         } else if ( status == 4 ) { // restart
           for( ipc_ i = 0; i < m; i++) u[i] = 1.0;
         }else{
-            printf(" the value %1i of status should not occur\n",
+            printf(" the value %1" i_ipc_ " of status should not occur\n",
               status);
             break;
         }
       }
       lstr_information( &data, &inform, &status );
-      printf("%1i lstr_solve_problem exit status = %i,"
-           " f = %.2f\n", new_radius, inform.status, inform.r_norm );
+      printf("%1" i_ipc_ " lstr_solve_problem exit status = %" i_ipc_
+             ", f = %.2f\n", new_radius, inform.status, inform.r_norm );
     }
    // Delete internal workspace
    lstr_terminate( &data, &control, &inform );

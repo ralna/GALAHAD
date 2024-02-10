@@ -8,13 +8,13 @@
 
 // Custom userdata struct
 struct userdata_type {
-   real_wp_ p;
+   rpc_ p;
 };
 
 // Function prototypes
-ipc_ fun(ipc_ n, const real_wp_ x[], real_wp_ *f, const void *);
-ipc_ grad(ipc_ n, const real_wp_ x[], real_wp_ g[], const void *);
-ipc_ hess(ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[], const void *);
+ipc_ fun(ipc_ n, const rpc_ x[], rpc_ *f, const void *);
+ipc_ grad(ipc_ n, const rpc_ x[], rpc_ g[], const void *);
+ipc_ hess(ipc_ n, ipc_ ne, const rpc_ x[], rpc_ hval[], const void *);
 
 int main(void) {
 
@@ -38,14 +38,14 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
-    real_wp_ x[] = {1,1,1}; // start from one
-    real_wp_ infty = 1e20; // infinity
+    rpc_ x[] = {1,1,1}; // start from one
+    rpc_ infty = 1e20; // infinity
     char H_type[] = "coordinate"; // specify co-ordinate storage
     ipc_ H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     ipc_ H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
 
     // Set storage
-    real_wp_ g[n]; // gradient
+    rpc_ g[n]; // gradient
 
     // Set Hessian storage format, structure and problem bounds
     arc_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );
@@ -59,7 +59,7 @@ int main(void) {
 
     if(inform.status == 0){ // successful return
         printf("ARC successful solve\n");
-        printf("iter: %d \n", inform.iter);
+        printf("iter: %" d_ipc_ " \n", inform.iter);
         printf("x: ");
         for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         printf("\n");
@@ -67,12 +67,12 @@ int main(void) {
         printf("gradient: ");
         for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         printf("\n");
-        printf("f_eval: %d \n", inform.f_eval);
+        printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
         printf("time: %f \n", inform.time.clock_total);
-        printf("status: %d \n", inform.status);
+        printf("status: %" d_ipc_ " \n", inform.status);
     }else{ // error returns
         printf("ARC error in solve\n");
-        printf("status: %d \n", inform.status);
+        printf("status: %" d_ipc_ " \n", inform.status);
     }
 
     // Delete internal workspace
@@ -82,18 +82,18 @@ int main(void) {
 }
 
 // Objective function
-ipc_ fun(ipc_ n, const real_wp_ x[], real_wp_ *f, const void *userdata){
+ipc_ fun(ipc_ n, const rpc_ x[], rpc_ *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ p = myuserdata->p;
+    rpc_ p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
     return 0;
 }
 
 // Gradient of the objective
-ipc_ grad(ipc_ n, const real_wp_ x[], real_wp_ g[], const void *userdata){
+ipc_ grad(ipc_ n, const rpc_ x[], rpc_ g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    real_wp_ p = myuserdata->p;
+    rpc_ p = myuserdata->p;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
@@ -102,7 +102,7 @@ ipc_ grad(ipc_ n, const real_wp_ x[], real_wp_ g[], const void *userdata){
 }
 
 // Hessian of the objective
-ipc_ hess(ipc_ n, ipc_ ne, const real_wp_ x[], real_wp_ hval[],
+ipc_ hess(ipc_ n, ipc_ ne, const rpc_ x[], rpc_ hval[],
          const void *userdata){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;

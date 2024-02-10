@@ -1,7 +1,7 @@
 //* \file galahad_sha.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-08-22 AT 15:50 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SHA C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -279,7 +279,7 @@ void sha_initialize( void **data,
   @param[out] control is a struct containing control information
               (see sha_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -298,7 +298,7 @@ void sha_reset_control( struct sha_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
  */
@@ -322,7 +322,7 @@ void sha_analyse_matrix( struct sha_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The import and analysis were conducted succesfully.
@@ -337,22 +337,22 @@ void sha_analyse_matrix( struct sha_control_type *control,
        are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or ne >= 0 has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$H\f$.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
    entries in the upper triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme
 
- @param[in] row is a one-dimensional array of size ne and type int, that
+ @param[in] row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the upper triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme
 
- @param[in] col is a one-dimensional array of size ne and type int,
+ @param[in] col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the upper triangular part of \f$H\f$ in
    sparse row-wise storage scheme.
 
- @param[out] m is a scalar variable of type int, that holds the minimum number
+ @param[out] m is a scalar variable of type ipc_, that holds the minimum number
   of \f$(s^(k),y^(k))\f$ pairs that will be needed to recover a good
   Hessian approximation
 
@@ -366,11 +366,11 @@ void sha_recover_matrix( void **data,
                          ipc_ m,
                          ipc_ ls1,
                          ipc_ ls2,
-                         const real_wp_ strans[][ls2],
+                         const rpc_ strans[][ls2],
                          ipc_ ly1,
                          ipc_ ly2,
-                         const real_wp_ ytrans[][ly2],
-                         real_wp_ val[],
+                         const rpc_ ytrans[][ly2],
+                         rpc_ val[],
                          const ipc_ precedence[] );
 
 /*!<
@@ -378,7 +378,7 @@ void sha_recover_matrix( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -393,37 +393,37 @@ void sha_recover_matrix( void **data,
        are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or ne >= 0 has been violated.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the upper triangular part of the symmetric matrix \f$H\f$.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     \f$(s,y)\f$ pairs that are available.
 
- @param[in] ls1 is a scalar variable of type int, that holds the leading
+ @param[in] ls1 is a scalar variable of type ipc_, that holds the leading
     dimension of the array s.
 
- @param[in] ls2 is a scalar variable of type int, that holds the trailing
+ @param[in] ls2 is a scalar variable of type ipc_, that holds the trailing
     dimension of the array s.
 
  @param[in] strans is a two-dimensional array of size [ls1][ls2] and
-    type double, that holds the values of the vectors \f$s^{(k) T}\f$.
+    type rpc_, that holds the values of the vectors \f$s^{(k) T}\f$.
     Component \f$k,i\f$ holds \f$s_i^{(k)}\f$.
 
- @param[in] ly1 is a scalar variable of type int, that holds the leading
+ @param[in] ly1 is a scalar variable of type ipc_, that holds the leading
     dimension of the array y.
 
- @param[in] ly2 is a scalar variable of type int, that holds the trailing
+ @param[in] ly2 is a scalar variable of type ipc_, that holds the trailing
     dimension of the array y.
 
  @param[in] ytrans is a two-dimensional array of size [ly1][ly2] and
-    type double, that holds the values of the vectors \f$y^{(k) T}\f$.
+    type rpc_, that holds the values of the vectors \f$y^{(k) T}\f$.
     Component \f$k,i\f$ holds \f$y_i^{(k)}\f$.
 
- @param[out] val is a one-dimensional array of size ne and type double,
+ @param[out] val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the upper triangular part of the
     symmetric matrix \f$H\f$ in the sparse coordinate scheme.
 
- @param[in] precedence is a one-dimensional array of size m and type int, that
+ @param[in] precedence is a one-dimensional array of size m and type ipc_, that
    holds the preferred order of access for the pairs \f$(s^(k),y^(k))\f$.
    The \f$k\f$-th component of precedence specifies the row number of strans
    and ytrans that will be used as the \f$k\f$-th most favoured. precedence
@@ -445,7 +445,7 @@ void sha_information( void **data,
   @param[out] inform is a struct containing output information
               (see sha_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

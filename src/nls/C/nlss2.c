@@ -10,30 +10,30 @@
 
 // Custom userdata struct
 struct userdata_type {
-   real_wp_ p;
+   rpc_ p;
 };
 
 // Function prototypes
 
-ipc_ res( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ c[], const void * );
-ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
+ipc_ res( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[], const void * );
+ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
          const void * );
-ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
-          real_wp_ hval[], const void * );
-ipc_ jacprod( ipc_ n, ipc_ m, const real_wp_ x[], const bool transpose,
-             real_wp_ u[], const real_wp_ v[], bool got_j, const void * );
-ipc_ hessprod( ipc_ n, ipc_ m, const real_wp_ x[], const real_wp_ y[],
-              real_wp_ u[], const real_wp_ v[], bool got_h, const void * );
-ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[], const real_wp_ v[],
-                real_wp_ pval[], bool got_h, const void * );
-ipc_ scale( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ u[],
-           const real_wp_ v[], const void * );
-ipc_ jac_dense( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
+ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
+          rpc_ hval[], const void * );
+ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose,
+             rpc_ u[], const rpc_ v[], bool got_j, const void * );
+ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
+              rpc_ u[], const rpc_ v[], bool got_h, const void * );
+ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[],
+                rpc_ pval[], bool got_h, const void * );
+ipc_ scale( ipc_ n, ipc_ m, const rpc_ x[], rpc_ u[],
+           const rpc_ v[], const void * );
+ipc_ jac_dense( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
                const void * );
-ipc_ hess_dense( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
-                real_wp_ hval[], const void * );
-ipc_ rhessprods_dense( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[],
-                      const real_wp_ v[], real_wp_ pval[], bool got_h,
+ipc_ hess_dense( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
+                rpc_ hval[], const void * );
+ipc_ rhessprods_dense( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
+                      const rpc_ v[], rpc_ pval[], bool got_h,
                       const void * );
 
 int main(void) {
@@ -63,12 +63,12 @@ int main(void) {
     ipc_ P_ptr[] = {0, 1, 2, 2};    // column pointers
 
     // Set storage
-    real_wp_ x[n]; // variables
-    real_wp_ g[n]; // gradient
-    real_wp_ c[m]; // residual
-    real_wp_ y[m]; // multipliers
-    real_wp_ W[] = {1.0, 1.0, 1.0}; // weights
-    char st;
+    rpc_ x[n]; // variables
+    rpc_ g[n]; // gradient
+    rpc_ c[m]; // residual
+    rpc_ y[m]; // multipliers
+    rpc_ W[] = {1.0, 1.0, 1.0}; // weights
+    char st = ' ';
     ipc_ status;
 
     printf(" C sparse matrix indexing\n");
@@ -100,10 +100,10 @@ int main(void) {
 
     if(inform.status == 0){
         printf(" %i Gauss-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1i\n",
+               " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" NLS_solve exit status = %1i\n", inform.status);
+        printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     nls_terminate( &data, &control, &inform );
@@ -133,10 +133,10 @@ int main(void) {
 
     if(inform.status == 0){
         printf(" %i Newton iterations. Optimal objective value = %5.2f"
-               " status = %1i\n",
+               " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" NLS_solve exit status = %1i\n", inform.status);
+        printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     nls_terminate( &data, &control, &inform );
@@ -166,19 +166,19 @@ int main(void) {
 
     if(inform.status == 0){
         printf(" %i tensor-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1i\n",
+               " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
-        printf(" NLS_solve exit status = %1i\n", inform.status);
+        printf(" NLS_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
     // Delete internal workspace
     nls_terminate( &data, &control, &inform );
 }
 
 // compute the residuals
-ipc_ res( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ c[], const void *userdata ){
+ipc_ res( ipc_ n, ipc_ m, const rpc_ x[], rpc_ c[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
-    real_wp_ p = myuserdata->p;
+    rpc_ p = myuserdata->p;
     c[0] = pow(x[0],2.0) + p;
     c[1] = x[0] + pow(x[1],2.0);
     c[2] = x[0] - x[1];
@@ -186,7 +186,7 @@ ipc_ res( ipc_ n, ipc_ m, const real_wp_ x[], real_wp_ c[], const void *userdata
 }
 
 // compute the Jacobian
-ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
+ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ jval[],
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     jval[0] = 2.0 * x[0];
@@ -198,8 +198,8 @@ ipc_ jac( ipc_ n, ipc_ m, ipc_ jne, const real_wp_ x[], real_wp_ jval[],
 }
 
 // compute the Hessian
-ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
-           real_wp_ hval[], const void *userdata ){
+ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
+           rpc_ hval[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     hval[0] = 2.0 * y[0];
     hval[1] = 2.0 * y[1];
@@ -207,8 +207,8 @@ ipc_ hess( ipc_ n, ipc_ m, ipc_ hne, const real_wp_ x[], const real_wp_ y[],
 }
 
 // compute Jacobian-vector products
-ipc_ jacprod( ipc_ n, ipc_ m, const real_wp_ x[], const bool transpose, real_wp_ u[],
-             const real_wp_ v[], bool got_j, const void *userdata ){
+ipc_ jacprod( ipc_ n, ipc_ m, const rpc_ x[], const bool transpose, rpc_ u[],
+             const rpc_ v[], bool got_j, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     if (transpose) {
       u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];
@@ -222,8 +222,8 @@ ipc_ jacprod( ipc_ n, ipc_ m, const real_wp_ x[], const bool transpose, real_wp_
 }
 
 // compute Hessian-vector products
-ipc_ hessprod( ipc_ n, ipc_ m, const real_wp_ x[], const real_wp_ y[],
-              real_wp_ u[], const real_wp_ v[], bool got_h,
+ipc_ hessprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
+              rpc_ u[], const rpc_ v[], bool got_h,
               const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     u[0] = u[0] + 2.0 * y[0] * v[0];
@@ -232,8 +232,8 @@ ipc_ hessprod( ipc_ n, ipc_ m, const real_wp_ x[], const real_wp_ y[],
 }
 
 // compute residual-Hessians-vector products
-ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const real_wp_ x[], const real_wp_ v[],
-                real_wp_ pval[], bool got_h, const void *userdata ){
+ipc_ rhessprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[], const rpc_ v[],
+                rpc_ pval[], bool got_h, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     pval[0] = 2.0 * v[0];
     pval[1] = 2.0 * v[1];

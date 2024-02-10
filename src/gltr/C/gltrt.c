@@ -18,11 +18,11 @@ int main(void) {
     ipc_ n = 100; // dimension
 
     ipc_ status;
-    real_wp_ radius;
-    real_wp_ x[n];
-    real_wp_ r[n];
-    real_wp_ vector[n];
-    real_wp_ h_vector[n];
+    rpc_ radius;
+    rpc_ x[n];
+    rpc_ r[n];
+    rpc_ vector[n];
+    rpc_ h_vector[n];
 
     // Initialize gltr
     gltr_initialize( &data, &control, &status );
@@ -66,14 +66,15 @@ int main(void) {
           } else if ( status == 5 ) { // restart
             for( ipc_ i = 0; i < n; i++) r[i] = 1.0;
           }else{
-              printf(" the value %1i of status should not occur\n",
+              printf(" the value %1" i_ipc_ " of status should not occur\n",
                 status);
               break;
           }
         }
         gltr_information( &data, &inform, &status );
-        printf("MR = %1i%1i gltr_solve_problem exit status = %i,"
-             " f = %.2f\n", unit_m, new_radius, inform.status, inform.obj );
+        printf("MR = %1" i_ipc_ "%1" i_ipc_ 
+               " gltr_solve_problem exit status = %" i_ipc_ ", f = %.2f\n", 
+               unit_m, new_radius, inform.status, inform.obj );
       }
     }
    // Delete internal workspace

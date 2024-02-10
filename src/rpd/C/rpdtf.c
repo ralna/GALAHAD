@@ -64,22 +64,23 @@ int main(void) {
     rpd_get_stats( qplib_file, qplib_file_len, &control, &data, &status,
                    p_type, &n, &m, &h_ne, &a_ne, &h_c_ne );
     printf( " QPLIB file is of type %s\n", p_type );
-    printf( " n = %i, m = %i, h_ne = %i, a_ne = %i, h_c_ne = %i\n",
+    printf( " n = %" i_ipc_ ", m = %" i_ipc_ ", h_ne = %" i_ipc_ 
+            ", a_ne = %" i_ipc_ ", h_c_ne = %" i_ipc_ "\n",
             n, m, h_ne, a_ne, h_c_ne );
 
     // Recover g
-    real_wp_ g[n];
+    rpc_ g[n];
     rpd_get_g( &data, &status, n, g );
     printf( " g = %.1f %.1f %.1f %.1f %.1f\n",g[0], g[1], g[2], g[3], g[4]);
 
     // Recover f
-    real_wp_ f;
+    rpc_ f;
     rpd_get_f( &data, &status, &f );
     printf( " f = %.1f\n", f );
 
     // Recover xlu
-    real_wp_ x_l[n];
-    real_wp_ x_u[n];
+    rpc_ x_l[n];
+    rpc_ x_u[n];
     rpd_get_xlu( &data, &status, n, x_l, x_u );
     printf( " x_l = %.1f %.1f %.1f %.1f %.1f\n", x_l[0], x_l[1], x_l[2],
              x_l[3], x_l[4]);
@@ -87,8 +88,8 @@ int main(void) {
              x_u[3], x_u[4]);
 
     // Recover clu
-    real_wp_ c_l[m];
-    real_wp_ c_u[m];
+    rpc_ c_l[m];
+    rpc_ c_u[m];
     rpd_get_clu( &data, &status, m, c_l, c_u );
     printf( " c_l = %.1f %.1f\n", c_l[0], c_l[1] );
     printf( " c_u = %.1f %.1f\n", c_u[0], c_u[1] );
@@ -96,49 +97,50 @@ int main(void) {
     // Recover H
     ipc_ h_row[h_ne];
     ipc_ h_col[h_ne];
-    real_wp_ h_val[h_ne];
+    rpc_ h_val[h_ne];
     rpd_get_h( &data, &status, h_ne, h_row, h_col, h_val );
     printf( " h_row, h_col, h_val =\n");
-    for( ipc_ i = 0; i < h_ne; i++) printf("   %i %i %.1f\n",
+    for( ipc_ i = 0; i < h_ne; i++) printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n",
          h_row[i], h_col[i], h_val[i]);
 
     // Recover A
     ipc_ a_row[a_ne];
     ipc_ a_col[a_ne];
-    real_wp_ a_val[a_ne];
+    rpc_ a_val[a_ne];
     rpd_get_a( &data, &status, a_ne, a_row, a_col, a_val );
     printf( " a_row, a_col, a_val =\n");
-    for( ipc_ i = 0; i < a_ne; i++) printf("   %i %i %.1f\n",
+    for( ipc_ i = 0; i < a_ne; i++) printf("   %" i_ipc_ " %" i_ipc_ " %.1f\n",
          a_row[i], a_col[i], a_val[i]);
 
     // Recover H_c
     ipc_ h_c_ptr[h_c_ne];
     ipc_ h_c_row[h_c_ne];
     ipc_ h_c_col[h_c_ne];
-    real_wp_ h_c_val[h_c_ne];
+    rpc_ h_c_val[h_c_ne];
     rpd_get_h_c( &data, &status, h_c_ne, h_c_ptr, h_c_row, h_c_col, h_c_val );
     printf( " h_c_row, h_c_col, h_c_val =\n");
-    for( ipc_ i = 0; i < h_c_ne; i++) printf("   %i %i %i %.1f\n",
-         h_c_ptr[i], h_c_row[i], h_c_col[i], h_c_val[i]);
+    for( ipc_ i = 0; i < h_c_ne; i++) printf("   %" i_ipc_ " %" i_ipc_ 
+         " %" i_ipc_ " %.1f\n", h_c_ptr[i], h_c_row[i], h_c_col[i], h_c_val[i]);
 
     // Recover x_type
     ipc_ x_type[n];
     rpd_get_x_type( &data, &status, n, x_type );
-    printf( " x_type = %i %i %i %i %i\n", x_type[0], x_type[1], x_type[2],
+    printf( " x_type = %" i_ipc_ " %" i_ipc_ " %" i_ipc_ " %" i_ipc_ 
+            " %" i_ipc_ "\n", x_type[0], x_type[1], x_type[2],
             x_type[3], x_type[4] );
 
     // Recover x
-    real_wp_ x[n];
+    rpc_ x[n];
     rpd_get_x( &data, &status, n, x );
     printf( " x = %.1f %.1f %.1f %.1f %.1f\n",x[0], x[1], x[2], x[3], x[4]);
 
     // Recover y
-    real_wp_ y[m];
+    rpc_ y[m];
     rpd_get_y( &data, &status, m, y );
     printf( " y = %.1f %.1f\n",y[0], y[1]);
 
     // Recover z
-    real_wp_ z[n];
+    rpc_ z[n];
     rpd_get_z( &data, &status, n, z );
     printf( " z = %.1f %.1f %.1f %.1f %.1f\n",z[0], z[1], z[2], z[3], z[4]);
 

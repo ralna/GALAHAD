@@ -85,7 +85,7 @@ struct ma77_control {
    /* Controls used by MA77_scale */
    ipc_ maxit;
    ipc_ infnorm;
-   real_wp_ thresh;
+   rpc_ thresh;
 
    /* Controls used by MA77_factor with posdef true */
    ipc_ nb54;
@@ -93,27 +93,27 @@ struct ma77_control {
    /* Controls used by MA77_factor with posdef false */
    ipc_ action;    /* Keep going even if matrix is singular if true, or abort
                      if false */
-   real_wp_ multiplier;
+   rpc_ multiplier;
    ipc_ nb64;
    ipc_ nbi;
-   real_wp_ small;
-   real_wp_ static_;
+   rpc_ small;
+   rpc_ static_;
    long storage_indef;
-   real_wp_ u;       /* Pivot tolerance*/
-   real_wp_ umin;    /* Minimum pivot tolerance*/
+   rpc_ u;       /* Pivot tolerance*/
+   rpc_ umin;    /* Minimum pivot tolerance*/
 
    /* Controls used by ma77_solve_fredholm */
-   real_wp_ consist_tol;   /* Tolerance for consistent singular system */
+   rpc_ consist_tol;   /* Tolerance for consistent singular system */
 
    /* Pad data structure to allow for future growth */
-   ipc_ ispare[5]; long lspare[5]; real_wp_ rspare[5];
+   ipc_ ispare[5]; long lspare[5]; rpc_ rspare[5];
 };
 
 /***************************************************/
 
 /* data type for returning information to user.*/
 struct ma77_info {
-   real_wp_ detlog;
+   rpc_ detlog;
    ipc_ detsign;
    ipc_ flag;
    ipc_ iostat;
@@ -143,10 +143,10 @@ struct ma77_info {
    ipc_ tree_nodes;
    ipc_ unit_restart;
    ipc_ unused;
-   real_wp_ usmall;
+   rpc_ usmall;
 
    /* Pad data structure to allow for future growth */
-   ipc_ ispare[5]; long lspare[5]; real_wp_ rspare[5];
+   ipc_ ispare[5]; long lspare[5]; rpc_ rspare[5];
 };
 
 #endif

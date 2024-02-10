@@ -87,10 +87,10 @@ struct ma86_control {
                         if false */
    ipc_ nbi;         /* Inner block size for use with ma64*/
    ipc_ pool_size;   /* Size of task pool arrays*/
-   real_wp_ small_;  /* Pivots less than small are treated as zero*/
-   real_wp_ static_; /* Control static pivoting*/
-   real_wp_ u;       /* Pivot tolerance*/
-   real_wp_ umin;    /* Minimum pivot tolerance*/
+   rpc_ small_;  /* Pivots less than small are treated as zero*/
+   rpc_ static_; /* Control static pivoting*/
+   rpc_ u;       /* Pivot tolerance*/
+   rpc_ umin;    /* Minimum pivot tolerance*/
    ipc_ scaling;     /* Scaling algorithm to use */
 };
 
@@ -98,7 +98,7 @@ struct ma86_control {
 
 /* data type for returning information to user.*/
 struct ma86_info {
-   real_wp_ detlog;     /* Holds logarithm of abs det A (or 0) */
+   rpc_ detlog;     /* Holds logarithm of abs det A (or 0) */
    ipc_ detsign;        /* Holds sign of determinant (+/-1 or 0) */
    ipc_ flag;           /* Error return flag (0 on success) */
    ipc_ matrix_rank;    /* Rank of matrix */
@@ -113,7 +113,7 @@ struct ma86_info {
    ipc_ num_two;        /* Number of 2x2 pivots */
    ipc_ pool_size;      /* Maximum size of task pool used */
    ipc_ stat;           /* STAT value on error return -1. */
-   real_wp_ usmall;     /* smallest threshold parameter used */
+   rpc_ usmall;     /* smallest threshold parameter used */
 };
 
 #endif

@@ -1,7 +1,7 @@
 //* \file galahad_sbls.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 24/11/2021 AT 15:06 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SBLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -435,32 +435,32 @@ struct sbls_control_type {
 
     /// \brief
     /// the relative pivot tolerance used by ULS (obsolete)
-    real_wp_ pivot_tol;
+    rpc_ pivot_tol;
 
     /// \brief
     /// the relative pivot tolerance used by ULS when determining
     /// the basis matrix
-    real_wp_ pivot_tol_for_basis;
+    rpc_ pivot_tol_for_basis;
 
     /// \brief
     /// the absolute pivot tolerance used by ULS (obsolete)
-    real_wp_ zero_pivot;
+    rpc_ zero_pivot;
 
     /// \brief
     /// not used at present
-    real_wp_ static_tolerance;
+    rpc_ static_tolerance;
     /// see static_tolerance
-    real_wp_ static_level;
+    rpc_ static_level;
 
     /// \brief
     /// the minimum permitted diagonal in diag(max(\f$H\f$,min_diag))
-    real_wp_ min_diagonal;
+    rpc_ min_diagonal;
 
     /// \brief
     /// the required absolute and relative accuracies
-    real_wp_ stop_absolute;
+    rpc_ stop_absolute;
     /// see stop_absolute
-    real_wp_ stop_relative;
+    rpc_ stop_relative;
 
     /// \brief
     /// preprocess equality constraints to remove linear dependencies
@@ -537,35 +537,35 @@ struct sbls_time_type {
 
     /// \brief
     /// total cpu time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// cpu time spent forming the preconditioner \f$K_G\f$
-    real_wp_ form;
+    rpc_ form;
 
     /// \brief
     /// cpu time spent factorizing \f$K_G\f$
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// cpu time spent solving linear systems inolving \f$K_G\f$
-    real_wp_ apply;
+    rpc_ apply;
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time spent forming the preconditioner \f$K_G\f$
-    real_wp_ clock_form;
+    rpc_ clock_form;
 
     /// \brief
     /// clock time spent factorizing \f$K_G\f$
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// clock time spent solving linear systems inolving \f$K_G\f$
-    real_wp_ clock_apply;
+    rpc_ clock_apply;
 };
 
 /**
@@ -628,7 +628,7 @@ struct sbls_inform_type {
 
     /// \brief
     /// the norm of the residual
-    real_wp_ norm_residual;
+    rpc_ norm_residual;
 
     /// \brief
     /// has an "alternative" \f$y\f$: \f$K y = 0\f$ and \f$y^T c > 0\f$
@@ -662,7 +662,7 @@ void sbls_initialize( void **data,
  @param[out] control  is a struct containing control information
               (see sbls_control_type)
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -717,7 +717,7 @@ void sbls_import( struct sbls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
   \li -1. An allocation error occurred. A message indicating the
@@ -735,10 +735,10 @@ void sbls_import( struct sbls_control_type *control,
        'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
         has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$H\f$.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$C\f$.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
@@ -748,22 +748,22 @@ void sbls_import( struct sbls_control_type *control,
    'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
    case variants are allowed.
 
- @param[in]  H_ne is a scalar variable of type int, that holds the number of
+ @param[in]  H_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size H_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  H_col is a one-dimensional array of size H_ne and type int,
+ @param[in]  H_col is a one-dimensional array of size H_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$H\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -775,21 +775,21 @@ void sbls_import( struct sbls_control_type *control,
   'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
   is via matrix-vector products; lower or upper case variants are allowed.
 
- @param[in]  A_ne is a scalar variable of type int, that holds the number of
+ @param[in]  A_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+ @param[in]  A_row is a one-dimensional array of size A_ne and type ipc_, that
    holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -802,22 +802,22 @@ void sbls_import( struct sbls_control_type *control,
    'zero' or 'none', the latter pair if \f$C=0\f$; lower or upper
    case variants are allowed.
 
- @param[in]  C_ne is a scalar variable of type int, that holds the number of
+ @param[in]  C_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$C\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  C_row is a one-dimensional array of size C_ne and type int, that
+ @param[in]  C_row is a one-dimensional array of size C_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$C\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  C_col is a one-dimensional array of size C_ne and type int,
+ @param[in]  C_col is a one-dimensional array of size C_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$C\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
- @param[in]  C_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  C_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$C\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -838,7 +838,7 @@ void sbls_reset_control( struct sbls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
 */
@@ -849,12 +849,12 @@ void sbls_factorize_matrix( void **data,
                             ipc_ *status,
                             ipc_ n,
                             ipc_ h_ne,
-                            const real_wp_ H_val[],
+                            const rpc_ H_val[],
                             ipc_ a_ne,
-                            const real_wp_ A_val[],
+                            const rpc_ A_val[],
                             ipc_ c_ne,
-                            const real_wp_ C_val[],
-                            const real_wp_ D[] );
+                            const rpc_ C_val[],
+                            const rpc_ D[] );
 
 /*!<
  Form and factorize the block matrix
@@ -869,7 +869,7 @@ for some appropriate matrix \f$G\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -909,31 +909,31 @@ for some appropriate matrix \f$G\f$.
     The return status from SORT_reorder_by_rows is given in inform.sort_status.
     See the documentation for the GALAHAD package SORT for further details.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$H\f$.
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of
+ @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size h_ne and type double,
+ @param[in] H_val is a one-dimensional array of size h_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     symmetric matrix \f$H\f$ in any of the available storage schemes
 
- @param[in] a_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type ipc_, that holds the number of
     entries in the unsymmetric matrix \f$A\f$.
 
- @param[in] A_val is a one-dimensional array of size a_ne and type double,
+ @param[in] A_val is a one-dimensional array of size a_ne and type rpc_,
     that holds the values of the entries of the unsymmetric matrix
     \f$A\f$ in any of the available storage schemes.
 
- @param[in] c_ne is a scalar variable of type int, that holds the number of
+ @param[in] c_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$C\f$.
 
- @param[in] C_val is a one-dimensional array of size c_ne and type double,
+ @param[in] C_val is a one-dimensional array of size c_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     symmetric matrix \f$C\f$ in any of the available storage schemes
 
- @param[in] D is a one-dimensional array of size n and type double,
+ @param[in] D is a one-dimensional array of size n and type rpc_,
     that holds the values of the entries of the diagonal matrix
     \f$D\f$ that is required if the user has specified
     control.preconditioner = 5. It need not be set otherwise.
@@ -945,7 +945,7 @@ void sbls_solve_system( void **data,
                         ipc_ *status,
                         ipc_ n,
                         ipc_ m,
-                        real_wp_ sol[] );
+                        rpc_ sol[] );
 
 /*!<
  Solve the block linear system
@@ -961,7 +961,7 @@ void sbls_solve_system( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The required solution was obtained.
@@ -983,10 +983,10 @@ void sbls_solve_system( void **data,
        ULS_solve is given in inform.uls_solve_status.  See the documentation
        for the GALAHAD package ULS for further details.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     entries in the vector \f$a\f$.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     entries in the vector \f$b\f$.
 
  @param[in,out] sol is a one-dimensional array of size n + m and type double.
@@ -1010,7 +1010,7 @@ void sbls_information( void **data,
   @param[out] inform is a struct containing output information
               (see sbls_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

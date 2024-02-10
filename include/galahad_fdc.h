@@ -1,7 +1,7 @@
 //* \file galahad_fdc.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-19 AT 13:30 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_FDC C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -146,15 +146,15 @@ struct fdc_control_type {
 
     /// \brief
     /// the relative pivot tolerance (obsolete)
-    real_wp_ pivot_tol;
+    rpc_ pivot_tol;
 
     /// \brief
     /// the absolute pivot tolerance used (obsolete)
-    real_wp_ zero_pivot;
+    rpc_ zero_pivot;
 
     /// \brief
     /// the largest permitted residual
-    real_wp_ max_infeas;
+    rpc_ max_infeas;
 
     /// \brief
     /// choose whether SLS or ULS is used to determine dependencies
@@ -204,29 +204,29 @@ struct fdc_time_type {
 
     /// \brief
     /// the total CPU time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// the CPU time spent analysing the required matrices prior to
     /// factorization
-    real_wp_ analyse;
+    rpc_ analyse;
 
     /// \brief
     /// the CPU time spent factorizing the required matrices
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the clock time spent analysing the required matrices prior to
     /// factorization
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// the clock time spent factorizing the required matrices
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 };
 
 /**
@@ -262,7 +262,7 @@ struct fdc_inform_type {
     /// \brief
     /// the smallest pivot which was not judged to be zero when detecting linear
     /// dependent constraints
-    real_wp_ non_negligible_pivot;
+    rpc_ non_negligible_pivot;
 
     /// \brief
     /// timings (see above)
@@ -291,7 +291,7 @@ void fdc_initialize( void **data,
   @param[out] control is a struct containing control information
               (see fdc_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -327,8 +327,8 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
                               ipc_ A_ne,
                               const ipc_ A_col[],
                               const ipc_ A_ptr[],
-                              const real_wp_ A_val[],
-                              const real_wp_ b[],
+                              const rpc_ A_val[],
+                              const rpc_ b[],
                               ipc_ *n_depen,
                               ipc_ depen[] );
 
@@ -343,7 +343,7 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
  @param[out] inform  is a struct containing output information
               (see fdc_inform_type)
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -367,36 +367,36 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
   \li -10. The factorization failed; the return status from the factorization
          package is given in the component inform.factor_status.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     rows of \f$A\f$.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     columns of \f$A\f$.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
+ @param[in] A_ne is a scalar variable of type ipc_, that holds the number of
     nonzero entries in \f$A\f$.
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in a row-wise storage scheme.
    The nonzeros must be ordered so that those in row i appear directly before
    those in row i+1, the order within each row is unimportant.
 
- @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries.
 
- @param[in] A_val is a one-dimensional array of size a_ne and type double,
+ @param[in] A_val is a one-dimensional array of size a_ne and type rpc_,
     that holds the values of the entries of the \f$A\f$ ordered as in A_col
     and A_ptr.
 
- @param[in] b is a one-dimensional array of size m and type double, that
+ @param[in] b is a one-dimensional array of size m and type rpc_, that
     holds the linear term \f$b\f$  in the constraints.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i\f$.
 
- @param[out] n_depen is a scalar variable of type int, that holds the number of
+ @param[out] n_depen is a scalar variable of type ipc_, that holds the number of
     dependent constraints, if any.
 
- @param[out] depen is a one-dimensional array of size m and type int, whose
+ @param[out] depen is a one-dimensional array of size m and type ipc_, whose
     first n_depen components contain the indices of dependent constraints.
 
 */

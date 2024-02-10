@@ -1,7 +1,7 @@
 //* \file galahad_sils.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-20 AT 13.30 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SILS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -220,37 +220,37 @@ struct sils_control_type {
 
     /// \brief
     /// MA27 internal real controls
-    real_wp_ CNTL[5];
+    rpc_ CNTL[5];
 
     /// \brief
     /// Factor by which arrays sizes are to be increased if they are too small
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// If previously allocated internal workspace arrays are greater than
     /// reduce times the currently required sizes, they are reset to current
     /// requirment
-    real_wp_ reduce;
+    rpc_ reduce;
 
     /// \brief
     /// Pivot threshold
-    real_wp_ u;
+    rpc_ u;
 
     /// \brief
     /// used for setting static pivot level
-    real_wp_ static_tolerance;
+    rpc_ static_tolerance;
 
     /// \brief
     /// used for switch to static
-    real_wp_ static_level;
+    rpc_ static_level;
 
     /// \brief
     /// Anything less than this is considered zero
-    real_wp_ tolerance;
+    rpc_ tolerance;
 
     /// \brief
     /// used to monitor convergence in iterative refinement
-    real_wp_ convergence;
+    rpc_ convergence;
 };
 
 /**
@@ -320,11 +320,11 @@ struct sils_ainfo_type {
 
     /// \brief
     /// Anticipated number of operations in assembly
-    real_wp_ opsa;
+    rpc_ opsa;
 
     /// \brief
     /// Anticipated number of operations in elimination
-    real_wp_ opse;
+    rpc_ opse;
 };
 
 /**
@@ -422,27 +422,27 @@ struct sils_finfo_type {
 
     /// \brief
     /// # operations in assembly
-    real_wp_ opsa;
+    rpc_ opsa;
 
     /// \brief
     /// number of operations in elimination
-    real_wp_ opse;
+    rpc_ opse;
 
     /// \brief
     /// Additional number of operations for BLAS
-    real_wp_ opsb;
+    rpc_ opsb;
 
     /// \brief
     /// Largest control.pivoting=4 modification
-    real_wp_ maxchange;
+    rpc_ maxchange;
 
     /// \brief
     /// Minimum scaling factor
-    real_wp_ smin;
+    rpc_ smin;
 
     /// \brief
     /// Maximum scaling factor
-    real_wp_ smax;
+    rpc_ smax;
 };
 
 /**
@@ -460,23 +460,23 @@ struct sils_sinfo_type {
 
     /// \brief
     /// Condition number of matrix (category 1 eqs)
-    real_wp_ cond;
+    rpc_ cond;
 
     /// \brief
     /// Condition number of matrix (category 2 eqs)
-    real_wp_ cond2;
+    rpc_ cond2;
 
     /// \brief
     /// Backward error for the system (category 1 eqs)
-    real_wp_ berr;
+    rpc_ berr;
 
     /// \brief
     /// Backward error for the system (category 2 eqs)
-    real_wp_ berr2;
+    rpc_ berr2;
 
     /// \brief
     /// Estimate of forward error
-    real_wp_ error;
+    rpc_ error;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    S I L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
@@ -491,7 +491,7 @@ void sils_initialize( void **data,
   @param[in,out] data  holds private internal data
   @param[out] control  is a struct containing control information
               (see sils_control_type)
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully
@@ -530,7 +530,7 @@ void sils_import( struct sils_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -562,7 +562,7 @@ void sils_reset_control( struct sils_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -589,7 +589,7 @@ void sils_information( void **data,
   @param[out] sinfo is a struct containing output information
               (see sils_sinfo_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully
@@ -609,7 +609,7 @@ void sils_finalize( void **data,
   @param[out] control  is a struct containing control information
               (see sils_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

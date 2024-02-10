@@ -1,7 +1,7 @@
 //* \file galahad_icfs.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-12-06 AT 09:20 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ICFS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -90,7 +90,7 @@ struct icfs_control_type {
     /// a diagonal matrix whose entries are no larger than \f$\alpha\f$.
     /// This value \f$\alpha\f$ may subsequently be increased, as necessary,
     /// by the package, see icfs_inform_type.shift.
-    real_wp_ shift;
+    rpc_ shift;
 
     /// \brief
     /// if .space_critical true, every effort will be made to use as little
@@ -129,15 +129,15 @@ struct icfs_time_type {
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time for the factorization phase
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// clock time for the triangular solution phase
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -165,7 +165,7 @@ struct icfs_inform_type {
     /// the integer and real output arrays from mc61
     ipc_ mc61_info[10];
     /// see mc61_info
-    real_wp_ mc61_rinfo[15];
+    rpc_ mc61_rinfo[15];
 
     /// \brief
     /// times for various stages
@@ -186,7 +186,7 @@ void icfs_initialize( void **data,
   @param[out] control is a struct containing control information
               (see icfs_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -224,7 +224,7 @@ void icfs_reset_control( struct icfs_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful
 */
@@ -236,8 +236,8 @@ void icfs_factorize_matrix( void **data,
                             ipc_ n,
                             const ipc_ ptr[] );
                             const ipc_ row[],
-                            const real_wp_ diag[] );
-                            const real_wp_ val[] );
+                            const rpc_ diag[] );
+                            const rpc_ val[] );
 
 /*!<
  Form and factorize an incomplete factorization \f$P = L L^T\f$ of the
@@ -245,7 +245,7 @@ void icfs_factorize_matrix( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -260,10 +260,10 @@ void icfs_factorize_matrix( void **data,
        are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 has been violated
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$A\f$.
 
- @param[in]  ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each column of the strictly
    lower triangular part of \f$A\f$ (i.e., \f$a_{i,j}\f$ for \f$i > j\f$),
    as well as the total number of entries. The entries for
@@ -271,15 +271,15 @@ void icfs_factorize_matrix( void **data,
    the arrays matrix_row and matrix_val.
 
  @param[in] row is a one-dimensional array of size matrix_ptr(n+1)-1
-   and type int, that holds the row indices of the strictly lower triangular
+   and type ipc_, that holds the row indices of the strictly lower triangular
    part of \f$A\f$ as dictated by matrix_ptr.
 
- @param[in] diag is a one-dimensional array of size n and type double, that
+ @param[in] diag is a one-dimensional array of size n and type rpc_, that
    holds the values of the diagonals of \f$A\f$., i.e., matrix_diag(i) =
    \f$a_{i,i}\f$.
 
  @param[in] val is a one-dimensional array of size matrix_ptr(n+1)-1 and type
-    double, that holds the values of the entries of  the strict lower
+    rpc_, that holds the values of the entries of  the strict lower
     triangular part of \f$A\f$ input in precisely the same  order as those
     for the row indices.
 */
@@ -290,7 +290,7 @@ void icfs_factorize_matrix( void **data,
 void icfs_solve_system( void **data,
                         ipc_ *status,
                         ipc_ n,
-                        real_wp_ sol[],
+                        rpc_ sol[],
                         bool trans );
 
 /*!<
@@ -298,7 +298,7 @@ void icfs_solve_system( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The required solution was obtained.
@@ -312,7 +312,7 @@ void icfs_solve_system( void **data,
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     entries in the vectors \f$b\f$ and \f$x\f$.
 
  @param[in,out] sol is a one-dimensional array of size n and type double.
@@ -338,7 +338,7 @@ void icfs_information( void **data,
   @param[out] inform is a struct containing output information
               (see icfs_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

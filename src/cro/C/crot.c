@@ -23,32 +23,32 @@ int main(void) {
     //  describe the objective function
 
     ipc_ H_ne = 21;
-    real_wp_ H_val[] = {1.0,0.5,1.0,0.5,1.0,0.5,1.0,0.5,1.0,0.5,
+    rpc_ H_val[] = {1.0,0.5,1.0,0.5,1.0,0.5,1.0,0.5,1.0,0.5,
                         1.0,0.5,1.0,0.5,1.0,0.5,1.0,0.5,1.0,0.5,1.0};
     ipc_ H_col[] = {0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10};
     ipc_ H_ptr[] = {0,1,3,5,7,9,11,13,15,17,19,21};
-    real_wp_ g[] = {0.5,-0.5,-1.0,-1.0,-1.0, -1.0,-1.0,-1.0,-1.0,-1.0,-0.5};
+    rpc_ g[] = {0.5,-0.5,-1.0,-1.0,-1.0, -1.0,-1.0,-1.0,-1.0,-1.0,-0.5};
 
     //  describe constraints
 
     ipc_ A_ne = 30;
-    real_wp_ A_val[] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
+    rpc_ A_val[] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
                         1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
                         1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
     ipc_ A_col[] = {0,1,2,3,4,5,6,7,8,9,10,2,3,4,5,6,7,8,9,10,
                    1,2,3,4,5,6,7,8,9,10};
     ipc_ A_ptr[] = {0,11,20,30};
-    real_wp_ c_l[] = {10.0,9.0,-INFINITY};
-    real_wp_ c_u[] = {10.0,INFINITY,10.0};
-    real_wp_ x_l[] = {0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
-    real_wp_ x_u[] = {INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,
+    rpc_ c_l[] = {10.0,9.0,-INFINITY};
+    rpc_ c_u[] = {10.0,INFINITY,10.0};
+    rpc_ x_l[] = {0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0};
+    rpc_ x_u[] = {INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,INFINITY,
                       INFINITY,INFINITY,INFINITY,INFINITY,INFINITY};
 
     // provide optimal variables, Lagrange multipliers and dual variables
-    real_wp_ x[] = {0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0, 1.0,1.0,1.0};
-    real_wp_ c[] = {10.0,9.0,10.0};
-    real_wp_ y[] = { -1.0,1.5,-2.0};
-    real_wp_ z[] = {2.0,4.0,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5};
+    rpc_ x[] = {0.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0, 1.0,1.0,1.0};
+    rpc_ c[] = {10.0,9.0,10.0};
+    rpc_ y[] = { -1.0,1.5,-2.0};
+    rpc_ z[] = {2.0,4.0,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5};
     // provide interior-point constraint and variable status
     ipc_ c_stat[] = {-1,-1,1};
     ipc_ x_stat[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
@@ -73,7 +73,7 @@ int main(void) {
                             g, c_l, c_u, x_l, x_u, x, c, y, z,
                             x_stat, c_stat );
 
-    printf(" CRO_crossover exit status = %1i\n", inform.status);
+    printf(" CRO_crossover exit status = %1" i_ipc_ "\n", inform.status);
 
     // Delete internal workspace
     cro_terminate( &data, &control, &inform );

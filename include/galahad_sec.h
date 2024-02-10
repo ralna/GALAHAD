@@ -1,7 +1,7 @@
 //* \file galahad_sec.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 17:01 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SEC C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -80,12 +80,12 @@ struct sec_control_type {
 
     /// \brief
     /// the initial Hessian approximation will be h_initial * \f$I\f$
-    real_wp_ h_initial;
+    rpc_ h_initial;
 
     /// \brief
     /// an update is skipped if the resulting matrix would have grown too much;
     ///  specifically it is skipped when y^T s / y^T y <= update_skip_tol.
-    real_wp_ update_skip_tol;
+    rpc_ update_skip_tol;
 
     /// \brief
     /// all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1)
@@ -117,7 +117,7 @@ void sec_initialize( struct sec_control_type *control,
   @param[out] control is a struct containing control information
               (see sec_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -136,7 +136,7 @@ void sec_information( void **data,
   @param[out] inform is a struct containing output information
               (see sec_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

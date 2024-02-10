@@ -1,7 +1,7 @@
 //* \file galahad_lms.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 16:20 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LMS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -161,35 +161,35 @@ struct lms_time_type {
 
     /// \brief
     /// total cpu time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// cpu time spent setting up space for the secant approximation
-    real_wp_ setup;
+    rpc_ setup;
 
     /// \brief
     /// cpu time spent updating the secant approximation
-    real_wp_ form;
+    rpc_ form;
 
     /// \brief
     /// cpu time spent applying the secant approximation
-    real_wp_ apply;
+    rpc_ apply;
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time spent setting up space for the secant approximation
-    real_wp_ clock_setup;
+    rpc_ clock_setup;
 
     /// \brief
     /// clock time spent updating the secant approximation
-    real_wp_ clock_form;
+    rpc_ clock_form;
 
     /// \brief
     /// clock time spent applying the secant approximation
-    real_wp_ clock_apply;
+    rpc_ clock_apply;
 };
 
 /**
@@ -260,7 +260,7 @@ void lms_initialize( void **data,
   @param[out] control is a struct containing control information
               (see lms_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -279,7 +279,7 @@ void lms_information( void **data,
   @param[out] inform is a struct containing output information
               (see lms_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

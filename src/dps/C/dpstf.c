@@ -17,22 +17,21 @@ int main(void) {
 
     // Set problem data
     ipc_ n = 3; // dimension of H
-    ipc_ m = 1; // dimension of A
     ipc_ H_ne = 4; // number of elements of H
     ipc_ H_dense_ne = 6; // number of elements of H
     ipc_ H_row[] = {1, 2, 3, 3}; // row indices, NB lower triangle
     ipc_ H_col[] = {1, 2, 3, 1};
     ipc_ H_ptr[] = {1, 2, 3, 5};
-    real_wp_ H_val[] = {1.0, 2.0, 3.0, 4.0};
-    real_wp_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
-    real_wp_ f = 0.96;
-    real_wp_ radius = 1.0;
-    real_wp_ half_radius = 0.5;
-    real_wp_ c[] = {0.0, 2.0, 0.0};
+    rpc_ H_val[] = {1.0, 2.0, 3.0, 4.0};
+    rpc_ H_dense[] = {1.0, 0.0, 2.0, 4.0, 0.0, 3.0};
+    rpc_ f = 0.96;
+    rpc_ radius = 1.0;
+    rpc_ half_radius = 0.5;
+    rpc_ c[] = {0.0, 2.0, 0.0};
 
-    char st;
+    char st = ' ';
     ipc_ status;
-    real_wp_ x[n];
+    rpc_ x[n];
 
     printf(" Fortran sparse matrix indexing\n\n");
 
@@ -76,7 +75,7 @@ int main(void) {
         }
 
       dps_information( &data, &inform, &status );
-      printf("format %c: DPS_solve_problem exit status   = %1i, f = %.2f\n",
+      printf("format %c: DPS_solve_problem exit status   = %1" i_ipc_ ", f = %.2f\n",
              st, inform.status, inform.obj );
 
       switch(storage_type){
@@ -99,7 +98,7 @@ int main(void) {
         }
 
       dps_information( &data, &inform, &status );
-      printf("format %c: DPS_resolve_problem exit status = %1i, f = %.2f\n",
+      printf("format %c: DPS_resolve_problem exit status = %1" i_ipc_ ", f = %.2f\n",
              st, inform.status, inform.obj );
       //printf("x: ");
       //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);

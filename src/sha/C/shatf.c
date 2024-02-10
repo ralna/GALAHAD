@@ -22,14 +22,14 @@ int main(void) {
     ipc_ m_max = 9; // upper bound on max # differences required
     ipc_ row[] = {1, 1, 1, 1, 1, 2, 3, 4, 5}; // row indices, NB upper triangle
     ipc_ col[] = {1, 2, 3, 4, 5, 2, 3, 4, 5}; // column indices
-    real_wp_ val[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}; // values
+    rpc_ val[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}; // values
     ipc_ i, j, k, l, m, status;
-    real_wp_ rr, v;
-    real_wp_ val_est[ne];
+    rpc_ rr, v;
+    rpc_ val_est[ne];
     ipc_ ls1 = m_max, ls2 = n; // dimensions of s
     ipc_ ly1 = m_max, ly2 = n; // dimensions of y
-    real_wp_ strans[ls1][ls2];
-    real_wp_ ytrans[ly1][ly2];
+    rpc_ strans[ls1][ls2];
+    rpc_ ytrans[ly1][ly2];
     ipc_ order[m_max]; // diffference precedence order
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -56,7 +56,7 @@ int main(void) {
         for( ipc_ k = 0; k < m; k++) {
           // set up random differences strans
           for( ipc_ i = 0; i < n; i++) {
-            rr = ((real_wp_) rand()/ RAND_MAX);
+            rr = ((rpc_) rand()/ RAND_MAX);
             strans[k][i] = -1.0 + 2.0 * rr;
             ytrans[k][i] = 0.0; // initialize ytrans as the zero matrix
           }

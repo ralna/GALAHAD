@@ -1,7 +1,7 @@
 //* \file galahad_uls.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 09/12/2021 AT 12:55 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ULS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -268,37 +268,37 @@ struct uls_control_type {
 
     /// \brief
     /// factor by which arrays sizes are to be increased if they are too small
-    real_wp_ array_increase_factor;
+    rpc_ array_increase_factor;
 
     /// \brief
     /// switch to full code when the density exceeds this factor
-    real_wp_ switch_to_full_code_density;
+    rpc_ switch_to_full_code_density;
 
     /// \brief
     /// if previously allocated internal workspace arrays are greater than
     /// array_decrease_factor times the currently required sizes, they are reset
     /// to current requirements
-    real_wp_ array_decrease_factor;
+    rpc_ array_decrease_factor;
 
     /// \brief
     /// pivot threshold
-    real_wp_ relative_pivot_tolerance;
+    rpc_ relative_pivot_tolerance;
 
     /// \brief
     /// any pivot small than this is considered zero
-    real_wp_ absolute_pivot_tolerance;
+    rpc_ absolute_pivot_tolerance;
 
     /// \brief
     /// any entry smaller than this in modulus is reset to zero
-    real_wp_ zero_tolerance;
+    rpc_ zero_tolerance;
 
     /// \brief
     /// refinement will cease as soon as the residual \f$\|Ax-b\|\f$ falls
     /// below max( acceptable_residual_relative * \f$\|b\|\f$,
     ///            acceptable_residual_absolute )
-    real_wp_ acceptable_residual_relative;
+    rpc_ acceptable_residual_relative;
     /// see acceptable_residual_relative
-    real_wp_ acceptable_residual_absolute;
+    rpc_ acceptable_residual_absolute;
 
     /// \brief
     /// all output lines will be prefixed by
@@ -437,7 +437,7 @@ void uls_initialize( const char solver[],
  @param[out] control is a struct containing control information
               (see uls_control_type)
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
   \li -26. The requested solver is not available.
@@ -471,7 +471,7 @@ void uls_factorize_matrix( struct uls_control_type *control,
                            ipc_ n,
                            const char type[],
                            ipc_ ne,
-                           const real_wp_ val[],
+                           const rpc_ val[],
                            const ipc_ row[],
                            const ipc_ col[],
                            const ipc_ ptr[] );
@@ -485,7 +485,7 @@ void uls_factorize_matrix( struct uls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The import, analysis and factorization were conducted succesfully.
@@ -509,10 +509,10 @@ void uls_factorize_matrix( struct uls_control_type *control,
        information component of inform along with the solver’s
        documentation for more details.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     rows in the unsymmetric matrix \f$A\f$.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     columns in the unsymmetric matrix \f$A\f$.
 
  @param[in] type is a one-dimensional array of type char that specifies the
@@ -520,26 +520,26 @@ void uls_factorize_matrix( struct uls_control_type *control,
    used for the matrix \f$A\f$. It should be one of 'coordinate',
    'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in] val is a one-dimensional array of size ne and type double,
+ @param[in] val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the matrix \f$A\f$ in any of
    the supported storage schemes.
 
- @param[in] row is a one-dimensional array of size ne and type int, that
+ @param[in] row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the matrix \f$A\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in] col is a one-dimensional array of size ne and type int,
+ @param[in] col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the matrix \f$A\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense storage schemes is used,  and in this
    case can be NULL.
 
- @param[in]  ptr is a one-dimensional array of size m+1 and type int,
+ @param[in]  ptr is a one-dimensional array of size m+1 and type ipc_,
    that holds the starting position of  each row of the matrix
    \f$A\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -561,7 +561,7 @@ void uls_reset_control( struct uls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
 */
@@ -572,7 +572,7 @@ void uls_solve_system( void **data,
                        ipc_ *status,
                        ipc_ m,
                        ipc_ n,
-                       real_wp_ sol[],
+                       rpc_ sol[],
                        bool trans );
 
 /*!<
@@ -580,7 +580,7 @@ void uls_solve_system( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The required solution was obtained.
@@ -600,10 +600,10 @@ void uls_solve_system( void **data,
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     rows in the unsymmetric matrix \f$A\f$.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     columns in the unsymmetric matrix \f$A\f$.
 
  @param[in,out] sol is a one-dimensional array of size n and type double.
@@ -629,7 +629,7 @@ void uls_information( void **data,
   @param[out] inform   is a struct containing output information
               (see uls_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

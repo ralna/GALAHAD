@@ -55,12 +55,12 @@ extern "C" {
 
 struct ma48_control {
    ipc_ f_arrays; /* If eval to true, use 1-based indexing, else 0-based */
-   real_wp_ multiplier; /* If arrays are too small, increase by factor */
-   real_wp_ u; /* Pivot threshold */
-   real_wp_ switch_; /* Density for switch to full code */
-   real_wp_ drop; /* Drop tolerance */
-   real_wp_ tolerance; /* Anything less than this is considered zero */
-   real_wp_ cgce; /* Ratio for required reduction using IR */
+   rpc_ multiplier; /* If arrays are too small, increase by factor */
+   rpc_ u; /* Pivot threshold */
+   rpc_ switch_; /* Density for switch to full code */
+   rpc_ drop; /* Drop tolerance */
+   rpc_ tolerance; /* Anything less than this is considered zero */
+   rpc_ cgce; /* Ratio for required reduction using IR */
    ipc_ lp; /* Fortran unit for error messages */
    ipc_ wp; /* Fortran unit for warning messages */
    ipc_ mp; /* Fortran unit for monitor output */
@@ -78,7 +78,7 @@ struct ma48_control {
 
 
 struct ma48_ainfo {
-   real_wp_ ops; /* Number of operations in elimination */
+   rpc_ ops; /* Number of operations in elimination */
    ipc_ flag; /* Return code */
    ipc_ more; /* More information on failure */
    long lena_analyse; /* Size for analysis (main arrays) */
@@ -99,7 +99,7 @@ struct ma48_ainfo {
 
 
 struct ma48_finfo {
-   real_wp_ ops; /* Number of operations in elimination */
+   rpc_ ops; /* Number of operations in elimination */
    ipc_ flag; /* Return code */
    ipc_ more; /* More information on failure */
    long size_factor; /* Number of words to hold factors */

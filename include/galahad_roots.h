@@ -1,7 +1,7 @@
 //* \file galahad_roots.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-28 AT 16:59 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ROOTS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -87,17 +87,17 @@ struct roots_control_type {
 
     /// \brief
     /// the required accuracy of the roots
-    real_wp_ tol;
+    rpc_ tol;
 
     /// \brief
     /// any coefficient smaller in absolute value than zero_coef will be regarde
     /// to be zero
-    real_wp_ zero_coef;
+    rpc_ zero_coef;
 
     /// \brief
     /// any value of the polynomial smaller in absolute value than zero_f
     /// will be regarded as giving a root
-    real_wp_ zero_f;
+    rpc_ zero_f;
 
     /// \brief
     /// if .space_critical true, every effort will be made to use as little
@@ -163,7 +163,7 @@ void roots_initialize( void **data,
   @param[out] control is a struct containing control information
               (see roots_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -182,7 +182,7 @@ void roots_information( void **data,
   @param[out] inform is a struct containing output information
               (see roots_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

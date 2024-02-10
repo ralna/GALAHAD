@@ -18,14 +18,14 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ o = 4; // number of observations
-    real_wp_ sigma = 1.0; // regularization weight
-    real_wp_ b[] = {2.0, 2.0, 3.0, 1.0};   // observations
-    real_wp_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
-    real_wp_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
-    real_wp_ w[] = {1.0, 1.0, 1.0, 2.0}; // weights
+    rpc_ sigma = 1.0; // regularization weight
+    rpc_ b[] = {2.0, 2.0, 3.0, 1.0};   // observations
+    rpc_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
+    rpc_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
+    rpc_ w[] = {1.0, 1.0, 1.0, 2.0}; // weights
 
     // Set output storage
-    real_wp_ r[o]; // residual values
+    rpc_ r[o]; // residual values
     ipc_ x_stat[n]; // variable status
     char st[3];
     ipc_ status;
@@ -46,9 +46,9 @@ int main(void) {
         control.fdc_control.use_sls = true;
 
         // Start from 0
-        real_wp_ x[] = {0.0,0.0,0.0};
-        real_wp_ y[] = {0.0,0.0};
-        real_wp_ z[] = {0.0,0.0,0.0};
+        rpc_ x[] = {0.0,0.0,0.0};
+        rpc_ y[] = {0.0,0.0};
+        rpc_ z[] = {0.0,0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -57,7 +57,7 @@ int main(void) {
                 ipc_ Ao_ne = 7; // objective Jacobian elements
                 ipc_ Ao_row[] = {1, 1, 2, 2, 3, 3, 4};   // row indices
                 ipc_ Ao_col[] = {1, 2, 2, 3, 1, 3, 2};    // column indices
-                real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
+                rpc_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
                 bllsb_import( &control, &data, &status, n, o,
                              "coordinate", Ao_ne, Ao_row, Ao_col, 0, NULL );
                 bllsb_solve_blls( &data, &status, n, o, Ao_ne, Ao_val, b,
@@ -71,7 +71,7 @@ int main(void) {
                 ipc_ Ao_col[] = {1, 2, 2, 3, 1, 3, 2};    // column indices
                 ipc_ Ao_ptr_ne = o + 1; // number of row pointers
                 ipc_ Ao_ptr[] = {1, 3, 5, 7, 8}; // row pointers
-                real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
+                rpc_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
                 bllsb_import( &control, &data, &status, n, o,
                               "sparse_by_rows", Ao_ne, NULL, Ao_col,
                               Ao_ptr_ne, Ao_ptr );
@@ -86,7 +86,7 @@ int main(void) {
                 ipc_ Ao_row[] = {1, 3, 1, 2, 4, 2, 3};   // row indices
                 ipc_ Ao_ptr_ne = n + 1; // number of column pointers
                 ipc_ Ao_ptr[] = {1, 3, 6, 8}; // column pointers
-                real_wp_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
+                rpc_ Ao_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // vals
                 bllsb_import( &control, &data, &status, n, o,
                                "sparse_by_columns", Ao_ne, Ao_row, NULL,
                                Ao_ptr_ne, Ao_ptr );
@@ -98,7 +98,7 @@ int main(void) {
                 strcpy(st, "DR");
                 {
                 ipc_ Ao_ne = 12; // objective Jacobian elements
-                real_wp_ Ao_dense[] = {1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
+                rpc_ Ao_dense[] = {1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
                                        1.0, 0.0, 1.0, 0.0, 1.0, 0.0};
                 bllsb_import( &control, &data, &status, n, o,
                              "dense", Ao_ne, NULL, NULL, 0, NULL  );
@@ -110,7 +110,7 @@ int main(void) {
                 strcpy(st, "DC");
                 {
                 ipc_ Ao_ne = 12; // objective Jacobian elements
-                real_wp_ Ao_dense[] = {1.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+                rpc_ Ao_dense[] = {1.0, 0.0, 1.0, 0.0, 1.0, 1.0,
                                        0.0, 1.0, 0.0, 1.0, 1.0, 0.0};
                 bllsb_import( &control, &data, &status, n, o,
                              "dense_by_columns", Ao_ne, NULL, NULL, 0, NULL );
@@ -122,10 +122,10 @@ int main(void) {
         bllsb_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+            printf("%s:%6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
-            printf("%s: BLLSB_solve exit status = %1i\n", st, inform.status);
+            printf("%s: BLLSB_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

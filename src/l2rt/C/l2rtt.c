@@ -19,12 +19,12 @@ int main(void) {
     ipc_ m = 2 * n;
 
     ipc_ status;
-    real_wp_ power = 3.0;
-    real_wp_ weight = 1.0;
-    real_wp_ shift = 1.0;
-    real_wp_ x[n];
-    real_wp_ u[m];
-    real_wp_ v[n];
+    rpc_ power = 3.0;
+    rpc_ weight = 1.0;
+    rpc_ shift = 1.0;
+    rpc_ x[n];
+    rpc_ u[m];
+    rpc_ v[n];
 
     // Initialize l2rt
     l2rt_initialize( &data, &control, &status );
@@ -52,14 +52,14 @@ int main(void) {
       } else if ( status == 4 ) { // restart
         for( ipc_ i = 0; i < m; i++) u[i] = 1.0;
       }else{
-          printf(" the value %1i of status should not occur\n",
+          printf(" the value %1" i_ipc_ " of status should not occur\n",
             status);
           break;
       }
     }
     l2rt_information( &data, &inform, &status );
-    printf("l2rt_solve_problem exit status = %i,"
-           " f = %.2f\n", inform.status, inform.obj );
+    printf("l2rt_solve_problem exit status = %" i_ipc_
+           ", f = %.2f\n", inform.status, inform.obj );
     // Delete internal workspace
     l2rt_terminate( &data, &control, &inform );
 }

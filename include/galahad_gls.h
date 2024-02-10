@@ -1,7 +1,7 @@
 //* \file galahad_gls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-20 AT 13.10 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_GLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -185,33 +185,33 @@ struct gls_control {
 
     /// \brief
     /// Factor by which arrays sizes are to be increased if they are too small
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// if previously allocated internal workspace arrays are greater than
     /// reduce times the currently required sizes, they are reset to current
     /// requirment
-    real_wp_ reduce;
+    rpc_ reduce;
 
     /// \brief
     /// Pivot threshold
-    real_wp_ u;
+    rpc_ u;
 
     /// \brief
     /// Density for switch to full code
-    real_wp_ switch_full;
+    rpc_ switch_full;
 
     /// \brief
     /// Drop tolerance
-    real_wp_ drop;
+    rpc_ drop;
 
     /// \brief
     /// anything < this is considered zero
-    real_wp_ tolerance;
+    rpc_ tolerance;
 
     /// \brief
     /// Ratio for required reduction using IR
-    real_wp_ cgce;
+    rpc_ cgce;
 
     /// \brief
     /// Set to 0 for diagonal pivoting
@@ -285,7 +285,7 @@ struct gls_ainfo {
 
     /// \brief
     /// Number of operations in elimination
-    real_wp_ ops;
+    rpc_ ops;
 };
 
 /**
@@ -323,7 +323,7 @@ struct gls_finfo {
 
     /// \brief
     /// Number of operations in elimination
-    real_wp_ ops;
+    rpc_ ops;
 };
 
 /**
@@ -393,7 +393,7 @@ void gls_import( struct gls_control *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -425,7 +425,7 @@ void gls_reset_control( struct gls_control *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -452,7 +452,7 @@ void gls_information( void **data,
   @param[out] sinfo   is a struct containing solver output information
               (see gls_sinfo)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully
@@ -472,7 +472,7 @@ void gls_finalize( void **data,
   @param[out] control  is a struct containing control information
               (see gls_control)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

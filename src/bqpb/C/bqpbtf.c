@@ -20,15 +20,15 @@ int main(void) {
     ipc_ H_row[] = {1, 2, 3 };   // row indices, NB lower triangle
     ipc_ H_col[] = {1, 2, 3};    // column indices, NB lower triangle
     ipc_ H_ptr[] = {1, 2, 3, 4}; // row pointers
-    real_wp_ H_val[] = {1.0, 1.0, 1.0 };   // values
-    real_wp_ g[] = {2.0, 0.0, 0.0};   // linear term in the objective
-    real_wp_ f = 1.0;  // constant term in the objective
-    real_wp_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
-    real_wp_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
+    rpc_ H_val[] = {1.0, 1.0, 1.0 };   // values
+    rpc_ g[] = {2.0, 0.0, 0.0};   // linear term in the objective
+    rpc_ f = 1.0;  // constant term in the objective
+    rpc_ x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound
+    rpc_ x_u[] = {1.0, INFINITY, 2.0}; // variable upper bound
 
     // Set output storage
     ipc_ x_stat[n]; // variable status
-    char st;
+    char st = ' ';
     ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -44,8 +44,8 @@ int main(void) {
         control.f_indexing = true; // Fortran sparse matrix indexing
 
         // Start from 0
-        real_wp_ x[] = {0.0,0.0,0.0};
-        real_wp_ z[] = {0.0,0.0,0.0};
+        rpc_ x[] = {0.0,0.0,0.0};
+        rpc_ z[] = {0.0,0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -55,7 +55,7 @@ int main(void) {
                 bqpb_solve_qp( &data, &status, n, H_ne, H_val, g, f,
                                x_l, x_u, x, z, x_stat );
                 break;
-            printf(" case %1i break\n",d);
+            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 bqpb_import( &control, &data, &status, n,
@@ -66,7 +66,7 @@ int main(void) {
             case 3: // dense
                 st = 'D';
                 ipc_ H_dense_ne = 6; // number of elements of H
-                real_wp_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+                rpc_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
                 bqpb_import( &control, &data, &status, n,
                              "dense", H_ne, NULL, NULL, NULL );
                 bqpb_solve_qp( &data, &status, n, H_dense_ne, H_dense, g, f,
@@ -108,10 +108,10 @@ int main(void) {
         bqpb_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+            printf("%c:%6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
-            printf("%c: BQPB_solve exit status = %1i\n", st, inform.status);
+            printf("%c: BQPB_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -134,13 +134,13 @@ int main(void) {
         control.f_indexing = true; // Fortran sparse matrix indexing
 
         // Start from 0
-        real_wp_ x[] = {0.0,0.0,0.0};
-        real_wp_ z[] = {0.0,0.0,0.0};
+        rpc_ x[] = {0.0,0.0,0.0};
+        rpc_ z[] = {0.0,0.0,0.0};
 
         // Set shifted least-distance data
 
-        real_wp_ w[] = {1.0,1.0,1.0};
-        real_wp_ x_0[] = {0.0,0.0,0.0};
+        rpc_ w[] = {1.0,1.0,1.0};
+        rpc_ x_0[] = {0.0,0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -155,10 +155,10 @@ int main(void) {
         bqpb_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+            printf("%c:%6" i_ipc_ " iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
-            printf("%c: BQPB_solve exit status = %1i\n", st, inform.status);
+            printf("%c: BQPB_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

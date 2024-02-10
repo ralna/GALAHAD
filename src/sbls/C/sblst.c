@@ -33,18 +33,18 @@ int main(void) {
     ipc_ C_row[] = {0, 1, 1}; // row indices, NB lower triangle
     ipc_ C_col[] = {0, 0, 1};
     ipc_ C_ptr[] = {0, 1, 3};
-    real_wp_ H_val[] = {1.0, 2.0, 3.0, 1.0};
-    real_wp_ A_val[] = {2.0, 1.0, 1.0};
-    real_wp_ C_val[] = {4.0, 1.0, 2.0};
-    real_wp_ H_dense[] = {1.0, 0.0, 2.0, 1.0, 0.0, 3.0};
-    real_wp_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 0.0, 1.0};
-    real_wp_ C_dense[] = {4.0, 1.0, 2.0};
-    real_wp_ H_diag[] = {1.0, 1.0, 2.0};
-    real_wp_ C_diag[] = {4.0, 2.0};
-    real_wp_ H_scid[] = {2.0};
-    real_wp_ C_scid[] = {2.0};
+    rpc_ H_val[] = {1.0, 2.0, 3.0, 1.0};
+    rpc_ A_val[] = {2.0, 1.0, 1.0};
+    rpc_ C_val[] = {4.0, 1.0, 2.0};
+    rpc_ H_dense[] = {1.0, 0.0, 2.0, 1.0, 0.0, 3.0};
+    rpc_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 0.0, 1.0};
+    rpc_ C_dense[] = {4.0, 1.0, 2.0};
+    rpc_ H_diag[] = {1.0, 1.0, 2.0};
+    rpc_ C_diag[] = {4.0, 2.0};
+    rpc_ H_scid[] = {2.0};
+    rpc_ C_scid[] = {2.0};
 
-    char st;
+    char st = ' ';
     ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
@@ -76,7 +76,7 @@ int main(void) {
                                        A_ne, A_val,
                                        C_ne, C_val, NULL );
                 break;
-            printf(" case %1i break\n",d);
+            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 sbls_import( &control, &data, &status, n, m,
@@ -150,17 +150,17 @@ int main(void) {
             }
 
         // Set right-hand side ( a, b )
-        real_wp_ sol[] = {3.0, 2.0, 4.0, 2.0, 0.0};   // values
+        rpc_ sol[] = {3.0, 2.0, 4.0, 2.0, 0.0};   // values
 
         sbls_solve_system( &data, &status, n, m, sol );
 
         sbls_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c: residual = %9.1e status = %1i\n",
+            printf("%c: residual = %9.1e status = %1" i_ipc_ "\n",
                    st, inform.norm_residual, inform.status);
         }else{
-            printf("%c: SBLS_solve exit status = %1i\n", st, inform.status);
+            printf("%c: SBLS_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("sol: ");
         //for( ipc_ i = 0; i < n+m; i++) printf("%f ", x[i]);

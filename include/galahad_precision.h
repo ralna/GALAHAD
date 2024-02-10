@@ -24,9 +24,11 @@ typedef float real_sp_;   // single precision
 #ifdef GALAHAD_SINGLE
 /** `real_wp_` is real working precision */
 typedef float real_wp_;  // working precision
+typedef float rpc_;  // working precision
 #else
 /** `real_wp_` is the real working precision used */
 typedef double real_wp_;  // working precision
+typedef double rpc_;  // working precision
 #endif
 
 #ifdef INTEGER_64

@@ -9,20 +9,20 @@
 #include <string.h>
 
 // Test problem objective
-real_wp_ objf(real_wp_ x){
-    real_wp_ a = 10.0;
+rpc_ objf(rpc_ x){
+    rpc_ a = 10.0;
     return x * x * cos( a*x );
 }
 
 // Test problem first derivative
-real_wp_ gradf(real_wp_ x){
-    real_wp_ a = 10.0;
+rpc_ gradf(rpc_ x){
+    rpc_ a = 10.0;
     return - a * x * x * sin( a*x ) + 2.0 * x * cos( a*x );
 }
 
 // Test problem second derivative
-real_wp_ hessf(real_wp_ x){
-    real_wp_ a = 10.0;
+rpc_ hessf(rpc_ x){
+    rpc_ a = 10.0;
     return - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x )
             + 2.0 * cos( a*x );
 }
@@ -49,11 +49,11 @@ int main(void) {
     ugo_read_specfile(&control, specfile);
 
     // Test problem bounds
-    real_wp_ x_l = -1.0;
-    real_wp_ x_u = 2.0;
+    rpc_ x_l = -1.0;
+    rpc_ x_u = 2.0;
 
     // Test problem objective, gradient, Hessian values
-    real_wp_ x, f, g, h;
+    rpc_ x, f, g, h;
 
     // import problem data
     ugo_import( &control, &data, &status, &x_l, &x_u );
@@ -84,10 +84,10 @@ int main(void) {
     ugo_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf("%i evaluations. Optimal objective value = %5.2f"
-          " status = %1i\n", inform.f_eval, f, inform.status);
+        printf("%" i_ipc_ "evaluations. Optimal objective value = %5.2f"
+          " status = %1" i_ipc_ "\n", inform.f_eval, f, inform.status);
     }else{
-        printf("BGO_solve exit status = %1i\n", inform.status);
+        printf("BGO_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
 
     // Delete internal workspace

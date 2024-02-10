@@ -1,7 +1,7 @@
 //* \file galahad_glrt.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 16/12/2021 AT 10:20 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_GLRT C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -223,23 +223,23 @@ struct glrt_control_type {
     /// norm is smaller than
     /// max( stop_relative * min( 1, stopping_rule ) * norm initial gradient,
     /// stop_absolute )
-    real_wp_ stop_relative;
+    rpc_ stop_relative;
     /// see stop_relative
-    real_wp_ stop_absolute;
+    rpc_ stop_absolute;
 
     /// \brief
     /// an estimate of the solution that gives at least .fraction_opt times
     /// the optimal objective value will be found
-    real_wp_ fraction_opt;
+    rpc_ fraction_opt;
 
     /// \brief
     /// the smallest value that the square of the M norm of the gradient of
     /// the objective may be before it is considered to be zero
-    real_wp_ rminvr_zero;
+    rpc_ rminvr_zero;
 
     /// \brief
     /// the constant term, f0, in the objective function
-    real_wp_ f_0;
+    rpc_ f_0;
 
     /// \brief
     /// is M the identity matrix ?
@@ -302,24 +302,24 @@ struct glrt_inform_type {
 
     /// \brief
     /// the value of the quadratic function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the value of the regularized quadratic function
-    real_wp_ obj_regularized;
+    rpc_ obj_regularized;
 
     /// \brief
     /// the multiplier, \f$\sigma \|x\|^{p-2}\f$
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// the value of the norm \f$\|x\|_M\f$
-    real_wp_ xpo_norm;
+    rpc_ xpo_norm;
 
     /// \brief
     /// an estimate of the leftmost generalized eigenvalue of the pencil
     /// \f$(H,M)\f$
-    real_wp_ leftmost;
+    rpc_ leftmost;
 
     /// \brief
     /// was negative curvature encountered ?
@@ -344,7 +344,7 @@ void glrt_initialize( void **data,
   @param[out] control is a struct containing control information
               (see glrt_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):  \li  0. The import was succesful.
 */
 
@@ -381,7 +381,7 @@ void glrt_import_control( struct glrt_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -391,18 +391,18 @@ void glrt_import_control( struct glrt_control_type *control,
 void glrt_solve_problem( void **data,
                         ipc_ *status,
                         ipc_ n,
-                        const real_wp_ power,
-                        const real_wp_ weight,
-                        real_wp_ x[],
-                        real_wp_ r[],
-                        real_wp_ vector[] );
+                        const rpc_ power,
+                        const rpc_ weight,
+                        rpc_ x[],
+                        rpc_ r[],
+                        rpc_ vector[] );
 
 /*!<
  Solve the regularized-quadratic problem using reverse communication.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
 
    This must be set to
@@ -430,24 +430,24 @@ void glrt_solve_problem( void **data,
    \li -15. the matrix \f$M\f$ appears to be indefinite
    \li -18. the iteration limit has been exceeded
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] power is a scalar of type double, that holds the
+ @param[in] power is a scalar of type rpc_, that holds the
     egularization power, \f$p \geq 2\f$
 
- @param[in] weight is a scalar of type double, that holds the positive
+ @param[in] weight is a scalar of type rpc_, that holds the positive
    regularization weight, \f$\sigma\f$
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
 
- @param[in,out] r is a one-dimensional array of size n and type double, that
+ @param[in,out] r is a one-dimensional array of size n and type rpc_, that
     that must be set to \f$c\f$ on entry (status = 1) and re-entry
     (status = 4, 5). On exit, r contains the resiual \f$H x + c\f$.
 
- @param[in,out] vector is a one-dimensional array of size n and type double,
+ @param[in,out] vector is a one-dimensional array of size n and type rpc_,
     that should be used and reset appropriately when status = 2 and 3
     as directed.
 
@@ -468,7 +468,7 @@ void glrt_information( void **data,
   @param[out] inform is a struct containing output information
               (see glrt_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

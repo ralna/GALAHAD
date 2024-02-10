@@ -22,20 +22,18 @@ int main(void) {
     ipc_ H_row[] = {1, 2, 3 };   // row indices, NB lower triangle
     ipc_ H_col[] = {1, 2, 3};    // column indices, NB lower triangle
     ipc_ H_ptr[] = {1, 2, 3, 4}; // row pointers
-    real_wp_ H_val[] = {1.0, 1.0, 1.0 };   // values
-    real_wp_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
-    real_wp_ f = 1.0;  // constant term in the objective
+    rpc_ H_val[] = {1.0, 1.0, 1.0 };   // values
+    rpc_ g[] = {0.0, 2.0, 0.0};   // linear term in the objective
+    rpc_ f = 1.0;  // constant term in the objective
     ipc_ A_ne = 4; // Jacobian elements
     ipc_ A_row[] = {1, 1, 2, 2}; // row indices
     ipc_ A_col[] = {1, 2, 2, 3}; // column indices
     ipc_ A_ptr[] = {1, 3, 5}; // row pointers
-    real_wp_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
-    real_wp_ c[] = {3.0, 0.0};   // rhs of the constraints
+    rpc_ A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
+    rpc_ c[] = {3.0, 0.0};   // rhs of the constraints
 
     // Set output storage
-    ipc_ x_stat[n]; // variable status
-    ipc_ c_stat[m]; // constraint status
-    char st;
+    char st = ' ';
     ipc_ status;
 
     printf(" Fortran sparse matrix indexing\n\n");
@@ -55,9 +53,8 @@ int main(void) {
         strcpy(control.sbls_control.definite_linear_solver, "sytr ") ;
 
         // Start from 0
-        real_wp_ x[] = {0.0,0.0,0.0};
-        real_wp_ y[] = {0.0,0.0};
-        real_wp_ z[] = {0.0,0.0,0.0};
+        rpc_ x[] = {0.0,0.0,0.0};
+        rpc_ y[] = {0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -68,7 +65,7 @@ int main(void) {
                 eqp_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
                               A_ne, A_val, c, x, y );
                 break;
-            printf(" case %1i break\n",d);
+            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 eqp_import( &control, &data, &status, n, m,
@@ -81,8 +78,8 @@ int main(void) {
                 st = 'D';
                 ipc_ H_dense_ne = 6; // number of elements of H
                 ipc_ A_dense_ne = 6; // number of elements of A
-                real_wp_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
-                real_wp_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
+                rpc_ H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+                rpc_ A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 eqp_import( &control, &data, &status, n, m,
                             "dense", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL );
@@ -126,10 +123,10 @@ int main(void) {
         eqp_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i cg iterations. Optimal objective value = %5.2f status = %1i\n",
+            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
         }else{
-            printf("%c: EQP_solve exit status = %1i\n", st, inform.status);
+            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -156,14 +153,13 @@ int main(void) {
         control.f_indexing = true; // Fortran sparse matrix indexing
 
         // Start from 0
-        real_wp_ x[] = {0.0,0.0,0.0};
-        real_wp_ y[] = {0.0,0.0};
-        real_wp_ z[] = {0.0,0.0,0.0};
+        rpc_ x[] = {0.0,0.0,0.0};
+        rpc_ y[] = {0.0,0.0};
 
         // Set shifted least-distance data
 
-        real_wp_ w[] = {1.0,1.0,1.0};
-        real_wp_ x_0[] = {0.0,0.0,0.0};
+        rpc_ w[] = {1.0,1.0,1.0};
+        rpc_ x_0[] = {0.0,0.0,0.0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -179,10 +175,10 @@ int main(void) {
         eqp_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i cg iterations. Optimal objective value = %5.2f status = %1i\n",
+            printf("%c:%6" i_ipc_ " cg iterations. Optimal objective value = %5.2f status = %1" i_ipc_ "\n",
                    st, inform.cg_iter, inform.obj, inform.status);
         }else{
-            printf("%c: EQP_solve exit status = %1i\n", st, inform.status);
+            printf("%c: EQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

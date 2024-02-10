@@ -56,18 +56,18 @@ extern "C" {
 
 struct ma57_control {
   ipc_ f_arrays;       /* Use C or Fortran based indexing for sparse matrices */
-  real_wp_ multiplier; /* Factor by which arrays sizes are to be */
+  rpc_ multiplier; /* Factor by which arrays sizes are to be */
                        /* increased if they are too small */
-  real_wp_ reduce;     /* if previously allocated internal workspace arrays */
+  rpc_ reduce;     /* if previously allocated internal workspace arrays */
                        /* are greater than reduce times the currently */
                        /* required sizes, they are reset to current requirments */
-  real_wp_ u;          /* Pivot threshold */
-  real_wp_ static_tolerance; /* used for setting static pivot level */
-  real_wp_ static_level; /* used for switch to static */
-  real_wp_ tolerance;    /* anything less than this is considered zero */
-  real_wp_ convergence;  /* used to monitor convergence in iterative */
+  rpc_ u;          /* Pivot threshold */
+  rpc_ static_tolerance; /* used for setting static pivot level */
+  rpc_ static_level; /* used for switch to static */
+  rpc_ tolerance;    /* anything less than this is considered zero */
+  rpc_ convergence;  /* used to monitor convergence in iterative */
                          /* refinement */
-  real_wp_ consist;      /* used in test for consistency when using */
+  rpc_ consist;      /* used in test for consistency when using */
                          /* fredholm alternative */
   ipc_ lp;               /* Unit for error messages */
   ipc_ wp;               /* Unit for warning messages */
@@ -111,12 +111,12 @@ struct ma57_control {
   			 /* >0  Small entries removed during factorization */
 
   /* Reserve space for future interface changes */
-  ipc_ ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; rpc_ rspare[10];
 };
 
 struct ma57_ainfo {
-  real_wp_ opsa;       /* Anticipated # operations in assembly */
-  real_wp_ opse;       /* Anticipated # operations in elimination */
+  rpc_ opsa;       /* Anticipated # operations in assembly */
+  rpc_ opse;       /* Anticipated # operations in elimination */
   ipc_ flag;        	 /* Flags success or failure case */
   ipc_ more;        	 /* More information on failure */
   ipc_ nsteps;      	 /* Number of elimination steps */
@@ -134,16 +134,16 @@ struct ma57_ainfo {
   ipc_ stat;        	 /* STAT value after allocate failure */
 
   /* Reserve space for future interface changes */
-  ipc_ ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; rpc_ rspare[10];
 };
 
 struct ma57_finfo {
-  real_wp_ opsa;       /* Number of operations in assembly */
-  real_wp_ opse;       /* Number of operations in elimination */
-  real_wp_ opsb;       /* Additional number of operations for BLAS */
-  real_wp_ maxchange;  /* Largest pivot modification when pivoting=4 */
-  real_wp_ smin;       /* Minimum scaling factor */
-  real_wp_ smax;       /* Maximum scaling factor */
+  rpc_ opsa;       /* Number of operations in assembly */
+  rpc_ opse;       /* Number of operations in elimination */
+  rpc_ opsb;       /* Additional number of operations for BLAS */
+  rpc_ maxchange;  /* Largest pivot modification when pivoting=4 */
+  rpc_ smin;       /* Minimum scaling factor */
+  rpc_ smax;       /* Maximum scaling factor */
   ipc_ flag;           /* Flags success or failure case */
   ipc_ more;           /* More information on failure */
   ipc_ maxfrt;         /* Largest front size */
@@ -166,20 +166,20 @@ struct ma57_finfo {
   ipc_ stat;           /* STAT value after allocate failure */
 
   /* Reserve space for future interface changes */
-  ipc_ ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; rpc_ rspare[10];
 };
 
 struct ma57_sinfo {
-  real_wp_ cond;   /* Condition number of matrix (category 1 equations) */
-  real_wp_ cond2;  /* Condition number of matrix (category 2 equations) */
-  real_wp_ berr;   /* Condition number of matrix (category 1 equations) */
-  real_wp_ berr2;  /* Condition number of matrix (category 2 equations) */
-  real_wp_ error;  /* Estimate of forward error using above data */
+  rpc_ cond;   /* Condition number of matrix (category 1 equations) */
+  rpc_ cond2;  /* Condition number of matrix (category 2 equations) */
+  rpc_ berr;   /* Condition number of matrix (category 1 equations) */
+  rpc_ berr2;  /* Condition number of matrix (category 2 equations) */
+  rpc_ error;  /* Estimate of forward error using above data */
   ipc_ flag;       /* Flags success or failure case */
   ipc_ stat;       /* STAT value after allocate failure */
 
   /* Reserve space for future interface changes */
-  ipc_ ispare[5]; real_wp_ rspare[10];
+  ipc_ ispare[5]; rpc_ rspare[10];
 };
 
 #endif

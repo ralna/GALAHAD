@@ -1,7 +1,7 @@
 //* \file galahad_convert.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-02-25 AT 07:13 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CONVERT C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -111,11 +111,11 @@ struct convert_time_type {
 
     /// \brief
     /// total cpu time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 };
 
 /**
@@ -179,7 +179,7 @@ void convert_initialize( void **data,
   @param[out] control is a struct containing control information
               (see convert_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The initialization was succesful.
 */
@@ -198,7 +198,7 @@ void convert_information( void **data,
   @param[out] inform is a struct containing output information
               (see convert_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

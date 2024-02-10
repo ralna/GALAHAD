@@ -60,15 +60,15 @@ struct mi20_control {
    ipc_ c_fail;              /* conditions for coarsening failure */
    ipc_ max_levels;          /* size of mi20_data object */
    ipc_ max_points;          /* max number of points allowed on a coarse level */
-   real_wp_ reduction;       /* definition of stagnation */
+   rpc_ reduction;       /* definition of stagnation */
    ipc_ st_method;           /* method to find strong transpose connections */
-   real_wp_ st_parameter;    /* defines 'strong' connections */
+   rpc_ st_parameter;    /* defines 'strong' connections */
    ipc_ testing;             /* test for validity? */
-   real_wp_ trunc_parameter; /* interpolation truncation parameter */
+   rpc_ trunc_parameter; /* interpolation truncation parameter */
    ipc_ coarse_solver;       /* coarse solver to use */
    ipc_ coarse_solver_its;   /* number of coarse solver itr (itr methods only) */
-   real_wp_ damping;         /* damping factor for Jacobi smoother */
-   real_wp_ err_tol;         /* error tolerance for preconditioner */
+   rpc_ damping;         /* damping factor for Jacobi smoother */
+   rpc_ err_tol;         /* error tolerance for preconditioner */
    ipc_ levels;              /* number of coarse levels used */
    ipc_ pre_smoothing;       /* number of pre-smoothing iterations */
    ipc_ smoother;            /* smoother type */
@@ -82,14 +82,14 @@ struct mi20_control {
 
 /* Derived type to hold control parameters for hsl_mi20_solve */
 struct mi20_solve_control {
-  real_wp_ abs_tol;          /* absolute convergence tolerance */
-  real_wp_ breakdown_tol;    /* tolerance to determine breakdown in Krylov solver */
+  rpc_ abs_tol;          /* absolute convergence tolerance */
+  rpc_ breakdown_tol;    /* tolerance to determine breakdown in Krylov solver */
   ipc_ gmres_restart;        /* number of iterations before restart*/
   _Bool init_guess;          /* initial guess supplied? */
   ipc_ krylov_solver;        /* choice of krylov solver to use */
   ipc_ max_its;              /* max no of iterations allowed */
   ipc_ preconditioner_side;  /* left (<0) or right (>=0) preconditioning? */
-  real_wp_ rel_tol;          /* relative tolerance? */
+  rpc_ rel_tol;          /* relative tolerance? */
 };
 
 /* Communucates errors and information to the user. */
@@ -101,7 +101,7 @@ struct mi20_info {
    ipc_ stat;                /* Fortran stat parameter */
    ipc_ getrf_info;          /* getrf return code */
   ipc_ iterations;           /* number of iterations */
-  real_wp_ residual;         /* norm of the residual */
+  rpc_ residual;         /* norm of the residual */
 };
 #endif
 

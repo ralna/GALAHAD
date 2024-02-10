@@ -20,8 +20,8 @@ int main(void) {
     ipc_ A_ne = 10; // number of nonzeros
     ipc_ A_col[] = {1, 2, 3, 4, 1, 2, 3, 4, 2, 4}; // column indices
     ipc_ A_ptr[] = {1, 5, 9, 11}; // row pointers
-    real_wp_ A_val[] = {1.0, 2.0, 3.0, 4.0, 2.0, -4.0, 6.0, -8.0, 5.0, 10.0};
-    real_wp_ b[] = {5.0, 10.0, 0.0};
+    rpc_ A_val[] = {1.0, 2.0, 3.0, 4.0, 2.0, -4.0, 6.0, -8.0, 5.0, 10.0};
+    rpc_ b[] = {5.0, 10.0, 0.0};
 
     // Set output storage
     ipc_ depen[m]; // dependencies, if any
@@ -51,7 +51,7 @@ int main(void) {
         printf(", status = %i\n", status);
       }
     }else{
-        printf("FDC_find_dependent - exit status = %1i\n", status);
+        printf("FDC_find_dependent - exit status = %1" i_ipc_ "\n", status);
     }
 
     // Delete internal workspace

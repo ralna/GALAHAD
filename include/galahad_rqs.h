@@ -1,7 +1,7 @@
 //* \file galahad_rqs.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 12/12/2021 AT 09:41 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_RQS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -345,35 +345,35 @@ struct rqs_control_type {
 
     /// \brief
     /// initial estimate of the Lagrange multipler
-    real_wp_ initial_multiplier;
+    rpc_ initial_multiplier;
 
     /// \brief
     /// lower and upper bounds on the multiplier, if known
-    real_wp_ lower;
+    rpc_ lower;
     /// see lower
-    real_wp_ upper;
+    rpc_ upper;
 
     /// \brief
     /// stop when \f$| \|x\| - (multiplier/\sigma)^(1/(p-2)) | \leq\f$
     /// stop_normal * max\f$( \|x\|, (multiplier/\sigma)^(1/(p-2)) )\f$
     /// REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
-    real_wp_ stop_normal;
+    rpc_ stop_normal;
 
     /// \brief
     /// stop when bracket on optimal multiplier <=
     /// stop_hard * max( bracket ends )
     /// REAL ( KIND = wp ) :: stop_hard  = epsmch ** 0.75
-    real_wp_ stop_hard;
+    rpc_ stop_hard;
 
     /// \brief
     /// start inverse iteration when bracket on optimal multiplier <=
     /// stop_start_invit_tol * max( bracket ends )
-    real_wp_ start_invit_tol;
+    rpc_ start_invit_tol;
 
     /// \brief
     /// start full inverse iteration when bracket on multiplier <=
     /// stop_start_invitmax_tol * max( bracket ends)
-    real_wp_ start_invitmax_tol;
+    rpc_ start_invitmax_tol;
 
     /// \brief
     /// ignore initial_multiplier?
@@ -428,43 +428,43 @@ struct rqs_time_type {
 
     /// \brief
     /// total CPU time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// CPU time spent building \f$H + \lambda M\f$
-    real_wp_ assemble;
+    rpc_ assemble;
 
     /// \brief
     /// CPU time spent reordering \f$H + \lambda M\f$ prior to factorization
-    real_wp_ analyse;
+    rpc_ analyse;
 
     /// \brief
     /// CPU time spent factorizing \f$H + \lambda M\f$
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// CPU time spent solving linear systems inolving \f$H + \lambda M\f$
-    real_wp_ solve;
+    rpc_ solve;
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time spent building \f$H + \lambda M\f$
-    real_wp_ clock_assemble;
+    rpc_ clock_assemble;
 
     /// \brief
     /// clock time spent reordering \f$H + \lambda M\f$ prior to factorization
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// clock time spent factorizing \f$H + \lambda M\f$
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// clock time spent solving linear systems inolving \f$H + \lambda M\f$
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -474,11 +474,11 @@ struct rqs_history_type {
 
     /// \brief
     /// the value of \f$\lambda\f$
-    real_wp_ lambda;
+    rpc_ lambda;
 
     /// \brief
     /// the corresponding value of \f$\|x(\lambda)\|_M\f$
-    real_wp_ x_norm;
+    rpc_ x_norm;
 };
 
 /**
@@ -517,24 +517,24 @@ struct rqs_inform_type {
 
     /// \brief
     /// the value of the quadratic function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the value of the regularized quadratic function
-    real_wp_ obj_regularized;
+    rpc_ obj_regularized;
 
     /// \brief
     /// the \f$M\f$-norm of \f$x\f$, \f$\|x\|_M\f$
-    real_wp_ x_norm;
+    rpc_ x_norm;
 
     /// \brief
     /// the Lagrange multiplier corresponding to the regularization
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// a lower bound max\f$(0,-\lambda_1)\f$, where \f$\lambda_1\f$
     /// is the left-most eigenvalue of \f$(H,M)\f$
-    real_wp_ pole;
+    rpc_ pole;
 
     /// \brief
     /// was a dense factorization used?
@@ -573,7 +573,7 @@ void rqs_initialize( void **data,
   @param[out] control is a struct containing control information
               (see rqs_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -618,7 +618,7 @@ void rqs_import( struct rqs_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
   \li -1. An allocation error occurred. A message indicating the
@@ -635,7 +635,7 @@ void rqs_import( struct rqs_control_type *control,
        contains its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        diagonal' or 'identity' has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows (and columns) of H.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
@@ -644,22 +644,22 @@ void rqs_import( struct rqs_control_type *control,
    'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants
    are allowed.
 
- @param[in]  H_ne is a scalar variable of type int, that holds the number of
+ @param[in]  H_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size H_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  H_col is a one-dimensional array of size H_ne and type int,
+ @param[in]  H_col is a one-dimensional array of size H_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$H\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense or diagonal storage schemes are used,
    and in this case can be NULL.
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -682,7 +682,7 @@ void rqs_import_m( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
   \li -1. An allocation error occurred. A message indicating the
@@ -699,7 +699,7 @@ void rqs_import_m( void **data,
        contains its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        diagonal' or 'identity' has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows (and columns) of M.
 
  @param[in]  M_type is a one-dimensional array of type char that specifies the
@@ -708,22 +708,22 @@ void rqs_import_m( void **data,
    'sparse_by_rows', 'dense', or 'diagonal'; lower or upper
    case variants are allowed.
 
- @param[in]  M_ne is a scalar variable of type int, that holds the number of
+ @param[in]  M_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$M\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  M_row is a one-dimensional array of size M_ne and type int, that
+ @param[in]  M_row is a one-dimensional array of size M_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$M\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  M_col is a one-dimensional array of size M_ne and type int,
+ @param[in]  M_col is a one-dimensional array of size M_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$M\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense, diagonal or identity storage
    schemes are used,  and in this case can be NULL.
 
- @param[in]  M_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  M_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$M\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -747,7 +747,7 @@ void rqs_import_a( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
   \li -1. An allocation error occurred. A message indicating the
@@ -764,7 +764,7 @@ void rqs_import_a( void **data,
        contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
        has been violated.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints, i.e., the number of rows of A, if any.
     m must be non-negative.
 
@@ -774,21 +774,21 @@ void rqs_import_a( void **data,
   'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants
   are allowed.
 
- @param[in]  A_ne is a scalar variable of type int, that holds the number of
+ @param[in]  A_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$, if used, in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+ @param[in]  A_row is a one-dimensional array of size A_ne and type ipc_, that
    holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -809,7 +809,7 @@ void rqs_reset_control( struct rqs_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
  */
@@ -819,26 +819,26 @@ void rqs_reset_control( struct rqs_control_type *control,
 void rqs_solve_problem( void **data,
                         ipc_ *status,
                         ipc_ n,
-                        const real_wp_ power,
-                        const real_wp_ weight,
-                        const real_wp_ f,
-                        const real_wp_ c[],
+                        const rpc_ power,
+                        const rpc_ weight,
+                        const rpc_ f,
+                        const rpc_ c[],
                         ipc_ H_ne,
-                        const real_wp_ H_val[],
-                        real_wp_ x[],
+                        const rpc_ H_val[],
+                        rpc_ x[],
                         ipc_ M_ne,
-                        const real_wp_ M_val[],
+                        const rpc_ M_val[],
                         ipc_ m,
                         ipc_ A_ne,
-                        const real_wp_ A_val[],
-                        real_wp_ y[] );
+                        const rpc_ A_val[],
+                        rpc_ y[] );
 
 /*!<
  Solve the regularised quadratic problem.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -865,57 +865,57 @@ void rqs_solve_problem( void **data,
            control.max factorizations is too small, but may also be
            symptomatic of a badly scaled problem.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[in] power is a scalar of type double, that
+ @param[in] power is a scalar of type rpc_, that
     holds the order of regularisation, \f$p\f$, used. power must be no smaller
     than 2.
 
- @param[in] weight is a scalar of type double, that
+ @param[in] weight is a scalar of type rpc_, that
     holds the regularisation weight, \f$\sigma\f$, used. weight must be
     strictly positive.
 
- @param[in] c is a one-dimensional array of size n and type double, that
+ @param[in] c is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$c\f$ of the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] H_ne is a scalar variable of type int, that holds the number of
+ @param[in] H_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size h_ne and type double,
+ @param[in] H_val is a one-dimensional array of size h_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[out] x is a one-dimensional array of size n and type double, that
+ @param[out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in] M_ne is a scalar variable of type int, that holds the number of
+ @param[in] M_ne is a scalar variable of type ipc_, that holds the number of
     entries in the scaling matrix \f$M\f$ if it not the identity matrix.
 
- @param[in] M_val is a one-dimensional array of size M_ne and type double,
+ @param[in] M_val is a one-dimensional array of size M_ne and type rpc_,
     that holds the values of the entries of the scaling matrix
     \f$M\f$, if it is not the identity matrix, in any of the available
      storage schemes. If M_val is NULL, M will be taken to be the identity
      matrix.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints, if any. m must be non-negative.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
+ @param[in] A_ne is a scalar variable of type ipc_, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$ if used. A_ne must be
     non-negative.
 
- @param[in] A_val is a one-dimensional array of size A_ne and type double,
+ @param[in] A_val is a one-dimensional array of size A_ne and type rpc_,
     that holds the values of the entries of the constraint Jacobian matrix
     \f$A\f$, if used, in any of the available storage schemes.
     If A_val is NULL, no constraints will be enforced.
 
- @param[out] y is a one-dimensional array of size m and type double, that
+ @param[out] y is a one-dimensional array of size m and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the equality
     constraints \f$A x = 0\f$ if used. The i-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
@@ -936,7 +936,7 @@ void rqs_information( void **data,
   @param[out] inform   is a struct containing output information
               (see rqs_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

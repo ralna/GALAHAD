@@ -1,7 +1,7 @@
 /** \file galahad_nls.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 19/08/2021 AT 13:10 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -536,32 +536,32 @@ struct nls_subproblem_control_type {
     /// \f$\|g\|_2 \leq\f$  MAX( .stop_g_absolute, .stop_g_relative
     ///   \f$ * \|g_{\mbox{initial}}\|_2\f$, or
     /// if the step is less than .stop_s
-    real_wp_ stop_c_absolute;
+    rpc_ stop_c_absolute;
     /// see stop_c_absolute
-    real_wp_ stop_c_relative;
+    rpc_ stop_c_relative;
     /// see stop_c_absolute
-    real_wp_ stop_g_absolute;
+    rpc_ stop_g_absolute;
     /// see stop_c_absolute
-    real_wp_ stop_g_relative;
+    rpc_ stop_g_relative;
     /// see stop_c_absolute
-    real_wp_ stop_s;
+    rpc_ stop_s;
 
     /// \brief
     /// the regularization power (<2 => chosen according to the model)
-    real_wp_ power;
+    rpc_ power;
 
     /// \brief
     /// initial value for the regularization weight (-ve => \f$1/\|g_0\|)\f$)
-    real_wp_ initial_weight;
+    rpc_ initial_weight;
 
     /// \brief
     /// minimum permitted regularization weight
-    real_wp_ minimum_weight;
+    rpc_ minimum_weight;
 
     /// \brief
     /// initial value for the inner regularization weight for tensor GN
     /// (-ve => 0)
-    real_wp_ initial_inner_weight;
+    rpc_ initial_inner_weight;
 
     /// \brief
     /// a potential iterate will only be accepted if the actual decrease
@@ -569,11 +569,11 @@ struct nls_subproblem_control_type {
     /// by a quadratic model of the decrease. The regularization weight will be
     /// decreaed if this relative decrease is greater than .eta_very_successful
     /// but smaller than .eta_too_successful
-    real_wp_ eta_successful;
+    rpc_ eta_successful;
     /// see eta_successful
-    real_wp_ eta_very_successful;
+    rpc_ eta_very_successful;
     /// see eta_successful
-    real_wp_ eta_too_successful;
+    rpc_ eta_too_successful;
 
     /// \brief
     /// on very successful iterations, the regularization weight will be reduced
@@ -582,13 +582,13 @@ struct nls_subproblem_control_type {
     /// factor .weight_increase but no more than .weight_increase_max
     /// (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli
     /// and Toint, 2011)
-    real_wp_ weight_decrease_min;
+    rpc_ weight_decrease_min;
     /// see weight_decrease_min
-    real_wp_ weight_decrease;
+    rpc_ weight_decrease;
     /// see weight_decrease_min
-    real_wp_ weight_increase;
+    rpc_ weight_increase;
     /// see weight_decrease_min
-    real_wp_ weight_increase_max;
+    rpc_ weight_increase_max;
 
     /// \brief
     /// expert parameters as suggested in Gould, Porcelli and Toint, "Updating t
@@ -596,24 +596,24 @@ struct nls_subproblem_control_type {
     /// RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011),
     /// http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
     /// (these are denoted beta, epsilon_chi and alpha_max in the paper)
-    real_wp_ reduce_gap;
+    rpc_ reduce_gap;
     /// see reduce_gap
-    real_wp_ tiny_gap;
+    rpc_ tiny_gap;
     /// see reduce_gap
-    real_wp_ large_root;
+    rpc_ large_root;
 
     /// \brief
     /// if the Gauss-Newto to Newton model is specified, switch to Newton as
     /// soon as the norm of the gradient g is smaller than switch_to_newton
-    real_wp_ switch_to_newton;
+    rpc_ switch_to_newton;
 
     /// \brief
     /// the maximum CPU time allowed (-ve means infinite)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// the maximum elapsed clock time allowed (-ve means infinite)
-    real_wp_ clock_time_limit;
+    rpc_ clock_time_limit;
 
     /// \brief
     /// use a direct (factorization) or (preconditioned) iterative method to
@@ -794,32 +794,32 @@ struct nls_control_type {
     /// \f$\|g\|_2 \leq\f$  MAX( .stop_g_absolute, .stop_g_relative
     ///   \f$ * \|g_{\mbox{initial}}\|_2\f$, or
     /// if the step is less than .stop_s
-    real_wp_ stop_c_absolute;
+    rpc_ stop_c_absolute;
     /// see stop_c_absolute
-    real_wp_ stop_c_relative;
+    rpc_ stop_c_relative;
     /// see stop_c_absolute
-    real_wp_ stop_g_absolute;
+    rpc_ stop_g_absolute;
     /// see stop_c_absolute
-    real_wp_ stop_g_relative;
+    rpc_ stop_g_relative;
     /// see stop_c_absolute
-    real_wp_ stop_s;
+    rpc_ stop_s;
 
     /// \brief
     /// the regularization power (<2 => chosen according to the model)
-    real_wp_ power;
+    rpc_ power;
 
     /// \brief
     /// initial value for the regularization weight (-ve => \f$1/\|g_0\|)\f$)
-    real_wp_ initial_weight;
+    rpc_ initial_weight;
 
     /// \brief
     /// minimum permitted regularization weight
-    real_wp_ minimum_weight;
+    rpc_ minimum_weight;
 
     /// \brief
     /// initial value for the inner regularization weight for tensor GN
     /// (-ve => 0)
-    real_wp_ initial_inner_weight;
+    rpc_ initial_inner_weight;
 
     /// \brief
     /// a potential iterate will only be accepted if the actual decrease
@@ -827,11 +827,11 @@ struct nls_control_type {
     /// by a quadratic model of the decrease. The regularization weight will be
     /// decreaed if this relative decrease is greater than .eta_very_successful
     /// but smaller than .eta_too_successful
-    real_wp_ eta_successful;
+    rpc_ eta_successful;
     /// see eta_successful
-    real_wp_ eta_very_successful;
+    rpc_ eta_very_successful;
     /// see eta_successful
-    real_wp_ eta_too_successful;
+    rpc_ eta_too_successful;
 
     /// \brief
     /// on very successful iterations, the regularization weight will be reduced
@@ -840,13 +840,13 @@ struct nls_control_type {
     /// factor .weight_increase but no more than .weight_increase_max
     /// (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli
     /// and Toint, 2011)
-    real_wp_ weight_decrease_min;
+    rpc_ weight_decrease_min;
     /// see weight_decrease_min
-    real_wp_ weight_decrease;
+    rpc_ weight_decrease;
     /// see weight_decrease_min
-    real_wp_ weight_increase;
+    rpc_ weight_increase;
     /// see weight_decrease_min
-    real_wp_ weight_increase_max;
+    rpc_ weight_increase_max;
 
     /// \brief
     /// expert parameters as suggested in Gould, Porcelli and Toint,
@@ -855,24 +855,24 @@ struct nls_control_type {
     /// Rutherford Appleton Laboratory, England (2011),
     /// http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
     /// (these are denoted beta, epsilon_chi and alpha_max in the paper)
-    real_wp_ reduce_gap;
+    rpc_ reduce_gap;
     /// see reduce_gap
-    real_wp_ tiny_gap;
+    rpc_ tiny_gap;
     /// see reduce_gap
-    real_wp_ large_root;
+    rpc_ large_root;
 
     /// \brief
     /// if the Gauss-Newto to Newton model is specified, switch to Newton as
     /// soon as the norm of the gradient g is smaller than switch_to_newton
-    real_wp_ switch_to_newton;
+    rpc_ switch_to_newton;
 
     /// \brief
     /// the maximum CPU time allowed (-ve means infinite)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// the maximum elapsed clock time allowed (-ve means infinite)
-    real_wp_ clock_time_limit;
+    rpc_ clock_time_limit;
 
     /// \brief
     /// use a direct (factorization) or (preconditioned) iterative method to
@@ -962,24 +962,24 @@ struct nls_time_type {
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the clock time spent preprocessing the problem
-    real_wp_ clock_preprocess;
+    rpc_ clock_preprocess;
 
     /// \brief
     /// the clock time spent analysing the required matrices prior to
     /// factorization
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// the clock time spent factorizing the required matrices
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// the clock time spent computing the search direction
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -1047,26 +1047,26 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// the average number of factorizations per sub-problem solve
-    real_wp_ factorization_average;
+    rpc_ factorization_average;
 
     /// \brief
     /// the value of the objective function \f$\frac{1}{2}\|c(x)\|^2_W\f$
     /// at the best estimate the solution, x, determined by NLS_solve
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the norm of the residual \f$\|c(x)\|_W\f$ at the best estimate of
     /// the solution x, determined by NLS_solve
-    real_wp_ norm_c;
+    rpc_ norm_c;
 
     /// \brief
     /// the norm of the gradient of \f$\|c(x)\|_W\f$ of the objective function
     /// at the best estimate, x, of the solution determined by NLS_solve
-    real_wp_ norm_g;
+    rpc_ norm_g;
 
     /// \brief
     /// the final regularization weight used
-    real_wp_ weight;
+    rpc_ weight;
 
     /// \brief
     /// timings (see above)
@@ -1158,26 +1158,26 @@ struct nls_inform_type {
 
     /// \brief
     /// the average number of factorizations per sub-problem solve
-    real_wp_ factorization_average;
+    rpc_ factorization_average;
 
     /// \brief
     /// the value of the objective function \f$\frac{1}{2}\|c(x)\|^2_W\f$
     /// at the best estimate the solution, x, determined by NLS_solve
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the norm of the residual \f$\|c(x)\|_W\f$ at the best estimate of
     /// the solution x, determined by NLS_solve
-    real_wp_ norm_c;
+    rpc_ norm_c;
 
     /// \brief
     /// the norm of the gradient of \f$\|c(x)\|_W\f$ of the objective function
     /// at the best estimate, x, of the solution determined by NLS_solve
-    real_wp_ norm_g;
+    rpc_ norm_g;
 
     /// \brief
     /// the final regularization weight used
-    real_wp_ weight;
+    rpc_ weight;
 
     /// \brief
     /// timings (see above)
@@ -1265,7 +1265,7 @@ void nls_import( struct nls_control_type *control,
                  const ipc_ P_row[],
                  const ipc_ P_col[],
                  const ipc_ P_ptr[],
-                 const real_wp_ w[] );
+                 const rpc_ w[] );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -1275,7 +1275,7 @@ void nls_import( struct nls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the offending
@@ -1291,10 +1291,10 @@ void nls_import( struct nls_control_type *control,
        'coordinate', 'sparse_by_rows', 'sparse_by_columns',
        'diagonal' or 'absent' has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals.
 
  @param[in]  J_type is a one-dimensional array of type char that specifies the
@@ -1303,21 +1303,21 @@ void nls_import( struct nls_control_type *control,
   'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
   is via matrix-vector products; lower or upper case variants are allowed.
 
- @param[in]  J_ne is a scalar variable of type int, that holds the number of
+ @param[in]  J_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$J\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  J_row is a one-dimensional array of size J_ne and type int, that
+ @param[in]  J_row is a one-dimensional array of size J_ne and type ipc_, that
    holds the row indices of \f$J\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  J_col is a one-dimensional array of size J_ne and type int,
+ @param[in]  J_col is a one-dimensional array of size J_ne and type ipc_,
    that holds the column indices of \f$J\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  J_ptr is a one-dimensional array of size m+1 and type int,
+ @param[in]  J_ptr is a one-dimensional array of size m+1 and type ipc_,
    that holds the starting position of each row of \f$J\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -1330,22 +1330,22 @@ void nls_import( struct nls_control_type *control,
    \f$H\f$ is via matrix-vector products; lower or upper case variants
     are allowed.
 
- @param[in]  H_ne is a scalar variable of type int, that holds the number of
+ @param[in]  H_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other three schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size H_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  H_col is a one-dimensional array of size H_ne and type int,
+ @param[in]  H_col is a one-dimensional array of size H_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$H\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense or diagonal storage schemes are used,
    and in this case can be NULL.
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -1358,28 +1358,28 @@ void nls_import( struct nls_control_type *control,
    the latter if access to \f$P\f$ is  via matrix-vector products;
    lower or upper case variants are allowed.
 
- @param[in]  P_ne is a scalar variable of type int, that holds the number of
+ @param[in]  P_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$P\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  P_row is a one-dimensional array of size P_ne and type int, that
+ @param[in]  P_row is a one-dimensional array of size P_ne and type ipc_, that
    holds the row indices of \f$P\f$ in either the sparse co-ordinate,
    or the sparse column-wise storage scheme.
    It need not be set when the dense storage scheme is used,
    and in this case can be NULL.
 
- @param[in]  P_col is a one-dimensional array of size P_ne and type int, that
+ @param[in]  P_col is a one-dimensional array of size P_ne and type ipc_, that
    holds the row indices of \f$P\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  P_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  P_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$P\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
    and in this case can be NULL.
 
- @param[in] w is a one-dimensional array of size m and type double,
+ @param[in] w is a one-dimensional array of size m and type rpc_,
    that holds the values \f$w\f$ of the weights on the residuals in the
    least-squares objective function. It need not be set if the weights are
    all ones, and in this case can be NULL.
@@ -1399,7 +1399,7 @@ void nls_reset_control( struct nls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
  */
@@ -1411,24 +1411,24 @@ void nls_solve_with_mat( void **data,
                          ipc_ *status,
                          ipc_ n,
                          ipc_ m,
-                         real_wp_ x[],
-                         real_wp_ c[],
-                         real_wp_ g[],
+                         rpc_ x[],
+                         rpc_ c[],
+                         rpc_ g[],
                          ipc_ (*eval_c)(
-                           ipc_, ipc_, const real_wp_[], real_wp_[],
+                           ipc_, ipc_, const rpc_[], rpc_[],
                            const void * ),
                          ipc_ j_ne,
                          ipc_ (*eval_j)(
-                           ipc_, ipc_, ipc_, const real_wp_[], real_wp_[],
+                           ipc_, ipc_, ipc_, const rpc_[], rpc_[],
                            const void * ),
                          ipc_ h_ne,
                          ipc_ (*eval_h)(
-                           ipc_, ipc_, ipc_, const real_wp_[], const real_wp_[],
-                           real_wp_[], const void * ),
+                           ipc_, ipc_, ipc_, const rpc_[], const rpc_[],
+                           rpc_[], const void * ),
                          ipc_ p_ne,
                          ipc_ (*eval_hprods)(
-                           ipc_, ipc_, ipc_, const real_wp_[],
-                           const real_wp_[], real_wp_[], bool,
+                           ipc_, ipc_, ipc_, const rpc_[],
+                           const rpc_[], rpc_[], bool,
                            const void * ) );
 
 /*!<
@@ -1443,7 +1443,7 @@ void nls_solve_with_mat( void **data,
  @param[in] userdata is a structure that allows data to be passed into
     the function and derivative evaluation programs.
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1480,41 +1480,41 @@ void nls_solve_with_mat( void **data,
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
+ @param[out] c is a one-dimensional array of size m and type rpc_, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
 
- @param[out] g is a one-dimensional array of size n and type double, that
+ @param[out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
  @param eval_c is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_c( ipc_ n, const double x[], double c[], const void *userdata )
+        ipc_ eval_c( ipc_ n, const rpc_ x[], rpc_ c[], const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to c, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
    Data may be passed into \c eval_c via the structure \c userdata.
 
- @param[in] j_ne is a scalar variable of type int, that holds the number of
+ @param[in] j_ne is a scalar variable of type ipc_, that holds the number of
     entries in the Jacobian matrix \f$J\f$.
 
  @param eval_j is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_j( ipc_ n, ipc_ m, ipc_ jne, const double x[], double j[],
+      ipc_ eval_j( ipc_ n, ipc_ m, ipc_ jne, const rpc_ x[], rpc_ j[],
                   const void *userdata )
    \endcode
    The components of the Jacobian \f$J = \nabla_x c(x\f$) of the residuals must
@@ -1523,15 +1523,15 @@ void nls_solve_with_mat( void **data,
    return should be set to a nonzero value.
    Data may be passed into \c eval_j via the structure \c userdata.
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of
+ @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$
     if it is used.
 
  @param eval_h is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_h( ipc_ n, ipc_ m, ipc_ hne, const double x[], const double y[],
-                    double h[], const void *userdata )
+        ipc_ eval_h( ipc_ n, ipc_ m, ipc_ hne, const rpc_ x[], const rpc_ y[],
+                    rpc_ h[], const void *userdata )
    \endcode
    The nonzeros of the matrix \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
    of the weighted residual Hessian evaluated at x=\f$x\f$ and y=\f$y\f$ must
@@ -1540,7 +1540,7 @@ void nls_solve_with_mat( void **data,
    return should be set to a nonzero value.
    Data may be passed into \c eval_h via the structure \c userdata.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of
+ @param[in] p_ne is a scalar variable of type ipc_, that holds the number of
     entries in the residual-Hessians-vector product matrix \f$P\f$ if it
     is used.
 
@@ -1548,8 +1548,8 @@ void nls_solve_with_mat( void **data,
    If non-NULL, it must have the following signature:
    \code
 
-       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ pne, const double x[],
-                           const double v[], double p[], bool got_h,
+       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ pne, const rpc_ x[],
+                           const rpc_ v[], rpc_ p[], bool got_h,
                            const void *userdata ) );
 
    \endcode
@@ -1569,24 +1569,24 @@ void nls_solve_without_mat( void **data,
                             ipc_ *status,
                             ipc_ n,
                             ipc_ m,
-                            real_wp_ x[],
-                            real_wp_ c[],
-                            real_wp_ g[],
+                            rpc_ x[],
+                            rpc_ c[],
+                            rpc_ g[],
                             ipc_ (*eval_c)(
-                              ipc_, ipc_, const real_wp_[], real_wp_[],
+                              ipc_, ipc_, const rpc_[], rpc_[],
                               const void * ),
                             ipc_ (*eval_jprod)(
-                              ipc_, ipc_, const real_wp_[], const bool,
-                              real_wp_[], const real_wp_[], bool,
+                              ipc_, ipc_, const rpc_[], const bool,
+                              rpc_[], const rpc_[], bool,
                               const void * ),
                             ipc_ (*eval_hprod)(
-                              ipc_, ipc_, const real_wp_[], const real_wp_[],
-                              real_wp_[], const real_wp_[], bool,
+                              ipc_, ipc_, const rpc_[], const rpc_[],
+                              rpc_[], const rpc_[], bool,
                               const void * ),
                             ipc_ p_ne,
                             ipc_ (*eval_hprods)(
-                              ipc_, ipc_, ipc_, const real_wp_[],
-                              const real_wp_[], real_wp_[], bool,
+                              ipc_, ipc_, ipc_, const rpc_[],
+                              const rpc_[], rpc_[], bool,
                               const void * ) );
 
 /*!<
@@ -1601,7 +1601,7 @@ void nls_solve_without_mat( void **data,
  @param[in] userdata is a structure that allows data to be passed into
     the function and derivative evaluation programs.
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1638,28 +1638,28 @@ void nls_solve_without_mat( void **data,
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
+ @param[out] c is a one-dimensional array of size m and type rpc_, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
 
- @param[out] g is a one-dimensional array of size n and type double, that
+ @param[out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
  @param eval_c is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_c( ipc_ n, const double x[], double c[], const void *userdata )
+        ipc_ eval_c( ipc_ n, const rpc_ x[], rpc_ c[], const void *userdata )
    \endcode
    The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
    must be assigned to c, and the function return value set to 0. If the
@@ -1669,8 +1669,8 @@ void nls_solve_without_mat( void **data,
  @param eval_jprod is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_jprod( ipc_ n, ipc_ m, const double x[], bool transpose,
-                      double u[], const double v[], bool got_j,
+      ipc_ eval_jprod( ipc_ n, ipc_ m, const rpc_ x[], bool transpose,
+                      rpc_ u[], const rpc_ v[], bool got_j,
                       const void *userdata )
    \endcode
    The sum \f$u + \nabla_{x}c_(x) v\f$ (if tranpose is false) or
@@ -1684,8 +1684,8 @@ void nls_solve_without_mat( void **data,
  @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_hprod( ipc_ n, ipc_ m, const double x[], const double y[],
-                        double u[], const double v[], bool got_h,
+        ipc_ eval_hprod( ipc_ n, ipc_ m, const rpc_ x[], const rpc_ y[],
+                        rpc_ u[], const rpc_ v[], bool got_h,
                         const void *userdata )
    \endcode
    The sum \f$u + \sum_{i=1}^m y_i  \nabla_{xx}c_i(x) v\f$ of the product of
@@ -1697,15 +1697,15 @@ void nls_solve_without_mat( void **data,
    The Hessians have already been evaluated or used at x if got_h is true.
    Data may be passed into \c eval_hprod via the structure \c userdata.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of
+ @param[in] p_ne is a scalar variable of type ipc_, that holds the number of
     entries in the residual-Hessians-vector product matrix \f$P\f$ if it
     is used.
 
  @param  eval_hprods is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ p_ne, const double x[],
-                        const double v[], double pval[], bool got_h,
+       ipc_ eval_hprods( ipc_ n, ipc_ m, ipc_ p_ne, const rpc_ x[],
+                        const rpc_ v[], rpc_ pval[], bool got_h,
                         const void *userdata )
    \endcode
    The entries of the matrix \f$P\f$, whose i-th column is the
@@ -1724,17 +1724,17 @@ void nls_solve_reverse_with_mat( void **data,
                                  ipc_ *eval_status,
                                  ipc_ n,
                                  ipc_ m,
-                                 real_wp_ x[],
-                                 real_wp_ c[],
-                                 real_wp_ g[],
+                                 rpc_ x[],
+                                 rpc_ c[],
+                                 rpc_ g[],
                                  ipc_ j_ne,
-                                 real_wp_ J_val[],
-                                 const real_wp_ y[],
+                                 rpc_ J_val[],
+                                 const rpc_ y[],
                                  ipc_ h_ne,
-                                 real_wp_ H_val[],
-                                 real_wp_ v[],
+                                 rpc_ H_val[],
+                                 rpc_ v[],
                                  ipc_ p_ne,
-                                 real_wp_ P_val[] );
+                                 rpc_ P_val[] );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -1745,7 +1745,7 @@ void nls_solve_reverse_with_mat( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1828,57 +1828,57 @@ void nls_solve_reverse_with_mat( void **data,
          \b Note that this return will not happen if either the Gauss-Newton
          or Newton models is selected.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to
+ @param[in,out] eval_status is a scalar variable of type ipc_, that is used to
     indicate if  objective function/gradient/Hessian values can be provided
     (see above)
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] c is a one-dimensional array of size m and type double, that
+ @param[in,out] c is a one-dimensional array of size m and type rpc_, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
     See status = 2, above, for more details.
 
- @param[in,out] g is a one-dimensional array of size n and type double, that
+ @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] j_ne is a scalar variable of type int, that holds the number of
+ @param[in] j_ne is a scalar variable of type ipc_, that holds the number of
     entries in the Jacobian matrix \f$J\f$.
 
- @param[in] J_val is a one-dimensional array of size j_ne and type double,
+ @param[in] J_val is a one-dimensional array of size j_ne and type rpc_,
     that holds the values of the entries of the Jacobian matrix \f$J\f$
     in any of the available storage schemes.
     See status = 3, above, for more details.
 
- @param[in,out] y is a one-dimensional array of size m and type double, that is
+ @param[in,out] y is a one-dimensional array of size m and type rpc_, that is
     used for reverse communication.
     See status = 4 above for more details.
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of
+ @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size h_ne and type double,
+ @param[in] H_val is a one-dimensional array of size h_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
     See status = 4, above, for more details.
 
- @param[in,out] v is a one-dimensional array of size n and type double, that is
+ @param[in,out] v is a one-dimensional array of size n and type rpc_, that is
     used for reverse communication.
     See status = 7, above, for more details.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of
+ @param[in] p_ne is a scalar variable of type ipc_, that holds the number of
     entries in the residual-Hessians-vector product matrix, \f$P\f$.
 
- @param[in] P_val is a one-dimensional array of size p_ne and type double,
+ @param[in] P_val is a one-dimensional array of size p_ne and type rpc_,
     that holds the values of the entries of the residual-Hessians-vector
     product matrix, \f$P\f$.
     See status = 7, above, for more details.
@@ -1891,15 +1891,15 @@ void nls_solve_reverse_without_mat( void **data,
                                     ipc_ *eval_status,
                                     ipc_ n,
                                     ipc_ m,
-                                    real_wp_ x[],
-                                    real_wp_ c[],
-                                    real_wp_ g[],
+                                    rpc_ x[],
+                                    rpc_ c[],
+                                    rpc_ g[],
                                     bool *transpose,
-                                    real_wp_ u[],
-                                    real_wp_ v[],
-                                    real_wp_ y[],
+                                    rpc_ u[],
+                                    rpc_ v[],
+                                    rpc_ y[],
                                     ipc_ p_ne,
-                                    real_wp_ P_val[] );
+                                    rpc_ P_val[] );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -1910,7 +1910,7 @@ void nls_solve_reverse_without_mat( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1994,26 +1994,26 @@ void nls_solve_reverse_without_mat( void **data,
          \b Note that this return will not happen if either the Gauss-Newton
          or Newton models is selected.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to
+ @param[in,out] eval_status is a scalar variable of type ipc_, that is used to
     indicate if  objective function/gradient/Hessian values can be provided
     (see above)
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] c is a one-dimensional array of size m and type double, that
+ @param[in,out] c is a one-dimensional array of size m and type rpc_, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
     See status = 2, above, for more details.
 
- @param[in,out] g is a one-dimensional array of size n and type double, that
+ @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
@@ -2021,22 +2021,22 @@ void nls_solve_reverse_without_mat( void **data,
    whether the product with Jacobian or its transpose should be obtained when
    status=5.
 
- @param[in,out] u is a one-dimensional array of size max(n,m) and type double,
+ @param[in,out] u is a one-dimensional array of size max(n,m) and type rpc_,
     that is used for reverse communication.
     See status = 5,6 above for more details.
 
- @param[in,out] v is a one-dimensional array of size max(n,m) and type double,
+ @param[in,out] v is a one-dimensional array of size max(n,m) and type rpc_,
     that is used for reverse communication.
     See status = 5,6,7 above for more details.
 
- @param[in,out] y is a one-dimensional array of size m and type double, that is
+ @param[in,out] y is a one-dimensional array of size m and type rpc_, that is
     used for reverse communication.
     See status = 6 above for more details.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of
+ @param[in] p_ne is a scalar variable of type ipc_, that holds the number of
     entries in the residual-Hessians-vector product matrix, \f$P\f$.
 
- @param[in] P_val is a one-dimensional array of size P_ne and type double,
+ @param[in] P_val is a one-dimensional array of size P_ne and type rpc_,
     that holds the values of the entries of the residual-Hessians-vector
     product matrix, \f$P\f$.
     See status = 7, above, for more details.
@@ -2057,7 +2057,7 @@ void nls_information( void **data,
   @param[out] inform   is a struct containing output information
               (see nls_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

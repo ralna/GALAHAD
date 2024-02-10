@@ -1,7 +1,7 @@
 //* \file galahad_eqp.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 16:16 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_EQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -392,41 +392,41 @@ struct eqp_control_type {
     /// \brief
     /// the threshold pivot used by the matrix factorization.
     /// See the documentation for SBLS for details                    (OBSOLETE)
-    real_wp_ pivot_tol;
+    rpc_ pivot_tol;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization when finding the ba
     /// See the documentation for ULS for details                     (OBSOLETE)
-    real_wp_ pivot_tol_for_basis;
+    rpc_ pivot_tol_for_basis;
 
     /// \brief
     /// any pivots smaller than zero_pivot in absolute value will be regarded to
     /// zero when attempting to detect linearly dependent constraints (OBSOLETE)
-    real_wp_ zero_pivot;
+    rpc_ zero_pivot;
 
     /// \brief
     /// the computed solution which gives at least inner_fraction_opt times the
     /// optimal value will be found                                   (OBSOLETE)
-    real_wp_ inner_fraction_opt;
+    rpc_ inner_fraction_opt;
 
     /// \brief
     /// an upper bound on the permitted step (-ve will be reset to an appropriat
     /// large value by eqp_solve)
-    real_wp_ radius;
+    rpc_ radius;
 
     /// \brief
     /// diagonal preconditioners will have diagonals no smaller than
     /// min_diagonal (OBSOLETE)
-    real_wp_ min_diagonal;
+    rpc_ min_diagonal;
 
     /// \brief
     /// if the constraints are believed to be rank defficient and the residual
     /// at a "typical" feasible point is larger than
     /// max( max_infeasibility_relative * norm A, max_infeasibility_absolute )
     /// the problem will be marked as infeasible
-    real_wp_ max_infeasibility_relative;
+    rpc_ max_infeasibility_relative;
     /// see max_infeasibility_relative
-    real_wp_ max_infeasibility_absolute;
+    rpc_ max_infeasibility_absolute;
 
     /// \brief
     /// the computed solution is considered as an acceptable approximation to th
@@ -434,11 +434,11 @@ struct eqp_control_type {
     /// preconditioning(inverse) norm is less than
     /// max( inner_stop_relative * initial preconditioning(inverse)
     /// gradient norm, inner_stop_absolute )
-    real_wp_ inner_stop_relative;
+    rpc_ inner_stop_relative;
     /// see inner_stop_relative
-    real_wp_ inner_stop_absolute;
+    rpc_ inner_stop_absolute;
     /// see inner_stop_relative
-    real_wp_ inner_stop_inter;
+    rpc_ inner_stop_inter;
 
     /// \brief
     /// if .find_basis_by_transpose is true, implicit factorization precondition
@@ -497,37 +497,37 @@ struct eqp_time_type {
 
     /// \brief
     /// the total CPU time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// the CPU time spent detecting linear dependencies
-    real_wp_ find_dependent;
+    rpc_ find_dependent;
 
     /// \brief
     /// the CPU time spent factorizing the required matrices
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// the CPU time spent computing the search direction
-    real_wp_ solve;
+    rpc_ solve;
     /// see solve
-    real_wp_ solve_inter;
+    rpc_ solve_inter;
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the clock time spent detecting linear dependencies
-    real_wp_ clock_find_dependent;
+    rpc_ clock_find_dependent;
 
     /// \brief
     /// the clock time spent factorizing the required matrices
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// the clock time spent computing the search direction
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -565,7 +565,7 @@ struct eqp_inform_type {
     /// \brief
     /// the value of the objective function at the best estimate of the solution
     /// determined by QPB_solve
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// timings (see above)
@@ -598,7 +598,7 @@ void eqp_initialize( void **data,
   @param[out] control is a struct containing control information
               (see eqp_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -649,7 +649,7 @@ void eqp_import( struct eqp_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
   \li -1. An allocation error occurred. A message indicating the
@@ -669,10 +669,10 @@ void eqp_import( struct eqp_control_type *control,
   \li -23. An entry from the strict upper triangle of \f$H\f$ has been
        specified.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
@@ -682,22 +682,22 @@ void eqp_import( struct eqp_control_type *control,
    'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
    case variants are allowed.
 
- @param[in]  H_ne is a scalar variable of type int, that holds the number of
+ @param[in]  H_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size H_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  H_col is a one-dimensional array of size H_ne and type int,
+ @param[in]  H_col is a one-dimensional array of size H_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$H\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$H\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -708,21 +708,21 @@ void eqp_import( struct eqp_control_type *control,
    used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
   'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
- @param[in]  A_ne is a scalar variable of type int, that holds the number of
+ @param[in]  A_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+ @param[in]  A_row is a one-dimensional array of size A_ne and type ipc_, that
    holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -744,7 +744,7 @@ void eqp_reset_control( struct eqp_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
  */
@@ -756,21 +756,21 @@ void eqp_solve_qp( void **data,
                    ipc_ n,
                    ipc_ m,
                    ipc_ h_ne,
-                   const real_wp_ H_val[],
-                   const real_wp_ g[],
-                   const real_wp_ f,
+                   const rpc_ H_val[],
+                   const rpc_ g[],
+                   const rpc_ f,
                    ipc_ a_ne,
-                   const real_wp_ A_val[],
-                   real_wp_ c[],
-                   real_wp_ x[],
-                   real_wp_ y[] );
+                   const rpc_ A_val[],
+                   rpc_ c[],
+                   rpc_ x[],
+                   rpc_ y[] );
 
 /*!<
  Solve the quadratic program when the Hessian \f$H\f$ is available.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -808,42 +808,42 @@ void eqp_solve_qp( void **data,
   \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints.
 
-  @param[in] h_ne is a scalar variable of type int, that holds the number of
+  @param[in] h_ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
-  @param[in] H_val is a one-dimensional array of size h_ne and type double,
+  @param[in] H_val is a one-dimensional array of size h_ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] a_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type ipc_, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
- @param[in] A_val is a one-dimensional array of size a_ne and type double,
+ @param[in] A_val is a one-dimensional array of size a_ne and type rpc_,
     that holds the values of the entries of the constraint Jacobian matrix
     \f$A\f$ in any of the available storage schemes.
 
- @param[in] c is a one-dimensional array of size m and type double, that
+ @param[in] c is a one-dimensional array of size m and type rpc_, that
     holds the linear term \f$c\f$  in the constraints.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[in,out] y is a one-dimensional array of size n and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the
     linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
@@ -856,22 +856,22 @@ void eqp_solve_sldqp( void **data,
                       ipc_ *status,
                       ipc_ n,
                       ipc_ m,
-                      const real_wp_ w[],
-                      const real_wp_ x0[],
-                      const real_wp_ g[],
-                      const real_wp_ f,
+                      const rpc_ w[],
+                      const rpc_ x0[],
+                      const rpc_ g[],
+                      const rpc_ f,
                       ipc_ a_ne,
-                      const real_wp_ A_val[],
-                      real_wp_ c[],
-                      real_wp_ x[],
-                      real_wp_ y[] );
+                      const rpc_ A_val[],
+                      rpc_ c[],
+                      rpc_ x[],
+                      rpc_ y[] );
 
 /*!<
  Solve the shifted least-distance quadratic program
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful
@@ -909,41 +909,41 @@ void eqp_solve_sldqp( void **data,
   \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints.
 
-  @param[in] w is a one-dimensional array of size n and type double,
+  @param[in] w is a one-dimensional array of size n and type rpc_,
     that holds the values of the weights \f$w\f$.
 
-  @param[in] x0 is a one-dimensional array of size n and type double,
+  @param[in] x0 is a one-dimensional array of size n and type rpc_,
     that holds the values of the shifts \f$x^0\f$.
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] a_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type ipc_, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
-@param[in] A_val is a one-dimensional array of size a_ne and type double,
+@param[in] A_val is a one-dimensional array of size a_ne and type rpc_,
     that holds the values of the entries of the constraint Jacobian matrix
     \f$A\f$ in any of the available storage schemes.
 
- @param[in] c is a one-dimensional array of size m and type double, that
+ @param[in] c is a one-dimensional array of size m and type rpc_, that
     holds the linear term \f$c\f$ in the constraints.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[in,out] y is a one-dimensional array of size n and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the
     linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
@@ -956,11 +956,11 @@ void eqp_resolve_qp( void **data,
                      ipc_ *status,
                      ipc_ n,
                      ipc_ m,
-                     const real_wp_ g[],
-                     const real_wp_ f,
-                     real_wp_ c[],
-                     real_wp_ x[],
-                     real_wp_ y[] );
+                     const rpc_ g[],
+                     const rpc_ f,
+                     rpc_ c[],
+                     rpc_ x[],
+                     rpc_ y[] );
 
 /*!<
  Resolve the quadratic program or shifted least-distance quadratic program
@@ -968,7 +968,7 @@ void eqp_resolve_qp( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -1001,28 +1001,28 @@ void eqp_resolve_qp( void **data,
   \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints.
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] c is a one-dimensional array of size m and type double, that
+ @param[in] c is a one-dimensional array of size m and type rpc_, that
     holds the linear term \f$c\f$ in the constraints.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[in,out] y is a one-dimensional array of size n and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the
     linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
@@ -1043,7 +1043,7 @@ void eqp_information( void **data,
   @param[out] inform   is a struct containing output information
               (see eqp_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

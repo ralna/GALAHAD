@@ -1,7 +1,7 @@
 //* \file galahad_lpa.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 16:19 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LPA C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -373,50 +373,50 @@ struct lpa_control_type {
 
     /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
-    real_wp_ infinity;
+    rpc_ infinity;
 
     /// \brief
     /// the tolerable relative perturbation of the data (A,g,..) defining
     /// the problem
-    real_wp_ tol_data;
+    rpc_ tol_data;
 
     /// \brief
     /// any constraint violated by less than feas_tol will be considered to be
     /// satisfied
-    real_wp_ feas_tol;
+    rpc_ feas_tol;
 
     /// \brief
     /// pivot threshold used to control the selection of pivot elements in the
     /// matrix factorization. Any potential pivot which is less than the largest
     /// entry in its row times the threshold is excluded as a candidate
-    real_wp_ relative_pivot_tolerance;
+    rpc_ relative_pivot_tolerance;
 
     /// \brief
     /// limit to control growth in the upated basis factors. A refactorization
     /// occurs if the growth exceeds this limit
-    real_wp_ growth_limit;
+    rpc_ growth_limit;
 
     /// \brief
     /// any entry in the basis smaller than this is considered zero
-    real_wp_ zero_tolerance;
+    rpc_ zero_tolerance;
 
     /// \brief
     /// any solution component whose change is smaller than a tolerence times
     /// the largest change may be considered to be zero
-    real_wp_ change_tolerance;
+    rpc_ change_tolerance;
 
     /// \brief
     /// any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer
     /// than identical_bounds_tol will be reset to the average of their values
-    real_wp_ identical_bounds_tol;
+    rpc_ identical_bounds_tol;
 
     /// \brief
     /// the maximum CPU time allowed (-ve means infinite)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// the maximum elapsed clock time allowed (-ve means infinite)
-    real_wp_ clock_time_limit;
+    rpc_ clock_time_limit;
 
     /// \brief
     /// if .scale is true, the problem will be automatically scaled prior to
@@ -478,19 +478,19 @@ struct lpa_time_type {
 
     /// \brief
     /// the total CPU time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// the CPU time spent preprocessing the problem
-    real_wp_ preprocess;
+    rpc_ preprocess;
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the clock time spent preprocessing the problem
-    real_wp_ clock_preprocess;
+    rpc_ clock_preprocess;
 };
 
 /**
@@ -527,11 +527,11 @@ struct lpa_inform_type {
     /// \brief
     /// the value of the objective function at the best estimate of the solution
     /// determined by LPA_solve
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the value of the primal infeasibility
-    real_wp_ primal_infeasibility;
+    rpc_ primal_infeasibility;
 
     /// \brief
     /// is the returned "solution" feasible?
@@ -539,7 +539,7 @@ struct lpa_inform_type {
 
     /// \brief
     /// the information array from LA04
-    real_wp_ RINFO[40];
+    rpc_ RINFO[40];
 
     /// \brief
     /// timings (see above)
@@ -564,7 +564,7 @@ void lpa_initialize( void **data,
   @param[out] control is a struct containing control information
               (see lpa_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
     \li  0. The import was succesful.
 */
@@ -609,7 +609,7 @@ void lpa_import( struct lpa_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
   \li -1. An allocation error occurred. A message indicating the
@@ -626,10 +626,10 @@ void lpa_import( struct lpa_control_type *control,
        its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
         has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints.
 
  @param[in]  A_type is a one-dimensional array of type char that specifies the
@@ -637,21 +637,21 @@ void lpa_import( struct lpa_control_type *control,
    used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
   'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
- @param[in]  A_ne is a scalar variable of type int, that holds the number of
+ @param[in]  A_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+ @param[in]  A_row is a one-dimensional array of size A_ne and type ipc_, that
    holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -673,7 +673,7 @@ void lpa_reset_control( struct lpa_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
  */
@@ -684,18 +684,18 @@ void lpa_solve_lp( void **data,
                    ipc_ *status,
                    ipc_ n,
                    ipc_ m,
-                   const real_wp_ g[],
-                   const real_wp_ f,
+                   const rpc_ g[],
+                   const rpc_ f,
                    ipc_ a_ne,
-                   const real_wp_ A_val[],
-                   const real_wp_ c_l[],
-                   const real_wp_ c_u[],
-                   const real_wp_ x_l[],
-                   const real_wp_ x_u[],
-                   real_wp_ x[],
-                   real_wp_ c[],
-                   real_wp_ y[],
-                   real_wp_ z[],
+                   const rpc_ A_val[],
+                   const rpc_ c_l[],
+                   const rpc_ c_u[],
+                   const rpc_ x_l[],
+                   const rpc_ x_u[],
+                   rpc_ x[],
+                   rpc_ c[],
+                   rpc_ y[],
+                   rpc_ z[],
                    ipc_ x_stat[],
                    ipc_ c_stat[] );
 
@@ -704,7 +704,7 @@ void lpa_solve_lp( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -740,66 +740,66 @@ void lpa_solve_lp( void **data,
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     general linear constraints.
 
- @param[in] g is a one-dimensional array of size n and type double, that
+ @param[in] g is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] f is a scalar of type double, that
+ @param[in] f is a scalar of type rpc_, that
     holds the constant term \f$f\f$ of the objective function.
 
- @param[in] a_ne is a scalar variable of type int, that holds the number of
+ @param[in] a_ne is a scalar variable of type ipc_, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
 
- @param[in] A_val is a one-dimensional array of size a_ne and type double,
+ @param[in] A_val is a one-dimensional array of size a_ne and type rpc_,
     that holds the values of the entries of the constraint Jacobian matrix
     \f$A\f$ in any of the available storage schemes.
 
- @param[in] c_l is a one-dimensional array of size m and type double, that
+ @param[in] c_l is a one-dimensional array of size m and type rpc_, that
     holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
 
- @param[in] c_u is a one-dimensional array of size m and type double, that
+ @param[in] c_u is a one-dimensional array of size m and type rpc_, that
     holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
 
- @param[in] x_l is a one-dimensional array of size n and type double, that
+ @param[in] x_l is a one-dimensional array of size n and type rpc_, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in] x_u is a one-dimensional array of size n and type double, that
+ @param[in] x_u is a one-dimensional array of size n and type rpc_, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] c is a one-dimensional array of size m and type double, that
+ @param[out] c is a one-dimensional array of size m and type rpc_, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i(x) \f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that
+ @param[in,out] y is a one-dimensional array of size n and type rpc_, that
     holds the values \f$y\f$ of the Lagrange multipliers for the general
     linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type double, that
+ @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[out] x_stat is a one-dimensional array of size n and type int, that
+ @param[out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] c_stat is a one-dimensional array of size m and type int, that
+ @param[out] c_stat is a one-dimensional array of size m and type ipc_, that
     gives the optimal status of the general linear constraints. If c_stat(i) is
     negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
     lower bound, if it is positive, it lies on its upper bound, and if it
@@ -820,7 +820,7 @@ void lpa_information( void **data,
   @param[out] inform is a struct containing output information
               (see lpa_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

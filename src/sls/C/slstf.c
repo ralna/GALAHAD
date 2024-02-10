@@ -9,7 +9,7 @@
 #include "galahad_cfunctions.h"
 #include "galahad_sls.h"
 
-ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs);
+ipc_ maxabsarray(rpc_ a[], ipc_ n, rpc_ *maxabs);
 
 int main(void) {
 
@@ -25,17 +25,17 @@ int main(void) {
     ipc_ row[] = {1, 2, 2, 3, 3, 4, 5}; // row indices, NB lower triangle
     ipc_ col[] = {1, 1, 5, 2, 3, 3, 5}; // column indices
     ipc_ ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
-    real_wp_ val[] = {2.0, 3.0, 6.0, 4.0,  1.0, 5.0, 1.0}; // values
-    real_wp_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
+    rpc_ val[] = {2.0, 3.0, 6.0, 4.0,  1.0, 5.0, 1.0}; // values
+    rpc_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                       0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0};
-    real_wp_ rhs[] = {8.0, 45.0, 31.0, 15.0, 17.0};
-    real_wp_ sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    rpc_ rhs[] = {8.0, 45.0, 31.0, 15.0, 17.0};
+    rpc_ sol[] = {1.0, 2.0, 3.0, 4.0, 5.0};
     ipc_ i, status;
-    real_wp_ x[n];
-    real_wp_ error[n];
+    rpc_ x[n];
+    rpc_ error[n];
 
-    real_wp_ norm_residual;
-    real_wp_ good_x = pow( DBL_EPSILON, 0.3333 );
+    rpc_ norm_residual;
+    rpc_ good_x = pow( DBL_EPSILON, 0.3333 );
 
     printf(" Fortran sparse matrix indexing\n\n");
 
@@ -86,7 +86,7 @@ int main(void) {
             printf("  fail ");
           }
         }else{
-            printf(" SLS_solve exit status = %1i\n", inform.status);
+            printf(" SLS_solve exit status = %1" i_ipc_ "\n", inform.status);
         }
         //printf("sol: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -107,7 +107,7 @@ int main(void) {
             printf("   fail ");
           }
         }else{
-            printf(" SLS_solve exit status = %1i\n", inform.status);
+            printf(" SLS_solve exit status = %1" i_ipc_ "\n", inform.status);
         }
 
         // obtain the solution by part solves
@@ -126,7 +126,7 @@ int main(void) {
             printf("   fail ");
           }
         }else{
-            printf(" SLS_solve exit status = %1i\n", inform.status);
+            printf(" SLS_solve exit status = %1" i_ipc_ "\n", inform.status);
         }
 
         // Delete internal workspace
@@ -135,10 +135,10 @@ int main(void) {
     }
 }
 
-ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs)
+ipc_ maxabsarray(rpc_ a[], ipc_ n, rpc_ *maxabs)
  {
     ipc_ i;
-    real_wp_ b, max;
+    rpc_ b, max;
     max=abs(a[0]);
     for(i=1; i<n; i++)
     {
@@ -147,4 +147,5 @@ ipc_ maxabsarray(real_wp_ a[], ipc_ n, real_wp_ *maxabs)
           max=b;
     }
     *maxabs=max;
+    return 0;
  }

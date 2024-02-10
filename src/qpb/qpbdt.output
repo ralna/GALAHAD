@@ -1,55 +1,11 @@
+ C sparse matrix indexing
 
- error exit tests 
+ basic tests of qp storage formats
 
- 3: QPB_solve exit status =     -3
- 4: QPB_solve exit status =     -4
- 5: QPB_solve exit status =     -5
-17: QPB_solve exit status =    -17
-18: QPB_solve exit status =    -18
-19: QPB_solve exit status =    -19
-23: QPB_solve exit status =    -23
- 7: QPB_solve exit status =    -18
-
- basic tests of storage formats 
-
-I1:    12 iterations. Optimal objective value =    4.0 status =      0
-I2:    12 iterations. Optimal objective value =    4.0 status =      0
-D1:    19 iterations. Optimal objective value =    5.4 status =      0
-D2:    19 iterations. Optimal objective value =    5.4 status =      0
-R1:    19 iterations. Optimal objective value =    5.4 status =      0
-R2:    19 iterations. Optimal objective value =    5.4 status =      0
-C1:    19 iterations. Optimal objective value =    5.4 status =      0
-C2:    22 iterations. Optimal objective value =    5.4 status =      0
-
- basic tests of options 
-
- 0:     7 iterations. Optimal objective value =    0.4 status =      0
- 1:     7 iterations. Optimal objective value =    0.4 status =      0
- 2:     7 iterations. Optimal objective value =    0.4 status =      0
- 3:     7 iterations. Optimal objective value =    0.4 status =      0
- 4:     7 iterations. Optimal objective value =    0.4 status =      0
- 5:     7 iterations. Optimal objective value =    0.4 status =      0
- 6:     7 iterations. Optimal objective value =    0.4 status =      0
- 7:     7 iterations. Optimal objective value =    0.4 status =      0
- 8:     7 iterations. Optimal objective value =    0.4 status =      0
- 9:     7 iterations. Optimal objective value =    0.4 status =      0
-10:     7 iterations. Optimal objective value =    0.4 status =      0
-11:     7 iterations. Optimal objective value =    0.4 status =      0
-12:     7 iterations. Optimal objective value =    0.4 status =      0
-13:     7 iterations. Optimal objective value =    0.4 status =      0
-14:     7 iterations. Optimal objective value =    0.4 status =      0
-15:     7 iterations. Optimal objective value =    0.4 status =      0
-16:     7 iterations. Optimal objective value =    0.4 status =      0
-17:     7 iterations. Optimal objective value =    0.4 status =      0
-18:     7 iterations. Optimal objective value =    0.4 status =      0
-19:     7 iterations. Optimal objective value =    0.4 status =      0
-20:     7 iterations. Optimal objective value =    0.4 status =      0
-21:     1 iterations. Optimal objective value =    0.3 status =      0
-22:    -1 iterations. Optimal objective value =    0.3 status =      0
-
- full test of generic problems 
-
- 1:    25 iterations. Optimal objective value = -137.7 status =      0
- 2:    16 iterations. Optimal objective value =   44.3 status =      0
-
- tests completed
+C:    10 iterations. Optimal objective value =  3.11 status = 0
+R:    10 iterations. Optimal objective value =  3.11 status = 0
+D:    10 iterations. Optimal objective value =  3.11 status = 0
+L:    10 iterations. Optimal objective value =  3.11 status = 0
+S:    10 iterations. Optimal objective value =  3.11 status = 0
+I:    10 iterations. Optimal objective value =  3.11 status = 0
+Z:     5 iterations. Optimal objective value =  1.00 status = 0

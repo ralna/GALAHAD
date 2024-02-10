@@ -1,7 +1,7 @@
 /** \file galahad_tru.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 10/08/2021 AT 15:30 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-  G A L A H A D _ T R U  C  I N T E R F A C E  -*-*-*-*-*-*-*-
  *
@@ -365,11 +365,11 @@ struct tru_control_type {
     /// norm of the gradient of the objective function is smaller than
     /// MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient )
     /// or if the step is less than .stop_s
-    real_wp_ stop_g_absolute;
+    rpc_ stop_g_absolute;
     /// see stop_g_absolute
-    real_wp_ stop_g_relative;
+    rpc_ stop_g_relative;
     /// see stop_g_absolute
-    real_wp_ stop_s;
+    rpc_ stop_s;
 
     /// \brief
     /// try to pick a good initial trust-region radius using
@@ -379,46 +379,46 @@ struct tru_control_type {
 
     /// \brief
     /// initial value for the trust-region radius
-    real_wp_ initial_radius;
+    rpc_ initial_radius;
 
     /// \brief
     /// maximum permitted trust-region radius
-    real_wp_ maximum_radius;
+    rpc_ maximum_radius;
 
     /// \brief a potential iterate will only be accepted if the actual decrease
     /// \f$f - f(x_{new})\f$ is larger than .eta_successful times that predicted
     /// by a quadratic model of the decrease. The trust-region radius will be
     /// increased if this relative decrease is greater than .eta_very_successful
     /// but smaller than .eta_too_successful
-    real_wp_ eta_successful;
+    rpc_ eta_successful;
     /// see eta_successful
-    real_wp_ eta_very_successful;
+    rpc_ eta_very_successful;
     /// see eta_successful
-    real_wp_ eta_too_successful;
+    rpc_ eta_too_successful;
 
     /// \brief
     /// on very successful iterations, the trust-region radius will be increased
     /// by the factor .radius_increase, while if the iteration is unsucceful,
     /// the radius will be decreased by a factor .radius_reduce but no more
     /// than .radius_reduce_max
-    real_wp_ radius_increase;
+    rpc_ radius_increase;
     /// see radius_increase;
-    real_wp_ radius_reduce;
+    rpc_ radius_reduce;
     /// see radius_increase;
-    real_wp_ radius_reduce_max;
+    rpc_ radius_reduce_max;
 
     /// \brief
     /// the smallest value the objective function may take before the problem
     /// is marked as unbounded
-    real_wp_ obj_unbounded;
+    rpc_ obj_unbounded;
 
     /// \brief
     /// the maximum CPU time allowed (-ve means infinite)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// the maximum elapsed clock time allowed (-ve means infinite)
-    real_wp_ clock_time_limit;
+    rpc_ clock_time_limit;
 
     /// \brief
     /// is the Hessian matrix of second derivatives available or is access only
@@ -514,24 +514,24 @@ struct tru_time_type {
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the clock time spent preprocessing the problem
-    real_wp_ clock_preprocess;
+    rpc_ clock_preprocess;
 
     /// \brief
     /// the clock time spent analysing the required matrices prior to
     /// factorization
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// the clock time spent factorizing the required matrices
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// the clock time spent computing the search direction
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -595,21 +595,21 @@ struct tru_inform_type {
 
     /// \brief
     /// the average number of factorizations per sub-problem solve
-    real_wp_ factorization_average;
+    rpc_ factorization_average;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
     /// determined by the package.
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the norm of the gradient of the objective function at the best estimate
     /// of the solution determined by the package.
-    real_wp_ norm_g;
+    rpc_ norm_g;
 
     /// \brief
     /// the current value of the trust-region radius
-    real_wp_ radius;
+    rpc_ radius;
 
     /// \brief
     /// timings (see above)
@@ -659,7 +659,7 @@ void tru_initialize( void **data,
   @param[out] control  is a struct containing control information
               (see tru_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
    \li  0. The import was succesful.
 */
@@ -704,7 +704,7 @@ void tru_import( struct tru_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
   \li -1. An allocation error occurred. A message indicating the offending
@@ -719,7 +719,7 @@ void tru_import( struct tru_control_type *control,
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        'diagonal' or 'absent' has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
@@ -728,22 +728,22 @@ void tru_import( struct tru_control_type *control,
   'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
   via matrix-vector products; lower or upper case variants are allowed
 
- @param[in]  ne is a scalar variable of type int, that holds the number of
+ @param[in]  ne is a scalar variable of type ipc_, that holds the number of
    entries in the  lower triangular part of H in the sparse co-ordinate
    storage scheme. It need not be set for any of the other three schemes.
 
- @param[in]  H_row is a one-dimensional array of size ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the lower triangular part of H in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL
 
- @param[in]  H_col is a one-dimensional array of size ne and type int,
+ @param[in]  H_col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the  lower triangular part of H in either
    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
    be set when the dense or diagonal storage schemes are used, and in this
    case can be NULL
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of H, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -764,7 +764,7 @@ void tru_reset_control( struct tru_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
  */
@@ -776,18 +776,18 @@ void tru_solve_with_mat( void **data,
                          void *userdata,
                          ipc_ *status,
                          ipc_ n,
-                         real_wp_ x[],
-                         real_wp_ g[],
+                         rpc_ x[],
+                         rpc_ g[],
                          ipc_ ne,
                          ipc_ (*eval_f)(
-                           ipc_, const real_wp_[], real_wp_*, const void * ),
+                           ipc_, const rpc_[], rpc_*, const void * ),
                          ipc_ (*eval_g)(
-                           ipc_, const real_wp_[], real_wp_[], const void * ),
+                           ipc_, const rpc_[], rpc_[], const void * ),
                          ipc_ (*eval_h)(
-                           ipc_, ipc_, const real_wp_[], real_wp_[],
+                           ipc_, ipc_, const rpc_[], rpc_[],
                            const void * ),
                          ipc_ (*eval_prec)(
-                           ipc_, const real_wp_[], real_wp_[], const real_wp_[],
+                           ipc_, const rpc_[], rpc_[], const rpc_[],
                            const void * ) );
 
 /*!<
@@ -802,7 +802,7 @@ void tru_solve_with_mat( void **data,
  @param[in] userdata is a structure that allows data to be passed into
     the function and derivative evaluation programs.
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -839,24 +839,24 @@ void tru_solve_with_mat( void **data,
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] g is a one-dimensional array of size n and type double, that
+ @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
  @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_f( ipc_ n, const double x[], double *f, const void *userdata )
+        ipc_ eval_f( ipc_ n, const rpc_ x[], rpc_ *f, const void *userdata )
    \endcode
    The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
    be assigned to f, and the function return value set to 0. If the
@@ -866,7 +866,7 @@ void tru_solve_with_mat( void **data,
  @param eval_g is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_g( ipc_ n, const double x[], double g[], const void *userdata )
+      ipc_ eval_g( ipc_ n, const rpc_ x[], rpc_ g[], const void *userdata )
    \endcode
    The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
    function evaluated at x=\f$x\f$ must be assigned to g, and the function
@@ -877,7 +877,7 @@ void tru_solve_with_mat( void **data,
  @param eval_h is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_h( ipc_ n, ipc_ ne, const double x[], double h[],
+        ipc_ eval_h( ipc_ n, ipc_ ne, const rpc_ x[], rpc_ h[],
                     const void *userdata )
    \endcode
    The nonzeros of the Hessian \f$H = \nabla_{xx}f(x)\f$ of the objective
@@ -890,7 +890,7 @@ void tru_solve_with_mat( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       ipc_ eval_prec( ipc_ n, const double x[], double u[], const double v[],
+       ipc_ eval_prec( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[],
                       const void *userdata )
    \endcode
    The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
@@ -906,18 +906,18 @@ void tru_solve_without_mat( void **data,
                             void *userdata,
                             ipc_ *status,
                             ipc_ n,
-                            real_wp_ x[],
-                            real_wp_ g[],
+                            rpc_ x[],
+                            rpc_ g[],
                             ipc_ (*eval_f)(
-                              ipc_, const real_wp_[], real_wp_*, const void * ),
+                              ipc_, const rpc_[], rpc_*, const void * ),
                             ipc_ (*eval_g)(
-                              ipc_, const real_wp_[], real_wp_[], const void * ),
+                              ipc_, const rpc_[], rpc_[], const void * ),
                             ipc_ (*eval_hprod)(
-                              ipc_, const real_wp_[], real_wp_[],
-                              const real_wp_[], bool, const void * ),
+                              ipc_, const rpc_[], rpc_[],
+                              const rpc_[], bool, const void * ),
                             ipc_ (*eval_prec)(
-                              ipc_, const real_wp_[], real_wp_[],
-                               const real_wp_[], const void * ) );
+                              ipc_, const rpc_[], rpc_[],
+                               const rpc_[], const void * ) );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -931,7 +931,7 @@ void tru_solve_without_mat( void **data,
  @param[in] userdata is a structure that allows data to be passed into
     the function and derivative evaluation programs.
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -968,21 +968,21 @@ void tru_solve_without_mat( void **data,
   \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] g is a one-dimensional array of size n and type double, that
+ @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
  @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_f( ipc_ n, const double x[], double *f, const void *userdata )
+        ipc_ eval_f( ipc_ n, const rpc_ x[], rpc_ *f, const void *userdata )
    \endcode
    The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
    be assigned to f, and the function return value set to 0. If the
@@ -992,7 +992,7 @@ void tru_solve_without_mat( void **data,
  @param eval_g is a user-supplied function that must have the following
    signature:
    \code
-      ipc_ eval_g( ipc_ n, const double x[], double g[], const void *userdata )
+      ipc_ eval_g( ipc_ n, const rpc_ x[], rpc_ g[], const void *userdata )
    \endcode
    The components of the gradient \f$g = \nabla_x f(x)\f$ of the objective
    function evaluated at x=\f$x\f$ must be assigned to g, and the function
@@ -1003,7 +1003,7 @@ void tru_solve_without_mat( void **data,
  @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        ipc_ eval_hprod( ipc_ n, const double x[], double u[], const double v[],
+        ipc_ eval_hprod( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[],
                         bool got_h, const void *userdata )
    \endcode
    The sum \f$u + \nabla_{xx}f(x) v\f$ of the product of the Hessian
@@ -1017,7 +1017,7 @@ void tru_solve_without_mat( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       ipc_ eval_prec( ipc_ n, const double x[], double u[], const double v[],
+       ipc_ eval_prec( ipc_ n, const rpc_ x[], rpc_ u[], const rpc_ v[],
                       const void *userdata )
    \endcode
    The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
@@ -1033,13 +1033,13 @@ void tru_solve_reverse_with_mat( void **data,
                                  ipc_ *status,
                                  ipc_ *eval_status,
                                  ipc_ n,
-                                 real_wp_ x[],
-                                 real_wp_ f,
-                                 real_wp_ g[],
+                                 rpc_ x[],
+                                 rpc_ f,
+                                 rpc_ g[],
                                  ipc_ ne,
-                                 real_wp_ H_val[],
-                                 const real_wp_ u[],
-                                 real_wp_ v[] );
+                                 rpc_ H_val[],
+                                 const rpc_ u[],
+                                 rpc_ v[] );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -1050,7 +1050,7 @@ void tru_solve_reverse_with_mat( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1120,36 +1120,36 @@ void tru_solve_reverse_with_mat( void **data,
          preconditioner is undefined at \f$x\f$ --- the user need not set u,
          but should then set eval_status to a non-zero value.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to
+ @param[in,out] eval_status is a scalar variable of type ipc_, that is used to
     indicate if  objective function/gradient/Hessian values can be provided
     (see above)
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value of the
+   f is a scalar variable pointer of type rpc_, that holds the value of the
     objective function.
 
- @param[in,out] g is a one-dimensional array of size n and type double, that
+ @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size ne and type double,
+ @param[in] H_val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] u is a one-dimensional array of size n and type double, that is
+ @param[in] u is a one-dimensional array of size n and type rpc_, that is
     used for reverse communication (see above for details)
 
- @param[in,out] v is a one-dimensional array of size n and type double, that is
+ @param[in,out] v is a one-dimensional array of size n and type rpc_, that is
     used for reverse communication (see above for details)
 */
 
@@ -1160,11 +1160,11 @@ void tru_solve_reverse_without_mat( void **data,
                                     ipc_ *status,
                                     ipc_ *eval_status,
                                     ipc_ n,
-                                    real_wp_ x[],
-                                    real_wp_ f,
-                                    real_wp_ g[],
-                                    real_wp_ u[],
-                                    real_wp_ v[] );
+                                    rpc_ x[],
+                                    rpc_ f,
+                                    rpc_ g[],
+                                    rpc_ u[],
+                                    rpc_ v[] );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
@@ -1175,7 +1175,7 @@ void tru_solve_reverse_without_mat( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1246,29 +1246,29 @@ void tru_solve_reverse_without_mat( void **data,
          preconditioner is undefined at \f$x\f$ --- the user need not set u,
          but should then set eval_status to a non-zero value.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to
+ @param[in,out] eval_status is a scalar variable of type ipc_, that is used to
     indicate if  objective function/gradient/Hessian values can be provided
     (see above)
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value of the
+   f is a scalar variable pointer of type rpc_, that holds the value of the
     objective function.
 
- @param[in,out] g is a one-dimensional array of size n and type double, that
+ @param[in,out] g is a one-dimensional array of size n and type rpc_, that
     holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
 
- @param[in,out] u is a one-dimensional array of size n and type double, that is
+ @param[in,out] u is a one-dimensional array of size n and type rpc_, that is
     used for reverse communication (see above for details)
 
- @param[in,out] v is a one-dimensional array of size n and type double, that is
+ @param[in,out] v is a one-dimensional array of size n and type rpc_, that is
     used for reverse communication (see above for details)
 */
 
@@ -1286,7 +1286,7 @@ void tru_information( void **data,
   @param[out] inform   is a struct containing output information
     (see tru_inform_type)
 
-  @param[out] status   is a scalar variable of type int, that gives
+  @param[out] status   is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The values were recorded succesfully
 */

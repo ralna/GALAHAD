@@ -1,108 +1,11 @@
+ C sparse matrix indexing
 
- error exit tests 
+ basic tests of storage formats
 
- test   status
-    3       -3
-   15        0
-
- basic tests of storage formats 
-
-        storage prec fact  new   status residual
-       IDENTITY   -1    1    2        0     tiny
-       IDENTITY   -1    1    1        0     tiny
-       IDENTITY   -1    1    0        0     tiny
-SCALED_IDENTITY   -1    1    2        0     tiny
-SCALED_IDENTITY   -1    1    1        0     tiny
-SCALED_IDENTITY   -1    1    0        0     tiny
-       DIAGONAL   -1    1    2        0     tiny
-       DIAGONAL   -1    1    1        0     tiny
-       DIAGONAL   -1    1    0        0     tiny
-          DENSE   -1    1    2        0     tiny
-          DENSE   -1    1    1        0     tiny
-          DENSE   -1    1    0        0     tiny
- SPARSE_BY_ROWS   -1    1    2        0     tiny
- SPARSE_BY_ROWS   -1    1    1        0     tiny
- SPARSE_BY_ROWS   -1    1    0        0     tiny
-     COORDINATE   -1    1    2        0     tiny
-     COORDINATE   -1    1    1        0     tiny
-     COORDINATE   -1    1    0        0     tiny
-       IDENTITY   -1    2    2        0     tiny
-       IDENTITY   -1    2    1        0     tiny
-       IDENTITY   -1    2    0        0     tiny
-SCALED_IDENTITY   -1    2    2        0     tiny
-SCALED_IDENTITY   -1    2    1        0     tiny
-SCALED_IDENTITY   -1    2    0        0     tiny
-       DIAGONAL   -1    2    2        0     tiny
-       DIAGONAL   -1    2    1        0     tiny
-       DIAGONAL   -1    2    0        0     tiny
-          DENSE   -1    2    2        0     tiny
-          DENSE   -1    2    1        0     tiny
-          DENSE   -1    2    0        0     tiny
- SPARSE_BY_ROWS   -1    2    2        0     tiny
- SPARSE_BY_ROWS   -1    2    1        0     tiny
- SPARSE_BY_ROWS   -1    2    0        0     tiny
-     COORDINATE   -1    2    2        0     tiny
-     COORDINATE   -1    2    1        0     tiny
-     COORDINATE   -1    2    0        0     tiny
-
- basic tests of symmetric linear solvers 
-
-    <---  solver  --->
-    definite  symmetric  status residual
-      sils      sils        0     tiny
-      ma57      ma57        0     tiny
-      ma77      ma77      -26
-      ma86      ma86      -26
-      ma87     ssids        0     tiny
-      ma97      ma97       -9
-   pardiso   pardiso       -9
-mkl_pardismkl_pardis       -9
-      wsmp      wsmp       -9
-    pastix    pastix        0     tiny
-      potr      sytr        0     tiny
-      sytr      sytr        0     tiny
-     ssids     ssids        0     tiny
-
- basic tests of unsymmetric linear solvers 
-
-    solver   status residual
-       gls      -13
-      ma48      -13
-      getr        0     tiny
-
- basic tests of options 
-
- test   status residual
-    0        0     tiny
-    1        0     tiny
-    2        0     tiny
-    3        0     tiny
-    4        0     tiny
-    5        0     tiny
-    6        0     tiny
-    7        0     tiny
-    8        0     tiny
-    9        0     tiny
-   10        0     tiny
-   11        0     tiny
-   12        0     tiny
-   13        0     tiny
-   14        0     tiny
-   15        0     tiny
-   16        0     tiny
-   17        0     tiny
-   18        0     tiny
-   19        0     tiny
-   20        0     tiny
-   21        0     tiny
-   22        0     tiny
-
- full test of generic problems 
-
- test   status residual
-    1        0     tiny
-    2        0     tiny
-    3        0     tiny
-    4        0     tiny
-
- tests completed
+C: residual =   4.4e-16 status = 0
+R: residual =   4.4e-16 status = 0
+D: residual =   4.4e-16 status = 0
+L: residual =   8.9e-16 status = 0
+S: residual =   1.1e-16 status = 0
+I: residual =   0.0e+00 status = 0
+Z: residual =   1.1e-16 status = 0

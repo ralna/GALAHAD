@@ -1,7 +1,7 @@
 //* \file galahad_l2rt.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 19/12/2021 AT 11:33 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_L2RT C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -272,18 +272,18 @@ struct l2rt_control_type {
     /// \brief
     /// the iteration stops successfully when \f$\|A^Tr\|\f$ is less than
     /// max( stop_relative * \f$\|A^Tr_{initial} \|\f$, stop_absolute )
-    real_wp_ stop_relative;
+    rpc_ stop_relative;
     /// see stop_relative
-    real_wp_ stop_absolute;
+    rpc_ stop_absolute;
 
     /// \brief
     /// an estimate of the solution that gives at least .fraction_opt times
     /// the optimal objective value will be found
-    real_wp_ fraction_opt;
+    rpc_ fraction_opt;
 
     /// \brief
     /// the maximum elapsed time allowed (-ve means infinite)
-    real_wp_ time_limit;
+    rpc_ time_limit;
 
     /// \brief
     /// if .space_critical true, every effort will be made to use as little
@@ -344,28 +344,28 @@ struct l2rt_inform_type {
 
     /// \brief
     /// the value of the objective function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the multiplier, \f$\lambda = \mu + \sigma \|x\|^{p-2} * \sqrt{\|Ax-b\|^2 + \mu \|x\|^2}\f$
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// the Euclidean norm of \f$x\f$
-    real_wp_ x_norm;
+    rpc_ x_norm;
 
     /// \brief
     /// the Euclidean norm of \f$Ax-b\f$
-    real_wp_ r_norm;
+    rpc_ r_norm;
 
     /// \brief
     /// the Euclidean norm of \f$A^T (Ax-b) + \lambda x\f$
-    real_wp_ Atr_norm;
+    rpc_ Atr_norm;
 
     /// \brief
     /// the average number of inner iterations performed during an
     /// outer iteration
-    real_wp_ biter_mean;
+    rpc_ biter_mean;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    L 2 R T  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
@@ -382,7 +382,7 @@ void l2rt_initialize( void **data,
   @param[out] control is a struct containing control information
               (see l2rt_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):  \li  0. The import was succesful.
 */
 
@@ -419,7 +419,7 @@ void l2rt_import_control( struct l2rt_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -430,19 +430,19 @@ void l2rt_solve_problem( void **data,
                          ipc_ *status,
                          ipc_ m,
                          ipc_ n,
-                         const real_wp_ power,
-                         const real_wp_ weight,
-                         const real_wp_ shift,
-                         real_wp_ x[],
-                         real_wp_ u[],
-                         real_wp_ v[] );
+                         const rpc_ power,
+                         const rpc_ weight,
+                         const rpc_ shift,
+                         rpc_ x[],
+                         rpc_ u[],
+                         rpc_ v[] );
 
 /*!<
  Solve the regularized-least-squares problem using reverse communication.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
 
    This must be set to
@@ -483,30 +483,30 @@ void l2rt_solve_problem( void **data,
    \li -18. the iteration limit has been exceeded
    \li -25. status is negative on entry
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     equations (i.e., rows of \f$A\f$), \f$m > 0\f$
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables (i.e., columns of \f$A\f$), \f$n > 0\f$
 
- @param[in] power is a scalar of type double, that holds the
+ @param[in] power is a scalar of type rpc_, that holds the
    regularization power, \f$p \geq 2\f$
 
- @param[in] weight is a scalar of type double, that holds the
+ @param[in] weight is a scalar of type rpc_, that holds the
    regularization weight, \f$\sigma > 0\f$
 
- @param[in] shift is a scalar of type double, that holds the shift,
+ @param[in] shift is a scalar of type rpc_, that holds the shift,
    \f$\mu\f$
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
 
- @param[in,out] u is a one-dimensional array of size m and type double,
+ @param[in,out] u is a one-dimensional array of size m and type rpc_,
     that should be used and reset appropriately when status = 1 to 5
     as directed by status.
 
- @param[in,out] v is a one-dimensional array of size n and type double,
+ @param[in,out] v is a one-dimensional array of size n and type rpc_,
     that should be used and reset appropriately when status = 1 to 5
     as directed by status.
 
@@ -526,7 +526,7 @@ void l2rt_information( void **data,
   @param[out] inform is a struct containing output information
               (see l2rt_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

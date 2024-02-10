@@ -21,21 +21,21 @@ int main(void) {
     ipc_ H_row[] = {0};   // row indices, NB lower triangle
     ipc_ H_col[] = {0};    // column indices, NB lower triangle
     ipc_ H_ptr[] = {0, 1, 1, 1, 1, 1, 1}; // row pointers
-    real_wp_ H_val[] = {1.0};   // values
-    real_wp_ g[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // linear term in the objective
-    real_wp_ f = 1.0;  // constant term in the objective
+    rpc_ H_val[] = {1.0};   // values
+    rpc_ g[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // linear term in the objective
+    rpc_ f = 1.0;  // constant term in the objective
     ipc_ A_ne = 8; // Jacobian elements
     ipc_ A_row[] = {2, 2, 2, 3, 3, 4, 4, 4}; // row indices
     ipc_ A_col[] = {2, 3, 4, 2, 5, 3, 4, 5}; // column indices
     ipc_ A_ptr[] = {0, 0, 0, 3, 5, 8}; // row pointers
-    real_wp_ A_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // values
-    real_wp_ c_l[] = { 0.0, 0.0, 2.0, 1.0, 3.0};   // constraint lower bound
-    real_wp_ c_u[] = {1.0, 1.0, 3.0, 3.0, 3.0};   // constraint upper bound
-    real_wp_ x_l[] = {-3.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // variable lower bound
-    real_wp_ x_u[] = {3.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // variable upper bound
+    rpc_ A_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // values
+    rpc_ c_l[] = { 0.0, 0.0, 2.0, 1.0, 3.0};   // constraint lower bound
+    rpc_ c_u[] = {1.0, 1.0, 3.0, 3.0, 3.0};   // constraint upper bound
+    rpc_ x_l[] = {-3.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // variable lower bound
+    rpc_ x_u[] = {3.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // variable upper bound
 
     // Set output storage
-    char st;
+    char st = ' ';
     ipc_ status;
 
     printf(" C sparse matrix indexing\n\n");
@@ -61,7 +61,7 @@ int main(void) {
                            c_l, c_u, x_l, x_u,
                            &n_trans, &m_trans, &H_ne_trans, &A_ne_trans );
                 break;
-            printf(" case %1i break\n",d);
+            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 presolve_import_problem( &control, &data, &status, n, m,
@@ -74,13 +74,13 @@ int main(void) {
                 st = 'D';
                 ipc_ H_dense_ne = n*(n+1)/2; // number of elements of H
                 ipc_ A_dense_ne = m*n; // number of elements of A
-                real_wp_ H_dense[] = {1.0,
+                rpc_ H_dense[] = {1.0,
                                     0.0, 0.0,
                                     0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-                real_wp_ A_dense[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                rpc_ A_dense[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 1.0, 1.0, 1.0, 0.0,
                                     0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
@@ -126,24 +126,24 @@ int main(void) {
                 break;
             }
 
-        //printf("%c: n, m, h_ne, a_ne = %2i, %2i, %2i, %2i\n",
+        //printf("%c: n, m, h_ne, a_ne = %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ "\n",
         //           st, n_trans, m_trans, H_ne_trans, A_ne_trans);
-        real_wp_ f_trans;  // transformed constant term in the objective
+        rpc_ f_trans;  // transformed constant term in the objective
         ipc_ H_ptr_trans[n_trans+1]; // transformed Hessian row pointers
         ipc_ H_col_trans[H_ne_trans]; // transformed Hessian column indices
-        real_wp_ H_val_trans[H_ne_trans]; // transformed Hessian values
-        real_wp_ g_trans[n_trans]; // transformed gradient
+        rpc_ H_val_trans[H_ne_trans]; // transformed Hessian values
+        rpc_ g_trans[n_trans]; // transformed gradient
         ipc_ A_ptr_trans[m_trans+1]; // transformed Jacobian row pointers
         ipc_ A_col_trans[A_ne_trans]; // transformed Jacobian column indices
-        real_wp_ A_val_trans[A_ne_trans]; // transformed Jacobian values
-        real_wp_ x_l_trans[n_trans]; // transformed lower variable bounds
-        real_wp_ x_u_trans[n_trans]; // transformed upper variable bounds
-        real_wp_ c_l_trans[m_trans]; // transformed lower constraint bounds
-        real_wp_ c_u_trans[m_trans]; // transformed upper constraint bounds
-        real_wp_ y_l_trans[m_trans]; // transformed lower multiplier bounds
-        real_wp_ y_u_trans[m_trans]; // transformed upper multiplier bounds
-        real_wp_ z_l_trans[n_trans]; // transformed lower dual variable bounds
-        real_wp_ z_u_trans[n_trans]; // transformed upper dual variable bounds
+        rpc_ A_val_trans[A_ne_trans]; // transformed Jacobian values
+        rpc_ x_l_trans[n_trans]; // transformed lower variable bounds
+        rpc_ x_u_trans[n_trans]; // transformed upper variable bounds
+        rpc_ c_l_trans[m_trans]; // transformed lower constraint bounds
+        rpc_ c_u_trans[m_trans]; // transformed upper constraint bounds
+        rpc_ y_l_trans[m_trans]; // transformed lower multiplier bounds
+        rpc_ y_u_trans[m_trans]; // transformed upper multiplier bounds
+        rpc_ z_l_trans[n_trans]; // transformed lower dual variable bounds
+        rpc_ z_u_trans[n_trans]; // transformed upper dual variable bounds
 
         presolve_transform_problem( &data, &status, n_trans, m_trans,
                                H_ne_trans, H_col_trans, H_ptr_trans,
@@ -152,21 +152,21 @@ int main(void) {
                                c_l_trans, c_u_trans, x_l_trans, x_u_trans,
                                y_l_trans, y_u_trans, z_l_trans, z_u_trans );
 
-        real_wp_ x_trans[n_trans]; // transformed variables
+        rpc_ x_trans[n_trans]; // transformed variables
         for( ipc_ i = 0; i < n_trans; i++) x_trans[i] = 0.0;
-        real_wp_ c_trans[m_trans]; // transformed constraints
+        rpc_ c_trans[m_trans]; // transformed constraints
         for( ipc_ i = 0; i < m_trans; i++) c_trans[i] = 0.0;
-        real_wp_ y_trans[m_trans]; // transformed Lagrange multipliers
+        rpc_ y_trans[m_trans]; // transformed Lagrange multipliers
         for( ipc_ i = 0; i < m_trans; i++) y_trans[i] = 0.0;
-        real_wp_ z_trans[n_trans]; // transformed dual variables
+        rpc_ z_trans[n_trans]; // transformed dual variables
         for( ipc_ i = 0; i < n_trans; i++) z_trans[i] = 0.0;
 
-        real_wp_ x[n]; // primal variables
-        real_wp_ c[m]; // constraint values
-        real_wp_ y[m]; // Lagrange multipliers
-        real_wp_ z[n]; // dual variables
+        rpc_ x[n]; // primal variables
+        rpc_ c[m]; // constraint values
+        rpc_ y[m]; // Lagrange multipliers
+        rpc_ z[n]; // dual variables
 
-        //printf("%c: n_trans, m_trans, n, m = %2i, %2i, %2i, %2i\n",
+        //printf("%c: n_trans, m_trans, n, m = %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ ", %2" i_ipc_ "\n",
         //           st, n_trans, m_trans, n, m );
         presolve_restore_solution( &data, &status, n_trans, m_trans,
                   x_trans, c_trans, y_trans, z_trans, n, m, x, c, y, z );
@@ -174,10 +174,10 @@ int main(void) {
         presolve_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i transformations, n, m = %2i, %2i, status = %1i\n",
+            printf("%c:%6" i_ipc_ " transformations, n, m = %2" i_ipc_ ", %2" i_ipc_ ", status = %1" i_ipc_ "\n",
                    st, inform.nbr_transforms, n_trans, m_trans, inform.status);
         }else{
-            printf("%c: PRESOLVE_solve exit status = %1i\n", st, inform.status);
+            printf("%c: PRESOLVE_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

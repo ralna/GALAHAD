@@ -23,10 +23,10 @@ int main(void) {
     ipc_ row[] = {0, 1, 1, 2, 2, 3, 4}; // A indices & values, NB lower triangle
     ipc_ col[] = {0, 0, 4, 1, 2, 2, 4};
     ipc_ ptr[] = {0, 1, 3, 5, 6, 7};
-    real_wp_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0};
-    real_wp_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
+    rpc_ val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0};
+    rpc_ dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                       0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0};
-    char st;
+    char st = ' ';
     ipc_ status;
     ipc_ status_apply;
 
@@ -52,7 +52,7 @@ int main(void) {
                              "coordinate", ne, row, col, NULL );
                 psls_form_preconditioner( &data, &status, ne, val );
                 break;
-            printf(" case %1i break\n",d);
+            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 psls_import( &control, &data, &status, n,
@@ -68,7 +68,7 @@ int main(void) {
             }
 
         // Set right-hand side b in x
-        real_wp_ x[] = {8.0, 45.0, 31.0, 15.0, 17.0};   // values
+        rpc_ x[] = {8.0, 45.0, 31.0, 15.0, 17.0};   // values
 
         if(status == 0){
           psls_information( &data, &inform, &status );
@@ -77,8 +77,8 @@ int main(void) {
           status_apply = - 1;
         }
 
-        printf("%c storage: status from form & factorize = %i apply = %i\n",
-                   st, status, status_apply );
+        printf("%c storage: status from form & factorize = %" i_ipc_ 
+               " apply = %" i_ipc_ "\n", st, status, status_apply );
 
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

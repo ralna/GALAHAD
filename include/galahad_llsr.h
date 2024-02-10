@@ -1,7 +1,7 @@
 //* \file galahad_llsr.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-06-21 AT 07:40 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LLSR C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -312,18 +312,18 @@ struct llsr_control_type {
 
     /// \brief
     /// initial estimate of the Lagrange multipler
-    real_wp_ initial_multiplier;
+    rpc_ initial_multiplier;
 
     /// \brief
     /// lower and upper bounds on the multiplier, if known
-    real_wp_ lower;
+    rpc_ lower;
     /// see lower
-    real_wp_ upper;
+    rpc_ upper;
 
     /// \brief
     /// stop when \f$| \|x\| - (\lambda/\sigma)^{1/(p-2)}| \leq\f$
     /// stop_normal * max( 1, \f$\|x\|\f$ )
-    real_wp_ stop_normal;
+    rpc_ stop_normal;
 
     /// \brief
     /// ignore initial_multiplier?
@@ -372,43 +372,43 @@ struct llsr_time_type {
 
     /// \brief
     /// total CPU time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// CPU time assembling \f$K(\lambda)\f$ in (1)
-    real_wp_ assemble;
+    rpc_ assemble;
 
     /// \brief
     /// CPU time spent analysing \f$K(\lambda)\f$
-    real_wp_ analyse;
+    rpc_ analyse;
 
     /// \brief
     /// CPU time spent factorizing \f$K(\lambda)\f$
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// CPU time spent solving linear systems inolving \f$K(\lambda)\f$
-    real_wp_ solve;
+    rpc_ solve;
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time assembling \f$K(\lambda)\f$
-    real_wp_ clock_assemble;
+    rpc_ clock_assemble;
 
     /// \brief
     /// clock time spent analysing \f$K(\lambda)\f$
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// clock time spent factorizing \f$K(\lambda)\f$
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// clock time spent solving linear systems inolving \f$K(\lambda)\f$
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -418,15 +418,15 @@ struct llsr_history_type {
 
     /// \brief
     /// the value of \f$\lambda\f$
-    real_wp_ lambda;
+    rpc_ lambda;
 
     /// \brief
     /// the corresponding value of \f$\|x(\lambda)\|_M\f$
-    real_wp_ x_norm;
+    rpc_ x_norm;
 
     /// \brief
     /// the corresponding value of \f$\|A x(\lambda) - b\|_2\f$
-    real_wp_ r_norm;
+    rpc_ r_norm;
 };
 
 /**
@@ -460,15 +460,15 @@ struct llsr_inform_type {
     /// \brief
     /// corresponding value of the two-norm of the residual,
     /// \f$\|A x(\lambda) - b\|\f$
-    real_wp_ r_norm;
+    rpc_ r_norm;
 
     /// \brief
     /// the S-norm of x, \f$\|x\|_S\f$
-    real_wp_ x_norm;
+    rpc_ x_norm;
 
     /// \brief
     /// the multiplier corresponding to the regularization term
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// name of array which provoked an allocate failure
@@ -512,7 +512,7 @@ void llsr_initialize( void **data,
   @param[out] control is a struct containing control information
               (see llsr_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -553,7 +553,7 @@ void llsr_import( struct llsr_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -570,10 +570,10 @@ void llsr_import( struct llsr_control_type *control,
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        'diagonal' or 'absent' has been violated.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals, i.e., the number of rows of \f$A\f$. m must be positive.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables, i.e., the number of columns of \f$A\f$. n must be positive.
 
  @param[in]  A_type is a one-dimensional array of type char that specifies the
@@ -582,21 +582,21 @@ void llsr_import( struct llsr_control_type *control,
   'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants
   are allowed.
 
- @param[in]  A_ne is a scalar variable of type int, that holds the number of
+ @param[in]  A_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A\f$, if used, in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+ @param[in]  A_row is a one-dimensional array of size A_ne and type ipc_, that
    holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes,
    and in this case can be NULL.
 
- @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+ @param[in]  A_col is a one-dimensional array of size A_ne and type ipc_,
    that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -624,7 +624,7 @@ void llsr_import_scaling( struct llsr_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -641,7 +641,7 @@ void llsr_import_scaling( struct llsr_control_type *control,
        its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
        'diagonal' has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables, i.e., the number of rows and columns of \f$S\f$.
     n must be positive.
 
@@ -651,22 +651,22 @@ void llsr_import_scaling( struct llsr_control_type *control,
    'sparse_by_rows', 'dense' or 'diagonal'; lower or upper
    case variants are allowed.
 
- @param[in]  S_ne is a scalar variable of type int, that holds the number of
+ @param[in]  S_ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$S\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  S_row is a one-dimensional array of size S_ne and type int, that
+ @param[in]  S_row is a one-dimensional array of size S_ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$S\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in]  S_col is a one-dimensional array of size S_ne and type int,
+ @param[in]  S_col is a one-dimensional array of size S_ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$S\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
- @param[in]  S_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  S_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$S\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -687,7 +687,7 @@ void llsr_reset_control( struct llsr_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -698,21 +698,21 @@ void llsr_solve_problem( void **data,
                          ipc_ *status,
                          ipc_ m,
                          ipc_ n,
-                         const real_wp_ power,
-                         const real_wp_ weight,
+                         const rpc_ power,
+                         const rpc_ weight,
                          ipc_ A_ne,
-                         const real_wp_ A_val[],
-                         const real_wp_ b[],
-                         real_wp_ x[],
+                         const rpc_ A_val[],
+                         const rpc_ b[],
+                         rpc_ x[],
                          ipc_ S_ne,
-                         const real_wp_ S_val[] );
+                         const rpc_ S_val[] );
 
 /*!<
  Solve the regularization-region problem.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -742,39 +742,39 @@ void llsr_solve_problem( void **data,
            impossible.
   \li -17. The step is too small to make further impact.
 
- @param[in] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type ipc_, that holds the number of
     residuals
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] power is a scalar of type double, that
+ @param[in] power is a scalar of type rpc_, that
     holds the regularization power, \f$p\f$, used. power must be
     greater than or equal to two.
 
- @param[in] weight is a scalar of type double, that
+ @param[in] weight is a scalar of type rpc_, that
     holds the regularization power, \f$\sigma\f$, used. weight must be
     strictly positive
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of
+ @param[in] A_ne is a scalar variable of type ipc_, that holds the number of
     entries in the observation matrix \f$A\f$.
 
- @param[in] A_val is a one-dimensional array of size A_ne and type double,
+ @param[in] A_val is a one-dimensional array of size A_ne and type rpc_,
     that holds the values of the entries of the observation matrix
     \f$A\f$ in any of the available storage schemes.
 
- @param[in] b is a one-dimensional array of size m and type double, that
+ @param[in] b is a one-dimensional array of size m and type rpc_, that
     holds the values \f$b\f$ of observations. The i-th component
     of b, i = 0, ... , m-1, contains \f$b_i\f$.
 
- @param[out] x is a one-dimensional array of size n and type double, that
+ @param[out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in] S_ne is a scalar variable of type int, that holds the number of
+ @param[in] S_ne is a scalar variable of type ipc_, that holds the number of
     entries in the scaling matrix \f$S\f$ if it not the identity matrix.
 
- @param[in] S_val is a one-dimensional array of size S_ne and type double,
+ @param[in] S_val is a one-dimensional array of size S_ne and type rpc_,
     that holds the values of the entries of the scaling matrix
     \f$S\f$ in any of the available storage schemes.
     If S_val is NULL, \f$S\f$ will be taken to be the identity matrix.
@@ -795,7 +795,7 @@ void llsr_information( void **data,
   @param[out] inform is a struct containing output information
               (see llsr_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

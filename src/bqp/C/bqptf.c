@@ -21,19 +21,19 @@ int main(void) {
     ipc_ H_row[H_ne]; // row indices,
     ipc_ H_col[H_ne]; // column indices
     ipc_ H_ptr[n+1];  // row pointers
-    real_wp_ H_val[H_ne]; // values
-    real_wp_ H_dense[H_dense_ne]; // dense values
-    real_wp_ H_diag[n];   // diagonal values
-    real_wp_ g[n];  // linear term in the objective
-    real_wp_ f = 1.0;  // constant term in the objective
-    real_wp_ x_l[n]; // variable lower bound
-    real_wp_ x_u[n]; // variable upper bound
-    real_wp_ x[n]; // variables
-    real_wp_ z[n]; // dual variables
+    rpc_ H_val[H_ne]; // values
+    rpc_ H_dense[H_dense_ne]; // dense values
+    rpc_ H_diag[n];   // diagonal values
+    rpc_ g[n];  // linear term in the objective
+    rpc_ f = 1.0;  // constant term in the objective
+    rpc_ x_l[n]; // variable lower bound
+    rpc_ x_u[n]; // variable upper bound
+    rpc_ x[n]; // variables
+    rpc_ z[n]; // dual variables
 
     // Set output storage
     ipc_ x_stat[n]; // variable status
-    char st;
+    char st = ' ';
     ipc_ i, l, status;
 
     g[0] = 2.0;
@@ -102,7 +102,7 @@ int main(void) {
                 bqp_solve_given_h( &data, &status, n, H_ne, H_val, g, f,
                                    x_l, x_u, x, z, x_stat );
                 break;
-            printf(" case %1i break\n",d);
+            printf(" case %1" i_ipc_ " break\n",d);
             case 2: // sparse by rows
                 st = 'R';
                 bqp_import( &control, &data, &status, n,
@@ -128,11 +128,11 @@ int main(void) {
         bqp_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f"
-                   " status = %1i\n",
+            printf("%c:%6" i_ipc_ " iterations. Optimal objective value = %5.2f"
+                   " status = %1" i_ipc_ "\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
-            printf("%c: BQP_solve exit status = %1i\n", st, inform.status);
+            printf("%c: BQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
@@ -150,7 +150,7 @@ int main(void) {
     // reverse-communication input/output
     ipc_ nz_v_start, nz_v_end, nz_prod_end;
     ipc_ nz_v[n], nz_prod[n], mask[n];
-    real_wp_ v[n], prod[n];
+    rpc_ v[n], prod[n];
 
     nz_prod_end = 0;
 
@@ -224,7 +224,7 @@ int main(void) {
           }
           for( ipc_ l = 0; l < nz_prod_end; l++) mask[nz_prod[l]] = 0;
         }else{
-            printf(" the value %1i of status should not occur\n", status);
+            printf(" the value %1" i_ipc_ " of status should not occur\n", status);
             break;
         }
     }
@@ -234,11 +234,11 @@ int main(void) {
 
     // Print solution details
     if(inform.status == 0){
-        printf("%c:%6i iterations. Optimal objective value = %5.2f"
-               " status = %1i\n",
+        printf("%c:%6" i_ipc_ " iterations. Optimal objective value = %5.2f"
+               " status = %1" i_ipc_ "\n",
                st, inform.iter, inform.obj, inform.status);
     }else{
-        printf("%c: BQP_solve exit status = %1i\n", st, inform.status);
+        printf("%c: BQP_solve exit status = %1" i_ipc_ "\n", st, inform.status);
     }
     //printf("x: ");
     //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);

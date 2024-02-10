@@ -1,7 +1,7 @@
 //* \file galahad_lhs.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-04 AT 13.05 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 13.25 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LHS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -198,16 +198,16 @@ void lhs_ihs( ipc_ n_dimen,
   Improved Distributed Hypercube Sampling,
   American Institute of Aeronautics and Astronautics Paper 2002-1274
 
-  @param[in] n_dimen is a scalar variable of type int that specifies
+  @param[in] n_dimen is a scalar variable of type int, that specifies
              the spatial dimension
 
-  @param[in] n_points is a scalar variable of type int that specifies
+  @param[in] n_points is a scalar variable of type int, that specifies
              the number of points to be generated
 
   @param[in,out] seed is a scalar variable of type int, that gives a seed
                  for the random number generator used
 
-  @param[out] X is an array variable of type int with dimensions
+  @param[out] X is an array variable of type int, with dimensions
               [n_dimen][n_points] that gives the hyper-cube points
 
   @param[in,out] control, inform, data - see lhs_initialize
@@ -222,7 +222,7 @@ void lhs_get_seed( ipc_ *seed );
 /*!<
   Get a seed for the random number generator.
 
-  @param[out] seed is a scalar variable of type int that gives the
+  @param[out] seed is a scalar variable of type int, that gives the
               pseudorandom seed value.
 */
 

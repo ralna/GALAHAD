@@ -84,8 +84,8 @@ struct ma87_control {
 
    /* Controls used by ma87_factor and ma87_factor_solve */
    ipc_ pool_size; /* Size of task pool arrays*/
-   real_wp_ diag_zero_minus; /* Semi-definite rank detection */
-   real_wp_ diag_zero_plus;  /* Semi-definite rank detection */
+   rpc_ diag_zero_minus; /* Semi-definite rank detection */
+   rpc_ diag_zero_plus;  /* Semi-definite rank detection */
 
    char unused[40];
 };
@@ -94,7 +94,7 @@ struct ma87_control {
 
 /* data type for returning information to user.*/
 struct ma87_info {
-   real_wp_ detlog;     /* Holds logarithm of abs det A (or 0) */
+   rpc_ detlog;     /* Holds logarithm of abs det A (or 0) */
    ipc_ flag;           /* Error return flag (0 on success) */
    ipc_ maxdepth;       /* Maximum depth of the tree. */
    long num_factor;     /* Number of entries in the factor. */

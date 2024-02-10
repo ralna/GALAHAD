@@ -24,15 +24,15 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
-    real_wp_ x[] = {1.,1.,1.}; // start from one
-    real_wp_ infty = 1e20; // infinity
+    rpc_ x[] = {1.,1.,1.}; // start from one
+    rpc_ infty = 1e20; // infinity
     char H_type[] = "absent"; // specify Hessian-vector products
 
     // Reverse-communication input/output
     ipc_ eval_status;
-    real_wp_ f;
-    real_wp_ g[n];
-    real_wp_ u[n], v[n];
+    rpc_ f;
+    rpc_ g[n];
+    rpc_ u[n], v[n];
 
     //control.maxit=2;
     //control.print_level=5;
@@ -76,7 +76,7 @@ int main(void) {
     tru_information( &data, &inform, &status );
 
     // Print solution details
-    printf("iter: %d \n", inform.iter);
+    printf("iter: %" d_ipc_ " \n", inform.iter);
     printf("x: ");
     for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
     printf("\n");
@@ -84,9 +84,9 @@ int main(void) {
     printf("gradient: ");
     for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
     printf("\n");
-    printf("f_eval: %d \n", inform.f_eval);
+    printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
     printf("time: %f \n", inform.time.clock_total);
-    printf("status: %d \n", inform.status);
+    printf("status: %" d_ipc_ " \n", inform.status);
 
     // Delete internal workspace
     tru_terminate( &data, &control, &inform );

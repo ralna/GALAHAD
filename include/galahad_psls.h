@@ -1,7 +1,7 @@
 //* \file galahad_psls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-26 AT 09:20 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_PSLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -335,7 +335,7 @@ struct psls_control_type {
 
     /// \brief
     /// the minimum permitted diagonal in diag(max(H,.min_diagonal))
-    real_wp_ min_diagonal;
+    rpc_ min_diagonal;
 
     /// \brief
     /// set new_structure true if the storage structure for the input matrix
@@ -416,27 +416,27 @@ struct psls_time_type {
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time to assemble the preconditioner prior to factorization
-    real_wp_ clock_assemble;
+    rpc_ clock_assemble;
 
     /// \brief
     /// clock time for the analysis phase
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// clock time for the factorization phase
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// clock time for the linear solution phase
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 
     /// \brief
     /// clock time to update the factorization
-    real_wp_ clock_update;
+    rpc_ clock_update;
 };
 
 /**
@@ -522,11 +522,11 @@ struct psls_inform_type {
 
     /// \brief
     /// ratio of fill in to original nonzeros
-    real_wp_ fill_in_ratio;
+    rpc_ fill_in_ratio;
 
     /// \brief
     /// the norm of the solution residual
-    real_wp_ norm_residual;
+    rpc_ norm_residual;
 
     /// \brief
     /// name of array which provoked an allocate failure
@@ -536,7 +536,7 @@ struct psls_inform_type {
     /// the integer and real output arrays from mc61
     ipc_ mc61_info[10];
     /// see mc61_info
-    real_wp_ mc61_rinfo[15];
+    rpc_ mc61_rinfo[15];
 
     /// \brief
     /// times for various stages
@@ -565,7 +565,7 @@ void psls_initialize( void **data,
   @param[out] control is a struct containing control information
               (see psls_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -609,7 +609,7 @@ void psls_import( struct psls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -626,7 +626,7 @@ void psls_import( struct psls_control_type *control,
        its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
        'diagonal' has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$A\f$.
 
  @param[in] type is a one-dimensional array of type char that specifies the
@@ -634,22 +634,22 @@ void psls_import( struct psls_control_type *control,
    used for the matrix \f$A\f$. It should be one of 'coordinate',
    'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$A\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in] row is a one-dimensional array of size ne and type int, that
+ @param[in] row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$A\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in] col is a one-dimensional array of size ne and type int,
+ @param[in] col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$A\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense storage scheme is used, and in this case
    can be NULL.
 
- @param[in]  ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$A\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -671,7 +671,7 @@ void psls_reset_control( struct psls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -681,14 +681,14 @@ void psls_reset_control( struct psls_control_type *control,
 void psls_form_preconditioner( void **data,
                                ipc_ *status,
                                ipc_ ne,
-                               const real_wp_ val[] );
+                               const rpc_ val[] );
 
 /*!<
  Form and factorize a preconditioner \f$P\f$ of the matrix \f$A\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -704,10 +704,10 @@ void psls_form_preconditioner( void **data,
   \li -26. The requested solver is not available.
   \li -29. This option is not available with this solver.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$A\f$.
 
- @param[in] val is a one-dimensional array of size ne and type double,
+ @param[in] val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     symmetric matrix \f$A\f$ in any of the supported storage schemes.
 */
@@ -717,7 +717,7 @@ void psls_form_preconditioner( void **data,
 void psls_form_subset_preconditioner( void **data,
                                       ipc_ *status,
                                       ipc_ ne,
-                                      const real_wp_ val[],
+                                      const rpc_ val[],
                                       ipc_ n_sub,
                                       const ipc_ sub[] );
 
@@ -727,7 +727,7 @@ void psls_form_subset_preconditioner( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -743,17 +743,17 @@ void psls_form_subset_preconditioner( void **data,
   \li -26. The requested solver is not available.
   \li -29. This option is not available with this solver.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$A\f$.
 
- @param[in] val is a one-dimensional array of size ne and type double,
+ @param[in] val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     symmetric matrix \f$A\f$ in any of the supported storage schemes.
 
- @param[in] n_sub is a scalar variable of type int, that holds the number of
+ @param[in] n_sub is a scalar variable of type ipc_, that holds the number of
     rows (and columns) of the required submatrix of \f$A\f$.
 
- @param[in] sub is a one-dimensional array of size n_sub and type int,
+ @param[in] sub is a one-dimensional array of size n_sub and type ipc_,
     that holds the indices of the rows of required submatrix.
 */
 
@@ -762,7 +762,7 @@ void psls_form_subset_preconditioner( void **data,
 void psls_update_preconditioner( void **data,
                                  ipc_ *status,
                                  ipc_ ne,
-                                 const real_wp_ val[],
+                                 const rpc_ val[],
                                  ipc_ n_del,
                                  const ipc_ del[] );
 
@@ -771,7 +771,7 @@ void psls_update_preconditioner( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -787,17 +787,17 @@ void psls_update_preconditioner( void **data,
   \li -26. The requested solver is not available.
   \li -29. This option is not available with this solver.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$A\f$.
 
- @param[in] val is a one-dimensional array of size ne and type double,
+ @param[in] val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     symmetric matrix \f$A\f$ in any of the supported storage schemes.
 
- @param[in] n_del is a scalar variable of type int, that holds the number of
+ @param[in] n_del is a scalar variable of type ipc_, that holds the number of
     rows (and columns) of (sub) matrix that are to be deleted.
 
- @param[in] del is a one-dimensional array of size n_fix and type int,
+ @param[in] del is a one-dimensional array of size n_fix and type ipc_,
     that holds the indices of the rows that are to be deleted.
 */
 
@@ -806,14 +806,14 @@ void psls_update_preconditioner( void **data,
 void psls_apply_preconditioner( void **data,
                                 ipc_ *status,
                                 ipc_ n,
-                                real_wp_ sol[] );
+                                rpc_ sol[] );
 
 /*!<
  Solve the linear system \f$Px=b\f$.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The required solution was obtained.
@@ -827,7 +827,7 @@ void psls_apply_preconditioner( void **data,
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     entries in the vectors \f$b\f$ and \f$x\f$.
 
  @param[in,out] sol is a one-dimensional array of size n and type double.
@@ -852,7 +852,7 @@ void psls_information( void **data,
   @param[out] inform is a struct containing output information
               (see psls_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

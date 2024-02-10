@@ -24,17 +24,17 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
-    real_wp_ x[] = {1.,1.,1.}; // start from one
-    real_wp_ infty = 1e20; // infinity
-    real_wp_ x_l[] = {-infty,-infty, 0.};
-    real_wp_ x_u[] = {1.1,1.1,1.1};
+    rpc_ x[] = {1.,1.,1.}; // start from one
+    rpc_ infty = 1e20; // infinity
+    rpc_ x_l[] = {-infty,-infty, 0.};
+    rpc_ x_u[] = {1.1,1.1,1.1};
     char H_type[] = "absent"; // specify Hessian-vector products
 
     // Reverse-communication input/output
     ipc_ eval_status, nnz_u, nnz_v;
-    real_wp_ f;
-    real_wp_ g[n];
-    real_wp_ u[n], v[n];
+    rpc_ f;
+    rpc_ g[n];
+    rpc_ u[n], v[n];
     ipc_ index_nz_u[n], index_nz_v[n];
 
     // Set Hessian storage format, structure and problem bounds
@@ -72,7 +72,7 @@ int main(void) {
             u[2] = 0.25 * v[2];
             eval_status = 0; // record successful evaluation
         }else if(status == 7){ // obtain sparse Hessian-vector product
-            real_wp_ tmp[] = {0., 0., 0.};
+            rpc_ tmp[] = {0., 0., 0.};
             bool used[] = {false, false, false};
             for(ipc_ i = 0; i < nnz_v; i++){
                 ipc_ j = index_nz_v[i];
@@ -118,7 +118,7 @@ int main(void) {
 
     // Print solution details
     if(inform.status == 0){ // successful return
-        printf("iter: %d \n", inform.iter);
+        printf("iter: %" d_ipc_ " \n", inform.iter);
         printf("x: ");
         for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
         printf("\n");
@@ -126,12 +126,12 @@ int main(void) {
         printf("gradient: ");
         for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
         printf("\n");
-        printf("f_eval: %d \n", inform.f_eval);
+        printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
         printf("time: %f \n", inform.time.clock_total);
-        printf("status: %d \n", inform.status);
+        printf("status: %" d_ipc_ " \n", inform.status);
      }else{ // error returns
         printf("TRB error in solve\n");
-        printf("status: %d \n", inform.status);
+        printf("status: %" d_ipc_ " \n", inform.status);
     }
 
     // Delete internal workspace

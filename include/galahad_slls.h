@@ -1,7 +1,7 @@
 //* \file galahad_slls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-07-14 AT 09:40 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -323,43 +323,43 @@ struct slls_control_type {
 
     /// \brief
     /// the objective function will be regularized by adding 1/2 weight ||x||^2
-    real_wp_ weight;
+    rpc_ weight;
 
     /// \brief
     /// the required accuracy for the dual infeasibility
-    real_wp_ stop_d;
+    rpc_ stop_d;
 
     /// \brief
     /// the CG iteration will be stopped as soon as the current norm of the
     /// preconditioned gradient is smaller than
     /// max( stop_cg_relative * initial preconditioned gradient,
     /// stop_cg_absolute)
-    real_wp_ stop_cg_relative;
-    real_wp_ stop_cg_absolute;
+    rpc_ stop_cg_relative;
+    rpc_ stop_cg_absolute;
 
     /// \brief
     /// the largest permitted arc length during the piecewise line search
-    real_wp_ alpha_max;
+    rpc_ alpha_max;
 
     /// \brief
     /// the initial arc length during the inexact piecewise line search
-    real_wp_ alpha_initial;
+    rpc_ alpha_initial;
 
     /// \brief
     /// the arc length reduction factor for the inexact piecewise line search
-    real_wp_ alpha_reduction;
+    rpc_ alpha_reduction;
 
     /// \brief
     /// the required relative reduction during the inexact piecewise line search
-    real_wp_ arcsearch_acceptance_tol;
+    rpc_ arcsearch_acceptance_tol;
 
     /// \brief
     /// the stabilisation weight added to the search-direction subproblem
-    real_wp_ stabilisation_weight;
+    rpc_ stabilisation_weight;
 
     /// \brief
     /// the maximum CPU time allowed (-ve = no limit)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// direct_subproblem_solve is true if the least-squares subproblem is to be
@@ -457,11 +457,11 @@ struct slls_inform_type {
 
     /// \brief
     /// current value of the objective function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// current value of the projected gradient
-    real_wp_ norm_pg;
+    rpc_ norm_pg;
 
     /// \brief
     /// name of array which provoked an allocate failure
@@ -494,7 +494,7 @@ void slls_initialize( void **data,
   @param[out] control is a struct containing control information
               (see slls_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -541,7 +541,7 @@ void slls_import( struct slls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -559,10 +559,10 @@ void slls_import( struct slls_control_type *control,
        'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns';
        has been violated.
 
-@param[in] n is a scalar variable of type int, that holds the number of
+@param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-@param[in] o is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
 
  @param[in]  Ao_type is a one-dimensional array of type char that specifies the
@@ -571,30 +571,30 @@ void slls_import( struct slls_control_type *control,
    'coordinate', 'sparse_by_rows', 'sparse_by_columns',
    'dense' or 'dense_by_columns'; lower or upper case variants are allowed.
 
- @param[in]  Ao_ne is a scalar variable of type int, that holds the number of
+ @param[in]  Ao_ne is a scalar variable of type ipc_, that holds the number of
    entries in \f$A_o\f$ in the sparse storage schemes.
    It need not be set for either of the dense schemes.
 
- @param[in]  Ao_row is a one-dimensional array of size Ao_ne and type int, that
+ @param[in]  Ao_row is a one-dimensional array of size Ao_ne and type ipc_, that
    holds the row indices of \f$A_o\f$ in the sparse co-ordinate
    or sparse column-wise storage schemes. It need not be set for any of the
    other schemes, and in this case can be NULL.
 
- @param[in]  Ao_col is a one-dimensional array of size Ao_ne and type int,
+ @param[in]  Ao_col is a one-dimensional array of size Ao_ne and type ipc_,
    that holds the column indices of \f$A_o\f$ in either the sparse co-ordinate,
    or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
- @param[in]  Ao_ptr_ne is a scalar variable of type int, that holds the
+ @param[in]  Ao_ptr_ne is a scalar variable of type ipc_, that holds the
    length of the pointer array if sparse row or column storage scheme is
    used for \f$A_o\f$. For the sparse row scheme,  Ao_ptr_ne should be at least
    o+1, while for the sparse column scheme,  it should be at least n+1,
    It need not be set when the other schemes are used.
 
- @param[in]  Ao_ptr is a one-dimensional array of size o+1 and type int,
+ @param[in]  Ao_ptr is a one-dimensional array of size o+1 and type ipc_,
    that holds the starting position of each row of \f$A_o\f$, as well as the
    total number of entries, in the sparse row-wise storage scheme.
-   By contrast, it is a one-dimensional array of size n+1 and type int,
+   By contrast, it is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of each column of \f$A_o\f$, as well as the
    total number of entries, in the sparse column-wise storage scheme.
    It need not be set when the other schemes are used,
@@ -618,7 +618,7 @@ void slls_import_without_a( struct slls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -633,10 +633,10 @@ void slls_import_without_a( struct slls_control_type *control,
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or o > 0 has been violated.
 
-@param[in] n is a scalar variable of type int, that holds the number of
+@param[in] n is a scalar variable of type ipc_, that holds the number of
     variables.
 
-@param[in] o is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
 
 */
@@ -654,7 +654,7 @@ void slls_reset_control( struct slls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -667,16 +667,16 @@ void slls_solve_given_a( void **data,
                          ipc_ n,
                          ipc_ o,
                          ipc_ Ao_ne,
-                         const real_wp_ Ao_val[],
-                         const real_wp_ b[],
-                         real_wp_ x[],
-                         real_wp_ z[],
-                         real_wp_ r[],
-                         real_wp_ g[],
+                         const rpc_ Ao_val[],
+                         const rpc_ b[],
+                         rpc_ x[],
+                         rpc_ z[],
+                         rpc_ r[],
+                         rpc_ g[],
                          ipc_ x_stat[],
                          ipc_ (*eval_prec)(
-                              ipc_, const real_wp_[],
-                              real_wp_[], const void * ) );
+                              ipc_, const rpc_[],
+                              rpc_[], const void * ) );
 
 /*!<
  Solve the bound-constrained linear least-squares problem when the
@@ -687,7 +687,7 @@ void slls_solve_given_a( void **data,
  @param[in] userdata is a structure that allows data to be passed into
     the function and derivative evaluation programs.
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -717,40 +717,40 @@ void slls_solve_given_a( void **data,
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
-@param[in] o is a scalar variable of type int, that holds the number of
+@param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in] Ao_ne is a scalar variable of type int, that holds the number of
+ @param[in] Ao_ne is a scalar variable of type ipc_, that holds the number of
     entries in the design matrix \f$A_o\f$.
 
- @param[in] Ao_val is a one-dimensional array of size A_ne and type double,
+ @param[in] Ao_val is a one-dimensional array of size A_ne and type rpc_,
     that holds the values of the entries of the designmatrix \f$A_o\f$
     in any of the available storage schemes.
 
- @param[in] b is a one-dimensional array of size o and type double, that
+ @param[in] b is a one-dimensional array of size o and type rpc_, that
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type double, that
+ @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[out] r is a one-dimensional array of size o and type double, that
+ @param[out] r is a one-dimensional array of size o and type rpc_, that
     holds the values of the residuals \f$r = A x - b\f$.
     The i-th component of r, i = 0, ... , m-1, contains \f$r_i\f$.
 
- @param[out] g is a one-dimensional array of size n and type double, that
+ @param[out] g is a one-dimensional array of size n and type rpc_, that
     holds the values of the gradient \f$g = A_o^T r\f$.
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j\f$.
 
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that
+ @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
@@ -759,7 +759,7 @@ void slls_solve_given_a( void **data,
  @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       ipc_ eval_prec( ipc_ n, const double v[], double p[],
+       ipc_ eval_prec( ipc_ n, const rpc_ v[], rpc_ p[],
                       const void *userdata )
    \endcode
    The product \f$p = P^{-1} v\f$ involving the user's preconditioner \f$P\f$
@@ -777,14 +777,14 @@ void slls_solve_reverse_a_prod( void **data,
                                 ipc_ *eval_status,
                                 ipc_ n,
                                 ipc_ o,
-                                const real_wp_ b[],
-                                real_wp_ x[],
-                                real_wp_ z[],
-                                real_wp_ r[],
-                                real_wp_ g[],
+                                const rpc_ b[],
+                                rpc_ x[],
+                                rpc_ z[],
+                                rpc_ r[],
+                                rpc_ g[],
                                 ipc_ x_stat[],
-                                real_wp_ v[],
-                                const real_wp_ p[],
+                                rpc_ v[],
+                                const rpc_ p[],
                                 ipc_ nz_v[],
                                 ipc_ *nz_v_start,
                                 ipc_ *nz_v_end,
@@ -798,7 +798,7 @@ void slls_solve_reverse_a_prod( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     Possible exit are:
   \li  0. The run was succesful.
@@ -899,60 +899,60 @@ void slls_solve_reverse_a_prod( void **data,
        This value of status can only occur if the user has set
        control.preconditioner = 2.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to
+ @param[in,out] eval_status is a scalar variable of type ipc_, that is used to
     indicate if the matrix products can be provided (see \c status above)
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] o is a scalar variable of type int, that holds the number of
+ @param[in] o is a scalar variable of type ipc_, that holds the number of
     residuals.
 
- @param[in] b is a one-dimensional array of size o and type double, that
+ @param[in] b is a one-dimensional array of size o and type rpc_, that
     holds the constant term \f$b\f$ in the residuals.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i \f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[out] r is a one-dimensional array of size o and type double, that
+ @param[out] r is a one-dimensional array of size o and type rpc_, that
     holds the values of the residuals \f$r = A x - b\f$.
     The i-th component of c, i = 0, ... , o-1, contains \f$c_i\f$.
 
- @param[out] g is a one-dimensional array of size n and type double, that
+ @param[out] g is a one-dimensional array of size n and type rpc_, that
     holds the values of the gradient \f$g = A_o^T r\f$.
     The j-th component of g, j = 0, ... , n-1, contains \f$g_j\f$.
 
- @param[in,out] z is a one-dimensional array of size n and type double, that
+ @param[in,out] z is a one-dimensional array of size n and type rpc_, that
     holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that
+ @param[in,out] x_stat is a one-dimensional array of size n and type ipc_, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] v is a one-dimensional array of size n and type double, that
+ @param[out] v is a one-dimensional array of size n and type rpc_, that
     is used for reverse communication (see status=2-4 above for details)
 
- @param[in] p is a one-dimensional array of size n and type double, that
+ @param[in] p is a one-dimensional array of size n and type rpc_, that
     is used for reverse communication (see status=2-4 above for details)
 
- @param[out] nz_v is a one-dimensional array of size n and type int, that
+ @param[out] nz_v is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[out] nz_v_start is a scalar of type int, that
+ @param[out] nz_v_start is a scalar of type ipc_, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[out] nz_v_end is a scalar of type int, that
+ @param[out] nz_v_end is a scalar of type ipc_, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[in] nz_p is a one-dimensional array of size n and type int, that
+ @param[in] nz_p is a one-dimensional array of size n and type ipc_, that
     is used for reverse communication (see status=4 above for details)
 
- @param[in] nz_p_end is a scalar of type int, that
+ @param[in] nz_p_end is a scalar of type ipc_, that
     is used for reverse communication (see status=4 above for details)
 
 */
@@ -971,7 +971,7 @@ void slls_information( void **data,
   @param[out] inform is a struct containing output information
               (see slls_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

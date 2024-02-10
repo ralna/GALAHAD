@@ -25,21 +25,21 @@ int main(void) {
     // Set problem data
     ipc_ n = 3; // dimension
     ipc_ ne = 5; // Hesssian elements
-    real_wp_ x[] = {1.,1.,1.}; // start from one
-    real_wp_ x_l[] = {-10.0,-10.0,-10.0};
-    real_wp_ x_u[] = {1.0,1.0,1.0};
+    rpc_ x[] = {1.,1.,1.}; // start from one
+    rpc_ x_l[] = {-10.0,-10.0,-10.0};
+    rpc_ x_u[] = {1.0,1.0,1.0};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     ipc_ H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     ipc_ H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
 
     // Reverse-communication input/output
     ipc_ eval_status;
-    real_wp_ f;
-    real_wp_ g[n];
-    real_wp_ u[n], v[n];
-    real_wp_ H_val[ne];
-    real_wp_ freq = 10.0;
-    real_wp_ mag = 1000.0;
+    rpc_ f;
+    rpc_ g[n];
+    rpc_ u[n], v[n];
+    rpc_ H_val[ne];
+    rpc_ freq = 10.0;
+    rpc_ mag = 1000.0;
 
     // Set Hessian storage format, structure and problem bounds
     dgo_import( &control, &data, &status, n, x_l, x_u,
@@ -129,7 +129,7 @@ int main(void) {
     dgo_information( &data, &inform, &status );
 
     // Print solution details
-    printf("iter: %d \n", inform.trb_inform.iter);
+    printf("iter: %" d_ipc_ " \n", inform.trb_inform.iter);
     printf("x: ");
     for(ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
     printf("\n");
@@ -137,9 +137,9 @@ int main(void) {
     printf("gradient: ");
     for(ipc_ i = 0; i < n; i++) printf("%f ", g[i]);
     printf("\n");
-    printf("f_eval: %d \n", inform.f_eval);
+    printf("f_eval: %" d_ipc_ " \n", inform.f_eval);
     printf("time: %f \n", inform.time.clock_total);
-    printf("status: %d \n", inform.status);
+    printf("status: %" d_ipc_ " \n", inform.status);
 
     // Delete internal workspace
     dgo_terminate( &data, &control, &inform );

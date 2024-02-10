@@ -1,7 +1,7 @@
 //* \file galahad_gltr.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 16/12/2021 AT 10:16 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_GLTR C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -205,27 +205,27 @@ struct gltr_control_type {
     /// the iteration stops successfully when the gradient in the M(inverse) nor
     /// is smaller than max( stop_relative * initial M(inverse)
     /// gradient norm, stop_absolute )
-    real_wp_ stop_relative;
+    rpc_ stop_relative;
     /// see stop_relative
-    real_wp_ stop_absolute;
+    rpc_ stop_absolute;
 
     /// \brief
     /// an estimate of the solution that gives at least .fraction_opt times
     /// the optimal objective value will be found
-    real_wp_ fraction_opt;
+    rpc_ fraction_opt;
 
     /// \brief
     /// the iteration stops if the objective-function value is lower than f_min
-    real_wp_ f_min;
+    rpc_ f_min;
 
     /// \brief
     /// the smallest value that the square of the M norm of the gradient of the
     /// the objective may be before it is considered to be zero
-    real_wp_ rminvr_zero;
+    rpc_ rminvr_zero;
 
     /// \brief
     /// the constant term, \f$f_0\f$, in the objective function
-    real_wp_ f_0;
+    rpc_ f_0;
 
     /// \brief
     /// is \f$M\f$ the identity matrix ?
@@ -297,32 +297,32 @@ struct gltr_inform_type {
 
     /// \brief
     /// the value of the quadratic function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the Lagrange multiplier corresponding to the trust-region constraint
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// the \f$M\f$-norm of \f$x\f$
-    real_wp_ mnormx;
+    rpc_ mnormx;
 
     /// \brief
     /// the latest pivot in the Cholesky factorization of the Lanczos tridiagona
-    real_wp_ piv;
+    rpc_ piv;
 
     /// \brief
     /// the most negative cuurvature encountered
-    real_wp_ curv;
+    rpc_ curv;
 
     /// \brief
     /// the current Rayleigh quotient
-    real_wp_ rayleigh;
+    rpc_ rayleigh;
 
     /// \brief
     /// an estimate of the leftmost generalized eigenvalue of the pencil
     /// \f$(H,M)\f$
-    real_wp_ leftmost;
+    rpc_ leftmost;
 
     /// \brief
     /// was negative curvature encountered ?
@@ -347,7 +347,7 @@ void gltr_initialize( void **data,
   @param[out] control is a struct containing control information
               (see gltr_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):  \li  0. The import was succesful.
 */
 
@@ -384,7 +384,7 @@ void gltr_import_control( struct gltr_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -394,17 +394,17 @@ void gltr_import_control( struct gltr_control_type *control,
 void gltr_solve_problem( void **data,
                         ipc_ *status,
                         ipc_ n,
-                        const real_wp_ radius,
-                        real_wp_ x[],
-                        real_wp_ r[],
-                        real_wp_ vector[] );
+                        const rpc_ radius,
+                        rpc_ x[],
+                        rpc_ r[],
+                        rpc_ vector[] );
 
 /*!<
  Solve the trust-region problem using reverse communication.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
 
    This must be set to
@@ -433,21 +433,21 @@ void gltr_solve_problem( void **data,
    \li -30. the trust-region has been encountered in Steihaug-Toint mode
    \li -31. the function value is smaller than control.f_min
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] radius is a scalar of type double, that holds the trust-region
+ @param[in] radius is a scalar of type rpc_, that holds the trust-region
     radius, \f$\Delta\f$, used. radius must be strictly positive
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
 
- @param[in,out] r is a one-dimensional array of size n and type double, that
+ @param[in,out] r is a one-dimensional array of size n and type rpc_, that
     that must be set to \f$c\f$ on entry (status = 1) and re-entry
 !   (status = 4, 5). On exit, r contains the resiual \f$H x + c\f$.
 
- @param[in,out] vector is a one-dimensional array of size n and type double,
+ @param[in,out] vector is a one-dimensional array of size n and type rpc_,
     that should be used and reset appropriately when status = 2 and 3
     as directed.
 
@@ -467,7 +467,7 @@ void gltr_information( void **data,
   @param[out] inform   is a struct containing output information
               (see gltr_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

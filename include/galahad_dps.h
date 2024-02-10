@@ -1,7 +1,7 @@
 //* \file galahad_dps.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-02-03 AT 09:00 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DPS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -261,20 +261,20 @@ struct dps_control_type {
     /// \brief
     /// smallest allowable value of an eigenvalue of the block diagonal factor
     /// of \f$H\f$
-    real_wp_ eigen_min;
+    rpc_ eigen_min;
 
     /// \brief
     /// lower and upper bounds on the multiplier, if known
-    real_wp_ lower;
+    rpc_ lower;
     /// see lower
-    real_wp_ upper;
+    rpc_ upper;
 
     /// \brief
     /// stop trust-region solution when \f$| ||x||_M - \delta | \leq\f$
     /// max( .stop_normal * delta, .stop_absolute_normal )
-    real_wp_ stop_normal;
+    rpc_ stop_normal;
     /// see stop_normal
-    real_wp_ stop_absolute_normal;
+    rpc_ stop_absolute_normal;
 
     /// \brief
     /// use the Goldfarb variant of the trust-region/regularization norm rather
@@ -316,35 +316,35 @@ struct dps_time_type {
 
     /// \brief
     /// total CPU time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// CPU time spent reordering H prior to factorization
-    real_wp_ analyse;
+    rpc_ analyse;
 
     /// \brief
     /// CPU time spent factorizing H
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// CPU time spent solving the diagonal model system
-    real_wp_ solve;
+    rpc_ solve;
 
     /// \brief
     /// total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// clock time spent reordering H prior to factorization
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// clock time spent factorizing H
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// clock time spent solving the diagonal model system
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 };
 
 /**
@@ -372,24 +372,24 @@ struct dps_inform_type {
 
     /// \brief
     /// the value of the quadratic function
-    real_wp_ obj;
+    rpc_ obj;
 
     /// \brief
     /// the value of the regularized quadratic function
-    real_wp_ obj_regularized;
+    rpc_ obj_regularized;
 
     /// \brief
     /// the M-norm of the solution
-    real_wp_ x_norm;
+    rpc_ x_norm;
 
     /// \brief
     /// the Lagrange multiplier associated with the constraint/regularization
-    real_wp_ multiplier;
+    rpc_ multiplier;
 
     /// \brief
     /// a lower bound max(0,-lambda_1), where lambda_1 is the left-most
     /// eigenvalue of \f$(H,M)\f$
-    real_wp_ pole;
+    rpc_ pole;
 
     /// \brief
     /// has the hard case occurred?
@@ -422,7 +422,7 @@ void dps_initialize( void **data,
   @param[out] control is a struct containing control information
               (see dps_control_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -467,7 +467,7 @@ void dps_import( struct dps_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the
@@ -484,7 +484,7 @@ void dps_import( struct dps_control_type *control,
        its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
        has been violated.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
@@ -492,22 +492,22 @@ void dps_import( struct dps_control_type *control,
    used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows' or
   'dense'; lower or upper case variants are allowed
 
- @param[in]  ne is a scalar variable of type int, that holds the number of
+ @param[in]  ne is a scalar variable of type ipc_, that holds the number of
    entries in the  lower triangular part of H in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size ne and type int, that
+ @param[in]  H_row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the lower triangular part of H in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL
 
- @param[in]  H_col is a one-dimensional array of size ne and type int,
+ @param[in]  H_col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the  lower triangular part of H in either
    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
    be set when the dense or diagonal storage schemes are used, and in this
    case can be NULL
 
- @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of H, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -528,7 +528,7 @@ void dps_reset_control( struct dps_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
 */
@@ -539,18 +539,18 @@ void dps_solve_tr_problem( void **data,
                            ipc_ *status,
                            ipc_ n,
                            ipc_ ne,
-                           real_wp_ H_val[],
-                           real_wp_ c[],
-                           real_wp_ f,
-                           real_wp_ radius,
-                           real_wp_ x[]  );
+                           rpc_ H_val[],
+                           rpc_ c[],
+                           rpc_ f,
+                           rpc_ radius,
+                           rpc_ x[]  );
 
 /*!<
  Find the global minimizer of the trust-region problem (1).
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The run was succesful
@@ -575,29 +575,29 @@ void dps_solve_tr_problem( void **data,
            impossible.
   \li -40. An error has occured when building the preconditioner.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size ne and type double,
+ @param[in] H_val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] c is a one-dimensional array of size n and type double, that
+ @param[in] c is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$c\f$ in the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value of the
+   f is a scalar variable pointer of type rpc_, that holds the value of the
     holds the constant term \f$f\f$ in the objective function.
 
  @param[in]
-   radius is a scalar variable pointer of type double, that holds the value
+   radius is a scalar variable pointer of type rpc_, that holds the value
    of the trust-region radius, \f$\Delta > 0\f$.
 
- @param[out] x is a one-dimensional array of size n and type double, that
+ @param[out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
@@ -609,19 +609,19 @@ void dps_solve_rq_problem( void **data,
                            ipc_ *status,
                            ipc_ n,
                            ipc_ ne,
-                           real_wp_ H_val[],
-                           real_wp_ c[],
-                           real_wp_ f,
-                           real_wp_ power,
-                           real_wp_ weight,
-                           real_wp_ x[]  );
+                           rpc_ H_val[],
+                           rpc_ c[],
+                           rpc_ f,
+                           rpc_ power,
+                           rpc_ weight,
+                           rpc_ x[]  );
 
 /*!<
  Find the global minimizer of the regularized-quadartic problem (2).
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The run was succesful
@@ -646,33 +646,33 @@ void dps_solve_rq_problem( void **data,
            impossible.
   \li -40. An error has occured when building the preconditioner.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size ne and type double,
+ @param[in] H_val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] c is a one-dimensional array of size n and type double, that
+ @param[in] c is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$c\f$ in the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value of the
+   f is a scalar variable pointer of type rpc_, that holds the value of the
     holds the constant term \f$f\f$ in the objective function.
 
  @param[in]
-   weight is a scalar variable pointer of type double, that holds the value
+   weight is a scalar variable pointer of type rpc_, that holds the value
    of the regularization weight, \f$\sigma > 0\f$.
 
  @param[in]
-   power is a scalar variable pointer of type double, that holds the value
+   power is a scalar variable pointer of type rpc_, that holds the value
    of the regularization power, \f$p \geq 2\f$.
 
- @param[out] x is a one-dimensional array of size n and type double, that
+ @param[out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
@@ -683,10 +683,10 @@ void dps_solve_rq_problem( void **data,
 void dps_resolve_tr_problem( void **data,
                              ipc_ *status,
                              ipc_ n,
-                             real_wp_ c[],
-                             real_wp_ f,
-                             real_wp_ radius,
-                             real_wp_ x[] );
+                             rpc_ c[],
+                             rpc_ f,
+                             rpc_ radius,
+                             rpc_ x[] );
 
 /*!<
  Find the global minimizer of the trust-region problem (1) if some non-matrix
@@ -694,7 +694,7 @@ void dps_resolve_tr_problem( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The run was succesful
@@ -713,22 +713,22 @@ void dps_resolve_tr_problem( void **data,
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] c is a one-dimensional array of size n and type double, that
+ @param[in] c is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$c\f$ in the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value
+   f is a scalar variable pointer of type rpc_, that holds the value
     of the constant term \f$f\f$ in the objective function.
 
  @param[in]
-   radius is a scalar variable pointer of type double, that holds the value
+   radius is a scalar variable pointer of type rpc_, that holds the value
     of the trust-region radius, \f$\Delta > 0\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
@@ -739,11 +739,11 @@ void dps_resolve_tr_problem( void **data,
 void dps_resolve_rq_problem( void **data,
                              ipc_ *status,
                              ipc_ n,
-                             real_wp_ c[],
-                             real_wp_ f,
-                             real_wp_ power,
-                             real_wp_ weight,
-                             real_wp_ x[] );
+                             rpc_ c[],
+                             rpc_ f,
+                             rpc_ power,
+                             rpc_ weight,
+                             rpc_ x[] );
 
 /*!<
  Find the global minimizer of the regularized-quadartic problem (2) if some
@@ -751,7 +751,7 @@ void dps_resolve_rq_problem( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The run was succesful
@@ -767,26 +767,26 @@ void dps_resolve_rq_problem( void **data,
   \li -16. The problem is so ill-conditioned that further progress is
            impossible.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     variables
 
- @param[in] c is a one-dimensional array of size n and type double, that
+ @param[in] c is a one-dimensional array of size n and type rpc_, that
     holds the linear term \f$c\f$ in the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value of the
+   f is a scalar variable pointer of type rpc_, that holds the value of the
     holds the constant term \f$f\f$ in the objective function.
 
  @param[in]
-   weight is a scalar variable pointer of type double, that holds the value
+   weight is a scalar variable pointer of type rpc_, that holds the value
     of the regularization weight, \f$\sigma > 0\f$.
 
  @param[in]
-   power is a scalar variable pointer of type double, that holds the value
+   power is a scalar variable pointer of type rpc_, that holds the value
     of the regularization power, \f$p \geq 2\f$.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
+ @param[in,out] x is a one-dimensional array of size n and type rpc_, that
     holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
@@ -806,7 +806,7 @@ void dps_information( void **data,
   @param[out] inform is a struct containing output information
               (see dps_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

@@ -1,7 +1,7 @@
 //* \file galahad_sls.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 27/11/2021 AT 15:24 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -438,13 +438,13 @@ struct sls_control_type {
 
     /// \brief
     /// factor by which arrays sizes are to be increased if they are too small
-    real_wp_ array_increase_factor;
+    rpc_ array_increase_factor;
 
     /// \brief
     /// if previously allocated internal workspace arrays are greater than
     /// array_decrease_factor times the currently required sizes, they are reset
     /// to current requirements
-    real_wp_ array_decrease_factor;
+    rpc_ array_decrease_factor;
 
     /// \brief
     /// pivot control:
@@ -502,44 +502,44 @@ struct sls_control_type {
     /// \brief
     /// the scaling iteration stops as soon as the row/column norms are less
     /// than 1+/-.scale_thresh
-    real_wp_ scale_thresh;
+    rpc_ scale_thresh;
 
     /// \brief
     /// pivot threshold
-    real_wp_ relative_pivot_tolerance;
+    rpc_ relative_pivot_tolerance;
 
     /// \brief
     /// smallest permitted relative pivot threshold
-    real_wp_ minimum_pivot_tolerance;
+    rpc_ minimum_pivot_tolerance;
 
     /// \brief
     /// any pivot small than this is considered zero
-    real_wp_ absolute_pivot_tolerance;
+    rpc_ absolute_pivot_tolerance;
 
     /// \brief
     /// any entry smaller than this is considered zero
-    real_wp_ zero_tolerance;
+    rpc_ zero_tolerance;
 
     /// \brief
     /// any pivot smaller than this is considered zero for positive-definite sol
-    real_wp_ zero_pivot_tolerance;
+    rpc_ zero_pivot_tolerance;
 
     /// \brief
     /// any pivot smaller than this is considered to be negative for p-d solvers
-    real_wp_ negative_pivot_tolerance;
+    rpc_ negative_pivot_tolerance;
 
     /// \brief
     /// used for setting static pivot level
-    real_wp_ static_pivot_tolerance;
+    rpc_ static_pivot_tolerance;
 
     /// \brief
     /// used for switch to static
-    real_wp_ static_level_switch;
+    rpc_ static_level_switch;
 
     /// \brief
     /// used to determine whether a system is consistent when seeking a Fredholm
     /// alternative
-    real_wp_ consistency_tolerance;
+    rpc_ consistency_tolerance;
 
     /// \brief
     /// maximum number of iterative refinements allowed
@@ -548,9 +548,9 @@ struct sls_control_type {
     /// \brief
     /// refinement will cease as soon as the residual ||Ax-b|| falls below
     /// max( acceptable_residual_relative * ||b||, acceptable_residual_absolute
-    real_wp_ acceptable_residual_relative;
+    rpc_ acceptable_residual_relative;
     /// see acceptable_residual_relative
-    real_wp_ acceptable_residual_absolute;
+    rpc_ acceptable_residual_absolute;
 
     /// \brief
     /// set .multiple_rhs to .true. if there is possibility that the solver
@@ -604,67 +604,67 @@ struct sls_time_type {
 
     /// \brief
     /// the total cpu time spent in the package
-    real_wp_ total;
+    rpc_ total;
 
     /// \brief
     /// the total cpu time spent in the analysis phase
-    real_wp_ analyse;
+    rpc_ analyse;
 
     /// \brief
     /// the total cpu time spent in the factorization phase
-    real_wp_ factorize;
+    rpc_ factorize;
 
     /// \brief
     /// the total cpu time spent in the solve phases
-    real_wp_ solve;
+    rpc_ solve;
 
     /// \brief
     /// the total cpu time spent by the external solver in the ordering phase
-    real_wp_ order_external;
+    rpc_ order_external;
 
     /// \brief
     /// the total cpu time spent by the external solver in the analysis phase
-    real_wp_ analyse_external;
+    rpc_ analyse_external;
 
     /// \brief
     /// the total cpu time spent by the external solver in the factorization pha
-    real_wp_ factorize_external;
+    rpc_ factorize_external;
 
     /// \brief
     /// the total cpu time spent by the external solver in the solve phases
-    real_wp_ solve_external;
+    rpc_ solve_external;
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 
     /// \brief
     /// the total clock time spent in the analysis phase
-    real_wp_ clock_analyse;
+    rpc_ clock_analyse;
 
     /// \brief
     /// the total clock time spent in the factorization phase
-    real_wp_ clock_factorize;
+    rpc_ clock_factorize;
 
     /// \brief
     /// the total clock time spent in the solve phases
-    real_wp_ clock_solve;
+    rpc_ clock_solve;
 
     /// \brief
     /// the total clock time spent by the external solver in the ordering phase
-    real_wp_ clock_order_external;
+    rpc_ clock_order_external;
 
     /// \brief
     /// the total clock time spent by the external solver in the analysis phase
-    real_wp_ clock_analyse_external;
+    rpc_ clock_analyse_external;
 
     /// \brief
     /// the total clock time spent by the external solver in the factorization p
-    real_wp_ clock_factorize_external;
+    rpc_ clock_factorize_external;
 
     /// \brief
     /// the total clock time spent by the external solver in the solve phases
-    real_wp_ clock_solve_external;
+    rpc_ clock_solve_external;
 };
 
 /**
@@ -829,35 +829,35 @@ struct sls_inform_type {
 
     /// \brief
     /// largest diagonal modification when static pivoting or ensuring definiten
-    real_wp_ largest_modified_pivot;
+    rpc_ largest_modified_pivot;
 
     /// \brief
     /// minimum scaling factor
-    real_wp_ minimum_scaling_factor;
+    rpc_ minimum_scaling_factor;
 
     /// \brief
     /// maximum scaling factor
-    real_wp_ maximum_scaling_factor;
+    rpc_ maximum_scaling_factor;
 
     /// \brief
     /// esimate of the condition number of the matrix (category 1 equations)
-    real_wp_ condition_number_1;
+    rpc_ condition_number_1;
 
     /// \brief
     /// estimate of the condition number of the matrix (category 2 equations)
-    real_wp_ condition_number_2;
+    rpc_ condition_number_2;
 
     /// \brief
     /// esimate of the backward error (category 1 equations)
-    real_wp_ backward_error_1;
+    rpc_ backward_error_1;
 
     /// \brief
     /// esimate of the backward error (category 2 equations)
-    real_wp_ backward_error_2;
+    rpc_ backward_error_2;
 
     /// \brief
     /// estimate of forward error
-    real_wp_ forward_error;
+    rpc_ forward_error;
 
     /// \brief
     /// has an "alternative" y: A y = 0 and yT b > 0 been found when trying to
@@ -912,7 +912,7 @@ struct sls_inform_type {
     /// the integer and real output arrays from mc61
     ipc_ mc61_info[10];
     /// see mc61_info
-    real_wp_ mc61_rinfo[15];
+    rpc_ mc61_rinfo[15];
 
     /// \brief
     /// the output structure from mc64
@@ -928,7 +928,7 @@ struct sls_inform_type {
 
     /// \brief
     /// the real output status from mc77
-    real_wp_ mc77_rinfo[10];
+    rpc_ mc77_rinfo[10];
 
     /// \brief
     /// the output scalars and arrays from mumps
@@ -936,7 +936,7 @@ struct sls_inform_type {
     /// see mumps_error
     ipc_ mumps_info[80];
     /// see mumps_error
-    real_wp_ mumps_rinfo[40];
+    rpc_ mumps_rinfo[40];
 
     /// \brief
     /// the output scalars and arrays from pardiso
@@ -944,7 +944,7 @@ struct sls_inform_type {
     /// see pardiso_error
     ipc_ pardiso_IPARM[64];
     /// see pardiso_error
-    real_wp_ pardiso_DPARM[64];
+    rpc_ pardiso_DPARM[64];
 
     /// \brief
     /// the output scalars and arrays from mkl_pardiso
@@ -962,7 +962,7 @@ struct sls_inform_type {
     /// see wsmp_error
     ipc_ wsmp_iparm[64];
     /// see wsmp_error
-    real_wp_ wsmp_dparm[64];
+    rpc_ wsmp_dparm[64];
 
     /// \brief
     /// the output flag from MPI routines
@@ -996,7 +996,7 @@ void sls_initialize( const char solver[],
  @param[out] control is a struct containing control information
               (see sls_control_type)
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
   \li -26. The requested solver is not available.
@@ -1041,7 +1041,7 @@ void sls_analyse_matrix( struct sls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The import and analysis were conducted succesfully.
@@ -1081,7 +1081,7 @@ void sls_analyse_matrix( struct sls_control_type *control,
        information component of inform along with the solver’s
        documentation for more details.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     rows in the symmetric matrix \f$A\f$.
 
  @param[in] type is a one-dimensional array of type char that specifies the
@@ -1089,22 +1089,22 @@ void sls_analyse_matrix( struct sls_control_type *control,
    used for the matrix \f$A\f$. It should be one of 'coordinate',
    'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
    entries in the lower triangular part of \f$A\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in] row is a one-dimensional array of size ne and type int, that
+ @param[in] row is a one-dimensional array of size ne and type ipc_, that
    holds the row indices of the lower triangular part of \f$A\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
- @param[in] col is a one-dimensional array of size ne and type int,
+ @param[in] col is a one-dimensional array of size ne and type ipc_,
    that holds the column indices of the lower triangular part of \f$A\f$ in
    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
    need not be set when the dense storage scheme is used, and in this case
    can be NULL.
 
- @param[in]  ptr is a one-dimensional array of size n+1 and type int,
+ @param[in]  ptr is a one-dimensional array of size n+1 and type ipc_,
    that holds the starting position of  each row of the lower
    triangular part of \f$A\f$, as well as the total number of entries,
    in the sparse row-wise storage scheme. It need not be set when the
@@ -1126,7 +1126,7 @@ void sls_reset_control( struct sls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful.
 */
@@ -1136,14 +1136,14 @@ void sls_reset_control( struct sls_control_type *control,
 void sls_factorize_matrix( void **data,
                            ipc_ *status,
                            ipc_ ne,
-                           const real_wp_ val[] );
+                           const rpc_ val[] );
 
 /*!<
  Form and factorize the symmetric matrix \f$A\f$.
 
  @param[in,out] data holds private internal data
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The factors were generated succesfully.
@@ -1183,10 +1183,10 @@ void sls_factorize_matrix( void **data,
        information component of inform along with the solver’s
        documentation for more details.
 
- @param[in] ne is a scalar variable of type int, that holds the number of
+ @param[in] ne is a scalar variable of type ipc_, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$A\f$.
 
- @param[in] val is a one-dimensional array of size ne and type double,
+ @param[in] val is a one-dimensional array of size ne and type rpc_,
     that holds the values of the entries of the lower triangular part of the
     symmetric matrix \f$A\f$ in any of the supported storage schemes.
 */
@@ -1196,14 +1196,14 @@ void sls_factorize_matrix( void **data,
 void sls_solve_system( void **data,
                        ipc_ *status,
                        ipc_ n,
-                       real_wp_ sol[] );
+                       rpc_ sol[] );
 
 /*!<
  Solve the linear system \f$Ax=b\f$.
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. \n
     Possible values are:
   \li  0. The required solution was obtained.
@@ -1223,7 +1223,7 @@ void sls_solve_system( void **data,
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     entries in the vectors \f$b\f$ and \f$x\f$.
 
  @param[in,out] sol is a one-dimensional array of size n and type double.
@@ -1237,7 +1237,7 @@ void sls_partial_solve_system( const char part[],
                                void **data,
                                ipc_ *status,
                                ipc_ n,
-                               real_wp_ sol[] );
+                               rpc_ sol[] );
 
 /*!<
  Given the factorization \f$A = L D U\f$ with \f$U = L^T\f$,
@@ -1253,7 +1253,7 @@ void sls_partial_solve_system( const char part[],
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -1274,7 +1274,7 @@ void sls_partial_solve_system( const char part[],
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
 
- @param[in] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type ipc_, that holds the number of
     entries in the vectors \f$b\f$ and \f$x\f$.
 
  @param[in,out] sol is a one-dimensional array of size n and type double.
@@ -1297,7 +1297,7 @@ void sls_information( void **data,
   @param[out] inform is a struct containing output information
               (see sls_inform_type)
 
-  @param[out] status is a scalar variable of type int, that gives
+  @param[out] status is a scalar variable of type ipc_, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully

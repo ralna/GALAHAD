@@ -8,13 +8,13 @@
 #include "galahad_ugo.h"
 
 struct userdata_type {
-   real_wp_ a;
+   rpc_ a;
 };
 
 // Evaluate test problem objective, first and second derivatives
-ipc_ fgh(real_wp_ x, real_wp_ *f, real_wp_ *g, real_wp_ *h, const void *userdata){
+ipc_ fgh(rpc_ x, rpc_ *f, rpc_ *g, rpc_ *h, const void *userdata){
    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-   real_wp_ a = myuserdata->a;
+   rpc_ a = myuserdata->a;
 
    *f = x * x * cos( a*x );
    *g = - a * x * x * sin( a*x ) + 2.0 * x * cos( a*x );
@@ -45,11 +45,11 @@ int main(void) {
     userdata.a = 10.0;
 
     // Test problem bounds
-    real_wp_ x_l = -1.0;
-    real_wp_ x_u = 2.0;
+    rpc_ x_l = -1.0;
+    rpc_ x_u = 2.0;
 
     // Test problem objective, gradient, Hessian values
-    real_wp_ x, f, g, h;
+    rpc_ x, f, g, h;
 
     // import problem data
     ugo_import( &control, &data, &status, &x_l, &x_u );
@@ -65,9 +65,9 @@ int main(void) {
 
     if(inform.status == 0){
         printf("%i evaluations. Optimal objective value = %5.2f"
-          " at x = %5.2f, status = %1i\n", inform.f_eval, f, x, inform.status);
+          " at x = %5.2f, status = %1" i_ipc_ "\n", inform.f_eval, f, x, inform.status);
     }else{
-        printf("BGO_solve exit status = %1i\n", inform.status);
+        printf("BGO_solve exit status = %1" i_ipc_ "\n", inform.status);
     }
 
     // Delete internal workspace

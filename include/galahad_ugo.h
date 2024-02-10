@@ -1,7 +1,7 @@
 //* \file galahad_ugo.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-13 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_UGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -190,46 +190,46 @@ struct ugo_control_type {
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when
     /// the step is less than .stop_length
-    real_wp_ stop_length;
+    rpc_ stop_length;
 
     /// \brief
     /// if the absolute value of the gradient is smaller than
     /// small_g_for_newton, the next evaluation point may be at a
     /// Newton estimate of a local minimizer
-    real_wp_ small_g_for_newton;
+    rpc_ small_g_for_newton;
 
     /// \brief
     /// if the absolute value of the gradient at the end of the interval search
     /// is smaller than small_g, no Newton serach is necessary
-    real_wp_ small_g;
+    rpc_ small_g;
 
     /// \brief
     /// stop if the objective function is smaller than a specified value
-    real_wp_ obj_sufficient;
+    rpc_ obj_sufficient;
 
     /// \brief
     /// the global Lipschitz constant for the gradient (-ve means unknown)
-    real_wp_ global_lipschitz_constant;
+    rpc_ global_lipschitz_constant;
 
     /// \brief
     /// the reliability parameter that is used to boost insufficiently large
     /// estimates of the Lipschitz constant (-ve means that default values
     /// will be chosen depending on whether second derivatives are provided
     /// or not)
-    real_wp_ reliability_parameter;
+    rpc_ reliability_parameter;
 
     /// \brief
     /// a lower bound on the Lipscitz constant for the gradient
     /// (not zero unless the function is constant)
-    real_wp_ lipschitz_lower_bound;
+    rpc_ lipschitz_lower_bound;
 
     /// \brief
     /// the maximum CPU time allowed (-ve means infinite)
-    real_wp_ cpu_time_limit;
+    rpc_ cpu_time_limit;
 
     /// \brief
     /// the maximum elapsed clock time allowed (-ve means infinite)
-    real_wp_ clock_time_limit;
+    rpc_ clock_time_limit;
 
     /// \brief
     /// if .second_derivative_available is true, the user must provide them
@@ -265,7 +265,7 @@ struct ugo_time_type {
 
     /// \brief
     /// the total clock time spent in the package
-    real_wp_ clock_total;
+    rpc_ clock_total;
 };
 
 /*
@@ -329,7 +329,7 @@ void ugo_initialize( void **data,
  @param[out] control is a struct containing control information
               (see ugo_control_type)
 
- @param[out] status is a scalar variable of type int, that gives
+ @param[out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The import was succesful.
 */
@@ -358,8 +358,8 @@ void ugo_read_specfile( struct ugo_control_type *control,
 void ugo_import( struct ugo_control_type *control,
                  void **data,
                  ipc_ *status,
-                 const real_wp_ *x_l,
-                 const real_wp_ *x_u );
+                 const rpc_ *x_l,
+                 const rpc_ *x_u );
 
 /*!<
  Import problem data into internal storage prior to solution.
@@ -369,7 +369,7 @@ void ugo_import( struct ugo_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the offending
@@ -381,11 +381,11 @@ void ugo_import( struct ugo_control_type *control,
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
 
- @param[in] x_l is a scalar variable of type double,
+ @param[in] x_l is a scalar variable of type rpc_,
     that holds the value \f$x^l\f$ of the lower bound on the optimization
     variable \f$x\f$.
 
- @param[in] x_u is a scalar variable of type double,
+ @param[in] x_u is a scalar variable of type rpc_,
     that holds the value \f$x^u\f$ of the upper bound on the optimization
     variable \f$x\f$.
 
@@ -406,7 +406,7 @@ void ugo_reset_control( struct ugo_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
  */
@@ -433,12 +433,12 @@ void ugo_reset_control( struct ugo_control_type *control,
 void ugo_solve_direct( void **data,
                        void *userdata,
                        ipc_ *status,
-                       real_wp_ *x,
-                       real_wp_ *f,
-                       real_wp_ *g,
-                       real_wp_ *h,
+                       rpc_ *x,
+                       rpc_ *f,
+                       rpc_ *g,
+                       rpc_ *h,
                        ipc_ (*eval_fgh)(
-                          real_wp_, real_wp_*, real_wp_*, real_wp_*,
+                          rpc_, rpc_*, rpc_*, rpc_*,
                           const void * ) );
 
 /*!<
@@ -453,7 +453,7 @@ void ugo_solve_direct( void **data,
  @param[in] userdata is a structure that allows data to be passed into
     the function and derivative evaluation programs (see below).
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -477,20 +477,20 @@ void ugo_solve_direct( void **data,
   \li -40. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
-  @param[out] x is a scalar variable of type double, that holds the value of
+  @param[out] x is a scalar variable of type rpc_, that holds the value of
      the approximate global minimizer \f$x\f$ after a successful (status = 0)
      call.
 
-   @param[out] f is a scalar variable of type double, that holds the the value
+   @param[out] f is a scalar variable of type rpc_, that holds the the value
      of the objective function \f$f(x)\f$ at the approximate global minimizer
      \f$x\f$ after a successful (status = 0) call.
 
-   @param[out] g is a scalar variable of type double, that holds the the value
+   @param[out] g is a scalar variable of type rpc_, that holds the the value
      of the gradient of the objective function \f$f^{\prime}(x)\f$
      at the approximate global minimizer
      \f$x\f$ after a successful (status = 0) call.
 
-   @param[out] h is a scalar variable of type double, that holds the the value
+   @param[out] h is a scalar variable of type rpc_, that holds the the value
      of the second derivative of the objective function
     \f$f^{\prime\prime}(x)\f$ at the approximate global minimizer
     \f$x\f$ after a successful (status = 0) call.
@@ -498,10 +498,10 @@ void ugo_solve_direct( void **data,
    @param eval_fgh is a user-provided function that must have the following
    signature:
    \code
-     ipc_ eval_fgh( double x,
-                   double *f,
-                   double *g,
-                   double *h,
+     ipc_ eval_fgh( rpc_ x,
+                   rpc_ *f,
+                   rpc_ *g,
+                   rpc_ *h,
                    const void *userdata)
    \endcode
    The value of the objective function \f$f(x)\f$ and its first derivative
@@ -520,10 +520,10 @@ void ugo_solve_direct( void **data,
 void ugo_solve_reverse( void **data,
                         ipc_ *status,
                         ipc_ *eval_status,
-                        real_wp_ *x,
-                        real_wp_ *f,
-                        real_wp_ *g,
-                        real_wp_ *h );
+                        rpc_ *x,
+                        rpc_ *f,
+                        rpc_ *g,
+                        rpc_ *h );
 
 /*!<
  Find an approximation to the global minimizer of a given univariate
@@ -534,7 +534,7 @@ void ugo_solve_reverse( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
+ @param[in,out] status is a scalar variable of type ipc_, that gives
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
@@ -580,29 +580,29 @@ void ugo_solve_reverse( void **data,
         This value can only occur when
         control.second_derivatives_available = true.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to
+ @param[in,out] eval_status is a scalar variable of type ipc_, that is used to
     indicate if  objective function and its derivatives can be provided
     (see above).
 
  @param[out]
-   x is a scalar variable of type double, that holds the next value of \f$x\f$
+   x is a scalar variable of type rpc_, that holds the next value of \f$x\f$
     at which the user is required to evaluate the objective (and its
     derivatives) when status > 0, or the value of the approximate
     global minimizer when status = 0
 
  @param[in,out]
-   f is a scalar variable of type double, that must be set by the user to
+   f is a scalar variable of type rpc_, that must be set by the user to
     hold the value of \f$f(x)\f$ if required by status > 0 (see above), and
     will return the value of the approximate global minimum when status = 0
 
  @param[in,out]
-   g is a scalar variable of type double, that must be set by the user to
+   g is a scalar variable of type rpc_, that must be set by the user to
     hold the value of  \f$f^{\prime}(x)\f$ if required by status > 0
     (see above), and will return the value of the first derivative of \f$f\f$
     at the approximate global minimizer when status = 0
 
  @param[in,out]
-   h is a scalar variable of type double, that must be set by the user to
+   h is a scalar variable of type rpc_, that must be set by the user to
     hold the value of \f$f^{\prime\prime}(x)\f$ if required by status > 0
     (see above), and will return the value of the second derivative of \f$f\f$
     at the approximate global minimizer when status = 0
@@ -622,7 +622,7 @@ void ugo_information( void **data,
   @param[out] inform   is a struct containing output information
     (see ugo_inform_type)
 
-  @param[out] status   is a scalar variable of type int, that gives
+  @param[out] status   is a scalar variable of type ipc_, that gives
     the exit status from the package. Possible values are (currently):
   \li  0. The values were recorded succesfully
 */

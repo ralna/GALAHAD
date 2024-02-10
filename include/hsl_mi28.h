@@ -1,7 +1,7 @@
 //* \file hsl_mi28.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-27 AT 09:00 GMT.
+ * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD MI28 C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -31,18 +31,18 @@ extern "C" {
 /* Derived type to hold control parameters for hsl_mi28 */
 struct mi28_control {
    ipc_ f_arrays;
-   real_wp_ alpha;
+   rpc_ alpha;
    bool check ;
    ipc_ iorder;
    ipc_ iscale;
-   real_wp_ lowalpha;
+   rpc_ lowalpha;
    ipc_ maxshift;
    bool rrt;
-   real_wp_ shift_factor;
-   real_wp_ shift_factor2;
-   real_wp_ small;
-   real_wp_ tau1;
-   real_wp_ tau2;
+   rpc_ shift_factor;
+   rpc_ shift_factor2;
+   rpc_ small;
+   rpc_ tau1;
+   rpc_ tau2;
    ipc_ unit_error;
    ipc_ unit_warning;
 };
@@ -60,11 +60,11 @@ struct mi28_info {
    ipc_ nrestart;
    ipc_ nshift;
    ipc_ oor;
-   real_wp_ profile_before;
-   real_wp_ profile_after;
+   rpc_ profile_before;
+   rpc_ profile_after;
    long size_r;
    ipc_ stat;
-   real_wp_ alpha;
+   rpc_ alpha;
 };
 
 #endif
