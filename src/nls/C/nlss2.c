@@ -99,7 +99,7 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %i Gauss-Newton iterations. Optimal objective value = %5.2f"
+        printf(" %" i_ipc_ " Gauss-Newton iterations. Optimal objective value = %5.2f"
                " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
@@ -132,7 +132,7 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %i Newton iterations. Optimal objective value = %5.2f"
+        printf(" %" i_ipc_ " Newton iterations. Optimal objective value = %5.2f"
                " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{
@@ -165,7 +165,7 @@ int main(void) {
     nls_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf(" %i tensor-Newton iterations. Optimal objective value = %5.2f"
+        printf(" %" i_ipc_ " tensor-Newton iterations. Optimal objective value = %5.2f"
                " status = %1" i_ipc_ "\n",
                inform.iter, inform.obj, inform.status);
     }else{

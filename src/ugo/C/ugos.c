@@ -64,7 +64,7 @@ int main(void) {
     ugo_information( &data, &inform, &status );
 
     if(inform.status == 0){
-        printf("%i evaluations. Optimal objective value = %5.2f"
+        printf("%" i_ipc_ " evaluations. Optimal objective value = %5.2f"
           " at x = %5.2f, status = %1" i_ipc_ "\n", inform.f_eval, f, x, inform.status);
     }else{
         printf("BGO_solve exit status = %1" i_ipc_ "\n", inform.status);
