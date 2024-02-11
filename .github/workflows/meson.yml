@@ -16,66 +16,53 @@ jobs:
         int: ['32', '64']
         include:
           - compiler: gcc
-            julia: ${{ matrix.int == '32' }}
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
-            julia: false
             int: '32'
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
-            julia: false
             int: '64'
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
-            julia: true
             int: '32'
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
-            julia: false
             int: '64'
           - os: macos-latest
             compiler: intel-classic
             version: '2021.10'
-            julia: true
             int: '32'
           - os: macos-latest
             compiler: intel-classic
             version: '2021.10'
-            julia: false
             int: '64'
           - os: windows-latest
             compiler: intel
             version: '2023.2'
-            julia: false
             int: '32'
           - os: windows-latest
             compiler: intel
             version: '2023.2'
-            julia: false
             int: '64'
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
-            julia: true
             int: '32'
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
-            julia: false
             int: '64'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
-          #   julia: true
           #   int: '32'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
-          #   julia: false
           #   int: '64'
     runs-on: ${{ matrix.os }}
     steps:
@@ -254,10 +241,10 @@ jobs:
           path: builddir/meson-logs/testlog.txt
 
       - name: Install Julia
-        if: matrix.julia == true
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
         uses: julia-actions/setup-julia@v1
 
       - name: Test GALAHAD.jl
-        if: matrix.julia == true
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
         shell: bash
         run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
