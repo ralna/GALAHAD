@@ -7,8 +7,18 @@ if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
   const libgalahad_double = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_double.$dlext")
   const GALAHAD_INSTALLATION = "CUSTOM"
 else
+  using OpenBLAS32_jll
   using GALAHAD_jll
   const GALAHAD_INSTALLATION = "YGGDRASIL"
+end
+
+function __init__()
+  if GALAHAD_INSTALLATION == "YGGDRASIL"
+    config = LinearAlgebra.BLAS.lbt_get_config()
+    if !any(lib -> lib.interface == :lp64, config.loaded_libs)
+      LinearAlgebra.BLAS.lbt_forward(OpenBLAS32_jll.libopenblas_path)
+    end
+  end
 end
 
 # Utils.

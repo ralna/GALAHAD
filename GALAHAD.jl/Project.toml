@@ -6,14 +6,15 @@ version = "0.1.0"
 [deps]
 GALAHAD_jll = "1621ace8-c1f0-5e32-a05d-ca786afa56c2"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+OpenBLAS32_jll = "656ef2d0-ae68-5445-9ca0-591084a874a2"
 
 [compat]
 julia = "1.9"
 
 [extras]
+Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 
 [targets]
 test = ["Test", "Printf", "Accessors"]
