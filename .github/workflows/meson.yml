@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        version: ['12']
+        version: ['11']
         int: ['32', '64']
         include:
           - compiler: gcc
