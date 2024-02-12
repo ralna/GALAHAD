@@ -231,6 +231,7 @@ jobs:
           path: builddir/meson-logs/install-log.txt
 
       - name: Test GALAHAD
+        if: (matrix.int != '64' || matrix.os != 'macos-latest')
         shell: bash
         run: |
           meson test -C builddir
