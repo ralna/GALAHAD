@@ -31,7 +31,7 @@
      USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_MOP_precision
-     USE HSL_MI20_precision
+     USE hsl_mi20_precision
      USE GALAHAD_GLTR_precision
      USE GALAHAD_TRU_precision
      USE GALAHAD_SPACE_precision

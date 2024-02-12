@@ -2219,7 +2219,7 @@
            DO i = 1, data%n_subspace
              CALL mop_Ax( one, nlp%H,  data%S( 1 : nlp%n, i ), zero,           &
                           data%HS( : nlp%n, i ), data%out, data%control%error, &
-                          0, symmetric = .TRUE. )
+                          0_ip_, symmetric = .TRUE. )
 !                         data%print_level, symmetric = .TRUE. )
            END DO
 
