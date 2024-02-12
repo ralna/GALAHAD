@@ -16,7 +16,7 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
   options["general"]["library_name"] = "libgalahad_double"
   # options["general"]["extract_c_comment_style"] = "doxygen"
   options["general"]["output_file_path"] = joinpath("..", "src", "wrappers", "$(name).jl")
-  optimized && (options["general"]["output_ignorelist"] = ["real_wp_", "real_sp_"])
+  optimized && (options["general"]["output_ignorelist"] = ["real_wp_", "real_sp_", "rpc_", "ipc_"])
   args = get_default_args()
   push!(args, "-I$include_dir")
   push!(args, "-DGALAHAD_DOUBLE")

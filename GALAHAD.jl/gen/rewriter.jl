@@ -21,6 +21,8 @@ function rewrite!(path::String, name::String, optimized::Bool)
   structures = "# Structures for $name\n"
   text = read(path, String)
   if optimized
+    text = replace(text, "ipc_" => "Cint")
+    text = replace(text, "longc_" => "Int64")
     text = replace(text, "real_sp_" => "Float32")
     text = replace(text, "\n    " => "\n  ")
 
@@ -59,8 +61,8 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_single = replace(routine_single, "libgalahad_double" => "libgalahad_single")
         routine_single = replace(routine_single, ",\n" => ",\n  ")
 
-        routine_single = replace(routine_single, "real_wp_" => "Float32")
-        routine_double = replace(routine_double, "real_wp_" => "Float64")
+        routine_single = replace(routine_single, "rpc_" => "Float32")
+        routine_double = replace(routine_double, "rpc_" => "Float64")
 
         routine_single = replace(routine_single, "spral_ssids_options" => "spral_ssids_options{Float32}")
         routine_double = replace(routine_double, "spral_ssids_options" => "spral_ssids_options{Float64}")
@@ -84,7 +86,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
       elseif contains(code, "struct ")
         structure = code * "end\n"
         structure_name = split(split(code, "struct ")[2], "\n")[1]
-        structure = replace(structure, "real_wp_" => "T")
+        structure = replace(structure, "rpc_" => "T")
         if structure_name ∉ nonparametric_structures
           structure = replace(structure, structure_name => structure_name * "{T}")
           structures = structures * "Ref{$(structure_name){Float32}}()\n"
