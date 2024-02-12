@@ -45,34 +45,9 @@ function test_eqp()
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
     @reset control[].fdc_control.use_sls = true
-    solver = "sytr"
-    @reset control[].fdc_control.symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                                   (115, 121, 116, 114, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 0))
-    @reset control[].sbls_control.symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                                    (115, 121, 116, 114, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 0))
-    @reset control[].sbls_control.definite_linear_solver = convert(NTuple{31,Int8},
-                                                                   (115, 121, 116, 114, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 0))
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
 
     # Start from 0
     x = Float64[0.0, 0.0, 0.0]
@@ -191,34 +166,9 @@ function test_eqp()
     # Initialize EQP
     eqp_initialize(data, control, status)
     @reset control[].fdc_control.use_sls = true
-    solver = "sytr"
-    @reset control[].fdc_control.symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                                   (115, 121, 116, 114, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 0))
-    @reset control[].sbls_control.symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                                    (115, 121, 116, 114, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 0))
-    @reset control[].sbls_control.definite_linear_solver = convert(NTuple{31,Int8},
-                                                                   (115, 121, 116, 114, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 0))
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("sytr")
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing

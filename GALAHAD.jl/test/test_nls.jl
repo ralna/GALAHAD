@@ -8,7 +8,7 @@ using Accessors
 
 # Custom userdata struct
 struct userdata_type
-p::Float64
+  p::Float64
 end
 
 function test_nls()

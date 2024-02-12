@@ -107,33 +107,9 @@ function test_llst()
 
     # Initialize LLST
     llst_initialize(data, control, status)
-    @reset control[].definite_linear_solver = convert(NTuple{31,Int8},
-                                                                    (112, 111, 116, 114, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 0))
-    @reset control[].sbls_control.symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                                    (115, 121, 116, 114, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 0))
-    @reset control[].sbls_control.definite_linear_solver = convert(NTuple{31,Int8},
-                                                                    (112, 111, 116, 114, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 32,
-                                                                     32, 32, 32, 32, 32, 32,
-                                                                     32, 0))
+    @reset control[].definite_linear_solver = galahad_linear_solver("potr")
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("potr")
+    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
     # @reset control[].print_level = Cint(1)
 
     # Set user-defined control options

@@ -41,25 +41,8 @@ function test_clls()
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    @reset control[].symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                       (112, 111, 116, 114, 32,
-                                                        32, 32,
-                                                        32, 32, 32, 32, 32, 32,
-                                                        32, 32,
-                                                        32, 32, 32, 32, 32, 32,
-                                                        32, 32,
-                                                        32, 32, 32, 32, 32, 32,
-                                                        32, 0))
-
-    @reset control[].fdc_control.symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                                   (112, 111, 116, 114, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 32,
-                                                                    32, 32, 32, 32, 32, 32,
-                                                                    32, 0))
+    @reset control[].symmetric_linear_solver = galahad_linear_solver("potr")
+    @reset control[].fdc_control.symmetric_linear_solver = galahad_linear_solver("potr")
     @reset control[].fdc_control.use_sls = true
 
     # Start from 0

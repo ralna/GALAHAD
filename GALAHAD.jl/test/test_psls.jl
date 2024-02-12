@@ -35,13 +35,7 @@ function test_psls()
     psls_initialize(data, control, status)
     @reset control[].preconditioner = Cint(2) # band preconditioner
     @reset control[].semi_bandwidth = Cint(1) # semibandwidth
-    @reset control[].definite_linear_solver = convert(NTuple{31,Int8},
-                                                      (115, 105, 108, 115, 32, 32, 32, 32,
-                                                       32, 32,
-                                                       32, 32, 32, 32, 32, 32, 32, 32, 32,
-                                                       32, 32,
-                                                       32, 32, 32, 32, 32, 32, 32, 32, 32,
-                                                       0))
+    @reset control[].definite_linear_solver = galahad_linear_solver("sils")
 
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing

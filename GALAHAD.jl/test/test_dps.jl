@@ -39,14 +39,8 @@ function test_dps()
     dps_initialize(data, control, status)
 
     # Set user-defined control options
-    @reset control[].f_indexing = true # fortran sparse matrix indexing 
-    @reset control[].symmetric_linear_solver = convert(NTuple{31,Int8},
-                                                       (115, 121, 116, 114, 32, 32, 32, 32,
-                                                        32, 32,
-                                                        32, 32, 32, 32, 32, 32, 32, 32, 32,
-                                                        32, 32,
-                                                        32, 32, 32, 32, 32, 32, 32, 32, 32,
-                                                        0))
+    @reset control[].f_indexing = true # fortran sparse matrix indexing
+    @reset control[].symmetric_linear_solver = galahad_linear_solver("sytr")
 
     # sparse co-ordinate storage
     if storage_type == 1

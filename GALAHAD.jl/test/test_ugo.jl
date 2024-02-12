@@ -42,10 +42,7 @@ function test_ugo()
   @reset control[].print_level = Cint(1)
 
   # control.prefix = "'ugo: '"
-  @reset control[].prefix = convert(NTuple{31,Int8},
-                                    (34, 39, 117, 103, 111, 58, 32, 39, 34, 32, 32, 32, 32,
-                                     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-                                     32, 32, 32, 0))
+  @reset control[].prefix = galahad_linear_solver("'ugo: '")
 
   # Read options from specfile
   specfile = "UGO.SPC"
