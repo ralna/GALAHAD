@@ -11,6 +11,9 @@ else
   const GALAHAD_INSTALLATION = "YGGDRASIL"
 end
 
+# Utils.
+include("utils.jl")
+
 # packages without dependencies.
 include("wrappers/bsc.jl")
 include("wrappers/convert.jl")
