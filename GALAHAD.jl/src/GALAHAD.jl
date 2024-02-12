@@ -1,6 +1,7 @@
 module GALAHAD
 
 using Libdl
+using LinearAlgebra
 
 if haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH")
   const libgalahad_single = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "libgalahad_single.$dlext")
