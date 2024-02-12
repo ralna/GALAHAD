@@ -777,7 +777,7 @@
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPsiqp  = 'accelerator(I)-QPC'
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPseqp  = 'accelerator(E)-EQP'
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPsteer = 'steering-QPC      '
- INTEGER ( KINDS = ip_) :: error
+ INTEGER ( KIND = ip_) :: error
  REAL( kind=rp_ ) :: infinity
  TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -8229,7 +8229,7 @@
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
- INTEGER ( KINDS = ip_) :: i, j, nbreak, inheap, iter, ibreakp
+ INTEGER ( KIND = ip_) :: i, j, nbreak, inheap, iter, ibreakp
 !INTEGER :: nbreak_total
  REAL ( KIND = rp_ ) :: Asi, too_small, res, P_min, PatX, cosine, tiny_cosine
  REAL ( KIND = rp_ ) :: breakp_max, t_break, t_star, t_old, dt
@@ -9060,7 +9060,7 @@
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
- INTEGER ( KINDS = ip_) :: i
+ INTEGER ( KIND = ip_) :: i
  REAL ( KIND = rp_ ) :: Asi, infeas
 
  !------------------------------------------------------------------------------
@@ -9171,7 +9171,7 @@
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
- INTEGER ( KINDS = ip_) :: i
+ INTEGER ( KIND = ip_) :: i
  REAL ( KIND = rp_ ) :: Asi, infeas, dum_real
 
  !------------------------------------------------------------------------------

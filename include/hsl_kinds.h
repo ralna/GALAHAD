@@ -1,4 +1,5 @@
 #ifdef NAG_KINDS
+
 #define lp_ 3
 #ifdef INTEGER_64
 #define ip_ 4
@@ -12,7 +13,9 @@
 #else
 #define rp_ 2
 #endif
+
 #else
+
 #define lp_ 4
 #ifdef INTEGER_64
 #define ip_ 8
@@ -26,4 +29,5 @@
 #else
 #define rp_ 8
 #endif
+
 #endif

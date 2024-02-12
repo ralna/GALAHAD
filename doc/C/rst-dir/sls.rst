@@ -1,4 +1,5 @@
 .. _doxid-index_sls:
+.. _doxid-sls:
 
 GALAHAD SLS package
 ===================

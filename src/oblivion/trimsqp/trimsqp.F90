@@ -1136,7 +1136,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                            inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
-  CALL SPACE_resize_array( nlp%m, data%JxSsteer, 
+  CALL SPACE_resize_array( nlp%m, data%JxSsteer, &
                            inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -3680,7 +3680,7 @@ end do
 !1004 FORMAT( /,  &
 !     '          approx_B   iter_p    inf_norm_s_p         alpha        ', &
 !     'decrease_cauchy   sqp   iter_s       inf_norm_s_s   descent      ', &
-      ' decrease_full      ratio   accept   success' )
+!     ' decrease_full      ratio   accept   success' )
 !1005 FORMAT(T11, A, 2X, I7, 2X, ES13.6, 2X, ES12.6, 2X, ES19.12,      &
 !            2X, A3, 2X, I7, 4X, ES13.6, 2X, A4, 5X, ES19.12,          &
 !            2X, ES9.2, 2X, A3, 5X, A7, / )

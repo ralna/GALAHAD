@@ -125,7 +125,7 @@ Select solver, set default control values and initialize private data
 	*
 		- solver
 
-		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed.
+		- is a one-dimensional array of type char that specifies the :ref:`solver package <doxid->` that should be used to factorize the matrix $A$. It should be one of 'gls', 'ma28', 'ma48 or 'getr'; lower or upper case variants are allowed. Only 'getr' is available by default, but others are easily installed (see README.external).
 
 	*
 		- data

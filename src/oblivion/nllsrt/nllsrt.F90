@@ -32,7 +32,7 @@
 
     !internal parameters
     REAL(KIND = rp_),PARAMETER::eta1=0.01_rp_, eta2=0.95_rp_, gamma1=1.0_rp_, &
-                             gamma2=2.0_rp_, eps_m=10.0_wp**(-15)
+                             gamma2=2.0_rp_, eps_m=10.0_rp_**(-15)
     REAL(KIND = rp_),PARAMETER:: one=1.0_rp_, zero=0.0_rp_
     REAL(KIND = rp_),PARAMETER:: ten=10.0_rp_, half=0.5_rp_
 
@@ -148,7 +148,7 @@
        !              inform%r_norm, NRES
 
        ! WRITE(102,'('' objective recurred and calculated = '', 2ES16.8)') &
-       !              inform%obj,0.5_wp* NRES+(sigma/p)*NS**p
+       !              inform%obj,0.5_rp_* NRES+(sigma/p)*NS**p
              CALL LSRT_terminate(data, control, inform)
              EXIT
           CASE DEFAULT
