@@ -216,10 +216,8 @@ int main(void) {
                  mask[i+1] = 1;
                  nz_prod[nz_prod_end] = i + 1;
                  nz_prod_end = nz_prod_end + 1;
-                 prod[i+1] = prod[i+1] + v[i];
-               }else{
-                 prod[i+1] = prod[i+1] + v[i];
                }
+               prod[i+1] = prod[i+1] + v[i];
              }
           }
           for( ipc_ l = 0; l < nz_prod_end; l++) mask[nz_prod[l]] = 0;

@@ -9,7 +9,7 @@ function galahad_linear_solver(solver::String)
     result[i] = Cchar(solver[i])
   end
   for i in nchar+1:30
-    result[i] = Char(' ')
+    result[i] = Cchar(' ')
   end
 
   return ntuple(i -> result[i], 31)

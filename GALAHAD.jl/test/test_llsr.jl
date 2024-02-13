@@ -27,7 +27,7 @@ function test_llsr()
   # store A in sparse formats
   l = 1
   for i in 1:m
-    A_ptr[i] = l + 1
+    A_ptr[i] = l
     A_row[l] = i
     A_col[l] = i
     A_val[l] = 1.0
@@ -41,14 +41,11 @@ function test_llsr()
     A_val[l] = 1.0
     l = l + 1
   end
-  A_ptr[m + 1] = l + 1
+  A_ptr[m + 1] = l
 
   # store A in dense format
   A_dense_ne = m * n
   A_dense_val = zeros(Float64, A_dense_ne)
-  for i in 1:A_dense_ne
-    A_dense_val[i] = 0.0
-  end
   l = 0
   for i in 1:m
     A_dense_val[l + i] = 1.0
@@ -76,9 +73,6 @@ function test_llsr()
   # store S in dense format
   S_dense_ne = div(n * (n + 1), 2)
   S_dense_val = zeros(Float64, S_dense_ne)
-  for i in 1:S_dense_ne
-    S_dense_val[i] = 0.0
-  end
   l = 0
   for i in 1:n
     S_dense_val[l + i] = i * i
@@ -120,15 +114,15 @@ function test_llsr()
       if d == 1
         st = 'C'
         llsr_import(control, data, status, m, n,
-                    "coordinate", A_ne, A_row, A_col, Cint[])
+                    "coordinate", A_ne, A_row, A_col, C_NULL)
 
         if use_s == 0
           llsr_solve_problem(data, status, m, n, power, weight,
-                             A_ne, A_val, b, x, 0, Cint[])
+                             A_ne, A_val, b, x, 0, C_NULL)
         else
           llsr_import_scaling(control, data, status, n,
                               "coordinate", S_ne, S_row,
-                              S_col, Cint[])
+                              S_col, C_NULL)
 
           llsr_solve_problem(data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
@@ -139,14 +133,14 @@ function test_llsr()
       if d == 2
         st = 'R'
         llsr_import(control, data, status, m, n,
-                    "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                    "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
         if use_s == 0
           llsr_solve_problem(data, status, m, n, power, weight,
-                             A_ne, A_val, b, x, 0, Cint[])
+                             A_ne, A_val, b, x, 0, C_NULL)
         else
           llsr_import_scaling(control, data, status, n,
-                              "sparse_by_rows", S_ne, Cint[],
+                              "sparse_by_rows", S_ne, C_NULL,
                               S_col, S_ptr)
 
           llsr_solve_problem(data, status, m, n, power, weight,
@@ -158,15 +152,15 @@ function test_llsr()
       if d == 3
         st = 'D'
         llsr_import(control, data, status, m, n,
-                    "dense", A_dense_ne, Cint[], Cint[], Cint[])
+                    "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
         if use_s == 0
           llsr_solve_problem(data, status, m, n, power, weight,
                              A_dense_ne, A_dense_val, b, x,
-                             0, Cint[])
+                             0, C_NULL)
         else
           llsr_import_scaling(control, data, status, n,
                               "dense", S_dense_ne,
-                              Cint[], Cint[], Cint[])
+                              C_NULL, C_NULL, C_NULL)
 
           llsr_solve_problem(data, status, m, n, power, weight,
                              A_dense_ne, A_dense_val, b, x,
@@ -178,13 +172,13 @@ function test_llsr()
       if d == 4
         st = 'I'
         llsr_import(control, data, status, m, n,
-                    "coordinate", A_ne, A_row, A_col, Cint[])
+                    "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
           llsr_solve_problem(data, status, m, n, power, weight,
-                             A_ne, A_val, b, x, 0, Cint[])
+                             A_ne, A_val, b, x, 0, C_NULL)
         else
           llsr_import_scaling(control, data, status, n,
-                              "diagonal", S_ne, Cint[], Cint[], Cint[])
+                              "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
 
           llsr_solve_problem(data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)

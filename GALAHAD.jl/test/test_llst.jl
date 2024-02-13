@@ -40,14 +40,11 @@ function test_llst()
     A_val[l] = 1.0
     l = l + 1
   end
-  A_ptr[m] = l
+  A_ptr[m+1] = l
 
   # store A in dense format
   A_dense_ne = m * n
   A_dense_val = zeros(Float64, A_dense_ne)
-  for i in 1:A_dense_ne
-    A_dense_val[i] = 0.0
-  end
   l = 0
   for i in 1:m
     A_dense_val[l + i] = 1.0
@@ -57,7 +54,7 @@ function test_llst()
   end
 
   # S = diag(1:n)**2
-  S_ne = Cint(n)
+  S_ne = n
   S_row = zeros(Cint, S_ne)
   S_col = zeros(Cint, S_ne)
   S_ptr = zeros(Cint, n + 1)
@@ -70,15 +67,11 @@ function test_llst()
     S_ptr[i] = i
     S_val[i] = i * i
   end
-  S_ptr[n] = n + 1
+  S_ptr[n+1] = n + 1
 
   # store S in dense format
   S_dense_ne = div(n * (n + 1), 2)
   S_dense_val = zeros(Float64, S_dense_ne)
-  for i in 1:S_dense_ne
-    S_dense_val[i] = 0.0
-  end
-
   l = 0
   for i in 1:n
     S_dense_val[l + i] = i * i
@@ -86,10 +79,7 @@ function test_llst()
   end
 
   # b is a vector of ones
-  b = zeros(Float64, m) # observations
-  for i in 1:m
-    b[i] = 1.0
-  end
+  b = ones(Float64, m) # observations
 
   # trust-region radius is one
   radius = 1.0
@@ -108,7 +98,7 @@ function test_llst()
     # Initialize LLST
     llst_initialize(data, control, status)
     @reset control[].definite_linear_solver = galahad_linear_solver("potr")
-    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("potr")
+    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
     # @reset control[].print_level = Cint(1)
 
@@ -121,15 +111,15 @@ function test_llst()
       if d == 1
         st = 'C'
         llst_import(control, data, status, m, n,
-                    "coordinate", A_ne, A_row, A_col, Cint[])
+                    "coordinate", A_ne, A_row, A_col, C_NULL)
 
         if use_s == 0
           llst_solve_problem(data, status, m, n, radius,
-                             A_ne, A_val, b, x, 0, Cint[])
+                             A_ne, A_val, b, x, 0, C_NULL)
         else
           llst_import_scaling(control, data, status, n,
                               "coordinate", S_ne, S_row,
-                              S_col, Cint[])
+                              S_col, C_NULL)
 
           llst_solve_problem(data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
@@ -140,13 +130,13 @@ function test_llst()
       if d == 2
         st = 'R'
         llst_import(control, data, status, m, n,
-                    "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                    "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
         if use_s == 0
           llst_solve_problem(data, status, m, n, radius,
-                             A_ne, A_val, b, x, 0, Cint[])
+                             A_ne, A_val, b, x, 0, C_NULL)
         else
           llst_import_scaling(control, data, status, n,
-                              "sparse_by_rows", S_ne, Cint[],
+                              "sparse_by_rows", S_ne, C_NULL,
                               S_col, S_ptr)
 
           llst_solve_problem(data, status, m, n, radius,
@@ -158,16 +148,16 @@ function test_llst()
       if d == 3
         st = 'D'
         llst_import(control, data, status, m, n,
-                    "dense", A_dense_ne, Cint[], Cint[], Cint[])
+                    "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
 
         if use_s == 0
           llst_solve_problem(data, status, m, n, radius,
                              A_dense_ne, A_dense_val, b, x,
-                             0, Cint[])
+                             0, C_NULL)
         else
           llst_import_scaling(control, data, status, n,
                               "dense", S_dense_ne,
-                              Cint[], Cint[], Cint[])
+                              C_NULL, C_NULL, C_NULL)
 
           llst_solve_problem(data, status, m, n, radius,
                              A_dense_ne, A_dense_val, b, x,
@@ -179,13 +169,13 @@ function test_llst()
       if d == 4
         st = 'I'
         llst_import(control, data, status, m, n,
-                    "coordinate", A_ne, A_row, A_col, Cint[])
+                    "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
           llst_solve_problem(data, status, m, n, radius,
-                             A_ne, A_val, b, x, 0, Cint[])
+                             A_ne, A_val, b, x, 0, C_NULL)
         else
           llst_import_scaling(control, data, status, n,
-                              "diagonal", S_ne, Cint[], Cint[], Cint[])
+                              "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
 
           llst_solve_problem(data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
