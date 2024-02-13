@@ -9,7 +9,7 @@ using Accessors
 #function test_llst()
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{llst_control_type{Float64}}()
+  global control = Ref{llst_control_type{Float64}}()
   inform = Ref{llst_inform_type{Float64}}()
 
   # Set problem data
@@ -24,33 +24,33 @@ using Accessors
   A_val = zeros(Float64, A_ne)
 
   # store A in sparse formats
-  l = 1
+  global l = 1
   for i in 1:m
     A_ptr[i] = l
     A_row[l] = i
     A_col[l] = i
     A_val[l] = 1.0
-    l = l + 1
+    global l = l + 1
     A_row[l] = i
     A_col[l] = m + i
     A_val[l] = i
-    l = l + 1
+    global l = l + 1
     A_row[l] = i
     A_col[l] = n
     A_val[l] = 1.0
-    l = l + 1
+    global l = l + 1
   end
   A_ptr[m+1] = l
 
   # store A in dense format
   A_dense_ne = m * n
   A_dense_val = zeros(Float64, A_dense_ne)
-  l = 0
+  global l = 0
   for i in 1:m
     A_dense_val[l + i] = 1.0
     A_dense_val[l + m + i] = i
     A_dense_val[l + n] = 1.0
-    l = l + n
+    global l = l + n
   end
 
   # S = diag(1:n)**2
@@ -72,10 +72,10 @@ using Accessors
   # store S in dense format
   S_dense_ne = div(n * (n + 1), 2)
   S_dense_val = zeros(Float64, S_dense_ne)
-  l = 0
+  global l = 0
   for i in 1:n
     S_dense_val[l + i] = i * i
-    l = l + i
+    global l = l + i
   end
 
   # b is a vector of ones
@@ -86,7 +86,7 @@ using Accessors
 
   # Set output storage
   x = zeros(Float64, n) # solution
-  st = ' '
+  global st = ' '
   status = Ref{Cint}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
@@ -97,9 +97,9 @@ using Accessors
 
     # Initialize LLST
     llst_initialize(data, control, status)
-    @reset control[].definite_linear_solver = galahad_linear_solver("potr")
-    @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
-    @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
+    global @reset control[].definite_linear_solver = galahad_linear_solver("potr")
+    global @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
+    global @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
     # @reset control[].print_level = Cint(1)
 
     # Set user-defined control options
@@ -109,7 +109,7 @@ using Accessors
     for use_s in 0:1
       # sparse co-ordinate storage
       if d == 1
-        st = 'C'
+        global st = 'C'
         llst_import(control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
 
@@ -128,7 +128,7 @@ using Accessors
 
       # sparse by rows
       if d == 2
-        st = 'R'
+        global st = 'R'
         llst_import(control, data, status, m, n,
                     "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
         if use_s == 0
@@ -146,7 +146,7 @@ using Accessors
 
       # dense
       if d == 3
-        st = 'D'
+        global st = 'D'
         llst_import(control, data, status, m, n,
                     "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
 
@@ -167,7 +167,7 @@ using Accessors
 
       # diagonal
       if d == 4
-        st = 'I'
+        global st = 'I'
         llst_import(control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
