@@ -49,6 +49,10 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
 
+    for type in ("llst_history_type", "llsr_history_type", "rqs_history_type", "trs_history_type")
+      text = replace(text, "$type}" => "$type{T}}")
+    end
+
     blocks = split(text, "end\n")
     text = ""
     for (index, code) in enumerate(blocks)

@@ -59,7 +59,7 @@ struct llst_inform_type{T}
   multiplier::T
   bad_alloc::NTuple{81,Cchar}
   time::llst_time_type{T}
-  history::NTuple{100,llst_history_type}
+  history::NTuple{100,llst_history_type{T}}
   sbls_inform::sbls_inform_type{T}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}

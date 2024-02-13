@@ -73,7 +73,7 @@ struct trs_inform_type{T}
   hard_case::Bool
   bad_alloc::NTuple{81,Cchar}
   time::trs_time_type{T}
-  history::NTuple{100,trs_history_type}
+  history::NTuple{100,trs_history_type{T}}
   sls_inform::sls_inform_type{T}
   ir_inform::ir_inform_type{T}
 end
