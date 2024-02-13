@@ -54,8 +54,8 @@ function test_presolve()
     if d == 1
       st = 'C'
       presolve_import_problem(control, data, status, n, m,
-                              "coordinate", H_ne, H_row, H_col, Cint[], H_val, g, f,
-                              "coordinate", A_ne, A_row, A_col, Cint[], A_val,
+                              "coordinate", H_ne, H_row, H_col, C_NULL, H_val, g, f,
+                              "coordinate", A_ne, A_row, A_col, C_NULL, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end
@@ -64,8 +64,8 @@ function test_presolve()
     if d == 2
       st = 'R'
       presolve_import_problem(control, data, status, n, m,
-                              "sparse_by_rows", H_ne, Cint[], H_col, H_ptr, H_val, g, f,
-                              "sparse_by_rows", A_ne, Cint[], A_col, A_ptr, A_val,
+                              "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr, H_val, g, f,
+                              "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end
@@ -81,8 +81,8 @@ function test_presolve()
                         0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
                         0.0, 1.0, 1.0, 1.0]
       presolve_import_problem(control, data, status, n, m,
-                              "dense", H_dense_ne, Cint[], Cint[], Cint[], H_dense, g,
-                              f, "dense", A_dense_ne, Cint[], Cint[], Cint[], A_dense,
+                              "dense", H_dense_ne, C_NULL, C_NULL, C_NULL, H_dense, g,
+                              f, "dense", A_dense_ne, C_NULL, C_NULL, C_NULL, A_dense,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end
@@ -91,8 +91,8 @@ function test_presolve()
     if d == 4
       st = 'L'
       presolve_import_problem(control, data, status, n, m,
-                              "diagonal", n, Cint[], Cint[], Cint[], H_val, g, f,
-                              "sparse_by_rows", A_ne, Cint[], A_col, A_ptr, A_val,
+                              "diagonal", n, C_NULL, C_NULL, C_NULL, H_val, g, f,
+                              "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end
@@ -101,8 +101,8 @@ function test_presolve()
     if d == 5
       st = 'S'
       presolve_import_problem(control, data, status, n, m,
-                              "scaled_identity", 1, Cint[], Cint[], Cint[], H_val, g, f,
-                              "sparse_by_rows", A_ne, Cint[], A_col, A_ptr, A_val,
+                              "scaled_identity", 1, C_NULL, C_NULL, C_NULL, H_val, g, f,
+                              "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end
@@ -111,8 +111,8 @@ function test_presolve()
     if d == 6
       st = 'I'
       presolve_import_problem(control, data, status, n, m,
-                              "identity", 0, Cint[], Cint[], Cint[], Cint[], g, f,
-                              "sparse_by_rows", A_ne, Cint[], A_col, A_ptr, A_val,
+                              "identity", 0, C_NULL, C_NULL, C_NULL, C_NULL, g, f,
+                              "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end
@@ -121,8 +121,8 @@ function test_presolve()
     if d == 7
       st = 'Z'
       presolve_import_problem(control, data, status, n, m,
-                              "zero", 0, Cint[], Cint[], Cint[], Cint[], g, f,
-                              "sparse_by_rows", A_ne, Cint[], A_col, A_ptr, A_val,
+                              "zero", 0, C_NULL, C_NULL, C_NULL, C_NULL, g, f,
+                              "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
                               n_trans, m_trans, H_ne_trans, A_ne_trans)
     end

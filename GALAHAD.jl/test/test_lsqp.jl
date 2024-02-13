@@ -55,7 +55,7 @@ function test_lsqp()
     if d == 1
       st = 'C'
       lsqp_import(control, data, status, n, m,
-                  "coordinate", A_ne, A_row, A_col, Cint[])
+                  "coordinate", A_ne, A_row, A_col, C_NULL)
 
       lsqp_solve_qp(data, status, n, m, w, x_0, g, f,
                     A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -66,7 +66,7 @@ function test_lsqp()
     if d == 2
       st = 'R'
       lsqp_import(control, data, status, n, m,
-                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
       lsqp_solve_qp(data, status, n, m, w, x_0, g, f,
                     A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -80,7 +80,7 @@ function test_lsqp()
       A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
       lsqp_import(control, data, status, n, m,
-                  "dense", A_dense_ne, Cint[], Cint[], Cint[])
+                  "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
 
       lsqp_solve_qp(data, status, n, m, w, x_0, g, f,
                     A_dense_ne, A_dense, c_l, c_u, x_l, x_u,

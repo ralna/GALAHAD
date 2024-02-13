@@ -47,7 +47,7 @@ function test_dps()
       st = 'C'
       # import the control parameters and structural data
       dps_import(control, data, status, n,
-                 "coordinate", H_ne, H_row, H_col, Cint[])
+                 "coordinate", H_ne, H_row, H_col, C_NULL)
 
       # solve the problem
       dps_solve_tr_problem(data, status, n, H_ne, H_val,
@@ -59,7 +59,7 @@ function test_dps()
       st = 'R'
       # import the control parameters and structural data
       dps_import(control, data, status, n,
-                 "sparse_by_rows", H_ne, Cint[], H_col, H_ptr)
+                 "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
       dps_solve_tr_problem(data, status, n, H_ne, H_val,
                            c, f, radius, x)
@@ -70,7 +70,7 @@ function test_dps()
       st = 'D'
       # import the control parameters and structural data
       dps_import(control, data, status, n,
-                 "dense", H_ne, Cint[], Cint[], Cint[])
+                 "dense", H_ne, C_NULL, C_NULL, C_NULL)
 
       dps_solve_tr_problem(data, status, n, H_dense_ne, H_dense,
                            c, f, radius, x)

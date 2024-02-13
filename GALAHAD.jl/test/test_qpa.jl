@@ -60,8 +60,8 @@ function test_qpa()
     if d == 1
       st = 'C'
       qpa_import(control, data, status, n, m,
-                 "coordinate", H_ne, H_row, H_col, Cint[],
-                 "coordinate", A_ne, A_row, A_col, Cint[])
+                 "coordinate", H_ne, H_row, H_col, C_NULL,
+                 "coordinate", A_ne, A_row, A_col, C_NULL)
 
       qpa_solve_qp(data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -72,8 +72,8 @@ function test_qpa()
     if d == 2
       st = 'R'
       qpa_import(control, data, status, n, m,
-                 "sparse_by_rows", H_ne, Cint[], H_col, H_ptr,
-                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                 "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr,
+                 "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
       qpa_solve_qp(data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -89,8 +89,8 @@ function test_qpa()
       A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
       qpa_import(control, data, status, n, m,
-                 "dense", H_ne, Cint[], Cint[], Cint[],
-                 "dense", A_ne, Cint[], Cint[], Cint[])
+                 "dense", H_ne, C_NULL, C_NULL, C_NULL,
+                 "dense", A_ne, C_NULL, C_NULL, C_NULL)
 
       qpa_solve_qp(data, status, n, m, H_dense_ne, H_dense, g, f,
                    A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
@@ -101,8 +101,8 @@ function test_qpa()
     if d == 4
       st = 'L'
       qpa_import(control, data, status, n, m,
-                 "diagonal", H_ne, Cint[], Cint[], Cint[],
-                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                 "diagonal", H_ne, C_NULL, C_NULL, C_NULL,
+                 "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
       qpa_solve_qp(data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -113,8 +113,8 @@ function test_qpa()
     if d == 5
       st = 'S'
       qpa_import(control, data, status, n, m,
-                 "scaled_identity", H_ne, Cint[], Cint[], Cint[],
-                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                 "scaled_identity", H_ne, C_NULL, C_NULL, C_NULL,
+                 "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
       qpa_solve_qp(data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -125,8 +125,8 @@ function test_qpa()
     if d == 6
       st = 'I'
       qpa_import(control, data, status, n, m,
-                 "identity", H_ne, Cint[], Cint[], Cint[],
-                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                 "identity", H_ne, C_NULL, C_NULL, C_NULL,
+                 "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
       qpa_solve_qp(data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -137,8 +137,8 @@ function test_qpa()
     if d == 7
       st = 'Z'
       qpa_import(control, data, status, n, m,
-                 "zero", H_ne, Cint[], Cint[], Cint[],
-                 "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                 "zero", H_ne, C_NULL, C_NULL, C_NULL,
+                 "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
       qpa_solve_qp(data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -182,8 +182,8 @@ function test_qpa()
 
   # solve the l_1qp problem
   qpa_import(control, data, status, n, m,
-             "coordinate", H_ne, H_row, H_col, Cint[],
-             "coordinate", A_ne, A_row, A_col, Cint[])
+             "coordinate", H_ne, H_row, H_col, C_NULL,
+             "coordinate", A_ne, A_row, A_col, C_NULL)
 
   qpa_solve_l1qp(data, status, n, m, H_ne, H_val, g, f, rho_g, rho_b,
                  A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
@@ -209,8 +209,8 @@ function test_qpa()
 
   # solve the bound constrained l_1qp problem
   qpa_import(control, data, status, n, m,
-             "coordinate", H_ne, H_row, H_col, Cint[],
-             "coordinate", A_ne, A_row, A_col, Cint[])
+             "coordinate", H_ne, H_row, H_col, C_NULL,
+             "coordinate", A_ne, A_row, A_col, C_NULL)
 
   qpa_solve_bcl1qp(data, status, n, m, H_ne, H_val, g, f, rho_g,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,

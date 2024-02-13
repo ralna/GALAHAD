@@ -205,7 +205,7 @@ function test_arc()
       terminated = false
       while !terminated # reverse-communication loop
         arc_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f[], g, div(n*(n + 1), 2), H_dense, u, v)
+                                   n, x, f[], g, div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -215,7 +215,7 @@ function test_arc()
         elseif status[] == 3 # evaluate g
           eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status[] = hess_dense(n, div(n*(n + 1), 2), x, H_dense, userdata)
+          eval_status[] = hess_dense(n, div(n * (n + 1), 2), x, H_dense, userdata)
         elseif status[] == 6 # evaluate the product with P
           eval_status[] = prec(n, x, u, v, userdata)
         else

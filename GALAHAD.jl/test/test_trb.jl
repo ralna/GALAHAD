@@ -29,7 +29,8 @@ function test_trb()
   end
 
   # Hessian of the objective
-  function hess(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+  function hess(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64},
+                userdata::userdata_type)
     p = userdata.p
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 2.0
@@ -40,7 +41,8 @@ function test_trb()
   end
 
   # Dense Hessian
-  function hess_dense(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+  function hess_dense(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64},
+                      userdata::userdata_type)
     p = userdata.p
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 0.0
@@ -52,7 +54,8 @@ function test_trb()
   end
 
   # Hessian-vector product
-  function hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
+                    got_h::Bool, userdata::userdata_type)
     p = userdata.p
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
@@ -61,7 +64,9 @@ function test_trb()
   end
 
   # Sparse Hessian-vector product
-  function shessprod(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int}, v::Vector{Float64}, nnz_u::Ref{Int}, index_nz_u::Vector{Int}, u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function shessprod(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int},
+                     v::Vector{Float64}, nnz_u::Ref{Int}, index_nz_u::Vector{Int},
+                     u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
     p = zeros(Float64, 3)
     used = falses(3)
     for i in 1:nnz_v
@@ -98,7 +103,8 @@ function test_trb()
   end
 
   # Apply preconditioner
-  function prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64}, userdata::userdata_type)
+  function prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
+                userdata::userdata_type)
     p = userdata.p
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
@@ -114,7 +120,8 @@ function test_trb()
   end
 
   # Gradient of the objective
-  function grad_diag(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+  function grad_diag(n::Int, var::Vector{Float64}, g::Vector{Float64},
+                     userdata::userdata_type)
     p = userdata.p
     g[1] = -sin(x[1])
     g[2] = 2.0 * x[2]
@@ -123,7 +130,8 @@ function test_trb()
   end
 
   # Hessian of the objective
-  function hess_diag(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+  function hess_diag(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64},
+                     userdata::userdata_type)
     p = userdata.p
     hval[1] = -cos(x[1])
     hval[3] = 2.0
@@ -132,16 +140,18 @@ function test_trb()
   end
 
   # Hessian-vector product
-  function hessprod_diag(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function hessprod_diag(n::Int, var::Vector{Float64}, u::Vector{Float64},
+                         var::Vector{Float64}, got_h::Bool, userdata::userdata_type)
     p = userdata.p
-    u[1] = u[1] + - cos(x[1]) * v[1]
+    u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
     u[3] = u[3] + 2.0 * v[3]
     return 0
   end
 
   # Produit matrice-vecteur Hesseien creux
-  function shessprod_diag(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int}, u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function shessprod_diag(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int},
+                          u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
     p = zeros(3)
     used = falses(3)
     for i in 1:nnz_v
@@ -255,7 +265,8 @@ function test_trb()
     # sparse by rows
     if d == 2
       st = 'R'
-      trb_import(control, data, status, n, x_l, x_u, "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
+      trb_import(control, data, status, n, x_l, x_u, "sparse_by_rows", ne, C_NULL, H_col,
+                 H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
@@ -286,7 +297,8 @@ function test_trb()
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, div(n*(n + 1), 2), H_dense, u, v)
+        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g,
+                                   div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -339,7 +351,8 @@ function test_trb()
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_without_mat(data, status, eval_status, n, x, f[], g, u, v, index_nz_v, nnz_v, index_nz_u, nnz_u)
+        trb_solve_reverse_without_mat(data, status, eval_status, n, x, f[], g, u, v,
+                                      index_nz_v, nnz_v, index_nz_u, nnz_u)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit

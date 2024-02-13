@@ -63,8 +63,8 @@ function test_clls()
       A_val = Float64[2.0, 1.0, 1.0, 1.0]  # values
 
       clls_import(control, data, status, n, o, m,
-                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, Cint[],
-                  "coordinate", A_ne, A_row, A_col, 0, Cint[])
+                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL,
+                  "coordinate", A_ne, A_row, A_col, 0, C_NULL)
 
       clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b,
                       sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
@@ -86,9 +86,9 @@ function test_clls()
       A_val = Float64[2.0, 1.0, 1.0, 1.0]  # values
 
       clls_import(control, data, status, n, o, m,
-                  "sparse_by_rows", Ao_ne, Cint[], Ao_col,
+                  "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                   Ao_ptr_ne, Ao_ptr,
-                  "sparse_by_rows", A_ne, Cint[], A_col,
+                  "sparse_by_rows", A_ne, C_NULL, A_col,
                   A_ptr_ne, A_ptr)
 
       clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b,
@@ -111,9 +111,9 @@ function test_clls()
       A_val = Float64[2.0, 1.0, 1.0, 1.0]  # values
 
       clls_import(control, data, status, n, o, m,
-                  "sparse_by_columns", Ao_ne, Ao_row, Cint[],
+                  "sparse_by_columns", Ao_ne, Ao_row, C_NULL,
                   Ao_ptr_ne, Ao_ptr,
-                  "sparse_by_columns", A_ne, A_row, Cint[],
+                  "sparse_by_columns", A_ne, A_row, C_NULL,
                   A_ptr_ne, A_ptr)
 
       clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b,
@@ -130,8 +130,8 @@ function test_clls()
       A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
       clls_import(control, data, status, n, o, m,
-                  "dense", Ao_ne, Cint[], Cint[], 0, Cint[],
-                  "dense", A_ne, Cint[], Cint[], 0, Cint[])
+                  "dense", Ao_ne, C_NULL, C_NULL, 0, C_NULL,
+                  "dense", A_ne, C_NULL, C_NULL, 0, C_NULL)
 
       clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_dense, b,
                       sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
@@ -147,8 +147,8 @@ function test_clls()
       A_dense = Float64[2.0, 0.0, 1.0, 1.0, 0.0, 1.0]
 
       clls_import(control, data, status, n, o, m,
-                  "dense_by_columns", Ao_ne, Cint[], Cint[], 0, Cint[],
-                  "dense_by_columns", A_ne, Cint[], Cint[], 0, Cint[])
+                  "dense_by_columns", Ao_ne, C_NULL, C_NULL, 0, C_NULL,
+                  "dense_by_columns", A_ne, C_NULL, C_NULL, 0, C_NULL)
 
       clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_dense, b,
                       sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,

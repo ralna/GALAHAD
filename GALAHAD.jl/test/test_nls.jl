@@ -13,7 +13,8 @@ end
 
 function test_nls()
   # compute the residuals
-  function res(n::Int, m::Int, x::Vector{Float64}, c::Vector{Float64}, userdata::userdata_type)
+  function res(n::Int, m::Int, x::Vector{Float64}, c::Vector{Float64},
+               userdata::userdata_type)
     c[1] = x[1]^2 + userdata.p
     c[2] = x[1] + x[2]^2
     c[3] = x[1] - x[2]
@@ -21,7 +22,8 @@ function test_nls()
   end
 
   # compute the Jacobian
-  function jac(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64}, userdata::userdata_type)
+  function jac(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64},
+               userdata::userdata_type)
     jval[1] = 2.0 * x[1]
     jval[2] = 1.0
     jval[3] = 2.0 * x[2]
@@ -31,14 +33,16 @@ function test_nls()
   end
 
   # compute the Hessian
-  function hess(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+  function hess(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64},
+                hval::Vector{Float64}, userdata::userdata_type)
     hval[1] = 2.0 * y[1]
     hval[2] = 2.0 * y[2]
     return 0
   end
 
   # compute Jacobian-vector products
-  function jacprod(n::Int, m::Int, x::Vector{Float64}, trans::Bool, u::Vector{Float64}, v::Vector{Float64}, got_j::Bool, userdata::userdata_type)
+  function jacprod(n::Int, m::Int, x::Vector{Float64}, trans::Bool, u::Vector{Float64},
+                   v::Vector{Float64}, got_j::Bool, userdata::userdata_type)
     if trans
       u[1] = u[1] + 2.0 * x[1] * v[1] + v[2] + v[3]
       u[2] = u[2] + 2.0 * x[2] * v[2] - v[3]
@@ -51,28 +55,33 @@ function test_nls()
   end
 
   # compute Hessian-vector products
-  function hessprod(n::Int, m::Int, x::Vector{Float64}, y::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function hessprod(n::Int, m::Int, x::Vector{Float64}, y::Vector{Float64},
+                    u::Vector{Float64}, v::Vector{Float64}, got_h::Bool,
+                    userdata::userdata_type)
     u[1] = u[1] + 2.0 * y[1] * v[1]
     u[2] = u[2] + 2.0 * y[2] * v[2]
     return 0
   end
 
   # compute residual-Hessians-vector products
-  function rhessprods(n::Int, m::Int, pne::Int, x::Vector{Float64}, v::Vector{Float64}, pval::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function rhessprods(n::Int, m::Int, pne::Int, x::Vector{Float64}, v::Vector{Float64},
+                      pval::Vector{Float64}, got_h::Bool, userdata::userdata_type)
     pval[1] = 2.0 * v[1]
     pval[2] = 2.0 * v[2]
     return 0
   end
 
   # # scale v
-  function scale(n::Int, m::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, userdata::userdata_type)
+  function scale(n::Int, m::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                 userdata::userdata_type)
     u[1] = v[1]
     u[2] = v[2]
     return 0
   end
 
   # compute the dense Jacobian
-  function jac_dense(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64}, userdata::userdata_type)
+  function jac_dense(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64},
+                     userdata::userdata_type)
     jval[1] = 2.0 * x[1]
     jval[2] = 0.0
     jval[3] = 1.0
@@ -83,7 +92,8 @@ function test_nls()
   end
 
   # compute the dense Hessian
-  function hess_dense(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+  function hess_dense(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64},
+                      hval::Vector{Float64}, userdata::userdata_type)
     hval[1] = 2.0 * y[1]
     hval[2] = 0.0
     hval[3] = 2.0 * y[2]
@@ -91,7 +101,9 @@ function test_nls()
   end
 
   # compute dense residual-Hessians-vector products
-  function rhessprods_dense(n::Int, m::Int, pne::Int, x::Vector{Float64}, v::Vector{Float64}, pval::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+  function rhessprods_dense(n::Int, m::Int, pne::Int, x::Vector{Float64},
+                            v::Vector{Float64}, pval::Vector{Float64}, got_h::Bool,
+                            userdata::userdata_type)
     pval[1] = 2.0 * v[1]
     pval[2] = 0.0
     pval[3] = 0.0

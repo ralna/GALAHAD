@@ -206,7 +206,7 @@ function test_bqp()
       terminated = true
     elseif status[] == 2 # evaluate Hv
       prod[1] = 2.0 * v[1] + v[2]
-      for i in 2:n-1
+      for i in 2:(n - 1)
         prod[i] = 2.0 * v[i] + v[i - 1] + v[i + 1]
       end
       prod[n] = 2.0 * v[n] + v[n - 1]

@@ -28,7 +28,8 @@ function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata
 end
 
 # Hessian of the objective
-function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+              userdata::userdata_type)
   hval[1] = 2.0 - cos(x[1])
   hval[2] = 2.0
   hval[3] = 2.0
@@ -38,7 +39,8 @@ function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, userda
 end
 
 # Dense Hessian
-function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+                    userdata::userdata_type)
   hval[1] = 2.0 - cos(x[1])
   hval[2] = 0.0
   hval[3] = 2.0
@@ -49,7 +51,8 @@ function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, 
 end
 
 # Hessian-vector product
-function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                  got_h::Bool, userdata::userdata_type)
   u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
   u[2] = u[2] + 2.0 * (v[2] + v[3])
   u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
@@ -57,7 +60,8 @@ function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Floa
 end
 
 # Apply preconditioner
-function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, userdata::userdata_type)
+function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+              userdata::userdata_type)
   u[1] = 0.5 * v[1]
   u[2] = 0.5 * v[2]
   u[3] = 0.25 * v[3]
@@ -81,7 +85,8 @@ function grad_diag(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::use
 end
 
 # Hessian of the objective
-function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+                   userdata::userdata_type)
   hval[1] = -cos(x[1])
   hval[2] = 2.0
   hval[3] = 2.0
@@ -89,7 +94,8 @@ function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, u
 end
 
 # Hessian-vector product
-function hessprod_diag(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+function hessprod_diag(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                       got_h::Bool, userdata::userdata_type)
   u[1] = u[1] + -cos(x[1]) * v[1]
   u[2] = u[2] + 2.0 * v[2]
   u[3] = u[3] + 2.0 * v[3]
@@ -205,7 +211,8 @@ function test_tru()
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, div(n*(n + 1), 2), H_dense, u, v)
+        tru_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g,
+                                   div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -215,7 +222,7 @@ function test_tru()
         elseif status[] == 3 # evaluate g
           eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status[] = hess_dense(n, div(n*(n + 1), 2), x, H_dense, userdata)
+          eval_status[] = hess_dense(n, div(n * (n + 1), 2), x, H_dense, userdata)
         elseif status[] == 6 # evaluate the product with P
           eval_status[] = prec(n, x, u, v, userdata)
         else

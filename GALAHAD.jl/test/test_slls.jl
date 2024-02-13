@@ -32,7 +32,8 @@ function test_slls()
   pointer_userdata = pointer_from_objref(userdata)
 
   # Pointer to call prec
-  pointer_prec = @cfunction(prec, Int, (Int, Vector{Float64}, Vector{Float64}, userdata_type))
+  pointer_prec = @cfunction(prec, Int,
+                            (Int, Vector{Float64}, Vector{Float64}, userdata_type))
 
   # Set problem data
   n = 10 # dimension
@@ -195,7 +196,8 @@ function test_slls()
                   "dense_by_columns", Ao_dense_ne,
                   C_NULL, C_NULL, 0, C_NULL)
 
-      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense, b,
+      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense,
+                         b,
                          x, z, r, g, x_stat, pointer_prec)
     end
 

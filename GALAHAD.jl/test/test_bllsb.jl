@@ -54,7 +54,7 @@ function test_bllsb()
       Ao_val = Float64[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
       bllsb_import(control, data, status, n, o,
-                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, Cint[])
+                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
 
       bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_val, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
@@ -71,7 +71,7 @@ function test_bllsb()
       Ao_val = Float64[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
       bllsb_import(control, data, status, n, o,
-                   "sparse_by_rows", Ao_ne, Cint[], Ao_col,
+                   "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                    Ao_ptr_ne, Ao_ptr)
 
       bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_val, b,
@@ -88,7 +88,7 @@ function test_bllsb()
       Ao_val = Float64[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
       bllsb_import(control, data, status, n, o,
-                   "sparse_by_columns", Ao_ne, Ao_row, Cint[],
+                   "sparse_by_columns", Ao_ne, Ao_row, C_NULL,
                    Ao_ptr_ne, Ao_ptr)
 
       bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_val, b,
@@ -101,7 +101,7 @@ function test_bllsb()
       Ao_dense = Float64[1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0]
 
       bllsb_import(control, data, status, n, o,
-                   "dense", Ao_ne, Cint[], Cint[], 0, Cint[])
+                   "dense", Ao_ne, C_NULL, C_NULL, 0, C_NULL)
 
       bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_dense, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
@@ -113,7 +113,7 @@ function test_bllsb()
       Ao_dense = Float64[1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0]
 
       bllsb_import(control, data, status, n, o,
-                   "dense_by_columns", Ao_ne, Cint[], Cint[], 0, Cint[])
+                   "dense_by_columns", Ao_ne, C_NULL, C_NULL, 0, C_NULL)
 
       bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_dense, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)

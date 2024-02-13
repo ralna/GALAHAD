@@ -312,7 +312,7 @@ function test_dgo()
     if d == 1
       st = 'C'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "coordinate", ne, H_row, H_col, Cint[])
+                 "coordinate", ne, H_row, H_col, C_NULL)
 
       dgo_solve_with_mat(data, userdata, status, n, x, g,
                          ne, fun, grad, hess, hessprod, prec)
@@ -322,7 +322,7 @@ function test_dgo()
     if d == 2
       st = 'R'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "sparse_by_rows", ne, Cint[], H_col, H_ptr)
+                 "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
       dgo_solve_with_mat(data, userdata, status, n, x, g,
                          ne, fun, grad, hess, hessprod, prec)
@@ -332,7 +332,7 @@ function test_dgo()
     if d == 3
       st = 'D'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "dense", ne, Cint[], Cint[], Cint[])
+                 "dense", ne, C_NULL, C_NULL, C_NULL)
 
       dgo_solve_with_mat(data, userdata, status, n, x, g,
                          ne, fun, grad, hess_dense, hessprod, prec)
@@ -342,7 +342,7 @@ function test_dgo()
     if d == 4
       st = 'I'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "diagonal", ne, Cint[], Cint[], Cint[])
+                 "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       dgo_solve_with_mat(data, userdata, status, n, x, g,
                          ne, fun_diag, grad_diag, hess_diag,
@@ -353,7 +353,7 @@ function test_dgo()
     if d == 5
       st = 'P'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "absent", ne, Cint[], Cint[], Cint[])
+                 "absent", ne, C_NULL, C_NULL, C_NULL)
 
       dgo_solve_without_mat(data, userdata, status, n, x, g,
                             fun, grad, hessprod, shessprod, prec)
@@ -416,7 +416,7 @@ function test_dgo()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      dgo_import(control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, Cint[])
+      dgo_import(control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
@@ -458,7 +458,7 @@ function test_dgo()
     if d == 2
       st = 'R'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "sparse_by_rows", ne, Cint[], H_col, H_ptr)
+                 "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
@@ -501,7 +501,7 @@ function test_dgo()
     if d == 3
       st = 'D'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "dense", ne, Cint[], Cint[], Cint[])
+                 "dense", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
@@ -546,7 +546,7 @@ function test_dgo()
     if d == 4
       st = 'I'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "diagonal", ne, Cint[], Cint[], Cint[])
+                 "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
@@ -593,7 +593,7 @@ function test_dgo()
     if d == 5
       st = 'P'
       dgo_import(control, data, status, n, x_l, x_u,
-                 "absent", ne, Cint[], Cint[], Cint[])
+                 "absent", ne, C_NULL, C_NULL, C_NULL)
 
       nnz_u = 0
       terminated = false

@@ -45,7 +45,7 @@ function test_psls()
       st = 'C'
 
       psls_import(control, data, status, n,
-                  "coordinate", ne, row, col, Cint[])
+                  "coordinate", ne, row, col, C_NULL)
 
       psls_form_preconditioner(data, status, ne, val)
     end
@@ -55,7 +55,7 @@ function test_psls()
       st = 'R'
 
       psls_import(control, data, status, n,
-                  "sparse_by_rows", ne, Cint[], col, ptr)
+                  "sparse_by_rows", ne, C_NULL, col, ptr)
 
       psls_form_preconditioner(data, status, ne, val)
     end
@@ -65,7 +65,7 @@ function test_psls()
       st = 'D'
 
       psls_import(control, data, status, n,
-                  "dense", ne, Cint[], Cint[], Cint[])
+                  "dense", ne, C_NULL, C_NULL, C_NULL)
 
       psls_form_preconditioner(data, status, dense_ne, dense)
     end

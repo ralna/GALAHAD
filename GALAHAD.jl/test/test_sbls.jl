@@ -62,101 +62,101 @@ function test_sbls()
     if d == 1
       st = 'C'
       sbls_import(control, data, status, n, m,
-                  "coordinate", H_ne, H_row, H_col, Cint[],
-                  "coordinate", A_ne, A_row, A_col, Cint[],
-                  "coordinate", C_ne, C_row, C_col, Cint[])
+                  "coordinate", H_ne, H_row, H_col, C_NULL,
+                  "coordinate", A_ne, A_row, A_col, C_NULL,
+                  "coordinate", C_ne, C_row, C_col, C_NULL)
 
       sbls_factorize_matrix(data, status, n,
                             H_ne, H_val,
                             A_ne, A_val,
-                            C_ne, C_val, Cint[])
+                            C_ne, C_val, C_NULL)
     end
 
     # sparse by rows
     if d == 2
       st = 'R'
       sbls_import(control, data, status, n, m,
-                  "sparse_by_rows", H_ne, Cint[], H_col, H_ptr,
-                  "sparse_by_rows", A_ne, Cint[], A_col, A_ptr,
-                  "sparse_by_rows", C_ne, Cint[], C_col, C_ptr)
+                  "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr,
+                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr,
+                  "sparse_by_rows", C_ne, C_NULL, C_col, C_ptr)
 
       sbls_factorize_matrix(data, status, n,
                             H_ne, H_val,
                             A_ne, A_val,
-                            C_ne, C_val, Cint[])
+                            C_ne, C_val, C_NULL)
     end
 
     # dense
     if d == 3
       st = 'D'
       sbls_import(control, data, status, n, m,
-                  "dense", H_ne, Cint[], Cint[], Cint[],
-                  "dense", A_ne, Cint[], Cint[], Cint[],
-                  "dense", C_ne, Cint[], Cint[], Cint[])
+                  "dense", H_ne, C_NULL, C_NULL, C_NULL,
+                  "dense", A_ne, C_NULL, C_NULL, C_NULL,
+                  "dense", C_ne, C_NULL, C_NULL, C_NULL)
 
       sbls_factorize_matrix(data, status, n,
                             H_dense_ne, H_dense,
                             A_dense_ne, A_dense,
                             C_dense_ne, C_dense,
-                            Cint[])
+                            C_NULL)
     end
 
     # diagonal
     if d == 4
       st = 'L'
       sbls_import(control, data, status, n, m,
-                  "diagonal", H_ne, Cint[], Cint[], Cint[],
-                  "dense", A_ne, Cint[], Cint[], Cint[],
-                  "diagonal", C_ne, Cint[], Cint[], Cint[])
+                  "diagonal", H_ne, C_NULL, C_NULL, C_NULL,
+                  "dense", A_ne, C_NULL, C_NULL, C_NULL,
+                  "diagonal", C_ne, C_NULL, C_NULL, C_NULL)
 
       sbls_factorize_matrix(data, status, n,
                             n, H_diag,
                             A_dense_ne, A_dense,
                             m, C_diag,
-                            Cint[])
+                            C_NULL)
     end
 
     # scaled identity
     if d == 5
       st = 'S'
       sbls_import(control, data, status, n, m,
-                  "scaled_identity", H_ne, Cint[], Cint[], Cint[],
-                  "dense", A_ne, Cint[], Cint[], Cint[],
-                  "scaled_identity", C_ne, Cint[], Cint[], Cint[])
+                  "scaled_identity", H_ne, C_NULL, C_NULL, C_NULL,
+                  "dense", A_ne, C_NULL, C_NULL, C_NULL,
+                  "scaled_identity", C_ne, C_NULL, C_NULL, C_NULL)
 
       sbls_factorize_matrix(data, status, n,
                             1, H_scid,
                             A_dense_ne, A_dense,
                             1, C_scid,
-                            Cint[])
+                            C_NULL)
     end
 
     # identity
     if d == 6
       st = 'I'
       sbls_import(control, data, status, n, m,
-                  "identity", H_ne, Cint[], Cint[], Cint[],
-                  "dense", A_ne, Cint[], Cint[], Cint[],
-                  "identity", C_ne, Cint[], Cint[], Cint[])
+                  "identity", H_ne, C_NULL, C_NULL, C_NULL,
+                  "dense", A_ne, C_NULL, C_NULL, C_NULL,
+                  "identity", C_ne, C_NULL, C_NULL, C_NULL)
 
       sbls_factorize_matrix(data, status, n,
                             0, H_val,
                             A_dense_ne, A_dense,
-                            0, C_val, Cint[])
+                            0, C_val, C_NULL)
     end
 
     # zero
     if d == 7
       st = 'Z'
       sbls_import(control, data, status, n, m,
-                  "identity", H_ne, Cint[], Cint[], Cint[],
-                  "dense", A_ne, Cint[], Cint[], Cint[],
-                  "zero", C_ne, Cint[], Cint[], Cint[])
+                  "identity", H_ne, C_NULL, C_NULL, C_NULL,
+                  "dense", A_ne, C_NULL, C_NULL, C_NULL,
+                  "zero", C_ne, C_NULL, C_NULL, C_NULL)
 
       sbls_factorize_matrix(data, status, n,
                             0, H_val,
                             A_dense_ne, A_dense,
-                            0, Cint[], Cint[])
+                            0, C_NULL, C_NULL)
     end
 
     # Set right-hand side (a, b)

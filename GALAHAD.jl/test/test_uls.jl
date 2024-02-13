@@ -48,21 +48,21 @@ function test_uls()
     if d == 1
       @printf(" coordinate ")
       uls_factorize_matrix(control, data, status, m, n,
-                           "coordinate", ne, val, row, col, Cint[])
+                           "coordinate", ne, val, row, col, C_NULL)
     end
 
     # sparse by rows
     if d == 2
       @printf(" sparse by rows ")
       uls_factorize_matrix(control, data, status, m, n,
-                           "sparse_by_rows", ne, val, Cint[], col, ptr)
+                           "sparse_by_rows", ne, val, C_NULL, col, ptr)
     end
 
     # dense
     if d == 3
       @printf(" dense  ")
       uls_factorize_matrix(control, data, status, m, n,
-                           "dense", dense_ne, dense, Cint[], Cint[], Cint[])
+                           "dense", dense_ne, dense, C_NULL, C_NULL, C_NULL)
     end
 
     # Set right-hand side and solve the system A x = b

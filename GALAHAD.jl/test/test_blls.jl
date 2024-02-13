@@ -31,7 +31,8 @@ function test_blls()
   pointer_userdata = pointer_from_objref(userdata)
 
   # Pointer to call prec
-  pointer_prec = @cfunction(prec, Int, (Int, Vector{Float64}, Vector{Float64}, userdata_type))
+  pointer_prec = @cfunction(prec, Int,
+                            (Int, Vector{Float64}, Vector{Float64}, userdata_type))
 
   # Set problem data
   n = 10 # dimension

@@ -48,7 +48,7 @@ function test_sls()
     if d == 1
       @printf(" coordinate ")
       sls_analyse_matrix(control, data, status, n,
-                         "coordinate", ne, row, col, Cint[])
+                         "coordinate", ne, row, col, C_NULL)
       sls_factorize_matrix(data, status, ne, val)
     end
 
@@ -56,7 +56,7 @@ function test_sls()
     if d == 2
       @printf(" sparse by rows ")
       sls_analyse_matrix(control, data, status, n,
-                         "sparse_by_rows", ne, Cint[], col, ptr)
+                         "sparse_by_rows", ne, C_NULL, col, ptr)
       sls_factorize_matrix(data, status, ne, val)
     end
 
@@ -64,7 +64,7 @@ function test_sls()
     if d == 3
       @printf(" dense  ")
       sls_analyse_matrix(control, data, status, n,
-                         "dense", ne, Cint[], Cint[], Cint[])
+                         "dense", ne, C_NULL, C_NULL, C_NULL)
       sls_factorize_matrix(data, status, dense_ne, dense)
     end
 

@@ -46,11 +46,11 @@ function test_l2rt()
     elseif status[] == 2 # form u <- u + A * v
       for i in 1:n
         u[i] = u[i] + v[i]
-        u[n + i] = u[n+i] + i * v[i]
+        u[n + i] = u[n + i] + i * v[i]
       end
     elseif status[] == 3 # form v <- v + A^T * u
       for i in 1:n
-        v[i] = v[i] + u[i] + i * u[n+i]
+        v[i] = v[i] + u[i] + i * u[n + i]
       end
     elseif status[] == 4 # restart
       for i in 1:m

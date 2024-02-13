@@ -27,130 +27,136 @@ function test_bgo()
 
   # Gradient of the objective
   function grad(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
-      struct Cuserdata_type
-          p::Float64
-          freq::Float64
-          mag::Float64
-      end
-      myuserdata = unsafe_load(Cuserdata_type, userdata)
-      p = myuserdata.p
-      freq = myuserdata.freq
-      mag = myuserdata.mag
+    struct Cuserdata_type
+      p::Float64
+      freq::Float64
+      mag::Float64
+    end
+    myuserdata = unsafe_load(Cuserdata_type, userdata)
+    p = myuserdata.p
+    freq = myuserdata.freq
+    mag = myuserdata.mag
 
-      g[1] = 2.0 * (var[1] + var[3] + p) - mag * freq * sin(freq * var[1]) + 1.0
-      g[2] = 2.0 * (var[2] + var[3]) + 1.0
-      g[3] = 2.0 * (var[1] + var[3] + p) + 2.0 * (var[2] + var[3]) + 1.0
-      return 0
+    g[1] = 2.0 * (var[1] + var[3] + p) - mag * freq * sin(freq * var[1]) + 1.0
+    g[2] = 2.0 * (var[2] + var[3]) + 1.0
+    g[3] = 2.0 * (var[1] + var[3] + p) + 2.0 * (var[2] + var[3]) + 1.0
+    return 0
   end
 
   # Hessian of the objective
-  function hess(n::Int, ne::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
-      struct Cuserdata_type
-          p::Float64
-          freq::Float64
-          mag::Float64
-      end
-      myuserdata = unsafe_load(Cuserdata_type, userdata)
-      freq = myuserdata.freq
-      mag = myuserdata.mag
+  function hess(n::Int, ne::Int, var::Vector{Float64}, hval::Vector{Float64},
+                userdata::userdata_type)
+    struct Cuserdata_type
+      p::Float64
+      freq::Float64
+      mag::Float64
+    end
+    myuserdata = unsafe_load(Cuserdata_type, userdata)
+    freq = myuserdata.freq
+    mag = myuserdata.mag
 
-      hval[1] = 2.0 - mag * freq^2 * cos(freq * var[1])
-      hval[2] = 2.0
-      hval[3] = 2.0
-      hval[4] = 4.0
-      return 0
+    hval[1] = 2.0 - mag * freq^2 * cos(freq * var[1])
+    hval[2] = 2.0
+    hval[3] = 2.0
+    hval[4] = 4.0
+    return 0
   end
 
   # Dense Hessian
-  function hess_dense(n::Int, ne::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
-      struct Cuserdata_type
-          p::Float64
-          freq::Float64
-          mag::Float64
-      end
-      myuserdata = unsafe_load(Cuserdata_type, userdata)
-      freq = myuserdata.freq
-      mag = myuserdata.mag
+  function hess_dense(n::Int, ne::Int, var::Vector{Float64}, hval::Vector{Float64},
+                      userdata::userdata_type)
+    struct Cuserdata_type
+      p::Float64
+      freq::Float64
+      mag::Float64
+    end
+    myuserdata = unsafe_load(Cuserdata_type, userdata)
+    freq = myuserdata.freq
+    mag = myuserdata.mag
 
-      hval[1] = 2.0 - mag * freq^2 * cos(freq * var[1])
-      hval[2] = 0.0
-      hval[3] = 2.0
-      hval[4] = 2.0
-      hval[5] = 4.0
-      return 0
+    hval[1] = 2.0 - mag * freq^2 * cos(freq * var[1])
+    hval[2] = 0.0
+    hval[3] = 2.0
+    hval[4] = 2.0
+    hval[5] = 4.0
+    return 0
   end
 
   # Hessian-vector product
-  function hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, got_h::Bool, userdata::userdata_type)
-      struct Cuserdata_type
-          p::Float64
-          freq::Float64
-          mag::Float64
-      end
-      myuserdata = unsafe_load(Cuserdata_type, userdata)
-      freq = myuserdata.freq
-      mag = myuserdata.mag
+  function hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                    got_h::Bool, userdata::userdata_type)
+    struct Cuserdata_type
+      p::Float64
+      freq::Float64
+      mag::Float64
+    end
+    myuserdata = unsafe_load(Cuserdata_type, userdata)
+    freq = myuserdata.freq
+    mag = myuserdata.mag
 
-      u[1] = u[1] + 2.0 * (v[1] + v[3]) - mag * freq^2 * cos(freq * var[1]) * v[1]
-      u[2] = u[2] + 2.0 * (v[2] + v[3])
-      u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
-      return 0
+    u[1] = u[1] + 2.0 * (v[1] + v[3]) - mag * freq^2 * cos(freq * var[1]) * v[1]
+    u[2] = u[2] + 2.0 * (v[2] + v[3])
+    u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
+    return 0
   end
 
   # Sparse Hessian-vector product
-  function shessprod(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int}, v::Vector{Float64},
-                    nnz_u::Ptr{Int}, index_nz_u::Vector{Int}, u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
-      struct Cuserdata_type
-          p::Float64
-          freq::Float64
-          mag::Float64
-      end
-      myuserdata = unsafe_load(Cuserdata_type, userdata)
-      freq = myuserdata.freq
-      mag = myuserdata.mag
+  function shessprod(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int},
+                     v::Vector{Float64},
+                     nnz_u::Ptr{Int}, index_nz_u::Vector{Int}, u::Vector{Float64},
+                     got_h::Bool, userdata::userdata_type)
+    struct Cuserdata_type
+      p::Float64
+      freq::Float64
+      mag::Float64
+    end
+    myuserdata = unsafe_load(Cuserdata_type, userdata)
+    freq = myuserdata.freq
+    mag = myuserdata.mag
 
-      p = zeros(3)
-      used = [false, false, false]
-      for i in 1:nnz_v
-          j = index_nz_v[i]
-          if j == 1
-              p[1] += 2.0 * v[1] - mag * freq^2 * cos(freq * var[1]) * v[1]
-              used[1] = true
-              p[3] += 2.0 * v[1]
-              used[3] = true
-          elseif j == 2
-              p[2] += 2.0 * v[2]
-              used[2] = true
-              p[3] += 2.0 * v[2]
-              used[3] = true
-          elseif j == 3
-              p[1] += 2.0 * v[3]
-              used[1] = true
-              p[2] += 2.0 * v[3]
-              used[2] = true
-              p[3] += 4.0 * v[3]
-              used[3] = true
-          end
+    p = zeros(3)
+    used = [false, false, false]
+    for i in 1:nnz_v
+      j = index_nz_v[i]
+      if j == 1
+        p[1] += 2.0 * v[1] - mag * freq^2 * cos(freq * var[1]) * v[1]
+        used[1] = true
+        p[3] += 2.0 * v[1]
+        used[3] = true
+      elseif j == 2
+        p[2] += 2.0 * v[2]
+        used[2] = true
+        p[3] += 2.0 * v[2]
+        used[3] = true
+      elseif j == 3
+        p[1] += 2.0 * v[3]
+        used[1] = true
+        p[2] += 2.0 * v[3]
+        used[2] = true
+        p[3] += 4.0 * v[3]
+        used[3] = true
       end
+    end
 
-      nnz = 0
-      for j in 1:3
-          if used[j]
-              u[j] = p[j]
-              nnz += 1
-              index_nz_u[nnz] = j
-          end
+    nnz = 0
+    for j in 1:3
+      if used[j]
+        u[j] = p[j]
+        nnz += 1
+        index_nz_u[nnz] = j
       end
-      unsafe_store!(nnz_u, nnz)
-      return 0
+    end
+    unsafe_store!(nnz_u, nnz)
+    return 0
   end
 
   # Apply preconditioner
-  function prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64}, userdata::userdata_type)
-      u[1] = 0.5 * v[1]
-      u[2] = 0.5 * v[2]
-      u[3] = 0.25 * v[3]
-      return 0
+  function prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                userdata::userdata_type)
+    u[1] = 0.5 * v[1]
+    u[2] = 0.5 * v[2]
+    u[3] = 0.25 * v[3]
+    return 0
   end
 
   # Derived types
