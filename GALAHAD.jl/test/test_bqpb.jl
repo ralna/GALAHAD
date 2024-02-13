@@ -49,7 +49,7 @@ function test_bqpb()
     if d == 1
       st = 'C'
       bqpb_import(control, data, status, n,
-                  "coordinate", H_ne, H_row, H_col, Cint[])
+                  "coordinate", H_ne, H_row, H_col, C_NULL)
 
       bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -59,7 +59,7 @@ function test_bqpb()
     if d == 2
       st = 'R'
       bqpb_import(control, data, status, n,
-                  "sparse_by_rows", H_ne, Cint[], H_col, H_ptr)
+                  "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
       bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -71,7 +71,7 @@ function test_bqpb()
       H_dense_ne = 6 # number of elements of H
       H_dense = Float64[1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
       bqpb_import(control, data, status, n,
-                  "dense", H_ne, Cint[], Cint[], Cint[])
+                  "dense", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqpb_solve_qp(data, status, n, H_dense_ne, H_dense, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -81,7 +81,7 @@ function test_bqpb()
     if d == 4
       st = 'L'
       bqpb_import(control, data, status, n,
-                  "diagonal", H_ne, Cint[], Cint[], Cint[])
+                  "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -91,7 +91,7 @@ function test_bqpb()
     if d == 5
       st = 'S'
       bqpb_import(control, data, status, n,
-                  "scaled_identity", H_ne, Cint[], Cint[], Cint[])
+                  "scaled_identity", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -101,7 +101,7 @@ function test_bqpb()
     if d == 6
       st = 'I'
       bqpb_import(control, data, status, n,
-                  "identity", H_ne, Cint[], Cint[], Cint[])
+                  "identity", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -111,7 +111,7 @@ function test_bqpb()
     if d == 7
       st = 'Z'
       bqpb_import(control, data, status, n,
-                  "zero", H_ne, Cint[], Cint[], Cint[])
+                  "zero", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
@@ -163,7 +163,7 @@ function test_bqpb()
     if d == 1
       st = 'W'
       bqpb_import(control, data, status, n,
-                  "shifted_least_distance", H_ne, Cint[], Cint[], Cint[])
+                  "shifted_least_distance", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqpb_solve_sldqp(data, status, n, w, x_0, g, f,
                        x_l, x_u, x, z, x_stat)

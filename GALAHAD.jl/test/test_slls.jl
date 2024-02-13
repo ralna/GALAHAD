@@ -7,19 +7,21 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-struct userdata_type
+mutable struct userdata_type
   scale::Float64
 end
 
-function test_slls()
-  # Apply preconditioner
-  function prec(n, var::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
-    scale = userdata.scale
-    for i in 1:n
-      p[i] = scale * v[i]
-    end
-    return 0
+# Apply preconditioner
+function prec(n::Int, var::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
+  scale = userdata.scale
+  for i in 1:n
+    p[i] = scale * v[i]
   end
+  return 0
+end
+
+function test_slls()
+  pointer_prec = @cfunction(prec, Int, (Int, Vector{Float64}, Vector{Float64}, userdata_type))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -28,6 +30,7 @@ function test_slls()
 
   # Set user data
   userdata = userdata_type(1.0)
+  pointer_userdata = pointer_from_objref(userdata)
 
   # Set problem data
   n = 10 # dimension
@@ -142,21 +145,21 @@ function test_slls()
     if d == 1
       st = "CO"
       slls_import(control, data, status, n, o,
-                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, Cint[])
+                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
 
-      slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g, x_stat,
-                         prec)
+      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
+                         x_stat, pointer_prec)
     end
 
     # sparse by rows
     if d == 2
       st = "SR"
       slls_import(control, data, status, n, o,
-                  "sparse_by_rows", Ao_ne, Cint[], Ao_col,
+                  "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                   Ao_ptr_ne, Ao_ptr)
 
-      slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g, x_stat,
-                         prec)
+      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
+                         x_stat, pointer_prec)
     end
 
     # dense by rows
@@ -164,11 +167,11 @@ function test_slls()
       st = "DR"
       slls_import(control, data, status, n, o,
                   "dense_by_rows", Ao_dense_ne,
-                  Cint[], Cint[], 0, Cint[])
+                  C_NULL, C_NULL, 0, C_NULL)
 
-      slls_solve_given_a(data, userdata, status, n, o,
+      slls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_dense_ne, Ao_dense, b,
-                         x, z, r, g, x_stat, prec)
+                         x, z, r, g, x_stat, pointer_prec)
     end
 
     # sparse by columns
@@ -176,11 +179,11 @@ function test_slls()
       st = "SC"
       slls_import(control, data, status, n, o,
                   "sparse_by_columns", Ao_ne, Ao_by_col_row,
-                  Cint[], Ao_by_col_ptr_ne, Ao_by_col_ptr)
+                  C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
 
-      slls_solve_given_a(data, userdata, status, n, o,
+      slls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_ne, Ao_by_col_val, b,
-                         x, z, r, g, x_stat, prec)
+                         x, z, r, g, x_stat, pointer_prec)
     end
 
     # dense by columns
@@ -188,10 +191,10 @@ function test_slls()
       st = "DC"
       slls_import(control, data, status, n, o,
                   "dense_by_columns", Ao_dense_ne,
-                  Cint[], Cint[], 0, Cint[])
+                  C_NULL, C_NULL, 0, C_NULL)
 
-      slls_solve_given_a(data, userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense, b,
-                         x, z, r, g, x_stat, prec)
+      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense, b,
+                         x, z, r, g, x_stat, pointer_prec)
     end
 
     slls_information(data, inform, status)
@@ -225,11 +228,11 @@ function test_slls()
   nz_v_start = Ref{Cint}()
   nz_v_end = Ref{Cint}()
   nz_p_end = Ref{Cint}()
-  nz_v = Vector(Cint, on)
-  nz_p = Vector(Cint, o)
-  mask = Vector(Cint, o)
-  v = Vector(Float64, on)
-  p = Vector(Float64, on)
+  nz_v = zeros(Cint, on)
+  nz_p = zeros(Cint, o)
+  mask = zeros(Cint, o)
+  v = zeros(Float64, on)
+  p = zeros(Float64, on)
 
   nz_p_end = 0
 
@@ -277,15 +280,15 @@ function test_slls()
       for i in 1:n
         p[i] = 0.0
       end
-      for l in nz_v_start:nz_v_end
-        i = nz_v[l] - 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
         p[i] = v[i]
         p[n + 1] = p[n + 1] + v[i]
       end
     elseif status[] == 5 # evaluate p = sparse Av for sparse v
       nz_p_end = 1
-      for l in nz_v_start:nz_v_end
-        i = nz_v[l] - 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
         if mask[i] == 0
           mask[i] = 1
           nz_p[nz_p_end] = i + 1

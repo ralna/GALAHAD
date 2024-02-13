@@ -14,8 +14,8 @@ end
 function test_nls()
   # compute the residuals
   function res(n, m, x::Vector{Float64}, c::Vector{Float64}, userdata::userdata_type)
-    c[1] = pow(x[1], 2.0) + userdata.p
-    c[2] = x[1] + x[2]^(2.0)
+    c[1] = x[1]^2 + userdata.p
+    c[2] = x[1] + x[2]^2
     c[3] = x[1] - x[2]
     return 0
   end

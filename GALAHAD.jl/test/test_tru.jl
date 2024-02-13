@@ -7,7 +7,7 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-struct userdata_type
+mutable struct userdata_type
   p::Float64
 end
 
@@ -109,6 +109,7 @@ function test_tru()
 
   # Set user data
   userdata = userdata_type(4.0)
+  pointer_userdata = pointer_from_objref(userdata)
 
   # Set problem data
   n = 3 # dimension
@@ -142,7 +143,7 @@ function test_tru()
       tru_import(control, data, status, n, "coordinate",
                  ne, H_row, H_col, Cint[])
 
-      tru_solve_with_mat(data, userdata, status,
+      tru_solve_with_mat(data, pointer_userdata, status,
                          n, x, g, ne, fun, grad, hess, prec)
     end
 
@@ -152,7 +153,7 @@ function test_tru()
       tru_import(control, data, status, n, "sparse_by_rows",
                  ne, Cint[], H_col, H_ptr)
 
-      tru_solve_with_mat(data, userdata, status,
+      tru_solve_with_mat(data, pointer_userdata, status,
                          n, x, g, ne, fun, grad, hess, prec)
     end
 
@@ -162,7 +163,7 @@ function test_tru()
       tru_import(control, data, status, n, "dense",
                  ne, Cint[], Cint[], Cint[])
 
-      tru_solve_with_mat(data, userdata, status,
+      tru_solve_with_mat(data, pointer_userdata, status,
                          n, x, g, ne, fun, grad, hess_dense, prec)
     end
 
@@ -172,7 +173,7 @@ function test_tru()
       tru_import(control, data, status, n, "diagonal",
                  ne, Cint[], Cint[], Cint[])
 
-      tru_solve_with_mat(data, userdata, status, n, x, g,
+      tru_solve_with_mat(data, pointer_userdata, status, n, x, g,
                          ne, fun_diag, grad_diag, hess_diag, prec)
     end
 
@@ -182,7 +183,7 @@ function test_tru()
       tru_import(control, data, status, n, "absent",
                  ne, Cint[], Cint[], Cint[])
 
-      tru_solve_without_mat(data, userdata, status,
+      tru_solve_without_mat(data, pointer_userdata, status,
                             n, x, g, fun, grad, hessprod, prec)
     end
 
