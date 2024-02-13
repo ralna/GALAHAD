@@ -28,8 +28,8 @@ include("test_hash.jl")
 include("test_ir.jl")
 include("test_l2rt.jl")
 include("test_lhs.jl")
-include("test_llsr.jl") # bug
-## include("test_llst.jl")
+## include("test_llsr.jl") # bug
+include("test_llst.jl") # bug
 include("test_lms.jl")
 include("test_lpa.jl")
 include("test_lpb.jl")
