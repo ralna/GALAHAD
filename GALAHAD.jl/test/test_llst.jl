@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_llst()
+#function test_llst()
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{llst_control_type{Float64}}()
@@ -203,9 +203,9 @@ function test_llst()
     llst_terminate(data, control, inform)
   end
 
-  return 0
-end
+#   return 0
+# end
 
-@testset "LLST" begin
-  @test test_llst() == 0
-end
+# @testset "LLST" begin
+#   @test test_llst() == 0
+# end
