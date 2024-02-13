@@ -12,10 +12,11 @@ mutable struct userdata_type
 end
 
 # Apply preconditioner
-function prec(n::Int, var::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
+function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
   scale = userdata.scale
   for i in 1:n
-    p[i] = scale * v[i]
+    p[i] = scale * x[i]
+    println(bob)
   end
   return 0
 end

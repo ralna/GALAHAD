@@ -13,14 +13,14 @@ end
 
 function test_trb()
   # Objective function
-  function fun(n::Int, var::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
     p = userdata.p
     f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
     p = userdata.p
     g[1] = 2.0 * (x[1] + x[3] + p) - sin(x[1])
     g[2] = 2.0 * (x[2] + x[3])
@@ -29,9 +29,8 @@ function test_trb()
   end
 
   # Hessian of the objective
-  function hess(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64},
+  function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
                 userdata::userdata_type)
-    p = userdata.p
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 2.0
     hval[3] = 2.0
@@ -41,9 +40,8 @@ function test_trb()
   end
 
   # Dense Hessian
-  function hess_dense(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64},
+  function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
                       userdata::userdata_type)
-    p = userdata.p
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 0.0
     hval[3] = 2.0
@@ -54,9 +52,8 @@ function test_trb()
   end
 
   # Hessian-vector product
-  function hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
+  function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
                     got_h::Bool, userdata::userdata_type)
-    p = userdata.p
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
@@ -64,29 +61,29 @@ function test_trb()
   end
 
   # Sparse Hessian-vector product
-  function shessprod(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int},
-                     v::Vector{Float64}, nnz_u::Ref{Int}, index_nz_u::Vector{Int},
+  function shessprod(n::Int, x::Vector{Float64}, nnz_v::Cint, index_nz_v::Vector{Cint},
+                     v::Vector{Float64}, nnz_u::Ref{Cint}, index_nz_u::Vector{Cint},
                      u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
     p = zeros(Float64, 3)
     used = falses(3)
     for i in 1:nnz_v
       j = index_nz_v[i]
       if j == 1
-        p[1] += 2.0 * v[i] - cos(var[1]) * v[i]
+        p[1] = p[1] + 2.0 * v[1] - cos(x[1]) * v[1]
         used[1] = true
-        p[3] += 2.0 * v[i]
+        p[3] = p[3] + 2.0 * v[1]
         used[3] = true
       elseif j == 2
-        p[2] += 2.0 * v[i]
+        p[2] = p[2] + 2.0 * v[2]
         used[2] = true
-        p[3] += 2.0 * v[i]
+        p[3] = p[3] + 2.0 * v[2]
         used[3] = true
       elseif j == 3
-        p[1] += 2.0 * v[i]
+        p[1] = p[1] + 2.0 * v[3]
         used[1] = true
-        p[2] += 2.0 * v[i]
+        p[2] = p[2] + 2.0 * v[3]
         used[2] = true
-        p[3] += 4.0 * v[i]
+        p[3] = p[3] + 4.0 * v[3]
         used[3] = true
       end
     end
@@ -103,9 +100,8 @@ function test_trb()
   end
 
   # Apply preconditioner
-  function prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
+  function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
                 userdata::userdata_type)
-    p = userdata.p
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -113,14 +109,14 @@ function test_trb()
   end
 
   # Objective function
-  function fun_diag(n::Int, var::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+  function fun_diag(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
     p = userdata.p
-    f[] = (x[2] + p)^2 + x[1]^2 + cos(x[1])
+    f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad_diag(n::Int, var::Vector{Float64}, g::Vector{Float64},
+  function grad_diag(n::Int, x::Vector{Float64}, g::Vector{Float64},
                      userdata::userdata_type)
     p = userdata.p
     g[1] = -sin(x[1])
@@ -130,58 +126,50 @@ function test_trb()
   end
 
   # Hessian of the objective
-  function hess_diag(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64},
+  function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
                      userdata::userdata_type)
-    p = userdata.p
     hval[1] = -cos(x[1])
-    hval[3] = 2.0
+    hval[2] = 2.0
     hval[3] = 2.0
     return 0
   end
 
   # Hessian-vector product
-  function hessprod_diag(n::Int, var::Vector{Float64}, u::Vector{Float64},
-                         var::Vector{Float64}, got_h::Bool, userdata::userdata_type)
-    p = userdata.p
+  function hessprod_diag(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                         got_h::Bool, userdata::userdata_type)
     u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
     u[3] = u[3] + 2.0 * v[3]
     return 0
   end
 
-  # Produit matrice-vecteur Hesseien creux
-  function shessprod_diag(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int},
-                          u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
-    p = zeros(3)
+  # Sparse Hessian-vector product
+  function shessprod_diag(n::Int, x::Vector{Float64}, nnz_v::Cint,
+                          index_nz_v::Vector{Cint}, v::Vector{Float64}, nnz_u::Ref{Cint},
+                          index_nz_u::Vector{Cint}, u::Vector{Float64}, got_h::Bool,
+                          userdata::userdata_type)
+    p = zeros(Float64, 3)
     used = falses(3)
     for i in 1:nnz_v
       j = index_nz_v[i]
       if j == 1
-        p[1] += 2.0 * v[0]
-        p[3] += 2.0 * v[0]
+        p[1] = p[1] - cos(x[1]) * v[1]
         used[1] = true
-        used[3] = true
       elseif j == 2
-        p[2] += 2.0 * v[1]
-        p[3] += 2.0 * v[1]
+        p[2] = p[2] + 2.0 * v[2]
         used[2] = true
-        used[3] = true
       elseif j == 3
-        p[1] += 2.0 * v[2]
-        p[2] += 2.0 * v[2]
-        p[3] += 4.0 * v[2]
-        used[1] = true
-        used[2] = true
+        p[3] = p[3] + 2.0 * v[3]
         used[3] = true
       end
     end
 
-    nnz_u = 0
+    nnz_u[] = 0
     for j in 1:3
       if used[j]
         u[j] = p[j]
-        nnz_u += 1
-        index_nz_u[nnz_u] = j
+        nnz_u[] += 1
+        index_nz_u[nnz_u[]] = j
       end
     end
     return 0
@@ -249,13 +237,13 @@ function test_trb()
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess(n, ne, x, H_val, userdata)
+          eval_status[] = hess(n, ne, x, H_val, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -276,13 +264,13 @@ function test_trb()
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess(n, ne, x, H_val, userdata)
+          eval_status[] = hess(n, ne, x, H_val, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -304,13 +292,13 @@ function test_trb()
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess_dense(n, div(n * (n + 1), 2), x, H_dense, userdata)
+          eval_status[] = hess_dense(n, div(n * (n + 1), 2), x, H_dense, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -330,13 +318,13 @@ function test_trb()
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun_diag(n, x, f, userdata)
+          eval_status[] = fun_diag(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad_diag(n, x, g, userdata)
+          eval_status[] = grad_diag(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess_diag(n, n, x, H_diag, userdata)
+          eval_status[] = hess_diag(n, n, x, H_diag, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -347,27 +335,28 @@ function test_trb()
     if d == 5
       st = 'P'
       trb_import(control, data, status, n, x_l, x_u, "absent", ne, C_NULL, C_NULL, C_NULL)
-      nnz_u = 0
+      nnz_u = Ref{Cint}(0)
 
       terminated = false
       while !terminated # reverse-communication loop
         trb_solve_reverse_without_mat(data, status, eval_status, n, x, f[], g, u, v,
-                                      index_nz_v, nnz_v, index_nz_u, nnz_u)
+                                      index_nz_v, nnz_v, index_nz_u, nnz_u[])
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 5 # evaluate H
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         elseif status[] == 7 # evaluate sparse Hessian-vect prod
-          eval_status = shessprod(n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u, u, false,
-                                  userdata)
+          eval_status[] = shessprod(n, x, nnz_v[], index_nz_v, v, nnz_u, index_nz_u, u,
+                                    false,
+                                    userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end

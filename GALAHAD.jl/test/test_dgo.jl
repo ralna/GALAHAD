@@ -16,258 +16,192 @@ end
 function test_dgo()
 
   # Objective function
-  function fun(n::Int, var::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
-
-    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + mag * cos(freq * x[1]) + x[1] + x[2] +
-          x[3]
+    f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + mag * cos(freq * x[1]) + x[1] + x[2] + x[3]
     return 0
   end
 
   # Gradient of the objective
-  function grad(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    freq = userdata.freq
+    mag = userdata.mag
+    g[1] = 2.0 * (x[1] + x[3] + p) - mag * freq * sin(freq * x[1]) + 1.0
+    g[2] = 2.0 * (x[2] + x[3]) + 1.0
+    g[3] = 2.0 * (x[1] + x[3] + p) + 2.0 * (x[2] + x[3]) + 1.0
+    return 0
+  end
+
+  # Hessian of the objective
+  function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+                userdata::userdata_type)
+    p = userdata.p
+    freq = userdata.freq
+    mag = userdata.mag
+    hval[1] = 2.0 - mag * freq^2 * cos(freq * x[1])
+    hval[2] = 2.0
+    hval[3] = 2.0
+    hval[4] = 4.0
+    return 0
+  end
+
+  # Dense Hessian
+  function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+                      userdata::userdata_type)
+    p = userdata.p
+    freq = userdata.freq
+    mag = userdata.mag
+    hval[1] = 2.0 - mag * freq^2 * cos(freq * x[1])
+    hval[2] = 0.0
+    hval[3] = 2.0
+    hval[4] = 2.0
+    hval[5] = 4.0
+    return 0
+  end
+
+  # Hessian-vector product
+  function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                    got_h::Bool, userdata::userdata_type)
+    p = userdata.p
+    freq = userdata.freq
+    mag = userdata.mag
+    u[1] = u[1] + 2.0 * (v[1] + v[3]) - mag * freq^2 * cos(freq * x[1]) * v[1]
+    u[2] = u[2] + 2.0 * (v[2] + v[3])
+    u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
+    return 0
+  end
+
+  # Sparse Hessian-vector product
+  function shessprod(n::Int, x::Vector{Float64}, nnz_v::Cint, index_nz_v::Vector{Cint},
+                     v::Vector{Float64}, nnz_u::Ref{Cint}, index_nz_u::Vector{Cint},
+                     u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+    p = userdata.p
+    freq = userdata.freq
+    mag = userdata.mag
+    p = zeros(Float64, 3)
+    used = falses(3)
+    for i in 1:nnz_v
+      j = index_nz_v[i]
+      if j == 1
+        p[1] = p[1] + 2.0 * v[1] - mag * freq^2 * cos(freq * x[1]) * v[1]
+        used[1] = true
+        p[3] = p[3] + 2.0 * v[1]
+        used[3] = true
+      elseif j == 2
+        p[2] = p[2] + 2.0 * v[2]
+        used[2] = true
+        p[3] = p[3] + 2.0 * v[2]
+        used[3] = true
+      elseif j == 3
+        p[1] = p[1] + 2.0 * v[3]
+        used[1] = true
+        p[2] = p[2] + 2.0 * v[3]
+        used[2] = true
+        p[3] = p[3] + 4.0 * v[3]
+        used[3] = true
+      end
+    end
+
+    nnz_u[] = 0
+    for j in 1:3
+      if used[j]
+        u[j] = p[j]
+        nnz_u[] += 1
+        index_nz_u[nnz_u[]] = j
+      end
+    end
+    return 0
+  end
+
+  # Apply preconditioner
+  function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                userdata::userdata_type)
+    u[1] = 0.5 * v[1]
+    u[2] = 0.5 * v[2]
+    u[3] = 0.25 * v[3]
+    return 0
+  end
+
+  # Objective function
+  function fun_diag(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
 
-    g[1] = 2.0 * (x[1] + x[3] + p) - mag * freq * sin(freq * x[1]) + 1
-    g[2] = 2.0 * (x[2] + x[3]) + 1
-    g[3] = 2.0 * (x[1] + x[3] + p) + 2.0 * (x[2] + x[3]) + 1
+    f[] = (x[3] + p)^2 + x[2]^2 + mag * cos(freq * x[1]) + sum(x)
     return 0
   end
 
-  # # Hessian of the objective
-  # int hess(int n,
-  #   int ne,
-  #   var::Vector{Float64},
-  #   hval::Vector{Float64},
-  #   const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
+  # Gradient of the objective
+  function grad_diag(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata)
+    p = userdata.p
+    freq = userdata.freq
+    mag = userdata.mag
 
-  # hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0])
-  # hval[1] = 2.0
-  # hval[2] = 2.0
-  # hval[3] = 2.0
-  # hval[4] = 4.0
-  # return 0
-  # ]
+    g[1] = -mag * freq * sin(freq * x[1]) + 1
+    g[2] = 2.0 * x[2] + 1
+    g[3] = 2.0 * (x[3] + p) + 1
+    return 0
+  end
 
-  # # Dense Hessian
-  # int hess_dense(int n,
-  # int ne,
-  # var::Vector{Float64},
-  # hval::Vector{Float64},
-  # const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
+  # Hessian of the objective
+  function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64}, userdata)
+    freq = userdata.freq
+    mag = userdata.mag
 
-  # hval[0] = 2.0 - mag * freq * freq * cos(freq*x[0])
-  # hval[1] = 0.0
-  # hval[2] = 2.0
-  # hval[3] = 2.0
-  # hval[4] = 2.0
-  # hval[5] = 4.0
-  # return 0
-  # ]
+    hval[1] = -mag * freq^2 * cos(freq * x[1])
+    hval[2] = 2.0
+    hval[3] = 2.0
+    return 0
+  end
 
-  # # Hessian-vector product
-  # int hessprod(int n,
-  #   var::Vector{Float64},
-  #   u::Vector{Float64},
-  #   var::Vector{Float64},
-  #   bool got_h,
-  #   const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
+  # Hessian-vector product
+  function hessprod_diag(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+                         got_h::Bool, userdata)
+    freq = userdata.freq
+    mag = userdata.mag
 
-  # u[0] = u[0] + 2.0 * (v[0] + v[2])
-  #    - mag * freq * freq * cos(freq*x[0]) * v[0]
-  # u[1] = u[1] + 2.0 * (v[1] + v[2])
-  # u[2] = u[2] + 2.0 * (v[0] + v[1] + 2.0 * v[2])
-  # return 0
-  # ]
+    u[1] += -mag * freq^2 * cos(freq * x[1]) * v[1]
+    u[2] += 2.0 * v[2]
+    u[3] += 2.0 * v[3]
+    return 0
+  end
 
-  # # Sparse Hessian-vector product
-  # int shessprod(int n,
-  #    var::Vector{Float64},
-  #    int nnz_v,
-  #    const int index_nz_v[],
-  #    var::Vector{Float64},
-  #    int *nnz_u,
-  #    int index_nz_u[],
-  #    u::Vector{Float64},
-  #    bool got_h,
-  #    const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
+  # Sparse Hessian-vector product
+  function shessprod_diag(n::Int, x::Vector{Float64}, nnz_v::Cint, index_nz_v::Vector{Cint},
+                          v::Vector{Float64}, nnz_u::Ref{Cint}, index_nz_u::Vector{Cint},
+                          u::Vector{Float64}, got_h::Bool, userdata)
+    freq = userdata.freq
+    mag = userdata.mag
 
-  # real_wp_ p[] = {0., 0., 0.]
-  # bool used[] = {false, false, false]
-  # for(int i = 0 i < nnz_v i++)
-  # int j = index_nz_v[i]
-  # switch(j)
-  # case 1:
-  # p[0] = p[0] + 2.0 * v[0]
-  #  - mag * freq * freq * cos(freq*x[0]) * v[0]
-  # used[0] = true
-  # p[2] = p[2] + 2.0 * v[0]
-  # used[2] = true
-  # end
-  # case 2:
-  # p[1] = p[1] + 2.0 * v[1]
-  # used[1] = true
-  # p[2] = p[2] + 2.0 * v[1]
-  # used[2] = true
-  # end
-  # case 3:
-  # p[0] = p[0] + 2.0 * v[2]
-  # used[0] = true
-  # p[1] = p[1] + 2.0 * v[2]
-  # used[1] = true
-  # p[2] = p[2] + 4.0 * v[2]
-  # used[2] = true
-  # end
-  # ]
-  # ]
-  # *nnz_u = 0
-  # for(int j = 0 j < 3 j++)
-  # if used[j])
-  # u[j] = p[j]
-  # *nnz_u = *nnz_u + 1
-  # index_nz_u[*nnz_u-1] = j+1
-  # ]
-  # ]
-  # return 0
-  # ]
-
-  # # Apply preconditioner
-  # int prec(int n,
-  #   var::Vector{Float64},
-  #   u::Vector{Float64},
-  #   var::Vector{Float64},
-  #   const void *userdata)
-  #    u[0] = 0.5 * v[0]
-  #    u[1] = 0.5 * v[1]
-  #    u[2] = 0.25 * v[2]
-  #    return 0
-  # ]
-
-  # # Objective function
-  # int fun_diag(int n,
-  #   var::Vector{Float64},
-  #   real_wp_ *f,
-  #   const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ p = myuserdata->p
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
-
-  # *f = pow(x[2] + p, 2) + pow(x[1], 2) + mag * cos(freq*x[0])
-  #  + x[0] + x[1] + x[2]
-  # return 0
-  # ]
-
-  # # Gradient of the objective
-  # int grad_diag(int n,
-  #    var::Vector{Float64},
-  #    g::Vector{Float64},
-  #    const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ p = myuserdata->p
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
-
-  # g[0] = -mag * freq * sin(freq*x[0]) + 1
-  # g[1] = 2.0 * x[1] + 1
-  # g[2] = 2.0 * (x[2] + p) + 1
-  # return 0
-  # ]
-
-  # # Hessian of the objective
-  # int hess_diag(int n,
-  #    int ne,
-  #    var::Vector{Float64},
-  #    hval::Vector{Float64},
-  #    const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
-
-  # hval[0] = -mag * freq * freq * cos(freq*x[0])
-  # hval[1] = 2.0
-  # hval[2] = 2.0
-  # return 0
-  # ]
-
-  # # Hessian-vector product
-  # int hessprod_diag(int n,
-  #    var::Vector{Float64},
-  #    u::Vector{Float64},
-  #    var::Vector{Float64},
-  #    bool got_h,
-  #    const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
-
-  # u[0] = u[0] + -mag * freq * freq * cos(freq*x[0]) * v[0]
-  # u[1] = u[1] + 2.0 * v[1]
-  # u[2] = u[2] + 2.0 * v[2]
-  # return 0
-  # ]
-
-  # # Sparse Hessian-vector product
-  # int shessprod_diag(int n,
-  # var::Vector{Float64},
-  # int nnz_v,
-  # const int index_nz_v[],
-  # var::Vector{Float64},
-  # int *nnz_u,
-  # int index_nz_u[],
-  # u::Vector{Float64},
-  # bool got_h,
-  # const void *userdata)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ freq = myuserdata->freq
-  # real_wp_ mag = myuserdata->mag
-
-  # real_wp_ p[] = {0., 0., 0.]
-  # bool used[] = {false, false, false]
-  # for(int i = 0 i < nnz_v i++)
-  # int j = index_nz_v[i]
-  # switch(j)
-  # case 1:
-  # p[0] = p[0] - mag * freq * freq * cos(freq*x[0]) * v[0]
-  # used[0] = true
-  # end
-  # case 2:
-  # p[1] = p[1] + 2.0 * v[1]
-  # used[1] = true
-  # end
-  # case 3:
-  # p[2] = p[2] + 2.0 * v[2]
-  # used[2] = true
-  # end
-  # ]
-  # ]
-  # *nnz_u = 0
-  # for(int j = 0 j < 3 j++)
-  # if used[j])
-  # u[j] = p[j]
-  # *nnz_u = *nnz_u + 1
-  # index_nz_u[*nnz_u-1] = j+1
-  # ]
-  # ]
-  # return 0
-  # ]
-  # end
+    p = zeros(3)
+    used = falses(3)
+    for i in 1:nnz_v
+      j = index_nz_v[i]
+      if j == 1
+        p[1] -= mag * freq^2 * cos(freq * x[1]) * v[1]
+        used[1] = true
+      elseif j == 2
+        p[2] += 2.0 * v[2]
+        used[2] = true
+      elseif j == 3
+        p[3] += 2.0 * v[3]
+        used[3] = true
+      end
+    end
+    nnz_u[] = 0
+    for j in 1:3
+      if used[j]
+        u[j] = p[j]
+        nnz_u[] += 1
+        index_nz_u[nnz_u[]] = j
+      end
+    end
+    return 0
+  end
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -292,113 +226,20 @@ function test_dgo()
   status = Ref{Cint}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" tests options for all-in-one storage format\n\n")
-
-  for d in 1:5
-
-    # Initialize DGO
-    dgo_initialize(data, control, status)
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    @reset control[].maxit = 2500
-    # @reset control[].trb_control[].maxit = 100
-    # @reset control[].print_level = 1
-
-    # Start from 0
-    x = Float64[0, 0, 0]
-
-    # sparse co-ordinate storage
-    if d == 1
-      st = 'C'
-      dgo_import(control, data, status, n, x_l, x_u,
-                 "coordinate", ne, H_row, H_col, C_NULL)
-
-      dgo_solve_with_mat(data, userdata, status, n, x, g,
-                         ne, fun, grad, hess, hessprod, prec)
-    end
-
-    # sparse by rows
-    if d == 2
-      st = 'R'
-      dgo_import(control, data, status, n, x_l, x_u,
-                 "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
-
-      dgo_solve_with_mat(data, userdata, status, n, x, g,
-                         ne, fun, grad, hess, hessprod, prec)
-    end
-
-    # dense
-    if d == 3
-      st = 'D'
-      dgo_import(control, data, status, n, x_l, x_u,
-                 "dense", ne, C_NULL, C_NULL, C_NULL)
-
-      dgo_solve_with_mat(data, userdata, status, n, x, g,
-                         ne, fun, grad, hess_dense, hessprod, prec)
-    end
-
-    # diagonal
-    if d == 4
-      st = 'I'
-      dgo_import(control, data, status, n, x_l, x_u,
-                 "diagonal", ne, C_NULL, C_NULL, C_NULL)
-
-      dgo_solve_with_mat(data, userdata, status, n, x, g,
-                         ne, fun_diag, grad_diag, hess_diag,
-                         hessprod_diag, prec)
-    end
-
-    # access by products
-    if d == 5
-      st = 'P'
-      dgo_import(control, data, status, n, x_l, x_u,
-                 "absent", ne, C_NULL, C_NULL, C_NULL)
-
-      dgo_solve_without_mat(data, userdata, status, n, x, g,
-                            fun, grad, hessprod, shessprod, prec)
-    end
-
-    # Record solution information
-    dgo_information(data, inform, status)
-
-    if inform[].status[] == 0
-      @printf("%c:%6i evaluations. Optimal objective value = %5.2f status = %1i\n", st,
-              inform[].f_eval, inform[].obj, inform[].status)
-    elseif inform[].status[] == -18
-      @printf("%c:%6i evaluations. Best objective value = %5.2f status = %1i\n", st,
-              inform[].f_eval, inform[].obj, inform[].status)
-    else
-      @printf("%c: DGO_solve exit status = %1i\n", st, inform[].status)
-    end
-
-    # @printf("x: ")
-    # for i in 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i in 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
-
-    # Delete internal workspace
-    dgo_terminate(data, control, inform)
-  end
-
-  @printf("\n tests reverse-communication options\n\n")
+  @printf(" tests reverse-communication options\n\n")
 
   # reverse-communication input/output
   eval_status = Ref{Cint}()
   nnz_u = Ref{Cint}()
   nnz_v = Ref{Cint}()
-  f = 0.0
+  f = Ref{Float64}(0.0)
   u = zeros(Float64, n)
   v = zeros(Float64, n)
   index_nz_u = zeros(Cint, n)
   index_nz_v = zeros(Cint, n)
-  # real_wp_ H_val[ne], H_dense[n*(n+1)/2], H_diag[n]
+  H_val = zeros(Float64, ne)
+  H_dense = zeros(Float64, div(n * (n + 1), 2))
+  H_diag = zeros(Float64, n)
 
   for d in 1:5
     # Initialize DGO
@@ -406,9 +247,9 @@ function test_dgo()
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    @reset control[].maxit = 2500
-    # @reset control[].trb_control[].maxit = 100
-    # @reset control[].print_level = 1
+    @reset control[].maxit = Cint(2500)
+    # @reset control[].trb_control[].maxit = Cint(100)
+    # @reset control[].print_level = Cint(1)
 
     # Start from 0
     x = Float64[0.0, 0.0, 0.0]
@@ -420,34 +261,34 @@ function test_dgo()
 
       terminated = false
       while !terminated # reverse-communication loop
-        dgo_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H_val, u, v)
+        dgo_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess(n, ne, x, H_val, userdata)
+          eval_status[] = hess(n, ne, x, H_val, userdata)
         elseif status[] == 5 # evaluate Hv product
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         elseif status[] == 23 # evaluate f and g
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 25 # evaluate f and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 35 # evaluate g and Hv product
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 235 # evaluate f, g and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -463,34 +304,34 @@ function test_dgo()
       terminated = false
       while !terminated # reverse-communication loop
         dgo_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f, g, ne, H_val, u, v)
+                                   n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess(n, ne, x, H_val, userdata)
+          eval_status[] = hess(n, ne, x, H_val, userdata)
         elseif status[] == 5 # evaluate Hv product
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         elseif status[] == 23 # evaluate f and g
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 25 # evaluate f and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 35 # evaluate g and Hv product
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 235 # evaluate f, g and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -506,36 +347,35 @@ function test_dgo()
       terminated = false
       while !terminated # reverse-communication loop
         dgo_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f, g, n * (n + 1) / 2,
+                                   n, x, f[], g, div(n * (n + 1), 2),
                                    H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess_dense(n, n * (n + 1) / 2, x, H_dense,
-                                   userdata)
+          eval_status[] = hess_dense(n, div(n * (n + 1), 2), x, H_dense, userdata)
         elseif status[] == 5 # evaluate Hv product
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         elseif status[] == 23 # evaluate f and g
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 25 # evaluate f and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 35 # evaluate g and Hv product
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 235 # evaluate f, g and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -551,38 +391,38 @@ function test_dgo()
       terminated = false
       while !terminated # reverse-communication loop
         dgo_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f, g, n, H_diag, u, v)
+                                   n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun_diag(n, x, f, userdata)
+          eval_status[] = fun_diag(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad_diag(n, x, g, userdata)
+          eval_status[] = grad_diag(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess_diag(n, n, x, H_diag, userdata)
+          eval_status[] = hess_diag(n, n, x, H_diag, userdata)
         elseif status[] == 5 # evaluate Hv product
-          eval_status = hessprod_diag(n, x, u, v, false,
-                                      userdata)
+          eval_status[] = hessprod_diag(n, x, u, v, false,
+                                        userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         elseif status[] == 23 # evaluate f and g
-          eval_status = fun_diag(n, x, f, userdata)
-          eval_status = grad_diag(n, x, g, userdata)
+          eval_status[] = fun_diag(n, x, f, userdata)
+          eval_status[] = grad_diag(n, x, g, userdata)
         elseif status[] == 25 # evaluate f and Hv product
-          eval_status = fun_diag(n, x, f, userdata)
-          eval_status = hessprod_diag(n, x, u, v, false,
-                                      userdata)
+          eval_status[] = fun_diag(n, x, f, userdata)
+          eval_status[] = hessprod_diag(n, x, u, v, false,
+                                        userdata)
         elseif status[] == 35 # evaluate g and Hv product
-          eval_status = grad_diag(n, x, g, userdata)
-          eval_status = hessprod_diag(n, x, u, v, false,
-                                      userdata)
+          eval_status[] = grad_diag(n, x, g, userdata)
+          eval_status[] = hessprod_diag(n, x, u, v, false,
+                                        userdata)
         elseif status[] == 235 # evaluate f, g and Hv product
-          eval_status = fun_diag(n, x, f, userdata)
-          eval_status = grad_diag(n, x, g, userdata)
-          eval_status = hessprod_diag(n, x, u, v, false,
-                                      userdata)
+          eval_status[] = fun_diag(n, x, f, userdata)
+          eval_status[] = grad_diag(n, x, g, userdata)
+          eval_status[] = hessprod_diag(n, x, u, v, false,
+                                        userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -595,41 +435,41 @@ function test_dgo()
       dgo_import(control, data, status, n, x_l, x_u,
                  "absent", ne, C_NULL, C_NULL, C_NULL)
 
-      nnz_u = 0
+      nnz_u = Ref{Cint}(0)
       terminated = false
       while !terminated # reverse-communication loop
         dgo_solve_reverse_without_mat(data, status, eval_status,
-                                      n, x, f, g, u, v, index_nz_v,
-                                      nnz_v, index_nz_u, nnz_u)
+                                      n, x, f[], g, u, v, index_nz_v,
+                                      nnz_v, index_nz_u, nnz_u[])
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 5 # evaluate Hv product
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         elseif status[] == 7 # evaluate sparse Hess-vect product
-          eval_status = shessprod(n, x, nnz_v, index_nz_v, v,
-                                  nnz_u, index_nz_u, u,
-                                  false, userdata)
+          eval_status[] = shessprod(n, x, nnz_v[], index_nz_v, v,
+                                    nnz_u, index_nz_u, u,
+                                    false, userdata)
         elseif status[] == 23 # evaluate f and g
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 25 # evaluate f and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 35 # evaluate g and Hv product
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 235 # evaluate f, g and Hv product
-          eval_status = fun(n, x, f, userdata)
-          eval_status = grad(n, x, g, userdata)
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = fun(n, x, f, userdata)
+          eval_status[] = grad(n, x, g, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -663,6 +503,7 @@ function test_dgo()
     # Delete internal workspace
     dgo_terminate(data, control, inform)
   end
+  return 0
 end
 
 @testset "DGO" begin
