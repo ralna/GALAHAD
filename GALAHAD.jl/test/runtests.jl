@@ -4,7 +4,7 @@ using GALAHAD
 include("test_structures.jl")
 
 include("test_arc.jl")
-## include("test_bgo.jl")
+include("test_bgo.jl")
 ## include("test_blls.jl")
 include("test_bllsb.jl")
 include("test_bqp.jl")
