@@ -19,173 +19,163 @@ function test_trb()
     return 0
   end
 
-  # # Gradient of the objective
-  # int grad(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ p = myuserdata->p
+  # Gradient of the objective
+  function grad(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    g[1] = 2.0 * (x[1] + x[3] + p) - sin(x[1])
+    g[2] = 2.0 * (x[2] + x[3])
+    g[3] = 2.0 * (x[1] + x[3] + p) + 2.0 * (x[2] + x[3])
+    return 0
+  end
 
-  # g[0] = 2.0 * (x[0] + x[2] + p) - sin(x[0])
-  # g[1] = 2.0 * (x[1] + x[2])
-  # g[2] = 2.0 * (x[0] + x[2] + p) + 2.0 * (x[1] + x[2])
-  # return 0
-  # ]
+  # Hessian of the objective
+  function hess(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    hval[1] = 2.0 - cos(x[1])
+    hval[2] = 2.0
+    hval[3] = 2.0
+    hval[4] = 2.0
+    hval[5] = 4.0
+    return 0
+  end
 
-  # # Hessian of the objective
-  # int hess(n::Int, n::Inte, var::Vector{Float64}, hval::Vector{Float64},
-  #   userdata::userdata_type)
-  # hval[0] = 2.0 - cos(x[0])
-  # hval[1] = 2.0
-  # hval[2] = 2.0
-  # hval[3] = 2.0
-  # hval[4] = 4.0
-  # return 0
-  # ]
+  # Dense Hessian
+  function hess_dense(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    hval[1] = 2.0 - cos(x[1])
+    hval[2] = 0.0
+    hval[3] = 2.0
+    hval[4] = 2.0
+    hval[5] = 2.0
+    hval[6] = 4.0
+    return 0
+  end
 
-  # # Dense Hessian
-  # int hess_dense(n::Int, n::Inte, var::Vector{Float64}, hval::Vector{Float64},
-  # userdata::userdata_type)
-  # hval[0] = 2.0 - cos(x[0])
-  # hval[1] = 0.0
-  # hval[2] = 2.0
-  # hval[3] = 2.0
-  # hval[4] = 2.0
-  # hval[5] = 4.0
-  # return 0
-  # ]
+  # Hessian-vector product
+  function hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+    p = userdata.p
+    u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
+    u[2] = u[2] + 2.0 * (v[2] + v[3])
+    u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
+    return 0
+  end
 
-  # # Hessian-vector product
-  # int hessprod(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
-  #   bool got_h, userdata::userdata_type)
-  # u[0] = u[0] + 2.0 * (v[0] + v[2]) - cos(x[0]) * v[0]
-  # u[1] = u[1] + 2.0 * (v[1] + v[2])
-  # u[2] = u[2] + 2.0 * (v[0] + v[1] + 2.0 * v[2])
-  # return 0
-  # ]
+  # Sparse Hessian-vector product
+  function shessprod(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int}, v::Vector{Float64}, nnz_u::Ref{Int}, index_nz_u::Vector{Int}, u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+    p = zeros(Float64, 3)
+    used = falses(3)
+    for i in 1:nnz_v
+      j = index_nz_v[i]
+      if j == 1
+        p[1] += 2.0 * v[i] - cos(var[1]) * v[i]
+        used[1] = true
+        p[3] += 2.0 * v[i]
+        used[3] = true
+      elseif j == 2
+        p[2] += 2.0 * v[i]
+        used[2] = true
+        p[3] += 2.0 * v[i]
+        used[3] = true
+      elseif j == 3
+        p[1] += 2.0 * v[i]
+        used[1] = true
+        p[2] += 2.0 * v[i]
+        used[2] = true
+        p[3] += 4.0 * v[i]
+        used[3] = true
+      end
+    end
 
-  # # Sparse Hessian-vector product
-  # int shessprod(n::Int, var::Vector{Float64}, n::Intnz_v, const int index_nz_v[],
-  #    var::Vector{Float64}, int *nnz_u, int index_nz_u[], u::Vector{Float64},
-  #    bool got_h, userdata::userdata_type)
-  # real_wp_ p[] = {0., 0., 0.]
-  # bool used[] = {false, false, false]
-  # for(int i = 0 i < nnz_v i++)
-  # int j = index_nz_v[i]
-  # switch(j)
-  # case 1:
-  # p[0] = p[0] + 2.0 * v[0] - cos(x[0]) * v[0]
-  # used[0] = true
-  # p[2] = p[2] + 2.0 * v[0]
-  # used[2] = true
-  # end
-  # case 2:
-  # p[1] = p[1] + 2.0 * v[1]
-  # used[1] = true
-  # p[2] = p[2] + 2.0 * v[1]
-  # used[2] = true
-  # end
-  # case 3:
-  # p[0] = p[0] + 2.0 * v[2]
-  # used[0] = true
-  # p[1] = p[1] + 2.0 * v[2]
-  # used[1] = true
-  # p[2] = p[2] + 4.0 * v[2]
-  # used[2] = true
-  # end
-  # ]
-  # ]
-  # *nnz_u = 0
-  # for(int j = 0 j < 3 j++)
-  # if used[j])
-  # u[j] = p[j]
-  # *nnz_u = *nnz_u + 1
-  # index_nz_u[*nnz_u-1] = j+1
-  # ]
-  # ]
-  # return 0
-  # ]
+    nnz_u[] = 0
+    for j in 1:3
+      if used[j]
+        u[j] = p[j]
+        nnz_u[] += 1
+        index_nz_u[nnz_u[]] = j
+      end
+    end
+    return 0
+  end
 
-  # # Apply preconditioner
-  # int prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
-  #   userdata::userdata_type)
-  #    u[0] = 0.5 * v[0]
-  #    u[1] = 0.5 * v[1]
-  #    u[2] = 0.25 * v[2]
-  #    return 0
-  # ]
+  # Apply preconditioner
+  function prec(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    u[1] = 0.5 * v[1]
+    u[2] = 0.5 * v[2]
+    u[3] = 0.25 * v[3]
+    return 0
+  end
 
-  #  # Objective function
-  # int fun_diag(n::Int, var::Vector{Float64}, real_wp_ *f, userdata::userdata_type)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ p = myuserdata->p
+  # Objective function
+  function fun_diag(n::Int, var::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+    p = userdata.p
+    f[] = (x[2] + p)^2 + x[1]^2 + cos(x[1])
+    return 0
+  end
 
-  # *f = pow(x[2] + p, 2) + pow(x[1], 2) + cos(x[0])
-  # return 0
-  # ]
+  # Gradient of the objective
+  function grad_diag(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    g[1] = -sin(x[1])
+    g[2] = 2.0 * x[2]
+    g[3] = 2.0 * (x[3] + p)
+    return 0
+  end
 
-  # # Gradient of the objective
-  # int grad_diag(n::Int, var::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
-  # struct userdata_type *myuserdata = (struct userdata_type *) userdata
-  # real_wp_ p = myuserdata->p
+  # Hessian of the objective
+  function hess_diag(n::Int, n::Int, var::Vector{Float64}, hval::Vector{Float64}, userdata::userdata_type)
+    p = userdata.p
+    hval[1] = -cos(x[1])
+    hval[3] = 2.0
+    hval[3] = 2.0
+    return 0
+  end
 
-  # g[0] = -sin(x[0])
-  # g[1] = 2.0 * x[1]
-  # g[2] = 2.0 * (x[2] + p)
-  # return 0
-  # ]
+  # Hessian-vector product
+  function hessprod_diag(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+    p = userdata.p
+    u[1] = u[1] + - cos(x[1]) * v[1]
+    u[2] = u[2] + 2.0 * v[2]
+    u[3] = u[3] + 2.0 * v[3]
+    return 0
+  end
 
-  # # Hessian of the objective
-  # int hess_diag(n::Int, n::Inte, var::Vector{Float64}, hval::Vector{Float64},
-  #    userdata::userdata_type)
-  # hval[0] = -cos(x[0])
-  # hval[1] = 2.0
-  # hval[2] = 2.0
-  # return 0
-  # ]
+  # Produit matrice-vecteur Hesseien creux
+  function shessprod_diag(n::Int, var::Vector{Float64}, nnz_v::Int, index_nz_v::Vector{Int}, u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+    p = zeros(3)
+    used = falses(3)
+    for i in 1:nnz_v
+      j = index_nz_v[i]
+      if j == 1
+        p[1] += 2.0 * v[0]
+        p[3] += 2.0 * v[0]
+        used[1] = true
+        used[3] = true
+      elseif j == 2
+        p[2] += 2.0 * v[1]
+        p[3] += 2.0 * v[1]
+        used[2] = true
+        used[3] = true
+      elseif j == 3
+        p[1] += 2.0 * v[2]
+        p[2] += 2.0 * v[2]
+        p[3] += 4.0 * v[2]
+        used[1] = true
+        used[2] = true
+        used[3] = true
+      end
+    end
 
-  # # Hessian-vector product
-  # int hessprod_diag(n::Int, var::Vector{Float64}, u::Vector{Float64}, var::Vector{Float64},
-  #    bool got_h, userdata::userdata_type)
-  # u[0] = u[0] + - cos(x[0]) * v[0]
-  # u[1] = u[1] + 2.0 * v[1]
-  # u[2] = u[2] + 2.0 * v[2]
-  # return 0
-  # ]
-
-  # # Sparse Hessian-vector product
-  # int shessprod_diag(n::Int, var::Vector{Float64}, n::Intnz_v,
-  # const int index_nz_v[],
-  # var::Vector{Float64}, int *nnz_u, int index_nz_u[],
-  # u::Vector{Float64}, bool got_h, userdata::userdata_type)
-  # real_wp_ p[] = {0., 0., 0.]
-  # bool used[] = {false, false, false]
-  # for(int i = 0 i < nnz_v i++)
-  # int j = index_nz_v[i]
-  # switch(j)
-  # case 0:
-  # p[0] = p[0] - cos(x[0]) * v[0]
-  # used[0] = true
-  # end
-  # case 1:
-  # p[1] = p[1] + 2.0 * v[1]
-  # used[1] = true
-  # end
-  # case 2:
-  # p[2] = p[2] + 2.0 * v[2]
-  # used[2] = true
-  # end
-  # ]
-  # ]
-  # *nnz_u = 0
-  # for(int j = 0 j < 3 j++)
-  # if used[j])
-  # u[j] = p[j]
-  # *nnz_u = *nnz_u + 1
-  # index_nz_u[*nnz_u-1] = j+1
-  # ]
-  # ]
-  # return 0
-  # ]
-  # end
+    nnz_u = 0
+    for j in 1:3
+      if used[j]
+        u[j] = p[j]
+        nnz_u += 1
+        index_nz_u[nnz_u] = j
+      end
+    end
+    return 0
+  end
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -210,103 +200,13 @@ function test_trb()
   status = Ref{Cint}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" tests options for all-in-one storage format\n\n")
-
-  for d in 1:5
-
-    # Initialize TRB
-    trb_initialize(data, control, status)
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    # @reset control[].print_level = 1
-
-    # Start from 1.5
-    x = Float64[1.5, 1.5, 1.5]
-
-    # sparse co-ordinate storage
-    if d == 1
-      st = 'C'
-      trb_import(control, data, status, n, x_l, x_u,
-                 "coordinate", ne, H_row, H_col, Cint[])
-
-      trb_solve_with_mat(data, userdata, status, n, x, g, ne,
-                         fun, grad, hess, prec)
-    end
-
-    # sparse by rows
-    if d == 2
-      st = 'R'
-      trb_import(control, data, status, n, x_l, x_u,
-                 "sparse_by_rows", ne, Cint[], H_col, H_ptr)
-
-      trb_solve_with_mat(data, userdata, status, n, x, g, ne,
-                         fun, grad, hess, prec)
-    end
-
-    # dense
-    if d == 3
-      st = 'D'
-      trb_import(control, data, status, n, x_l, x_u,
-                 "dense", ne, Cint[], Cint[], Cint[])
-
-      trb_solve_with_mat(data, userdata, status, n, x, g, ne,
-                         fun, grad, hess_dense, prec)
-    end
-
-    # diagonal
-    if d == 4
-      st = 'I'
-      trb_import(control, data, status, n, x_l, x_u,
-                 "diagonal", ne, Cint[], Cint[], Cint[])
-
-      trb_solve_with_mat(data, userdata, status, n, x, g, ne,
-                         fun_diag, grad_diag, hess_diag, prec)
-    end
-
-    # access by products
-    if d == 5
-      st = 'P'
-      trb_import(control, data, status, n, x_l, x_u,
-                 "absent", ne, Cint[], Cint[], Cint[])
-
-      trb_solve_without_mat(data, userdata, status, n, x, g,
-                            fun, grad, hessprod, shessprod, prec)
-    end
-
-    # Record solution information
-    trb_information(data, inform, status)
-
-    # Print solution details
-    if inform[].status == 0
-      @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
-              inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("%c: TRB_solve exit status = %1i\n", st, inform[].status)
-    end
-
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
-
-    # Delete internal workspace
-    trb_terminate(data, control, inform)
-  end
-
-  @printf("\n tests reverse-communication options\n\n")
+  @printf(" tests reverse-communication options\n\n")
 
   # reverse-communication input/output
   eval_status = Ref{Cint}()
   nnz_v = Ref{Cint}()
   nnz_u = Ref{Cint}()
-  f = 0.0
+  f = Ref{Float64}(0.0)
   u = zeros(Float64, n)
   v = zeros(Float64, n)
   index_nz_u = zeros(Cint, n)
@@ -316,7 +216,6 @@ function test_trb()
   H_diag = zeros(Float64, n)
 
   for d in 1:5
-
     # Initialize TRB
     trb_initialize(data, control, status)
 
@@ -330,11 +229,11 @@ function test_trb()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      trb_import(control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, Cint[])
+      trb_import(control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H_val, u, v)
+        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -356,12 +255,11 @@ function test_trb()
     # sparse by rows
     if d == 2
       st = 'R'
-      trb_import(control, data, status, n, x_l, x_u, "sparse_by_rows", ne, Cint[], H_col,
-                 H_ptr)
+      trb_import(control, data, status, n, x_l, x_u, "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H_val, u, v)
+        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -384,12 +282,11 @@ function test_trb()
     if d == 3
       st = 'D'
       trb_import(control, data, status, n, x_l, x_u,
-                 "dense", ne, Cint[], Cint[], Cint[])
+                 "dense", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, n * (n + 1) / 2,
-                                   H_dense, u, v)
+        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, div(n*(n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -411,11 +308,11 @@ function test_trb()
     # diagonal
     if d == 4
       st = 'I'
-      trb_import(control, data, status, n, x_l, x_u, "diagonal", ne, Cint[], Cint[], Cint[])
+      trb_import(control, data, status, n, x_l, x_u, "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, n, H_diag, u, v)
+        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -437,13 +334,12 @@ function test_trb()
     # access by products
     if d == 5
       st = 'P'
-      trb_import(control, data, status, n, x_l, x_u, "absent", ne, Cint[], Cint[], Cint[])
+      trb_import(control, data, status, n, x_l, x_u, "absent", ne, C_NULL, C_NULL, C_NULL)
       nnz_u = 0
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_without_mat(data, status, eval_status, n, x, f, g, u, v,
-                                      index_nz_v, nnz_v, index_nz_u, nnz_u)
+        trb_solve_reverse_without_mat(data, status, eval_status, n, x, f[], g, u, v, index_nz_v, nnz_v, index_nz_u, nnz_u)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit

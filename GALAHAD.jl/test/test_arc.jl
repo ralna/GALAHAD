@@ -118,99 +118,11 @@ function test_arc()
   status = Ref{Cint}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" tests options for all-in-one storage format\n\n")
-
-  for d in 1:5
-
-    # Initialize ARC
-    arc_initialize(data, control, status)
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    # @reset control[].print_level = 1
-
-    # Start from 1.5
-    x = Float64[1.5, 1.5, 1.5]
-
-    # sparse co-ordinate storage
-    if d == 1
-      st = 'C'
-      arc_import(control, data, status, n, "coordinate",
-                 ne, H_row, H_col, C_NULL)
-
-      arc_solve_with_mat(data, userdata, status,
-                         n, x, g, ne, fun, grad, hess, prec)
-    end
-
-    # sparse by rows
-    if d == 2
-      st = 'R'
-      arc_import(control, data, status, n, "sparse_by_rows",
-                 ne, C_NULL, H_col, H_ptr)
-
-      arc_solve_with_mat(data, userdata, status,
-                         n, x, g, ne, fun, grad, hess, prec)
-    end
-
-    # dense
-    if d == 3
-      st = 'D'
-      arc_import(control, data, status, n, "dense",
-                 ne, C_NULL, C_NULL, C_NULL)
-
-      arc_solve_with_mat(data, userdata, status,
-                         n, x, g, ne, fun, grad, hess_dense, prec)
-    end
-
-    # diagonal
-    if d == 4
-      st = 'I'
-      arc_import(control, data, status, n, "diagonal",
-                 ne, C_NULL, C_NULL, C_NULL)
-
-      arc_solve_with_mat(data, userdata, status, n, x, g,
-                         ne, fun_diag, grad_diag, hess_diag, prec)
-    end
-
-    # access by products
-    if d == 5
-      st = 'P'
-      arc_import(control, data, status, n, "absent",
-                 ne, C_NULL, C_NULL, C_NULL)
-
-      arc_solve_without_mat(data, userdata, status,
-                            n, x, g, fun, grad, hessprod, prec)
-    end
-
-    arc_information(data, inform, status)
-
-    if inform[].status[] == 0
-      @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
-              inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("%c: ARC_solve exit status = %1i\n", st, inform[].status)
-    end
-
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
-
-    # Delete internal workspace
-    arc_terminate(data, control, inform)
-  end
-
-  @printf("\n tests reverse-communication options\n\n")
+  @printf(" tests reverse-communication options\n\n")
 
   # reverse-communication input/output
   eval_status = Ref{Cint}()
-  f = 0.0
+  f = Ref{Float64}(0.0)
   u = zeros(Float64, n)
   v = zeros(Float64, n)
   H_val = zeros(Float64, ne)
@@ -224,7 +136,7 @@ function test_arc()
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    # @reset control[].print_level = 1
+    # @reset control[].print_level = Cint(1)
 
     # Start from 1.5
     x = Float64[1.5, 1.5, 1.5]
@@ -237,19 +149,19 @@ function test_arc()
 
       terminated = false
       while !terminated # reverse-communication loop
-        arc_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H_val, u, v)
+        arc_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess(n, ne, x, H_val, userdata)
+          eval_status[] = hess(n, ne, x, H_val, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -265,19 +177,19 @@ function test_arc()
       terminated = false
       while !terminated # reverse-communication loop
         arc_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f, g, ne, H_val, u, v)
+                                   n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess(n, ne, x, H_val, userdata)
+          eval_status[] = hess(n, ne, x, H_val, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -293,23 +205,21 @@ function test_arc()
       terminated = false
       while !terminated # reverse-communication loop
         arc_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f, g, n * (n + 1) / 2, H_dense, u, v)
+                                   n, x, f[], g, div(n*(n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess_dense(n, n * (n + 1) / 2, x, H_dense,
-                                   userdata)
+          eval_status[] = hess_dense(n, div(n*(n + 1), 2), x, H_dense, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
-          @printf(" the value %1i of status should not occur\n",
-                  status)
+          @printf(" the value %1i of status should not occur\n", status)
         end
       end
     end
@@ -323,19 +233,19 @@ function test_arc()
       terminated = false
       while !terminated # reverse-communication loop
         arc_solve_reverse_with_mat(data, status, eval_status,
-                                   n, x, f, g, n, H_diag, u, v)
+                                   n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun_diag(n, x, f, userdata)
+          eval_status[] = fun_diag(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad_diag(n, x, g, userdata)
+          eval_status[] = grad_diag(n, x, g, userdata)
         elseif status[] == 4 # evaluate H
-          eval_status = hess_diag(n, n, x, H_diag, userdata)
+          eval_status[] = hess_diag(n, n, x, H_diag, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end
@@ -351,19 +261,19 @@ function test_arc()
       terminated = false
       while !terminated # reverse-communication loop
         arc_solve_reverse_without_mat(data, status, eval_status,
-                                      n, x, f, g, u, v)
+                                      n, x, f[], g, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
           terminated = true
         elseif status[] == 2 # evaluate f
-          eval_status = fun(n, x, f, userdata)
+          eval_status[] = fun(n, x, f, userdata)
         elseif status[] == 3 # evaluate g
-          eval_status = grad(n, x, g, userdata)
+          eval_status[] = grad(n, x, g, userdata)
         elseif status[] == 5 # evaluate H
-          eval_status = hessprod(n, x, u, v, false, userdata)
+          eval_status[] = hessprod(n, x, u, v, false, userdata)
         elseif status[] == 6 # evaluate the product with P
-          eval_status = prec(n, x, u, v, userdata)
+          eval_status[] = prec(n, x, u, v, userdata)
         else
           @printf(" the value %1i of status should not occur\n", status)
         end

@@ -103,7 +103,7 @@ function test_bqp()
     if d == 1
       st = 'C'
       bqp_import(control, data, status, n,
-                 "coordinate", H_ne, H_row, H_col, Cint[])
+                 "coordinate", H_ne, H_row, H_col, C_NULL)
 
       bqp_solve_given_h(data, status, n, H_ne, H_val, g, f,
                         x_l, x_u, x, z, x_stat)
@@ -113,7 +113,7 @@ function test_bqp()
     if d == 2
       st = 'R'
       bqp_import(control, data, status, n,
-                 "sparse_by_rows", H_ne, Cint[], H_col, H_ptr)
+                 "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
       bqp_solve_given_h(data, status, n, H_ne, H_val, g, f,
                         x_l, x_u, x, z, x_stat)
@@ -123,7 +123,7 @@ function test_bqp()
     if d == 3
       st = 'D'
       bqp_import(control, data, status, n,
-                 "dense", H_dense_ne, Cint[], Cint[], Cint[])
+                 "dense", H_dense_ne, C_NULL, C_NULL, C_NULL)
 
       bqp_solve_given_h(data, status, n, H_dense_ne, H_dense,
                         g, f, x_l, x_u, x, z, x_stat)
@@ -133,7 +133,7 @@ function test_bqp()
     if d == 4
       st = 'L'
       bqp_import(control, data, status, n,
-                 "diagonal", H_ne, Cint[], Cint[], Cint[])
+                 "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
 
       bqp_solve_given_h(data, status, n, n, H_diag, g, f,
                         x_l, x_u, x, z, x_stat)
@@ -168,14 +168,13 @@ function test_bqp()
   # reverse-communication input/output
   nz_v_start = Ref{Cint}()
   nz_v_end = Ref{Cint}()
-  nz_prod_end = Ref{Cint}()
   nz_v = zeros(Cint, n)
   nz_prod = zeros(Cint, n)
   mask = zeros(Cint, n)
   v = zeros(Float64, n)
   prod = zeros(Float64, n)
 
-  nz_prod_end = 0
+  nz_prod_end = 1
 
   # Initialize BQP
   bqp_initialize(data, control, status)
@@ -200,13 +199,14 @@ function test_bqp()
   while !terminated # reverse-communication loop
     bqp_solve_reverse_h_prod(data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod, nz_v,
                              nz_v_start, nz_v_end, nz_prod, nz_prod_end)
+
     if status[] == 0 # successful termination
       terminated = true
     elseif status[] < 0 # error exit
       terminated = true
     elseif status[] == 2 # evaluate Hv
       prod[1] = 2.0 * v[1] + v[2]
-      for i in 2:(n - 1)
+      for i in 2:n-1
         prod[i] = 2.0 * v[i] + v[i - 1] + v[i + 1]
       end
       prod[n] = 2.0 * v[n] + v[n - 1]
@@ -214,8 +214,8 @@ function test_bqp()
       for i in 1:n
         prod[i] = 0.0
       end
-      for l in nz_v_start[]+1:nz_v_end[]
-        i = nz_v[l] - 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
         if i > 1
           prod[i - 1] = prod[i - 1] + v[i]
         end
@@ -227,7 +227,7 @@ function test_bqp()
     elseif status[] == 4 # evaluate sarse Hv for sparse v
       nz_prod_end = 1
       for l in nz_v_start[]:nz_v_end[]
-        i = nz_v[l] - 1
+        i = nz_v[l]
         if i > 1
           if mask[i - 1] == 0
             mask[i - 1] = 1

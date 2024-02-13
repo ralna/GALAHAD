@@ -21,7 +21,6 @@ function prec(n::Int, var::Vector{Float64}, p::Vector{Float64}, userdata::userda
 end
 
 function test_slls()
-  pointer_prec = @cfunction(prec, Int, (Int, Vector{Float64}, Vector{Float64}, userdata_type))
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -31,6 +30,9 @@ function test_slls()
   # Set user data
   userdata = userdata_type(1.0)
   pointer_userdata = pointer_from_objref(userdata)
+
+  # Pointer to call prec
+  pointer_prec = @cfunction(prec, Int, (Int, Vector{Float64}, Vector{Float64}, userdata_type))
 
   # Set problem data
   n = 10 # dimension
@@ -308,8 +310,8 @@ function test_slls()
         mask[nz_p[l]] = 0
       end
     elseif status[] == 6 # evaluate p = sparse A^Tv
-      for l in nz_v_start:nz_v_end
-        i = nz_v[l] - 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
         p[i] = v[i] + v[n]
       end
     elseif status[] == 7 # evaluate p = P^{-}v

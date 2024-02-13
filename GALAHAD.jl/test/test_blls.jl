@@ -7,20 +7,20 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-struct userdata_type
+mutable struct userdata_type
   scale::Float64
 end
 
-function test_blls()
-  # Apply preconditioner
-  function prec(n::Int, var::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
-    scale = userdata.scale
-    for i in 1:n
-      p[i] = scale * v[i]
-    end
-    return 0
+# Apply preconditioner
+function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
+  scale = userdata.scale
+  for i in 1:n
+    p[i] = scale * x[i]
   end
+  return 0
+end
 
+function test_blls()
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{blls_control_type{Float64}}()
@@ -28,6 +28,10 @@ function test_blls()
 
   # Set user data
   userdata = userdata_type(1.0)
+  pointer_userdata = pointer_from_objref(userdata)
+
+  # Pointer to call prec
+  pointer_prec = @cfunction(prec, Int, (Int, Vector{Float64}, Vector{Float64}, userdata_type))
 
   # Set problem data
   n = 10 # dimension
@@ -75,7 +79,7 @@ function test_blls()
   #       (e^T)          (n + 1)
 
   for i in 1:n
-    b[i] = i + 1
+    b[i] = i
   end
   b[n + 1] = n + 1
 
@@ -87,18 +91,18 @@ function test_blls()
 
   # # A by rows
   for i in 1:n
-    Ao_ptr[i] = i + 1
-    Ao_row[i] = i + 1
-    Ao_col[i] = i + 1
+    Ao_ptr[i] = i
+    Ao_row[i] = i
+    Ao_col[i] = i
     Ao_val[i] = 1.0
   end
   Ao_ptr[n + 1] = n + 1
   for i in 1:n
     Ao_row[n + i] = o
-    Ao_col[n + i] = i + 1
+    Ao_col[n + i] = i
     Ao_val[n + i] = 1.0
   end
-  Ao_ptr[o] = Ao_ne + 1
+  Ao_ptr[o + 1] = Ao_ne + 1
   l = 0
   for i in 1:n
     for j in 1:n
@@ -119,8 +123,8 @@ function test_blls()
   l = 0
   for j in 1:n
     l = l + 1
-    Ao_by_col_ptr[j] = l + 1
-    Ao_by_col_row[l] = j + 1
+    Ao_by_col_ptr[j] = l
+    Ao_by_col_row[l] = j
     Ao_by_col_val[l] = 1.0
     l = l + 1
     Ao_by_col_row[l] = o
@@ -162,23 +166,23 @@ function test_blls()
     if d == 1
       st = "CO"
       blls_import(control, data, status, n, o,
-                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, Cint[])
+                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
 
-      blls_solve_given_a(data, userdata, status, n, o,
+      blls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_ne, Ao_val, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, prec)
+                         x, z, r, g, x_stat, w, pointer_prec)
     end
 
     # sparse by rows
     if d == 2
       st = "SR"
       blls_import(control, data, status, n, o,
-                  "sparse_by_rows", Ao_ne, Cint[], Ao_col,
+                  "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                   Ao_ptr_ne, Ao_ptr)
 
-      blls_solve_given_a(data, userdata, status, n, o,
+      blls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_ne, Ao_val, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, prec)
+                         x, z, r, g, x_stat, w, pointer_prec)
     end
 
     # dense by rows
@@ -186,11 +190,11 @@ function test_blls()
       st = "DR"
       blls_import(control, data, status, n, o,
                   "dense_by_rows", Ao_dense_ne,
-                  Cint[], Cint[], 0, Cint[])
+                  C_NULL, C_NULL, 0, C_NULL)
 
-      blls_solve_given_a(data, userdata, status, n, o,
+      blls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_dense_ne, Ao_dense, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, prec)
+                         x, z, r, g, x_stat, w, pointer_prec)
     end
 
     # sparse by columns
@@ -198,11 +202,11 @@ function test_blls()
       st = "SC"
       blls_import(control, data, status, n, o,
                   "sparse_by_columns", Ao_ne, Ao_by_col_row,
-                  Cint[], Ao_by_col_ptr_ne, Ao_by_col_ptr)
+                  C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
 
-      blls_solve_given_a(data, userdata, status, n, o,
+      blls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_ne, Ao_by_col_val, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, prec)
+                         x, z, r, g, x_stat, w, pointer_prec)
     end
 
     # dense by columns
@@ -210,11 +214,11 @@ function test_blls()
       st = "DC"
       blls_import(control, data, status, n, o,
                   "dense_by_columns", Ao_dense_ne,
-                  Cint[], Cint[], 0, Cint[])
+                  C_NULL, C_NULL, 0, C_NULL)
 
-      blls_solve_given_a(data, userdata, status, n, o,
+      blls_solve_given_a(data, pointer_userdata, status, n, o,
                          Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, prec)
+                         x, z, r, g, x_stat, w, pointer_prec)
     end
 
     blls_information(data, inform, status)
@@ -242,11 +246,16 @@ function test_blls()
 
   # reverse-communication input/output
   on = max(o, n)
-  # int eval_status, nz_v_start, nz_v_end, nz_p_end
-  # int nz_v[on], nz_p[o], mask[o]
-  # real_wp_ v[on], p[on]
+  eval_status = Ref{Cint}()
+  nz_v_start = Ref{Cint}()
+  nz_v_end = Ref{Cint}()
+  nz_v = zeros(Cint, on)
+  nz_p = zeros(Cint, o)
+  mask = zeros(Cint, o)
+  v = zeros(Float64, on)
+  p = zeros(Float64, on)
 
-  nz_p_end = 0
+  nz_p_end = 1
 
   # Initialize BLLS
   blls_initialize(data, control, status)
@@ -260,7 +269,7 @@ function test_blls()
     z[i] = 0.0
   end
 
-  st = "RC"
+  st = "RZ"
   for i in 1:o
     mask[i] = 0
   end
@@ -292,15 +301,15 @@ function test_blls()
       for i in 1:n
         p[i] = 0.0
       end
-      for l in (nz_v_start - 1):nz_v_end
+      for l in nz_v_start[]:nz_v_end[]
         i = nz_v[l]
         p[i] = v[i]
         p[n + 1] = p[n + 1] + v[i]
       end
     elseif status[] == 5 # evaluate p = sparse Av for sparse v
-      nz_p_end = 0
-      for l in (nz_v_start - 1):nz_v_end
-        i = nz_v[l] - 1
+      nz_p_end = 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
         if mask[i] == 0
           mask[i] = 1
           nz_p[nz_p_end] = i + 1
@@ -316,12 +325,12 @@ function test_blls()
           p[n + 1] = p[n + 1] + v[i]
         end
         for l in 1:nz_p_end
-          mask[nz_p[l] - 1] = 0
+          mask[nz_p[l]] = 0 # <-- Nick I need your help here
         end
       end
     elseif status[] == 6 # evaluate p = sparse A^Tv
-      for l in (nz_v_start - 1):nz_v_end
-        i = nz_v[l] - 1
+      for l in nz_v_start[]:nz_v_end[]
+        i = nz_v[l]
         p[i] = v[i] + v[n + 1]
       end
     elseif status[] == 7 # evaluate p = P^{-}v
@@ -331,7 +340,7 @@ function test_blls()
     else
       @printf(" the value %1i of status should not occur\n", status)
     end
-    eval_status = 0
+    eval_status[] = 0
   end
 
   # Record solution information

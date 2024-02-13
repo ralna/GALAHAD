@@ -61,7 +61,6 @@ function test_rqs()
       end
 
       for storage_type in 1:4
-
         # Initialize RQS
         rqs_initialize(data, control, status)
 
@@ -73,33 +72,33 @@ function test_rqs()
           st = 'C'
           # import the control parameters and structural data
           rqs_import(control, data, status, n,
-                     "coordinate", H_ne, H_row, H_col, Cint[])
+                     "coordinate", H_ne, H_row, H_col, C_NULL)
           if m_is == 1
             rqs_import_m(data, status, n,
-                         "coordinate", M_ne, M_row, M_col, Cint[])
+                         "coordinate", M_ne, M_row, M_col, C_NULL)
           end
           if a_is == 1
             rqs_import_a(data, status, m,
-                         "coordinate", A_ne, A_row, A_col, Cint[])
+                         "coordinate", A_ne, A_row, A_col, C_NULL)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              M_ne, M_val, m, A_ne, A_val, Cint[])
+                              M_ne, M_val, m, A_ne, A_val, C_NULL)
           elseif a_is == 1
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              0, Cint[], m, A_ne, A_val, Cint[])
+                              0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              M_ne, M_val, 0, 0, Cint[], Cint[])
+                              M_ne, M_val, 0, 0, C_NULL, C_NULL)
           else
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              0, Cint[], 0, 0, Cint[], Cint[])
+                              0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
@@ -108,33 +107,33 @@ function test_rqs()
           st = 'R'
           # import the control parameters and structural data
           rqs_import(control, data, status, n,
-                     "sparse_by_rows", H_ne, Cint[], H_col, H_ptr)
+                     "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
           if m_is == 1
             rqs_import_m(data, status, n,
-                         "sparse_by_rows", M_ne, Cint[], M_col, M_ptr)
+                         "sparse_by_rows", M_ne, C_NULL, M_col, M_ptr)
           end
           if a_is == 1
             rqs_import_a(data, status, m,
-                         "sparse_by_rows", A_ne, Cint[], A_col, A_ptr)
+                         "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              M_ne, M_val, m, A_ne, A_val, Cint[])
+                              M_ne, M_val, m, A_ne, A_val, C_NULL)
           elseif a_is == 1
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              0, Cint[], m, A_ne, A_val, Cint[])
+                              0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              M_ne, M_val, 0, 0, Cint[], Cint[])
+                              M_ne, M_val, 0, 0, C_NULL, C_NULL)
           else
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, H_ne, H_val, x,
-                              0, Cint[], 0, 0, Cint[], Cint[])
+                              0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
@@ -143,15 +142,14 @@ function test_rqs()
           st = 'D'
           # import the control parameters and structural data
           rqs_import(control, data, status, n,
-                     "dense", H_ne, Cint[], Cint[], Cint[])
+                     "dense", H_ne, C_NULL, C_NULL, C_NULL)
           if m_is == 1
             rqs_import_m(data, status, n,
-                         "dense", M_ne, Cint[], Cint[], Cint[])
+                         "dense", M_ne, C_NULL, C_NULL, C_NULL)
           end
-
           if a_is == 1
             rqs_import_a(data, status, m,
-                         "dense", A_ne, Cint[], Cint[], Cint[])
+                         "dense", A_ne, C_NULL, C_NULL, C_NULL)
           end
 
           # solve the problem
@@ -159,19 +157,19 @@ function test_rqs()
             rqs_solve_problem(data, status, n, power, weight,
                               f, c, H_dense_ne, H_dense, x,
                               M_dense_ne, M_dense, m, A_ne, A_val,
-                              Cint[])
+                              C_NULL)
           elseif a_is == 1
             rqs_solve_problem(data, status, n, power, weight,
                               f, c, H_dense_ne, H_dense, x,
-                              0, Cint[], m, A_ne, A_val, Cint[])
+                              0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
             rqs_solve_problem(data, status, n, power, weight,
                               f, c, H_dense_ne, H_dense, x,
-                              M_dense_ne, M_dense, 0, 0, Cint[], Cint[])
+                              M_dense_ne, M_dense, 0, 0, C_NULL, C_NULL)
           else
             rqs_solve_problem(data, status, n, power, weight,
                               f, c, H_dense_ne, H_dense, x,
-                              0, Cint[], 0, 0, Cint[], Cint[])
+                              0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
@@ -180,33 +178,33 @@ function test_rqs()
           st = 'L'
           # import the control parameters and structural data
           rqs_import(control, data, status, n,
-                     "diagonal", H_ne, Cint[], Cint[], Cint[])
+                     "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
           if m_is == 1
             rqs_import_m(data, status, n,
-                         "diagonal", M_ne, Cint[], Cint[], Cint[])
+                         "diagonal", M_ne, C_NULL, C_NULL, C_NULL)
           end
           if a_is == 1
             rqs_import_a(data, status, m,
-                         "dense", A_ne, Cint[], Cint[], Cint[])
+                         "dense", A_ne, C_NULL, C_NULL, C_NULL)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, n, H_diag, x,
-                              n, M_diag, m, A_ne, A_val, Cint[])
+                              n, M_diag, m, A_ne, A_val, C_NULL)
           elseif a_is == 1
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, n, H_diag, x,
-                              0, Cint[], m, A_ne, A_val, Cint[])
+                              0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, n, H_diag, x,
-                              n, M_diag, 0, 0, Cint[], Cint[])
+                              n, M_diag, 0, 0, C_NULL, C_NULL)
           else
             rqs_solve_problem(data, status, n,
                               power, weight, f, c, n, H_diag, x,
-                              0, Cint[], 0, 0, Cint[], Cint[])
+                              0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
@@ -216,7 +214,7 @@ function test_rqs()
                 inform[].status, inform[].obj_regularized)
 
         # @printf("x: ")
-        # for(int i = 0 i < n+m i++)
+        # for i in 1:n+m
         #   @printf("%f ", x[i])
         # end
 
