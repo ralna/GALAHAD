@@ -1642,6 +1642,8 @@
 #define hsl_ma54_double galahad_hsl_ma54_double_64
 #define hsl_ma57_single galahad_hsl_ma57_single_64
 #define hsl_ma57_double galahad_hsl_ma57_double_64
+#define hsl_ma64_single galahad_hsl_ma64_single_64
+#define hsl_ma64_double galahad_hsl_ma64_double_64
 #define hsl_ma77_single galahad_hsl_ma77_single_64
 #define hsl_ma77_double galahad_hsl_ma77_double_64
 #define hsl_ma86_single galahad_hsl_ma86_single_64
@@ -1650,6 +1652,8 @@
 #define hsl_ma87_double galahad_hsl_ma87_double_64
 #define hsl_ma97_single galahad_hsl_ma97_single_64
 #define hsl_ma97_double galahad_hsl_ma97_double_64
+#define hsl_mc34_single galahad_hsl_mc34_single_64
+#define hsl_mc34_double galahad_hsl_mc34_double_64
 #define hsl_mc64_single galahad_hsl_mc64_single_64
 #define hsl_mc64_double galahad_hsl_mc64_double_64
 #define hsl_mc65_single galahad_hsl_mc65_single_64
@@ -1657,6 +1661,10 @@
 #define hsl_mc68_single galahad_hsl_mc68_single_64
 #define hsl_mc68_double galahad_hsl_mc68_double_64
 #define hsl_mc68_integer galahad_hsl_mc68_integer_64
+#define hsl_mc69_single galahad_hsl_mc69_single_64
+#define hsl_mc69_double galahad_hsl_mc69_double_64
+#define hsl_mc80_single galahad_hsl_mc80_single_64
+#define hsl_mc80_double galahad_hsl_mc80_double_64
 #define hsl_mi20_single galahad_hsl_mi20_single_64
 #define hsl_mi20_double galahad_hsl_mi20_double_64
 #define hsl_mi28_single galahad_hsl_mi28_single_64
@@ -2028,6 +2036,8 @@
 #define hsl_ma54_double galahad_hsl_ma54_double
 #define hsl_ma57_single galahad_hsl_ma57_single
 #define hsl_ma57_double galahad_hsl_ma57_double
+#define hsl_ma64_single galahad_hsl_ma64_single
+#define hsl_ma64_double galahad_hsl_ma64_double
 #define hsl_ma77_single galahad_hsl_ma77_single
 #define hsl_ma77_double galahad_hsl_ma77_double
 #define hsl_ma86_single galahad_hsl_ma86_single
@@ -2036,6 +2046,8 @@
 #define hsl_ma87_double galahad_hsl_ma87_double
 #define hsl_ma97_single galahad_hsl_ma97_single
 #define hsl_ma97_double galahad_hsl_ma97_double
+#define hsl_mc34_single galahad_hsl_mc34_single
+#define hsl_mc34_double galahad_hsl_mc34_double
 #define hsl_mc64_single galahad_hsl_mc64_single
 #define hsl_mc64_double galahad_hsl_mc64_double
 #define hsl_mc65_single galahad_hsl_mc65_single
@@ -2043,6 +2055,10 @@
 #define hsl_mc68_single galahad_hsl_mc68_single
 #define hsl_mc68_double galahad_hsl_mc68_double
 #define hsl_mc68_integer galahad_hsl_mc68_integer
+#define hsl_mc69_single galahad_hsl_mc69_single
+#define hsl_mc69_double galahad_hsl_mc69_double
+#define hsl_mc80_single galahad_hsl_mc80_single
+#define hsl_mc80_double galahad_hsl_mc80_double
 #define hsl_mi20_single galahad_hsl_mi20_single
 #define hsl_mi20_double galahad_hsl_mi20_double
 #define hsl_mi28_single galahad_hsl_mi28_single

@@ -1,5 +1,7 @@
 using Test
 
+global n = 0
+
 function exported_modules(path::String)
   modules = String[]
   files = readdir(path)
@@ -45,8 +47,11 @@ for (modules1, modules2, int1, int2, name) in modules_combinations
     flag2 = mapreduce(x -> (x * "_64.mod") == mod, |, single_double_modules) && (int1 == int2 == 64)
     if !flag1 && !flag2
       println(mod)
+      global n = n+1
     end
   end
   println("---------------------------------------------------------------------------------------------------------------------------")
   println()
 end
+
+@test n == 0

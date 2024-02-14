@@ -299,6 +299,7 @@
 #define sbls_solve_system sbls_solve_system_s
 #define sbls_information sbls_information_s
 #define sbls_terminate sbls_terminate_s
+#define scu_initialize scu_initialize_s
 #define scu_information scu_information_s
 #define scu_terminate scu_terminate_s
 #define sec_information sec_information_s
