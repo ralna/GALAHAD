@@ -11,8 +11,9 @@ types = ("control", "time", "inform", "history", "subproblem_control", "subprobl
 nonparametric_structures = ("slls_time_type", "sha_control_type", "sha_inform_type", "sec_inform_type",
                             "scu_control_type", "scu_inform_type", "rpd_control_type",
                             "rpd_inform_type", "roots_inform_type", "presolve_inform_type",
-                            "lhs_control_type", "lhs_inform_type", "hash_control_type", "hash_inform_type",
-                            "gls_sinfo_type", "bqp_time_type", "bsc_control_type", "convert_control_type",
+                            "lhs_control_type", "lhs_inform_type", "lms_control_type",
+                            "hash_control_type", "hash_inform_type", "gls_sinfo_type",
+                            "bqp_time_type", "bsc_control_type", "convert_control_type",
                             "fit_control_type", "fit_inform_type", "spral_ssids_inform", "ma48_sinfo",
                             "mc64_control", "mc64_info", "mc68_control", "mc68_info")
 
@@ -20,9 +21,9 @@ function rewrite!(path::String, name::String, optimized::Bool)
   structures = "# Structures for $name\n"
   text = read(path, String)
   if optimized
-    text = replace(text, "struct " => "mutable struct ")
+    text = replace(text, "ipc_" => "Cint")
+    text = replace(text, "longc_" => "Int64")
     text = replace(text, "real_sp_" => "Float32")
-    text = replace(text, "Ptr{$name" => "Ref{$name")
     text = replace(text, "\n    " => "\n  ")
 
     # Special case for gls
@@ -48,6 +49,10 @@ function rewrite!(path::String, name::String, optimized::Bool)
       end
     end
 
+    for type in ("llst_history_type", "llsr_history_type", "rqs_history_type", "trs_history_type")
+      text = replace(text, "$type}" => "$type{T}}")
+    end
+
     blocks = split(text, "end\n")
     text = ""
     for (index, code) in enumerate(blocks)
@@ -60,8 +65,8 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_single = replace(routine_single, "libgalahad_double" => "libgalahad_single")
         routine_single = replace(routine_single, ",\n" => ",\n  ")
 
-        routine_single = replace(routine_single, "real_wp_" => "Float32")
-        routine_double = replace(routine_double, "real_wp_" => "Float64")
+        routine_single = replace(routine_single, "rpc_" => "Float32")
+        routine_double = replace(routine_double, "rpc_" => "Float64")
 
         routine_single = replace(routine_single, "spral_ssids_options" => "spral_ssids_options{Float32}")
         routine_double = replace(routine_double, "spral_ssids_options" => "spral_ssids_options{Float64}")
@@ -82,22 +87,16 @@ function rewrite!(path::String, name::String, optimized::Bool)
           text = text * "\n" * "export " * function_name * "_s\n" * routine_single
           text = text * "\n" * "export " * function_name *   "\n" * routine_double
         end
-      elseif contains(code, "mutable struct")
+      elseif contains(code, "struct ")
         structure = code * "end\n"
-        structure_name = split(split(code, "mutable struct ")[2], "\n")[1]
-        structure = replace(structure, "real_wp_" => "T")
+        structure_name = split(split(code, "struct ")[2], "\n")[1]
+        structure = replace(structure, "rpc_" => "T")
         if structure_name ∉ nonparametric_structures
           structure = replace(structure, structure_name => structure_name * "{T}")
-          structures = structures * "$(structure_name){Float32}()\n"
-          structures = structures * "$(structure_name){Float64}()\n"
-          if count("_type", structure) > 1
-            structure = replace(structure, "end\n" => "\n  function " * structure_name * "{T}() where T\n    type = new()\n    # TODO!\n    return type\n  end\nend\n")
-          else
-            structure = replace(structure, "end\n" => "\n  " * structure_name * "{T}() where T = new()\nend\n")
-          end
+          structures = structures * "Ref{$(structure_name){Float32}}()\n"
+          structures = structures * "Ref{$(structure_name){Float64}}()\n"
         else
-          structure = replace(structure, "end\n" => "\n  " * structure_name * "() = new()\nend\n")
-          structures = structures * "$(structure_name)()\n"
+          structures = structures * "Ref{$(structure_name)}()\n"
         end
         if index == 1
           text = text * "export " * structure_name * "\n\n" * structure
@@ -108,11 +107,12 @@ function rewrite!(path::String, name::String, optimized::Bool)
         text = text * code
       end
     end
+
+    isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\n\n")
+    test = read("../test/test_structures.jl", String)
+    structures = structures * "\n"
+    write("../test/test_structures.jl", test * structures)
   end
-  isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "")
-  test = read("../test/test_structures.jl", String)
-  structures = structures * "\n"
-  write("../test/test_structures.jl", test * structures)
 
   write(path, text)
 end

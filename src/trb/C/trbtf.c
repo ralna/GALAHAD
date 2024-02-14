@@ -468,15 +468,15 @@ ipc_ shessprod_diag( ipc_ n, const rpc_ x[], ipc_ nnz_v,
     for( ipc_ i = 0; i < nnz_v; i++){
         ipc_ j = index_nz_v[i];
         switch(j){
-            case 0:
+            case 1:
                 p[0] = p[0] - cos(x[0]) * v[0];
                 used[0] = true;
                 break;
-            case 1:
+            case 2:
                 p[1] = p[1] + 2.0 * v[1];
                 used[1] = true;
                 break;
-            case 2:
+            case 3:
                 p[2] = p[2] + 2.0 * v[2];
                 used[2] = true;
                 break;

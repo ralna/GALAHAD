@@ -57,7 +57,5 @@ permanently in the shell's startup file, or in
 
 ## Documentation
 
-Documentation is available online from
-
-     https://ralna.github.io/galahad_docs/html/Julia
+Documentation is available online from [https://ralna.github.io/galahad_docs/html/Julia](https://ralna.github.io/galahad_docs/html/Julia).
 

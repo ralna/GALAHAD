@@ -1,6 +1,6 @@
 export qpa_control_type
 
-mutable struct qpa_control_type{T}
+struct qpa_control_type{T}
   f_indexing::Bool
   error::Cint
   out::Cint
@@ -52,17 +52,11 @@ mutable struct qpa_control_type{T}
   prefix::NTuple{31,Cchar}
   each_interval::Bool
   sls_control::sls_control_type{T}
-
-  function qpa_control_type{T}() where T
-    type = new()
-    type.sls_control = sls_control_type{T}()
-    return type
-  end
 end
 
 export qpa_time_type
 
-mutable struct qpa_time_type{T}
+struct qpa_time_type{T}
   total::T
   preprocess::T
   analyse::T
@@ -73,13 +67,11 @@ mutable struct qpa_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
-
-  qpa_time_type{T}() where T = new()
 end
 
 export qpa_inform_type
 
-mutable struct qpa_inform_type{T}
+struct qpa_inform_type{T}
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
@@ -99,20 +91,13 @@ mutable struct qpa_inform_type{T}
   merit::T
   time::qpa_time_type{T}
   sls_inform::sls_inform_type{T}
-
-  function qpa_inform_type{T}() where T
-    type = new()
-    type.time = qpa_time_type{T}()
-    type.sls_inform = sls_inform_type{T}()
-    return type
-  end
 end
 
 export qpa_initialize_s
 
 function qpa_initialize_s(data, control, status)
   @ccall libgalahad_single.qpa_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{qpa_control_type{Float32}},
+                                            control::Ptr{qpa_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -120,29 +105,29 @@ export qpa_initialize
 
 function qpa_initialize(data, control, status)
   @ccall libgalahad_double.qpa_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{qpa_control_type{Float64}},
+                                          control::Ptr{qpa_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
 export qpa_read_specfile_s
 
 function qpa_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.qpa_read_specfile_s(control::Ref{qpa_control_type{Float32}},
+  @ccall libgalahad_single.qpa_read_specfile_s(control::Ptr{qpa_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 export qpa_read_specfile
 
 function qpa_read_specfile(control, specfile)
-  @ccall libgalahad_double.qpa_read_specfile(control::Ref{qpa_control_type{Float64}},
+  @ccall libgalahad_double.qpa_read_specfile(control::Ptr{qpa_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
 export qpa_import_s
 
-function qpa_import_s(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
-                    A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_single.qpa_import_s(control::Ref{qpa_control_type{Float32}},
+function qpa_import_s(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr,
+                      A_type, A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_single.qpa_import_s(control::Ptr{qpa_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
                                         H_row::Ptr{Cint}, H_col::Ptr{Cint},
@@ -154,20 +139,19 @@ end
 export qpa_import
 
 function qpa_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
-                  A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_double.qpa_import(control::Ref{qpa_control_type{Float64}},
+                    A_ne, A_row, A_col, A_ptr)
+  @ccall libgalahad_double.qpa_import(control::Ptr{qpa_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
-                                      H_row::Ptr{Cint}, H_col::Ptr{Cint},
-                                      H_ptr::Ptr{Cint}, A_type::Ptr{Cchar}, A_ne::Cint,
-                                      A_row::Ptr{Cint}, A_col::Ptr{Cint},
-                                      A_ptr::Ptr{Cint})::Cvoid
+                                      H_row::Ptr{Cint}, H_col::Ptr{Cint}, H_ptr::Ptr{Cint},
+                                      A_type::Ptr{Cchar}, A_ne::Cint, A_row::Ptr{Cint},
+                                      A_col::Ptr{Cint}, A_ptr::Ptr{Cint})::Cvoid
 end
 
 export qpa_reset_control_s
 
 function qpa_reset_control_s(control, data, status)
-  @ccall libgalahad_single.qpa_reset_control_s(control::Ref{qpa_control_type{Float32}},
+  @ccall libgalahad_single.qpa_reset_control_s(control::Ptr{qpa_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -175,7 +159,7 @@ end
 export qpa_reset_control
 
 function qpa_reset_control(control, data, status)
-  @ccall libgalahad_double.qpa_reset_control(control::Ref{qpa_control_type{Float64}},
+  @ccall libgalahad_double.qpa_reset_control(control::Ptr{qpa_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
@@ -183,37 +167,35 @@ end
 export qpa_solve_qp_s
 
 function qpa_solve_qp_s(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c_l, c_u, x_l,
-                      x_u, x, c, y, z, x_stat, c_stat)
+                        x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.qpa_solve_qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, h_ne::Cint, H_val::Ptr{Float32},
                                           g::Ptr{Float32}, f::Float32, a_ne::Cint,
                                           A_val::Ptr{Float32}, c_l::Ptr{Float32},
                                           c_u::Ptr{Float32}, x_l::Ptr{Float32},
                                           x_u::Ptr{Float32}, x::Ptr{Float32},
-                                          c::Ptr{Float32}, y::Ptr{Float32},
-                                          z::Ptr{Float32}, x_stat::Ptr{Cint},
-                                          c_stat::Ptr{Cint})::Cvoid
+                                          c::Ptr{Float32}, y::Ptr{Float32}, z::Ptr{Float32},
+                                          x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
 export qpa_solve_qp
 
 function qpa_solve_qp(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c_l, c_u, x_l,
-                    x_u, x, c, y, z, x_stat, c_stat)
+                      x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_double.qpa_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, h_ne::Cint, H_val::Ptr{Float64},
                                         g::Ptr{Float64}, f::Float64, a_ne::Cint,
                                         A_val::Ptr{Float64}, c_l::Ptr{Float64},
                                         c_u::Ptr{Float64}, x_l::Ptr{Float64},
-                                        x_u::Ptr{Float64}, x::Ptr{Float64},
-                                        c::Ptr{Float64}, y::Ptr{Float64},
-                                        z::Ptr{Float64}, x_stat::Ptr{Cint},
+                                        x_u::Ptr{Float64}, x::Ptr{Float64}, c::Ptr{Float64},
+                                        y::Ptr{Float64}, z::Ptr{Float64}, x_stat::Ptr{Cint},
                                         c_stat::Ptr{Cint})::Cvoid
 end
 
 export qpa_solve_l1qp_s
 
 function qpa_solve_l1qp_s(data, status, n, m, h_ne, H_val, g, f, rho_g, rho_b, a_ne, A_val,
-                        c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
+                          c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.qpa_solve_l1qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                             n::Cint, m::Cint, h_ne::Cint,
                                             H_val::Ptr{Float32}, g::Ptr{Float32},
@@ -229,23 +211,22 @@ end
 export qpa_solve_l1qp
 
 function qpa_solve_l1qp(data, status, n, m, h_ne, H_val, g, f, rho_g, rho_b, a_ne, A_val,
-                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
-  @ccall libgalahad_double.qpa_solve_l1qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                          n::Cint, m::Cint, h_ne::Cint,
-                                          H_val::Ptr{Float64}, g::Ptr{Float64},
-                                          f::Float64, rho_g::Float64, rho_b::Float64,
-                                          a_ne::Cint, A_val::Ptr{Float64},
+                        c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
+  @ccall libgalahad_double.qpa_solve_l1qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
+                                          m::Cint, h_ne::Cint, H_val::Ptr{Float64},
+                                          g::Ptr{Float64}, f::Float64, rho_g::Float64,
+                                          rho_b::Float64, a_ne::Cint, A_val::Ptr{Float64},
                                           c_l::Ptr{Float64}, c_u::Ptr{Float64},
                                           x_l::Ptr{Float64}, x_u::Ptr{Float64},
-                                          x::Ptr{Float64}, c::Ptr{Float64},
-                                          y::Ptr{Float64}, z::Ptr{Float64},
-                                          x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
+                                          x::Ptr{Float64}, c::Ptr{Float64}, y::Ptr{Float64},
+                                          z::Ptr{Float64}, x_stat::Ptr{Cint},
+                                          c_stat::Ptr{Cint})::Cvoid
 end
 
 export qpa_solve_bcl1qp_s
 
 function qpa_solve_bcl1qp_s(data, status, n, m, h_ne, H_val, g, f, rho_g, a_ne, A_val, c_l,
-                          c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
+                            c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.qpa_solve_bcl1qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                               n::Cint, m::Cint, h_ne::Cint,
                                               H_val::Ptr{Float32}, g::Ptr{Float32},
@@ -261,7 +242,7 @@ end
 export qpa_solve_bcl1qp
 
 function qpa_solve_bcl1qp(data, status, n, m, h_ne, H_val, g, f, rho_g, a_ne, A_val, c_l,
-                        c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
+                          c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_double.qpa_solve_bcl1qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                             n::Cint, m::Cint, h_ne::Cint,
                                             H_val::Ptr{Float64}, g::Ptr{Float64},
@@ -278,7 +259,7 @@ export qpa_information_s
 
 function qpa_information_s(data, inform, status)
   @ccall libgalahad_single.qpa_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ref{qpa_inform_type{Float32}},
+                                             inform::Ptr{qpa_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -286,7 +267,7 @@ export qpa_information
 
 function qpa_information(data, inform, status)
   @ccall libgalahad_double.qpa_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ref{qpa_inform_type{Float64}},
+                                           inform::Ptr{qpa_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
@@ -294,14 +275,14 @@ export qpa_terminate_s
 
 function qpa_terminate_s(data, control, inform)
   @ccall libgalahad_single.qpa_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{qpa_control_type{Float32}},
-                                           inform::Ref{qpa_inform_type{Float32}})::Cvoid
+                                           control::Ptr{qpa_control_type{Float32}},
+                                           inform::Ptr{qpa_inform_type{Float32}})::Cvoid
 end
 
 export qpa_terminate
 
 function qpa_terminate(data, control, inform)
   @ccall libgalahad_double.qpa_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ref{qpa_control_type{Float64}},
-                                         inform::Ref{qpa_inform_type{Float64}})::Cvoid
+                                         control::Ptr{qpa_control_type{Float64}},
+                                         inform::Ptr{qpa_inform_type{Float64}})::Cvoid
 end

@@ -1,6 +1,6 @@
 export lsqp_control_type
 
-mutable struct lsqp_control_type{T}
+struct lsqp_control_type{T}
   f_indexing::Bool
   error::Cint
   out::Cint
@@ -57,18 +57,11 @@ mutable struct lsqp_control_type{T}
   prefix::NTuple{31,Cchar}
   fdc_control::fdc_control_type{T}
   sbls_control::sbls_control_type{T}
-
-  function lsqp_control_type{T}() where T
-    type = new()
-    type.fdc_control = fdc_control_type{T}()
-    type.sbls_control = sbls_control_type{T}()
-    return type
-  end
 end
 
 export lsqp_time_type
 
-mutable struct lsqp_time_type{T}
+struct lsqp_time_type{T}
   total::T
   preprocess::T
   find_dependent::T
@@ -81,13 +74,11 @@ mutable struct lsqp_time_type{T}
   clock_analyse::T
   clock_factorize::T
   clock_solve::T
-
-  lsqp_time_type{T}() where T = new()
 end
 
 export lsqp_inform_type
 
-mutable struct lsqp_inform_type{T}
+struct lsqp_inform_type{T}
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
@@ -104,21 +95,13 @@ mutable struct lsqp_inform_type{T}
   time::lsqp_time_type{T}
   fdc_inform::fdc_inform_type{T}
   sbls_inform::sbls_inform_type{T}
-
-  function lsqp_inform_type{T}() where T
-    type = new()
-    type.time = lsqp_time_type{T}()
-    type.fdc_inform = fdc_inform_type{T}()
-    type.sbls_inform = sbls_inform_type{T}()
-    return type
-  end
 end
 
 export lsqp_initialize_s
 
 function lsqp_initialize_s(data, control, status)
   @ccall libgalahad_single.lsqp_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ref{lsqp_control_type{Float32}},
+                                             control::Ptr{lsqp_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -126,28 +109,28 @@ export lsqp_initialize
 
 function lsqp_initialize(data, control, status)
   @ccall libgalahad_double.lsqp_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{lsqp_control_type{Float64}},
+                                           control::Ptr{lsqp_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
 export lsqp_read_specfile_s
 
 function lsqp_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.lsqp_read_specfile_s(control::Ref{lsqp_control_type{Float32}},
+  @ccall libgalahad_single.lsqp_read_specfile_s(control::Ptr{lsqp_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 export lsqp_read_specfile
 
 function lsqp_read_specfile(control, specfile)
-  @ccall libgalahad_double.lsqp_read_specfile(control::Ref{lsqp_control_type{Float64}},
+  @ccall libgalahad_double.lsqp_read_specfile(control::Ptr{lsqp_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
 export lsqp_import_s
 
 function lsqp_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_single.lsqp_import_s(control::Ref{lsqp_control_type{Float32}},
+  @ccall libgalahad_single.lsqp_import_s(control::Ptr{lsqp_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                          A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -157,7 +140,7 @@ end
 export lsqp_import
 
 function lsqp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
-  @ccall libgalahad_double.lsqp_import(control::Ref{lsqp_control_type{Float64}},
+  @ccall libgalahad_double.lsqp_import(control::Ptr{lsqp_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                        m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
                                        A_row::Ptr{Cint}, A_col::Ptr{Cint},
@@ -167,7 +150,7 @@ end
 export lsqp_reset_control_s
 
 function lsqp_reset_control_s(control, data, status)
-  @ccall libgalahad_single.lsqp_reset_control_s(control::Ref{lsqp_control_type{Float32}},
+  @ccall libgalahad_single.lsqp_reset_control_s(control::Ptr{lsqp_control_type{Float32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -175,15 +158,15 @@ end
 export lsqp_reset_control
 
 function lsqp_reset_control(control, data, status)
-  @ccall libgalahad_double.lsqp_reset_control(control::Ref{lsqp_control_type{Float64}},
+  @ccall libgalahad_double.lsqp_reset_control(control::Ptr{lsqp_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
 end
 
 export lsqp_solve_qp_s
 
-function lsqp_solve_qp_s(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_u, x_l, x_u, x,
-                       c, y, z, x_stat, c_stat)
+function lsqp_solve_qp_s(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_u, x_l, x_u,
+                         x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.lsqp_solve_qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                            n::Cint, m::Cint, w::Ptr{Float32},
                                            x0::Ptr{Float32}, g::Ptr{Float32}, f::Float32,
@@ -198,15 +181,14 @@ end
 export lsqp_solve_qp
 
 function lsqp_solve_qp(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_u, x_l, x_u, x,
-                     c, y, z, x_stat, c_stat)
-  @ccall libgalahad_double.lsqp_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
-                                         n::Cint, m::Cint, w::Ptr{Float64},
-                                         x0::Ptr{Float64}, g::Ptr{Float64}, f::Float64,
-                                         a_ne::Cint, A_val::Ptr{Float64},
-                                         c_l::Ptr{Float64}, c_u::Ptr{Float64},
-                                         x_l::Ptr{Float64}, x_u::Ptr{Float64},
-                                         x::Ptr{Float64}, c::Ptr{Float64},
-                                         y::Ptr{Float64}, z::Ptr{Float64},
+                       c, y, z, x_stat, c_stat)
+  @ccall libgalahad_double.lsqp_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
+                                         m::Cint, w::Ptr{Float64}, x0::Ptr{Float64},
+                                         g::Ptr{Float64}, f::Float64, a_ne::Cint,
+                                         A_val::Ptr{Float64}, c_l::Ptr{Float64},
+                                         c_u::Ptr{Float64}, x_l::Ptr{Float64},
+                                         x_u::Ptr{Float64}, x::Ptr{Float64},
+                                         c::Ptr{Float64}, y::Ptr{Float64}, z::Ptr{Float64},
                                          x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
@@ -214,7 +196,7 @@ export lsqp_information_s
 
 function lsqp_information_s(data, inform, status)
   @ccall libgalahad_single.lsqp_information_s(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ref{lsqp_inform_type{Float32}},
+                                              inform::Ptr{lsqp_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
@@ -222,7 +204,7 @@ export lsqp_information
 
 function lsqp_information(data, inform, status)
   @ccall libgalahad_double.lsqp_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ref{lsqp_inform_type{Float64}},
+                                            inform::Ptr{lsqp_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -230,14 +212,14 @@ export lsqp_terminate_s
 
 function lsqp_terminate_s(data, control, inform)
   @ccall libgalahad_single.lsqp_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{lsqp_control_type{Float32}},
-                                            inform::Ref{lsqp_inform_type{Float32}})::Cvoid
+                                            control::Ptr{lsqp_control_type{Float32}},
+                                            inform::Ptr{lsqp_inform_type{Float32}})::Cvoid
 end
 
 export lsqp_terminate
 
 function lsqp_terminate(data, control, inform)
   @ccall libgalahad_double.lsqp_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{lsqp_control_type{Float64}},
-                                          inform::Ref{lsqp_inform_type{Float64}})::Cvoid
+                                          control::Ptr{lsqp_control_type{Float64}},
+                                          inform::Ptr{lsqp_inform_type{Float64}})::Cvoid
 end

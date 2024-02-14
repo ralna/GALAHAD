@@ -10,21 +10,21 @@
 /* real precision employed */
 
 #ifdef SPRAL_SINGLE
-#define rpc_ float
+typedef float rpc_;
 #else
-#define rpc_ double
+typedef double rpc_;
 #endif
 
 /* integer storage employed */
 
 #ifdef INTEGER_64
-#define ipc_ int64_t
-#define uipc_ uint64_t
+typedef int64_t ipc_;
+typedef uint64_t uipc_;
 #else
-#define ipc_ int
-#define uipc_ unsigned int
+typedef int ipc_;
+typedef unsigned int uipc_;
 #endif
 
 /* generic storage */
 
-#define longc_ int64_t
+typedef int64_t longc_;

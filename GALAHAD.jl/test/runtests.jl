@@ -1,18 +1,59 @@
-using Test, GALAHAD
+using GALAHAD
 
 @info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION)")
-
-packages = ("arc", "bgo", "blls", "bqp", "bqpb", "bsc", "ccqp", "convert",
-            "cqp", "cro", "dgo", "dps", "dqp", "eqp", "fdc", "fit", "glrt",
-            "gls", "gltr", "hash", "ir", "l2rt", "lhs", "llsr", "llst", "lms",
-            "lpa", "lpb", "lsqp", "lsrt", "lstr", "nls", "presolve", "psls",
-            "qpa", "qpb", "roots", "rpd", "rqs", "sbls", "scu", "sec", "sha",
-            "sils", "slls", "sls", "trb", "trs", "tru", "ugo", "uls", "wcp")
-
 include("test_structures.jl")
 
-# for package in packages
-#   @testset "$package" begin
-#     include("test_$package.jl")
-#   end
-# end
+include("test_arc.jl")
+include("test_bgo.jl")
+## include("test_blls.jl")
+include("test_bllsb.jl")
+include("test_bqp.jl")
+include("test_bqpb.jl")
+include("test_bsc.jl")
+include("test_ccqp.jl")
+include("test_clls.jl")
+include("test_convert.jl")
+include("test_cqp.jl")
+include("test_cro.jl")
+include("test_dgo.jl")
+include("test_dps.jl")
+include("test_dqp.jl")
+include("test_eqp.jl")
+include("test_fdc.jl")
+include("test_fit.jl")
+include("test_glrt.jl")
+include("test_gls.jl")
+include("test_gltr.jl")
+include("test_hash.jl")
+include("test_ir.jl")
+include("test_l2rt.jl")
+include("test_lhs.jl")
+include("test_llsr.jl")
+include("test_llst.jl")
+include("test_lms.jl")
+include("test_lpa.jl")
+include("test_lpb.jl")
+include("test_lsqp.jl")
+include("test_lsrt.jl")
+include("test_lstr.jl")
+include("test_nls.jl")
+include("test_presolve.jl")
+include("test_psls.jl")
+include("test_qpa.jl")
+include("test_qpb.jl")
+include("test_roots.jl")
+include("test_rpd.jl")
+include("test_rqs.jl")
+include("test_sbls.jl")
+## include("test_scu.jl")
+include("test_sec.jl")
+include("test_sha.jl")
+include("test_sils.jl")
+## include("test_slls.jl")
+include("test_sls.jl")
+include("test_trb.jl")
+include("test_trs.jl")
+include("test_tru.jl")
+include("test_ugo.jl")
+include("test_uls.jl")
+include("test_wcp.jl")

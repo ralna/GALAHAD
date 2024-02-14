@@ -10,13 +10,13 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
   @info "Wrapping $name"
 
   cd(@__DIR__)
-  include_dir = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
+  include_dir = joinpath(ENV["GALAHAD"], "include")
 
   options = load_options(joinpath(@__DIR__, "galahad.toml"))
   options["general"]["library_name"] = "libgalahad_double"
   # options["general"]["extract_c_comment_style"] = "doxygen"
   options["general"]["output_file_path"] = joinpath("..", "src", "wrappers", "$(name).jl")
-  optimized && (options["general"]["output_ignorelist"] = ["real_wp_", "real_sp_"])
+  optimized && (options["general"]["output_ignorelist"] = ["real_wp_", "real_sp_", "rpc_", "ipc_"])
   args = get_default_args()
   push!(args, "-I$include_dir")
   push!(args, "-DGALAHAD_DOUBLE")
@@ -40,8 +40,8 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
 
   path = options["general"]["output_file_path"]
 
-  format_file(path, YASStyle())
   rewrite!(path, name, optimized)
+  format_file(path, YASStyle(), indent=2)
 
   # Generate a symbolic link for the Julia wrappers
   if (name ≠ "hsl") && (name ≠ "ssids")
@@ -58,8 +58,11 @@ function wrapper(name::String, headers::Vector{String}, optimized::Bool; targets
 end
 
 function main(name::String="all"; optimized::Bool=true)
-  haskey(ENV, "JULIA_GALAHAD_LIBRARY_PATH") || error("The environment variable JULIA_GALAHAD_LIBRARY_PATH is not defined.")
-  galahad = joinpath(ENV["JULIA_GALAHAD_LIBRARY_PATH"], "..", "include")
+  haskey(ENV, "GALAHAD") || error("The environment variable GALAHAD is not defined.")
+  galahad = joinpath(ENV["GALAHAD"], "include")
+
+  # Regenerate test_structures.jl
+  (name == "all") && optimized && isfile("../test/test_structures.jl") && rm("../test/test_structures.jl")
 
   (name == "all" || name == "arc")      && wrapper("arc", ["$galahad/galahad_arc.h"], optimized)
   (name == "all" || name == "bgo")      && wrapper("bgo", ["$galahad/galahad_bgo.h"], optimized)
@@ -84,12 +87,11 @@ function main(name::String="all"; optimized::Bool=true)
   (name == "all" || name == "gltr")     && wrapper("gltr", ["$galahad/galahad_gltr.h"], optimized)
   (name == "all" || name == "hash")     && wrapper("hash", ["$galahad/galahad_hash.h"], optimized)
   (name == "all" || name == "hsl")      && wrapper("hsl", ["$galahad/hsl_ma48.h", "$galahad/hsl_ma57.h", "$galahad/hsl_ma77.h", "$galahad/hsl_ma86.h", "$galahad/hsl_ma87.h", "$galahad/hsl_ma97.h", "$galahad/hsl_mc64.h", "$galahad/hsl_mc68.h", "$galahad/hsl_mi20.h", "$galahad/hsl_mi28.h"], optimized)
-  # (name == "all" || name == "icfs")     && wrapper("icfs", ["$galahad/galahad_icfs.h"], optimized)
   (name == "all" || name == "ir")       && wrapper("ir", ["$galahad/galahad_ir.h"], optimized)
   (name == "all" || name == "l2rt")     && wrapper("l2rt", ["$galahad/galahad_l2rt.h"], optimized)
   (name == "all" || name == "lhs")      && wrapper("lhs", ["$galahad/galahad_lhs.h"], optimized)
-  (name == "all" || name == "llsr")      && wrapper("llsr", ["$galahad/galahad_llsr.h"], optimized)
-  (name == "all" || name == "llst")      && wrapper("llst", ["$galahad/galahad_llst.h"], optimized)
+  (name == "all" || name == "llsr")     && wrapper("llsr", ["$galahad/galahad_llsr.h"], optimized)
+  (name == "all" || name == "llst")     && wrapper("llst", ["$galahad/galahad_llst.h"], optimized)
   (name == "all" || name == "lms")      && wrapper("lms", ["$galahad/galahad_lms.h"], optimized)
   (name == "all" || name == "lpa")      && wrapper("lpa", ["$galahad/galahad_lpa.h"], optimized)
   (name == "all" || name == "lpb")      && wrapper("lpb", ["$galahad/galahad_lpb.h"], optimized)

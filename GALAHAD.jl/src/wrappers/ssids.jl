@@ -1,6 +1,6 @@
 export spral_ssids_options
 
-mutable struct spral_ssids_options{T}
+struct spral_ssids_options{T}
   array_base::Cint
   print_level::Cint
   unit_diagnostics::Cint
@@ -25,13 +25,11 @@ mutable struct spral_ssids_options{T}
   multiplier::T
   min_loadbalance::Cfloat
   failed_pivot_method::Cint
-
-  spral_ssids_options{T}() where T = new()
 end
 
 export spral_ssids_inform
 
-mutable struct spral_ssids_inform
+struct spral_ssids_inform
   flag::Cint
   matrix_dup::Cint
   matrix_missing_diag::Cint
@@ -54,6 +52,4 @@ mutable struct spral_ssids_inform
   nparts::Cint
   cpu_flops::Int64
   gpu_flops::Int64
-
-  spral_ssids_inform() = new()
 end

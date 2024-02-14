@@ -1,6 +1,6 @@
 export sils_control_type
 
-mutable struct sils_control_type{T}
+struct sils_control_type{T}
   f_indexing::Bool
   ICNTL::NTuple{30,Cint}
   lp::Cint
@@ -27,13 +27,11 @@ mutable struct sils_control_type{T}
   static_level::T
   tolerance::T
   convergence::T
-
-  sils_control_type{T}() where T = new()
 end
 
 export sils_ainfo_type
 
-mutable struct sils_ainfo_type{T}
+struct sils_ainfo_type{T}
   flag::Cint
   more::Cint
   nsteps::Cint
@@ -51,13 +49,11 @@ mutable struct sils_ainfo_type{T}
   faulty::Cint
   opsa::T
   opse::T
-
-  sils_ainfo_type{T}() where T = new()
 end
 
 export sils_finfo_type
 
-mutable struct sils_finfo_type{T}
+struct sils_finfo_type{T}
   flag::Cint
   more::Cint
   maxfrt::Cint
@@ -86,13 +82,11 @@ mutable struct sils_finfo_type{T}
   maxchange::T
   smin::T
   smax::T
-
-  sils_finfo_type{T}() where T = new()
 end
 
 export sils_sinfo_type
 
-mutable struct sils_sinfo_type{T}
+struct sils_sinfo_type{T}
   flag::Cint
   stat::Cint
   cond::T
@@ -100,15 +94,13 @@ mutable struct sils_sinfo_type{T}
   berr::T
   berr2::T
   error::T
-
-  sils_sinfo_type{T}() where T = new()
 end
 
 export sils_initialize_s
 
 function sils_initialize_s(data, control, status)
   @ccall libgalahad_single.sils_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ref{sils_control_type{Float32}},
+                                             control::Ptr{sils_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -116,42 +108,42 @@ export sils_initialize
 
 function sils_initialize(data, control, status)
   @ccall libgalahad_double.sils_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{sils_control_type{Float64}},
+                                           control::Ptr{sils_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
 export sils_read_specfile_s
 
 function sils_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.sils_read_specfile_s(control::Ref{sils_control_type{Float32}},
+  @ccall libgalahad_single.sils_read_specfile_s(control::Ptr{sils_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 export sils_read_specfile
 
 function sils_read_specfile(control, specfile)
-  @ccall libgalahad_double.sils_read_specfile(control::Ref{sils_control_type{Float64}},
+  @ccall libgalahad_double.sils_read_specfile(control::Ptr{sils_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
 export sils_import_s
 
 function sils_import_s(control, data, status)
-  @ccall libgalahad_single.sils_import_s(control::Ref{sils_control_type{Float32}},
+  @ccall libgalahad_single.sils_import_s(control::Ptr{sils_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint})::Cvoid
 end
 
 export sils_import
 
 function sils_import(control, data, status)
-  @ccall libgalahad_double.sils_import(control::Ref{sils_control_type{Float64}},
+  @ccall libgalahad_double.sils_import(control::Ptr{sils_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint})::Cvoid
 end
 
 export sils_reset_control_s
 
 function sils_reset_control_s(control, data, status)
-  @ccall libgalahad_single.sils_reset_control_s(control::Ref{sils_control_type{Float32}},
+  @ccall libgalahad_single.sils_reset_control_s(control::Ptr{sils_control_type{Float32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
@@ -159,7 +151,7 @@ end
 export sils_reset_control
 
 function sils_reset_control(control, data, status)
-  @ccall libgalahad_double.sils_reset_control(control::Ref{sils_control_type{Float64}},
+  @ccall libgalahad_double.sils_reset_control(control::Ptr{sils_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
 end
@@ -168,9 +160,9 @@ export sils_information_s
 
 function sils_information_s(data, ainfo, finfo, sinfo, status)
   @ccall libgalahad_single.sils_information_s(data::Ptr{Ptr{Cvoid}},
-                                              ainfo::Ref{sils_ainfo_type{Float32}},
-                                              finfo::Ref{sils_finfo_type{Float32}},
-                                              sinfo::Ref{sils_sinfo_type{Float32}},
+                                              ainfo::Ptr{sils_ainfo_type{Float32}},
+                                              finfo::Ptr{sils_finfo_type{Float32}},
+                                              sinfo::Ptr{sils_sinfo_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
@@ -178,9 +170,9 @@ export sils_information
 
 function sils_information(data, ainfo, finfo, sinfo, status)
   @ccall libgalahad_double.sils_information(data::Ptr{Ptr{Cvoid}},
-                                            ainfo::Ref{sils_ainfo_type{Float64}},
-                                            finfo::Ref{sils_finfo_type{Float64}},
-                                            sinfo::Ref{sils_sinfo_type{Float64}},
+                                            ainfo::Ptr{sils_ainfo_type{Float64}},
+                                            finfo::Ptr{sils_finfo_type{Float64}},
+                                            sinfo::Ptr{sils_sinfo_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -188,7 +180,7 @@ export sils_finalize_s
 
 function sils_finalize_s(data, control, status)
   @ccall libgalahad_single.sils_finalize_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{sils_control_type{Float32}},
+                                           control::Ptr{sils_control_type{Float32}},
                                            status::Ptr{Cint})::Cvoid
 end
 
@@ -196,6 +188,6 @@ export sils_finalize
 
 function sils_finalize(data, control, status)
   @ccall libgalahad_double.sils_finalize(data::Ptr{Ptr{Cvoid}},
-                                         control::Ref{sils_control_type{Float64}},
+                                         control::Ptr{sils_control_type{Float64}},
                                          status::Ptr{Cint})::Cvoid
 end

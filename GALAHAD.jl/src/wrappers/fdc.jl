@@ -1,6 +1,6 @@
 export fdc_control_type
 
-mutable struct fdc_control_type{T}
+struct fdc_control_type{T}
   f_indexing::Bool
   error::Cint
   out::Cint
@@ -19,31 +19,22 @@ mutable struct fdc_control_type{T}
   prefix::NTuple{31,Cchar}
   sls_control::sls_control_type{T}
   uls_control::uls_control_type{T}
-
-  function fdc_control_type{T}() where T
-    type = new()
-    type.sls_control = sls_control_type{T}()
-    type.uls_control = uls_control_type{T}()
-    return type
-  end
 end
 
 export fdc_time_type
 
-mutable struct fdc_time_type{T}
+struct fdc_time_type{T}
   total::T
   analyse::T
   factorize::T
   clock_total::T
   clock_analyse::T
   clock_factorize::T
-
-  fdc_time_type{T}() where T = new()
 end
 
 export fdc_inform_type
 
-mutable struct fdc_inform_type{T}
+struct fdc_inform_type{T}
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
@@ -54,21 +45,13 @@ mutable struct fdc_inform_type{T}
   time::fdc_time_type{T}
   sls_inform::sls_inform_type{T}
   uls_inform::uls_inform_type{T}
-
-  function fdc_inform_type{T}() where T
-    type = new()
-    type.time = fdc_time_type{T}()
-    type.sls_inform = sls_inform_type{T}()
-    type.uls_inform = uls_inform_type{T}()
-    return type
-  end
 end
 
 export fdc_initialize_s
 
 function fdc_initialize_s(data, control, status)
   @ccall libgalahad_single.fdc_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{fdc_control_type{Float32}},
+                                            control::Ptr{fdc_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -76,31 +59,31 @@ export fdc_initialize
 
 function fdc_initialize(data, control, status)
   @ccall libgalahad_double.fdc_initialize(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{fdc_control_type{Float64}},
+                                          control::Ptr{fdc_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
 export fdc_read_specfile_s
 
 function fdc_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.fdc_read_specfile_s(control::Ref{fdc_control_type{Float32}},
+  @ccall libgalahad_single.fdc_read_specfile_s(control::Ptr{fdc_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
 export fdc_read_specfile
 
 function fdc_read_specfile(control, specfile)
-  @ccall libgalahad_double.fdc_read_specfile(control::Ref{fdc_control_type{Float64}},
+  @ccall libgalahad_double.fdc_read_specfile(control::Ptr{fdc_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
 export fdc_find_dependent_rows_s
 
 function fdc_find_dependent_rows_s(control, data, inform, status, m, n, A_ne, A_col, A_ptr,
-                                 A_val, b, n_depen, depen)
-  @ccall libgalahad_single.fdc_find_dependent_rows_s(control::Ref{fdc_control_type{Float32}},
+                                   A_val, b, n_depen, depen)
+  @ccall libgalahad_single.fdc_find_dependent_rows_s(control::Ptr{fdc_control_type{Float32}},
                                                      data::Ptr{Ptr{Cvoid}},
-                                                     inform::Ref{fdc_inform_type{Float32}},
+                                                     inform::Ptr{fdc_inform_type{Float32}},
                                                      status::Ptr{Cint}, m::Cint, n::Cint,
                                                      A_ne::Cint, A_col::Ptr{Cint},
                                                      A_ptr::Ptr{Cint}, A_val::Ptr{Float32},
@@ -111,10 +94,10 @@ end
 export fdc_find_dependent_rows
 
 function fdc_find_dependent_rows(control, data, inform, status, m, n, A_ne, A_col, A_ptr,
-                               A_val, b, n_depen, depen)
-  @ccall libgalahad_double.fdc_find_dependent_rows(control::Ref{fdc_control_type{Float64}},
+                                 A_val, b, n_depen, depen)
+  @ccall libgalahad_double.fdc_find_dependent_rows(control::Ptr{fdc_control_type{Float64}},
                                                    data::Ptr{Ptr{Cvoid}},
-                                                   inform::Ref{fdc_inform_type{Float64}},
+                                                   inform::Ptr{fdc_inform_type{Float64}},
                                                    status::Ptr{Cint}, m::Cint, n::Cint,
                                                    A_ne::Cint, A_col::Ptr{Cint},
                                                    A_ptr::Ptr{Cint}, A_val::Ptr{Float64},
@@ -126,14 +109,14 @@ export fdc_terminate_s
 
 function fdc_terminate_s(data, control, inform)
   @ccall libgalahad_single.fdc_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{fdc_control_type{Float32}},
-                                           inform::Ref{fdc_inform_type{Float32}})::Cvoid
+                                           control::Ptr{fdc_control_type{Float32}},
+                                           inform::Ptr{fdc_inform_type{Float32}})::Cvoid
 end
 
 export fdc_terminate
 
 function fdc_terminate(data, control, inform)
   @ccall libgalahad_double.fdc_terminate(data::Ptr{Ptr{Cvoid}},
-                                         control::Ref{fdc_control_type{Float64}},
-                                         inform::Ref{fdc_inform_type{Float64}})::Cvoid
+                                         control::Ptr{fdc_control_type{Float64}},
+                                         inform::Ptr{fdc_inform_type{Float64}})::Cvoid
 end

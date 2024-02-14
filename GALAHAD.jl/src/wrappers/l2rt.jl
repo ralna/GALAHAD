@@ -1,6 +1,6 @@
 export l2rt_control_type
 
-mutable struct l2rt_control_type{T}
+struct l2rt_control_type{T}
   f_indexing::Bool
   error::Cint
   out::Cint
@@ -21,13 +21,11 @@ mutable struct l2rt_control_type{T}
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
-
-  l2rt_control_type{T}() where T = new()
 end
 
 export l2rt_inform_type
 
-mutable struct l2rt_inform_type{T}
+struct l2rt_inform_type{T}
   status::Cint
   alloc_status::Cint
   bad_alloc::NTuple{81,Cchar}
@@ -42,15 +40,13 @@ mutable struct l2rt_inform_type{T}
   r_norm::T
   Atr_norm::T
   biter_mean::T
-
-  l2rt_inform_type{T}() where T = new()
 end
 
 export l2rt_initialize_s
 
 function l2rt_initialize_s(data, control, status)
   @ccall libgalahad_single.l2rt_initialize_s(data::Ptr{Ptr{Cvoid}},
-                                             control::Ref{l2rt_control_type{Float32}},
+                                             control::Ptr{l2rt_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
@@ -58,28 +54,28 @@ export l2rt_initialize
 
 function l2rt_initialize(data, control, status)
   @ccall libgalahad_double.l2rt_initialize(data::Ptr{Ptr{Cvoid}},
-                                           control::Ref{l2rt_control_type{Float64}},
+                                           control::Ptr{l2rt_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
 export l2rt_read_specfile_s
 
 function l2rt_read_specfile_s(control, specfile)
-  @ccall libgalahad_single.l2rt_read_specfile_s(control::Ref{l2rt_control_type{Float32}},
+  @ccall libgalahad_single.l2rt_read_specfile_s(control::Ptr{l2rt_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
 export l2rt_read_specfile
 
 function l2rt_read_specfile(control, specfile)
-  @ccall libgalahad_double.l2rt_read_specfile(control::Ref{l2rt_control_type{Float64}},
+  @ccall libgalahad_double.l2rt_read_specfile(control::Ptr{l2rt_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
 export l2rt_import_control_s
 
 function l2rt_import_control_s(control, data, status)
-  @ccall libgalahad_single.l2rt_import_control_s(control::Ref{l2rt_control_type{Float32}},
+  @ccall libgalahad_single.l2rt_import_control_s(control::Ptr{l2rt_control_type{Float32}},
                                                  data::Ptr{Ptr{Cvoid}},
                                                  status::Ptr{Cint})::Cvoid
 end
@@ -87,7 +83,7 @@ end
 export l2rt_import_control
 
 function l2rt_import_control(control, data, status)
-  @ccall libgalahad_double.l2rt_import_control(control::Ref{l2rt_control_type{Float64}},
+  @ccall libgalahad_double.l2rt_import_control(control::Ptr{l2rt_control_type{Float64}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
@@ -116,7 +112,7 @@ export l2rt_information_s
 
 function l2rt_information_s(data, inform, status)
   @ccall libgalahad_single.l2rt_information_s(data::Ptr{Ptr{Cvoid}},
-                                              inform::Ref{l2rt_inform_type{Float32}},
+                                              inform::Ptr{l2rt_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
@@ -124,7 +120,7 @@ export l2rt_information
 
 function l2rt_information(data, inform, status)
   @ccall libgalahad_double.l2rt_information(data::Ptr{Ptr{Cvoid}},
-                                            inform::Ref{l2rt_inform_type{Float64}},
+                                            inform::Ptr{l2rt_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
@@ -132,14 +128,14 @@ export l2rt_terminate_s
 
 function l2rt_terminate_s(data, control, inform)
   @ccall libgalahad_single.l2rt_terminate_s(data::Ptr{Ptr{Cvoid}},
-                                            control::Ref{l2rt_control_type{Float32}},
-                                            inform::Ref{l2rt_inform_type{Float32}})::Cvoid
+                                            control::Ptr{l2rt_control_type{Float32}},
+                                            inform::Ptr{l2rt_inform_type{Float32}})::Cvoid
 end
 
 export l2rt_terminate
 
 function l2rt_terminate(data, control, inform)
   @ccall libgalahad_double.l2rt_terminate(data::Ptr{Ptr{Cvoid}},
-                                          control::Ref{l2rt_control_type{Float64}},
-                                          inform::Ref{l2rt_inform_type{Float64}})::Cvoid
+                                          control::Ptr{l2rt_control_type{Float64}},
+                                          inform::Ptr{l2rt_inform_type{Float64}})::Cvoid
 end
