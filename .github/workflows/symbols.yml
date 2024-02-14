@@ -13,8 +13,13 @@ jobs:
       - name: Checkout GALAHAD
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Install Meson and Ninja
-        run: pip install meson ninja nump
+        run: pip install meson ninja
 
       - name: Install compilers
         uses: fortran-lang/setup-fortran@main
