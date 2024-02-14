@@ -30,7 +30,7 @@ for (modules1, modules2, int1, int2, name) in modules_combinations
   println("---------------------------------------------------------------------------------------------------------------------------")
   @warn("The following modules are generated for both libraries $name.")
   for mod in intersect_modules
-    println(symbol)
+    println(mod)
   end
   println("---------------------------------------------------------------------------------------------------------------------------")
   println()
