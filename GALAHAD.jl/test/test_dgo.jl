@@ -7,7 +7,7 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-struct userdata_type
+struct userdata_dgo
   p::Float64
   freq::Float64
   mag::Float64
@@ -16,7 +16,7 @@ end
 function test_dgo()
 
   # Objective function
-  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -25,7 +25,7 @@ function test_dgo()
   end
 
   # Gradient of the objective
-  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -37,7 +37,7 @@ function test_dgo()
 
   # Hessian of the objective
   function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
-                userdata::userdata_type)
+                userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -50,7 +50,7 @@ function test_dgo()
 
   # Dense Hessian
   function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
-                      userdata::userdata_type)
+                      userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -64,7 +64,7 @@ function test_dgo()
 
   # Hessian-vector product
   function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                    got_h::Bool, userdata::userdata_type)
+                    got_h::Bool, userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -77,7 +77,7 @@ function test_dgo()
   # Sparse Hessian-vector product
   function shessprod(n::Int, x::Vector{Float64}, nnz_v::Cint, index_nz_v::Vector{Cint},
                      v::Vector{Float64}, nnz_u::Ref{Cint}, index_nz_u::Vector{Cint},
-                     u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+                     u::Vector{Float64}, got_h::Bool, userdata::userdata_dgo)
     p = userdata.p
     freq = userdata.freq
     mag = userdata.mag
@@ -118,7 +118,7 @@ function test_dgo()
 
   # Apply preconditioner
   function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                userdata::userdata_type)
+                userdata::userdata_dgo)
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -209,7 +209,7 @@ function test_dgo()
   inform = Ref{dgo_inform_type{Float64}}()
 
   # Set user data
-  userdata = userdata_type(4.0, 10.0, 1000.0)
+  userdata = userdata_dgo(4.0, 10.0, 1000.0)
 
   # Set problem data
   n = 3 # dimension

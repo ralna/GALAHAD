@@ -7,7 +7,7 @@ using Printf
 using Accessors
 
 function test_sls()
-  maxabsarray(a) = maximum(abs.(a))
+  maxabsarray(a) = abs.(a) |> maximum
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()

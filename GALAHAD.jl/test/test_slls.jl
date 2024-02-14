@@ -7,16 +7,15 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-mutable struct userdata_type
+mutable struct userdata_slls
   scale::Float64
 end
 
 # Apply preconditioner
-function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
+function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_slls)
   scale = userdata.scale
   for i in 1:n
     p[i] = scale * x[i]
-    println(bob)
   end
   return 0
 end
@@ -29,12 +28,7 @@ function test_slls()
   inform = Ref{slls_inform_type{Float64}}()
 
   # Set user data
-  userdata = userdata_type(1.0)
-  pointer_userdata = pointer_from_objref(userdata)
-
-  # Pointer to call prec
-  pointer_prec = @cfunction(prec, Int,
-                            (Int, Vector{Float64}, Vector{Float64}, userdata_type))
+  userdata = userdata_slls(1.0)
 
   # Set problem data
   n = 10 # dimension
@@ -67,7 +61,6 @@ function test_slls()
 
   #   A = ( I )  and b = (i * e)
   #       (e^T)          (n + 1)
-
   for i in 1:n
     b[i] = i
   end
@@ -151,8 +144,8 @@ function test_slls()
       slls_import(control, data, status, n, o,
                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
 
-      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
-                         x_stat, pointer_prec)
+      slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
+                         x_stat, prec)
     end
 
     # sparse by rows
@@ -162,8 +155,8 @@ function test_slls()
                   "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                   Ao_ptr_ne, Ao_ptr)
 
-      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
-                         x_stat, pointer_prec)
+      slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
+                         x_stat, prec)
     end
 
     # dense by rows
@@ -173,9 +166,9 @@ function test_slls()
                   "dense_by_rows", Ao_dense_ne,
                   C_NULL, C_NULL, 0, C_NULL)
 
-      slls_solve_given_a(data, pointer_userdata, status, n, o,
+      slls_solve_given_a(data, userdata, status, n, o,
                          Ao_dense_ne, Ao_dense, b,
-                         x, z, r, g, x_stat, pointer_prec)
+                         x, z, r, g, x_stat, prec)
     end
 
     # sparse by columns
@@ -185,9 +178,9 @@ function test_slls()
                   "sparse_by_columns", Ao_ne, Ao_by_col_row,
                   C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
 
-      slls_solve_given_a(data, pointer_userdata, status, n, o,
+      slls_solve_given_a(data, userdata, status, n, o,
                          Ao_ne, Ao_by_col_val, b,
-                         x, z, r, g, x_stat, pointer_prec)
+                         x, z, r, g, x_stat, prec)
     end
 
     # dense by columns
@@ -197,9 +190,9 @@ function test_slls()
                   "dense_by_columns", Ao_dense_ne,
                   C_NULL, C_NULL, 0, C_NULL)
 
-      slls_solve_given_a(data, pointer_userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense,
+      slls_solve_given_a(data, userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense,
                          b,
-                         x, z, r, g, x_stat, pointer_prec)
+                         x, z, r, g, x_stat, prec)
     end
 
     slls_information(data, inform, status)

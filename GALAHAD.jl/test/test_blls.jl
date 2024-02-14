@@ -7,12 +7,12 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-mutable struct userdata_type
+mutable struct userdata_blls
   scale::Float64
 end
 
 # Apply preconditioner
-function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_type)
+function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_blls)
   scale = userdata.scale
   for i in 1:n
     p[i] = scale * x[i]
@@ -27,12 +27,7 @@ function test_blls()
   inform = Ref{blls_inform_type{Float64}}()
 
   # Set user data
-  userdata = userdata_type(1.0)
-  pointer_userdata = pointer_from_objref(userdata)
-
-  # Pointer to call prec
-  pointer_prec = @cfunction(prec, Int,
-                            (Int, Vector{Float64}, Vector{Float64}, userdata_type))
+  userdata = userdata_blls(1.0)
 
   # Set problem data
   n = 10 # dimension
@@ -169,9 +164,9 @@ function test_blls()
       blls_import(control, data, status, n, o,
                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
 
-      blls_solve_given_a(data, pointer_userdata, status, n, o,
+      blls_solve_given_a(data, userdata_blls, status, n, o,
                          Ao_ne, Ao_val, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, pointer_prec)
+                         x, z, r, g, x_stat, w, prec)
     end
 
     # sparse by rows
@@ -181,9 +176,9 @@ function test_blls()
                   "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                   Ao_ptr_ne, Ao_ptr)
 
-      blls_solve_given_a(data, pointer_userdata, status, n, o,
+      blls_solve_given_a(data, userdata_blls, status, n, o,
                          Ao_ne, Ao_val, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, pointer_prec)
+                         x, z, r, g, x_stat, w, prec)
     end
 
     # dense by rows
@@ -193,9 +188,9 @@ function test_blls()
                   "dense_by_rows", Ao_dense_ne,
                   C_NULL, C_NULL, 0, C_NULL)
 
-      blls_solve_given_a(data, pointer_userdata, status, n, o,
+      blls_solve_given_a(data, userdata_blls, status, n, o,
                          Ao_dense_ne, Ao_dense, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, pointer_prec)
+                         x, z, r, g, x_stat, w, prec)
     end
 
     # sparse by columns
@@ -205,9 +200,9 @@ function test_blls()
                   "sparse_by_columns", Ao_ne, Ao_by_col_row,
                   C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
 
-      blls_solve_given_a(data, pointer_userdata, status, n, o,
+      blls_solve_given_a(data, userdata_blls, status, n, o,
                          Ao_ne, Ao_by_col_val, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, pointer_prec)
+                         x, z, r, g, x_stat, w, prec)
     end
 
     # dense by columns
@@ -217,9 +212,9 @@ function test_blls()
                   "dense_by_columns", Ao_dense_ne,
                   C_NULL, C_NULL, 0, C_NULL)
 
-      blls_solve_given_a(data, pointer_userdata, status, n, o,
+      blls_solve_given_a(data, userdata_blls, status, n, o,
                          Ao_dense_ne, Ao_by_col_dense, b, x_l, x_u,
-                         x, z, r, g, x_stat, w, pointer_prec)
+                         x, z, r, g, x_stat, w, prec)
     end
 
     blls_information(data, inform, status)

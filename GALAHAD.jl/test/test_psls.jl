@@ -15,7 +15,7 @@ function test_psls()
   # Set problem data
   n = 5 # dimension of A
   ne = 7 # number of elements of A
-  dense_ne = n * (n + 1) / 2 # number of elements of dense A
+  dense_ne = div(n * (n + 1), 2) # number of elements of dense A
 
   row = Cint[1, 2, 2, 3, 3, 4, 5]  # A indices  values, NB lower triangle
   col = Cint[1, 1, 5, 2, 3, 3, 5]

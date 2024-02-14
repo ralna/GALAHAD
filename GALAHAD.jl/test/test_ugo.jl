@@ -41,13 +41,6 @@ function test_ugo()
   # Set user-defined control options
   @reset control[].print_level = Cint(1)
 
-  # control.prefix = "'ugo: '"
-  @reset control[].prefix = galahad_linear_solver("'ugo: '")
-
-  # Read options from specfile
-  specfile = "UGO.SPC"
-  ugo_read_specfile(control, specfile)
-
   # Test problem bounds
   x_l = Ref{Float64}(-1.0)
   x_u = Ref{Float64}(2.0)

@@ -7,20 +7,20 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-struct userdata_type
+struct userdata_trb
   p::Float64
 end
 
 function test_trb()
   # Objective function
-  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_trb)
     p = userdata.p
     f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_type)
+  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_trb)
     p = userdata.p
     g[1] = 2.0 * (x[1] + x[3] + p) - sin(x[1])
     g[2] = 2.0 * (x[2] + x[3])
@@ -30,7 +30,7 @@ function test_trb()
 
   # Hessian of the objective
   function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
-                userdata::userdata_type)
+                userdata::userdata_trb)
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 2.0
     hval[3] = 2.0
@@ -41,7 +41,7 @@ function test_trb()
 
   # Dense Hessian
   function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
-                      userdata::userdata_type)
+                      userdata::userdata_trb)
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 0.0
     hval[3] = 2.0
@@ -53,7 +53,7 @@ function test_trb()
 
   # Hessian-vector product
   function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                    got_h::Bool, userdata::userdata_type)
+                    got_h::Bool, userdata::userdata_trb)
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
     u[3] = u[3] + 2.0 * (v[1] + v[2] + 2.0 * v[3])
@@ -63,7 +63,7 @@ function test_trb()
   # Sparse Hessian-vector product
   function shessprod(n::Int, x::Vector{Float64}, nnz_v::Cint, index_nz_v::Vector{Cint},
                      v::Vector{Float64}, nnz_u::Ref{Cint}, index_nz_u::Vector{Cint},
-                     u::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+                     u::Vector{Float64}, got_h::Bool, userdata::userdata_trb)
     p = zeros(Float64, 3)
     used = falses(3)
     for i in 1:nnz_v
@@ -101,7 +101,7 @@ function test_trb()
 
   # Apply preconditioner
   function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                userdata::userdata_type)
+                userdata::userdata_trb)
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
     u[3] = 0.25 * v[3]
@@ -109,7 +109,7 @@ function test_trb()
   end
 
   # Objective function
-  function fun_diag(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_type)
+  function fun_diag(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_trb)
     p = userdata.p
     f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return 0
@@ -117,7 +117,7 @@ function test_trb()
 
   # Gradient of the objective
   function grad_diag(n::Int, x::Vector{Float64}, g::Vector{Float64},
-                     userdata::userdata_type)
+                     userdata::userdata_trb)
     p = userdata.p
     g[1] = -sin(x[1])
     g[2] = 2.0 * x[2]
@@ -127,7 +127,7 @@ function test_trb()
 
   # Hessian of the objective
   function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
-                     userdata::userdata_type)
+                     userdata::userdata_trb)
     hval[1] = -cos(x[1])
     hval[2] = 2.0
     hval[3] = 2.0
@@ -136,7 +136,7 @@ function test_trb()
 
   # Hessian-vector product
   function hessprod_diag(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                         got_h::Bool, userdata::userdata_type)
+                         got_h::Bool, userdata::userdata_trb)
     u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
     u[3] = u[3] + 2.0 * v[3]
@@ -147,7 +147,7 @@ function test_trb()
   function shessprod_diag(n::Int, x::Vector{Float64}, nnz_v::Cint,
                           index_nz_v::Vector{Cint}, v::Vector{Float64}, nnz_u::Ref{Cint},
                           index_nz_u::Vector{Cint}, u::Vector{Float64}, got_h::Bool,
-                          userdata::userdata_type)
+                          userdata::userdata_trb)
     p = zeros(Float64, 3)
     used = falses(3)
     for i in 1:nnz_v
@@ -181,7 +181,7 @@ function test_trb()
   inform = Ref{trb_inform_type{Float64}}()
 
   # Set user data
-  userdata = userdata_type(4.0)
+  userdata = userdata_trb(4.0)
 
   # Set problem data
   n = 3 # dimension

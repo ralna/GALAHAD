@@ -30,7 +30,6 @@ function test_bqpb()
   status = Ref{Cint}()
 
   @printf(" Fortran sparse matrix indexing\n\n")
-
   @printf(" basic tests of qp storage formats\n\n")
 
   for d in 1:7

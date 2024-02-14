@@ -7,14 +7,14 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-struct userdata_type
+struct userdata_nls
   p::Float64
 end
 
 function test_nls()
   # compute the residuals
   function res(n::Int, m::Int, x::Vector{Float64}, c::Vector{Float64},
-               userdata::userdata_type)
+               userdata::userdata_nls)
     c[1] = x[1]^2 + userdata.p
     c[2] = x[1] + x[2]^2
     c[3] = x[1] - x[2]
@@ -23,7 +23,7 @@ function test_nls()
 
   # compute the Jacobian
   function jac(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64},
-               userdata::userdata_type)
+               userdata::userdata_nls)
     jval[1] = 2.0 * x[1]
     jval[2] = 1.0
     jval[3] = 2.0 * x[2]
@@ -34,7 +34,7 @@ function test_nls()
 
   # compute the Hessian
   function hess(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64},
-                hval::Vector{Float64}, userdata::userdata_type)
+                hval::Vector{Float64}, userdata::userdata_nls)
     hval[1] = 2.0 * y[1]
     hval[2] = 2.0 * y[2]
     return 0
@@ -42,7 +42,7 @@ function test_nls()
 
   # compute Jacobian-vector products
   function jacprod(n::Int, m::Int, x::Vector{Float64}, trans::Bool, u::Vector{Float64},
-                   v::Vector{Float64}, got_j::Bool, userdata::userdata_type)
+                   v::Vector{Float64}, got_j::Bool, userdata::userdata_nls)
     if trans
       u[1] = u[1] + 2.0 * x[1] * v[1] + v[2] + v[3]
       u[2] = u[2] + 2.0 * x[2] * v[2] - v[3]
@@ -57,7 +57,7 @@ function test_nls()
   # compute Hessian-vector products
   function hessprod(n::Int, m::Int, x::Vector{Float64}, y::Vector{Float64},
                     u::Vector{Float64}, v::Vector{Float64}, got_h::Bool,
-                    userdata::userdata_type)
+                    userdata::userdata_nls)
     u[1] = u[1] + 2.0 * y[1] * v[1]
     u[2] = u[2] + 2.0 * y[2] * v[2]
     return 0
@@ -65,7 +65,7 @@ function test_nls()
 
   # compute residual-Hessians-vector products
   function rhessprods(n::Int, m::Int, pne::Int, x::Vector{Float64}, v::Vector{Float64},
-                      pval::Vector{Float64}, got_h::Bool, userdata::userdata_type)
+                      pval::Vector{Float64}, got_h::Bool, userdata::userdata_nls)
     pval[1] = 2.0 * v[1]
     pval[2] = 2.0 * v[2]
     return 0
@@ -73,7 +73,7 @@ function test_nls()
 
   # # scale v
   function scale(n::Int, m::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                 userdata::userdata_type)
+                 userdata::userdata_nls)
     u[1] = v[1]
     u[2] = v[2]
     return 0
@@ -81,7 +81,7 @@ function test_nls()
 
   # compute the dense Jacobian
   function jac_dense(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64},
-                     userdata::userdata_type)
+                     userdata::userdata_nls)
     jval[1] = 2.0 * x[1]
     jval[2] = 0.0
     jval[3] = 1.0
@@ -93,7 +93,7 @@ function test_nls()
 
   # compute the dense Hessian
   function hess_dense(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64},
-                      hval::Vector{Float64}, userdata::userdata_type)
+                      hval::Vector{Float64}, userdata::userdata_nls)
     hval[1] = 2.0 * y[1]
     hval[2] = 0.0
     hval[3] = 2.0 * y[2]
@@ -103,7 +103,7 @@ function test_nls()
   # compute dense residual-Hessians-vector products
   function rhessprods_dense(n::Int, m::Int, pne::Int, x::Vector{Float64},
                             v::Vector{Float64}, pval::Vector{Float64}, got_h::Bool,
-                            userdata::userdata_type)
+                            userdata::userdata_nls)
     pval[1] = 2.0 * v[1]
     pval[2] = 0.0
     pval[3] = 0.0
@@ -119,7 +119,7 @@ function test_nls()
   inform = Ref{nls_inform_type{Float64}}()
 
   # Set user data
-  userdata = userdata_type(1.0)
+  userdata = userdata_nls(1.0)
 
   # Set problem data
   n = 2 # # variables
