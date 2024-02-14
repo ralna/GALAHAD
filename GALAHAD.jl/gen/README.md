@@ -111,16 +111,25 @@ loading the Julia interface with `using GALAHAD`.
 
 # Tests
 
-The file `examples.jl` help to generate Julia tests based on the C tests of a GALAHAD package.
-- Create symbolic link
-- Explain "tf", "t" or ""
-- Call clean_example(...)
+The file `examples.jl` aids in generating Julia tests based on the
+C tests within a GALAHAD package. To facilitate the translation of a C
+test `GALAHAD/src/abcd/C/abcdtf.c` into a Julia test, follow these steps:
+
+Add the following entry to `examples.jl`:
 
 ```julia
 (name == "abcd") && examples("abcd", "tf")
 ```
 
-To test the new package named `abcd`, insert the following line in `GALAHAD.jl/test/runtests.jl`:
+Replace `"tf"` with `"t"` if translating a test from `abcdt.c`, or use `""` if no corresponding C test exists.
+
+After including `examples.jl`, invoking `main("abcd")` will generate the file `test_abcd.jl` in the
+directory `GALAHAD.jl/test`, along with a symbolic link pointing to this file in `GALAHAD/src/abcd/Julia`.
+
+After manual modifications to ensure the Julia test works correctly, you can utilize `clean_example("abcd")`
+to format the file.
+
+To test the new package named `abcd` alongside other packages, insert the following line in `GALAHAD.jl/test/runtests.jl`:
 
 ```julia
 include("test_abcd.jl")
