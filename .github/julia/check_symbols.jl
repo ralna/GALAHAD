@@ -32,7 +32,7 @@ single_double_modules = ["hash_MOD", "string_MOD", "clock_MOD", "copyright_MOD",
 for (symbols1, symbols2, int1, int2, name) in symbols_combinations
   intersect_symbols = intersect(symbols1, symbols2)
   println("---------------------------------------------------------------------------------------------------------------------------")
-  @warn("The same symbols are exported by the libraries $name.")
+  @warn("The following symbols are exported by both the libraries $name:")
   for symbol in intersect_symbols
     flag1 = (startswith(symbol, "galahad_") || startswith(symbol, "cutest_")) && endswith(symbol, "_") && (int1 == int2 == 32)
     flag2 = (startswith(symbol, "galahad_") || startswith(symbol, "cutest_")) && endswith(symbol, "64_") && (int1 == int2 == 64)
