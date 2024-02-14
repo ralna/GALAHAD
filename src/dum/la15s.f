@@ -9,8 +9,8 @@
       INTEGER ( KIND = ip_ ) :: KEEP( 7 )
       END SUBROUTINE LA15I
 
-      SUBROUTINE LA15A( A, IND, nzero, ia, n, IP, IW, W, g, u,
-     &                  ICNTL, CNTL, KEEP )
+      SUBROUTINE LA15A( A, IND, nzero, ia, n, IP, IW, W, g,
+     &                  u, ICNTL, CNTL, KEEP )
       USE GALAHAD_KINDS
       REAL :: g, U
       INTEGER ( KIND = ip_ ) :: ia, n, nzero
