@@ -9,8 +9,8 @@
       INTEGER ( KIND = ip_ ) :: KEEP( 7 )
       END SUBROUTINE LA15ID
 
-      SUBROUTINE LA15AD( A, IND, nzero, ia, n, IP, IW, W, g, u,
-     &                   ICNTL, CNTL, KEEP )
+      SUBROUTINE LA15AD( A, IND, nzero, ia, n, IP, IW, W, g,
+     &                   u, ICNTL, CNTL, KEEP )
       USE GALAHAD_KINDS
       DOUBLE PRECISION :: g, U
       INTEGER ( KIND = ip_ ) :: ia, n, nzero

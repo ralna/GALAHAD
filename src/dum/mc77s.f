@@ -19,8 +19,8 @@
 !    &    '   $GALAHAD/src/makedefs/packages for details.' )" )
       END
 
-      SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW, liw,
-     &                  DW, ldw, ICNTL, CNTL, INFO, RINFO )
+      SUBROUTINE MC77A( job, m, n, nnz, JCST, IRN, A, IW,
+     &                  liw, DW, ldw, ICNTL, CNTL, INFO, RINFO )
       USE GALAHAD_KINDS
       USE GALAHAD_SYMBOLS
       INTEGER ( KIND = ip_ ) :: licntl, lcntl, linfo, lrinfo

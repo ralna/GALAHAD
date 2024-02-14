@@ -66,8 +66,8 @@
 
       END SUBROUTINE MA33AD
 
-      SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF,
-     *                   IDISP, IP, IQ, X, W, mtype, RINFO )
+      SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL,
+     *                   LENOFF, IDISP, IP, IQ, X, W, mtype, RINFO )
 
       USE GALAHAD_KINDS
 

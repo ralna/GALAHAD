@@ -7,8 +7,8 @@
       SUBROUTINE MC21A( )
       END
 
-      SUBROUTINE MC21B( n, ICN, licn, IP, LENR, IPERM, numnz,
-     *                  PR, ARP, CV, OUT )
+      SUBROUTINE MC21B( n, ICN, licn, IP, LENR, IPERM,
+     &                  numnz, PR, ARP, CV, OUT )
       USE GALAHAD_KINDS
       INTEGER ( KIND = ip_ ) :: licn, n, numnz
       INTEGER ( KIND = ip_ ) :: ARP( n ), CV( n )
