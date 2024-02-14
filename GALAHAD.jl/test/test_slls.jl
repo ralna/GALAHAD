@@ -123,103 +123,8 @@ function test_slls()
   end
 
   @printf(" fortran sparse matrix indexing\n\n")
-  @printf(" basic tests of slls storage formats\n\n")
+  @printf(" tests reverse-communication options\n\n")
 
-  for d in 1:5
-    # Initialize SLLS
-    slls_initialize(data, control, status)
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # fortran sparse matrix indexing
-
-    # Start from 0
-    for i in 1:n
-      x[i] = 0.0
-      z[i] = 0.0
-    end
-
-    # sparse co-ordinate storage
-    if d == 1
-      st = "CO"
-      slls_import(control, data, status, n, o,
-                  "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
-
-      slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
-                         x_stat, prec)
-    end
-
-    # sparse by rows
-    if d == 2
-      st = "SR"
-      slls_import(control, data, status, n, o,
-                  "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
-                  Ao_ptr_ne, Ao_ptr)
-
-      slls_solve_given_a(data, userdata, status, n, o, Ao_ne, Ao_val, b, x, z, r, g,
-                         x_stat, prec)
-    end
-
-    # dense by rows
-    if d == 3
-      st = "DR"
-      slls_import(control, data, status, n, o,
-                  "dense_by_rows", Ao_dense_ne,
-                  C_NULL, C_NULL, 0, C_NULL)
-
-      slls_solve_given_a(data, userdata, status, n, o,
-                         Ao_dense_ne, Ao_dense, b,
-                         x, z, r, g, x_stat, prec)
-    end
-
-    # sparse by columns
-    if d == 4
-      st = "SC"
-      slls_import(control, data, status, n, o,
-                  "sparse_by_columns", Ao_ne, Ao_by_col_row,
-                  C_NULL, Ao_by_col_ptr_ne, Ao_by_col_ptr)
-
-      slls_solve_given_a(data, userdata, status, n, o,
-                         Ao_ne, Ao_by_col_val, b,
-                         x, z, r, g, x_stat, prec)
-    end
-
-    # dense by columns
-    if d == 5
-      st = "DC"
-      slls_import(control, data, status, n, o,
-                  "dense_by_columns", Ao_dense_ne,
-                  C_NULL, C_NULL, 0, C_NULL)
-
-      slls_solve_given_a(data, userdata, status, n, o, Ao_dense_ne, Ao_by_col_dense,
-                         b,
-                         x, z, r, g, x_stat, prec)
-    end
-
-    slls_information(data, inform, status)
-
-    if inform[].status == 0
-      @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              st, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("%s: SLLS_solve exit status = %1i\n", st, inform[].status)
-    end
-
-    # @printf("x: ")
-    # for i = 1:n
-    #   @printf("%f ", x[i])
-    # end
-    # @printf("\n")
-    # @printf("gradient: ")
-    # for i = 1:n
-    #   @printf("%f ", g[i])
-    # end
-    # @printf("\n")
-
-    # Delete internal workspace
-    slls_terminate(data, control, inform)
-  end
-
-  @printf("\n tests reverse-communication options\n\n")
   # reverse-communication input/output
   on = max(o, n)
   eval_status = Ref{Cint}()
@@ -231,8 +136,7 @@ function test_slls()
   mask = zeros(Cint, o)
   v = zeros(Float64, on)
   p = zeros(Float64, on)
-
-  nz_p_end = 0
+  nz_p_end = 1
 
   # Initialize SLLS
   slls_initialize(data, control, status)
@@ -264,42 +168,38 @@ function test_slls()
     elseif status[] < 0 # error exit
       terminated = true
     elseif status[] == 2 # evaluate p = Av
-      p[n + 1] = 0.0
+      p[o] = 0.0
       for i in 1:n
         p[i] = v[i]
-        p[n + 1] = p[n + 1] + v[i]
+        p[o] = p[o] + v[i]
       end
     elseif status[] == 3 # evaluate p = A^Tv
       for i in 1:n
-        p[i] = v[i] + v[n + 1]
+        p[i] = v[i] + v[o]
       end
     elseif status[] == 4 # evaluate p = Av for sparse v
-      p[n + 1] = 0.0
-      for i in 1:n
+      for i in 1:o
         p[i] = 0.0
       end
       for l in nz_v_start[]:nz_v_end[]
         i = nz_v[l]
         p[i] = v[i]
-        p[n + 1] = p[n + 1] + v[i]
+        p[o] = p[o] + v[i]
       end
     elseif status[] == 5 # evaluate p = sparse Av for sparse v
-      nz_p_end = 1
+      nz_p_end = 0
       for l in nz_v_start[]:nz_v_end[]
         i = nz_v[l]
+        nz_p_end = nz_p_end + 1
+        nz_p[nz_p_end] = i
+        p[i] = v[i]
         if mask[i] == 0
           mask[i] = 1
-          nz_p[nz_p_end] = i + 1
           nz_p_end = nz_p_end + 1
-          p[i] = v[i]
-        end
-        if mask[n] == 0
-          mask[n] = 1
           nz_p[nz_p_end] = o
-          nz_p_end = nz_p_end + 1
-          p[n] = v[i]
+          p[o] = v[i]
         else
-          p[n] = p[n] + v[i]
+          p[o] = p[o] + v[i]
         end
       end
       for l in 1:nz_p_end
@@ -308,7 +208,7 @@ function test_slls()
     elseif status[] == 6 # evaluate p = sparse A^Tv
       for l in nz_v_start[]:nz_v_end[]
         i = nz_v[l]
-        p[i] = v[i] + v[n]
+        p[i] = v[i] + v[o]
       end
     elseif status[] == 7 # evaluate p = P^{-}v
       for i in 1:n
