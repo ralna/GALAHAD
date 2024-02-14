@@ -4,7 +4,8 @@
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M C 2 0   S U B R O U T I N E *-*-*-
 
-      SUBROUTINE MC20AD( nc, maxa, A, INUM, JPTR, JNUM, jdisp )
+      SUBROUTINE MC20AD( nc, maxa, A, INUM, JPTR, JNUM,
+     &                   jdisp )
 
       USE GALAHAD_KINDS
 

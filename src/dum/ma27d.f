@@ -8,8 +8,9 @@
 !  Copyright reserved
 !  February 13th 1995
 
-      SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1,
-     *                   nsteps, iflag, ICNTL, CNTL, INFO, ops )
+      SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP,
+     *                   IW1, nsteps, iflag, ICNTL, CNTL,
+     *                   INFO, ops )
 
       USE GALAHAD_KINDS
 
@@ -54,8 +55,9 @@
       END SUBROUTINE MA27AD
 
 
-      SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP,
-     *                   nsteps, maxfrt, IW1, ICNTL, CNTL, INFO )
+      SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw,
+     *                   IKEEP, nsteps, maxfrt, IW1, ICNTL,
+     *                   CNTL, INFO )
 
       USE GALAHAD_KINDS
 
@@ -99,8 +101,8 @@
       END SUBROUTINE MA27BD
 
 
-      SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1,
-     *                   nsteps, ICNTL, INFO )
+      SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS,
+     *                   IW1, nsteps, ICNTL, INFO )
 
       USE GALAHAD_KINDS
 
@@ -176,8 +178,8 @@
 
       END SUBROUTINE MA27ID
 
-      SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2,
-     *                   nblk, latop, ICNTL )
+      SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS,
+     *                   IW2, nblk, latop, ICNTL )
 
       USE GALAHAD_KINDS
 
