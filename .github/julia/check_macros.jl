@@ -1,7 +1,7 @@
 using Test
 
-global m = 0
 global n = 0
+
 excluded_files = ["blas_original.f", "blas_original.f90",
                   "lapack_original.f", "lapack_original.f90",
                   "ieeeck_original.f", "noieeeck_original.f"]
@@ -13,7 +13,7 @@ function file_extension(file::String)
   return extension
 end
 
-function append_macros!(macros::Vector{Tuple{String,String}}, path::String)
+function append_macros!(macros::Dict{String, String}, path::String)
   str = read(path, String)
   lines = split(str, '\n')
   for line in lines
@@ -21,17 +21,19 @@ function append_macros!(macros::Vector{Tuple{String,String}}, path::String)
       tab = split(line, " ", keepempty=false)
       symbol = tab[2]
       pp_symbol = tab[3]
-      push!(macros, (symbol, pp_symbol))
-      # if length(pp_symbol) > 31
-      #   println("The symbol $(pp_symbol) has more than 31 characters.")
-      #   global m = m+1
-      # end
+      if !haskey(macros, symbol)
+        macros[symbol] = pp_symbol
+      else
+        if length(macros[symbol]) < length(pp_symbol)
+          macros[symbol] = pp_symbol
+        end
+      end
     end
   end
   return macros
 end
 
-macros = Tuple{String,String}[]
+macros = Dict{String, String}()
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_modules.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_blas.h"))
 append_macros!(macros, joinpath(@__DIR__, "..", "..", "include", "galahad_lapack.h"))
@@ -60,7 +62,8 @@ for (root, dirs, files) in walkdir(joinpath(@__DIR__, "..", "..", "src"))
         println("Line $i in the file $file has more than 132 characters.")
         global n = n+1
       end
-      for (symbol, pp_symbol) in macros
+      for symbol in keys(macros)
+        pp_symbol = macros[symbol]
         if occursin(symbol, line) && (file_extension(file) == "f")
           line2 = replace(line, symbol => pp_symbol)
           if length(line2) > 72
