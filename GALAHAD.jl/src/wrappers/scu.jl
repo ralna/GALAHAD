@@ -12,6 +12,22 @@ struct scu_inform_type
   inertia::NTuple{3,Cint}
 end
 
+export scu_initialize_s
+
+function scu_initialize_s(data, control, status)
+  @ccall libgalahad_single.scu_initialize_s(data::Ptr{Ptr{Cvoid}},
+                                            control::Ptr{scu_control_type},
+                                            status::Ptr{Cint})::Cvoid
+end
+
+export scu_initialize
+
+function scu_initialize(data, control, status)
+  @ccall libgalahad_double.scu_initialize(data::Ptr{Ptr{Cvoid}},
+                                          control::Ptr{scu_control_type},
+                                          status::Ptr{Cint})::Cvoid
+end
+
 export scu_information_s
 
 function scu_information_s(data, inform, status)
