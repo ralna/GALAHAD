@@ -21,7 +21,7 @@ modules_combinations = [(modules_single_int32, modules_double_int32, 32, 32, "li
                         (modules_single_int32, modules_double_int64, 32, 64, "libgalahad_single.so (Int32) and libgalahad_double.so (Int64)"),
                         (modules_double_int32, modules_single_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_single.so (Int64)"),
                         (modules_double_int32, modules_double_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_double.so (Int64)"),
-                        (modules_double_int64, modules_double_int64, 64, 64, "libgalahad_double.so (Int64) and libgalahad_double.so (Int64)")]
+                        (modules_single_int64, modules_double_int64, 64, 64, "libgalahad_single.so (Int64) and libgalahad_double.so (Int64)")]
 
 single_double_modules = ["galahad_blas_interface", "galahad_lapack_interface", "galahad_clock", "galahad_common_ciface",
                          "galahad_copyright", "galahad_hash", "galahad_hash_ciface", "galahad_hsl_kb22_long_integer",
@@ -36,7 +36,7 @@ single_double_modules = ["galahad_blas_interface", "galahad_lapack_interface", "
 for (modules1, modules2, int1, int2, name) in modules_combinations
   intersect_modules = intersect(modules1, modules2)
   println("---------------------------------------------------------------------------------------------------------------------------")
-  @warn("The following modules are generated for both libraries $name:")
+  println("The following modules are generated for both libraries $name:")
   for mod in intersect_modules
     flag1 = mapreduce(x -> (x * ".mod") == mod, |, single_double_modules) && (int1 == int2 == 32)
     flag2 = mapreduce(x -> (x * "_64.mod") == mod, |, single_double_modules) && (int1 == int2 == 64)

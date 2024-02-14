@@ -22,7 +22,7 @@ symbols_combinations = [(symbols_single_int32, symbols_double_int32, 32, 32, "li
                         (symbols_single_int32, symbols_double_int64, 32, 64, "libgalahad_single.so (Int32) and libgalahad_double.so (Int64)"),
                         (symbols_double_int32, symbols_single_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_single.so (Int64)"),
                         (symbols_double_int32, symbols_double_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_double.so (Int64)"),
-                        (symbols_double_int64, symbols_double_int64, 64, 64, "libgalahad_double.so (Int64) and libgalahad_double.so (Int64)")]
+                        (symbols_single_int64, symbols_double_int64, 64, 64, "libgalahad_single.so (Int64) and libgalahad_double.so (Int64)")]
 
 single_double_modules = ["hash_MOD", "string_MOD", "clock_MOD", "copyright_MOD", "symbols_MOD", "tools_MOD",
                          "common_ciface_MOD", "hash_ciface_MOD", "hsl_kb22_long_integer_MOD", "hsl_mc68_integer_ciface_MOD",
@@ -32,7 +32,7 @@ single_double_modules = ["hash_MOD", "string_MOD", "clock_MOD", "copyright_MOD",
 for (symbols1, symbols2, int1, int2, name) in symbols_combinations
   intersect_symbols = intersect(symbols1, symbols2)
   println("---------------------------------------------------------------------------------------------------------------------------")
-  @warn("The following symbols are exported by both the libraries $name:")
+  println("The following symbols are exported by both the libraries $name:")
   for symbol in intersect_symbols
     flag1 = (startswith(symbol, "galahad_") || startswith(symbol, "cutest_")) && endswith(symbol, "_") && (int1 == int2 == 32)
     flag2 = (startswith(symbol, "galahad_") || startswith(symbol, "cutest_")) && endswith(symbol, "64_") && (int1 == int2 == 64)
