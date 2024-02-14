@@ -26,7 +26,7 @@ symbols_combinations = [(symbols_single_int32, symbols_double_int32, 32, 32, "li
 
 single_double_modules = ["hash_MOD", "string_MOD", "clock_MOD", "copyright_MOD", "symbols_MOD", "tools_MOD",
                          "common_ciface_MOD", "hash_ciface_MOD", "hsl_kb22_long_integer_MOD", "hsl_mc68_integer_ciface_MOD",
-                         "hsl_mc68_integer_MOD", "hsl_mc78_integer_MOD", "hsl_zb01_integer_MOD",
+                         "hsl_mc68_integer_MOD", "hsl_mc78_integer_MOD", "hsl_zb01_integer_MOD", "galahad_hsl_of01_integer_MOD_",
                          "mkl_pardiso_private_MOD", "pastixf_enums_MOD", "pastixf_interfaces_MOD", "spmf_enums_MOD"]
 
 for (symbols1, symbols2, int1, int2, name) in symbols_combinations

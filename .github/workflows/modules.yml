@@ -1,4 +1,4 @@
-name: Symbols
+name: Fortran modules
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: GALAHAD -- Check symbols
+    name: GALAHAD -- Check Fortran modules
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GALAHAD
@@ -45,5 +45,5 @@ jobs:
           version: 1
           arch: x64
 
-      - name: Check the symbols
-        run: julia --color=yes .github/julia/check_symbols.jl
+      - name: Check the Fortran modules
+        run: julia --color=yes .github/julia/check_modules.jl
