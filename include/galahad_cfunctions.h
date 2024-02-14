@@ -54,6 +54,7 @@
 #define bqp_terminate bqp_terminate_s
 #define bsc_initialize bsc_initialize_s
 #define bsc_read_specfile bsc_read_specfile_s
+#define bsc_information bsc_information_s
 #define bsc_terminate bsc_terminate_s
 #define ccqp_initialize ccqp_initialize_s
 #define ccqp_read_specfile ccqp_read_specfile_s
@@ -129,6 +130,7 @@
 #define fdc_terminate fdc_terminate_s
 #define fit_initialize fit_initialize_s
 #define fit_read_specfile fit_read_specfile_s
+#define fit_information fit_information_s
 #define fit_terminate fit_terminate_s
 #define glrt_initialize glrt_initialize_s
 #define glrt_read_specfile glrt_read_specfile_s

@@ -256,6 +256,7 @@ $(HLG)(hsl_zb01s.o): $(MA48)/hsl_zb01s.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01s.f90
 	cd $(OBJ); $(HARR) hsl_zb01s.o ; $(RM) hsl_zb01s.f90 hsl_zb01s.o
 	$(HRMARFILE) hsl_ma48s.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -267,6 +268,7 @@ $(HLG)(hsl_zb01d.o): $(MA48)/hsl_zb01d.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01d.f90
 	cd $(OBJ); $(HARR) hsl_zb01d.o ; $(RM) hsl_zb01d.f90 hsl_zb01d.o
 	$(HRMARFILE) hsl_ma48d.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -279,6 +281,7 @@ $(HLG)(hsl_zb01i.o): $(MA48)/hsl_zb01i.f90
 	cd $(OBJ); $(HARR) hsl_zb01i.o ; $(RM) hsl_zb01i.f90 hsl_zb01i.o
 	$(HRMARFILE) hsl_ma48s.o
 	$(HRMARFILE) hsl_ma48d.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -290,6 +293,7 @@ $(HLG)(hsl_ma48s.o): $(MA48)/hsl_ma48s.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48s.f90
 	cd $(OBJ); $(HARR) hsl_ma48s.o ; $(RM) hsl_ma48s.f90 hsl_ma48s.o
 	$(RMARFILE) sbls.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -301,6 +305,7 @@ $(HLG)(hsl_ma48d.o): $(MA48)/hsl_ma48d.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48d.f90
 	cd $(OBJ); $(HARR) hsl_ma48d.o ; $(RM) hsl_ma48d.f90 hsl_ma48d.o
 	$(RMARFILE) sbls.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 

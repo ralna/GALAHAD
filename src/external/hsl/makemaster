@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for the HSL packages
+#  Main body of the installation makefile for GALAHAD's HSL packages
 
 #  N. Gould
-#  This version: 2024-02-11
+#  This version: 2024-02-12
 
 #  include standard GALAHAD HSL makefile definitions
 
@@ -10,6 +10,137 @@ include $(GALAHAD)/src/makedefs/hsl_definitions
 #  ===================
 #  compilation agendas
 #  ===================
+
+#  all packages
+
+hsl: hsl_$(PRECIS)
+	@printf ' %-21s\n' "HSL routines ($(PRECIS) $(SUCC)"
+hsl_silent: hsl_$(PRECIS)
+hsl_single: blas lapack metis kinds zd11 \
+            $(HLGS)(fa14s.o) $(HLGS)(fd15s.o) $(HLGS)(kb07i.o) \
+            $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) \
+            $(HLGS)(mc29s.o) $(HLGS)(mc30s.o) $(HLGS)(mc34s.o) \
+            $(HLGS)(mc47s.o) $(HLGS)(mc59s.o) $(HLGS)(mc61s.o) \
+            $(HLGS)(mc64s.o) $(HLGS)(mc71s.o) $(HLGS)(mc77s.o) \
+            $(HLGS)(la15s.o) $(HLGS)(la04s.o) $(HLGS)(ma27s.o) \
+            $(HLGS)(ma33s.o) $(HLGS)(ma57s.o) $(HLGS)(ma61s.o) \
+            $(HLGS)(mi21s.o) $(HLGS)(mi24s.o) $(HLGS)(mi26s.o) \
+            $(HLGS)(hsl_zb01s.o) $(HLGS)(hsl_zb01i.o) \
+            $(HLGS)(hsl_kb22l.o) $(HLGS)(hsl_mc34s.o) \
+            $(HLGS)(hsl_of01i.o) $(HLGS)(hsl_of01s.o) \
+            $(HLGS)(hsl_mc65s.o) $(HLGS)(hsl_mc68i.o) \
+            $(HLGS)(hsl_mc69s.o) $(HLGS)(hsl_mc64s.o) \
+            $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_mc80s.o) \
+            $(HLGS)(hsl_ma48s.o) $(HLGS)(hsl_ma57s.o) \
+            $(HLGS)(hsl_ma54s.o) $(HLGS)(hsl_ma64s.o) \
+            $(HLGS)(hsl_ma77s.o) $(HLGS)(hsl_ad02s.o) \
+            $(HLGS)(hsl_ma86s.o) $(HLGS)(hsl_ma87s.o) \
+            $(HLGS)(hsl_ma97s.o) $(HLGS)(hsl_mi32s.o) \
+            $(HLGS)(hsl_mi20s.o) $(HLGS)(hsl_mi28s.o) \
+            $(HLGS)(hsl_mi35s.o)
+hsl_double: blas lapack metis kinds zd11 \
+            $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(kb07i.o) \
+            $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) \
+            $(HLGD)(mc29d.o) $(HLGD)(mc30d.o) $(HLGD)(mc34d.o) \
+            $(HLGD)(mc47d.o) $(HLGD)(mc59d.o) $(HLGD)(mc61d.o) \
+            $(HLGD)(mc64d.o) $(HLGD)(mc71d.o) $(HLGD)(mc77d.o) \
+            $(HLGD)(la15d.o) $(HLGD)(la04d.o) $(HLGD)(ma27d.o) \
+            $(HLGD)(ma33d.o) $(HLGD)(ma57d.o) $(HLGD)(ma61d.o) \
+            $(HLGD)(mi21d.o) $(HLGD)(mi24d.o) $(HLGD)(mi26d.o) \
+            $(HLGD)(hsl_zb01d.o) $(HLGD)(hsl_zb01i.o) \
+            $(HLGD)(hsl_kb22l.o) $(HLGD)(hsl_mc34d.o) \
+            $(HLGD)(hsl_of01i.o) $(HLGD)(hsl_of01d.o) \
+            $(HLGD)(hsl_mc65d.o) $(HLGD)(hsl_mc68i.o) \
+            $(HLGD)(hsl_mc69d.o) $(HLGD)(hsl_mc64d.o) \
+            $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_mc80d.o) \
+            $(HLGD)(hsl_ma48d.o) $(HLGD)(hsl_ma57d.o) \
+            $(HLGD)(hsl_ma54d.o) $(HLGD)(hsl_ma64d.o) \
+            $(HLGD)(hsl_ma77d.o) $(HLGD)(hsl_ad02d.o) \
+            $(HLGD)(hsl_ma86d.o) $(HLGD)(hsl_ma87d.o) \
+            $(HLGD)(hsl_ma97d.o) $(HLGD)(hsl_mi32d.o) \
+            $(HLGD)(hsl_mi20d.o) $(HLGD)(hsl_mi28d.o) \
+            $(HLGD)(hsl_mi35d.o)
+
+hsl_single_64: blas lapack metis kinds zd11 \
+               $(HLGS64)(fa14s.o) $(HLGS64)(fd15s.o) $(HLGS64)(kb07i.o) \
+               $(HLGS64)(mc13s.o) $(HLGS64)(mc20s.o) $(HLGS64)(mc21s.o) \
+               $(HLGS64)(mc29s.o) $(HLGS64)(mc30s.o) $(HLGS64)(mc34s.o) \
+               $(HLGS64)(mc47s.o) $(HLGS64)(mc59s.o) $(HLGS64)(mc61s.o) \
+               $(HLGS64)(mc64s.o) $(HLGS64)(mc71s.o) $(HLGS64)(mc77s.o) \
+               $(HLGS64)(la15s.o) $(HLGS64)(la04s.o) $(HLGS64)(ma27s.o) \
+               $(HLGS64)(ma33s.o) $(HLGS64)(ma57s.o) $(HLGS64)(ma61s.o) \
+               $(HLGS64)(mi21s.o) $(HLGS64)(mi24s.o) $(HLGS64)(mi26s.o) \
+               $(HLGS64)(hsl_zb01s.o) $(HLGS64)(hsl_zb01i.o) \
+               $(HLGS64)(hsl_kb22l.o) $(HLGS64)(hsl_mc34s.o) \
+               $(HLGS64)(hsl_of01i.o) $(HLGS64)(hsl_of01s.o) \
+               $(HLGS64)(hsl_mc65s.o) $(HLGS64)(hsl_mc68i.o) \
+               $(HLGS64)(hsl_mc69s.o) $(HLGS64)(hsl_mc64s.o) \
+               $(HLGS64)(hsl_mc78i.o) $(HLGS64)(hsl_mc80s.o) \
+               $(HLGS64)(hsl_ma48s.o) $(HLGS64)(hsl_ma57s.o) \
+               $(HLGS64)(hsl_ma54s.o) $(HLGS64)(hsl_ma64s.o) \
+               $(HLGS64)(hsl_ma77s.o) $(HLGS64)(hsl_ad02s.o) \
+               $(HLGS64)(hsl_ma86s.o) $(HLGS64)(hsl_ma87s.o) \
+               $(HLGS64)(hsl_ma97s.o) $(HLGS64)(hsl_mi32s.o) \
+               $(HLGS64)(hsl_mi20s.o) $(HLGS64)(hsl_mi28s.o) \
+               $(HLGS64)(hsl_mi35s.o)
+hsl_double_64: blas lapack metis kinds zd11 \
+               $(HLGD64)(fa14d.o) $(HLGD64)(fd15d.o) $(HLGD64)(kb07i.o) \
+               $(HLGD64)(mc13d.o) $(HLGD64)(mc20d.o) $(HLGD64)(mc21d.o) \
+               $(HLGD64)(mc29d.o) $(HLGD64)(mc30d.o) $(HLGD64)(mc34d.o) \
+               $(HLGD64)(mc47d.o) $(HLGD64)(mc59d.o) $(HLGD64)(mc61d.o) \
+               $(HLGD64)(mc64d.o) $(HLGD64)(mc71d.o) $(HLGD64)(mc77d.o) \
+               $(HLGD64)(la15d.o) $(HLGD64)(la04d.o) $(HLGD64)(ma27d.o) \
+               $(HLGD64)(ma33d.o) $(HLGD64)(ma57d.o) $(HLGD64)(ma61d.o) \
+               $(HLGD64)(mi21d.o) $(HLGD64)(mi24d.o) $(HLGD64)(mi26d.o) \
+               $(HLGD64)(hsl_zb01d.o) $(HLGD64)(hsl_zb01i.o) \
+               $(HLGD64)(hsl_kb22l.o) $(HLGD64)(hsl_mc34d.o) \
+               $(HLGD64)(hsl_of01i.o) $(HLGD64)(hsl_of01d.o) \
+               $(HLGD64)(hsl_mc65d.o) $(HLGD64)(hsl_mc68i.o) \
+               $(HLGD64)(hsl_mc69d.o) $(HLGD64)(hsl_mc64d.o) \
+               $(HLGD64)(hsl_mc78i.o) $(HLGD64)(hsl_mc80d.o) \
+               $(HLGD64)(hsl_ma48d.o) $(HLGD64)(hsl_ma57d.o) \
+               $(HLGD64)(hsl_ma54d.o) $(HLGD64)(hsl_ma64d.o) \
+               $(HLGD64)(hsl_ma77d.o) $(HLGD64)(hsl_ad02d.o) \
+               $(HLGD64)(hsl_ma86d.o) $(HLGD64)(hsl_ma87d.o) \
+               $(HLGD64)(hsl_ma97d.o) $(HLGD64)(hsl_mi32d.o) \
+               $(HLGD64)(hsl_mi20d.o) $(HLGD64)(hsl_mi28d.o) \
+               $(HLGD64)(hsl_mi35d.o)
+             
+hsl_ciface: hsl_$(PRECIS) hsl_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL C routines ($(PRECIS) $(SUCC)"
+hsl_ciface_silent: hsl_$(PRECIS) hsl_ciface_$(PRECIS)
+hsl_ciface_single: $(HCLGS)(hsl_ma48s_ciface.o) \
+                   $(HCLGS)(hsl_ma57s_ciface.o) \
+                   $(HCLGS)(hsl_ma77s_ciface.o) \
+                   $(HCLGS)(hsl_ma86s_ciface.o) \
+                   $(HCLGS)(hsl_ma87s_ciface.o) \
+                   $(HCLGS)(hsl_ma97s_ciface.o) \
+                   $(HCLGS)(hsl_mi20s_ciface.o) \
+                   $(HCLGS)(hsl_mi28s_ciface.o)
+hsl_ciface_double: $(HCLGD)(hsl_ma48d_ciface.o) \
+                   $(HCLGD)(hsl_ma57d_ciface.o) \
+                   $(HCLGD)(hsl_ma77d_ciface.o) \
+                   $(HCLGD)(hsl_ma86d_ciface.o) \
+                   $(HCLGD)(hsl_ma87d_ciface.o) \
+                   $(HCLGD)(hsl_ma97d_ciface.o) \
+                   $(HCLGD)(hsl_mi20d_ciface.o) \
+                   $(HCLGD)(hsl_mi28d_ciface.o)
+hsl_ciface_single_64: $(HCLGS64)(hsl_ma48s_ciface.o) \
+                      $(HCLGS64)(hsl_ma57s_ciface.o) \
+                      $(HCLGS64)(hsl_ma77s_ciface.o) \
+                      $(HCLGS64)(hsl_ma86s_ciface.o) \
+                      $(HCLGS64)(hsl_ma87s_ciface.o) \
+                      $(HCLGS64)(hsl_ma97s_ciface.o) \
+                      $(HCLGS64)(hsl_mi20s_ciface.o) \
+                      $(HCLGS64)(hsl_mi28s_ciface.o)
+hsl_ciface_double_64: $(HCLGD64)(hsl_ma48d_ciface.o) \
+                      $(HCLGD64)(hsl_ma57d_ciface.o) \
+                      $(HCLGD64)(hsl_ma77d_ciface.o) \
+                      $(HCLGD64)(hsl_ma86d_ciface.o) \
+                      $(HCLGD64)(hsl_ma87d_ciface.o) \
+                      $(HCLGD64)(hsl_ma97d_ciface.o) \
+                      $(HCLGD64)(hsl_mi20d_ciface.o) \
+                      $(HCLGD64)(hsl_mi28d_ciface.o)
 
 #  ad02
 
@@ -50,14 +181,14 @@ ma27_double_64: $(HLGD64)(ma27d.o)
 ma33: ma33_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA33 routines ($(PRECIS) $(SUCC)"
 ma33_silent: ma33_$(PRECIS)
-ma33_single = $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) \
-              $(HLGS)(ma33s.o)
-ma33_double = $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) \
-              $(HLGD)(ma33d.o)
-ma33_single_64 = $(HLGS64)(mc13s.o) $(HLGS64)(mc20s.o) $(HLGS64)(mc21s.o) \
-                 $(HLGS64)(ma33s.o)
-ma33_double_64 = $(HLGD64)(mc13d.o) $(HLGD64)(mc20d.o) $(HLGD64)(mc21d.o) \
-                 $(HLGD64)(ma33d.o)
+ma33_single: $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) \
+             $(HLGS)(ma33s.o)
+ma33_double: $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) \
+             $(HLGD)(ma33d.o)
+ma33_single_64: $(HLGS64)(mc13s.o) $(HLGS64)(mc20s.o) $(HLGS64)(mc21s.o) \
+                $(HLGS64)(ma33s.o)
+ma33_double_64: $(HLGD64)(mc13d.o) $(HLGD64)(mc20d.o) $(HLGD64)(mc21d.o) \
+                $(HLGD64)(ma33d.o)
 
 #  ma48
 
@@ -65,7 +196,7 @@ ma48: ma48_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
 ma48_silent: ma48_$(PRECIS)
 ma48_single: zd11 $(HLGS)(mc71s.o) $(HLGS)(hsl_zb01s.o) \
-             $(HLGS)(hsl_zb01i.o) $(HLGS)(hsl_ma48s.o
+             $(HLGS)(hsl_zb01i.o) $(HLGS)(hsl_ma48s.o)
 ma48_double: zd11 $(HLGD)(mc71d.o) $(HLGD)(hsl_zb01d.o) \
              $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_ma48d.o)
 ma48_single_64: zd11 $(HLGS64)(mc71s.o) $(HLGS64)(hsl_zb01s.o) \
@@ -97,7 +228,7 @@ ma57_single_64: blas ma27 zd11 $(HLGS64)(mc71s.o) $(HLGS64)(ma57s.o) \
                 $(HLGS64)(mc59s.o) $(HLGS64)(mc64s.o) $(HLGS64)(hsl_ma57s.o)
 ma57_double_64: blas ma27 zd11 $(HLGD64)(mc71d.o) $(HLGD64)(ma57d.o) \
                 $(HLGD64)(mc21d.o) $(HLGD64)(mc34d.o) $(HLGD64)(mc47d.o) \
-                $(HLGD64)(mc59d.o) $(HLGD64)(mc64d.o) $(HLGD64)(hsl_ma57d.o
+                $(HLGD64)(mc59d.o) $(HLGD64)(mc64d.o) $(HLGD64)(hsl_ma57d.o)
 
 ma57_ciface: ma57_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
@@ -230,7 +361,7 @@ mi20: mi20_$(PRECIS)
 mi20_silent: mi20_$(PRECIS)
 mi20_single: blas lapack zd11 ma48 $(HLGS)(hsl_mc65s.o) $(HLGD)(fd15s.o) \
              $(HLGS)(mi21s.o) $(HLGS)(mi24s.o) $(HLGS)(mi26s.o) \
-             $(HLGS)(hsl_mi32s.o) $(HLGS)(hsl_mi20s.o
+             $(HLGS)(hsl_mi32s.o) $(HLGS)(hsl_mi20s.o)
 mi20_double: blas lapack zd11 ma48 $(HLGD)(hsl_mc65d.o) $(HLGD)(fd15d.o) \
              $(HLGD)(mi21d.o) $(HLGD)(mi24d.o) $(HLGD)(mi26d.o) \
              $(HLGD)(hsl_mi32d.o) $(HLGD)(hsl_mi20d.o)
@@ -304,15 +435,23 @@ mi35_double_64: blas lapack $(HLGD64)(hsl_mc34d.o) $(HLGD64)(hsl_zb01i.o) \
 blas:
 	( cd $(GALAHAD)/src/general ; \
              $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/$(GALAHAD)/src/general )
+             blas_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 lapack:
 	( cd $(GALAHAD)/src/general ; \
              $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/$(GALAHAD)/src/general )
+             lapack_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+metis:
+	( cd $(GALAHAD)/src/general ; \
+             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            metis_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+kinds:
+	( cd $(GALAHAD)/src/kinds ; \
+             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             kinds_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
 zd11:
 	( cd $(GALAHAD)/src/zd11 ; \
              $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/$(GALAHAD)/src/zd11 )
+             zd11_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
 #  =======================
 #  individual compilations
@@ -331,6 +470,7 @@ $(HLG)(hsl_ad02d.o): $(HSL_ARCHIVE)/hsl_ad02/hsl_ad02d.f90
                    $(FORTRAN) $(FFLAGS95N) hsl_ad02d.$(F95SUFFIX) )
 	cd $(OBJ); $(HARR) hsl_ad02d.o; $(RM) hsl_ad02d.$(F95SUFFIX) hsl_ad02d.o
 	$(RMARFILE) uselanb.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -345,6 +485,7 @@ $(HLG)(hsl_ad02s.o): $(HSL_ARCHIVE)/hsl_ad02/hsl_ad02s.f90
                    $(FORTRAN) $(FFLAGS95N) hsl_ad02s.$(F95SUFFIX) )
 	cd $(OBJ); $(HARR) hsl_ad02s.o; $(RM) hsl_ad02s.$(F95SUFFIX) hsl_ad02s.o
 	$(RMARFILE) uselanb.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -508,6 +649,7 @@ $(HLG)(hsl_ma48s.o): $(HSL)/hsl_ma48/hsl_ma48s.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48s.f90
 	cd $(OBJ); $(HARR) hsl_ma48s.o ; $(RM) hsl_ma48s.f90 hsl_ma48s.o
 	$(RMARFILE) sbls.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -519,6 +661,7 @@ $(HLG)(hsl_ma48d.o): $(HSL)/hsl_ma48/hsl_ma48d.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48d.f90
 	cd $(OBJ); $(HARR) hsl_ma48d.o ; $(RM) hsl_ma48d.f90 hsl_ma48d.o
 	$(RMARFILE) sbls.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -680,6 +823,30 @@ $(HLG)(ma61d.o): $(HSL)/ma61/ma61d.f
 	cd $(OBJ); $(HARR) ma61d.o; $(RM) ma61d.f90 ma61d.o
 	$(RMARFILE) hslint.o
 	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+#  hsl_ma64
+
+hsl_ma64s.o: $(HLG)(hsl_ma64s.o)
+
+$(HLG)(hsl_ma64s.o): $(HSL)/hsl_ma64/hsl_ma64s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64s"
+	$(CP) $(HSL)/hsl_ma64/hsl_ma64s.f90 $(OBJ)/hsl_ma64s.f90
+	cd $(OBJ); $(FORTRAN) -o hsl_ma64s.o $(FFLAGS) hsl_ma64s.f90
+	cd $(OBJ); $(HARR) hsl_ma64s.o ; $(RM) hsl_ma64s.f90 hsl_ma64s.o
+	$(HRMARFILES) hsl_ma77s.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+hsl_ma64d.o: $(HLG)(hsl_ma64d.o)
+
+$(HLG)(hsl_ma64d.o): $(HSL)/hsl_ma64/hsl_ma64d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64d"
+	$(CP) $(HSL)/hsl_ma64/hsl_ma64d.f90 $(OBJ)/hsl_ma64d.f90
+	cd $(OBJ); $(FORTRAN) -o hsl_ma64d.o $(FFLAGS) hsl_ma64d.f90
+	cd $(OBJ); $(HARR) hsl_ma64d.o ; $(RM) hsl_ma64d.f90 hsl_ma64d.o
+	$(HRMARFILED) hsl_ma77d.o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  hsl_ma77
@@ -850,8 +1017,7 @@ hsl_ma97s.o: $(HLG)(hsl_ma97s.o)
 
 $(HLG)(hsl_ma97s.o): $(HSL)/hsl_ma97/hsl_ma97s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97s"
-	$(SED) -f $(MA97BUGSEDS) $(HSL)/hsl_ma97/hsl_ma97s.f90 \
-           > $(OBJ)/hsl_ma97s.f90
+	$(CP) $(HSL)/hsl_ma97/hsl_ma97s.f90 $(OBJ)/hsl_ma97s.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97s.o $(FFLAGSOMP) hsl_ma97s.f90
 	cd $(OBJ) ; $(HARR) hsl_ma97s.o ; $(RM) hsl_ma97s.f90 hsl_ma97s.o
 	$(RMARFILES) sls.o
@@ -864,8 +1030,7 @@ hsl_ma97d.o: $(HLG)(hsl_ma97d.o)
 $(HLG)(hsl_ma97d.o): $(HSL)/hsl_ma97/hsl_ma97d.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97d"
 	echo $(MA97BUGSEDS) $(HSL)/hsl_ma97/hsl_ma97d.f90 > $(OBJ)/hsl_ma97d.f90
-	$(SED) -f $(MA97BUGSEDS) $(HSL)/hsl_ma97/hsl_ma97d.f90 > \
-           $(OBJ)/hsl_ma97d.f90
+	$(CP) $(HSL)/hsl_ma97/hsl_ma97d.f90 $(OBJ)/hsl_ma97d.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97d.o $(FFLAGSOMP) hsl_ma97d.f90
 	cd $(OBJ) ; $(HARR) hsl_ma97d.o ; $(RM) hsl_ma97d.f90 hsl_ma97d.o
 	$(RMARFILED) sls.o
@@ -974,9 +1139,9 @@ $(HLG)(mc29s.o): $(HSL)/mc29/mc29s.f
 
 mc29d.o: $(HLG)(mc29d.o)
 
-$(Hlg)(Mc29d.o): $(HSL)/mc29/mc29d.f
+$(HLG)(mc29d.o): $(HSL)/mc29/mc29d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc29d"
-	$(CP) $(HSL)/mc29/Mc29d.f $(OBJ)/mc29d.f90
+	$(CP) $(HSL)/mc29/mc29d.f $(OBJ)/mc29d.f90
 	cd $(OBJ) ; $(FORTRAN) -o mc29d.o $(FFLAGS77) mc29d.f90
 	cd $(OBJ) ; $(HARR) mc29d.o ; $(RM) mc29d.f90 mc29d.o
 	@printf '[ OK ]\n'
@@ -1087,6 +1252,26 @@ $(HLG)(mc59d.o): $(HSL)/mc59/mc59d.f
 	cd $(OBJ) ; $(HARR) mc59d.o ; $(RM) mc59d.f90 mc59d.o
 	@printf '[ OK ]\n'
 
+#  mc61
+
+mc61s.o: $(HLG)(mc61s.o)
+
+$(HLG)(mc61s.o): $(HSL)/mc61/mc61s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61s"
+	$(CP) $(HSL)/mc61/mc61s.f $(OBJ)/mc61s.f90
+	cd $(OBJ); $(FORTRAN) -o mc61s.o $(FFLAGS77) mc61s.f90
+	cd $(OBJ); $(HARR) mc61s.o ; $(RM) mc61s.f90 mc61s.o
+	@printf '[ OK ]\n'
+
+mc61d.o: $(HLG)(mc61d.o)
+
+$(HLG)(mc61d.o): $(HSL)/mc61/mc61d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61d"
+	$(CP) $(HSL)/mc61/mc61d.f $(OBJ)/mc61d.f90
+	cd $(OBJ); $(FORTRAN) -o mc61d.o $(FFLAGS77) mc61d.f90
+	cd $(OBJ); $(HARR) mc61d.o ; $(RM) mc61d.f90 mc61d.o
+	@printf '[ OK ]\n'
+
 #  mc64
 
 mc64s.o: $(HLG)(mc64s.o)
@@ -1109,26 +1294,32 @@ $(HLG)(mc64d.o): $(HSL)/mc64/mc64d.f
 
 #  hsl_mc64
 
-hsl_ma64s.o: $(HLG)(hsl_ma64s.o)
+hsl_mc64s.o: $(HLG)(hsl_mc64s.o)
 
-$(HLG)(hsl_ma64s.o): $(HSL)/hsl_mc64/hsl_ma64s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64s"
-	$(CP) $(HSL)/hsl_mc64/hsl_ma64s.f90 $(OBJ)/hsl_ma64s.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_ma64s.o $(FFLAGS) hsl_ma64s.f90
-	cd $(OBJ); $(HARR) hsl_ma64s.o ; $(RM) hsl_ma64s.f90 hsl_ma64s.o
-	$(HRMARFILES) hsl_ma77s.o
+$(HLG)(hsl_mc64s.o): $(HSL)/hsl_mc64/hsl_mc64s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64s"
+	$(CP) $(HSL)/hsl_mc64/hsl_mc64s.f90 $(OBJ)/hsl_mc64s.f90
+	cd $(OBJ); $(FORTRAN) -o hsl_mc64s.o $(FFLAGS) hsl_mc64s.f90
+	cd $(OBJ); $(HARR) hsl_mc64s.o ; $(RM) hsl_mc64s.f90 hsl_mc64s.o
+	$(HRMARFILES) hsl_ma97s.o
+	$(HRMARFILES) hsl_mi28s.o
+	$(RMARFILE) sls.o
 	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-hsl_ma64d.o: $(HLG)(hsl_ma64d.o)
+hsl_mc64d.o: $(HLG)(hsl_mc64d.o)
 
-$(HLG)(hsl_ma64d.o): $(HSL)/hsl_mc64/hsl_ma64d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64d"
-	$(CP) $(HSL)/hsl_mc64/hsl_ma64d.f90 $(OBJ)/hsl_ma64d.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_ma64d.o $(FFLAGS) hsl_ma64d.f90
-	cd $(OBJ); $(HARR) hsl_ma64d.o ; $(RM) hsl_ma64d.f90 hsl_ma64d.o
-	$(HRMARFILED) hsl_ma77d.o
+$(HLG)(hsl_mc64d.o): $(HSL)/hsl_mc64/hsl_mc64d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64d"
+	$(CP) $(HSL)/hsl_mc64/hsl_mc64d.f90 $(OBJ)/hsl_mc64d.f90
+	cd $(OBJ); $(FORTRAN) -o hsl_mc64d.o $(FFLAGS) hsl_mc64d.f90
+	cd $(OBJ); $(HARR) hsl_mc64d.o ; $(RM) hsl_mc64d.f90 hsl_mc64d.o
+	$(HRMARFILED) hsl_ma97d.o
+	$(HRMARFILED) hsl_mi28d.o
+	$(RMARFILE) sls.o
 	$(MVMODS)
+	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
 #  hsl_mc65
@@ -1305,7 +1496,7 @@ $(HLG)(hsl_mi20d.o): $(HSL)/hsl_mi20/hsl_mi20d.f90
 
 hsl_mi20s_ciface.o: $(HCLG)(hsl_mi20s_ciface.o)
 
-$(HCLG)(hsl_mi20s_ciface.o): $(HSL)/hsl_mi20/hsl_mi20s_ciface.f90
+$(HCLG)(hsl_mi20s_ciface.o): $(HSL)/hsl_mi20/C/hsl_mi20s_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20s_ciface"
 	$(CP) $(HSL)/hsl_mi20/C/hsl_mi20s_ciface.f90 $(OBJ)/hsl_mi20s_ciface.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20s_ciface.o $(FFLAGS) \
@@ -1475,24 +1666,22 @@ $(HLG)(hsl_mi32d.o): $(HSL)/hsl_mi32/hsl_mi32d.f90
 
 hsl_mi35s.o: $(HLG)(hsl_mi35s.o)
 
-$(HLG)(hsl_mi35s.o): $(MI35)/hsl_mi35s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35"
-	$(CP) $(MI35)/hsl_mi35s.f90 $(OBJ)/hsl_mi35s.f90
+$(HLG)(hsl_mi35s.o): $(HSL)/hsl_mi35/hsl_mi35s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35s"
+	$(CP) $(HSL)/hsl_mi35/hsl_mi35s.f90 $(OBJ)/hsl_mi35s.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35s.o $(FFLAGS) hsl_mi35s.f90
 	cd $(OBJ) ; $(HARR) hsl_mi35s.o ; $(RM) hsl_mi35s.f90 hsl_mi35s.o
-	$(HRMARFILED) hsl_mi35s.o
 	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
 hsl_mi35d.o: $(HLG)(hsl_mi35d.o)
 
-$(HLG)(hsl_mi35d.o): $(MI35)/hsl_mi35d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35"
-	$(CP) $(MI35)/hsl_mi35d.f90 $(OBJ)/hsl_mi35d.f90
+$(HLG)(hsl_mi35d.o): $(HSL)/hsl_mi35/hsl_mi35d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35d"
+	$(CP) $(HSL)/hsl_mi35/hsl_mi35d.f90 $(OBJ)/hsl_mi35d.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35d.o $(FFLAGS) hsl_mi35d.f90
 	cd $(OBJ) ; $(HARR) hsl_mi35d.o ; $(RM) hsl_mi35d.f90 hsl_mi35d.o
-	$(HRMARFILED) hsl_mi35d.o
 	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
@@ -1570,3 +1759,22 @@ $(HLG)(hsl_zb01i.o): $(HSL)/hsl_zb01/hsl_zb01i.f90
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Removing $(package) files"
+	$(RMARFILE) $(package)_$(PRECIS).o
+	$(RM) $(OBJ)/$(package)t_$(PRECIS).o $(OBJ)/$(package)s_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+cleanallc:
+	@printf ' %-9s\t' \
+          "Removing all $(PRECIS) precision C-interface object and module files"
+	$(RM) $(OBJ)/libgalahad_c.a $(MOD)/*ciface.mod
+	@printf '[ OK ]\n'

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-29 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-14 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -10,8 +10,8 @@
    TYPE ( BLLS_inform_type ) :: inform
    TYPE ( BLLS_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, o, Ao_ne, Ao_dense_ne, eval_status
-   INTEGER ( KIND = ip_ ) :: i, j, l, on, mask, data_storage_type, status
-   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   INTEGER ( KIND = ip_ ) :: i, j, l, on, data_storage_type, status
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null_
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, R, G, W
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
@@ -24,6 +24,7 @@
    INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MASK
    CHARACTER ( len = 3 ) :: st
    TYPE ( GALAHAD_userdata_type ) :: userdata
 
@@ -109,42 +110,42 @@
 
    WRITE( 6, "( /, ' basic tests of Jacobian storage formats', / )" )
 
-   DO data_storage_type = 1, 1
-!  DO data_storage_type = 1, 5
+!  DO data_storage_type = 1, 1
+   DO data_storage_type = 1, 5
      CALL BLLS_initialize( data, control, inform )
-     control%print_level = 1
+!    control%print_level = 1
 !    control%print_level = 10
      X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' CO'
        CALL BLLS_import( control, data, status, n, o, 'coordinate',            &
-                         Ao_ne, Ao_row, Ao_col, null )
+                         Ao_ne, Ao_row, Ao_col, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
 !      WRITE( 6, "( ' x = ', 5ES12.4, /, 5X, 5ES12.4 )" ) X
      CASE ( 2 ) ! sparse by rows
         st = ' SR'
         CALL BLLS_import( control, data, status, n, o, 'sparse_by_rows',       &
-                          Ao_ne, null, Ao_col, Ao_ptr )
+                          Ao_ne, null_, Ao_col, Ao_ptr )
         CALL BLLS_solve_given_a( data, userdata, status, Ao_val, B,            &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
      CASE ( 3 ) ! dense_by_rows
        st = ' DR'
        CALL BLLS_import( control, data, status, n, o, 'dense_by_rows',         &
-                                  Ao_ne, null, null, null )
+                                  Ao_ne, null_, null_, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
      CASE ( 4 ) ! sparse by cols
        st = ' SC'
        CALL BLLS_import( control, data, status, n, o, 'sparse_by_columns',     &
-                                  Ao_ne, Ao_by_col_row, null, Ao_by_col_ptr )
+                                  Ao_ne, Ao_by_col_row, null_, Ao_by_col_ptr )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_by_col_val, B,      &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
      CASE ( 5 ) ! dense_by_cols
        st = ' DC'
        CALL BLLS_import( control, data, status, n, o, 'dense_by_columns',      &
-                         Ao_ne, null, null, null )
+                         Ao_ne, null_, null_, null_ )
        CALL BLLS_solve_given_a( data, userdata, status, Ao_by_col_dense, B,    &
                                 X_l, X_u, X, Z, R, G, X_stat, W = W )
      END SELECT
@@ -162,11 +163,12 @@
    WRITE( 6, "( /, ' test of reverse-communication interface', / )" )
 
    on = MAX( n, o )
-   ALLOCATE( nz_in( on ), nz_out( o ), V( on ), P( on ) )
+   ALLOCATE( nz_in( on ), nz_out( o ), V( on ), P( on ), MASK( o ) )
    CALL BLLS_initialize( data, control, inform )
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   MASK = 0
    st = ' RC'
-   control%print_level = 1
+!  control%print_level = 1
 !  control%print_level = 10
 !  control%maxit = 5
    CALL BLLS_import_without_a( control, data, status, n, o )
@@ -203,8 +205,8 @@
          nz_out_end = nz_out_end + 1
          nz_out( nz_out_end ) = i
          P( i ) = V( i )
-         IF ( mask == 0 ) THEN
-           mask = 1
+         IF ( MASK( i ) == 0 ) THEN
+           MASK( i ) = 1
            nz_out_end = nz_out_end + 1
            nz_out( nz_out_end ) = o
            P( o ) = V( i )
@@ -212,6 +214,7 @@
            P( o ) = P( o ) + V( i )
          END IF
        END DO
+       MASK( nz_out( : nz_out_end ) ) = 0
        eval_status = 0
      CASE ( 6 ) ! sparse A_o^T v
        DO l = nz_in_start, nz_in_end
@@ -229,6 +232,6 @@
      WRITE( 6, "( A3, ': BLLS_solve exit status = ', I0 ) " ) st, inform%status
    END IF
    CALL BLLS_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, NZ_in, NZ_out, V, P, W )
+   DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, NZ_in, NZ_out, V, P, W, MASK )
    WRITE( 6, "( /, ' tests completed' )" )
    END PROGRAM GALAHAD_BLLS_interface_test

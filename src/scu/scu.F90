@@ -36,13 +36,17 @@
 
     PRIVATE
     PUBLIC :: SCU_restart_m_eq_0, SCU_factorize, SCU_solve,                    &
-              SCU_append, SCU_delete, SCU_increase_diagonal, SCU_terminate,    &
-              SCU_full_terminate, SCU_triangular, SCU_sign_determinant,        &
-              SCU_information
+              SCU_append, SCU_delete, SCU_increase_diagonal, SCU_initialize,   &
+              SCU_full_initialize, SCU_terminate, SCU_full_terminate,          &
+              SCU_triangular, SCU_sign_determinant, SCU_information
 
 !----------------------
 !   I n t e r f a c e s
 !----------------------
+
+    INTERFACE SCU_initialize
+      MODULE PROCEDURE SCU_initialize, SCU_full_initialize
+    END INTERFACE SCU_initialize
 
     INTERFACE SCU_restart_m_eq_0
       MODULE PROCEDURE SCU_restart_m_eq_0, SCU_restart_m_eq_0_info
@@ -94,6 +98,7 @@
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
     TYPE, PUBLIC :: SCU_inform_type
+      INTEGER ( KIND = ip_ ) :: status = 0  ! currently not used
       INTEGER ( KIND = ip_ ) :: alloc_status = 0
       INTEGER ( KIND = ip_ ), DIMENSION( 3 ) :: inertia = (/ 0, 0, 0 /)
     END TYPE SCU_inform_type
@@ -143,6 +148,68 @@
       END TYPE SCU_full_data_type
 
   CONTAINS
+
+!-*-*-*-*-*-   S C U _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
+
+      SUBROUTINE SCU_initialize( data, control, inform )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Default control data for SCU. This routine should be called before SCU_form
+!
+!  -----------------------------------------------------------------------------
+!
+!  Arguments:
+!
+!  data     private internal data
+!  control  a structure containing control information. See preamble
+!  inform   a structure containing output information. See preamble
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+      TYPE ( SCU_control_type ), INTENT( OUT ) :: control
+      TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+      TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
+
+      inform%status = GALAHAD_ok
+
+      RETURN
+
+!  End of SCU_initialize
+
+     END SUBROUTINE SCU_initialize
+
+!- G A L A H A D -  S C U _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE SCU_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for SCU controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SCU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SCU_control_type ), INTENT( OUT ) :: control
+     TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
+
+     CALL SCU_initialize( data%scu_data, control, inform )
+
+     RETURN
+
+!  End of subroutine SCU_full_initialize
+
+     END SUBROUTINE SCU_full_initialize
 
 !-*-*-*-  S C U _ r e s t a r t _ m _ e q _ 0    S U B R O U T I N E   -*-*-*-*-
 

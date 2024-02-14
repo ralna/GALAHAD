@@ -10,8 +10,8 @@
    TYPE ( SLLS_inform_type ) :: inform
    TYPE ( SLLS_full_data_type ) :: data
    INTEGER ( KIND = ip_ ) :: n, o, Ao_ne, Ao_dense_ne, eval_status
-   INTEGER ( KIND = ip_ ) :: i, j, l, nm, mask, data_storage_type, status
-   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   INTEGER ( KIND = ip_ ) :: i, j, l, nm, data_storage_type, status
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null_
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, B, C, G
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val, Ao_dense
@@ -23,6 +23,8 @@
    INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MASK
+
    CHARACTER ( len = 3 ) :: st
    TYPE ( GALAHAD_userdata_type ) :: userdata
 
@@ -109,32 +111,32 @@
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' CO'
        CALL SLLS_import( control, data, status, n, o, 'coordinate',            &
-                         Ao_ne, Ao_row, Ao_col, null )
+                         Ao_ne, Ao_row, Ao_col, null_ )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
                                 X, Z, C, G, X_stat )
 !      WRITE( 6, "( ' x = ', 5ES12.4, /, 5X, 5ES12.4 )" ) X
      CASE ( 2 ) ! sparse by rows
         st = ' SR'
         CALL SLLS_import( control, data, status, n, o, 'sparse_by_rows',       &
-                          Ao_ne, null, Ao_col, Ao_ptr )
+                          Ao_ne, null_, Ao_col, Ao_ptr )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_val, B,             &
                                 X, Z, C, G, X_stat )
      CASE ( 3 ) ! dense_by_rows
        st = ' DR'
        CALL SLLS_import( control, data, status, n, o, 'dense_by_rows',         &
-                                  Ao_ne, null, null, null )
+                                  Ao_ne, null_, null_, null_ )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_dense, B,           &
                                 X, Z, C, G, X_stat )
      CASE ( 4 ) ! sparse by cols
        st = ' SC'
        CALL SLLS_import( control, data, status, n, o, 'sparse_by_columns',     &
-                                  Ao_ne, Ao_by_col_row, null, Ao_by_col_ptr )
+                                  Ao_ne, Ao_by_col_row, null_, Ao_by_col_ptr )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_by_col_val, B,      &
                                 X, Z, C, G, X_stat )
      CASE ( 5 ) ! dense_by_cols
        st = ' DC'
        CALL SLLS_import( control, data, status, n, o, 'dense_by_columns',      &
-                         Ao_ne, null, null, null )
+                         Ao_ne, null_, null_, null_ )
        CALL SLLS_solve_given_a( data, userdata, status, Ao_by_col_dense, B,    &
                                 X, Z, C, G, X_stat )
      END SELECT
@@ -153,9 +155,10 @@
    WRITE( 6, "( /, ' test of reverse-communication interface', / )" )
 
    nm = MAX( n, o )
-   ALLOCATE( nz_in( nm ), nz_out( o ), V( nm ), P( nm ) )
+   ALLOCATE( nz_in( nm ), nz_out( o ), V( nm ), P( nm ), MASK( o ) )
    CALL SLLS_initialize( data, control, inform )
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   MASK = 0
    st = ' RC'
 !  control%print_level = 1
 !  control%maxit = 5
@@ -187,14 +190,13 @@
        eval_status = 0
      CASE ( 5 ) ! sparse A v using sparse v
        nz_out_end = 0
-       mask = 0
        DO l = nz_in_start, nz_in_end
          i = nz_in( l )
          nz_out_end = nz_out_end + 1
          nz_out( nz_out_end ) = i
          P( i ) = V( i )
-         IF ( mask == 0 ) THEN
-           mask = 1
+         IF ( MASK( i ) == 0 ) THEN
+           MASK( i ) = 1
            nz_out_end = nz_out_end + 1
            nz_out( nz_out_end ) = o
            P( o ) = V( i )
@@ -202,6 +204,7 @@
            P( o ) = P( o ) + V( i )
          END IF
        END DO
+       MASK( nz_out( : nz_out_end ) ) = 0
        eval_status = 0
      CASE ( 6 ) ! sparse A^T v
        DO l = nz_in_start, nz_in_end

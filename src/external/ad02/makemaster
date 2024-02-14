@@ -29,6 +29,7 @@ $(HLG)(hsl_ad02d.o): $(AD02)/hsl_ad02d.f90
                    $(FORTRAN) $(FFLAGS95N) hsl_ad02d.$(F95SUFFIX) )
 	cd $(OBJ); $(HARR) hsl_ad02d.o; $(RM) hsl_ad02d.$(F95SUFFIX) hsl_ad02d.o
 	$(RMARFILE) uselanb.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -42,6 +43,7 @@ $(HLG)(hsl_ad02s.o): $(AD02)//hsl_ad02s.f90
                    $(FORTRAN) $(FFLAGS95N) hsl_ad02s.$(F95SUFFIX) )
 	cd $(OBJ); $(HARR) hsl_ad02s.o; $(RM) hsl_ad02s.$(F95SUFFIX) hsl_ad02s.o
 	$(RMARFILE) uselanb.o
+	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 

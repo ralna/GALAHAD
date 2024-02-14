@@ -175,6 +175,25 @@ struct scu_inform_type {
     ipc_ inertia[3];
 };
 
+// *-*-*-*-*-*-*-*-*-    S C U _ I N I T I A L I Z E    -*-*--*-*-*-*-
+
+void scu_initialize( void **data,
+                     struct scu_control_type *control,
+                     ipc_ *status );
+
+/*!<
+ Set default control values and initialize private data
+
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information
+              (see scu_control_type)
+
+  @param[out] status is a scalar variable of type ipc_, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The initialization was succesful.
+*/
+
 // *-*-*-*-*-*-*-*-*-*-    S C U  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void scu_information( void **data,

@@ -21,7 +21,7 @@
         f_scu_control_type   => SCU_control_type,                              &
         f_scu_inform_type    => SCU_inform_type,                               &
         f_scu_full_data_type => SCU_full_data_type,                            &
-!       f_scu_initialize     => SCU_initialize,                                &
+        f_scu_initialize     => SCU_initialize,                                &
 !       f_scu_read_specfile  => SCU_read_specfile,                             &
 !       f_scu_import         => SCU_import,                                    &
 !       f_scu_reset_control  => SCU_reset_control,                             &
@@ -51,6 +51,32 @@
 
   CONTAINS
 
+!  copy C control parameters to fortran
+
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
+    TYPE ( scu_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_scu_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
+    RETURN
+
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
+    TYPE ( f_scu_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( scu_control_type ), INTENT( OUT ) :: ccontrol
+    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
+
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
+    RETURN
+
+    END SUBROUTINE copy_control_out
+
 !  copy C inform parameters to fortran
 
     SUBROUTINE copy_inform_in( cinform, finform )
@@ -79,6 +105,48 @@
     END SUBROUTINE copy_inform_out
 
   END MODULE GALAHAD_SCU_precision_ciface
+
+!  -------------------------------------
+!  C interface to fortran scu_initialize
+!  -------------------------------------
+
+  SUBROUTINE scu_initialize( cdata, ccontrol, status ) BIND( C )
+  USE GALAHAD_SCU_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( scu_control_type ), INTENT( OUT ) :: ccontrol
+
+!  local variables
+
+  TYPE ( f_scu_full_data_type ), POINTER :: fdata
+  TYPE ( f_scu_control_type ) :: fcontrol
+  TYPE ( f_scu_inform_type ) :: finform
+  LOGICAL :: f_indexing
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  initialize required fortran types
+
+  CALL f_scu_initialize( fdata, fcontrol, finform )
+  status = finform%status
+
+!  C sparse matrix indexing by default
+
+  f_indexing = .FALSE.
+  fdata%f_indexing = f_indexing
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE scu_initialize
 
 !  --------------------------------------
 !  C interface to fortran scu_information
