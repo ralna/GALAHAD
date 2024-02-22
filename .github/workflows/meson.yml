@@ -93,6 +93,9 @@ jobs:
         run: |
           cd $DEPS
           mkdir deps
+          mkdir deps/include
+          mkdir deps/lib
+          mkdir deps/bin
           PLATFORM=""
           if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
             PLATFORM="x86_64-linux-gnu"
@@ -104,12 +107,31 @@ jobs:
             PLATFORM="x86_64-w64-mingw32"
             choco install wget
           fi
-          # if [[ "${{matrix.int}}" == "64" ]]; then
-          #   wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
-          #   tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
-          # fi
-          # wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v0.3.26%2B0/OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz
-          # tar -xzvf OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
+          if [[ "${{matrix.compiler}}" == "gcc" ]]; then
+            if [[ "${{matrix.int64}}" == "true" ]]; then
+              wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
+              # tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
+            else
+              wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v0.3.26%2B0/OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz
+              tar -xzvf OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
+              wget https://github.com/JuliaBinaryWrappers/MUMPS_seq_jll.jl/releases/download/MUMPS_seq-v5.4.1%2B0/MUMPS_seq.v5.4.1.$PLATFORM-libgfortran5.tar.gz
+              tar -xzvf MUMPS_seq.v5.4.1.$PLATFORM-libgfortran5.tar.gz -C deps
+              wget https://github.com/JuliaBinaryWrappers/Hwloc_jll.jl/releases/download/Hwloc-v2.10.0%2B0/Hwloc.v2.10.0.$PLATFORM.tar.gz
+              tar -xzvf Hwloc.v2.10.0.$PLATFORM.tar.gz -C deps
+              wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v5.1.2%2B0/METIS.v5.1.2.$PLATFORM.tar.gz
+              tar -xzvf METIS.v5.1.2.$PLATFORM.tar.gz -C deps
+              wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v1.1.0%2B0/CompilerSupportLibraries.v1.1.0.$PLATFORM-libgfortran5.tar.gz
+              tar -xzvf CompilerSupportLibraries.v1.1.0.$PLATFORM-libgfortran5.tar.gz -C deps
+              # wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v7.0.4%2B0/SCOTCH.v7.0.4.$PLATFORM.tar.gz
+              # tar -xzvf SCOTCH.v7.0.4.$PLATFORM.tar.gz -C deps
+              # wget https://github.com/JuliaBinaryWrappers/PaStiX_jll.jl/releases/download/PaStiX-v6.3.0%2B0/PaStiX.v6.3.0.$PLATFORM-libgfortran5.tar.gz
+              # tar -xzvf PaStiX.v6.3.0.$PLATFORM-libgfortran5.tar.gz -C deps
+            fi
+          fi
+          if [[ "${{matrix.compiler}}" == "intel-classic" || "${{matrix.compiler}}" == "intel" ]]; then*
+            wget https://github.com/JuliaBinaryWrappers/MKL_jll.jl/releases/download/MKL-v2024.1.0%2B0/MKL.v2024.1.0.$PLATFORM.tar.gz
+            tar -xzvf MKL.v2024.1.0.$PLATFORM.tar.gz -C deps
+          fi
 
       - name: Set the environment variables LIBRARY_PATH, LD_LIBRARY_PATH and DYLD_LIBRARY_PATH
         if: matrix.os != 'windows-latest'
@@ -130,7 +152,6 @@ jobs:
           # fi
 
       - name: Set environment variables for OpenMP
-        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
@@ -161,13 +182,22 @@ jobs:
           SSIDS="true"
           BLAS="openblas"
           LAPACK="openblas"
-          BLAS_PATH=""
-          LAPACK_PATH=""
+          METIS="metis"
+          HWLOC="hwloc"
+          BLAS_PATH="$DEPS/deps/$LIBDIR"
+          LAPACK_PATH="$DEPS/deps/$LIBDIR"
+          METIS_PATH="$DEPS/deps/$LIBDIR"
+          MUMPS_PATH="$DEPS/deps/$LIBDIR"
+          HWLOC_PATH="$DEPS/deps/$LIBDIR"
+          HWLOC_INCLUDE="../deps/include"
           PYTHON_INTERFACE="true"
           SHARED_STATIC="shared"
           LD_CLASSIC=""
           if [[ "${{matrix.os}}" == "macos-13" ]]; then
             LD_CLASSIC="-Wl,-ld_classic"
+          fi
+          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+            HWLOC="hwloc-15"
           fi
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" ]]; then
             CSTD="none"
@@ -177,17 +207,19 @@ jobs:
             BLAS_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib"
             LAPACK_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib"
           fi
+          if [[ "${{matrix.compiler}}" == "intel-classic" || "${{matrix.compiler}}" == "intel" ]]; then
+            BLAS="mkl_rt"
+            LAPACK="mkl_rt"
+          fi
           if [[ "${{matrix.int}}" == "64" ]]; then
             INT64="true"
-            BLAS="openblas64_"
-            LAPACK="openblas64_"
-            BLAS_PATH="$DEPS/deps/$LIBDIR"
-            LAPACK_PATH="$DEPS/deps/$LIBDIR"
+            if [[ "${{matrix.compiler}}" == "gcc" ]]; then
+              BLAS="openblas64_"
+              LAPACK="openblas64_"
+            fi
           fi
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
-          fi
-          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "macos-13" ) ]]; then
             PYTHON_INTERFACE="false"
           fi
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
@@ -204,12 +236,18 @@ jobs:
                                -Dssids=$SSIDS \
                                -Dpythoniface=${PYTHON_INTERFACE} \
                                -Dgalahad_int64=$INT64 \
-                               -Dlibblas_path=${BLAS_PATH} \
-                               -Dliblapack_path=${LAPACK_PATH} \
                                -Dlibblas=$BLAS \
                                -Dliblapack=$LAPACK \
+                               -Dlibmetis=$METIS \
+                               -Dlibhwloc=$HWLOC \
+                               -Dlibblas_path=${BLAS_PATH} \
+                               -Dliblapack_path=${LAPACK_PATH} \
                                -Dfortran_link_args=${LD_CLASSIC} \
                                -Dc_link_args=${LD_CLASSIC}
+                               -Dlibmetis_path=${METIS_PATH} \
+                               -Dlibmumps_path=${MUMPS_PATH} \
+                               -Dlibhwloc_path=${HWLOC_PATH} \
+                               -Dlibhwloc_include=${HWLOC_INCLUDE}
 
       - name: Build GALAHAD
         shell: bash
