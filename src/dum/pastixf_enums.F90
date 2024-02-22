@@ -1,9 +1,6 @@
 ! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 10:25 GMT.
 
-#ifdef INTEGER_64
-#define pastixf_enums pastixf_enums_64
-#define spmf_enums spmf_enums_64
-#endif
+#include "galahad_modules.h"
 
 !-*-  G A L A H A D  -  D U M M Y   P A S T I X F _ E N U M S   M O D U L E  -*-
 
@@ -45,6 +42,3 @@
    INTEGER, PARAMETER :: DPARM_EPSILON_REFINEMENT = 2
 
  END MODULE pastixf_enums
-
-
-
