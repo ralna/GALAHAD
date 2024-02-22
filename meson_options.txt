@@ -139,7 +139,7 @@ option('libcutest_double_path',
        description : 'Additional directories to search for the CUTEST library in double precision')
 
 option('libwsmp_path',
-q       type : 'array',
+       type : 'array',
        value : [],
        description : 'Additional directories to search for the WSMP library')
 
