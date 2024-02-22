@@ -630,6 +630,7 @@ if build_tests
                         install : true,
                         install_dir : fortran_tests_folder),
              suite : [package, precision, 'fortran'],
+             timeout : 60,
              is_parallel : false)
       endif
     endforeach
@@ -661,6 +662,7 @@ if build_tests and build_ciface
            executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : lm, link_language : 'c',
                                   include_directories : include_tests, install : true, install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
+           timeout : 60,
            is_parallel : false)
     endforeach
   endforeach
@@ -678,6 +680,7 @@ if build_tests and build_pythoniface and build_ciface and build_double and (not 
          args : file,
          suite : [package, 'Python'],
          env : ['PYTHONPATH=' + py.get_install_dir()],
+         timeout : 60,
          is_parallel : false)
   endforeach
 endif
