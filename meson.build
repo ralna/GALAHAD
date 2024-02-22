@@ -113,7 +113,7 @@ libhwloc_path = get_option('libhwloc_path')
 
 libmetis_version = get_option('libmetis_version')
 
-libhwloc_include = include_directories(get_option('libhwloc_include'))
+libhwloc_include = include_directories('libhwloc_include')
 
 libcutest_single_modules = get_option('libcutest_single_modules')
 libcutest_double_modules = get_option('libcutest_double_modules')
