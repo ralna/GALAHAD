@@ -110,11 +110,8 @@ libampl_path = get_option('libampl_path')
 libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
 libhwloc_path = get_option('libhwloc_path')
-
 libmetis_version = get_option('libmetis_version')
-
-libhwloc_include = include_directories('libhwloc_include')
-
+libhwloc_include = get_option('libhwloc_include')
 libcutest_single_modules = get_option('libcutest_single_modules')
 libcutest_double_modules = get_option('libcutest_double_modules')
 libhsl_modules = get_option('libhsl_modules')
