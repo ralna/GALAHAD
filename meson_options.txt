@@ -178,16 +178,6 @@ option('libhwloc_include',
        value : [],
        description : 'Additional directories to search for the HWLOC header files')
 
-option('libpastix_modules',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the PASTIX modules')
-
-option('libspm_modules',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the SPM modules')
-
 option('libhsl_modules',
        type : 'array',
        value : [],
