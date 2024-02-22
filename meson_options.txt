@@ -139,7 +139,7 @@ option('libcutest_double_path',
        description : 'Additional directories to search for the CUTEST library in double precision')
 
 option('libwsmp_path',
-       type : 'array',
+q       type : 'array',
        value : [],
        description : 'Additional directories to search for the WSMP library')
 
@@ -177,6 +177,16 @@ option('libhwloc_include',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the HWLOC header files')
+
+option('libpastix_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the PASTIX modules')
+
+option('libspm_modules',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the SPM modules')
 
 option('libhsl_modules',
        type : 'array',
