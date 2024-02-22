@@ -108,8 +108,8 @@ jobs:
             choco install wget
           fi
           if [[ "${{matrix.compiler}}" == "gcc" ]]; then
-            if [[ "${{matrix.int64}}" == "true" ]]; then
-              wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
+            if [[ "${{matrix.int}}" == "64" ]]; then
+              # wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
               # tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
             else
               wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v0.3.26%2B0/OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz

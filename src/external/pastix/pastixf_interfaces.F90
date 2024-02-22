@@ -150,15 +150,3 @@
    END INTERFACE pastixFinalize
 
  END MODULE pastixf_interfaces
-
-
-
-
-
-
-
-
-
-
-
-
