@@ -122,8 +122,3 @@
    END INTERFACE spmExit
 
  END MODULE spmf_interfaces
-
-
-
-
-
