@@ -16,8 +16,6 @@ jobs:
         with:
           version: 1
           arch: x64
-      - name: Install BinaryBuilder.jl
-        run: julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
       - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
         shell: bash
         run: |
@@ -25,13 +23,25 @@ jobs:
           echo "GALAHAD_RELEASE=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "GALAHAD_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
       - name: Cross-compilation of GALAHAD -- x86_64-linux-gnu-libgfortran5
-        run: julia --color=yes .github/julia/build_tarballs.jl x86_64-linux-gnu-libgfortran5 --verbose
+        run: |
+          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=yes .github/julia/build_tarballs.jl x86_64-linux-gnu-libgfortran5 --verbose
+          rm -r ~/.julia
       - name: Cross-compilation of GALAHAD -- x86_64-w64-mingw32-libgfortran5
-        run: julia --color=yes .github/julia/build_tarballs.jl x86_64-w64-mingw32-libgfortran5 --verbose
+        run: |
+          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=yes .github/julia/build_tarballs.jl x86_64-w64-mingw32-libgfortran5 --verbose
+          rm -r ~/.julia
       - name: Cross-compilation of GALAHAD -- x86_64-apple-darwin-libgfortran5
-        run: julia --color=yes .github/julia/build_tarballs.jl x86_64-apple-darwin-libgfortran5 --verbose
+        run: |
+          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=yes .github/julia/build_tarballs.jl x86_64-apple-darwin-libgfortran5 --verbose
+          rm -r ~/.julia
       - name: Cross-compilation of GALAHAD -- aarch64-apple-darwin-libgfortran5
-        run: julia --color=yes .github/julia/build_tarballs.jl aarch64-apple-darwin-libgfortran5 --verbose
+        run: |
+          julia --color=yes -e 'using Pkg; Pkg.add("BinaryBuilder")'
+          julia --color=yes .github/julia/build_tarballs.jl aarch64-apple-darwin-libgfortran5 --verbose
+          rm -r ~/.julia
       - name: Generate the binaries
         run: julia --color=yes .github/julia/generate_binaries.jl
       - name: Create a new release
