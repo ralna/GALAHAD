@@ -1702,7 +1702,7 @@
      data%W( data%nls%m ) = control%initial_target_weight
      inform%target = control%initial_target
 
-!  solve the target problem: min 1/2||c(x)||^2 + omega/2 (f(x)-t)^2 for 
+!  solve the target problem: min 1/2||c(x)||^2 + omega/2 (f(x)-t)^2 for
 !  a given target t and weight omega
 
      inform%NLS_inform%status = 1
@@ -2239,8 +2239,10 @@ stop
        ELSE
          data%target_lower = inform%target
          data%target_bounded = .TRUE.
+!write(6,*) ' l, u ', data%target_lower, data%target_upper
 !        IF ( data%target_upper - data%target_lower < ten ** ( - 5 ) ) THEN
          IF ( data%target_upper - data%target_lower < ten ** ( - 8 ) ) THEN
+!        IF ( data%target_upper - data%target_lower < ten ** ( - 12 ) ) THEN
            data%converged = .TRUE.
          ELSE
 
@@ -2251,6 +2253,7 @@ stop
            ELSE
              data%tl = data%tu ; data%cl = data%cu
              data%tu = inform%target ; data%cu = inform%primal_infeasibility
+!write(6,*) ' tu, slope ', (data%cu -  data%cl) / (data%tu -  data%tl), data%tu
              t_star = ( data%tu * data%cl - data%tl * data%cu ) /              &
                       ( data%cl - data%cu )
 !            WRITE( 6, "( ' t_* = ', ES16.8 )" ) t_star
