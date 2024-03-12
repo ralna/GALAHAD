@@ -21,7 +21,7 @@
 
 ```julia
 julia> ]
-pkg> dev /path/to/GALAHAD.jl
+pkg> add GALAHAD
 pkg> test GALAHAD
 ```
 
