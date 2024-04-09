@@ -17,40 +17,40 @@ dqp_control_type structure
 		// components
 	
 		bool :ref:`f_indexing<doxid-structdqp__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structdqp__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structdqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structdqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`start_print<doxid-structdqp__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		int :ref:`stop_print<doxid-structdqp__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		int :ref:`print_gap<doxid-structdqp__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		int :ref:`dual_starting_point<doxid-structdqp__control__type_1a416b1d999e77575f6f0cb5f150829ee4>`;
-		int :ref:`maxit<doxid-structdqp__control__type_1ab717630b215f0362699acac11fb3652c>`;
-		int :ref:`max_sc<doxid-structdqp__control__type_1a58895c9f8fe04a04578073223b30af2a>`;
-		int :ref:`cauchy_only<doxid-structdqp__control__type_1afba2adad4ad503320066449f07aba83b>`;
-		int :ref:`arc_search_maxit<doxid-structdqp__control__type_1af633cdb2051e99e783dfe792a50a4149>`;
-		int :ref:`cg_maxit<doxid-structdqp__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
-		int :ref:`explore_optimal_subspace<doxid-structdqp__control__type_1a166a5815eb8a029edd1b46dfc2854679>`;
-		int :ref:`restore_problem<doxid-structdqp__control__type_1a19f10912888ac7ebd153fb21baaeaefa>`;
-		int :ref:`sif_file_device<doxid-structdqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		int :ref:`qplib_file_device<doxid-structdqp__control__type_1a580c343e54a25a2d687782410c9b6917>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`rho<doxid-structdqp__control__type_1a7a571cc854bea7cc6488175668c15b3d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`infinity<doxid-structdqp__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_abs_p<doxid-structdqp__control__type_1a3749f9dcb2eeb60815a18c85a7d7d440>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_rel_p<doxid-structdqp__control__type_1a068065b9d50d5b222fbc8710d530bd9e>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_abs_d<doxid-structdqp__control__type_1a67b6a7be5dbfa34e9db4c960943fe31f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_rel_d<doxid-structdqp__control__type_1ab479c27e2044c310e8d0c86869ea2307>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_abs_c<doxid-structdqp__control__type_1a1ed92b5ffb35957c5a8a0e657e312820>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_rel_c<doxid-structdqp__control__type_1a5c131e3b6061c09670e9c1959b6585a3>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_cg_relative<doxid-structdqp__control__type_1acd5b41623ff5db9a81dc5a8421fe5e2f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_cg_absolute<doxid-structdqp__control__type_1ad8ba10f33e624074c203f079afed54f8>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`cg_zero_curvature<doxid-structdqp__control__type_1aa72b520b0841cce9015e03522f58103b>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`max_growth<doxid-structdqp__control__type_1a2c39ca5cec2100192d5b451678e61864>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`identical_bounds_tol<doxid-structdqp__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`cpu_time_limit<doxid-structdqp__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_time_limit<doxid-structdqp__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`initial_perturbation<doxid-structdqp__control__type_1a6ef6c7936fe36bc165ba087eca79d9e8>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`perturbation_reduction<doxid-structdqp__control__type_1a12423a6a8d2151baede20265bee496ad>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`final_perturbation<doxid-structdqp__control__type_1a2c77f53cca5940c027611b0c5c9531c7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structdqp__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structdqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structdqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structdqp__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structdqp__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_gap<doxid-structdqp__control__type_1a31edaef6b722ef2721633484405a649b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dual_starting_point<doxid-structdqp__control__type_1a416b1d999e77575f6f0cb5f150829ee4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxit<doxid-structdqp__control__type_1ab717630b215f0362699acac11fb3652c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_sc<doxid-structdqp__control__type_1a58895c9f8fe04a04578073223b30af2a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cauchy_only<doxid-structdqp__control__type_1afba2adad4ad503320066449f07aba83b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`arc_search_maxit<doxid-structdqp__control__type_1af633cdb2051e99e783dfe792a50a4149>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_maxit<doxid-structdqp__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`explore_optimal_subspace<doxid-structdqp__control__type_1a166a5815eb8a029edd1b46dfc2854679>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`restore_problem<doxid-structdqp__control__type_1a19f10912888ac7ebd153fb21baaeaefa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sif_file_device<doxid-structdqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`qplib_file_device<doxid-structdqp__control__type_1a580c343e54a25a2d687782410c9b6917>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`rho<doxid-structdqp__control__type_1a7a571cc854bea7cc6488175668c15b3d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structdqp__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_p<doxid-structdqp__control__type_1a3749f9dcb2eeb60815a18c85a7d7d440>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_p<doxid-structdqp__control__type_1a068065b9d50d5b222fbc8710d530bd9e>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_d<doxid-structdqp__control__type_1a67b6a7be5dbfa34e9db4c960943fe31f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_d<doxid-structdqp__control__type_1ab479c27e2044c310e8d0c86869ea2307>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_abs_c<doxid-structdqp__control__type_1a1ed92b5ffb35957c5a8a0e657e312820>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_rel_c<doxid-structdqp__control__type_1a5c131e3b6061c09670e9c1959b6585a3>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_cg_relative<doxid-structdqp__control__type_1acd5b41623ff5db9a81dc5a8421fe5e2f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_cg_absolute<doxid-structdqp__control__type_1ad8ba10f33e624074c203f079afed54f8>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cg_zero_curvature<doxid-structdqp__control__type_1aa72b520b0841cce9015e03522f58103b>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_growth<doxid-structdqp__control__type_1a2c39ca5cec2100192d5b451678e61864>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`identical_bounds_tol<doxid-structdqp__control__type_1abc74ac9bbf6375075f8943aac6ee09e4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`cpu_time_limit<doxid-structdqp__control__type_1a52f14ff3f85e6805f2373eef5d0f3dfd>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_time_limit<doxid-structdqp__control__type_1ab05d7c2b06d3a9fb085fa3739501d1c8>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`initial_perturbation<doxid-structdqp__control__type_1a6ef6c7936fe36bc165ba087eca79d9e8>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`perturbation_reduction<doxid-structdqp__control__type_1a12423a6a8d2151baede20265bee496ad>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`final_perturbation<doxid-structdqp__control__type_1a2c77f53cca5940c027611b0c5c9531c7>`;
 		bool :ref:`factor_optimal_matrix<doxid-structdqp__control__type_1a64ad50a4e86e202661afcd04f340a2c8>`;
 		bool :ref:`remove_dependencies<doxid-structdqp__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
 		bool :ref:`treat_zero_bounds_as_general<doxid-structdqp__control__type_1a59b23877e9c8cb49f1f6261e24660295>`;
@@ -99,7 +99,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -109,7 +109,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -119,7 +119,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -129,7 +129,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int start_print
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` start_print
 
 any printing will start on this iteration
 
@@ -139,7 +139,7 @@ any printing will start on this iteration
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int stop_print
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` stop_print
 
 any printing will stop on this iteration
 
@@ -149,7 +149,7 @@ any printing will stop on this iteration
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_gap
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_gap
 
 printing will only occur every print_gap iterations
 
@@ -159,7 +159,7 @@ printing will only occur every print_gap iterations
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dual_starting_point
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dual_starting_point
 
 which starting point should be used for the dual problem
 
@@ -181,7 +181,7 @@ which starting point should be used for the dual problem
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int maxit
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` maxit
 
 at most maxit inner iterations are allowed
 
@@ -191,7 +191,7 @@ at most maxit inner iterations are allowed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_sc
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_sc
 
 the maximum permitted size of the Schur complement before a refactorization is performed (used in the case where there is no Fredholm Alternative, 0 = refactor every iteration)
 
@@ -201,7 +201,7 @@ the maximum permitted size of the Schur complement before a refactorization is p
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int cauchy_only
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` cauchy_only
 
 a subspace step will only be taken when the current Cauchy step has changed no more than than cauchy_only active constraints; the subspace step will always be taken if cauchy_only < 0
 
@@ -211,7 +211,7 @@ a subspace step will only be taken when the current Cauchy step has changed no m
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int arc_search_maxit
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` arc_search_maxit
 
 how many iterations are allowed per arc search (-ve = as many as require
 
@@ -221,7 +221,7 @@ how many iterations are allowed per arc search (-ve = as many as require
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int cg_maxit
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` cg_maxit
 
 how many CG iterations to perform per DQP iteration (-ve reverts to n+1)
 
@@ -231,7 +231,7 @@ how many CG iterations to perform per DQP iteration (-ve reverts to n+1)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int explore_optimal_subspace
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` explore_optimal_subspace
 
 once a potentially optimal subspace has been found, investigate it
 
@@ -247,7 +247,7 @@ once a potentially optimal subspace has been found, investigate it
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int restore_problem
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` restore_problem
 
 indicate whether and how much of the input problem should be restored on output. Possible values are
 
@@ -263,7 +263,7 @@ indicate whether and how much of the input problem should be restored on output.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int sif_file_device
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 
@@ -273,7 +273,7 @@ specifies the unit number to write generated SIF file describing the current pro
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int qplib_file_device
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` qplib_file_device
 
 specifies the unit number to write generated QPLIB file describing the current problem
 
@@ -283,7 +283,7 @@ specifies the unit number to write generated QPLIB file describing the current p
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` rho
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` rho
 
 the penalty weight, rho. The general constraints are not enforced explicitly, but instead included in the objective as a penalty term weighted by rho when rho > 0. If rho <= 0, the general constraints are explicit (that is, there is no penalty term in the objective function)
 
@@ -293,7 +293,7 @@ the penalty weight, rho. The general constraints are not enforced explicitly, bu
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` infinity
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` infinity
 
 any bound larger than infinity in modulus will be regarded as infinite
 
@@ -303,7 +303,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_abs_p
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_abs_p
 
 the required absolute and relative accuracies for the primal infeasibilies
 
@@ -313,7 +313,7 @@ the required absolute and relative accuracies for the primal infeasibilies
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_rel_p
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_rel_p
 
 see stop_abs_p
 
@@ -323,7 +323,7 @@ see stop_abs_p
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_abs_d
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_abs_d
 
 the required absolute and relative accuracies for the dual infeasibility
 
@@ -333,7 +333,7 @@ the required absolute and relative accuracies for the dual infeasibility
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_rel_d
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_rel_d
 
 see stop_abs_d
 
@@ -343,7 +343,7 @@ see stop_abs_d
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_abs_c
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_abs_c
 
 the required absolute and relative accuracies for the complementarity
 
@@ -353,7 +353,7 @@ the required absolute and relative accuracies for the complementarity
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_rel_c
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_rel_c
 
 see stop_abs_c
 
@@ -363,7 +363,7 @@ see stop_abs_c
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_cg_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_cg_relative
 
 the CG iteration will be stopped as soon as the current norm of the preconditioned gradient is smaller than max( stop_cg_relative \* initial preconditioned gradient, stop_cg_absolute )
 
@@ -373,7 +373,7 @@ the CG iteration will be stopped as soon as the current norm of the precondition
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_cg_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_cg_absolute
 
 see stop_cg_relative
 
@@ -383,7 +383,7 @@ see stop_cg_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` cg_zero_curvature
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` cg_zero_curvature
 
 threshold below which curvature is regarded as zero if CG is used
 
@@ -393,7 +393,7 @@ threshold below which curvature is regarded as zero if CG is used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` max_growth
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` max_growth
 
 maximum growth factor allowed without a refactorization
 
@@ -403,7 +403,7 @@ maximum growth factor allowed without a refactorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` identical_bounds_tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` identical_bounds_tol
 
 any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values
 
@@ -413,7 +413,7 @@ any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identi
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` cpu_time_limit
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` cpu_time_limit
 
 the maximum CPU time allowed (-ve means infinite)
 
@@ -423,7 +423,7 @@ the maximum CPU time allowed (-ve means infinite)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_time_limit
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_time_limit
 
 the maximum elapsed clock time allowed (-ve means infinite)
 
@@ -433,7 +433,7 @@ the maximum elapsed clock time allowed (-ve means infinite)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` initial_perturbation
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` initial_perturbation
 
 the initial penalty weight (for DLP only)
 
@@ -443,7 +443,7 @@ the initial penalty weight (for DLP only)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` perturbation_reduction
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` perturbation_reduction
 
 the penalty weight reduction factor (for DLP only)
 
@@ -453,7 +453,7 @@ the penalty weight reduction factor (for DLP only)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` final_perturbation
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` final_perturbation
 
 the final penalty weight (for DLP only)
 

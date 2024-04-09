@@ -22,7 +22,7 @@
 
    INTERFACE pastixInitParam
      SUBROUTINE pastixInitParam_f08( iparm, dparm )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        USE GALAHAD_KINDS, ONLY : spc_
 #else
        USE GALAHAD_KINDS, ONLY : dpc_
@@ -30,7 +30,7 @@
        USE pastixf_enums, ONLY : pastix_int_t
        IMPLICIT NONE
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target :: iparm( : )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        REAL ( KIND = spc_ ), INTENT( INOUT ), target :: dparm( : )
 #else
        REAL ( KIND = dpc_ ), INTENT( INOUT ), target :: dparm( : )
@@ -40,7 +40,7 @@
 
    INTERFACE pastixInit
      SUBROUTINE pastixInit_f08( pastix_data, pastix_comm, iparm, dparm )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        USE GALAHAD_KINDS, ONLY : spc_
 #else
        USE GALAHAD_KINDS, ONLY : dpc_
@@ -51,7 +51,7 @@
        TYPE ( pastix_data_t ), INTENT( INOUT ), pointer :: pastix_data
        TYPE ( MPI_Comm ), INTENT( IN ) :: pastix_comm
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target  :: iparm( : )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        REAL ( KIND = spc_ ), INTENT( INOUT ), target :: dparm( : )
 #else
        REAL ( KIND = dpc_ ), INTENT( INOUT ), target :: dparm( : )

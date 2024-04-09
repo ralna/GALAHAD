@@ -2,12 +2,12 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 14:30 GMT
+ *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:30 GMT
  */
 
 #include "ssids_rip.hxx"
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define cholesky_factor cholesky_factor_sgl
 #define cholesky_solve_fwd cholesky_solve_fwd_sgl
 #define cholesky_solve_bwd cholesky_solve_bwd_sgl

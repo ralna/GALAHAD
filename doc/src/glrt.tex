@@ -48,20 +48,22 @@ and, perhaps, $\bmM \bmz$.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time, the derived types
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_control\_type}, {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type},
 (Section~\ref{galtypes})
@@ -73,6 +75,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -92,20 +98,20 @@ is used to hold controlling data. Default values may be obtained by calling
 are:
 
 \begin{description}
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages.
 Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if ${\tt error} \leq {\tt 0}$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer,
+\itt{print\_level} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output which is required. No
 informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
@@ -114,27 +120,27 @@ iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output
 will be increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{itmax} is a scalar variable of type default \integer, that holds the
+\itt{itmax} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in
 {\tt \packagename\_solve}.
 If {\tt itmax} is set to a negative number, it will be reset by
 {\tt \packagename\_solve} to $n$.
 The default is {\tt itmax = -1}.
 
-\itt{extra\_vectors} is a scalar variable of type default \integer,
+\itt{extra\_vectors} is a scalar variable of type \integer,
 that specifies the number of additional vectors of length $n$
 that will be allocated to try to speed up the computation during the
 second pass.
 The default is {\tt extra\_vectors = 0}.
 
-\itt{stopping\_rule} is a scalar variable of type default \integer, that
+\itt{stopping\_rule} is a scalar variable of type \integer, that
 flags the stopping rule to be used (see {\tt stop\_relative} and
 {\tt stop\_absolute} below).
 Appropriate values are in the range $[0,2]$, and any value outside this range
 will be interpreted as 0.
 The default is {\tt stopping\_rule = 0}.
 
-\itt{freq} is a scalar variable of type default \integer, that
+\itt{freq} is a scalar variable of type \integer, that
 defines the frequency at which the tridiagonal subproblem will
 be solved. Specifically, the subproblem will be solved on iterations
 $k=1+$ {\tt freq} $\ast i$, for $i = 1, 2, \ldots.$.
@@ -224,11 +230,11 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 current status of the algorithm. See Sections~\ref{galreverse} and
 \ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer,
+\itt{alloc\_status} is a scalar variable of type \integer,
 that gives the status of the last internal array allocation
 or deallocation. This will be 0 if {\tt status = 0}.
 
@@ -237,10 +243,10 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{obj} is a scalar variable of type default \realdp, that holds the
+\itt{obj} is a scalar variable of type \realdp, that holds the
 value of the quadratic function $\half \bmx^T \bmH \bmx + \bmc^T \bmx + f_0$.
 
-\itt{obj\_regularized} is a scalar variable of type default \realdp, that
+\itt{obj\_regularized} is a scalar variable of type \realdp, that
 holds the value of the regularized objective function $\half \bmx^T \bmH \bmx
  + \bmc^T \bmx + f_0 +
   \sfrac{1}{p} \sigma [ \| \bmx + \bmo \|_{\bmM}^2 + \epsilon ]^{p/2}$.
@@ -253,10 +259,10 @@ holds the value of the regularized objective function $\half \bmx^T \bmH \bmx
 \realdp, that holds an estimate of the leftmost eigenvalue of the
 matrix pencil $(\bmH,\bmM)$.
 
-\ittf{iter} is a scalar variable of type default \integer, that holds the
+\ittf{iter} is a scalar variable of type \integer, that holds the
 current number of Lanczos vectors used.
 
-\itt{iter\_pass2} is a scalar variable of type default \integer, that holds the
+\itt{iter\_pass2} is a scalar variable of type \integer, that holds the
 current number of Lanczos vectors used in the second pass.
 
 \itt{negative\_curvature} is a scalar variable of type default \logical, that
@@ -347,7 +353,7 @@ The optimization problem solution algorithm is called as follows:
 
 \begin{description}
 
-\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
+\ittf{n} is a scalar \intentin\ argument of type \integer, that must be
 set to the number of unknowns, $n$. {\bf Restriction: } $n  >  0$.
 
 \ittf{p} is a scalar \intentin\ variable of type default
@@ -362,14 +368,14 @@ to the value of the weight $\sigma$ associated with the regularisation term.
 {\bf Restriction: } $\sigma \geq 0$.
 
 \ittf{X} is an array \intentinout\ argument of dimension {\tt n} and
-type default \realdp,
+type \realdp,
 that holds an estimate of the solution $\bmx$ of the linear system.
 On initial entry, {\tt X} need not be set.
 It must not be changed between entries.
 On exit, {\tt X} contains the current best estimate of the solution.
 
 \ittf{R} is an array \intentinout\ argument of dimension {\tt n} and
-type default \realdp,
+type \realdp,
 that is used to hold the gradient $\bmH \bmx  +  \bmc$ of the objective
 function at the current estimate of the solution.
 On initial entry, {\tt R} must contain the vector $\bmc$.
@@ -378,7 +384,7 @@ it must be left unchanged. On exit, {\tt R} contains the gradient of the
 objective   function at the current best estimate of the solution.
 
 \itt{VECTOR} is an array \intentinout\ argument of dimension {\tt n}
-and type default \realdp,
+and type \realdp,
 that is used to pass information from and to {\tt \packagename\_solve},
 as explained in Section~\ref{galreverse}.
 On initial entry, {\tt VECTOR} need not be set. On exit, the actual content of
@@ -681,7 +687,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

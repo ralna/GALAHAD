@@ -46,21 +46,22 @@ documentation follows that of I.S. Duff and J.K. Reid, ibid.
 
 \galhowto
 
-\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
-If it is required to use both modules at the same time, the derived types 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_TYPE},
 {\tt \packagename\_CONTROL},
 {\tt \packagename\_AINFO},
@@ -122,6 +123,10 @@ definite.
 \end{description} 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtypes
@@ -135,23 +140,23 @@ The components of {\tt SMT\_TYPE} are:
 
 \begin{description}
 
-\ittf{N} is a scalar variable of type default \integer, that holds
+\ittf{N} is a scalar variable of type \integer, that holds
 the order $n$ of the matrix  $\bmA$. 
 \restriction {\tt N} $\geq$ {\tt 1}. 
 
-\ittf{NE} is a scalar variable of type default \integer, that holds the 
+\ittf{NE} is a scalar variable of type \integer, that holds the 
 number of matrix entries.  
 \restriction {\tt NE} $\geq$ {\tt 0}.
 
-\ittf{VAL} is a rank-one allocatable array of type default \realdp, 
+\ittf{VAL} is a rank-one allocatable array of type \realdp, 
 and dimension at least {\tt NE}, that holds the values of the entries. 
 Each pair of off-diagonal entries $a_{ij} = a_{ji} $ 
 is represented as a single entry. Duplicated entries are summed. 
 
-\ittf{ROW} is a rank-one allocatable array of type default \integer, 
+\ittf{ROW} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt NE}, that holds the row indices of the entries. 
 
-\ittf{COL} is a rank-one allocatable array of type default \integer, 
+\ittf{COL} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt NE}, that holds the column indices of the entries. 
 
 \end{description}
@@ -248,7 +253,7 @@ identify dense
 rows during pivot selection.  It is the percentage density for a row to 
 be regarded as dense.  The default value is {\tt 100}. 
  
-\itt{ORDERING} is a scalar variable of type default \integer, that 
+\itt{ORDERING} is a scalar variable of type \integer, that 
 controls the initial order of the rows when performing the factorization.
 Possible values are: 
 \begin{description} 
@@ -566,7 +571,7 @@ Section~\ref{typecontrol}.
 Its components provide information about the execution, as explained in 
 Section~\ref{typeinfoa}. 
  
-\itt{PERM} is an optional rank-one default \integer\ array of \intentin\
+\itt{PERM} is an optional rank-one \integer\ array of \intentin\
 and length {\tt N}.
 If present, {\tt PERM} ($i$), $i = 1, \ldots, n$, should be set 
 to the position of  variable $i$ in the pivotal sequence. 
@@ -824,25 +829,25 @@ for one or more right-hand sides.
 It must be unaltered since the call to {\tt \packagename\_FACTORIZE} 
 or a subsequent call to {\tt \packagename\_ALTER\_D}. 
  
-\itt{PERM} is an optional rank-one default \integer\ array of \intentout\
+\itt{PERM} is an optional rank-one \integer\ array of \intentout\
  and length {\tt N}.
 If present, {\tt PERM} will be set to the pivot permutation
 selected by {\tt \packagename\_ANALYSE}.
   
-\itt{PIVOTS} is an optional rank-one default \integer\ array of \intentout\
+\itt{PIVOTS} is an optional rank-one \integer\ array of \intentout\
  and length {\tt N}.
 If present, the index of pivot $i$ will be placed in 
 {\tt PIVOTS} ($i$), $i = 1, \ldots, n$, with its sign negative if it is 
 the index of a 2 x 2 block. 
   
-\itt{D} is an optional rank-two default \realdp\ array
+\itt{D} is an optional rank-two \realdp\ array
 of \intentout\, and shape {\tt (2, N)}.
 If present, the diagonal entries of $\bmD^{-1} $ will 
 be placed in {\tt D( 1, i )}, $i = 1, \ldots n$ and the off-diagonal 
 entries of $\bmD^{-1} $ will be placed in {\tt D( 2, i )}, 
 $i = 1, \ldots n-1$. 
 
-\itt{PERTURBATION} is an optional rank-one default \realdp\ array of 
+\itt{PERTURBATION} is an optional rank-one \realdp\ array of 
 \intentout\ and length {\tt N}.
 If present, {\tt PERTURBATION} will be set to a vector of diagonal perturbations
 chosen by {\tt \packagename\_FACTORIZE}. This array can only be nonzero if

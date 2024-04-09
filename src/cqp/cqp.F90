@@ -118,7 +118,7 @@
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
       REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
       REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 7 )
 #else
       REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 15 )

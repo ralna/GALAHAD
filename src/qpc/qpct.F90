@@ -5,7 +5,7 @@
    USE GALAHAD_QPC_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 10
 #else
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20

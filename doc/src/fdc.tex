@@ -40,22 +40,22 @@ Full advantage is taken of any zero coefficients in the vectors $\bma_i$.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt \packagename\_time\_type},
 {\tt \packagename\_control\_type},
@@ -72,12 +72,9 @@ and
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
 
-%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Integer kinds}\label{Integer kinds}
-We use the term
-long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
-{\tt long = selected\_int\_kind(18))}.
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -106,18 +103,18 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_find\_dependent} and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_find\_dependent} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, basic statistics of the performance of the
@@ -125,17 +122,17 @@ package will be produced. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide details such as the size of each neglected pivot.
 The default is {\tt print\_level = 0}.
 
-%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%\itt{indmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of integer workspace required by
 %the factorization package {\tt SLS}.
 %The default is {\tt indmin = 1000}.
 
-%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%\itt{valmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of real workspace required by
 %the factorization package {\tt SLS}.
 %The default is {\tt valmin = 1000}.
 
-\itt{max\_infeas} is a scalar variable of type default \realdp, that holds the
+\itt{max\_infeas} is a scalar variable of type \realdp, that holds the
 largest permitted infeasibility for a dependent constraint. Specifically, if
 $\bmx$ satisfies $\bma_i^T \bmx = c_i^{}$ for the constraints deemed to be
 linearly independent, it is required that $|\bma_i^T \bmx - c_i^{}| \leq$
@@ -152,7 +149,7 @@ attempting to detect linearly dependent constraints.
 See the documentation for the packages {\tt SLS} and {\tt ULS} for details.
 The default is {\tt pivot\_tol = 0.5}.
 
-%\itt{zero\_pivot} is a scalar variable of type default \realdp.
+%\itt{zero\_pivot} is a scalar variable of type \realdp.
 %Any pivots smaller than  {\tt zero\_pivot} in absolute value will be regarded
 %to be zero when attempting to detect linearly dependent constraints.
 %The default is {\tt zero\_pivot =} $u^{3/4}$,
@@ -242,23 +239,23 @@ the calculation. The components of
 {\tt \packagename\_time\_type}
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time spent in the package.
 
-\itt{analyse} is a scalar variable of type default \realdp, that gives
+\itt{analyse} is a scalar variable of type \realdp, that gives
  the CPU time spent analysing the required matrices prior to factorization.
 
-\itt{factorize} is a scalar variable of type default \realdp, that gives
+\itt{factorize} is a scalar variable of type \realdp, that gives
  the CPU time spent factorizing the required matrices.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+\itt{clock\_analyse} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent analysing the required matrices prior to
 factorization.
 
-\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+\itt{clock\_factorize} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent factorizing the required matrices.
 
 \end{description}
@@ -276,13 +273,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See Section~\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -291,17 +288,17 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{factorization\_status} is a scalar variable of type default \integer, that
+\itt{factorization\_status} is a scalar variable of type \integer, that
 gives the return status from the matrix factorization.
 
 \itt{factorization\_integer} is a scalar variable of type long
 \integer, that gives the amount of integer storage used for the matrix
 factorization.
 
-\itt{factorization\_real} is a scalar variable of type long \integer,
+\itt{factorization\_real} is a scalar variable of type \longinteger,
 that gives the amount of real storage used for the matrix factorization.
 
-\itt{non\_negligible\_pivot} is a scalar variable of type default \realdp,
+\itt{non\_negligible\_pivot} is a scalar variable of type \realdp,
 that holds the value of the smallest pivot larger than
 {\tt control\%zero\_pivot}
 when searching for dependent linear constraints. If
@@ -402,37 +399,37 @@ Dependent constraints are identified as follows:
 
 \begin{description}
 
-\ittf{m} is a scalar \intentin\ argument of type default \integer,
+\ittf{m} is a scalar \intentin\ argument of type \integer,
 that holds the number of constraints, $m$.
 {\bf Restriction: } $m \geq 0$.
 
-\ittf{n} is a scalar \intentin\ argument of type default \integer,
+\ittf{n} is a scalar \intentin\ argument of type \integer,
 that holds the number of unknowns, $n$.
 {\bf Restriction: } $n \geq 0$.
 
-\itt{A\_val} is an \intentin\ rank-one array of type default \realdp, that holds
+\itt{A\_val} is an \intentin\ rank-one array of type \realdp, that holds
 the values of the entries (that is those component whose values are nonzero)
 of the matrix $\bmA$ whose rows are the vectors $\bma_i^T$, $i = 1, \ldots, m$.
 The entries for row $i$ must directly precede those in row $i$, but the
 order within each row is unimportant.
 
-\itt{A\_col} is an \intentin\ rank-one array of type default \integer, that 
+\itt{A\_col} is an \intentin\ rank-one array of type \integer, that 
 holds the (column) indices of the entries of $\bmA$ corresponding to the
 values input in {\tt A\_val}.
 
 \itt{A\_ptr} is an \intentin\ rank-one array of dimension {\tt m+1} and type
-default \integer, whose $i$-th entry holds the starting position of row $i$
+\integer, whose $i$-th entry holds the starting position of row $i$
 of $\bmA$ for $i = 1, \ldots, m$. The $m+1$-st entry of {\tt A\_ptr}
 must hold the total number of entries plus one.
 
 \ittf{B} is an \intentin\ rank-one array of dimension {\tt m} and
-type default \realdp, whose $i$-th component must be set to $b_i$ for
+type \realdp, whose $i$-th component must be set to $b_i$ for
 $i = 1, \ldots, m$.
 
-\itt{n\_depen} is a scalar \intentout\ argument of type default \integer,
+\itt{n\_depen} is a scalar \intentout\ argument of type \integer,
 that gives the number of dependent constraints.
 
-\itt{DEPEN} is a rank-one allocatable array of type default \integer,
+\itt{DEPEN} is a rank-one allocatable array of type \integer,
 On exit, if {\tt n\_depen} $>$ {\tt 0}, it will have been allocated to be of
 length {\tt n\_depen} and its components will be the indices of the dependent
 constraints. It will not be allocated or set if {\tt n\_depen = 0}.
@@ -662,7 +659,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

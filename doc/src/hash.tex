@@ -39,22 +39,22 @@ and
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_time\_\-type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
@@ -73,6 +73,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -97,18 +101,18 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -150,11 +154,11 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 See Section~\ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -208,11 +212,11 @@ are provided as follows:
 \vspace*{-2mm}
 \begin{description}
 
-\ittf{nchar} is a scalar \intentin\ argument of type default \integer\ that
+\ittf{nchar} is a scalar \intentin\ argument of type \integer\ that
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
-\itt{length} is a scalar \intentin\ argument of type default \integer\ that
+\itt{length} is a scalar \intentin\ argument of type \integer\ that
 should be sent to an upper bound on the number of words that
 may be inserted into the dictionary.
 
@@ -249,7 +253,7 @@ A word may be inserted into the dictionary as follows:
 \vspace*{-2mm}
 \begin{description}
 
-\ittf{nchar} is a scalar \intentin\ argument of type default \integer\ that
+\ittf{nchar} is a scalar \intentin\ argument of type \integer\ that
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
@@ -260,7 +264,7 @@ Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
-\itt{position} is a scalar \intentout\ argument of type default \integer\ that
+\itt{position} is a scalar \intentout\ argument of type \integer\ that
 gives the index of the table that data for the word occupies after insertion.
 If {\tt position=0} on exit, there is no more room in the dictionary, and
 it should be rebuilt (see \S\ref{subrebuild}) with more space before trying 
@@ -299,7 +303,7 @@ A word may be searched for in the dictionary as follows:
 \vspace*{-2mm}
 \begin{description}
 
-\ittf{nchar} is a scalar \intentin\ argument of type default \integer\ that
+\ittf{nchar} is a scalar \intentin\ argument of type \integer\ that
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
@@ -310,7 +314,7 @@ Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
-\itt{position} is a scalar \intentout\ argument of type default \integer\ that
+\itt{position} is a scalar \intentout\ argument of type \integer\ that
 gives the index of the table that data for the word occupies. If the word is
 not found, {\tt position} will be 0, and if the word has been removed, it will
 be negative (and {\tt - position} was the index that it once occupied).
@@ -348,7 +352,7 @@ A word may be removed from the dictionary as follows:
 \vspace*{-2mm}
 \begin{description}
 
-\ittf{nchar} is a scalar \intentin\ argument of type default \integer\ that
+\ittf{nchar} is a scalar \intentin\ argument of type \integer\ that
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
@@ -359,7 +363,7 @@ Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
-\ittf{position} is a scalar \intentout\ argument of type default \integer\ that
+\ittf{position} is a scalar \intentout\ argument of type \integer\ that
 gives the index of the table that data for the word occupies before it was
 removed. If the word is not found, {\tt position} will be 0.
 
@@ -396,14 +400,14 @@ The dictionary may be rebuilt to increase in its length as follows:
 \vspace*{-2mm}
 \begin{description}
 
-\itt{length} is a scalar \intentin\ argument of type default \integer\ that
+\itt{length} is a scalar \intentin\ argument of type \integer\ that
 should be the current length of the dictionary.
 
-\itt{new\_length} is a scalar \intentin\ argument of type default \integer\ 
+\itt{new\_length} is a scalar \intentin\ argument of type \integer\ 
 that should be the new length of the dictionary.
 
 \itt{moved\_to} is an array \intentout\ argument of length {\tt length} and 
-type default \integer\ that gives the position in the new table
+type \integer\ that gives the position in the new table
 that the old table entry has been moved to. Specifically, if 
 {\tt moved\_to(i)} is nonzero, entry {\tt i} has moved to position
 {\tt moved\_to(i)} in the new dictionary, while if {\tt moved\_to(i)=0},
@@ -617,7 +621,7 @@ that each affects are given in Table~\vref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

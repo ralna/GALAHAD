@@ -1,14 +1,16 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-01-12
+#  This version: 2024-04-08
 
 #  compilation agenda for package
 
 $(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(LGS)($(package)_single.o)
 $(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(LGD)($(package)_double.o)
+$(PACKAGE)OBJECTSQ = $(DEPENDENCIES) $(LGD)($(package)_quadruple.o)
 $(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(LGS64)($(package)_single_64.o)
 $(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(LGD64)($(package)_double_64.o)
+$(PACKAGE)OBJECTSQ64 = $(DEPENDENCIES) $(LGD64)($(package)_quadruple_64.o)
 
 #  compilation agenda for package with C interface
 
@@ -16,12 +18,17 @@ $(PACKAGE)OBJECTSCS = $($(PACKAGE)OBJECTSS) make_ciface_common \
                       $(CDEPENDENCIES) $(CLGS)($(package)_ciface_single.o)
 $(PACKAGE)OBJECTSCD = $($(PACKAGE)OBJECTSD) make_ciface_common \
                       $(CDEPENDENCIES) $(CLGD)($(package)_ciface_double.o)
+$(PACKAGE)OBJECTSCQ = $($(PACKAGE)OBJECTSQ) make_ciface_common \
+                      $(CDEPENDENCIES) $(CLGQ)($(package)_ciface_quadruple.o)
 $(PACKAGE)OBJECTSCS64 = $($(PACKAGE)OBJECTSS64) make_ciface_common \
                         $(CDEPENDENCIES) \
                         $(CLGS64)($(package)_ciface_single_64.o)
 $(PACKAGE)OBJECTSCD64 = $($(PACKAGE)OBJECTSD64) make_ciface_common \
                         $(CDEPENDENCIES) \
                         $(CLGD64)($(package)_ciface_double_64.o)
+$(PACKAGE)OBJECTSCQ64 = $($(PACKAGE)OBJECTSQ64) make_ciface_common \
+                        $(CDEPENDENCIES) \
+                        $(CLGQ64)($(package)_ciface_quadruple_64.o)
 
 #  compilation agenda for package with python interface
 

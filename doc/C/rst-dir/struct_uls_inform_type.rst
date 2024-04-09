@@ -15,20 +15,20 @@ uls_inform_type structure
 	struct uls_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structuls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structuls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structuls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structuls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structuls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`more_info<doxid-structuls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`more_info<doxid-structuls__inform__type_1a24d9e61a5ee1839c2fda4f8d5cff0cb7>`;
 		int64_t :ref:`out_of_range<doxid-structuls__inform__type_1ae595bb33a1e4f5e95da1927ac4673bbf>`;
 		int64_t :ref:`duplicates<doxid-structuls__inform__type_1aba4e8149b1ecbb5c21f4534ef36d75b8>`;
 		int64_t :ref:`entries_dropped<doxid-structuls__inform__type_1a2092110f6de97b4607da184213cd7492>`;
 		int64_t :ref:`workspace_factors<doxid-structuls__inform__type_1a4e43e0824a84867596aac783665f8057>`;
-		int :ref:`compresses<doxid-structuls__inform__type_1a06332c9a99b61a82393d2cf74a47428e>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`compresses<doxid-structuls__inform__type_1a06332c9a99b61a82393d2cf74a47428e>`;
 		int64_t :ref:`entries_in_factors<doxid-structuls__inform__type_1ab741fb84b79d2b013a84d71932452681>`;
-		int :ref:`rank<doxid-structuls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		int :ref:`structural_rank<doxid-structuls__inform__type_1a870efaeda81975bbbd9e247fe17baed1>`;
-		int :ref:`pivot_control<doxid-structuls__inform__type_1a7489428a42ce1420b4891f638153c99f>`;
-		int :ref:`iterative_refinements<doxid-structuls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`rank<doxid-structuls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`structural_rank<doxid-structuls__inform__type_1a870efaeda81975bbbd9e247fe17baed1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivot_control<doxid-structuls__inform__type_1a7489428a42ce1420b4891f638153c99f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iterative_refinements<doxid-structuls__inform__type_1a22c83a8ec8964a169bdd9d0cdf196cf1>`;
 		bool :ref:`alternative<doxid-structuls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
 		char :ref:`solver<doxid-structuls__inform__type_1af335c33211ea78f2d5b7314d7b1c210d>`[21];
 		struct gls_ainfo :ref:`gls_ainfo<doxid-structuls__inform__type_1a8fb46433ac34c44f07902189c1c9d028>`;
@@ -37,7 +37,7 @@ uls_inform_type structure
 		struct ma48_ainfo :ref:`ma48_ainfo<doxid-structuls__inform__type_1a9487553043c4ec110826e99e071ce9bc>`;
 		struct ma48_finfo :ref:`ma48_finfo<doxid-structuls__inform__type_1ac28e039b045cad8dec788fdca9823348>`;
 		struct ma48_sinfo :ref:`ma48_sinfo<doxid-structuls__inform__type_1a78e9faeec60579cc0fa6c34e0aaeecc3>`;
-		int :ref:`lapack_error<doxid-structuls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lapack_error<doxid-structuls__inform__type_1a0319e2c4ee2d95fe244f92d276038bd4>`;
 	};
 .. _details-structuls__inform__type:
 
@@ -55,7 +55,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 reported return status:
 
@@ -105,7 +105,7 @@ reported return status:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 STAT value after allocate failure.
 
@@ -125,7 +125,7 @@ name of array which provoked an allocate failure
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int more_info
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` more_info
 
 further information on failure
 
@@ -175,7 +175,7 @@ predicted or actual number of reals and integers to hold factors
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int compresses
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` compresses
 
 number of compresses of data required
 
@@ -195,7 +195,7 @@ number of entries in factors
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int rank
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` rank
 
 estimated rank of the matrix
 
@@ -205,7 +205,7 @@ estimated rank of the matrix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int structural_rank
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` structural_rank
 
 structural rank of the matrix
 
@@ -215,7 +215,7 @@ structural rank of the matrix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int pivot_control
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` pivot_control
 
 pivot control:
 
@@ -245,7 +245,7 @@ pivot control:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iterative_refinements
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iterative_refinements
 
 number of iterative refinements performed
 
@@ -335,7 +335,7 @@ see ma48_ainfo
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int lapack_error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` lapack_error
 
 the LAPACK error return code
 

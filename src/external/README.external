@@ -24,8 +24,9 @@ separately. The HSL archive codes may be obtained from
 by any user, while the main HSL codes are available for academic
 use from
 
-  http://www.hsl.rl.ac.uk/download/hsl-galahad/latest/d/
+  http://www.hsl.rl.ac.uk/download/hsl-galahad/latest
 
+(the former is included in the latter, so only a single download is required.)
 They should *not* be altered and then redistributed.
 
 We recommend that all users obtain at least the HSL Archive packages.
@@ -47,9 +48,7 @@ packages
    la04, ma48,  ma57, ma77,  ma86, ma87, ma97, mc61, mc64, mc68,
    mc77, mi20, mi28 and mi35.
 
-In addition, icfs (http://www.mcs.anl.gov/~more/icfs/) is useful
-but must be downloaded separately. The packages MKL, Pardiso
-and WSMP are availble as binary files from
+The packages MKL, Pardiso and WSMP are availble as binary files from
 
   https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl.html
   https://www.pardiso-project.org/
@@ -78,5 +77,5 @@ and installation of non-binary packages.
 TODO: add interfaces to umfpack and BaSpaCho
 
 Nick Gould
-November 20th 2022
+March 28th 2024
 For GALAHAD productions

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-31 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT.
 
 #include "spral_procedures.h"
 
@@ -24,7 +24,7 @@
    REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
      SOL = (/ 1.0_rp_,  2.0_rp_,  3.0_rp_,  4.0_rp_,  5.0_rp_ /)
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
    WRITE( 6, "( '  ssids single precision tests', / )" )
 #else
    WRITE( 6, "( '  ssids double precision tests', / )" )

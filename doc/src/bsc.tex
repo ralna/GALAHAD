@@ -39,20 +39,22 @@ Rutherford Appleton Laboratory.
 
 %\subsection{Calling sequences}
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types 
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type}, 
 {\tt QPT\_problem\_type}, 
 {\tt \packagename\_time\_type}, 
@@ -106,6 +108,10 @@ integer array {\tt A\%col}, and real array {\tt A\%val}, respectively.
 For sparse matrices, this scheme almost always requires less storage than 
 its predecessor.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
 %\input{parallel}
@@ -123,10 +129,10 @@ The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
-%\ittf{m} is a scalar component of type default \integer, 
+%\ittf{m} is a scalar component of type \integer, 
 %that holds the number of rows in the matrix. 
  
-%\ittf{n} is a scalar component of type default \integer, 
+%\ittf{n} is a scalar component of type \integer, 
 %that holds the number of columns in the matrix. 
  
 \ittf{type} is a rank-one allocatable array of type default \character, that
@@ -157,23 +163,23 @@ and we wish to use the co-ordinate storage scheme, we may simply
 See the documentation for the \galahad\ package {\tt SMT} 
 for further details on the use of {\tt SMT\_put}.
 
-\ittf{ne} is a scalar variable of type default \integer, that
+\ittf{ne} is a scalar variable of type \integer, that
 holds the number of matrix entries.
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+\ittf{val} is a rank-one allocatable array of type \realdp\, 
 and dimension at least {\tt ne}, that holds the values of the entries. 
 Any duplicated entries that appear in the sparse 
 co-ordinate or row-wise schemes will be summed. 
 
-\ittf{row} is a rank-one allocatable array of type default \integer, 
+\ittf{row} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt ne}, that may hold the row indices of the entries. 
 (see \S\ref{coordinate}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer, 
+\ittf{col} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer, 
+\ittf{ptr} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt m + 1}, that may hold the pointers to
 the first entry in each row (see \S\ref{rowwise}).
 
@@ -198,18 +204,18 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in 
 {\tt \packagename\_solve} and {\tt \packagename\_terminate} 
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in 
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {\tt print\_level} $\leq 0$. If 
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -217,7 +223,7 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{new\_a} is a scalar variable of type default \integer, that is used
+\itt{new\_a} is a scalar variable of type \integer, that is used
 to indicate how $\bmA$ has changed (if at all) since the previous call
 to {\tt BSC\_form}. Possible values are:
 \begin{description}
@@ -230,13 +236,13 @@ $\bmS$ (and not its values) is required.
 \end{description}
 The default is {\tt new\_a = 2}.
 
-\itt{max\_col} is a scalar variable of type default \integer, that specifies
+\itt{max\_col} is a scalar variable of type \integer, that specifies
 the maximum number of nonzeros in a column of $\bmA$ which is permitted
 when building the Schur-complement. Any negative value will be interpreted
 as {\tt m}.
 The default is {\tt max\_col = -1}.
 
-\itt{extra\_space\_s} is a scalar variable of type default \integer, 
+\itt{extra\_space\_s} is a scalar variable of type \integer, 
 that specifies how much extra space (if any) is to be allocated for the arrays 
 that will hold $\bmS$ above that needed to hold the Schur complement.
 This may be useful, for example, if another matrix might be subsequently added
@@ -283,13 +289,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. 
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See \S\ref{galerrors} 
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -298,17 +304,17 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}. 
 
-\itt{max\_col\_a} is a scalar variable of type default \integer, that gives
+\itt{max\_col\_a} is a scalar variable of type \integer, that gives
  the maximum number of entries in a column of $\bmA$.
 
-\itt{exceeds\_max\_col} is a scalar variable of type default \integer, that 
+\itt{exceeds\_max\_col} is a scalar variable of type \integer, that 
  gives the number of columns of $\bmA$ that have more entries than the limit
  specified by {\tt control\%max\_col}.
 
-\itt{time} is a scalar variable of type default \realdp, that gives
+\itt{time} is a scalar variable of type \realdp, that gives
  the total CPU time (in seconds) spent in the package.
 
-\itt{clock\_time} is a scalar variable of type default \realdp, that gives
+\itt{clock\_time} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time (in seconds) spent in the package.
 
 \end{description}
@@ -395,11 +401,11 @@ The sparse matrix $\bmS = \bmA \bmD \bmA^T$ is formed as follows:
 
 %\vspace*{-3mm}
 \begin{description}
-\itt{m} is a scalar \intentin\ argument of type default \integer\ that specifies
+\itt{m} is a scalar \intentin\ argument of type \integer\ that specifies
 the number of rows of $\bmA$. 
 \restriction {\tt m} $\geq 0$.
 
-\itt{n} is a scalar \intentin\ argument of type default \integer\ that specifies
+\itt{n} is a scalar \intentin\ argument of type \integer\ that specifies
 the number of columns of $\bmA$.
 \restriction {\tt n} $> 0$.
 
@@ -668,7 +674,7 @@ components of {\tt control}.}
 %just as described in the documentation for the \galahad\ packages 
 %{\tt SLS} and {\tt ULS}.
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

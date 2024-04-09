@@ -16,12 +16,12 @@ roots_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structroots__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structroots__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structroots__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structroots__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`tol<doxid-structroots__control__type_1adbee5a29b5dbbe5274332980af85f697>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`zero_coef<doxid-structroots__control__type_1a2760b013e8ef1a2ab6d0a0301379e10f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`zero_f<doxid-structroots__control__type_1a1c2d0687cfd3cda18d1595b79a7fdfe8>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structroots__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structroots__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structroots__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`tol<doxid-structroots__control__type_1adbee5a29b5dbbe5274332980af85f697>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_coef<doxid-structroots__control__type_1a2760b013e8ef1a2ab6d0a0301379e10f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_f<doxid-structroots__control__type_1a1c2d0687cfd3cda18d1595b79a7fdfe8>`;
 		bool :ref:`space_critical<doxid-structroots__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structroots__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structroots__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
@@ -52,7 +52,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -62,7 +62,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -72,7 +72,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -82,7 +82,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` tol
 
 the required accuracy of the roots
 
@@ -92,7 +92,7 @@ the required accuracy of the roots
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` zero_coef
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` zero_coef
 
 any coefficient smaller in absolute value than zero_coef will be regarde to be zero
 
@@ -102,7 +102,7 @@ any coefficient smaller in absolute value than zero_coef will be regarde to be z
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` zero_f
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` zero_f
 
 any value of the polynomial smaller in absolute value than zero_f will be regarded as giving a root
 

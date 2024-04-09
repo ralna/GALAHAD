@@ -13,7 +13,7 @@
    INTEGER ( KIND = ip_ ) :: iter, fail, method, mem
    REAL ( KIND = rp_ ) :: delta, lambda
    TYPE ( RAND_seed ) :: seed
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
    REAL ( KIND = sp_ ) :: error_tol = 1.0_sp_
 #else
    REAL ( KIND = dp_ ) :: error_tol = 0.00001_dp_

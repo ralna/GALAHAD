@@ -19,8 +19,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -30,19 +31,19 @@ overview of functions provided
 	// global functions
 
 	void :ref:`roots_initialize<doxid-galahad__roots_8h_1ac504c30e3b55ef425516ad7cf1638a76>`(
-		void** data,
+		void **data,
 		struct :ref:`roots_control_type<doxid-structroots__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`roots_information<doxid-galahad__roots_8h_1ac63ef195952ae821d6966a8f25ac2513>`(
-		void** data,
+		void **data,
 		struct :ref:`roots_inform_type<doxid-structroots__inform__type>`* inform,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`roots_terminate<doxid-galahad__roots_8h_1a4e81f4ac6c1119dfeb3a81729c3ec997>`(
-		void** data,
+		void **data,
 		struct :ref:`roots_control_type<doxid-structroots__control__type>`* control,
 		struct :ref:`roots_inform_type<doxid-structroots__inform__type>`* inform
 	);
@@ -52,25 +53,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -82,9 +95,9 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void roots_initialize(
-		void** data,
+		void **data,
 		struct :ref:`roots_control_type<doxid-structroots__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Set default control values and initialize private data
@@ -110,7 +123,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -122,9 +135,9 @@ Set default control values and initialize private data
 	:class: doxyrest-title-code-block
 
 	void roots_information(
-		void** data,
+		void **data,
 		struct :ref:`roots_inform_type<doxid-structroots__inform__type>`* inform,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Provides output information
@@ -148,7 +161,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -160,7 +173,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void roots_terminate(
-		void** data,
+		void **data,
 		struct :ref:`roots_control_type<doxid-structroots__control__type>`* control,
 		struct :ref:`roots_inform_type<doxid-structroots__inform__type>`* inform
 	)

@@ -2,14 +2,14 @@
  *  \copyright 2024 GALAHAD productions
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Nick Gould
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 10:30 GMT
+ *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:30 GMT
  */
 
 #include <stdint.h>
 
 /* real precision employed */
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 typedef float rpc_;
 #else
 typedef double rpc_;

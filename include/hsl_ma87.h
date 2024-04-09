@@ -1,12 +1,10 @@
-//* \file hsl_ma87.h */
-
 /*
+ * THIS VERSION: HSL Subset 1.0 - 2024-02-17 AT 15:40 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 25 Feburary 2011
  * All rights reserved
  *
  * Written by: Jonathan Hogg
- * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MA87 package
@@ -40,18 +38,59 @@
  *
  */
 
-#ifdef __cplusplus
-extern "C" {
+#ifndef HSL_MA87D_H
+#define HSL_MA87D_H
+
+/* precision */
+#include "hsl_precision.h"
+
+#ifndef ma87_default_control
+#ifdef SINGLE
+#ifdef INTEGER_64
+#define ma87_control ma87_control_s_64
+#define ma87_info ma87_info_s_64
+#define ma87_default_control ma87_default_control_s_64
+#define ma87_analyse ma87_analyse_s_64
+#define ma87_factor ma87_factor_s_64
+#define ma87_factor_solve ma87_factor_solve_s_64
+#define ma87_solve ma87_solve_s_64
+#define ma87_sparse_fwd_solve ma87_sparse_fwd_solve_s_64
+#define ma87_finalise ma87_finalise_s_64
 #else
-#include <stdbool.h>
+#define ma87_control ma87_control_s
+#define ma87_info ma87_info_s
+#define ma87_default_control ma87_default_control_s
+#define ma87_analyse ma87_analyse_s
+#define ma87_factor ma87_factor_s
+#define ma87_factor_solve ma87_factor_solve_s
+#define ma87_solve ma87_solve_s
+#define ma87_sparse_fwd_solve ma87_sparse_fwd_solve_s
+#define ma87_finalise ma87_finalise_s
 #endif
-
-// include guard
-#ifndef HSL_MA87_H
-#define HSL_MA87_H
-
-// precision
-#include "galahad_precision.h"
+#else
+#ifdef INTEGER_64
+#define ma87_control ma87_control_d_64
+#define ma87_info ma87_info_d_64
+#define ma87_default_control ma87_default_control_d_64
+#define ma87_analyse ma87_analyse_d_64
+#define ma87_factor ma87_factor_d_64
+#define ma87_factor_solve ma87_factor_solve_d_64
+#define ma87_solve ma87_solve_d_64
+#define ma87_sparse_fwd_solve ma87_sparse_fwd_solve_d_64
+#define ma87_finalise ma87_finalise_d_64
+#else
+#define ma87_control ma87_control_d
+#define ma87_info ma87_info_d
+#define ma87_default_control ma87_default_control_d
+#define ma87_analyse ma87_analyse_d
+#define ma87_factor ma87_factor_d
+#define ma87_factor_solve ma87_factor_solve_d
+#define ma87_solve ma87_solve_d
+#define ma87_sparse_fwd_solve ma87_sparse_fwd_solve_d
+#define ma87_finalise ma87_finalise_d
+#endif
+#endif
+#endif
 
 /* Data type for user controls */
 struct ma87_control {
@@ -94,11 +133,11 @@ struct ma87_control {
 
 /* data type for returning information to user.*/
 struct ma87_info {
-   rpc_ detlog;     /* Holds logarithm of abs det A (or 0) */
+   rpc_ detlog;         /* Holds logarithm of abs det A (or 0) */
    ipc_ flag;           /* Error return flag (0 on success) */
    ipc_ maxdepth;       /* Maximum depth of the tree. */
-   long num_factor;     /* Number of entries in the factor. */
-   long num_flops;      /* Number of flops for factor. */
+   int64_t num_factor;  /* Number of entries in the factor. */
+   int64_t num_flops;   /* Number of flops for factor. */
    ipc_ num_nodes;      /* Number of nodes in factors */
    ipc_ pool_size;      /* Maximum size of task pool used */
    ipc_ stat;           /* STAT value on error return -1. */
@@ -107,8 +146,31 @@ struct ma87_info {
    char unused[40];
 };
 
-#endif
+/* Initialise control with default values */
+void ma87_default_control(struct ma87_control *control);
+/* Analyse the sparsity pattern and prepare for factorization */
+void ma87_analyse(const ipc_ n, const ipc_ ptr[], const ipc_ row[], 
+      ipc_ order[], void **keep, const struct ma87_control *control,
+      struct ma87_info *info);
+/* To factorize the matrix */
+void ma87_factor(const ipc_ n, const ipc_ ptr[], const ipc_ row[],
+      const rpc_ val[], const ipc_ order[], void **keep,
+      const struct ma87_control *control, struct ma87_info *info);
+/* To factorize the matrix AND solve AX = B */
+void ma87_factor_solve(const ipc_ n, const ipc_ ptr[], const ipc_ row[],
+      const rpc_ val[], const ipc_ order[], void **keep,
+      const struct ma87_control *control, struct ma87_info *info,
+      const ipc_ nrhs, const ipc_ ldx, rpc_ x[]);
+/* To solve AX = B using the computed factors */
+void ma87_solve(const ipc_ job, const ipc_ nrhs, const ipc_ ldx,
+      rpc_ *x, const ipc_ order[], void **keep,
+      const struct ma87_control *control, struct ma87_info *info);
+/* To solve Ax = b for sparse b using the computed factors */
+void ma87_sparse_fwd_solve(const ipc_ nbi, ipc_ bindex[],
+      const rpc_ b[], const ipc_ order[], const ipc_ invp[],
+      ipc_ *nxi, ipc_ index[], rpc_ x[],  rpc_ *w, void **keep,
+      const struct ma87_control *control, struct ma87_info *info);
+/* To clean up memory in keep */
+void ma87_finalise(void **keep, const struct ma87_control *control);
 
-#ifdef __cplusplus
-} /* extern "C" */
 #endif

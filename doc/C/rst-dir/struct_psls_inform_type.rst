@@ -15,29 +15,29 @@ psls_inform_type structure
 	struct psls_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structpsls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structpsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		int :ref:`analyse_status<doxid-structpsls__inform__type_1ae38019a70cc3dffa90bd881451c6cf1b>`;
-		int :ref:`factorize_status<doxid-structpsls__inform__type_1a08c6a015b4a7616dffae6ab4972af1ab>`;
-		int :ref:`solve_status<doxid-structpsls__inform__type_1aaab916515d75c0f3abbc4a250381708b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structpsls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structpsls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`analyse_status<doxid-structpsls__inform__type_1ae38019a70cc3dffa90bd881451c6cf1b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorize_status<doxid-structpsls__inform__type_1a08c6a015b4a7616dffae6ab4972af1ab>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`solve_status<doxid-structpsls__inform__type_1aaab916515d75c0f3abbc4a250381708b>`;
 		int64_t :ref:`factorization_integer<doxid-structpsls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
 		int64_t :ref:`factorization_real<doxid-structpsls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		int :ref:`preconditioner<doxid-structpsls__inform__type_1adf7719f1a4491459e361e80a00c55656>`;
-		int :ref:`semi_bandwidth<doxid-structpsls__inform__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		int :ref:`reordered_semi_bandwidth<doxid-structpsls__inform__type_1a626e2d4fb989dd770239efa3be051e0a>`;
-		int :ref:`out_of_range<doxid-structpsls__inform__type_1a8daa2a776cae6116e9f14e2b009430a5>`;
-		int :ref:`duplicates<doxid-structpsls__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446>`;
-		int :ref:`upper<doxid-structpsls__inform__type_1a0a1a19aadb8cf4f2b05d37a8798b667c>`;
-		int :ref:`missing_diagonals<doxid-structpsls__inform__type_1a8d33160feb6e388439a1d38641b00b3d>`;
-		int :ref:`semi_bandwidth_used<doxid-structpsls__inform__type_1a981530ec3c99dba9d28c74cdacca6bbf>`;
-		int :ref:`neg1<doxid-structpsls__inform__type_1ac7c6e49ad4048d11de36fcc4ce540aba>`;
-		int :ref:`neg2<doxid-structpsls__inform__type_1a8fe93b02eb981bd3300337dee7835d86>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`preconditioner<doxid-structpsls__inform__type_1adf7719f1a4491459e361e80a00c55656>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structpsls__inform__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`reordered_semi_bandwidth<doxid-structpsls__inform__type_1a626e2d4fb989dd770239efa3be051e0a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out_of_range<doxid-structpsls__inform__type_1a8daa2a776cae6116e9f14e2b009430a5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`duplicates<doxid-structpsls__inform__type_1a4266bf48aafe2914b08e60d6ef9cf446>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`upper<doxid-structpsls__inform__type_1a0a1a19aadb8cf4f2b05d37a8798b667c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`missing_diagonals<doxid-structpsls__inform__type_1a8d33160feb6e388439a1d38641b00b3d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth_used<doxid-structpsls__inform__type_1a981530ec3c99dba9d28c74cdacca6bbf>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`neg1<doxid-structpsls__inform__type_1ac7c6e49ad4048d11de36fcc4ce540aba>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`neg2<doxid-structpsls__inform__type_1a8fe93b02eb981bd3300337dee7835d86>`;
 		bool :ref:`perturbed<doxid-structpsls__inform__type_1a6e04ee4d6dc38d2c5231d39d4f21be75>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`fill_in_ratio<doxid-structpsls__inform__type_1a255e78721c3559caab816b9e6e72a6d4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_residual<doxid-structpsls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`fill_in_ratio<doxid-structpsls__inform__type_1a255e78721c3559caab816b9e6e72a6d4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_residual<doxid-structpsls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
 		char :ref:`bad_alloc<doxid-structpsls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`mc61_info<doxid-structpsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8>`[10];
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`mc61_rinfo<doxid-structpsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f>`[15];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mc61_info<doxid-structpsls__inform__type_1ad29411cd0e18c59e43b474314a2adbe8>`[10];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`mc61_rinfo<doxid-structpsls__inform__type_1a6966776cf11a3b9c447f7a1c9621152f>`[15];
 		struct :ref:`psls_time_type<doxid-structpsls__time__type>` :ref:`time<doxid-structpsls__inform__type_1a4e85e8fc22799defca71ba5c448216ed>`;
 		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structpsls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
 		struct :ref:`mi28_info<doxid-structmi28__info>` :ref:`mi28_info<doxid-structpsls__inform__type_1aa5913427f989eb08152b78bf6390c0b9>`;
@@ -58,7 +58,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 reported return status:
 
@@ -84,7 +84,7 @@ reported return status:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 STAT value after allocate failure.
 
@@ -94,7 +94,7 @@ STAT value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int analyse_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` analyse_status
 
 status return from factorization
 
@@ -104,7 +104,7 @@ status return from factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorize_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorize_status
 
 status return from factorization
 
@@ -114,7 +114,7 @@ status return from factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int solve_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` solve_status
 
 status return from solution phase
 
@@ -144,7 +144,7 @@ number of real words to hold factors
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int preconditioner
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` preconditioner
 
 code for the actual preconditioner used (see control.preconditioner)
 
@@ -154,7 +154,7 @@ code for the actual preconditioner used (see control.preconditioner)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int semi_bandwidth
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` semi_bandwidth
 
 the actual semi-bandwidth
 
@@ -164,7 +164,7 @@ the actual semi-bandwidth
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int reordered_semi_bandwidth
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` reordered_semi_bandwidth
 
 the semi-bandwidth following reordering (if any)
 
@@ -174,7 +174,7 @@ the semi-bandwidth following reordering (if any)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out_of_range
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out_of_range
 
 number of indices out-of-range
 
@@ -184,7 +184,7 @@ number of indices out-of-range
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int duplicates
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` duplicates
 
 number of duplicates
 
@@ -194,7 +194,7 @@ number of duplicates
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int upper
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` upper
 
 number of entries from the strict upper triangle
 
@@ -204,7 +204,7 @@ number of entries from the strict upper triangle
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int missing_diagonals
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` missing_diagonals
 
 number of missing diagonal entries for an allegedly-definite matrix
 
@@ -214,7 +214,7 @@ number of missing diagonal entries for an allegedly-definite matrix
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int semi_bandwidth_used
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` semi_bandwidth_used
 
 the semi-bandwidth used
 
@@ -224,7 +224,7 @@ the semi-bandwidth used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int neg1
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` neg1
 
 number of 1 by 1 pivots in the factorization
 
@@ -234,7 +234,7 @@ number of 1 by 1 pivots in the factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int neg2
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` neg2
 
 number of 2 by 2 pivots in the factorization
 
@@ -254,7 +254,7 @@ has the preconditioner been perturbed during the fctorization?
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` fill_in_ratio
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` fill_in_ratio
 
 ratio of fill in to original nonzeros
 
@@ -264,7 +264,7 @@ ratio of fill in to original nonzeros
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_residual
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_residual
 
 the norm of the solution residual
 
@@ -284,7 +284,7 @@ name of array which provoked an allocate failure
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int mc61_info[10]
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` mc61_info[10]
 
 the integer and real output arrays from mc61
 
@@ -294,7 +294,7 @@ the integer and real output arrays from mc61
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` mc61_rinfo[15]
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` mc61_rinfo[15]
 
 see mc61_info
 

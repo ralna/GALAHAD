@@ -16,8 +16,9 @@ overview of functions provided
 	
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -26,41 +27,41 @@ overview of functions provided
 
 	// function calls
 
-	void :ref:`sha_initialize<doxid-galahad__sha_8h_initialize>`(void** data, struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, int* status);
+	void :ref:`sha_initialize<doxid-galahad__sha_8h_initialize>`(void **data, struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`sha_read_specfile<doxid-galahad__sha_8h_read_specfile>`(struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, const char specfile[]);
 
 	void :ref:`sha_analyse_matrix<doxid-galahad__sha_8h_analyse_matrix>`(
 		struct :ref:`sha_control_type<doxid-structsha__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		const int row[],
-		const int col[],
-		int* m
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` col[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m
 	);
 
 	void :ref:`sha_recover_matrix<doxid-galahad__sha_8h_recover_matrix>`(
-		void** data,
-		int* status,
-		int ne,
-		int m,
-		int ls1,
-		int ls2,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ls1,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ls2,
                 const real_wp_ strans[][ls2],
-                int ly1,
-                int ly2,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ly1,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ly2,
                 const real_wp_ ytrans[][ly2],
                 real_wp_ val[],
-                const int order[]
+                const :ref:`ipc_<doxid-galahad__ipc_8h_>` order[]
 	);
 
 
-	void :ref:`sha_information<doxid-galahad__sha_8h_information>`(void** data, struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, int* status);
+	void :ref:`sha_information<doxid-galahad__sha_8h_information>`(void **data, struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`sha_terminate<doxid-galahad__sha_8h_terminate>`(
-		void** data,
+		void **data,
 		struct :ref:`sha_control_type<doxid-structsha__control__type>`* control,
 		struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform
 	);
@@ -71,25 +72,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -100,7 +113,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void sha_initialize(void** data, struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, int* status)
+	void sha_initialize(void **data, struct :ref:`sha_control_type<doxid-structsha__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -125,7 +138,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 		  
@@ -178,13 +191,13 @@ relate to the components of the control structure.
 
 	void sha_analyse_matrix(
 		struct :ref:`sha_control_type<doxid-structsha__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		const int row[],
-		const int col[],
-		int* m
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` col[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m
 	)
 
 Analsyse the sparsity structure of $H$ to generate information that will be 
@@ -212,7 +225,7 @@ used when estimating its values.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are:
 		  
 		  * **0**
@@ -242,21 +255,21 @@ used when estimating its values.
 		- n
 
 		-
-		  is a scalar variable of type int, that holds the
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
 		  number of variables
 
 	*
 		- ne
 
 		-
-		  is a scalar variable of type int, that holds the
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
 		  number of entries in the upper triangular part of $H$.
 
 	*
 		- row
 
 		-
-		  is a one-dimensional array of size ne and type int,
+		  is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`,
 		  that holds the row indices of the upper triangular
 		  part of $H$.
 
@@ -264,7 +277,7 @@ used when estimating its values.
 		- col
 
 		-
-		  is a one-dimensional array of size ne and type int,
+		  is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`,
 		  that holds the column indices of the upper triangular
 		  part of $H$.
 
@@ -272,7 +285,7 @@ used when estimating its values.
 		- m
 
 		-
-		  is a scalar variable of type int, that gives the
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the
 		  minimum number of $(s^{(k)},y^{(k)})$ pairs that will
 		  be needed to recover a good Hessian approximation.
 
@@ -283,18 +296,18 @@ used when estimating its values.
 	:class: doxyrest-title-code-block
 
 	void sha_recover_matrix(
-		void** data,
-		int* status,
-                int ne,
-                int m_available,
-                int ls1,
-                int ls2,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` m_available,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ls1,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ls2,
                 const real_wp_ strans[][ls2],
-                int ly1,
-                int ly2,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ly1,
+                :ref:`ipc_<doxid-galahad__ipc_8h_>` ly2,
                 const real_wp_ ytrans[][ly2],
                 real_wp_ val[],
-                const int order[]
+                const :ref:`ipc_<doxid-galahad__ipc_8h_>` order[]
 	)
 
 
@@ -315,7 +328,7 @@ approximation.
 		- status
 
 		-
-		  is a scalar variable of type int, that gives the exit
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are:
 		  
 		  * **0**
@@ -345,14 +358,14 @@ approximation.
 		- ne
 
 		- 
-                  is a scalar variable of type int, that holds the number 
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number 
                   of entries in the upper triangular part of $H$.
 
 	*
 		- m_available
 
 		- 
-                  is a scalar variable of type int, that holds the
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   number of differences provided. Ideally this will be
                   as large as m as reported by sha_analyse_matrix, but
                   better still there should be a further
@@ -363,14 +376,14 @@ approximation.
 		- ls1
 
 		- 
-                  is a scalar variable of type int, that holds the
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   leading (first) dimension of the array strans.
 
 	*
 		- ls2
 
 		- 
-                  is a scalar variable of type int, that holds the
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   trailing (second) dimension of the array strans.
 
 	*
@@ -378,21 +391,21 @@ approximation.
 
 		- 
                   is a two-dimensional array of size [ls1][ls2] and type
-                  double, that holds the values of the vectors $\{s^{(k) T}\}$.
+                  :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the vectors $\{s^{(k) T}\}$.
                   Component [$k$][$i$] should hold $s_i^{(k)}$.
 
 	*
 		- ly1
 
 		- 
-                  is a scalar variable of type int, that holds the
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   leading (first) dimension of the array ytrans.
 
 	*
 		- ly2
 
 		- 
-                  is a scalar variable of type int, that holds the
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   trailing (second) dimension of the array ytrans.
 
 	*
@@ -400,14 +413,14 @@ approximation.
 
 		- 
                   is a two-dimensional array of size [ly1][ly2] and type
-                  double, that holds the values of the vectors $\{y^{(k) T}\}$.
+                  :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the vectors $\{y^{(k) T}\}$.
                   Component [$k$][$i$] should hold $y_i^{(k)}$.
 
 	*
 		- val
 
 		- 
-                  is a one-dimensional array of size ne and type double,
+                  is a one-dimensional array of size ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`,
                   that holds the values of the entries of the upper
                   triangular part of the symmetric matrix $H$ in the
                   sparse coordinate scheme.
@@ -416,7 +429,7 @@ approximation.
 		- order
 
 		- 
-                  is a one-dimensional array of size m and type int,
+                  is a one-dimensional array of size m and type :ref:`ipc_<doxid-galahad__ipc_8h_>`,
                   that holds the preferred order of access for the pairs
                   $\{(s^{(k)},y^{(k)})\}$. The $k$-th component of
                   order specifies the row number of strans and
@@ -431,7 +444,7 @@ approximation.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void sha_information(void** data, struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, int* status)
+	void sha_information(void **data, struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -456,7 +469,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are
 		  (currently):
 		  
@@ -470,7 +483,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void sha_terminate(
-		void** data,
+		void **data,
 		struct :ref:`sha_control_type<doxid-structsha__control__type>`* control,
 		struct :ref:`sha_inform_type<doxid-structsha__inform__type>`* inform
 	)

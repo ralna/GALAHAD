@@ -63,9 +63,11 @@ example calls
 This is an example of how to use the package to minimize a univariate function;
 the code is available in $GALAHAD/src/ugo/C/ugot.c .
 
-The floating-point type ``real_wp_``
+The floating-point type ``rpc_``
 is set in ``galahad_precision.h`` to ``double`` by default, but to ``float``
-if the preproccesor variable ``GALAHAD_SINGLE`` is defined.
+if the preprocessor variable ``SINGLE`` is defined. Similarly, the integer
+type ``ipc_`` from ``galahad_precision.h`` is set to ``int`` by default, 
+but to ``int64_t`` if the preprocessor variable ``INTEGER_64`` is defined.
 
 .. include :: ../../../src/ugo/C/ugot.c
    :code: C

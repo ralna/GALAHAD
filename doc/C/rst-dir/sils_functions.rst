@@ -23,8 +23,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -36,9 +37,9 @@ overview of functions provided
 	// global functions
 
 	void :ref:`sils_initialize<doxid-galahad__sils_8h_1adfa46fc519194d9acfbeccac4c5a1af3>`(
-		void** data,
+		void **data,
 		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`sils_read_specfile<doxid-galahad__sils_8h_1a12447d25d91610c87b4c8ce7744aefd7>`(
@@ -46,48 +47,60 @@ overview of functions provided
 		const char specfile[]
 	);
 
-	void :ref:`sils_import<doxid-galahad__sils_8h_1a78d5647031a8a4522541064853b021ba>`(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void** data, int* status);
+	void :ref:`sils_import<doxid-galahad__sils_8h_1a78d5647031a8a4522541064853b021ba>`(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`sils_reset_control<doxid-galahad__sils_8h_1a34e5304b29c89525543cd512f426ac4f>`(
 		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`sils_information<doxid-galahad__sils_8h_1a27320b6d18c7508283cfb19dc8fecf37>`(
-		void** data,
+		void **data,
 		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>`* ainfo,
 		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>`* finfo,
 		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>`* sinfo,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
-	void :ref:`sils_finalize<doxid-galahad__sils_8h_1aa862612cd37fce35b1d35bd6ad295d82>`(void** data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status);
+	void :ref:`sils_finalize<doxid-galahad__sils_8h_1aa862612cd37fce35b1d35bd6ad295d82>`(void **data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 .. _details-global:
 
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -99,9 +112,9 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void sils_initialize(
-		void** data,
+		void **data,
 		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Set default control values and initialize private data
@@ -127,7 +140,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -174,7 +187,7 @@ relate to the components of the control structure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void sils_import(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void** data, int* status)
+	void sils_import(struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Import problem data into internal storage prior to solution.
 
@@ -199,7 +212,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -235,8 +248,8 @@ Import problem data into internal storage prior to solution.
 
 	void sils_reset_control(
 		struct :ref:`sils_control_type<doxid-structsils__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -262,7 +275,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -275,11 +288,11 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void sils_information(
-		void** data,
+		void **data,
 		struct :ref:`sils_ainfo_type<doxid-structsils__ainfo__type>`* ainfo,
 		struct :ref:`sils_finfo_type<doxid-structsils__finfo__type>`* finfo,
 		struct :ref:`sils_sinfo_type<doxid-structsils__sinfo__type>`* sinfo,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Provides output information
@@ -315,7 +328,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -326,7 +339,7 @@ Provides output information
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void sils_finalize(void** data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, int* status)
+	void sils_finalize(void **data, struct :ref:`sils_control_type<doxid-structsils__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Deallocate all internal private storage
 
@@ -351,7 +364,7 @@ Deallocate all internal private storage
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully

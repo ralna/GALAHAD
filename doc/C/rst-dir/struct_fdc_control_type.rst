@@ -16,14 +16,14 @@ fdc_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structfdc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structfdc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structfdc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structfdc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`indmin<doxid-structfdc__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		int :ref:`valmin<doxid-structfdc__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`pivot_tol<doxid-structfdc__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`zero_pivot<doxid-structfdc__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`max_infeas<doxid-structfdc__control__type_1af32ec1d3b9134c1d7187455c7039dbb1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structfdc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structfdc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structfdc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`indmin<doxid-structfdc__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`valmin<doxid-structfdc__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pivot_tol<doxid-structfdc__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_pivot<doxid-structfdc__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_infeas<doxid-structfdc__control__type_1af32ec1d3b9134c1d7187455c7039dbb1>`;
 		bool :ref:`use_sls<doxid-structfdc__control__type_1af0bcd3e9e1917e2e44bb139c9df57e30>`;
 		bool :ref:`scale<doxid-structfdc__control__type_1aff7a60d3f21b50f4ad18e40d99d33a61>`;
 		bool :ref:`space_critical<doxid-structfdc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
@@ -60,7 +60,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -70,7 +70,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -80,7 +80,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -90,7 +90,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int indmin
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` indmin
 
 initial estimate of integer workspace for sls (obsolete)
 
@@ -100,7 +100,7 @@ initial estimate of integer workspace for sls (obsolete)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int valmin
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` valmin
 
 initial estimate of real workspace for sls (obsolete)
 
@@ -110,7 +110,7 @@ initial estimate of real workspace for sls (obsolete)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` pivot_tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` pivot_tol
 
 the relative pivot tolerance (obsolete)
 
@@ -120,7 +120,7 @@ the relative pivot tolerance (obsolete)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` zero_pivot
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` zero_pivot
 
 the absolute pivot tolerance used (obsolete)
 
@@ -130,7 +130,7 @@ the absolute pivot tolerance used (obsolete)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` max_infeas
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` max_infeas
 
 the largest permitted residual
 

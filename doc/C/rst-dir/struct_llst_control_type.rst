@@ -16,17 +16,17 @@ llst_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structllst__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structllst__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structllst__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structllst__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`new_a<doxid-structllst__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		int :ref:`new_s<doxid-structllst__control__type_1a2b6594b40a418a477a825143c48da0e9>`;
-		int :ref:`max_factorizations<doxid-structllst__control__type_1a49cdbb7627ab58da229da6ccb3034bb7>`;
-		int :ref:`taylor_max_degree<doxid-structllst__control__type_1a338fa3956816be173e13bfd4198c4078>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`initial_multiplier<doxid-structllst__control__type_1ae8d08df3ba4988681cb5f7c33a20f287>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`lower<doxid-structllst__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`upper<doxid-structllst__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_normal<doxid-structllst__control__type_1a3573530258a38cc836b106b9f7a54565>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structllst__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structllst__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structllst__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_a<doxid-structllst__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_s<doxid-structllst__control__type_1a2b6594b40a418a477a825143c48da0e9>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_factorizations<doxid-structllst__control__type_1a49cdbb7627ab58da229da6ccb3034bb7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`taylor_max_degree<doxid-structllst__control__type_1a338fa3956816be173e13bfd4198c4078>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`initial_multiplier<doxid-structllst__control__type_1ae8d08df3ba4988681cb5f7c33a20f287>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lower<doxid-structllst__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`upper<doxid-structllst__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_normal<doxid-structllst__control__type_1a3573530258a38cc836b106b9f7a54565>`;
 		bool :ref:`equality_problem<doxid-structllst__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb>`;
 		bool :ref:`use_initial_multiplier<doxid-structllst__control__type_1a4d2667d00744ca0f4cc3a2e19bfaae17>`;
 		bool :ref:`space_critical<doxid-structllst__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
@@ -63,7 +63,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -73,7 +73,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -83,7 +83,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -93,7 +93,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_a
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_a
 
 how much of $A$ has changed since the previous call. Possible values are
 
@@ -109,7 +109,7 @@ how much of $A$ has changed since the previous call. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_s
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_s
 
 how much of $S$ has changed since the previous call. Possible values are
 
@@ -125,7 +125,7 @@ how much of $S$ has changed since the previous call. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_factorizations
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_factorizations
 
 the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 
@@ -135,7 +135,7 @@ the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int taylor_max_degree
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` taylor_max_degree
 
 maximum degree of Taylor approximant allowed (<= 3)
 
@@ -145,7 +145,7 @@ maximum degree of Taylor approximant allowed (<= 3)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` initial_multiplier
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` initial_multiplier
 
 initial estimate of the Lagrange multipler
 
@@ -155,7 +155,7 @@ initial estimate of the Lagrange multipler
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` lower
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` lower
 
 lower and upper bounds on the multiplier, if known
 
@@ -165,7 +165,7 @@ lower and upper bounds on the multiplier, if known
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` upper
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` upper
 
 see lower
 
@@ -175,7 +175,7 @@ see lower
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_normal
 
 stop when $| \|x\| -$ radius $| \leq$ max( stop_normal \* max( 1, radius )
 

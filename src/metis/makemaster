@@ -1,0 +1,96 @@
+#  Makefile stub for nodend components of metis (including the required GKlib)
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2024-03-24
+
+#  include standard HSL subset makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+.SUFFIXES:
+.SUFFIXES: .c .o .h _64.o
+
+# Gklib and metis procedures used
+
+SRC =  memory.c random.c error.c timers.c mcore.c fs.c io.c string.c \
+       timing.c fortran.c wspace.c debug.c options.c contig.c graph.c \
+       checkgraph.c compress.c bucketsort.c initpart.c mincover.c \
+       separator.c refine.c srefine.c balance.c fm.c sfm.c kwayrefine.c \
+       kwayfm.c mcutil.c coarsen.c minconn.c util.c mmd.c gklib.c \
+       auxapi.c ometis.c
+
+TEST=test_nodend.c
+
+OBJFILE = $(SRC:.c=.o)
+OBJFILE64 = $(SRC:.c=_64.o)
+TESTOBJ = $(TEST:.c=.o)
+TESTOBJ64 = $(TEST:.c=_64.o)
+
+all: build$(HSL_64)
+	@printf ' %-21s\n' "MeTiS procedures ($(PRECIS) $(SUCC)"
+build: $(LM)($(OBJFILE)) $(LG)(adapter.o) $(LG)(metis.o)
+build_64: $(LM64)($(OBJFILE64)) $(LG)(adapter_64.o) $(LG)(metis_64.o)
+
+$(LM)($(OBJFILE)): $(SRC)
+	@printf ' %-9s %-15s\t\t' "Compiling" $*
+	@$(CC) $(CFLAGS) $*.c -o $*.o
+	@$(AR) $(ARREPFLAGS) $@ $*.o
+	@$(RM) $*.o
+	@printf '[ OK ]\n'
+
+$(LM64)($(OBJFILE64)): $(SRC)
+	@printf ' %-9s %-15s\t\t' "Compiling" $(*:_64=)
+	@$(CC) $(CFLAGS) $(*:_64=.c) -o $*.o
+	@$(AR) $(ARREPFLAGS) $@ $*.o
+	@$(RM) $*.o
+	@printf '[ OK ]\n'
+
+$(LG)(metis.o): metis.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis"
+	$(FORTRAN) -o metis.o $(FFLAGS) metis.f90
+	$(ARR) metis.o
+	$(RM) metis.o
+	@printf '[ OK ]\n'
+
+$(LG)(metis_64.o): metis.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis"
+	$(FORTRAN) -o metis_64.o $(FFLAGS) metis.f90
+	$(ARR) metis_64.o
+	$(RM) metis_64.o
+	@printf '[ OK ]\n'
+
+$(LG)(adapter.o): adapter.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "adapter"
+	$(CC) -o adapter.o $(CFLAGS) adapter.c
+	$(ARR) adapter.o
+	$(RM) adapter.o
+	@printf '[ OK ]\n'
+
+$(LG)(adapter_64.o): adapter.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "adapter"
+	$(CC) -o adapter_64.o $(CFLAGS) adapter.c
+	$(ARR) adapter_64.o
+	$(RM) adapter_64.o
+	@printf '[ OK ]\n'
+
+testall: test$(HSL_64)
+
+test: $(LM)($(OBJFILE))
+	@echo [Run test]
+	@$(CC) -c $(CFLAGS) $(TEST)
+	@$(CC) -o ./test_nodend $(TESTOBJ) -L .  -L $(OBJ) -lmetis_nodend -lm
+	@./test_nodend
+	@$(RM) ./test_nodend  $(TESTOBJ)
+
+test_64: $(LM64)($(OBJFILE64))
+	@echo [Run test 64]
+	@$(CC) -c $(CFLAGS) -o $(TESTOBJ64) $(TEST)
+	@$(CC) -o ./test_nodend $(TESTOBJ64) -L . -L $(OBJ) -lmetis64_nodend -lm
+	@./test_nodend
+	@$(RM) ./test_nodend  $(TESTOBJ64)
+
+cleanall:
+	@$(RM) $(OBJFILE) $(LM) $(OBJFILE64) $(LM64)
+
+clean:
+	@$(RM) $(OBJFILE) $(OBJFILE64)

@@ -16,13 +16,13 @@ slls_inform_type structure
 	struct slls_inform_type {
 		// components
 	
-		int :ref:`status<doxid-structslls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structslls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		int :ref:`factorization_status<doxid-structslls__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		int :ref:`iter<doxid-structslls__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		int :ref:`cg_iter<doxid-structslls__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structslls__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_pg<doxid-structslls__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structslls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structslls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_status<doxid-structslls__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structslls__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_iter<doxid-structslls__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structslls__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_pg<doxid-structslls__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
 		char :ref:`bad_alloc<doxid-structslls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`slls_time_type<doxid-structslls__time__type>` :ref:`time<doxid-structslls__inform__type_1ac8d53b198a1597a4a9fe75d4c1191ec0>`;
 		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structslls__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
@@ -44,7 +44,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 reported return status.
 
@@ -54,7 +54,7 @@ reported return status.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 Fortran STAT value after allocate failure.
 
@@ -64,7 +64,7 @@ Fortran STAT value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization_status
 
 status return from factorization
 
@@ -74,7 +74,7 @@ status return from factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iter
 
 number of iterations required
 
@@ -84,7 +84,7 @@ number of iterations required
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int cg_iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` cg_iter
 
 number of CG iterations required
 
@@ -94,7 +94,7 @@ number of CG iterations required
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
 current value of the objective function, r(x).
 
@@ -104,7 +104,7 @@ current value of the objective function, r(x).
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_pg
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_pg
 
 current value of the Euclidean norm of projected gradient of r(x).
 

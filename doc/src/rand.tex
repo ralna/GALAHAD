@@ -47,18 +47,22 @@ N. I. M. Gould and J. K. Reid, Rutherford Appleton Laboratory.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
+\hspace{8mm} {\tt USE \fullpackagename\_single}
 
 \medskip
-If it is required to use both modules at the same time, the derived type
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived type
 {\tt \packagename\_seed}
 (Section~\ref{galtypes})
 and the subroutines{\tt \packagename\_random\_real},
@@ -68,6 +72,10 @@ and {\tt \packagename\_set\_seed}
 (Section~\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
 Their seeds will be independent.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -146,7 +154,7 @@ A random integer value or values may be obtained as follows:
 \itt{seed} is a scalar \intentinout\ argument of derived type
 {\tt \packagename\_seed}  that holds the seed value.
 
-\ittf{n} is a scalar \intentin\ argument of type default \integer.
+\ittf{n} is a scalar \intentin\ argument of type \integer.
 It must be  set by the user to specify the upper bound for the range
 $1 \leq k \leq ${\tt n}  within which the generated random number(s) $k$
 is/are required to lie.

@@ -16,14 +16,14 @@ bgo_inform_type structure
 	struct bgo_inform_type {
 		// components
 	
-		int :ref:`status<doxid-structbgo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structbgo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structbgo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structbgo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structbgo__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`f_eval<doxid-structbgo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		int :ref:`g_eval<doxid-structbgo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		int :ref:`h_eval<doxid-structbgo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structbgo__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_pg<doxid-structbgo__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`f_eval<doxid-structbgo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`g_eval<doxid-structbgo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`h_eval<doxid-structbgo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structbgo__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_pg<doxid-structbgo__inform__type_1acb02a4d1ae275a55874bb9897262b1fe>`;
 		struct :ref:`bgo_time_type<doxid-structbgo__time__type>` :ref:`time<doxid-structbgo__inform__type_1a323c159d2e08628b6db82791b80a2f30>`;
 		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>` :ref:`ugo_inform<doxid-structbgo__inform__type_1a51109e95a1bf5edbca5d7d1279b5a554>`;
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>` :ref:`lhs_inform<doxid-structbgo__inform__type_1aa1305fc54f2639b2f4c39c629b39cd48>`;
@@ -45,7 +45,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See BGO_solve for details
 
@@ -55,7 +55,7 @@ return status. See BGO_solve for details
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -75,7 +75,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int f_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` f_eval
 
 the total number of evaluations of the objective function
 
@@ -85,7 +85,7 @@ the total number of evaluations of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int g_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` g_eval
 
 the total number of evaluations of the gradient of the objective function
 
@@ -95,7 +95,7 @@ the total number of evaluations of the gradient of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int h_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` h_eval
 
 the total number of evaluations of the Hessian of the objective function
 
@@ -105,7 +105,7 @@ the total number of evaluations of the Hessian of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
 the value of the objective function at the best estimate of the solution determined by BGO_solve
 
@@ -115,7 +115,7 @@ the value of the objective function at the best estimate of the solution determi
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_pg
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_pg
 
 the norm of the projected gradient of the objective function at the best estimate of the solution determined by BGO_solve
 

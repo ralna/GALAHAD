@@ -50,7 +50,7 @@
      IF ( status == - GALAHAD_error_ill_conditioned ) CYCLE
      IF ( status == - GALAHAD_error_tiny_step ) CYCLE
 !    IF ( status == - GALAHAD_error_max_iterations ) CYCLE
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
      IF ( status == - GALAHAD_error_cpu_limit ) CYCLE
 #else
 !    IF ( status == - GALAHAD_error_cpu_limit ) CYCLE

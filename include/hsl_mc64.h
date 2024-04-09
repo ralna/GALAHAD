@@ -1,13 +1,12 @@
-//* \file hsl_mc64.h */
-
 /*
+ * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 10:25 GMT
  * COPYRIGHT (c) 2012 Science and Technology Facilities Council
  * Original date 12 June 2012
  * All rights reserved
  *
  * Written by: Jonathan Hogg
- * Version 2.2.0
- * Modified by Nick Gould for GALAHAD use, 2022-01-15
+ *
+ * Version 2.4.3
  *
  * History: See ChangeLog
  *
@@ -42,18 +41,40 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef __cplusplus
-extern "C" {
+
+#ifndef HSL_MC64D_H
+#define HSL_MC64D_H
+
+/* precision */
+#include "hsl_precision.h"
+
+#ifndef mc64_default_control
+#ifdef SINGLE
+#ifdef INTEGER_64
+#define mc64_control mc64_control_s_64
+#define mc64_info mc64_info_s_64
+#define mc64_default_control mc64_default_control_s_64
+#define mc64_matching mc64_matching_s_64
 #else
-#include <stdbool.h>
+#define mc64_control mc64_control_s
+#define mc64_info mc64_info_s
+#define mc64_default_control mc64_default_control_s
+#define mc64_matching mc64_matching_s
 #endif
-
-// include guard
-#ifndef HSL_MC64_H
-#define HSL_MC64_H
-
-// precision
-#include "galahad_precision.h"
+#else
+#ifdef INTEGER_64
+#define mc64_control mc64_control_d_64
+#define mc64_info mc64_info_d_64
+#define mc64_default_control mc64_default_control_d_64
+#define mc64_matching mc64_matching_d_64
+#else
+#define mc64_control mc64_control_d
+#define mc64_info mc64_info_d
+#define mc64_default_control mc64_default_control_d
+#define mc64_matching mc64_matching_d
+#endif
+#endif
+#endif
 
 struct mc64_control {
    ipc_ f_arrays;
@@ -71,8 +92,12 @@ struct mc64_info {
    ipc_ stat;
 };
 
-#endif
+/* Set default values of control */
+void mc64_default_control(struct mc64_control *control);
+/* Find a matching, and (optionally) scaling */
+void mc64_matching(ipc_ job, ipc_ matrix_type, ipc_ m, ipc_ n, const ipc_ *ptr,
+   const ipc_ *row, const rpc_ *cval,
+   const struct mc64_control *control,
+   struct mc64_info *info, ipc_ *perm, rpc_ *scale);
 
-#ifdef __cplusplus
-} /* extern "C" */
 #endif

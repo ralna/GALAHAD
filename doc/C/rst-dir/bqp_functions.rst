@@ -18,8 +18,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -29,73 +30,73 @@ overview of functions provided
 
 	// function calls
 
-	void :ref:`bqp_initialize<doxid-galahad__bqp_8h_1a4466621895dd2314f1b3c21b4bc7f615>`(void** data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status);
+	void :ref:`bqp_initialize<doxid-galahad__bqp_8h_1a4466621895dd2314f1b3c21b4bc7f615>`(void **data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 	void :ref:`bqp_read_specfile<doxid-galahad__bqp_8h_1a0e3ffdd29be95753292694c7619a43e6>`(struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, const char specfile[]);
 
 	void :ref:`bqp_import<doxid-galahad__bqp_8h_1a0cfa65e832fd80e3dfcf9e0c65a69e56>`(
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[]
 	);
 
 	void :ref:`bqp_import_without_h<doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e>`(
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n
 	);
 
 	void :ref:`bqp_reset_control<doxid-galahad__bqp_8h_1a315ce83042f67a466cfdd868c27a2850>`(
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`bqp_solve_given_h<doxid-galahad__bqp_8h_1acb5ad644890efe38b7cf7048d6297308>`(
-		void** data,
-		int* status,
-		int n,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[]
 	);
 
 	void :ref:`bqp_solve_reverse_h_prod<doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755>`(
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` prod[],
-		int nz_v[],
-		int* nz_v_start,
-		int* nz_v_end,
-		const int nz_prod[],
-		int nz_prod_end
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` prod[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_v[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_start,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_end,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` nz_prod[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_prod_end
 	);
 
-	void :ref:`bqp_information<doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362>`(void** data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status);
+	void :ref:`bqp_information<doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362>`(void **data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`bqp_terminate<doxid-galahad__bqp_8h_1a34db499197d1fd6fb78b294473796fbc>`(
-		void** data,
+		void **data,
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
 		struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform
 	);
@@ -106,25 +107,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -135,7 +148,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void bqp_initialize(void** data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, int* status)
+	void bqp_initialize(void **data, struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -160,7 +173,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -205,14 +218,14 @@ to the components of the control structure.
 
 	void bqp_import(
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[]
 	)
 
 Import problem data into internal storage prior to solution.
@@ -236,7 +249,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -266,7 +279,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- H_type
@@ -276,22 +289,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
 
 .. index:: pair: function; bqp_import_without_h
 .. _doxid-galahad__bqp_8h_1a9a99d880b3bfbcfb7b093756019c5f0e:
@@ -301,9 +314,9 @@ Import problem data into internal storage prior to solution.
 
 	void bqp_import_without_h(
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n
 	)
 
 Import problem data into internal storage prior to solution.
@@ -329,7 +342,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -356,7 +369,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 .. index:: pair: function; bqp_reset_control
 .. _doxid-galahad__bqp_8h_1a315ce83042f67a466cfdd868c27a2850:
@@ -366,8 +379,8 @@ Import problem data into internal storage prior to solution.
 
 	void bqp_reset_control(
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -393,7 +406,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -406,18 +419,18 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void bqp_solve_given_h(
-		void** data,
-		int* status,
-		int n,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[]
 	)
 
 Solve the bound-constrained quadratic program when the Hessian $H$ is available.
@@ -438,7 +451,7 @@ Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -515,52 +528,52 @@ Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $f$ of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 .. index:: pair: function; bqp_solve_reverse_h_prod
 .. _doxid-galahad__bqp_8h_1a116b9b4ff28b9e2d18be0f0900ce2755:
@@ -569,23 +582,23 @@ Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 	:class: doxyrest-title-code-block
 
 	void bqp_solve_reverse_h_prod(
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[],
-		int x_stat[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` prod[],
-		int nz_v[],
-		int* nz_v_start,
-		int* nz_v_end,
-		const int nz_prod[],
-		int nz_prod_end
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` x_stat[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` prod[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_v[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_start,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nz_v_end,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` nz_prod[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` nz_prod_end
 	)
 
 Solve the bound-constrained quadratic program when the products of the Hessian $H$ with specified vectors may be computed by the calling program.
@@ -606,7 +619,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian $
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  Possible exit values are:
 		  
@@ -711,77 +724,77 @@ Solve the bound-constrained quadratic program when the products of the Hessian $
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $f$ of the objective function.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- x_stat
 
-		- is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
+		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable $x_j$ most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see status=2-4 above for details)
 
 	*
 		- prod
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see status=2-4 above for details)
 
 	*
 		- nz_v
 
-		- is a one-dimensional array of size n and type int, that is used for reverse communication (see status=3-4 above for details)
+		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=3-4 above for details)
 
 	*
 		- nz_v_start
 
-		- is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+		- is a scalar of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=3-4 above for details)
 
 	*
 		- nz_v_end
 
-		- is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+		- is a scalar of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=3-4 above for details)
 
 	*
 		- nz_prod
 
-		- is a one-dimensional array of size n and type int, that is used for reverse communication (see status=4 above for details)
+		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=4 above for details)
 
 	*
 		- nz_prod_end
 
-		- is a scalar of type int, that is used for reverse communication (see status=4 above for details)
+		- is a scalar of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=4 above for details)
 
 .. index:: pair: function; bqp_information
 .. _doxid-galahad__bqp_8h_1a75b662635f281148e9c19e12e0788362:
@@ -789,7 +802,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian $
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void bqp_information(void** data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, int* status)
+	void bqp_information(void **data, struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -814,7 +827,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -826,7 +839,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void bqp_terminate(
-		void** data,
+		void **data,
 		struct :ref:`bqp_control_type<doxid-structbqp__control__type>`* control,
 		struct :ref:`bqp_inform_type<doxid-structbqp__inform__type>`* inform
 	)

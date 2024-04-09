@@ -14,8 +14,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -26,46 +27,46 @@ overview of functions provided
 
 	void :ref:`uls_initialize<doxid-galahad__uls_8h_1a7afb5f2dde112e60686a5527a8f37ca4>`(
 		const char solver[],
-		void** data,
+		void **data,
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`uls_read_specfile<doxid-galahad__uls_8h_1a5e2c9573bc8661114e9f073782b460ef>`(struct :ref:`uls_control_type<doxid-structuls__control__type>`* control, const char specfile[]);
 
 	void :ref:`uls_factorize_matrix<doxid-galahad__uls_8h_1a6c0599479b84ee7d7c4ee7c473b76a83>`(
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status,
-		int m,
-		int n,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		const char type[],
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[],
-		const int row[],
-		const int col[],
-		const int ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` val[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` ptr[]
 	);
 
 	void :ref:`uls_reset_control<doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881>`(
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`uls_solve_system<doxid-galahad__uls_8h_1a01d3e7c19415125c660eba51d99c7518>`(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[],
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` sol[],
 		bool trans
 	);
 
-	void :ref:`uls_information<doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf>`(void** data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, int* status);
+	void :ref:`uls_information<doxid-galahad__uls_8h_1ab41cc4ccba208d7de3a0ccbc4b4efbcf>`(void **data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`uls_terminate<doxid-galahad__uls_8h_1a36b2ea1ade2cdd8bca238f46e9e98435>`(
-		void** data,
+		void **data,
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
 		struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform
 	);
@@ -75,25 +76,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -106,9 +119,9 @@ function calls
 
 	void uls_initialize(
 		const char solver[],
-		void** data,
+		void **data,
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Set default control values and initialize private data
@@ -141,7 +154,7 @@ Select solver, set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The initialization was successful.
@@ -189,16 +202,16 @@ components of the control structure.
 
 	void uls_factorize_matrix(
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status,
-		int m,
-		int n,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		const char type[],
-		int ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` val[],
-		const int row[],
-		const int col[],
-		const int ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` val[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` ptr[]
 	)
 
 Import matrix data into internal storage prior to solution, analyse the sparsity patern, and subsequently factorize the matrix
@@ -224,7 +237,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package.
 		  
 		  Possible values are:
 		  
@@ -274,12 +287,12 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of rows in the unsymmetric matrix $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of columns in the unsymmetric matrix $A$.
 
 	*
 		- type
@@ -289,27 +302,27 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the matrix $A$ in any of the supported storage schemes.
+		- is a one-dimensional array of size ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the matrix $A$ in any of the supported storage schemes.
 
 	*
 		- row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of the matrix $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the matrix $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage schemes is used, and in this case can be NULL.
 
 	*
 		- ptr
 
-		- is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size m+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the matrix $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; uls_reset_control
 .. _doxid-galahad__uls_8h_1ad2ad6daa4d54d75e40fbe253f2bc5881:
@@ -319,8 +332,8 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 
 	void uls_reset_control(
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -346,7 +359,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The import was successful.
@@ -358,11 +371,11 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void uls_solve_system(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` sol[],
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` sol[],
 		bool trans
 	)
 
@@ -384,7 +397,7 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package.
 		  
 		  Possible values are:
 		  
@@ -422,12 +435,12 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows in the unsymmetric matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of rows in the unsymmetric matrix $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns in the unsymmetric matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of columns in the unsymmetric matrix $A$.
 
 	*
 		- sol
@@ -445,7 +458,7 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void uls_information(void** data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, int* status)
+	void uls_information(void **data, struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -470,7 +483,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -482,7 +495,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void uls_terminate(
-		void** data,
+		void **data,
 		struct :ref:`uls_control_type<doxid-structuls__control__type>`* control,
 		struct :ref:`uls_inform_type<doxid-structuls__inform__type>`* inform
 	)

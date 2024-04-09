@@ -963,7 +963,7 @@
      CHARACTER ( len = 8 ) FUNCTION type_residual( residual )
      REAL ( KIND = rp_ ) :: residual
      REAL, PARAMETER :: ten = 10.0_rp_
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
      REAL, PARAMETER :: tiny = ten ** ( - 6 )
      REAL, PARAMETER :: small = ten ** ( - 3 )
      REAL, PARAMETER :: medium = ten ** ( - 2 )

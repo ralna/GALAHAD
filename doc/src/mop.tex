@@ -47,22 +47,26 @@ D. P. Robinson, University of Oxford, UK.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
-If it is required to use both modules at the same time, the derived
-type {\tt SMT\_type} (Section~\ref{typesmt}) and the subroutines {\tt
-  \packagename\_Ax}, {\tt \packagename\_getval}, and {\tt
-  \packagename\_scaleA} (Sections~\ref{Ax}, \ref{getval},
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
+{\tt SMT\_type} (Section~\ref{typesmt}) 
+and the subroutines 
+{\tt \packagename\_Ax}, {\tt \packagename\_getval}, and 
+{\tt \packagename\_scaleA} (Sections~\ref{Ax}, \ref{getval},
 \ref{scaleA}) must be renamed on one of the {\tt USE} statements.
 
 %%%%%%%%%%% Matrix Storage Formats %%%%%%%%%%%
@@ -128,6 +132,10 @@ If $\bmA$ is diagonal (i.e., $a_{ij} = 0$ for all $1 \leq i \neq j
 be stored, and the first $n$ components of the array {\tt A\%val}
 should be used for this purpose.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%% derived type for holding A %%%%%%%%%%%
 
 \subsection{The derived data type for holding the matrix $\bmA$}\label{typesmt}
@@ -136,13 +144,13 @@ whose components are:
 
 \begin{description}
 
-\ittf{m} is a scalar component of type default \integer, 
+\ittf{m} is a scalar component of type \integer, 
 that holds the number of rows in the matrix. 
  
-\ittf{n} is a scalar component of type default \integer, 
+\ittf{n} is a scalar component of type \integer, 
 that holds the number of columns in the matrix. 
  
-\ittf{ne} is a scalar variable of type default \integer, that
+\ittf{ne} is a scalar variable of type \integer, that
 holds the number of matrix entries.
 
 \ittf{type} is a rank-one allocatable array of type default \character, that
@@ -179,21 +187,21 @@ we may simply
 See the documentation for the \galahad\ package {\tt SMT} 
 for further details on the use of {\tt SMT\_put}. 
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+\ittf{val} is a rank-one allocatable array of type \realdp\, 
 and dimension at least {\tt ne}, that holds the values of the entries. 
 Each pair of off-diagonal entries $a_{ij} = a_{ji}$ of a {\em symmetric}
 matrix $\bmA$ is represented as a single entry 
 (see \S\ref{dense}--\ref{diagonal}).
 
-\ittf{row} is a rank-one allocatable array of type default \integer, 
+\ittf{row} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt ne}, that may hold the row indices of the entries 
 (see \S~\ref{coordinate} and \ref{columnwise}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer, 
+\ittf{col} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer.
+\ittf{ptr} is a rank-one allocatable array of type \integer.
 If sparse row-wise storage is used, then {\tt ptr} should be of
 dimension at least {\tt m + 1} and should contain pointers to the
 first entry in each row (see \S\ref{rowwise}). If sparse column-wise
@@ -236,13 +244,13 @@ by using
   \itt{R} is a rank-one \intentinout\ array of type \realdp\ that must
   contain the components of the vector $\bmr$. {\tt R} need not be set
   on entry if {\tt beta} is zero.
-  \ittf{out} is an \optional\ scalar \intentin\ argument of type default \integer, that holds the
+  \ittf{out} is an \optional\ scalar \intentin\ argument of type \integer, that holds the
      stream number for informational messages. If this argument is not
      provided, then the default value {\tt out = 6} is used.
-  \itt{error} is an \optional\ scalar \intentin\ argument of type default \integer, that holds the
+  \itt{error} is an \optional\ scalar \intentin\ argument of type \integer, that holds the
      stream number for error messages. If this argument is not
      provided, then the default value {\tt error = 6} is used.
-  \itt{print\_level} is an \optional\ scalar \intentin\ argument of type default \integer, that is used
+  \itt{print\_level} is an \optional\ scalar \intentin\ argument of type \integer, that is used
      to control the amount of informational output which is required. No 
      informational output will occur if {\tt print\_level} $\leq 0$. If 
      {\tt print\_level} $= 1$, minimal output will be produced and if
@@ -308,13 +316,13 @@ $(i,j)$-th element of the matrix $\bmA$ by using
      \logical\ that should be set \true\ if the matrix $\bmA$ is
      symmetric, and set \false\ otherwise.  If {\tt symmetric} is not
      provided, then the dafault value of \false\ is used. 
-  \ittf{out} is an \optional\ scalar \intentin\ argument of type default \integer, that holds the
+  \ittf{out} is an \optional\ scalar \intentin\ argument of type \integer, that holds the
      stream number for informational messages. If this argument is not
      provided, then the default value {\tt out = 6} is used.
-  \itt{error} is an \optional\ scalar \intentin\ argument of type default \integer, that holds the
+  \itt{error} is an \optional\ scalar \intentin\ argument of type \integer, that holds the
      stream number for error messages. If this argument is not
      provided, then the default value {\tt error = 6} is used.
-  \itt{print\_level} is an \optional\ scalar \intentin\ argument of type default \integer, that is used
+  \itt{print\_level} is an \optional\ scalar \intentin\ argument of type \integer, that is used
      to control the amount of informational output which is required. No 
      informational output will occur if {\tt print\_level} $\leq 0$. If 
      {\tt print\_level} $= 1$, minimal output will be produced and if
@@ -370,13 +378,13 @@ sequence is given by \vspace*{1mm}
   \itt{v} is an \optional\ rank-one \intentin\ argument of type \realdp\ of length
      {\tt A\%n} whose $i$-th component is used to scale the $i$-th
      column of the matrix $\bmA$.
-  \ittf{out} is an \optional\ scalar \intentin\ argument of type default \integer, that holds the
+  \ittf{out} is an \optional\ scalar \intentin\ argument of type \integer, that holds the
      stream number for informational messages. If this argument is not
      provided, then the default value {\tt out = 6} is used.
-  \itt{error} is an \optional\ scalar \intentin\ argument of type default \integer, that holds the
+  \itt{error} is an \optional\ scalar \intentin\ argument of type \integer, that holds the
      stream number for error messages. If this argument is not
      provided, then the default value {\tt error = 6} is used.
-  \itt{print\_level} is an \optional\ scalar \intentin\ argument of type default \integer, that is used
+  \itt{print\_level} is an \optional\ scalar \intentin\ argument of type \integer, that is used
      to control the amount of informational output which is required. No 
      informational output will occur if {\tt print\_level} $\leq 0$. If 
      {\tt print\_level} $= 1$, minimal output will be produced and if

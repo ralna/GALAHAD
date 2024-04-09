@@ -160,7 +160,7 @@
 !       MAX( %stop_g_absolute, %stop_g_relative * norm of the initial gradient )
 !     or if the step is less than %stop_s
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 3 )
        REAL ( KIND = rp_ ) :: stop_g_relative = ten ** ( - 4 )
 #else

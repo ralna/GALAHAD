@@ -1,25 +1,59 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-02-03
+#  This version: 2024-03-24
 
 #  makefile shell
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DGALAHAD_SINGLE -DINTEGER_64
-  HSL_PRECIS = s
+  DPREC = -DSINGLE -DINTEGER_64
+  HSL_64 = _64
+  HSL_PRECIS = s_64
+  HSL_IPRECIS = i_64
+  HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "double_64"
-  DPREC = -DGALAHAD_DOUBLE -DINTEGER_64
-  HSL_PRECIS = d
+  DPREC = -DINTEGER_64
+  HSL_64 = _64
+  HSL_PRECIS = d_64
+  HSL_IPRECIS = i_64
+  HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DGALAHAD_SINGLE
+  DPREC = -DSINGLE
+  HSL_64 =
   HSL_PRECIS = s
+  HSL_IPRECIS = i
+  HSL_LPRECIS = l
 else
-  DPREC = -DGALAHAD_DOUBLE
+  DPREC =
+  HSL_64 =
   HSL_PRECIS = d
+  HSL_IPRECIS = i
+  HSL_LPRECIS = l
 endif
+
+ifeq "$(BLASTYPE)" "reference"
+  SUFF64 = -DNO_SYMBOL_INTEGER_64
+else ifeq "$(BLASTYPE)" "galahad"
+  SUFF64 =
+else ifeq "$(BLASTYPE)" "openblas"
+  SUFF64 = -DNO_UNDERSCORE_INTEGER_64
+else ifeq "$(BLASTYPE)" "mkl"
+  SUFF64 = -DNO_UNDERSCORE_INTEGER_64
+else ifeq "$(BLASTYPE)" "apple"
+  SUFF64 = -DDOUBLE_UNDERSCORE_INTEGER_64
+endif
+
+ifeq "$(METISVERSION)" "4"
+  USEMETIS = -DMETIS4
+else ifeq "$(METISVERSION)" "51"
+  USEMETIS = -DMETIS51
+else
+  USEMETIS =
+endif
+
+CPPDEFINES = $(DPREC) $(SUFF64) $(USEMETIS)
 
 ifeq "$(LINEARSOLVER)" "ma57"
  DLINEARSOLVER = -DLANCELOT_USE_MA57
@@ -27,26 +61,31 @@ else
  DLINEARSOLVER = -DLANCELOT_USE_SILS
 endif
 
+#  source files for subset and archive subset
+
+HSLSRC = $(HSLSUBSET)/src
+HSLARCSRC = $(HSLARCHIVESUBSET)/src
+
 #  compiler flags
 
 FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include
 FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include
 FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include
 FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include
 FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include
 FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP) $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include $(OPENMP) 
 CFLAGS    = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
 CFLAGSN   = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
-              $(DPREC) -I $(GALAHAD)/include
+              $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
 PYINCLUDES = -I $(NUMPYINCLUDE) -I $(GALAHAD)/include -I $(OBJ) \
-             -I $(PYTHONINCLUDE)
+               -I $(PYTHONINCLUDE)
 
 #  coverage flags
 
@@ -55,7 +94,6 @@ COVERAGE = -fprofile-arcs -ftest-coverage
 #  linking and run flags
 
 RUNFFLAGS =    $(OPTIMIZATION) $(DEBUG) $(MODULES)
-#RUNFFLAGS =   $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
 RUNFFLAGSOMP = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
 
 #  names of random libraries
@@ -113,6 +151,15 @@ LLGS = $(OBJS)/libgalahad_lapack.a
 LLGD = $(OBJD)/libgalahad_lapack.a
 LLGS64 = $(OBJS64)/libgalahad_lapack.a
 LLGD64 = $(OBJD64)/libgalahad_lapack.a
+
+MSTATIC = libmetis_nodend.a
+MSTATIC64 = libmetis64_nodend.a
+LM  = $(OBJ)/$(MSTATIC)
+LM64 = $(OBJ)/$(MSTATIC64)
+LMS = $(OBJS)/$(MSTATIC)
+LMD = $(OBJD)/$(MSTATIC)
+LMS64 = $(OBJS64)/$(MSTATIC64)
+LMD64 = $(OBJD64)/$(MSTATIC64)
 
 M4LG  = $(OBJ)/libgalahad_metis4.a
 M4LGS = $(OBJS)/libgalahad_metis4.a
@@ -223,6 +270,8 @@ HCRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HCLG)
 
 LARR = $(AR) $(ARREPFLAGS) $(LLG)
 LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+MARR = $(AR) $(ARREPFLAGS)
 
 M4ARR = $(AR) $(ARREPFLAGS) $(M4LG)
 M4RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(M4LG)

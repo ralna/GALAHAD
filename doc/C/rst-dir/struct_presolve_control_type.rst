@@ -19,42 +19,42 @@ control derived type as a C struct :ref:`More...<details-structpresolve__control
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structpresolve__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`termination<doxid-structpresolve__control__type_1a8812e14a78de75cb35920f1ca14f8fcb>`;
-		int :ref:`max_nbr_transforms<doxid-structpresolve__control__type_1ad2cba4a8892265253e3821f2a8398783>`;
-		int :ref:`max_nbr_passes<doxid-structpresolve__control__type_1ab9b9f9490ee04ad60a88c98bedeb69bf>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`c_accuracy<doxid-structpresolve__control__type_1afb60a9e6d661aebf74d5da10af97233f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`z_accuracy<doxid-structpresolve__control__type_1af3699b1a6b62c80d06c848f9bf316708>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`infinity<doxid-structpresolve__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		int :ref:`out<doxid-structpresolve__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`errout<doxid-structpresolve__control__type_1a96f36bbf8aecb8c1df4e9479e0495341>`;
-		int :ref:`print_level<doxid-structpresolve__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`termination<doxid-structpresolve__control__type_1a8812e14a78de75cb35920f1ca14f8fcb>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_nbr_transforms<doxid-structpresolve__control__type_1ad2cba4a8892265253e3821f2a8398783>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_nbr_passes<doxid-structpresolve__control__type_1ab9b9f9490ee04ad60a88c98bedeb69bf>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`c_accuracy<doxid-structpresolve__control__type_1afb60a9e6d661aebf74d5da10af97233f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`z_accuracy<doxid-structpresolve__control__type_1af3699b1a6b62c80d06c848f9bf316708>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structpresolve__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structpresolve__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`errout<doxid-structpresolve__control__type_1a96f36bbf8aecb8c1df4e9479e0495341>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structpresolve__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
 		bool :ref:`dual_transformations<doxid-structpresolve__control__type_1a622f854458f44802d65ea5c644488b05>`;
 		bool :ref:`redundant_xc<doxid-structpresolve__control__type_1a7fff1fe9af8dc83ace001c1f01daca4e>`;
-		int :ref:`primal_constraints_freq<doxid-structpresolve__control__type_1ac5198d5a57920d3cbbc44fc43e1f461d>`;
-		int :ref:`dual_constraints_freq<doxid-structpresolve__control__type_1a5de3600b41511490861e5f5cc52c6c8d>`;
-		int :ref:`singleton_columns_freq<doxid-structpresolve__control__type_1a79b5f7f8d67056004a9ec1347eaf0b2a>`;
-		int :ref:`doubleton_columns_freq<doxid-structpresolve__control__type_1a3f84400443972b69eb439c8ddbccd6e4>`;
-		int :ref:`unc_variables_freq<doxid-structpresolve__control__type_1a83a0db3aa9212dc0630226a80f23355e>`;
-		int :ref:`dependent_variables_freq<doxid-structpresolve__control__type_1a916449dc4c15cc8c573f65d13a7b1837>`;
-		int :ref:`sparsify_rows_freq<doxid-structpresolve__control__type_1aedb83124a2aeb24018ca314263ea194d>`;
-		int :ref:`max_fill<doxid-structpresolve__control__type_1a62b85e62f2dd65b004b9561006447321>`;
-		int :ref:`transf_file_nbr<doxid-structpresolve__control__type_1af309919911cc80fb67ce4309caff53ee>`;
-		int :ref:`transf_buffer_size<doxid-structpresolve__control__type_1a8e55be8b47271c8bfe04e4eb7abe41d9>`;
-		int :ref:`transf_file_status<doxid-structpresolve__control__type_1a3327bff5444eebb4a46aa1671123681f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`primal_constraints_freq<doxid-structpresolve__control__type_1ac5198d5a57920d3cbbc44fc43e1f461d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dual_constraints_freq<doxid-structpresolve__control__type_1a5de3600b41511490861e5f5cc52c6c8d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`singleton_columns_freq<doxid-structpresolve__control__type_1a79b5f7f8d67056004a9ec1347eaf0b2a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`doubleton_columns_freq<doxid-structpresolve__control__type_1a3f84400443972b69eb439c8ddbccd6e4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`unc_variables_freq<doxid-structpresolve__control__type_1a83a0db3aa9212dc0630226a80f23355e>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dependent_variables_freq<doxid-structpresolve__control__type_1a916449dc4c15cc8c573f65d13a7b1837>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sparsify_rows_freq<doxid-structpresolve__control__type_1aedb83124a2aeb24018ca314263ea194d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_fill<doxid-structpresolve__control__type_1a62b85e62f2dd65b004b9561006447321>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`transf_file_nbr<doxid-structpresolve__control__type_1af309919911cc80fb67ce4309caff53ee>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`transf_buffer_size<doxid-structpresolve__control__type_1a8e55be8b47271c8bfe04e4eb7abe41d9>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`transf_file_status<doxid-structpresolve__control__type_1a3327bff5444eebb4a46aa1671123681f>`;
 		char :ref:`transf_file_name<doxid-structpresolve__control__type_1af7814ff832c4c4e7fab56d53c26b4bed>`[31];
-		int :ref:`y_sign<doxid-structpresolve__control__type_1a15a549b266499b20a45e93ce9a91f083>`;
-		int :ref:`inactive_y<doxid-structpresolve__control__type_1a0ddf7a757e8d25df82bbd45c4cc522f4>`;
-		int :ref:`z_sign<doxid-structpresolve__control__type_1aa643ec4b5dfb05f11c4c932158d92a37>`;
-		int :ref:`inactive_z<doxid-structpresolve__control__type_1a02a187d6425a995f970b86ab1ae6deaa>`;
-		int :ref:`final_x_bounds<doxid-structpresolve__control__type_1a980e04d17981a03c6ce9142915baeec6>`;
-		int :ref:`final_z_bounds<doxid-structpresolve__control__type_1a8b0b8e949abf9bb7eae7f6e258a9fadf>`;
-		int :ref:`final_c_bounds<doxid-structpresolve__control__type_1a7797130742a276bfa34e28713c5f69fe>`;
-		int :ref:`final_y_bounds<doxid-structpresolve__control__type_1a8d59a01fe70d5186b185454844aa5388>`;
-		int :ref:`check_primal_feasibility<doxid-structpresolve__control__type_1a63d94a12589b2a15bedc5d4b172563d7>`;
-		int :ref:`check_dual_feasibility<doxid-structpresolve__control__type_1a953e9d14756db97aaecceca97b78f334>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`pivot_tol<doxid-structpresolve__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`min_rel_improve<doxid-structpresolve__control__type_1a6ff1d4c2c7c9a996e081de4beccebf86>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`max_growth_factor<doxid-structpresolve__control__type_1ac768d36daebcdaaec3ad82313c45fa64>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`y_sign<doxid-structpresolve__control__type_1a15a549b266499b20a45e93ce9a91f083>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`inactive_y<doxid-structpresolve__control__type_1a0ddf7a757e8d25df82bbd45c4cc522f4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`z_sign<doxid-structpresolve__control__type_1aa643ec4b5dfb05f11c4c932158d92a37>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`inactive_z<doxid-structpresolve__control__type_1a02a187d6425a995f970b86ab1ae6deaa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`final_x_bounds<doxid-structpresolve__control__type_1a980e04d17981a03c6ce9142915baeec6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`final_z_bounds<doxid-structpresolve__control__type_1a8b0b8e949abf9bb7eae7f6e258a9fadf>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`final_c_bounds<doxid-structpresolve__control__type_1a7797130742a276bfa34e28713c5f69fe>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`final_y_bounds<doxid-structpresolve__control__type_1a8d59a01fe70d5186b185454844aa5388>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`check_primal_feasibility<doxid-structpresolve__control__type_1a63d94a12589b2a15bedc5d4b172563d7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`check_dual_feasibility<doxid-structpresolve__control__type_1a953e9d14756db97aaecceca97b78f334>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pivot_tol<doxid-structpresolve__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`min_rel_improve<doxid-structpresolve__control__type_1a6ff1d4c2c7c9a996e081de4beccebf86>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_growth_factor<doxid-structpresolve__control__type_1ac768d36daebcdaaec3ad82313c45fa64>`;
 	};
 .. _details-structpresolve__control__type:
 
@@ -82,7 +82,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int termination
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` termination
 
 Determines the strategy for terminating the presolve analysis. Possible values are:
 
@@ -96,7 +96,7 @@ Determines the strategy for terminating the presolve analysis. Possible values a
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_nbr_transforms
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_nbr_transforms
 
 The maximum number of problem transformations, cumulated over all calls to ``presolve``.
 
@@ -106,7 +106,7 @@ The maximum number of problem transformations, cumulated over all calls to ``pre
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_nbr_passes
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_nbr_passes
 
 The maximum number of analysis passes for problem analysis during a single call of ``presolve_transform_problem``.
 
@@ -116,7 +116,7 @@ The maximum number of analysis passes for problem analysis during a single call 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_accuracy
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` c_accuracy
 
 The relative accuracy at which the general linear constraints are satisfied at the exit of the solver. Note that this value is not used before the restoration of the problem.
 
@@ -126,7 +126,7 @@ The relative accuracy at which the general linear constraints are satisfied at t
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_accuracy
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` z_accuracy
 
 The relative accuracy at which the dual feasibility constraints are satisfied at the exit of the solver. Note that this value is not used before the restoration of the problem.
 
@@ -136,7 +136,7 @@ The relative accuracy at which the dual feasibility constraints are satisfied at
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` infinity
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` infinity
 
 The value beyond which a number is deemed equal to plus infinity (minus infinity being defined as its opposite)
 
@@ -146,7 +146,7 @@ The value beyond which a number is deemed equal to plus infinity (minus infinity
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 The unit number associated with the device used for printout.
 
@@ -156,7 +156,7 @@ The unit number associated with the device used for printout.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int errout
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` errout
 
 The unit number associated with the device used for error ouput.
 
@@ -166,7 +166,7 @@ The unit number associated with the device used for error ouput.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 The level of printout requested by the user. Can take the values:
 
@@ -208,7 +208,7 @@ true if the redundant variables and constraints (i.e. variables that do not appe
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int primal_constraints_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` primal_constraints_freq
 
 The frequency of primal constraints analysis in terms of presolving passes. A value of j = 2 indicates that primal constraints are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -218,7 +218,7 @@ The frequency of primal constraints analysis in terms of presolving passes. A va
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dual_constraints_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dual_constraints_freq
 
 The frequency of dual constraints analysis in terms of presolving passes. A value of j = 2 indicates that dual constraints are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -228,7 +228,7 @@ The frequency of dual constraints analysis in terms of presolving passes. A valu
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int singleton_columns_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` singleton_columns_freq
 
 The frequency of singleton column analysis in terms of presolving passes. A value of j = 2 indicates that singleton columns are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -238,7 +238,7 @@ The frequency of singleton column analysis in terms of presolving passes. A valu
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int doubleton_columns_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` doubleton_columns_freq
 
 The frequency of doubleton column analysis in terms of presolving passes. A value of j indicates that doubleton columns are analyzed every 2 presolving passes. A zero value indicates that they are never analyzed.
 
@@ -248,7 +248,7 @@ The frequency of doubleton column analysis in terms of presolving passes. A valu
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int unc_variables_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` unc_variables_freq
 
 The frequency of the attempts to fix linearly unconstrained variables, expressed in terms of presolving passes. A value of j = 2 indicates that attempts are made every 2 presolving passes. A zero value indicates that no attempt is ever made.
 
@@ -258,7 +258,7 @@ The frequency of the attempts to fix linearly unconstrained variables, expressed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dependent_variables_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dependent_variables_freq
 
 The frequency of search for dependent variables in terms of presolving passes. A value of j = 2 indicates that dependent variables are searched for every 2 presolving passes. A zero value indicates that they are never searched for.
 
@@ -268,7 +268,7 @@ The frequency of search for dependent variables in terms of presolving passes. A
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int sparsify_rows_freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` sparsify_rows_freq
 
 The frequency of the attempts to make A sparser in terms of presolving passes. A value of j = 2 indicates that attempts are made every 2 presolving passes. A zero value indicates that no attempt is ever made.
 
@@ -278,7 +278,7 @@ The frequency of the attempts to make A sparser in terms of presolving passes. A
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_fill
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_fill
 
 The maximum percentage of fill in each row of A. Note that this is a row-wise measure: globally fill never exceeds the storage initially used for A, no matter how large control.max_fill is chosen. If max_fill is negative, no limit is put on row fill.
 
@@ -288,7 +288,7 @@ The maximum percentage of fill in each row of A. Note that this is a row-wise me
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int transf_file_nbr
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` transf_file_nbr
 
 The unit number to be associated with the file(s) used for saving problem transformations on a disk file.
 
@@ -298,7 +298,7 @@ The unit number to be associated with the file(s) used for saving problem transf
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int transf_buffer_size
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` transf_buffer_size
 
 The number of transformations that can be kept in memory at once (that is without being saved on a disk file).
 
@@ -308,7 +308,7 @@ The number of transformations that can be kept in memory at once (that is withou
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int transf_file_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` transf_file_status
 
 The exit status of the file where problem transformations are saved:
 
@@ -332,7 +332,7 @@ The name of the file (to be) used for storing problem transformation on disk. NO
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int y_sign
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` y_sign
 
 Determines the convention of sign used for the multipliers associated with the general linear constraints.
 
@@ -346,7 +346,7 @@ Determines the convention of sign used for the multipliers associated with the g
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int inactive_y
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` inactive_y
 
 Determines whether or not the multipliers corresponding to constraints that are inactive at the unreduced point corresponding to the reduced point on input to ``presolve_restore_solution`` must be set to zero. Possible values are: associated with the general linear constraints.
 
@@ -360,7 +360,7 @@ Determines whether or not the multipliers corresponding to constraints that are 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int z_sign
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` z_sign
 
 Determines the convention of sign used for the dual variables associated with the bound constraints.
 
@@ -374,7 +374,7 @@ Determines the convention of sign used for the dual variables associated with th
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int inactive_z
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` inactive_z
 
 Determines whether or not the dual variables corresponding to bounds that are inactive at the unreduced point corresponding to the reduced point on input to ``presolve_restore_solution`` must be set to zero. Possible values are: associated with the general linear constraints.
 
@@ -388,7 +388,7 @@ Determines whether or not the dual variables corresponding to bounds that are in
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int final_x_bounds
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` final_x_bounds
 
 The type of final bounds on the variables returned by the package. This parameter can take the values:
 
@@ -406,7 +406,7 @@ NOTE: this parameter must be identical for all calls to presolve (except presolv
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int final_z_bounds
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` final_z_bounds
 
 The type of final bounds on the dual variables returned by the package. This parameter can take the values:
 
@@ -424,7 +424,7 @@ NOTE: this parameter must be identical for all calls to presolve (except presolv
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int final_c_bounds
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` final_c_bounds
 
 The type of final bounds on the constraints returned by the package. This parameter can take the values:
 
@@ -442,7 +442,7 @@ NOTES: 1) This parameter must be identical for all calls to presolve (except pre
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int final_y_bounds
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` final_y_bounds
 
 The type of final bounds on the multipliers returned by the package. This parameter can take the values:
 
@@ -460,7 +460,7 @@ NOTE: this parameter must be identical for all calls to presolve (except presolv
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int check_primal_feasibility
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` check_primal_feasibility
 
 The level of feasibility check (on the values of x) at the start of the restoration phase. This parameter can take the values:
 
@@ -476,7 +476,7 @@ The level of feasibility check (on the values of x) at the start of the restorat
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int check_dual_feasibility
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` check_dual_feasibility
 
 The level of dual feasibility check (on the values of x, y and z) at the start of the restoration phase. This parameter can take the values:
 
@@ -492,7 +492,7 @@ The level of dual feasibility check (on the values of x, y and z) at the start o
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` pivot_tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` pivot_tol
 
 The relative pivot tolerance above which pivoting is considered as numerically stable in transforming the coefficient matrix A. A zero value corresponds to a totally unsafeguarded pivoting strategy (potentially unstable).
 
@@ -502,7 +502,7 @@ The relative pivot tolerance above which pivoting is considered as numerically s
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` min_rel_improve
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` min_rel_improve
 
 The minimum relative improvement in the bounds on x, y and z for a tighter bound on these quantities to be accepted in the course of the analysis. More formally, if lower is the current value of the lower bound on one of the x, y or z, and if new_lower is a tentative tighter lower bound on the same quantity, it is only accepted if.
 
@@ -524,7 +524,7 @@ Note that this parameter must exceed the machine precision significantly.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` max_growth_factor
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` max_growth_factor
 
 The maximum growth factor (in absolute value) that is accepted between the maximum data item in the original problem and any data item in the reduced problem. If a transformation results in this bound being exceeded, the transformation is skipped.
 

@@ -15,11 +15,11 @@ rpd_inform_type structure
 	struct rpd_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structrpd__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structrpd__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structrpd__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`io_status<doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9>`;
-		int :ref:`line<doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`io_status<doxid-structrpd__inform__type_1a0ae587ad93ebdbad173f9e8475f936b9>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`line<doxid-structrpd__inform__type_1a41ebd28ef1d7c6ade45642cb6acc1039>`;
 		char :ref:`p_type<doxid-structrpd__inform__type_1a1ed26df99ee0d5be3db580aff3ab5397>`[4];
 	};
 .. _details-structrpd__inform__type:
@@ -38,7 +38,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. Possible values are:
 
@@ -78,7 +78,7 @@ return status. Possible values are:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation or deallocation
 
@@ -98,7 +98,7 @@ the name of the array for which an allocation or deallocation error occurred
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int io_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` io_status
 
 status from last read attempt
 
@@ -108,7 +108,7 @@ status from last read attempt
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int line
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` line
 
 number of last line read from i/o file
 

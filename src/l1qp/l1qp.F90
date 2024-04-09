@@ -141,7 +141,7 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
         REAL ( KIND = rp_ ) :: stop_abs_p = ten ** ( - 3 )
 #else
         REAL ( KIND = rp_ ) :: stop_abs_p = ten ** ( - 5 )
@@ -150,7 +150,7 @@
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
         REAL ( KIND = rp_ ) :: stop_abs_d = ten ** ( - 3 )
 #else
         REAL ( KIND = rp_ ) :: stop_abs_d = ten ** ( - 5 )
@@ -159,7 +159,7 @@
 
 !   the required absolute and relative accuracies for the complementarity
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
         REAL ( KIND = rp_ ) :: stop_abs_c = ten ** ( - 3 )
 #else
         REAL ( KIND = rp_ ) :: stop_abs_c = ten ** ( - 5 )
