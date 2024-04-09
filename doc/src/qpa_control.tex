@@ -1,17 +1,17 @@
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt QPA\_solve} and {\tt QPA\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt QPA\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -19,22 +19,22 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{maxit} is a scalar variable of type default \integer, that holds the
+\itt{maxit} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in {\tt QPA\_solve}.
 The default is {\tt maxit = 1000}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that specifies
+\itt{start\_print} is a scalar variable of type \integer, that specifies
 the first iteration for which printing will occur in {\tt QPA\_solve}.
 If {\tt start\_print} is negative, printing will occur from the outset.
 The default is {\tt start\_print = -1}.
 
-\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+\itt{stop\_print} is a scalar variable of type \integer, that specifies
 the last iteration for which printing will occur in  {\tt QPA\_solve}.
 If {\tt stop\_print} is negative, printing will occur once it has been
 started by {\tt start\_print}.
 The default is {\tt stop\_print = -1}.
 
-\itt{factor} is a scalar variable of type default \integer, that indicates
+\itt{factor} is a scalar variable of type \integer, that indicates
 the type of factorization of the preconditioner to be used.
 Possible values are:
 
@@ -46,40 +46,40 @@ Possible values are:
 \end{description}
 The default is {\tt factor = 0}.
 
-\itt{max\_col} is a scalar variable of type default \integer, that specifies
+\itt{max\_col} is a scalar variable of type \integer, that specifies
 the maximum number of nonzeros in a column of $\bmA$ which is permitted
 by the Schur-complement factorization.
 The default is {\tt max\_col = 35}.
 
-\itt{max\_sc} is a scalar variable of type default \integer, that specifies
+\itt{max\_sc} is a scalar variable of type \integer, that specifies
 the maximum number of columns permitted in the Schur complement of the
 reference matrix (see Section~\ref{galmethod})
 before a refactorization is triggered.
 The default is {\tt max\_sc = 75}.
 
-%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%\itt{indmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of integer workspace required by
 %the factorization package {\tt SILS.
 %The} default is {\tt indmin = 1000}.
 
-%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%\itt{valmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of real workspace required by
 %the factorization package {\tt SILS.
 %The} default is {\tt valmin = 1000}.
 
-\itt{itref\_max} is a scalar variable of type default \integer, that specifies
+\itt{itref\_max} is a scalar variable of type \integer, that specifies
 the maximum number of iterative refinements allowed with each application
 of the preconditioner.
 The default is {\tt itref\_max = 1}.
 
-\itt{cg\_maxit} is a scalar variable of type default \integer, that holds the
+\itt{cg\_maxit} is a scalar variable of type \integer, that holds the
 maximum number of conjugate-gradient inner iterations that may be performed
 during the computation of each search direction in {\tt QPA\_solve}.
 If {\tt cg\_itmax} is set to a negative number, it will be reset by
 {\tt QPA\_solve} to the dimension of the relevant linear system $+ 1$.
 The default is {\tt cg\_itmax = -1}.
 
-\itt{precon} is a scalar variable of type default \integer, that specifies
+\itt{precon} is a scalar variable of type \integer, that specifies
 which preconditioner to be used to accelerate the conjugate-gradient
 inner iteration.  Possible values are:
 
@@ -102,12 +102,12 @@ inner iteration.  Possible values are:
 \end{description}
 The default is {\tt precon = 0}.
 
-\itt{nsemib} is a scalar variable of type default \integer, that specifies
+\itt{nsemib} is a scalar variable of type \integer, that specifies
 the semi-bandwidth of the band preconditioner when {\tt precon = 3},
 if appropriate.
 The default is {\tt nsemib = 5}.
 
-\itt{full\_max\_fill} is a scalar variable of type default \integer.
+\itt{full\_max\_fill} is a scalar variable of type \integer.
 If the ratio of the number of nonzeros in the factors
 of the reference matrix (see Section~\ref{galmethod}) to the number of
 nonzeros in the matrix itself exceeds {\tt full\_max\_fil},
@@ -116,7 +116,7 @@ automatically ({\tt precon = 0}), a banded approximation (see {\tt precon = 3})
 will be used instead.
 The default is {\tt full\_max\_fill = 10}.
 
-\itt{deletion\_strategy} is a scalar variable of type default \integer, that
+\itt{deletion\_strategy} is a scalar variable of type \integer, that
 specifies the rules used to determine which constraint to remove
 from the working set (see Section~\ref{galmethod}) when necessary to ensure
 further progress towards the solution. Possible values are:
@@ -131,7 +131,7 @@ the one which most violates its bound will be removed.
 \end{description}
 The default is {\tt deletion\_strategy = 0}.
 
-\itt{restore\_problem} is a scalar variable of type default \integer, that
+\itt{restore\_problem} is a scalar variable of type \integer, that
 specifies how much of the input problem is to be retored on output.
 Possible values are:
 \begin{description}
@@ -144,13 +144,13 @@ the Hessian matrix $\bmH$ and the Jacobian matrix $\bmA$, will be restored.
 \end{description}
 The default is {\tt restore\_problem = 2}.
 
-\itt{monitor\_residuals} is a scalar variable of type default \integer, that
+\itt{monitor\_residuals} is a scalar variable of type \integer, that
 specifies the frequency at which working constraint residuals will be monitored
 to ensure feasibility. The  residuals will be monitored every
 {\tt monitor\_residu\-al} iterations.
 The default is {\tt monitor\_residuals = 1}.
 
-\itt{cold\_start} is a scalar variable of type default \integer, that controls
+\itt{cold\_start} is a scalar variable of type \integer, that controls
 the initial working set (see Section~\ref{galmethod})). Possible values are:
 \begin{description}
 \itt{0} a "warm start" will be performed. The values set in
@@ -167,17 +167,17 @@ the initial working set (see Section~\ref{galmethod})). Possible values are:
 \end{description}
 The default is {\tt cold\_start = 3}.
 
-\itt{infeas\_check\_interval} is a scalar variable of type default \integer,
+\itt{infeas\_check\_interval} is a scalar variable of type \integer,
 that gives the number of iterations that are permitted before the
 infeasibility is checked for improvement.
 The default is {\tt infeas\_check\_interval = 100}.
 
-\itt{infinity} is a scalar variable of type default \realdp, that is used to
+\itt{infinity} is a scalar variable of type \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
-\itt{feas\_tol} is a scalar variable of type default \realdp, that specifies the
+\itt{feas\_tol} is a scalar variable of type \realdp, that specifies the
 maximum amount by which a constraint may be violated and yet still be
 considered to be satisfied.
 The default is {\tt feas\_tol =} $u^{3/4}$,
@@ -192,12 +192,12 @@ The default is {\tt potential\_u\-nbounded =} $-u^{-2}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{increase\_rho\_g\_factor} is a scalar variable of type default \realdp,
+\itt{increase\_rho\_g\_factor} is a scalar variable of type \realdp,
 that gives the factor by which the current penalty parameter $\rho_g$
 for the general constraints may be increased when solving quadratic programs.
 The default is {\tt increase\_rho\_g\_factor = 2}.
 
-\itt{increase\_rho\_b\_factor} is a scalar variable of type default \realdp,
+\itt{increase\_rho\_b\_factor} is a scalar variable of type \realdp,
 that gives the factor by which the current penalty parameter $\rho_b$ for
 the simple bound constraints may be increased when solving quadratic programs.
 The default is {\tt increase\_rho\_b\_factor = 2}.
@@ -241,14 +241,14 @@ than  {\tt pivot\_tol} is appropriate. See
 the documentation for the package {\tt SLS} for details.
 The default is {\tt pivot\_tol\_for\_dependencies = 0.5}.
 
-%\itt{zero\_pivot} is a scalar variable of type default \realdp.
+%\itt{zero\_pivot} is a scalar variable of type \realdp.
 %Any pivots smaller than  {\tt zero\_pivot} in absolute value will be regarded
 %to be zero when attempting to detect linearly dependent constraints.
 %%The default is {\tt zero\_pivot =} $u^{3/4}$,
 %where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 %{\tt \fullpackagename\_dou\-ble}).
 
-\itt{multiplier\_tol} is a scalar variable of type default \realdp.
+\itt{multiplier\_tol} is a scalar variable of type \realdp.
 Any dual variable or Lagrange multiplier which is less than
 {\tt multiplier\_tol} outside its optimal interval will be regarded
 as being acceptable when checking for optimality.
@@ -257,7 +257,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_dou\-ble}).
 
 \itt{inner\_stop\_relative} and {\tt inner\_stop\_absolute}
-are scalar variables of type default \realdp,
+are scalar variables of type \realdp,
 that hold the relative and absolute convergence tolerances for the
 inner iteration (search direction) problem.
 and correspond to the values {\tt control\%stop\_relative} and
@@ -268,12 +268,12 @@ and \sloppy {\tt inner\_stop\_absolute =} $\sqrt{u}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+\itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
 
-\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+\itt{clock\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.

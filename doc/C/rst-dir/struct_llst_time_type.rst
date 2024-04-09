@@ -15,16 +15,16 @@ llst_time_type structure
 	struct llst_time_type {
 		// fields
 	
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`total<doxid-structllst__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`assemble<doxid-structllst__time__type_1ae84d232eee798a974ebaeb9c82d623f4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`analyse<doxid-structllst__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`factorize<doxid-structllst__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`solve<doxid-structllst__time__type_1a4c971b10c915041b89daa05a29125376>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_total<doxid-structllst__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_assemble<doxid-structllst__time__type_1a4df2b92cea9269b8f8cad7024b83a10d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_analyse<doxid-structllst__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_factorize<doxid-structllst__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_solve<doxid-structllst__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structllst__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`assemble<doxid-structllst__time__type_1ae84d232eee798a974ebaeb9c82d623f4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structllst__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structllst__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structllst__time__type_1a4c971b10c915041b89daa05a29125376>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structllst__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_assemble<doxid-structllst__time__type_1a4df2b92cea9269b8f8cad7024b83a10d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_analyse<doxid-structllst__time__type_1a3394e706afb175d930c81c4b86fe8f4b>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_factorize<doxid-structllst__time__type_1ad3f0f50628260b90d6cf974e02f86192>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_solve<doxid-structllst__time__type_1af569df4b8828eb7ac8a05ef1030d1358>`;
 	};
 .. _details-structllst__time__type:
 
@@ -42,7 +42,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` total
 
 total CPU time spent in the package
 
@@ -52,7 +52,7 @@ total CPU time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` assemble
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` assemble
 
 CPU time assembling $K(\lambda)$ in (1)
 
@@ -62,7 +62,7 @@ CPU time assembling $K(\lambda)$ in (1)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` analyse
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` analyse
 
 CPU time spent analysing $K(\lambda)$.
 
@@ -72,7 +72,7 @@ CPU time spent analysing $K(\lambda)$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` factorize
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` factorize
 
 CPU time spent factorizing $K(\lambda)$.
 
@@ -82,7 +82,7 @@ CPU time spent factorizing $K(\lambda)$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` solve
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` solve
 
 CPU time spent solving linear systems inolving $K(\lambda)$.
 
@@ -92,7 +92,7 @@ CPU time spent solving linear systems inolving $K(\lambda)$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_total
 
 total clock time spent in the package
 
@@ -102,7 +102,7 @@ total clock time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_assemble
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_assemble
 
 clock time assembling $K(\lambda)$
 
@@ -112,7 +112,7 @@ clock time assembling $K(\lambda)$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_analyse
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_analyse
 
 clock time spent analysing $K(\lambda)$
 
@@ -122,7 +122,7 @@ clock time spent analysing $K(\lambda)$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_factorize
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_factorize
 
 clock time spent factorizing $K(\lambda)$
 
@@ -132,7 +132,7 @@ clock time spent factorizing $K(\lambda)$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_solve
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_solve
 
 clock time spent solving linear systems inolving $K(\lambda)$
 

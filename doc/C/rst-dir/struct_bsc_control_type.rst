@@ -16,12 +16,12 @@ bsc_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structbsc__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`max_col<doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		int :ref:`new_a<doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		int :ref:`extra_space_s<doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structbsc__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structbsc__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structbsc__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_col<doxid-structbsc__control__type_1abca2db33b9520095e98790d45a1be93f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_a<doxid-structbsc__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_space_s<doxid-structbsc__control__type_1ad1d6fbcd01c19f28d44ca8ba150efce5>`;
 		bool :ref:`s_also_by_column<doxid-structbsc__control__type_1abad1637e3128deb63e2a8eab714e5ffd>`;
 		bool :ref:`space_critical<doxid-structbsc__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structbsc__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
@@ -53,7 +53,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -63,7 +63,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -73,7 +73,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -83,7 +83,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_col
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_col
 
 maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 
@@ -93,7 +93,7 @@ maximum permitted number of nonzeros in a column of $A$; -ve means unlimit
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_a
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_a
 
 how much has $A$ changed since it was last accessed:
 
@@ -111,7 +111,7 @@ how much has $A$ changed since it was last accessed:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int extra_space_s
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` extra_space_s
 
 how much extra space is to be allocated in $S$ above that needed to hold the Schur complement
 

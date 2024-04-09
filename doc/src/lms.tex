@@ -38,22 +38,22 @@ Rutherford Appleton Laboratory.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt \packagename\_time\_type},
 {\tt \packagename\_control\_type},
@@ -73,6 +73,10 @@ and
 {\tt \packagename\_read\_specfile}
 (\S\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -101,20 +105,20 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_setup}, {\tt \packagename\_apply}
 and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_setup}, {\tt \packagename\_apply}
 is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -122,13 +126,13 @@ level of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of the factorization.
 The default is {\tt print\_level = 0}.
 
-\itt{memory\_length} is a scalar variable of type default \integer, that is used
+\itt{memory\_length} is a scalar variable of type \integer, that is used
 to specify the maximum number of vectors  $\{\bms_k\}$ and $\{\bmy_k\}$
 that will be used when building the secant approximation.
 Any non-positive value will be interpreted as {\tt 1}.
 The default is {\tt memory\_length = 10}.
 
-\itt{method} is a scalar variable of type default \integer, that is used
+\itt{method} is a scalar variable of type \integer, that is used
 to specify the limited-memory formula that will be applied. Possible
 values are
 \begin{description}
@@ -181,32 +185,32 @@ the calculation. The components of
 {\tt \packagename\_time\_type}
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time spent in the package.
 
-\itt{setup} is a scalar variable of type default \realdp, that gives
+\itt{setup} is a scalar variable of type \realdp, that gives
  the CPU time spent setting up the data structures to represent
  the limited-memory matrix.
 
-\itt{form} is a scalar variable of type default \realdp, that gives
+\itt{form} is a scalar variable of type \realdp, that gives
  the CPU time spent forming and updating the limited-memory matrix
 as new data arrives.
 
-\itt{apply} is a scalar variable of type default \realdp, that gives
+\itt{apply} is a scalar variable of type \realdp, that gives
  the CPU time spent applying the matrix to given vectors.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_setup} is a scalar variable of type default \realdp, that gives
+\itt{clock\_setup} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent setting up the data structures to
  represent the limited-memory matrix.
 
-\itt{clock\_form} is a scalar variable of type default \realdp, that gives
+\itt{clock\_form} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent forming and updating the limited-memory
  matrix as new data arrives.
 
-\itt{clock\_apply} is a scalar variable of type default \realdp, that gives
+\itt{clock\_apply} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent  applying the matrix to given vectors.
 factor $\bmR$.
 
@@ -225,13 +229,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See \S\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -240,7 +244,7 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{length} is a scalar variable of type default \integer, that
+\itt{length} is a scalar variable of type \integer, that
 gives the number of pairs $\{\bms_k,\bmy_k\}$ currently used to represent the
 limited-memory matrix
 
@@ -361,7 +365,7 @@ or its inverse are set up as follows:
 
 \vspace*{-3mm}
 \begin{description}
-\ittf{n} is a scalar \intentin\ argument of type default \integer,
+\ittf{n} is a scalar \intentin\ argument of type \integer,
 that must be set to the dimension of the limited-memory matrix required.
 \restriction {\tt n} $\geq$ {\tt 1}.
 
@@ -799,7 +803,7 @@ components of {\tt control}.}
 %just as described in the documentation for the \galahad\ packages
 %{\tt SLS} and {\tt ULS}.
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

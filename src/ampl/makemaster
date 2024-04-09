@@ -6,9 +6,9 @@
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single"
- DPREC = -DGALAHAD_SINGLE
+ DPREC = -DSINGLE
 else
- DPREC = -DGALAHAD_DOUBLE
+ DPREC = -DDOUBLE
 endif
 
 #  Archive manipulation strings

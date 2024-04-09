@@ -18,8 +18,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -29,48 +30,48 @@ overview of functions provided
 
 	// function calls
 
-	void :ref:`ugo_initialize<doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78>`(void** data, struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, int* status);
+	void :ref:`ugo_initialize<doxid-galahad__ugo_8h_1a172105bd528410f7c7e2fd77899ebc78>`(void **data, struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 	void :ref:`ugo_read_specfile<doxid-galahad__ugo_8h_1a6819d58a728f3bf97232ed719e72fb91>`(struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, const char specfile[]);
 
 	void :ref:`ugo_import<doxid-galahad__ugo_8h_1a8bcbdf9ef1229535b77d9991eb543dcb>`(
 		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_l,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_u
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>`* x_l,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>`* x_u
 	);
 
 	void :ref:`ugo_reset_control<doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40>`(
 		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`ugo_solve_direct<doxid-galahad__ugo_8h_1aa5b2949ab17e25a0a0c24f38c0d61a1a>`(
-		void** data,
-		void* userdata,
-		int* status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h,
-		int(*)(:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_fgh
+		void **data,
+		void *userdata,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* x,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* g,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* h,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`rpc_<doxid-galahad__rpc_8h_>`, :ref:`rpc_<doxid-galahad__rpc_8h_>`*, :ref:`rpc_<doxid-galahad__rpc_8h_>`*, :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_fgh
 	);
 
 	void :ref:`ugo_solve_reverse<doxid-galahad__ugo_8h_1a0b8f123f8e67bb0cb8a27c5ce87c824c>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* x,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* g,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* h
 	);
 
-	void :ref:`ugo_information<doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee>`(void** data, struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform, int* status);
+	void :ref:`ugo_information<doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee>`(void **data, struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`ugo_terminate<doxid-galahad__ugo_8h_1ad9485926c547bb783aea3ee1adb3b084>`(
-		void** data,
+		void **data,
 		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
 		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform
 	);
@@ -80,25 +81,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -109,7 +122,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void ugo_initialize(void** data, struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, int* status)
+	void ugo_initialize(void **data, struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -134,7 +147,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -180,10 +193,10 @@ relate to the components of the control structure.
 
 	void ugo_import(
 		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_l,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x_u
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>`* x_l,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>`* x_u
 	)
 
 Import problem data into internal storage prior to solution.
@@ -209,7 +222,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -234,12 +247,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- x_l
 
-		- is a scalar variable of type double, that holds the value $x^l$ of the lower bound on the optimization variable $x$.
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value $x^l$ of the lower bound on the optimization variable $x$.
 
 	*
 		- x_u
 
-		- is a scalar variable of type double, that holds the value $x^u$ of the upper bound on the optimization variable $x$.
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value $x^u$ of the upper bound on the optimization variable $x$.
 
 .. index:: pair: function; ugo_reset_control
 .. _doxid-galahad__ugo_8h_1a51fa6faacfb75c3dcad44befd2e6cb40:
@@ -249,8 +262,8 @@ Import problem data into internal storage prior to solution.
 
 	void ugo_reset_control(
 		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -276,7 +289,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -289,14 +302,14 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void ugo_solve_direct(
-		void** data,
-		void* userdata,
-		int* status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h,
-		int(*)(:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_fgh
+		void **data,
+		void *userdata,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* x,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* g,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* h,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`rpc_<doxid-galahad__rpc_8h_>`, :ref:`rpc_<doxid-galahad__rpc_8h_>`*, :ref:`rpc_<doxid-galahad__rpc_8h_>`*, :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_fgh
 	)
 
 Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval.
@@ -324,7 +337,7 @@ This version is for the case where all function/derivative information is availa
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -371,22 +384,22 @@ This version is for the case where all function/derivative information is availa
 	*
 		- x
 
-		- is a scalar variable of type double, that holds the value of the approximate global minimizer $x$ after a successful (status = 0) call.
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- f
 
-		- is a scalar variable of type double, that holds the the value of the objective function $f(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the the value of the objective function $f(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- g
 
-		- is a scalar variable of type double, that holds the the value of the gradient of the objective function $f^{\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the the value of the gradient of the objective function $f^{\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- h
 
-		- is a scalar variable of type double, that holds the the value of the second derivative of the objective function $f^{\prime\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the the value of the second derivative of the objective function $f^{\prime\prime}(x)$ at the approximate global minimizer $x$ after a successful (status = 0) call.
 
 	*
 		- eval_fgh
@@ -396,10 +409,10 @@ This version is for the case where all function/derivative information is availa
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_fgh( double x,
-		  	              double *f,
-		  	              double *g,
-		  	              double *h,
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_fgh( :ref:`rpc_<doxid-galahad__rpc_8h_>` x,
+		  	              :ref:`rpc_<doxid-galahad__rpc_8h_>` *f,
+		  	              :ref:`rpc_<doxid-galahad__rpc_8h_>` *g,
+		  	              :ref:`rpc_<doxid-galahad__rpc_8h_>` *h,
 		  	              const void *userdata)
 		  
 		  The value of the objective function $f(x)$ and its first derivative $f^{\prime}(x)$ evaluated at x= $x$ must be assigned to f and g respectively, and the function return value set to 0. In addition, if control.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative $f^{\prime\prime}(x)$ in h; it need not be assigned otherwise. If the evaluation is impossible at x, return should be set to a nonzero value.
@@ -411,13 +424,13 @@ This version is for the case where all function/derivative information is availa
 	:class: doxyrest-title-code-block
 
 	void ugo_solve_reverse(
-		void** data,
-		int* status,
-		int* eval_status,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* x,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* g,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* h
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* x,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* g,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* h
 	)
 
 Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval.
@@ -440,7 +453,7 @@ This version is for the case where function/derivative information is only avail
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -518,27 +531,27 @@ This version is for the case where function/derivative information is only avail
 	*
 		- eval_status
 
-		- is a scalar variable of type int, that is used to indicate if objective function and its derivatives can be provided (see above).
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used to indicate if objective function and its derivatives can be provided (see above).
 
 	*
 		- x
 
-		- is a scalar variable of type double, that holds the next value of $x$ at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the next value of $x$ at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
 
 	*
 		- f
 
-		- is a scalar variable of type double, that must be set by the user to hold the value of $f(x)$ if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that must be set by the user to hold the value of $f(x)$ if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
 
 	*
 		- g
 
-		- is a scalar variable of type double, that must be set by the user to hold the value of $f^{\prime}(x)$ if required by status > 0 (see above), and will return the value of the first derivative of $f$ at the approximate global minimizer when status = 0
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that must be set by the user to hold the value of $f^{\prime}(x)$ if required by status > 0 (see above), and will return the value of the first derivative of $f$ at the approximate global minimizer when status = 0
 
 	*
 		- h
 
-		- is a scalar variable of type double, that must be set by the user to hold the value of $f^{\prime\prime}(x)$ if required by status > 0 (see above), and will return the value of the second derivative of $f$ at the approximate global minimizer when status = 0
+		- is a scalar variable of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that must be set by the user to hold the value of $f^{\prime\prime}(x)$ if required by status > 0 (see above), and will return the value of the second derivative of $f$ at the approximate global minimizer when status = 0
 
 .. index:: pair: function; ugo_information
 .. _doxid-galahad__ugo_8h_1a8e1db35daea3247b2cc9eb8607d0abee:
@@ -546,7 +559,7 @@ This version is for the case where function/derivative information is only avail
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void ugo_information(void** data, struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform, int* status)
+	void ugo_information(void **data, struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -571,7 +584,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -583,7 +596,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void ugo_terminate(
-		void** data,
+		void **data,
 		struct :ref:`ugo_control_type<doxid-structugo__control__type>`* control,
 		struct :ref:`ugo_inform_type<doxid-structugo__inform__type>`* inform
 	)

@@ -16,10 +16,10 @@ lpa_time_type structure
 	struct lpa_time_type {
 		// components
 	
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`total<doxid-structlpa__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`preprocess<doxid-structlpa__time__type_1a811a9183909ac7697f36d0ea8987715c>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_total<doxid-structlpa__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_preprocess<doxid-structlpa__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structlpa__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`preprocess<doxid-structlpa__time__type_1a811a9183909ac7697f36d0ea8987715c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structlpa__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_preprocess<doxid-structlpa__time__type_1a0c3b390c67037ef2fe8b4cf29e079e4e>`;
 	};
 .. _details-structlpa__time__type:
 
@@ -37,7 +37,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` total
 
 the total CPU time spent in the package
 
@@ -47,7 +47,7 @@ the total CPU time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` preprocess
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` preprocess
 
 the CPU time spent preprocessing the problem
 
@@ -57,7 +57,7 @@ the CPU time spent preprocessing the problem
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_total
 
 the total clock time spent in the package
 
@@ -67,7 +67,7 @@ the total clock time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_preprocess
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_preprocess
 
 the clock time spent preprocessing the problem
 

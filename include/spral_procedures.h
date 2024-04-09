@@ -11,7 +11,7 @@
 #define spral_pgm spral_pgm_64
 #endif
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
 #ifdef INTEGER_64
 #define GALAHAD_KINDS_single galahad_kinds_single_64
 #define GALAHAD_KINDS_precision galahad_kinds_single_64
@@ -37,7 +37,7 @@
 #endif
 #endif
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #ifdef INTEGER_64
 #define SPRAL_KINDS_precision spral_kinds_single_64
 #define spral_kinds_precision spral_kinds_single_64
@@ -131,7 +131,7 @@
 #endif
 #endif
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define add_delays_precision add_delays_single
 #define analyse_precision analyse_single
 #define analyse_precision_ptr32 analyse_single_ptr32

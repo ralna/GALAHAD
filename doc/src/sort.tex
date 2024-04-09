@@ -36,30 +36,35 @@ Ph. L. Toint, University of Namur, Belgium.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
+\medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the subroutines
+{\tt \packagename\_inplace\_invert},
+{\tt \packagename\_inplace\_permute},
+{\tt \packagename\_inverse\_permute},
+{\tt \packagename\_reorder\_by\_rows},
+{\tt \packagename\_quicksort},
+{\tt \packagename\_heapsort\_build} and
+{\tt \packagename\_heapsort\_\-smallest},
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
 
-%\medskip
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\noindent
-%If it is required to use both modules at the same time,
-%the subroutines
-%{\tt \packagename\_inplace\_invert},
-%{\tt \packagename\_inplace\_permute},
-%{\tt \packagename\_inverse\_permute},
-%{\tt \packagename\_reorder\_by\_rows},
-%{\tt \packagename\_quicksort},
-%{\tt \packagename\_heapsort\_build} and
-%{\tt \packagename\_heapsort\_\-smallest},
-%(Section~\ref{galarguments})
-%must be renamed on one of the {\tt USE} statements.
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -124,14 +129,14 @@ follows:
 
 \vspace*{-3mm}
 \begin{description}
-\itt{n} is a scalar \intentin\ argument of type default
+\itt{n} is a scalar \intentin\ argument of type 
 \integer, that must be set by the user to $n$, the size of the permutation to
 be inverted.
 {\bf Restriction:} ${\tt n} > 0$.
 
 \itt{p} is a rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type either default
-\integer\ or default \realdp, that must be set by the user
+dimension at least {\tt n} and type either 
+\integer\ or \realdp, that must be set by the user
 on input so that its $i$-th component contains the integer $p(i)$.
 On exit, the elements of {\tt p} will have overwritten by those of $q$, the
 inverse of $p$.
@@ -149,14 +154,14 @@ This is done without resorting to extra storage as follows:
 {\tt CALL \packagename\_inplace\_permute ( n, p [, x] [, ix] [, iy] )}
 
 \begin{description}
-\itt{n} is a scalar \intentin\ argument of type default
+\itt{n} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to $n$, the size of the permutation to
 be applied.
 {\bf Restriction:} ${\tt n} > 0$.
 
 \itt{p} is a rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type either default
-\integer\ or default \realdp, that must be set by the user
+dimension at least {\tt n} and type either
+\integer\ or \realdp, that must be set by the user
 on input so that its $i$-th component contains the integer $p(i)$, that is the
 $i$-th component of the permutation one wishes to apply.
 It is unchanged on exit.
@@ -190,14 +195,14 @@ This is done without resorting to extra storage as follows:
 {\tt CALL \packagename\_inverse\_permute ( n, p [, x] [, ix] )}
 
 \begin{description}
-\itt{n} is a scalar \intentin\ argument of type default
+\itt{n} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to $n$, the size of the permutation
 whose inverse is to be applied.
 {\bf Restriction:} ${\tt n} > 0$.
 
 \itt{p} is a rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type either default
-\integer\ or default \realdp, that must be set by the user
+dimension at least {\tt n} and type either
+\integer\ or \realdp, that must be set by the user
 on input so that its $i$-th component contains the integer $p(i)$, that is the
 $i$-th component of the permutation whose inverse is to be applied.
 It is unchanged on exit.
@@ -225,29 +230,29 @@ The matrix $\bmA$ is reordered from co-ordinate to row order as follows:
 
 \begin{description}
 
-\ittf{nr} is a scalar \intentin\ argument of type default
+\ittf{nr} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to the number of
 rows in $\bmA$.
 {\bf Restriction:} {\tt nr}$ > 0$.
 
-\ittf{nc} is a scalar \intentin\ argument of type default
+\ittf{nc} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to the number of
 columns in $\bmA$.
 {\bf Restriction:} {\tt nc}$ > 0$.
 
-\ittf{nnz} is a scalar \intentin\ argument of type default
+\ittf{nnz} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to the number of
 nonzeros in $\bmA$.
 {\bf Restriction:} {\tt nnz}$ > 0$.
 
-\itt{A\_row}  is a rank-one \intentinout\ array argument of type default
+\itt{A\_row}  is a rank-one \intentinout\ array argument of type
 \integer\ and length {\tt la}.
 On entry, {\tt A\_row}$(k)$, $k = 1, \ldots,$ {\tt nnz} give
 the row indices of $\bmA$. On exit, {\tt A\_row} will have been reordered, but
 {\tt A\_row}$(k)$ will still be the row index corresponding to the
 entry with column index {\tt A\_col}$(k)$.
 
-\itt{A\_col}  is a rank-one \intentinout\ array argument of type default
+\itt{A\_col}  is a rank-one \intentinout\ array argument of type
 \integer\ and length {\tt la}.
 On entry, {\tt A\_col}$(k)$, $k = 1, \ldots,$ {\tt nnz} give
 the column indices of $\bmA$. On exit, {\tt A\_col}
@@ -255,7 +260,7 @@ will have been reordered so that entries in row $i$ appear directly before
 those in row $i+1$ for $i = 1, \ldots ,$ {\tt nr}$-1$.
 
 \ittf{la}
-is a scalar \intentin\ argument of type default
+is a scalar \intentin\ argument of type
 \integer, that must be set by the user to the actual dimension of the arrays
 {\tt A\_row},
 {\tt A\_col}
@@ -264,7 +269,7 @@ and
 {\bf Restriction:} {\tt la} $\geq$ {\tt nnz}.
 
 \itt{A\_val}
-is a rank-one \intentinout\ array argument of type default
+is a rank-one \intentinout\ array argument of type
 \realdp\ of length {\tt la}.
 On entry, {\tt A\_val}$(k)$, $k = 1, \ldots,$ {\tt nnz} give the
 values of $\bmA$.
@@ -273,34 +278,34 @@ entries in row $i$ appear directly before those in row $i+1$ for
 $i = 1, \ldots,$ {\tt nr}$-1$ and correspond to those in
 {\tt A\_row} and {\tt A\_col}.
 
-\itt{A\_ptr}  is a rank-one \intentout\ array argument of type default
+\itt{A\_ptr}  is a rank-one \intentout\ array argument of type
 \integer\ and length {\tt lptr}.
 On exit, {\tt A\_ptr}$(i), i = 1, \ldots,$ {\tt nr} give
 the starting addresses for the entries in {\tt A\_row}/{\tt A\_col}/{\tt A\_val}
 in row $i$, while {\tt A\_ptr(nr+1)}
 gives the index of the first non-occupied component of $\bmA$.
 
-\ittf{lptr} is a scalar \intentin\ argument of type default
+\ittf{lptr} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to the
 actual dimension of {\tt A\_ptr}.
 {\bf Restriction:} {\tt lptr} $\geq$ {\tt nr + 1}.
 
-\itt{IW}  is a rank-one \intentout\ array argument of type default
+\itt{IW}  is a rank-one \intentout\ array argument of type
 \integer\ and length {\tt liw} that is used for workspace.
 
-\itt{liw}  is a scalar \intentin\ argument of type default
+\itt{liw}  is a scalar \intentin\ argument of type
 \integer, that gives the actual dimension of {\tt IW}.
 {\bf Restriction:} {\tt liw} $\geq$ {\tt MAX(nr,nc) + 1}.
 
-\itt{error} is a scalar \intentin\ argument of type default
+\itt{error} is a scalar \intentin\ argument of type
 \integer, that holds the stream number for error messages.
 Error messages will only occur if {\tt error > 0}.
 
-\itt{warning} is a scalar \intentin\ argument of type default
+\itt{warning} is a scalar \intentin\ argument of type
 \integer, that holds the stream number for warning messages.
 Warning messages will only occur if {\tt warning > 0}.
 
-\itt{inform} is a scalar \intentout\ argument of type default \integer.
+\itt{inform} is a scalar \intentout\ argument of type \integer.
 A successful call to {\tt \packagename\_reorder\_by\_rows}
 is indicated when {\tt inform} has the value 0 on exit.
 For other return values of {\tt inform}, see Section~\ref{galerrors}.
@@ -316,31 +321,31 @@ The vector $x$ is sorted in acending order as follows:
 {\tt CALL \packagename\_quicksort ( n, x, inform [, ix ] [, rx] )}
 
 \begin{description}
-\itt{n} is a scalar \intentin\ argument of type default
+\itt{n} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to $n$, the
 number of entries of {\tt x} that are to be sorted.
 {\bf Restriction:} ${\tt n} > 0$  and {\tt n} $< 2^{32}$.
 
 \itt{x} is a rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type either default
-\integer\ or default \realdp, whose first {\tt n} components must be set by
+dimension at least {\tt n} and type either
+\integer\ or \realdp, whose first {\tt n} components must be set by
 the user on input. On successful return, these components will have
 been sorted to ascending order.
 
-\itt{inform} is a scalar \intentout\ argument of type default \integer.
+\itt{inform} is a scalar \intentout\ argument of type \integer.
 A successful call to {\tt \packagename\_quicksort}
 is indicated when {\tt inform} has the value 0 on exit.
 For other return values of {\tt inform}, see Section~\ref{galerrors}.
 
 \itt{ix} is an optional rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type default \integer.
+dimension at least {\tt n} and type \integer.
 If {\tt ix} is present, exactly the same permutation is applied to the
 components of {\tt ix} as to the components of {\tt x}.
 For example, the inverse permutation will be provided if {\tt ix(i)} is set to
 {\tt i,} for $i = 1, \ldots, n$ on entry.
 
 \itt{rx} is an optional rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type default \realdp.
+dimension at least {\tt n} and type \realdp.
 If {\tt rx} is present, exactly the same permutation is applied to the
 components of {\tt rx} as to the components of {\tt x}.
 
@@ -359,24 +364,24 @@ The initial heap is constructed as follows:
 
 \vspace*{-3mm}
 \begin{description}
-\itt{n} is a scalar \intentin\ argument of type default
+\itt{n} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to $n$, the
 number of entries of {\tt x} that are to be (partially) sorted.
 {\bf Restriction:} ${\tt n} > 0$.
 
 \itt{x} is a rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type either default
-\integer\ or default \realdp, whose first {\tt n} components  must be set by
+dimension at least {\tt n} and type either
+\integer\ or \realdp, whose first {\tt n} components  must be set by
 the user on input. On successful return, the elements of {\tt x} will have
 been permuted so that they form a heap.
 
-\itt{inform} is a scalar \intentout\ argument of type default \integer.
+\itt{inform} is a scalar \intentout\ argument of type \integer.
 A successful call to {\tt \packagename\_heapsort\_build}
 is indicated when {\tt inform} has the value 0 on exit.
 For other return values of {\tt inform}, see Section~\ref{galerrors}.
 
 \itt{ix} is an optional rank-one \intentinout\ array argument of
-dimension at least {\tt n} and type default \integer.
+dimension at least {\tt n} and type \integer.
 If {\tt ix} is present, exactly the same permutation is applied to the
 components of {\tt ix} as to the components of {\tt x}.
 For example, the inverse permutation will be
@@ -384,7 +389,7 @@ provided if {\tt ix(i)} is set to {\tt i,} for $i = 1, \ldots, n$
 on entry.
 
 \itt{largest} is an optional scalar \intentin\ argument
-of type default \integer.
+of type \integer.
 If {\tt largest} is present and set to \true, the heap will be built so
 that the largest entry is at the root, and thus the subsequent sort will
 determine the largest entries in order. Otherwise, the heap will be
@@ -405,14 +410,14 @@ to form a new heap with the remaining entries:
 
 \vspace*{-3mm}
 \begin{description}
-\itt{m} is a scalar \intentin\ argument of type default
+\itt{m} is a scalar \intentin\ argument of type
 \integer, that must be set by the user to $m$, the
 number of entries of {\tt x} that lie on the heap on entry.
 {\bf Restriction:} ${\tt m} > 0$.
 
 \itt{x} is a rank-one \intentinout\ array argument of
-dimension at least {\tt m} and type either default
-\integer\ or default \realdp\, whose first {\tt m} components must be set by
+dimension at least {\tt m} and type either
+\integer\ or \realdp\, whose first {\tt m} components must be set by
 the user on input so that they form a heap.
 In practice, this normally means that they have been placed on a heap
 by a previous call to
@@ -423,18 +428,18 @@ On output, the smallest of the first {\tt m} components of {\tt x} will have
 been moved to position {\tt x(m)} and the remaining components will now occupy
 locations $1,  2,  .... $ {\tt m-1} of {\tt x} and will again form a heap.
 
-\itt{inform} is a scalar \intentout\ argument of type default \integer.
+\itt{inform} is a scalar \intentout\ argument of type \integer.
 A successful call to {\tt \packagename\_heapsort\_smallest}
 is indicated when {\tt inform} has the value 0 on exit.
 For other return values of {\tt inform}, see Section~\ref{galerrors}.
 
 \itt{ix} is an optional rank-one \intentinout\ array argument of
-dimension at least {\tt m} and type default \integer.
+dimension at least {\tt m} and type \integer.
 If {\tt ix} is present, exactly the same permutation is applied to the
 components of {\tt ix} as to the components of {\tt x}.
 
 \itt{largest} is an optional scalar \intentin\ argument
-of type default \integer.
+of type \integer.
 If {\tt largest} is present and set to \true, the largest, rather than the
 smallest, entry will be found and placed in {\tt x(m)} on exit, and
 the remaining heap rebuilt

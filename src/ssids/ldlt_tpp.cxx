@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 09:50 GMT
+ *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT
  */
 
 #include "ssids_cpu_kernels_ldlt_tpp.hxx"
@@ -28,7 +28,7 @@ namespace {
 
 /** overload fabs for floats and doubles */
 rpc_ fabs_(rpc_ x) {
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
      double fabsd = fabs(double(x));
      float fabss;
      fabss = fabsd;

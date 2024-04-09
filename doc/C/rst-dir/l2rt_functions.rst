@@ -15,8 +15,9 @@ overview of functions provided
 	
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -26,9 +27,9 @@ overview of functions provided
 	// global functions
 
 	void :ref:`l2rt_initialize<doxid-galahad__l2rt_8h_1a0103448a3db662f9c483f9f44a5112bc>`(
-		void** data,
+		void **data,
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`l2rt_read_specfile<doxid-galahad__l2rt_8h_1a1b63f8b501208629cceb662b03f35684>`(
@@ -38,27 +39,27 @@ overview of functions provided
 
 	void :ref:`l2rt_import_control<doxid-galahad__l2rt_8h_1adf880b26c8aea32493857f8576e58ae8>`(
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`l2rt_solve_problem<doxid-galahad__l2rt_8h_1a53042b19cef3a62c34631b00111ce754>`(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` shift,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` power,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` weight,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` shift,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[]
 	);
 
-	void :ref:`l2rt_information<doxid-galahad__l2rt_8h_1a4fa18245556cf87b255b2b9ac5748ca9>`(void** data, struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, int* status);
+	void :ref:`l2rt_information<doxid-galahad__l2rt_8h_1a4fa18245556cf87b255b2b9ac5748ca9>`(void **data, struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`l2rt_terminate<doxid-galahad__l2rt_8h_1aa9b62de33c3d6c129cca1e90a3d548b7>`(
-		void** data,
+		void **data,
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
 		struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform
 	);
@@ -68,25 +69,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -98,9 +111,9 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void l2rt_initialize(
-		void** data,
+		void **data,
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Set default control values and initialize private data
@@ -126,7 +139,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -174,8 +187,8 @@ relate to the components of the control structure.
 
 	void l2rt_import_control(
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Import control parameters prior to solution.
@@ -199,7 +212,7 @@ Import control parameters prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -212,16 +225,16 @@ Import control parameters prior to solution.
 	:class: doxyrest-title-code-block
 
 	void l2rt_solve_problem(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` shift,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` power,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` weight,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` shift,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[]
 	)
 
 Solve the regularized-least-squares problem using reverse communication.
@@ -242,7 +255,7 @@ Solve the regularized-least-squares problem using reverse communication.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  This must be set to
 		  
@@ -301,42 +314,42 @@ Solve the regularized-least-squares problem using reverse communication.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of equations (i.e., rows of $A$), $m > 0$
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of equations (i.e., rows of $A$), $m > 0$
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables (i.e., columns of $A$), $n > 0$
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables (i.e., columns of $A$), $n > 0$
 
 	*
 		- power
 
-		- is a scalar of type double, that holds the regularization power, $p \geq 2$
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the regularization power, $p \geq 2$
 
 	*
 		- weight
 
-		- is a scalar of type double, that holds the regularization weight, $\sigma > 0$
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the regularization weight, $\sigma > 0$
 
 	*
 		- shift
 
-		- is a scalar of type double, that holds the shift, $\mu$
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the shift, $\mu$
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- u
 
-		- is a one-dimensional array of size m and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 .. index:: pair: function; l2rt_information
 .. _doxid-galahad__l2rt_8h_1a4fa18245556cf87b255b2b9ac5748ca9:
@@ -344,7 +357,7 @@ Solve the regularized-least-squares problem using reverse communication.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void l2rt_information(void** data, struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, int* status)
+	void l2rt_information(void **data, struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -369,7 +382,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -381,7 +394,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void l2rt_terminate(
-		void** data,
+		void **data,
 		struct :ref:`l2rt_control_type<doxid-structl2rt__control__type>`* control,
 		struct :ref:`l2rt_inform_type<doxid-structl2rt__inform__type>`* inform
 	)

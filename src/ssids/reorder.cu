@@ -1,7 +1,7 @@
 /* Copyright (c) 2013 Science and Technology Facilities Council (STFC)
  * Licence: BSD licence, see LICENCE file for details
  * Author: Jonathan Hogg
- * This version: GALAHAD 4.3 - 2024-02-03 AT 09:50 GMT
+ * This version: GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT
  */
 
 #ifdef __cplusplus
@@ -18,7 +18,7 @@
 #include "ssids_gpu_kernels_datatypes.h"
 #include "spral_cuda_cuda_check.h"
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define multiswap_type multiswap_type_single
 #define multireorder_data multireorder_data_single
 #define multisymm_type multisymm_type_single

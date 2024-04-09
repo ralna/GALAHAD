@@ -6,14 +6,14 @@
  * Jeremey Appleyard    NVIDIA
  *
  * This code has not yet been publically released under any licence.
- * This version: GALAHAD 4.3 - 2024-02-03 AT 09:50 GMT
+ * This version: GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT
  */
 
 #include <cublas_v2.h>
 #include "spral_cuda_cuda_check.h"
 #include "ssids_rip.hxx"
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define gather gather_single
 #define gemv_transpose_lookup gemv_transpose_lookup_single
 #define gemv_transpose_sps_rhs gemv_transpose_sps_rhs_single

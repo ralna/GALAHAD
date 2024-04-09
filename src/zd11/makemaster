@@ -50,8 +50,8 @@ include $(GALAHAD)/src/makedefs/definitions
 
 $(PACKAGE)OBJECTSS = $(DEPENDENCIES) $(HLGS)(hsl_$(package)s.o)
 $(PACKAGE)OBJECTSD = $(DEPENDENCIES) $(HLGD)(hsl_$(package)d.o)
-$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(HLGS64)(hsl_$(package)s.o)
-$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(HLGD64)(hsl_$(package)d.o)
+$(PACKAGE)OBJECTSS64 = $(DEPENDENCIES) $(HLGS64)(hsl_$(package)s_64.o)
+$(PACKAGE)OBJECTSD64 = $(DEPENDENCIES) $(HLGD64)(hsl_$(package)d_64.o)
 
 #  main compilations and runs
 

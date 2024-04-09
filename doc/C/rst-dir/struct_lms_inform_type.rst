@@ -15,9 +15,9 @@ lms_inform_type structure
 	struct lms_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		int :ref:`length<doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structlms__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structlms__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`length<doxid-structlms__inform__type_1a9f59b34b1f25fe00023291b678246bcc>`;
 		bool :ref:`updates_skipped<doxid-structlms__inform__type_1a40b8937875a7d11bf4825d7f3bce57e8>`;
 		char :ref:`bad_alloc<doxid-structlms__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`lms_time_type<doxid-structlms__time__type>` :ref:`time<doxid-structlms__inform__type_1aa55b2c025b7cbc14de6ba0e1acfdae05>`;
@@ -38,7 +38,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 the return status. Possible values are:
 
@@ -84,7 +84,7 @@ the return status. Possible values are:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -94,7 +94,7 @@ the status of the last attempted allocation/deallocation
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int length
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` length
 
 the number of pairs (s,y) currently used to represent the limited-memory matrix.
 

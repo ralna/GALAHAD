@@ -16,8 +16,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -28,45 +29,57 @@ overview of functions provided
 
 	// global functions
 
-	void :ref:`gls_initialize<doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5>`(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control);
+	void :ref:`gls_initialize<doxid-galahad__gls_8h_1ab7827883517db347ee1229eda004ede5>`(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control);
 	void :ref:`gls_read_specfile<doxid-galahad__gls_8h_1a428c3dcc1d0de87f6108d396eec6e176>`(struct :ref:`gls_control<doxid-structgls__control>`* control, const char specfile[]);
-	void :ref:`gls_import<doxid-galahad__gls_8h_1a1b34338e803f603af4161082a25f4e58>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status);
-	void :ref:`gls_reset_control<doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status);
+	void :ref:`gls_import<doxid-galahad__gls_8h_1a1b34338e803f603af4161082a25f4e58>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
+	void :ref:`gls_reset_control<doxid-galahad__gls_8h_1a8b84f081ccc0b05b733adc2f0a829c07>`(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`gls_information<doxid-galahad__gls_8h_1a620dc0f7a9ef6049a7bafdc02913da47>`(
-		void** data,
+		void **data,
 		struct :ref:`gls_ainfo<doxid-structgls__ainfo>`* ainfo,
 		struct :ref:`gls_finfo<doxid-structgls__finfo>`* finfo,
 		struct :ref:`gls_sinfo<doxid-structgls__sinfo>`* sinfo,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
-	void :ref:`gls_finalize<doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390>`(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control, int* status);
+	void :ref:`gls_finalize<doxid-galahad__gls_8h_1a4758f1fc9cad110a33c1778254b51390>`(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 .. _details-global:
 
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -77,7 +90,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_initialize(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control)
+	void gls_initialize(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control)
 
 Set default control values and initialize private data
 
@@ -136,7 +149,7 @@ relate to the components of the control structure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_import(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status)
+	void gls_import(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Import problem data into internal storage prior to solution.
 
@@ -161,7 +174,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -195,7 +208,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_reset_control(struct :ref:`gls_control<doxid-structgls__control>`* control, void** data, int* status)
+	void gls_reset_control(struct :ref:`gls_control<doxid-structgls__control>`* control, void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Reset control parameters after import if required.
 
@@ -220,7 +233,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1** The import was successful, and the package is
                     ready for the solve phase
@@ -232,11 +245,11 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void gls_information(
-		void** data,
+		void **data,
 		struct :ref:`gls_ainfo<doxid-structgls__ainfo>`* ainfo,
 		struct :ref:`gls_finfo<doxid-structgls__finfo>`* finfo,
 		struct :ref:`gls_sinfo<doxid-structgls__sinfo>`* sinfo,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Provides output information
@@ -272,7 +285,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * 0. The values were recorded successfully
 
@@ -282,7 +295,7 @@ Provides output information
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void gls_finalize(void** data, struct :ref:`gls_control<doxid-structgls__control>`* control, int* status)
+	void gls_finalize(void **data, struct :ref:`gls_control<doxid-structgls__control>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Deallocate all internal private storage
 
@@ -307,7 +320,7 @@ Deallocate all internal private storage
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully

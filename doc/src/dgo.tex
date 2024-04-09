@@ -56,20 +56,22 @@ and
 
 %\subsection{Calling sequences}
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt GALAHAD\_userdata\_type},
 {\tt \packagename\_time\_\-type},
@@ -135,12 +137,9 @@ only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
 and the first $n$ components of the array {\tt H\%val} may be used for
 the purpose.
 
-%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Integer kinds}\label{Integer kinds}
-We use the term
-long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
-{\tt long = selected\_int\_kind(18))}.
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -155,17 +154,17 @@ if this is available. The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
-\ittf{n} is a scalar component of type default \integer,
+\ittf{n} is a scalar component of type \integer,
 that holds the dimension of the matrix.
 
-\ittf{ne} is a scalar variable of type default \integer, that
+\ittf{ne} is a scalar variable of type \integer, that
 holds the number of matrix entries.
 
 \ittf{type} is a rank-one allocatable array of type default \character, that
 is used to indicate the matrix storage scheme used. Its precise length and
 content depends on the type of matrix to be stored (see \S\ref{typeprob}).
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\,
+\ittf{val} is a rank-one allocatable array of type \realdp\,
 and dimension at least {\tt ne}, that holds the values of the entries.
 Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of the {\em symmetric}
 matrix $\bmH$ is represented as a single entry
@@ -173,15 +172,15 @@ matrix $\bmH$ is represented as a single entry
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
-\ittf{row} is a rank-one allocatable array of type default \integer,
+\ittf{row} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the row indices of the entries.
 (see \S\ref{coordinate}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer,
+\ittf{col} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer,
+\ittf{ptr} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt n + 1}, that may hold the pointers to
 the first entry in each row (see \S\ref{rowwise}).
 
@@ -197,7 +196,7 @@ are:
 
 \begin{description}
 
-\ittf{n} is a scalar variable of type default \integer,
+\ittf{n} is a scalar variable of type \integer,
  that holds the number of optimization variables, $n$.
 
 \ittf{H} is scalar variable of type {\tt SMT\_TYPE}
@@ -239,23 +238,23 @@ we may simply
 See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{H\%ne} is a scalar variable of type default \integer, that
+\itt{H\%ne} is a scalar variable of type \integer, that
 holds the number of entries in the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
-\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{H\%val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
 of the Hessian matrix $\bmH$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{H\%row} is a rank-one allocatable array of type default \integer,
+\itt{H\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}).
 It need not be allocated for any of the other three schemes.
 
-\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+\itt{H\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of the {\bf lower triangular} part of
 $\bmH$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
@@ -263,7 +262,7 @@ $\bmH$ in either the sparse co-ordinate
 It need not be allocated when the dense or diagonal storage schemes are used.
 
 \itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
-default \integer, that holds the starting position of
+\integer, that holds the starting position of
 each row of the {\bf lower triangular} part of $\bmH$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
@@ -272,7 +271,7 @@ other schemes are used.
 \end{description}
 
 \ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that holds the gradient $\bmg$
+\realdp, that holds the gradient $\bmg$
 of the objective function.
 The $j$-th component of
 {\tt G}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
@@ -280,10 +279,10 @@ These are equivalently the values $\bmz$ of estimates  of the dual variables
 corresponding to the simple bound constraints (see Section~\ref{galmethod}).
 
 \ittf{f} is a scalar variable of type
-default \realdp, that holds the value of the objective function.
+\realdp, that holds the value of the objective function.
 
 \ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that holds
+\realdp, that holds
 the vector of lower bounds $\bmx^{l}$ on the the variables.
 The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$,
 contains $\bmx_{j}^{l}$.
@@ -293,7 +292,7 @@ where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
 \ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that holds
+\realdp, that holds
 the vector of upper bounds $\bmx^{u}$ on the variables.
 The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$,
 contains $\bmx_{j}^{u}$.
@@ -303,7 +302,7 @@ where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp,
+\realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 
@@ -339,18 +338,18 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -358,36 +357,36 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that specifies
+\itt{start\_print} is a scalar variable of type \integer, that specifies
 the first iteration for which printing will occur in {\tt \packagename\_solve}.
 If {\tt start\_print} is negative, printing will occur from the outset.
 The default is {\tt start\_print = -1}.
 
-\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+\itt{stop\_print} is a scalar variable of type \integer, that specifies
 the last iteration for which printing will occur in  {\tt \packagename\_solve}.
 If {\tt stop\_print} is negative, printing will occur once it has been
 started by {\tt start\_print}.
 The default is {\tt stop\_print = -1}.
 
-\itt{print\_gap} is a scalar variable of type default \integer.
+\itt{print\_gap} is a scalar variable of type \integer.
 Once printing has been started, output will occur once every
 {\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
 printing will be permitted on every iteration.
 The default is {\tt print\_gap = 1}.
 
-\itt{maxit} is a scalar variable of type default \integer, that holds the
+\itt{maxit} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
 The default is {\tt maxit = 1000}.
 
-\itt{max\_evals} is a scalar variable of type default \integer, that gives
+\itt{max\_evals} is a scalar variable of type \integer, that gives
 the maximum number of function evaluations that are allowed.
 The default is {\tt max\_evals = 10000}.
 
-\itt{dictionary\_size} is a scalar variable of type default \integer, that 
+\itt{dictionary\_size} is a scalar variable of type \integer, that 
 gives the size of the initial hash dictionary.
 The default is {\tt dictionary\_size = 100000}.
 
-\itt{alive\_unit} is a scalar variable of type default \integer.
+\itt{alive\_unit} is a scalar variable of type \integer.
 If {\tt alive\_unit} $>$ 0, a temporary file named {\tt alive\_file} (see below)
 will be created on stream number {\tt alive\_unit} on initial entry to
 \solver, and execution of \solver\ will continue so
@@ -397,18 +396,18 @@ If {\tt alive\_unit} $\leq$ 0, no temporary file will be created, and
 execution cannot be terminated in this way.
 The default is {\tt alive\_unit} $=$ 60.
 
-\itt{infinity} is a scalar variable of type default \realdp, that is used to
+\itt{infinity} is a scalar variable of type \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
-\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp, 
+\itt{lipschitz\_lower\_bound} is a scalar variable of type \realdp, 
 that provides a lower bound on the Lipschitz constant for the gradient.
 This must be non-negative (and not zero unless the function is constant).
 The default is {\tt lipschitz\_lower\_bound =} $10^{-6}$.
 
 \itt{lipschitz\_reliability} and {\tt lipschitz\_control} are scalar variables 
-of type default \realdp, that are used to provide a reliable estimate of 
+of type \realdp, that are used to provide a reliable estimate of 
 the Lipschitz constant in the current sub-box. 
 Specifically, the Lipschitz constant used will be
 {\tt lipschitz\_reliability} + max( 1, n - 1 ) * {\tt lipschitz\_control} 
@@ -416,13 +415,13 @@ Specifically, the Lipschitz constant used will be
 The defaults are {\tt lipschitz\_reliab\-ility =} $2.0$ and
 {\tt lipschitz\_control =} $50$.
 
-\itt{stop\_length} is a scalar variable of type default \realdp, that is 
+\itt{stop\_length} is a scalar variable of type \realdp, that is 
 used to stop the iteration. This will happen if the length of the ``diagonal''
 in the sub-box with the smallest-found objective function is smaller than 
 {\tt stop\_length} times that of the original bound box.
 The default is {\tt stop\_length =} $10^{-4}$.
 
-\itt{stop\_f} is a scalar variable of type default \realdp, that is used to
+\itt{stop\_f} is a scalar variable of type \realdp, that is used to
 stop the iteration. This will happen if the gap between the best objective 
 value found and the smallest lower bound is smaller than {\tt stop\_f}.
 The default is {\tt stop\_f =} $10^{-4}$.
@@ -435,12 +434,12 @@ The default is {\tt potential\_u\-nbounded =} $-u^{-2}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+\itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
 
-\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+\itt{clock\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.
@@ -536,20 +535,20 @@ are:
 \itt{total} is a scalar variable of type default \real, that gives
  the CPU total time spent in the package.
 
-\itt{univariate\_global} is a scalar variable of type default \realdp, that 
+\itt{univariate\_global} is a scalar variable of type \realdp, that 
 gives the CPU time spent performing univariate global optimization.
 
-\itt{multivariate\_local} is a scalar variable of type default \realdp, that 
+\itt{multivariate\_local} is a scalar variable of type \realdp, that 
 gives the CPU time spent performing multivariate local optimization.
 
 \itt{clock\_total} is a scalar variable of type default \real, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_univariate\_global} is a scalar variable of type default \realdp, 
+\itt{clock\_univariate\_global} is a scalar variable of type \realdp, 
 that gives the elapsed system clock time spent performing univariate global 
 optimization.
 
-\itt{clock\_multivariate\_local} is a scalar variable of type default \realdp, 
+\itt{clock\_multivariate\_local} is a scalar variable of type \realdp, 
 that gives the  elapsed system clock time spent performing multivariate local 
 optimization.
 
@@ -567,13 +566,13 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See Sections~\ref{reverse} and \ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -582,26 +581,26 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{f\_eval} is a scalar variable of type default \integer, that gives the
+\itt{f\_eval} is a scalar variable of type \integer, that gives the
 total number of objective function evaluations performed.
 
-\itt{g\_eval} is a scalar variable of type default \integer, that gives the
+\itt{g\_eval} is a scalar variable of type \integer, that gives the
 total number of objective function gradient evaluations performed.
 
-\itt{h\_eval} is a scalar variable of type default \integer, that gives the
+\itt{h\_eval} is a scalar variable of type \integer, that gives the
 total number of objective function Hessian evaluations performed.
 
-\ittf{obj} is a scalar variable of type default \realdp, that holds the
+\ittf{obj} is a scalar variable of type \realdp, that holds the
 value of the objective function at the best estimate of the solution found.
 
-\itt{norm\_pg} is a scalar variable of type default \realdp, that holds the
+\itt{norm\_pg} is a scalar variable of type \realdp, that holds the
 value of the norm of the projected gradient of the objective function 
 at the best estimate of the solution found.
 
-\itt{length\_ratio} is a scalar variable of type default \realdp, that holds 
+\itt{length\_ratio} is a scalar variable of type \realdp, that holds 
 the ratio of the final to the initial box lengths.
 
-\itt{f\_gap} is a scalar variable of type default \realdp, that holds the
+\itt{f\_gap} is a scalar variable of type \realdp, that holds the
 gap  between the best objective value found and the lowest bound.
 
 \itt{why\_stop} is a scalar variable of type default \character\
@@ -922,12 +921,12 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate
 the objective function
 and to a non-zero value if the evaluation has not been possible.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{X} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -937,7 +936,7 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
 (see Section~\ref{typeuserdata}).
 
-\ittf{f} is a scalar \intentout\ argument of type default \realdp,
+\ittf{f} is a scalar \intentout\ argument of type \realdp,
 that should be set to the value of the objective function $f(\bmx)$
 evaluated at the vector $\bmx$ input in {\tt X}.
 
@@ -961,12 +960,12 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate
 the gradient of the objective function
 and to a non-zero value if the evaluation has not been possible.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{X} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -976,7 +975,7 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
 (see Section~\ref{typeuserdata}).
 
-\itt{G} is a rank-one \intentout\ argument of type default \realdp,
+\itt{G} is a rank-one \intentout\ argument of type \realdp,
 whose components should be set to the values of the gradient
 of the objective function $\nabla_x f(\bmx)$
 evaluated at the vector $\bmx$ input in {\tt X}.
@@ -1001,12 +1000,12 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate
 the Hessian of the objective function
 and to a non-zero value if the evaluation has not been possible.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{X} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -1016,7 +1015,7 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
 (see Section~\ref{typeuserdata}).
 
-\itt{Hval} is a scalar \intentout\ argument of type default \realdp,
+\itt{Hval} is a scalar \intentout\ argument of type \realdp,
 whose components should be set to the values of the Hessian
 of the objective function $\nabla_{xx} f(\bmx)$
 evaluated at the vector $\bmx$ input in {\tt X}. The values should
@@ -1045,13 +1044,13 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 sum $\bmu + \nabla_{xx} f(\bmx) \bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \ittf{X} is a \ rank-one \intentin\ array argument of type
-default \realdp\ whose components contain the vector $\bmx$.
+\realdp\ whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
 {\tt GALAHAD\_userdata\_type} whose components may be used
@@ -1060,11 +1059,11 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
 (see Section~\ref{typeuserdata}).
 
-\ittf{U} is a rank-one \intentinout\ array argument of type default \realdp\
+\ittf{U} is a rank-one \intentinout\ array argument of type \realdp\
 whose components on input contain the vector $\bmu$ and on output the
 sum $\bmu + \nabla_{xx} f(\bmx) \bmv$.
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$.
 
 \ittf{got\_h} is an \optional\ scalar \intentin\ argument of type default
@@ -1104,13 +1103,13 @@ If needed, the routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 sum $\bmu + \nabla_{xx} f(\bmx) \bmv$
 and to a non-zero value if the evaluation has not been possible.
 
 \ittf{X} is a \ rank-one \intentin\ array argument of type
-default \realdp\ whose components contain the vector $\bmx$.
+\realdp\ whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
 {\tt GALAHAD\_userdata\_type} whose components may be used
@@ -1119,28 +1118,28 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
 (see Section~\ref{typeuserdata}).
 
-\itt{nnz\_v} is a scalar \intentin\ argument of type default \integer,
+\itt{nnz\_v} is a scalar \intentin\ argument of type \integer,
 that specifies the number of nonzeros in the input sparse vector
 $\bmv$.
 
 \itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length 
-at least {\tt nnz\_v} and type default \integer\ 
+at least {\tt nnz\_v} and type \integer\ 
 whose first {\tt nnz\_v} components 
 give the indices of the nonzero components of $\bmv$.
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components {\tt INDEX\_nz\_v(i)}, {\tt i} $= 1, \ldots,$ {\tt nnz\_v},
 hold the nonzero values of $\bmv$. Any other components should be ignored.
 
-\itt{nnz\_u} is a scalar \intentout\ argument of type default \integer,
+\itt{nnz\_u} is a scalar \intentout\ argument of type \integer,
 that gives the number of nonzeros in the output vector $\bmu$.
 
 \itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length 
-at least {\tt nnz\_u} and type default \integer\ 
+at least {\tt nnz\_u} and type \integer\ 
 whose first {\tt nnz\_u} components give the indices of the 
 nonzero components of the computed product $\bmu$.
 
-\ittf{U} is a rank-one \intentout\ array argument of type default \realdp\
+\ittf{U} is a rank-one \intentout\ array argument of type \realdp\
 whose components {\tt INDEX\_nz\_u(i)}, {\tt i} $= 1, \ldots,$ {\tt nnz\_u},
 hold the nonzero values of $\bmu$. The remaining components should be ignored.
 
@@ -1178,12 +1177,12 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 product $\bmP(\bmx) \bmv$
 and to a non-zero value if the evaluation has not been possible.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{X} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -1193,11 +1192,11 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H} and {\tt eval\_PREC}
 (see Section~\ref{typeuserdata}).
 
-\ittf{U} is a rank-one \intentout\ array argument of type default \realdp\
+\ittf{U} is a rank-one \intentout\ array argument of type \realdp\
 whose components on output should contain the product
 sum $\bmu = \bmP(\bmx) \bmv$.
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$.
 
 \end{description}
@@ -1549,7 +1548,7 @@ that each affects are given in Table~\vref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

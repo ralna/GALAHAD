@@ -68,21 +68,22 @@ and optionally
 
 \galhowto
 
-\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
-If it is required to use both modules at the same time, the derived types
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_data\-\_type}, and
@@ -186,10 +187,9 @@ component $m \ast (i-1) + j$ of the storage array {\tt val}
 will hold the value $a_{ij}$
 for $1 \leq i \leq m$ and $1 \leq j \leq n$.
 
-\subsection{Integer kinds}\label{Integer kinds}
-We use the term
-long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
-{\tt long = selected\_int\_kind(18))}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -208,11 +208,11 @@ The components of {\tt SMT\_type} used are:
 
 \begin{description}
 
-\ittf{m} is a scalar variable of type default \integer, that holds
+\ittf{m} is a scalar variable of type \integer, that holds
 the row dimension $m$ of the matrix  $\bmA$.
 \restriction {\tt m} $\geq$ {\tt 1}.
 
-\ittf{n} is a scalar variable of type default \integer, that holds
+\ittf{n} is a scalar variable of type \integer, that holds
 the column dimension $n$ of the matrix  $\bmA$.
 \restriction {\tt n} $\geq$ {\tt 1}.
 
@@ -248,24 +248,24 @@ the co-ordinate scheme, we may simply
 See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{ne} is a scalar variable of type default \integer, that
+\itt{ne} is a scalar variable of type \integer, that
 holds the number of entries in $\bmA$
 in the sparse co-ordinate storage scheme (see \S\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
-\itt{val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the matrix $\bmA$ for each of the
 storage schemes discussed in \S\ref{galmatrix}.
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
-\itt{row} is a rank-one allocatable array of type default \integer,
+\itt{row} is a rank-one allocatable array of type \integer,
 that holds the row indices of $\bmA$ in the sparse co-ordinate storage
 scheme (see \S\ref{coordinate}).
 It need not be allocated for any of the other schemes.
 Any entry whose row index lies out of the range $[$1,n$]$ will be ignored.
 
-\itt{col} is a rank-one allocatable array variable of type default \integer,
+\itt{col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of $\bmA$ in either the sparse co-ordinate
 (see \S\ref{coordinate}), or the sparse row-wise
 (see \S\ref{rowwise}) storage scheme.
@@ -276,7 +276,7 @@ Any entry whose row index lies out of the range $[$1,m$]$ or
 column index lies out of the range $[$1,n$]$ will be ignored.
 
 \itt{ptr} is a rank-one allocatable array of size {\tt m+1} and type
-default \integer, that holds the starting position of $\bmA$, as well
+\integer, that holds the starting position of $\bmA$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see \S\ref{rowwise}). It need not be allocated for the
 other schemes.
@@ -307,22 +307,22 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 unit number for error messages.
 Printing of error messages is suppressed if ${\tt error} < {\tt 0}$.
 The default is {\tt error = 6}.
 
-\itt{warning} is a scalar variable of type default \integer, that holds the
+\itt{warning} is a scalar variable of type \integer, that holds the
 unit number for warning messages.
 Printing of warning messages is suppressed if ${\tt warning} < {\tt 0}$.
 The default is {\tt warning = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 unit number for informational messages.
 Printing of informational messages is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer,
+\itt{print\_level} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output that is required. No
 informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
@@ -332,7 +332,7 @@ If {\tt print\_level} $\geq$ {\tt 2} this output
 may be increased to provide significant detail of the factorization process.
 The default is {\tt print\_level = 0}.
 
-\itt{print\_level\_solver} is a scalar variable of type default \integer,
+\itt{print\_level\_solver} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output that is required by the exteral
 solver. No
@@ -341,41 +341,41 @@ informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
 dependent.
 The default is {\tt print\_level\_solver = 0}.
 
-\itt{initial\_fill\_in\_factor} is a scalar variable of type default \integer,
+\itt{initial\_fill\_in\_factor} is a scalar variable of type \integer,
 that gives a prediction of the factor by which the fill-in will exceed
 the initial number of entries in $\bma$.
 The default is {\tt initial\_fill\_in\_factor = 3}.
 
-\itt{min\_real\_factor\_size} is a scalar variable of type default \integer,
+\itt{min\_real\_factor\_size} is a scalar variable of type \integer,
 that specifies the amount of real storage that will initially be
 allocated for the factors and other data.
 The default is {\tt min\_real\_factor\_size = 10000},
 and this default is used if {\tt min\_real\_factor\_size < 1}.
 
-\itt{min\_integer\_factor\_size} is a scalar variable of type default \integer,
+\itt{min\_integer\_factor\_size} is a scalar variable of type \integer,
 that specifies the amount of integer storage that will initially be
 allocated for the factors and other data.
 The default is {\tt min\_integer\_factor\_size = 10000},
 and this default is used if {\tt min\_integer\_factor\_size < 1}.
 
-\itt{max\_factor\_size} is a scalar variable of type long \integer,
+\itt{max\_factor\_size} is a scalar variable of type \longinteger,
 that specifies the maximum amount of real storage that will be
 allocated for the factors and other data.
 The default is {\tt max\_factor\_size = HUGE(0)}.
 
-\itt{blas\_block\_size\_factorize} is a scalar variable of type default \integer,
+\itt{blas\_block\_size\_factorize} is a scalar variable of type \integer,
 that gives the block size for level-three basic linear algebra subprograms
 (BLAS) in the factorization phase.
 The default is {\tt blas\_block\_size\_factorize = 16},
 and this default is used if {\tt blas\_block\_size\_factorize < 1}.
 
-\itt{blas\_block\_size\_solve} is a scalar variable of type default \integer,
+\itt{blas\_block\_size\_solve} is a scalar variable of type \integer,
 that gives the block size for level-two and -three basic linear algebra
 subprograms (BLAS) in the solution phase.
 The default is {\tt blas\_block\_size\_solve = 16},
 and this default is used if {\tt blas\_block\_size\_solve < 1}.
 
-\itt{pivot\_control} is a scalar variable of type default \integer,
+\itt{pivot\_control} is a scalar variable of type \integer,
 that is used to control numerical pivoting by {\tt \packagename\_\-factorize}.
 Possible values are:
 \begin{description}
@@ -394,12 +394,12 @@ The default is {\tt pivot\_control = 1}, and any value outside of
 $[${\tt1,5}$]$ will be reset to the default. If a desired value
 is not available, the default will be substituted.
 
-\itt{pivot\_search\_limit} is a scalar variable of type default \integer,
+\itt{pivot\_search\_limit} is a scalar variable of type \integer,
 that controls the maximum number of row and columns searched for a pivot.
 If {\tt pivot\_search\_\-limit $\leq$ 0}, the search is unlimited.
 The default is {\tt pivot\_search\_\-limit = 0}.
 
-\itt{minimum\_size\_for\_btf} is a scalar variable of type default \integer,
+\itt{minimum\_size\_for\_btf} is a scalar variable of type \integer,
 that specifies the minimum size of a block within any block-triangular
 form found during the factorization.
 The default is {\tt minimum\_size\_for\_btf = 1}.
@@ -498,13 +498,13 @@ will have the value {\tt -1} or {\tt -1.0} as appropriate:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See \S\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 
 \itt{bad\_alloc} is a scalar variable of type default \character\
@@ -513,37 +513,37 @@ for which there were allocation or deallocation errors.
 This will be the null string if there have been no
 allocation or deallocation errors.
 
-%\itt{more\_info} is a scalar variable of type default \integer, that gives
+%\itt{more\_info} is a scalar variable of type \integer, that gives
 %additional information as
 %\ldots %  further information on failure
 
-\itt{out\_of\_range} is a scalar variable of type long \integer,
+\itt{out\_of\_range} is a scalar variable of type \longinteger,
 that is set to the number of
 entries of $\bmA$ supplied with one or both indices out of range.
 
-\itt{duplicates} is a scalar variable of type long \integer,
+\itt{duplicates} is a scalar variable of type \longinteger,
 that is set to the number of duplicate off-diagonal entries of $\bmA$ supplied.
 
-\itt{entries\_dropped} is a scalar variable of type long \integer,
+\itt{entries\_dropped} is a scalar variable of type \longinteger,
 that is set to the number of small entries dropped from the factorization.
 
-\itt{workspace\_factors} is a scalar variable of type long \integer,
+\itt{workspace\_factors} is a scalar variable of type \longinteger,
 that gives the total number of reals and integers needed to hold the
 factors.
 
-\itt{compresses} is a scalar variable of type default \integer,
+\itt{compresses} is a scalar variable of type \integer,
 that gives the number of compresses of the workspace data required.
 
-\itt{entries\_in\_factors} is a scalar variable of type long \integer,
+\itt{entries\_in\_factors} is a scalar variable of type \longinteger,
 that gives the number of entries in the factors of $\bmA$.
 
-\itt{rank} is a scalar variable of type default \integer,
+\itt{rank} is a scalar variable of type \integer,
 that gives an estimate of the rank of $\bmA$.
 
-\itt{structural\_rank} is a scalar variable of type default \integer,
+\itt{structural\_rank} is a scalar variable of type \integer,
 that gives the structural rank of $\bmA$.
 
-\itt{pivot\_control} is a scalar variable of type default \integer,
+\itt{pivot\_control} is a scalar variable of type \integer,
 that specifies what form of numerical pivoting has been used.
 Possible values are:
 \begin{description}
@@ -554,7 +554,7 @@ Possible values are:
  \itt{5}  Threshold diagonal pivoting has been performed.
 \end{description}
 
-\itt{iterative\_refinements} is a scalar variable of type default \integer,
+\itt{iterative\_refinements} is a scalar variable of type \integer,
 that gives the number of iterative refinements performed.
 
 \itt{solver} is a scalar variable of type default \character\
@@ -716,7 +716,7 @@ to the storage scheme desired (see \S\ref{typeprob}).
 Incorrectly-set components will result in errors
 flagged in {\tt inform\%status}, see \S\ref{galerrors}.
 
-%\itt{PERM} is an \optional\ \intentin\ rank-one default \integer\ argument of
+%\itt{PERM} is an \optional\ \intentin\ rank-one \integer\ argument of
 %length {\tt matrix\%n} that may be used to provide a permutation/pivot
 %order.
 %If present, {\tt PERM(i)}, {\tt i} $= 1, \ldots,$ {\tt matrix\%m}, should be set
@@ -941,11 +941,11 @@ It must have been initialized by a call to
 A successful call is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see \S\ref{galerrors}.
 
-\itt{ROWS} is a rank-one default \integer\ array argument
+\itt{ROWS} is a rank-one \integer\ array argument
 of \intentout\  and length $m$. The {\tt ROW($i$)}th row of $\bmA$
 is the $i$th row in the factors, $1 \leq i \leq m$.
 
-\itt{COLS} is a rank-one default \integer\ array argument
+\itt{COLS} is a rank-one \integer\ array argument
 of \intentout\  and length $n$. The {\tt COL($j$)}th column of $\bmA$
 is the $j$th column in the factors, $1 \leq j \leq n$.
 \end{description}
@@ -1092,7 +1092,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin\ argument of type default \integer,
+\itt{device} is a scalar \intentin\ argument of type \integer,
 that must be set to the unit number on which the specification file
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

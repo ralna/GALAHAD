@@ -54,19 +54,22 @@ and optionally
 
 \subsection{Calling sequences}
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
-If it is required to use both modules at the same time, the derived types
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_time\-\_type},
@@ -185,12 +188,9 @@ for $1 \leq j \leq i \leq n$.
 %and the first $n$ components of the array {\tt A\%val} may be used for
 %the purpose.
 
-%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Integer kinds}\label{Integer kinds}
-We use the term
-long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
-{\tt long = selected\_int\_kind(18))}.
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -209,7 +209,7 @@ The components of {\tt SMT\_type} used are:
 
 \begin{description}
 
-\ittf{n} is a scalar variable of type default \integer, that holds
+\ittf{n} is a scalar variable of type \integer, that holds
 the order $n$ of the matrix  $\bmA$.
 \restriction {\tt n} $\geq$ {\tt 1}.
 
@@ -245,26 +245,26 @@ the co-ordinate scheme, we may simply
 See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{ne} is a scalar variable of type default \integer, that
+\itt{ne} is a scalar variable of type \integer, that
 holds the number of entries in the {\bf lower triangular} part of $\bmA$
 in the sparse co-ordinate storage scheme (see \S\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
-\itt{val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
 of the matrix $\bmA$ for each of the
 storage schemes discussed in \S\ref{galmatrix}.
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
-\itt{row} is a rank-one allocatable array of type default \integer,
+\itt{row} is a rank-one allocatable array of type \integer,
 that holds the row indices of the {\bf lower triangular} part of $\bmA$
 in the sparse co-ordinate storage
 scheme (see \S\ref{coordinate}).
 It need not be allocated for any of the other schemes.
 Any entry whose row index lies out of the range $[$1,n$]$ will be ignored.
 
-\itt{col} is a rank-one allocatable array variable of type default \integer,
+\itt{col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of the {\bf lower triangular} part of
 $\bmA$ in either the sparse co-ordinate
 (see \S\ref{coordinate}), or the sparse row-wise
@@ -277,7 +277,7 @@ while the row and column indices of any entry from the
 {\bf strict upper triangle} will implicitly be swapped.
 
 \itt{ptr} is a rank-one allocatable array of size {\tt n+1} and type
-default \integer, that holds the starting position of
+\integer, that holds the starting position of
 each row of the {\bf lower triangular} part of $\bmA$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see \S\ref{rowwise}). It need not be allocated for the
@@ -306,24 +306,24 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 unit number for error messages.
 Printing of error messages is suppressed if ${\tt error} < {\tt 0}$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 unit number for informational messages.
 6Printing of informational messages is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer,
+\itt{print\_level} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output that is required. No
 informational output will occur if ${\tt print\_level} \leq {\tt 0}$. 
 Every increasing values produce more information.
 The default is {\tt print\_level = 0}.
 
-\itt{preconditioner} is a scalar variable of type default \integer, that 
+\itt{preconditioner} is a scalar variable of type \integer, that 
 indicates the preconditioner required. Possible values are
 \begin{description}
 \itt{<0} no preconditioning occurs, $\bmP = \bmI$
@@ -357,24 +357,24 @@ indicates the preconditioner required. Possible values are
 is not part of the package, and that must be obtained separately.
 The default is {\tt preconditioner = 0}.
 
-\itt{semi\_bandwidth} is a scalar variable of type default \integer, that holds
+\itt{semi\_bandwidth} is a scalar variable of type \integer, that holds
 the semi-bandwidth used if a band preconditioner ({\tt \%preconditioner = 2,3})
 is selected. Any negative value will be regarded as {\tt 0}.
 The default is {\tt semi\_bandwidth = 5}.
 
-%\itt{scaling} is a scalar variable of type default \integer, that holds
+%\itt{scaling} is a scalar variable of type \integer, that holds
 %The default is {\tt scaling = 0}.
 
-%\itt{ordering} is a scalar variable of type default \integer, that holds
+%\itt{ordering} is a scalar variable of type \integer, that holds
 %The default is {\tt ordering = 0}.
 
-\itt{max\_col} is a scalar variable of type default \integer, that holds
+\itt{max\_col} is a scalar variable of type \integer, that holds
 the maximum number of nonzeros in a column of $\bmA$ that are allowed
 for a Schur-complement factorization, rather than a refactorization, 
 to accommodate newly deleted columns.
 The default is {\tt max\_col = 100}.
 
-\itt{icfs\_vectors} is a scalar variable of type default \integer, that holds
+\itt{icfs\_vectors} is a scalar variable of type \integer, that holds
 the number of extra vectors of length $n$ required by the Lin--Mor\'{e} 
 incomplete Cholesky preconditioner ({\tt \%preconditioner = 6}).
 Usually, the larger the number, the
@@ -382,7 +382,7 @@ better the preconditioner, but the more space and effort required to
 use it. Any negative value will be regarded as {\tt 0}.
 The default is {\tt icfs\_vectors = 10}.
 
-\itt{mi28\_lsize} is a scalar variable of type default \integer, that holds
+\itt{mi28\_lsize} is a scalar variable of type \integer, that holds
 the maximum number of fill entries within each column of the incomplete
 factor $\bmL$ computed by {\tt HSL\_MI28} ({\tt \%preconditioner = 7}).
 In general, increasing {\tt mi28\_lsize} improves
@@ -390,7 +390,7 @@ the quality of the preconditioner but increases the time to compute
 and then apply the preconditioner. Values less than 0 are treated as 0.
 The default is {\tt mi28\_lsize = 10}.
 
-\itt{mi28\_rsize} is a scalar variable of type default \integer, that holds
+\itt{mi28\_rsize} is a scalar variable of type \integer, that holds
 the maximum number of entries within each column of the strictly lower
 triangular matrix $\bmR$ used in the computation of the preconditioner by
 {\tt HSL\_MI28} ({\tt \%preconditioner = 7)}.
@@ -402,7 +402,7 @@ preconditioner than using {\tt mi28\_rsize = 0}, and choosing
 {\tt mi28\_rsize} $\geq$  {\tt mi28\_lsize} is generally recommended.
 The default is {\tt mi28\_rsize = 10}.
 
-\itt{max\_col} is a scalar variable of type default \integer, that specifies
+\itt{max\_col} is a scalar variable of type \integer, that specifies
 Any non-positive value will be regarded as {\tt 1}.
 The default is {\tt max\_col = 100}.
 \itt{prefix} is a scalar variable of type default \character\
@@ -414,7 +414,7 @@ thus ignoring the first and last non-null components of the
 supplied string. If the user does not want to preface lines by such
 a string, the default {\tt prefix = ""} should be used.
 
-\itt{min\_diagonal} is a scalar variable of type default \realdp,
+\itt{min\_diagonal} is a scalar variable of type \realdp,
 that specifies the smallest permitted diagonal in $\bmP$ for some
 of the preconditioners provided. See {\tt preconditioner} above.
 The default is {\tt min\_diagonal = 0.00001}.
@@ -493,37 +493,37 @@ of the calculation. The components of
 {\tt \packagename\_time\_type}
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time (in seconds) spent in the package.
 
-\itt{analyse} is a scalar variable of type default \realdp, that gives
+\itt{analyse} is a scalar variable of type \realdp, that gives
  the CPU time spent analysing the matrix structure prior to building and
  factorizing the preconditioner.
 
-\itt{factorize} is a scalar variable of type default \realdp, that gives
+\itt{factorize} is a scalar variable of type \realdp, that gives
  the CPU time spent building and factorizing the preconditioner.
 
-\itt{solve} is a scalar variable of type default \realdp, that gives
+\itt{solve} is a scalar variable of type \realdp, that gives
  the CPU time spent applying the preconditioner.
 
-\itt{update} is a scalar variable of type default \realdp, that gives
+\itt{update} is a scalar variable of type \realdp, that gives
  the CPU time spent updating existing factorizations.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time (in seconds) spent in the package.
 
-\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+\itt{clock\_analyse} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent analysing the matrix structure prior to 
  building and factorizing the preconditioner.
 
-\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+\itt{clock\_factorize} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent building and factorizing the 
  preconditioner.
 
-\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+\itt{clock\_solve} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent applying the preconditioner.
 
-\itt{clock\_update} is a scalar variable of type default \realdp,
+\itt{clock\_update} is a scalar variable of type \realdp,
  that gives  the elapsed system clock time spent updating existing 
  factorizations.
 
@@ -543,13 +543,13 @@ will have the value {\tt -1} or {\tt -1.0} as appropriate:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See \S\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 
 \itt{bad\_alloc} is a scalar variable of type default \character\
@@ -558,7 +558,7 @@ for which there were allocation or deallocation errors.
 This will be the null string if there have been no
 allocation or deallocation errors.
 
-\itt{preconditioner} is a scalar variable of type default \integer,
+\itt{preconditioner} is a scalar variable of type \integer,
 that indicates the preconditioner method used. The range of values returned
 corresponds to those requested in {\tt control\%preconditioner},
 excepting that the requested value may have been altered to a more
@@ -566,35 +566,35 @@ appropriate one during the factorization. In particular, if the automatic
 choice {\tt control\%preconditioner = 0} is requested,
 {\tt preconditioner} reports the actual choice made.
 
-\itt{semi\_bandwidth} is a scalar variable of type default \integer,
+\itt{semi\_bandwidth} is a scalar variable of type \integer,
 that indicates the actual semi-bandwith.
 
-\itt{reordered\_semi\_bandwidth} is a scalar variable of type default \integer,
+\itt{reordered\_semi\_bandwidth} is a scalar variable of type \integer,
 that indicates the semi-bandwith used after reordering.
 
-\itt{semi\_bandwidth\_used} is a scalar variable of type default \integer,
+\itt{semi\_bandwidth\_used} is a scalar variable of type \integer,
 that indicates the actual semi-bandwith used.
 
-\itt{out\_of\_range} is a scalar variable of type default \integer,
+\itt{out\_of\_range} is a scalar variable of type \integer,
 that is set to the number of
 entries of $\bmA$ supplied with one or both indices out of range.
 
-\itt{duplicates} is a scalar variable of type default \integer,
+\itt{duplicates} is a scalar variable of type \integer,
 that is set to the number of duplicate off-diagonal entries of $\bmA$ supplied.
 
-\itt{upper} is a scalar variable of type default \integer,
+\itt{upper} is a scalar variable of type \integer,
 that is set to the number of input entries from the strict upper triangle
 of $\bmA$.
 
-\itt{missing\_diagonals} is a scalar variable of type default \integer,
+\itt{missing\_diagonals} is a scalar variable of type \integer,
 that gives the number of diagonal entries entries missing for an
 allegedly-definite matrix $\bmA$.
 
-\itt{neg1} is a scalar variable of type default \integer,
+\itt{neg1} is a scalar variable of type \integer,
 that gives the number of 1 by 1 pivots present in the factorization
 of $\bmA$.
 
-\itt{neg2} is a scalar variable of type default \integer,
+\itt{neg2} is a scalar variable of type \integer,
 that gives the number of 2 by 2 pivots present in the factorization
 of $\bmA$.
 
@@ -1030,7 +1030,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin\ argument of type default \integer,
+\itt{device} is a scalar \intentin\ argument of type \integer,
 that must be set to the unit number on which the specification file
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

@@ -1,18 +1,18 @@
 #  Main body of the LANCELOT B installation makefile under GALAHAD
 
 #  N. Gould and Ph. L. Toint.
-#  This version: 2024-02-03
+#  This version: 2024-02-28
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DGALAHAD_SINGLE -DINTEGER_64
+  DPREC = -DSINGLE -DINTEGER_64
 else ifeq "$(PRECIS)" "double_64"
-  DPREC = -DGALAHAD_DOUBLE -DINTEGER_64
+  DPREC = -DINTEGER_64
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DGALAHAD_SINGLE
+  DPREC = -DSINGLE
 else
-  DPREC = -DGALAHAD_DOUBLE
+  DPREC =
 endif
 
 ifeq "$(LINEARSOLVER)" "ma57"
@@ -66,7 +66,7 @@ RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 #  compilation agenda
 
 OBJECTSBASICS = extend basics scu band \
-         $(LGS)(others_single.o) icfs ma61 linearsolver ma57 sils ad02 \
+         $(LGS)(others_single.o) icfs hsl_lancelot linearsolver sils \
          $(LGS)(cauchy_single.o) $(LGS)(cg_single.o) \
          $(LGS)(hslint_single.o) $(LGS)(asmbl_single.o) \
          $(LGS)(hsprd_single.o) $(LGS)(initw_single.o) \
@@ -87,7 +87,7 @@ USEOBJECTSSTEERINGS = $(OBJECTSSTEERINGS) $(LGS)(scaln_single.o) \
           copyright $(CULGS)(uselancelot_steering_single.o)
 
 OBJECTSBASICD = extend basics scu band \
-          $(LGD)(others_double.o) icfs ma61 linearsolver ma57 sils ad02 \
+          $(LGD)(others_double.o) icfs hsl_lancelot linearsolver sils \
           $(LGD)(cauchy_double.o) $(LGD)(cg_double.o) \
           $(LGD)(hslint_double.o) $(LGD)(asmbl_double.o) \
           $(LGD)(hsprd_double.o) $(LGD)(initw_double.o) \
@@ -108,7 +108,7 @@ USEOBJECTSSTEERINGD = $(OBJECTSSTEERINGD) $(LGD)(scaln_double.o) \
            copyright $(CULGD)(uselancelot_steering_double.o)
 
 OBJECTSBASICS64 = extend basics scu band \
-         $(LGS64)(others_single_64.o) icfs ma61 linearsolver ma57 sils ad02 \
+         $(LGS64)(others_single_64.o) icfs hsl_lancelot linearsolver sils \
          $(LGS64)(cauchy_single_64.o) $(LGS64)(cg_single_64.o) \
          $(LGS64)(hslint_single_64.o) $(LGS64)(asmbl_single_64.o) \
          $(LGS64)(hsprd_single_64.o) $(LGS64)(initw_single_64.o) \
@@ -129,7 +129,7 @@ USEOBJECTSSTEERINGS64 = $(OBJECTSSTEERINGS64) $(LGS64)(scaln_single_64.o) \
           copyright $(CULGS64)(uselancelot_steering_single_64.o)
 
 OBJECTSBASICD64 = extend basics scu band \
-          $(LGD64)(others_double_64.o) icfs ma61 linearsolver ma57 sils ad02 \
+          $(LGD64)(others_double_64.o) icfs hsl_lancelot linearsolver sils \
           $(LGD64)(cauchy_double_64.o) $(LGD64)(cg_double_64.o) \
           $(LGD64)(hslint_double_64.o) $(LGD64)(asmbl_double_64.o) \
           $(LGD64)(hsprd_double_64.o) $(LGD64)(initw_double_64.o) \
@@ -598,15 +598,12 @@ rand:
 copyright:
 	( cd ../copyright ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../copyright )
-ma57:
-	( cd ../external/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma57_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
+hsl_lancelot:
+	( cd ../external/hsl ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            hsl_lancelot_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/hsl )
 ma61:
-	( cd ../external/ma61 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma61_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma61 )
-ad02:
-	( cd ../external/ad02 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ad02_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ad02 )
+	( cd ../external/hsl ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma61_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/hsl )
 icfs:
 	( cd ../icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../icfs )

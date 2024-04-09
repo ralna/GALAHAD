@@ -50,20 +50,22 @@ Ph. L. Toint, University of Namur, Belgium.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time, the derived types 
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_matrix\_type}, 
 {\tt \packagename\_inform\_type}, and
 {\tt \packagename\_data\_type} 
@@ -77,6 +79,10 @@ and
 {\tt \packagename\_terminate} 
 (Section~\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -94,17 +100,17 @@ are:
 
 \begin{description}
 
-\ittf{n} is a scalar of type default \integer, that holds the value of 
+\ittf{n} is a scalar of type \integer, that holds the value of 
 $n$, the dimension of the matrix $ \bmA$. 
  
-\ittf{m} is a scalar of type default \integer, that holds the value of  
+\ittf{m} is a scalar of type \integer, that holds the value of  
 $m$, dimension of the matrix $\bmD$. 
  
-\itt{m\_max} is an scalar of type default \integer,
+\itt{m\_max} is an scalar of type \integer,
 that holds the dimension of the largest possible matrix $\bmD$ to be permitted
 by the package. 
 
-\itt{class} is a scalar of type default \integer,
+\itt{class} is a scalar of type \integer,
 that indicates the type of matrix to be processed. Permitted values are: 
 
 \begin{description} 
@@ -117,7 +123,7 @@ $\bmS$ is known to be negative definite.
 \end{description} 
 
 \itt{BD\_val} is a rank-one allocatable of  
-type default \realdp, 
+type \realdp, 
 that holds the values of the entries in the partitioned matrix 
 \eqn{2}{\vect{\bmB \\ \bmD_U},}
 where $\bmD_U$ is the upper triangular part of $\bmD$, ie, 
@@ -127,10 +133,10 @@ contiguous and those of column
 $j$ preceding those of column $j+1$ $(j = 1, ...., m)$. The ordering 
 within each column is unimportant. 
  
-\itt{BD\_row} is a rank-one allocatable of type default \integer, that holds 
+\itt{BD\_row} is a rank-one allocatable of type \integer, that holds 
 the row indices of the corresponding entries in {\tt BD\_val.} 
  
-\itt{BD\_col\_start} is a rank-one allocatable of type default \integer, that  
+\itt{BD\_col\_start} is a rank-one allocatable of type \integer, that  
 must be set so that {\tt BD\_col\_start(j)} holds the positions 
 in the arrays {\tt BD\_val} and {\tt BD\_row} of the first entry in column $j$ 
 $(j = 1, ...., m)$. {\tt BD\_col\_start(m+1)} must be set to 
@@ -149,11 +155,11 @@ contiguous and those of row
 $i$ preceding those of row $i+1$ $(i = 1, ...., m)$. 
 The ordering within each row is unimportant. 
  
-\itt{CD\_col} is a rank-one allocatable of type default \integer, 
+\itt{CD\_col} is a rank-one allocatable of type \integer, 
 that need not be set in the symmetric case. In the unsymmetric case, it holds 
 the column indices of the corresponding entries in {\tt CD\_val}. 
  
-\itt{CD\_row\_start} is a rank-one allocatable of type default \integer, 
+\itt{CD\_row\_start} is a rank-one allocatable of type \integer, 
 that need not be set in the symmetric case. In the unsymmetric case, it  
 must be set so that {\tt CD\_row\_start(i)} points to the  
 positions in the arrays {\tt CD\_val} and {\tt CD\_col} of the first entry in 
@@ -187,14 +193,14 @@ The components of
 are:
 
 \begin{description}
-\itt{alloc\_status} is a scalar of type default \integer, that contains 
+\itt{alloc\_status} is a scalar of type \integer, that contains 
 the return status from the last attempted internal  
 workspace array allocation or deallocation. 
 A non-zero value indicates that the allocation or deallocation was
  unsuccessful, and corresponds to the {\tt STAT=} value on the user's system. 
 Consult local compiler documentation for further details. 
  
-\itt{inertia} is a rank-one array of length 3 and type default \integer, 
+\itt{inertia} is a rank-one array of length 3 and type \integer, 
 that holds the inertia of $\bmS$ when the extended matrix is symmetric. 
 Specifically, {\tt inertia(i),} {\tt i=1,2,3},  
 give the number of positive, negative and zero eigenvalues of  
@@ -638,13 +644,13 @@ For other values, see Section~\ref{galerrors}.
 (see Section~\ref{typeinfo}). 
  
 \itt{col\_del} is an scalar \intentin\ argument of type 
-default \integer. 
+\integer. 
 On input, this must be set by the user to the index of the column of 
 \req{2} that is to be removed.  
 {\bf Restriction:} ${\tt 1} \leq {\tt col\_del} \leq {\tt m}$.
  
 \itt{row\_del} is an optional scalar \intentin\ argument of type  
-default \integer. 
+\integer. 
 If {\tt \packagename\_factorize} was last called with {\tt matrix\%class=1}, 
 this can be set by the user to the index of  
 the row of \req{3} that is to be removed. If the argument is absent, or if 

@@ -17,12 +17,12 @@ cro_control_type structure
 		// components
 	
 		bool :ref:`f_indexing<doxid-structcro__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structcro__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structcro__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structcro__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`max_schur_complement<doxid-structcro__control__type_1abd1f3cb576a120eb097ebb819874af8d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`infinity<doxid-structcro__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`feasibility_tolerance<doxid-structcro__control__type_1aefac38140eecc872a3bc2907de2f0a30>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structcro__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structcro__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structcro__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_schur_complement<doxid-structcro__control__type_1abd1f3cb576a120eb097ebb819874af8d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`infinity<doxid-structcro__control__type_1a11a46bd456ea63bac8bdffb056fe98c9>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`feasibility_tolerance<doxid-structcro__control__type_1aefac38140eecc872a3bc2907de2f0a30>`;
 		bool :ref:`check_io<doxid-structcro__control__type_1a26ffe1bc01e525bfbc88f91b08e2295d>`;
 		bool :ref:`refine_solution<doxid-structcro__control__type_1a31c847b86043424b65e29784b7196b78>`;
 		bool :ref:`space_critical<doxid-structcro__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
@@ -61,7 +61,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -71,7 +71,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -81,7 +81,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -91,7 +91,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_schur_complement
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_schur_complement
 
 the maximum permitted size of the Schur complement before a refactorization is performed
 
@@ -101,7 +101,7 @@ the maximum permitted size of the Schur complement before a refactorization is p
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` infinity
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` infinity
 
 any bound larger than infinity in modulus will be regarded as infinite
 
@@ -111,7 +111,7 @@ any bound larger than infinity in modulus will be regarded as infinite
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` feasibility_tolerance
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` feasibility_tolerance
 
 feasibility tolerance for KKT violation
 

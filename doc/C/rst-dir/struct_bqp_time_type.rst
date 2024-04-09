@@ -16,10 +16,10 @@ bqp_time_type structure
 	struct bqp_time_type {
 		// components
 	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structbqp__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`analyse<doxid-structbqp__time__type_1a0ca2b20748c7749a77d684124011c531>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`factorize<doxid-structbqp__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`solve<doxid-structbqp__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structbqp__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`analyse<doxid-structbqp__time__type_1a0ca2b20748c7749a77d684124011c531>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`factorize<doxid-structbqp__time__type_1ab7eecce4b013c87e490b8984c74c59c3>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`solve<doxid-structbqp__time__type_1a6356532c25755a6e5fedee1a7d703949>`;
 	};
 .. _details-structbqp__time__type:
 
@@ -37,7 +37,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	:ref:`spc_<doxid-galahad__spc_8h_>` total
 
 total time
 
@@ -47,7 +47,7 @@ total time
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` analyse
+	:ref:`spc_<doxid-galahad__spc_8h_>` analyse
 
 time for the analysis phase
 
@@ -57,7 +57,7 @@ time for the analysis phase
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` factorize
+	:ref:`spc_<doxid-galahad__spc_8h_>` factorize
 
 time for the factorization phase
 
@@ -67,7 +67,7 @@ time for the factorization phase
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` solve
+	:ref:`spc_<doxid-galahad__spc_8h_>` solve
 
 time for the linear solution phase
 

@@ -18,8 +18,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -29,81 +30,81 @@ overview of functions provided
 
 	// function calls
 
-	void :ref:`eqp_initialize<doxid-galahad__eqp_8h_1a0d6a00469fba32b588f74c05a386626d>`(void** data, struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, int* status);
+	void :ref:`eqp_initialize<doxid-galahad__eqp_8h_1a0d6a00469fba32b588f74c05a386626d>`(void **data, struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 	void :ref:`eqp_read_specfile<doxid-galahad__eqp_8h_1a24889f7ee5c51b3c76daab94687faed9>`(struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, const char specfile[]);
 
 	void :ref:`eqp_import<doxid-galahad__eqp_8h_1adbadbd11a40aedbbb705334023406de1>`(
 		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
 		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[],
 		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[]
 	);
 
 	void :ref:`eqp_reset_control<doxid-galahad__eqp_8h_1a1b8074313bdc2176203d0c0e9ea87c24>`(
 		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`eqp_solve_qp<doxid-galahad__eqp_8h_1abf97ed5ee46d2b3fd9a6f75023a95c3d>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[]
 	);
 
 	void :ref:`eqp_solve_sldqp<doxid-galahad__eqp_8h_1aaadb310c329e4857b3ad373bcee69e6f>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x0[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x0[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[]
 	);
 
 	void :ref:`eqp_resolve_qp<doxid-galahad__eqp_8h_1abde96724e9b4b13c5cce1aae5cf93d8f>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[]
 	);
 
-	void :ref:`eqp_information<doxid-galahad__eqp_8h_1aba10933446f1856fc435ecfbd98371d6>`(void** data, struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform, int* status);
+	void :ref:`eqp_information<doxid-galahad__eqp_8h_1aba10933446f1856fc435ecfbd98371d6>`(void **data, struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`eqp_terminate<doxid-galahad__eqp_8h_1a237e3d3e43c6819205b3f303418324e0>`(
-		void** data,
+		void **data,
 		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
 		struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform
 	);
@@ -114,25 +115,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -143,7 +156,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void eqp_initialize(void** data, struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, int* status)
+	void eqp_initialize(void **data, struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -168,7 +181,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -213,20 +226,20 @@ relate to the components of the control structure.
 
 	void eqp_import(
 		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
 		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[],
 		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[]
 	)
 
 Import problem data into internal storage prior to solution.
@@ -252,7 +265,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The import was successful
@@ -287,12 +300,12 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints.
 
 	*
 		- H_type
@@ -302,22 +315,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- H_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_type
@@ -327,22 +340,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 .. index:: pair: function; eqp_reset_control
 .. _doxid-galahad__eqp_8h_1a1b8074313bdc2176203d0c0e9ea87c24:
@@ -352,8 +365,8 @@ Import problem data into internal storage prior to solution.
 
 	void eqp_reset_control(
 		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -379,7 +392,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * 0. The import was successful.
 
@@ -390,19 +403,19 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void eqp_solve_qp(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		int h_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[]
 	)
 
 Solve the quadratic program when the Hessian $H$ is available.
@@ -423,7 +436,7 @@ Solve the quadratic program when the Hessian $H$ is available.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  Possible exit values are:
 		  
@@ -496,57 +509,57 @@ Solve the quadratic program when the Hessian $H$ is available.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $f$ of the objective function.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type double, that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; eqp_solve_sldqp
 .. _doxid-galahad__eqp_8h_1aaadb310c329e4857b3ad373bcee69e6f:
@@ -555,19 +568,19 @@ Solve the quadratic program when the Hessian $H$ is available.
 	:class: doxyrest-title-code-block
 
 	void eqp_solve_sldqp(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` w[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x0[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		int a_ne,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` w[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x0[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_ne,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[]
 	)
 
 Solve the shifted least-distance quadratic program
@@ -588,7 +601,7 @@ Solve the shifted least-distance quadratic program
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  Possible exit values are:
 		  
@@ -661,57 +674,57 @@ Solve the shifted least-distance quadratic program
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints.
 
 	*
 		- w
 
-		- is a one-dimensional array of size n and type double, that holds the values of the weights $w$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the weights $w$.
 
 	*
 		- x0
 
-		- is a one-dimensional array of size n and type double, that holds the values of the shifts $x^0$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the shifts $x^0$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $f$ of the objective function.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type double, that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; eqp_resolve_qp
 .. _doxid-galahad__eqp_8h_1abde96724e9b4b13c5cce1aae5cf93d8f:
@@ -720,15 +733,15 @@ Solve the shifted least-distance quadratic program
 	:class: doxyrest-title-code-block
 
 	void eqp_resolve_qp(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[]
 	)
 
 Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data $g$, $f$ and $c$ has changed
@@ -749,7 +762,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  Possible exit values are:
 		  
@@ -812,37 +825,37 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $f$ of the objective function.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type double, that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the constraints. The i-th component of c, i = 0, ... , m-1, contains $c_i$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains $y_i$.
 
 .. index:: pair: function; eqp_information
 .. _doxid-galahad__eqp_8h_1aba10933446f1856fc435ecfbd98371d6:
@@ -850,7 +863,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void eqp_information(void** data, struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform, int* status)
+	void eqp_information(void **data, struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -875,7 +888,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -887,7 +900,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void eqp_terminate(
-		void** data,
+		void **data,
 		struct :ref:`eqp_control_type<doxid-structeqp__control__type>`* control,
 		struct :ref:`eqp_inform_type<doxid-structeqp__inform__type>`* inform
 	)

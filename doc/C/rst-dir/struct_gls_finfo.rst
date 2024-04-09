@@ -15,14 +15,14 @@ gls_finfo structure
 	struct gls_finfo {
 		// fields
 	
-		int :ref:`flag<doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf>`;
-		int :ref:`more<doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
-		int :ref:`size_factor<doxid-structgls__finfo_1a79b3c4b1d5426fdbd7eaf1b346be2c49>`;
-		int :ref:`len_factorize<doxid-structgls__finfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
-		int :ref:`drop<doxid-structgls__finfo_1a56da9169fe581b834e971dee4997ecfd>`;
-		int :ref:`rank<doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		int :ref:`stat<doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`ops<doxid-structgls__finfo_1af0a337c9f4d03e088123ec071639aad7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`flag<doxid-structgls__finfo_1adf916204820072417ed73a32de1cefcf>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`more<doxid-structgls__finfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`size_factor<doxid-structgls__finfo_1a79b3c4b1d5426fdbd7eaf1b346be2c49>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`len_factorize<doxid-structgls__finfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`drop<doxid-structgls__finfo_1a56da9169fe581b834e971dee4997ecfd>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`rank<doxid-structgls__finfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stat<doxid-structgls__finfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`ops<doxid-structgls__finfo_1af0a337c9f4d03e088123ec071639aad7>`;
 	};
 .. _details-structgls__finfo:
 
@@ -40,7 +40,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int flag
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` flag
 
 Flags success or failure case.
 
@@ -50,7 +50,7 @@ Flags success or failure case.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int more
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` more
 
 More information on failure.
 
@@ -60,7 +60,7 @@ More information on failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int size_factor
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` size_factor
 
 Number of words to hold factors.
 
@@ -70,7 +70,7 @@ Number of words to hold factors.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int len_factorize
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` len_factorize
 
 Size for subsequent factorization.
 
@@ -80,7 +80,7 @@ Size for subsequent factorization.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int drop
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` drop
 
 Number of entries dropped.
 
@@ -90,7 +90,7 @@ Number of entries dropped.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int rank
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` rank
 
 Estimated rank.
 
@@ -100,7 +100,7 @@ Estimated rank.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int stat
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` stat
 
 Status value after allocate failure.
 
@@ -110,7 +110,7 @@ Status value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` ops
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` ops
 
 Number of operations in elimination.
 

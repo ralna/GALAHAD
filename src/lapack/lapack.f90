@@ -1249,10 +1249,10 @@
               mnthr = ILAENV(6_ip_, 'DGELSS', ' ', m, n, nrhs, -1_ip_)
               IF (m>=n .AND. m>=mnthr) THEN
                 CALL DGEQRF(m, n, a, lda, dum(1), dum(1), -1_ip_, info)
-                lwork_dgeqrf = dum(1)
+                lwork_dgeqrf = INT(dum(1),ip_)
                 CALL DORMQR('L', 'T', m, nrhs, n, a, lda, dum(1), b, ldb,   &
                   dum(1), -1_ip_, info)
-                lwork_dormqr = dum(1)
+                lwork_dormqr = INT(dum(1),ip_)
                 mm = n
                 maxwrk = MAX(maxwrk, n+lwork_dgeqrf)
                 maxwrk = MAX(maxwrk, n+lwork_dormqr)
@@ -1261,13 +1261,13 @@
                 bdspac = MAX(1, 5*n)
                 CALL DGEBRD(mm, n, a, lda, s, dum(1), dum(1), dum(1),       &
                   dum(1), -1_ip_, info)
-                lwork_dgebrd = dum(1)
+                lwork_dgebrd = INT(dum(1),ip_)
                 CALL DORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, dum(1), b,  &
                   ldb, dum(1), -1_ip_, info)
-                lwork_dormbr = dum(1)
+                lwork_dormbr = INT(dum(1),ip_)
                 CALL DORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,   &
                   info)
-                lwork_dorgbr = dum(1)
+                lwork_dorgbr = INT(dum(1),ip_)
                 maxwrk = MAX(maxwrk, 3*n+lwork_dgebrd)
                 maxwrk = MAX(maxwrk, 3*n+lwork_dormbr)
                 maxwrk = MAX(maxwrk, 3*n+lwork_dorgbr)
@@ -1281,19 +1281,19 @@
                 minwrk = MAX(3*m+nrhs, 3*m+n, bdspac)
                 IF (n>=mnthr) THEN
                   CALL DGELQF(m, n, a, lda, dum(1), dum(1), -1_ip_, info)
-                  lwork_dgelqf = dum(1)
+                  lwork_dgelqf = INT(dum(1),ip_)
                   CALL DGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
-                  lwork_dgebrd = dum(1)
+                  lwork_dgebrd = INT(dum(1),ip_)
                   CALL DORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, dum(1), b, &
                     ldb, dum(1), -1_ip_, info)
-                  lwork_dormbr = dum(1)
+                  lwork_dormbr = INT(dum(1),ip_)
                   CALL DORGBR('P', m, m, m, a, lda, dum(1), dum(1), -1_ip_, &
                     info)
-                  lwork_dorgbr = dum(1)
+                  lwork_dorgbr = INT(dum(1),ip_)
                   CALL DORMLQ('L', 'T', n, nrhs, m, a, lda, dum(1), b, ldb, &
                     dum(1), -1_ip_, info)
-                  lwork_dormlq = dum(1)
+                  lwork_dormlq = INT(dum(1),ip_)
                   maxwrk = m + lwork_dgelqf
                   maxwrk = MAX(maxwrk, m*m+4*m+lwork_dgebrd)
                   maxwrk = MAX(maxwrk, m*m+4*m+lwork_dormbr)
@@ -1308,13 +1308,13 @@
                 ELSE
                   CALL DGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
-                  lwork_dgebrd = dum(1)
+                  lwork_dgebrd = INT(dum(1),ip_)
                   CALL DORMBR('Q', 'L', 'T', m, nrhs, m, a, lda, dum(1), b, &
                     ldb, dum(1), -1_ip_, info)
-                  lwork_dormbr = dum(1)
+                  lwork_dormbr = INT(dum(1),ip_)
                   CALL DORGBR('P', m, n, m, a, lda, dum(1), dum(1), -1_ip_, &
                     info)
-                  lwork_dorgbr = dum(1)
+                  lwork_dorgbr = INT(dum(1),ip_)
                   maxwrk = 3*m + lwork_dgebrd
                   maxwrk = MAX(maxwrk, 3*m+lwork_dormbr)
                   maxwrk = MAX(maxwrk, 3*m+lwork_dorgbr)
@@ -12396,7 +12396,7 @@
                 END IF
               END IF
             END IF
-            lwkopt = work(1)
+            lwkopt = INT(work(1),ip_)
             lwkopt = MAX(lwkopt, mn)
           END IF
           IF (info/=0) THEN
@@ -16815,9 +16815,11 @@
             END DO
  50         CONTINUE
             sminoa = sminoa/SQRT(REAL(n))
-            thresh = MAX(tol*sminoa, maxitr*(n*(n*unfl)))
+            thresh = MAX(tol*sminoa, &
+                         REAL(maxitr)*(REAL(n)*(REAL(n)*unfl)))
           ELSE
-            thresh = MAX(ABS(tol)*smax, maxitr*(n*(n*unfl)))
+            thresh = MAX(ABS(tol)*smax, &
+                         REAL(maxitr)*(REAL(n)*(REAL(n)*unfl)))
           END IF
           maxitdivn = maxitr*n
           iterdivn = 0
@@ -16915,7 +16917,8 @@
           END IF
           oldll = ll
           oldm = m
-          IF (tol>=zero .AND. n*tol*(sminl/smax)<=MAX(eps,hndrth*tol)) THEN
+          IF (tol>=zero .AND. &
+              REAL(n)*tol*(sminl/smax)<=MAX(eps,hndrth*tol)) THEN
             shift = zero
           ELSE
             IF (idir==1) THEN
@@ -17241,7 +17244,7 @@
           END DO
           CALL SGEBD2(m-i+1, n-i+1, a(i,i), lda, d(i), e(i), tauq(i),       &
             taup(i), work, iinfo)
-          work(1) = ws
+          work(1) = real(ws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -17315,7 +17318,7 @@
           IF (info==0) THEN
             nb = MIN(nbmax, ILAENV(1_ip_,'SGEHRD',' ',n,ilo,ihi,-1_ip_))
             lwkopt = n*nb + tsize
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SGEHRD', -info)
@@ -17376,7 +17379,7 @@
             END DO
           END IF
           CALL SGEHD2(n, i, ihi, a, lda, tau, work, iinfo)
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -17430,7 +17433,7 @@
           info = 0
           nb = ILAENV(1_ip_, 'SGELQF', ' ', m, n, -1_ip_, -1_ip_)
           lwkopt = m*nb
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           lquery = (lwork==-1)
           IF (m<0) THEN
             info = -1
@@ -17484,7 +17487,7 @@
           END IF
           IF (i<=k) CALL SGELQ2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
-          work(1) = iws
+          work(1) = real(iws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -17759,7 +17762,7 @@
               END IF
             END IF
             minwrk = MIN(minwrk, maxwrk)
-            work(1) = maxwrk
+            work(1) = REAL(maxwrk)
             iwork(1) = liwork
             IF (lwork<minwrk .AND. .NOT. lquery) THEN
               info = -12
@@ -17904,7 +17907,7 @@
               info)
           END IF
  10       CONTINUE
-          work(1) = maxwrk
+          work(1) = REAL(maxwrk)
           iwork(1) = liwork
           RETURN
         END SUBROUTINE
@@ -17955,10 +17958,10 @@
               mnthr = ILAENV(6_ip_, 'SGELSS', ' ', m, n, nrhs, -1_ip_)
               IF (m>=n .AND. m>=mnthr) THEN
                 CALL SGEQRF(m, n, a, lda, dum(1), dum(1), -1_ip_, info)
-                lwork_sgeqrf = dum(1)
+                lwork_sgeqrf = INT(dum(1),ip_)
                 CALL SORMQR('L', 'T', m, nrhs, n, a, lda, dum(1), b, ldb,   &
                   dum(1), -1_ip_, info)
-                lwork_sormqr = dum(1)
+                lwork_sormqr = INT(dum(1),ip_)
                 mm = n
                 maxwrk = MAX(maxwrk, n+lwork_sgeqrf)
                 maxwrk = MAX(maxwrk, n+lwork_sormqr)
@@ -17967,13 +17970,13 @@
                 bdspac = MAX(1, 5*n)
                 CALL SGEBRD(mm, n, a, lda, s, dum(1), dum(1), dum(1),       &
                   dum(1), -1_ip_, info)
-                lwork_sgebrd = dum(1)
+                lwork_sgebrd = INT(dum(1),ip_)
                 CALL SORMBR('Q', 'L', 'T', mm, nrhs, n, a, lda, dum(1), b,  &
                   ldb, dum(1), -1_ip_, info)
-                lwork_sormbr = dum(1)
+                lwork_sormbr = INT(dum(1),ip_)
                 CALL SORGBR('P', n, n, n, a, lda, dum(1), dum(1), -1_ip_,   &
                   info)
-                lwork_sorgbr = dum(1)
+                lwork_sorgbr = INT(dum(1),ip_)
                 maxwrk = MAX(maxwrk, 3*n+lwork_sgebrd)
                 maxwrk = MAX(maxwrk, 3*n+lwork_sormbr)
                 maxwrk = MAX(maxwrk, 3*n+lwork_sorgbr)
@@ -17988,16 +17991,16 @@
                 IF (n>=mnthr) THEN
                   CALL SGEBRD(m, m, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
-                  lwork_sgebrd = dum(1)
+                  lwork_sgebrd = INT(dum(1),ip_)
                   CALL SORMBR('Q', 'L', 'T', m, nrhs, n, a, lda, dum(1), b, &
                     ldb, dum(1), -1_ip_, info)
-                  lwork_sormbr = dum(1)
+                  lwork_sormbr = INT(dum(1),ip_)
                   CALL SORGBR('P', m, m, m, a, lda, dum(1), dum(1), -1_ip_, &
                     info)
-                  lwork_sorgbr = dum(1)
+                  lwork_sorgbr = INT(dum(1),ip_)
                   CALL SORMLQ('L', 'T', n, nrhs, m, a, lda, dum(1), b, ldb, &
                     dum(1), -1_ip_, info)
-                  lwork_sormlq = dum(1)
+                  lwork_sormlq = INT(dum(1),ip_)
                   maxwrk = m + m*ILAENV(1_ip_, 'SGELQF', ' ', m, n, -1_ip_, &
                     -1_ip_)
                   maxwrk = MAX(maxwrk, m*m+4*m+lwork_sgebrd)
@@ -18013,13 +18016,13 @@
                 ELSE
                   CALL SGEBRD(m, n, a, lda, s, dum(1), dum(1), dum(1),      &
                     dum(1), -1_ip_, info)
-                  lwork_sgebrd = dum(1)
+                  lwork_sgebrd = INT(dum(1),ip_)
                   CALL SORMBR('Q', 'L', 'T', m, nrhs, m, a, lda, dum(1), b, &
                     ldb, dum(1), -1_ip_, info)
-                  lwork_sormbr = dum(1)
+                  lwork_sormbr = INT(dum(1),ip_)
                   CALL SORGBR('P', m, n, m, a, lda, dum(1), dum(1), -1_ip_, &
                     info)
-                  lwork_sorgbr = dum(1)
+                  lwork_sorgbr = INT(dum(1),ip_)
                   maxwrk = 3*m + lwork_sgebrd
                   maxwrk = MAX(maxwrk, 3*m+lwork_sormbr)
                   maxwrk = MAX(maxwrk, 3*m+lwork_sorgbr)
@@ -18029,7 +18032,7 @@
               END IF
               maxwrk = MAX(minwrk, maxwrk)
             END IF
-            work(1) = maxwrk
+            work(1) = real(maxwrk,r4_)
             IF (lwork<minwrk .AND. .NOT. lquery) info = -12
           END IF
           IF (info/=0) THEN
@@ -18250,7 +18253,7 @@
               info)
           END IF
  70       CONTINUE
-          work(1) = maxwrk
+          work(1) = real(maxwrk,r4_)
           RETURN
         END SUBROUTINE
 
@@ -18306,7 +18309,7 @@
               lwkmin = mn + MAX(2*mn, n+1, mn+nrhs)
               lwkopt = MAX(lwkmin, mn+2*n+nb*(n+1), 2*mn+nb*nrhs)
             END IF
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             IF (lwork<lwkmin .AND. .NOT. lquery) THEN
               info = -12
             END IF
@@ -18352,7 +18355,7 @@
           END IF
           CALL SGEQP3(m, n, a, lda, jpvt, work(1), work(mn+1), lwork-mn,    &
             info)
-          wsize = mn + work(mn+1)
+          wsize = real(mn,r4_) + work(mn+1)
           work(ismin) = one
           work(ismax) = one
           smax = ABS(a(1,1))
@@ -18388,7 +18391,7 @@
             work(2*mn+1), lwork-2*mn, info)
           CALL SORMQR('Left', 'Transpose', m, nrhs, mn, a, lda, work(1), b, &
             ldb, work(2*mn+1), lwork-2*mn, info)
-          wsize = MAX(wsize, 2*mn+work(2*mn+1))
+          wsize = MAX(wsize, real(2*mn,r4_)+work(2*mn+1))
           CALL STRSM('Left', 'Upper', 'No transpose', 'Non-unit', rank,     &
             nrhs, one, a, lda, b, ldb)
           DO j = 1, nrhs
@@ -18425,7 +18428,7 @@
               info)
           END IF
  70       CONTINUE
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -18464,7 +18467,7 @@
               nb = ILAENV(inb, 'SGEQRF', ' ', m, n, -1_ip_, -1_ip_)
               lwkopt = 2*n + (n+1)*nb
             END IF
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             IF ((lwork<iws) .AND. .NOT. lquery) THEN
               info = -8
             END IF
@@ -18543,7 +18546,7 @@
             IF (j<=minmn) CALL SLAQP2(m, n-j+1, j-1, a(1,j), lda, jpvt(j),  &
               tau(j), work(j), work(n+j), work(2*n+1))
           END IF
-          work(1) = iws
+          work(1) = real(iws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -18597,7 +18600,7 @@
           info = 0
           nb = ILAENV(1_ip_, 'SGEQRF', ' ', m, n, -1_ip_, -1_ip_)
           lwkopt = n*nb
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           lquery = (lwork==-1)
           IF (m<0) THEN
             info = -1
@@ -18651,7 +18654,7 @@
           END IF
           IF (i<=k) CALL SGEQR2(m-i+1, n-i+1, a(i,i), lda, tau(i), work,    &
             iinfo)
-          work(1) = iws
+          work(1) = real(iws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -18955,7 +18958,7 @@
               END IF
             END IF
             maxwrk = MAX(maxwrk, minwrk)
-            work(1) = maxwrk
+            work(1) = real(maxwrk,r4_)
             IF (lwork<minwrk .AND. .NOT. lquery) THEN
               info = -13
             END IF
@@ -20143,7 +20146,7 @@
             IF (info/=0 .AND. anrm<smlnum) CALL SLASCL('G', 0_ip_, 0_ip_,   &
               smlnum, anrm, minmn-1, 1_ip_, work(2), minmn, ierr)
           END IF
-          work(1) = maxwrk
+          work(1) = real(maxwrk,r4_)
           RETURN
         END SUBROUTINE
 
@@ -27100,7 +27103,7 @@
           z(2*n+2) = e
           z(2*n+3) = REAL(iter)
           z(2*n+4) = REAL(ndiv)/REAL(n**2)
-          z(2*n+5) = hundrd*nfail/REAL(iter)
+          z(2*n+5) = hundrd*REAL(nfail)/REAL(iter)
           RETURN
         END SUBROUTINE
 
@@ -28313,7 +28316,7 @@
           IF (n1==0 .OR. n2==0) RETURN
           eps = SLAMCH('P')
           smlnum = SLAMCH('S')/eps
-          sgn = isgn
+          sgn = real(isgn,r4_)
           k = n1 + n1 + n2 - 2
           GO TO (10, 20, 30, 50) k
  10       CONTINUE
@@ -28991,14 +28994,14 @@
                 END IF
               END IF
             END IF
-            lwkopt = work(1)
+            lwkopt = INT(work(1),ip_)
             lwkopt = MAX(lwkopt, mn)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORGBR', -info)
             RETURN
           ELSE IF (lquery) THEN
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             RETURN
           END IF
           IF (m==0 .OR. n==0) THEN
@@ -29044,7 +29047,7 @@
               END IF
             END IF
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29113,7 +29116,7 @@
           info = 0
           nb = ILAENV(1_ip_, 'SORGLQ', ' ', m, n, k, -1_ip_)
           lwkopt = MAX(1, m)*nb
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           lquery = (lwork==-1)
           IF (m<0) THEN
             info = -1
@@ -29181,7 +29184,7 @@
               END DO
             END DO
           END IF
-          work(1) = iws
+          work(1) = real(iws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29216,7 +29219,7 @@
               nb = ILAENV(1_ip_, 'SORGQL', ' ', m, n, k, -1_ip_)
               lwkopt = n*nb
             END IF
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             IF (lwork<MAX(1,n) .AND. .NOT. lquery) THEN
               info = -8
             END IF
@@ -29274,7 +29277,7 @@
               END DO
             END DO
           END IF
-          work(1) = iws
+          work(1) = real(iws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29294,7 +29297,7 @@
           info = 0
           nb = ILAENV(1_ip_, 'SORGQR', ' ', m, n, k, -1_ip_)
           lwkopt = MAX(1, n)*nb
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           lquery = (lwork==-1)
           IF (m<0) THEN
             info = -1
@@ -29362,7 +29365,7 @@
               END DO
             END DO
           END IF
-          work(1) = iws
+          work(1) = real(iws,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29399,7 +29402,7 @@
               nb = ILAENV(1_ip_, 'SORGQR', ' ', n-1, n-1, n-1, -1_ip_)
             END IF
             lwkopt = MAX(1, n-1)*nb
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORGTR', -info)
@@ -29439,7 +29442,7 @@
                 iinfo)
             END IF
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29585,7 +29588,7 @@
               END IF
             END IF
             lwkopt = MAX(1, nw)*nb
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORMBR', -info)
@@ -29639,7 +29642,7 @@
                 c(i1,i2), ldc, work, lwork, iinfo)
             END IF
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29694,7 +29697,7 @@
               nb = ILAENV(1_ip_, 'SORMQR', side//trans, m, nh, nh, -1_ip_)
             END IF
             lwkopt = MAX(1, nw)*nb
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORMHR', -info)
@@ -29719,7 +29722,7 @@
           END IF
           CALL SORMQR(side, trans, mi, ni, nh, a(ilo+1,ilo), lda, tau(ilo), &
             c(i1,i2), ldc, work, lwork, iinfo)
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29849,7 +29852,7 @@
             nb = MIN(nbmax, ILAENV(1_ip_,'SORMLQ',side//trans,m,n,k,        &
               -1_ip_))
             lwkopt = MAX(1, nw)*nb + tsize
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORMLQ', -info)
@@ -29912,7 +29915,7 @@
                 a(i,i), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -29964,7 +29967,7 @@
             nb = MIN(nbmax, ILAENV(1_ip_,'SORMQR',side//trans,m,n,k,        &
               -1_ip_))
             lwkopt = MAX(1, nw)*nb + tsize
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORMQR', -info)
@@ -30022,7 +30025,7 @@
                 a(i,i), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -30157,7 +30160,7 @@
                 -1_ip_))
               lwkopt = nw*nb + tsize
             END IF
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SORMRZ', -info)
@@ -30221,7 +30224,7 @@
                 l, a(i,ja), lda, work(iwt), ldt, c(ic,jc), ldc, work, ldwork)
             END DO
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -31392,7 +31395,7 @@
           IF (info==0) THEN
             nb = ILAENV(1_ip_, 'SSYTRD', uplo, n, -1_ip_, -1_ip_, -1_ip_)
             lwkopt = MAX(1, (nb+2)*n)
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             IF (lwork<MAX(1,3*n-1) .AND. .NOT. lquery) info = -8
           END IF
           IF (info/=0) THEN
@@ -31448,7 +31451,7 @@
             END IF
             CALL SSCAL(imax, one/sigma, w, 1_ip_)
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -31706,7 +31709,7 @@
             lwkmin = MAX(1, 3*n-1)
             nb = ILAENV(1_ip_, 'SSYTRD', uplo, n, -1_ip_, -1_ip_, -1_ip_)
             lwkopt = MAX(lwkmin, (nb+2)*n)
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             IF (lwork<lwkmin .AND. .NOT. lquery) THEN
               info = -11
             END IF
@@ -31746,7 +31749,7 @@
                 ldb, a, lda)
             END IF
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -32048,7 +32051,7 @@
           IF (info==0) THEN
             nb = ILAENV(1_ip_, 'SSYTRD', uplo, n, -1_ip_, -1_ip_, -1_ip_)
             lwkopt = n*nb
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SSYTRD', -info)
@@ -32106,7 +32109,7 @@
             CALL SSYTD2(uplo, n-i+1, a(i,i), lda, d(i), e(i), tau(i),       &
               iinfo)
           END IF
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -32138,7 +32141,7 @@
           IF (info==0) THEN
             nb = ILAENV(1_ip_, 'SSYTRF', uplo, n, -1_ip_, -1_ip_, -1_ip_)
             lwkopt = n*nb
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
           END IF
           IF (info/=0) THEN
             CALL XERBLA('SSYTRF', -info)
@@ -32196,7 +32199,7 @@
             GO TO 20
           END IF
  40       CONTINUE
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 
@@ -32583,7 +32586,7 @@
               lwkopt = m*nb
               lwkmin = MAX(1, m)
             END IF
-            work(1) = lwkopt
+            work(1) = real(lwkopt,r4_)
             IF (lwork<lwkmin .AND. .NOT. lquery) THEN
               info = -7
             END IF
@@ -32637,7 +32640,7 @@
             mu = m
           END IF
           IF (mu>0) CALL SLATRZ(mu, n, n-m, a, lda, tau, work)
-          work(1) = lwkopt
+          work(1) = real(lwkopt,r4_)
           RETURN
         END SUBROUTINE
 

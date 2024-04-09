@@ -9,7 +9,8 @@
 
    MODULE hsl_zd11_precision
 
-     USE GALAHAD_KINDS_precision
+     USE GALAHAD_KINDS_precision, ONLY: ip_, rp_
+     PRIVATE :: ip_, rp_
 
 !  ==========================
 !  Sparse matrix derived type

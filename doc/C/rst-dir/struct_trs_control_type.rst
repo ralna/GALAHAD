@@ -16,25 +16,25 @@ trs_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structtrs__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structtrs__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structtrs__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`problem<doxid-structtrs__control__type_1a540c0b4e7d398c31890f62ad69cd551c>`;
-		int :ref:`print_level<doxid-structtrs__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`dense_factorization<doxid-structtrs__control__type_1aab4d800411bc0d93a4025eb9e3b863d2>`;
-		int :ref:`new_h<doxid-structtrs__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		int :ref:`new_m<doxid-structtrs__control__type_1a5b8ebe6e4189c3a8d7a0c02acdb21166>`;
-		int :ref:`new_a<doxid-structtrs__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		int :ref:`max_factorizations<doxid-structtrs__control__type_1a49cdbb7627ab58da229da6ccb3034bb7>`;
-		int :ref:`inverse_itmax<doxid-structtrs__control__type_1a2ae9a03c4071d26be0d495c9f91f3d45>`;
-		int :ref:`taylor_max_degree<doxid-structtrs__control__type_1a338fa3956816be173e13bfd4198c4078>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`initial_multiplier<doxid-structtrs__control__type_1ae8d08df3ba4988681cb5f7c33a20f287>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`lower<doxid-structtrs__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`upper<doxid-structtrs__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_normal<doxid-structtrs__control__type_1a3573530258a38cc836b106b9f7a54565>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_absolute_normal<doxid-structtrs__control__type_1a02066d2241f2971e375ca4a56532bc2c>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_hard<doxid-structtrs__control__type_1a9508356d815ae3f8eea0f0770fddb6d7>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`start_invit_tol<doxid-structtrs__control__type_1aec94d12f2b37930ecfdb129e5c4d432d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`start_invitmax_tol<doxid-structtrs__control__type_1a75ff746a88cecc883d73cec9c7193bbd>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structtrs__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structtrs__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`problem<doxid-structtrs__control__type_1a540c0b4e7d398c31890f62ad69cd551c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structtrs__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dense_factorization<doxid-structtrs__control__type_1aab4d800411bc0d93a4025eb9e3b863d2>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_h<doxid-structtrs__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_m<doxid-structtrs__control__type_1a5b8ebe6e4189c3a8d7a0c02acdb21166>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_a<doxid-structtrs__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_factorizations<doxid-structtrs__control__type_1a49cdbb7627ab58da229da6ccb3034bb7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`inverse_itmax<doxid-structtrs__control__type_1a2ae9a03c4071d26be0d495c9f91f3d45>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`taylor_max_degree<doxid-structtrs__control__type_1a338fa3956816be173e13bfd4198c4078>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`initial_multiplier<doxid-structtrs__control__type_1ae8d08df3ba4988681cb5f7c33a20f287>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lower<doxid-structtrs__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`upper<doxid-structtrs__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_normal<doxid-structtrs__control__type_1a3573530258a38cc836b106b9f7a54565>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_absolute_normal<doxid-structtrs__control__type_1a02066d2241f2971e375ca4a56532bc2c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_hard<doxid-structtrs__control__type_1a9508356d815ae3f8eea0f0770fddb6d7>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`start_invit_tol<doxid-structtrs__control__type_1aec94d12f2b37930ecfdb129e5c4d432d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`start_invitmax_tol<doxid-structtrs__control__type_1a75ff746a88cecc883d73cec9c7193bbd>`;
 		bool :ref:`equality_problem<doxid-structtrs__control__type_1a86fd5b4cf421b63f8d908f27cf2c60bb>`;
 		bool :ref:`use_initial_multiplier<doxid-structtrs__control__type_1a4d2667d00744ca0f4cc3a2e19bfaae17>`;
 		bool :ref:`initialize_approx_eigenvector<doxid-structtrs__control__type_1a39433cce74413f6635c587d6c06b9110>`;
@@ -74,7 +74,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -84,7 +84,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -94,7 +94,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int problem
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` problem
 
 unit to write problem data into file problem_file
 
@@ -104,7 +104,7 @@ unit to write problem data into file problem_file
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -114,7 +114,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dense_factorization
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dense_factorization
 
 should the problem be solved by dense factorization? Possible values are
 
@@ -130,7 +130,7 @@ should the problem be solved by dense factorization? Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_h
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_h
 
 how much of $H$ has changed since the previous call. Possible values are
 
@@ -146,7 +146,7 @@ how much of $H$ has changed since the previous call. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_m
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_m
 
 how much of $M$ has changed since the previous call. Possible values are
 
@@ -162,7 +162,7 @@ how much of $M$ has changed since the previous call. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_a
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_a
 
 how much of $A$ has changed since the previous call. Possible values are
 
@@ -178,7 +178,7 @@ how much of $A$ has changed since the previous call. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_factorizations
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_factorizations
 
 the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 
@@ -188,7 +188,7 @@ the maximum number of factorizations (=iterations) allowed. -ve implies no limit
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int inverse_itmax
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` inverse_itmax
 
 the number of inverse iterations performed in the "maybe hard" case
 
@@ -198,7 +198,7 @@ the number of inverse iterations performed in the "maybe hard" case
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int taylor_max_degree
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` taylor_max_degree
 
 maximum degree of Taylor approximant allowed
 
@@ -208,7 +208,7 @@ maximum degree of Taylor approximant allowed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` initial_multiplier
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` initial_multiplier
 
 initial estimate of the Lagrange multipler
 
@@ -218,7 +218,7 @@ initial estimate of the Lagrange multipler
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` lower
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` lower
 
 lower and upper bounds on the multiplier, if known
 
@@ -228,7 +228,7 @@ lower and upper bounds on the multiplier, if known
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` upper
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` upper
 
 see lower
 
@@ -238,7 +238,7 @@ see lower
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_normal
 
 stop when $| ||x|| - radius | \leq$ max( stop_normal \* radius, stop_absolute_normal )
 
@@ -248,7 +248,7 @@ stop when $| ||x|| - radius | \leq$ max( stop_normal \* radius, stop_absolute_no
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_absolute_normal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_absolute_normal
 
 see stop_normal
 
@@ -258,7 +258,7 @@ see stop_normal
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_hard
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_hard
 
 stop when bracket on optimal multiplier $\leq$ stop_hard \* max( bracket ends )
 
@@ -268,7 +268,7 @@ stop when bracket on optimal multiplier $\leq$ stop_hard \* max( bracket ends )
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` start_invit_tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` start_invit_tol
 
 start inverse iteration when bracket on optimal multiplier $\leq$ stop_start_invit_tol \* max( bracket ends )
 
@@ -278,7 +278,7 @@ start inverse iteration when bracket on optimal multiplier $\leq$ stop_start_inv
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` start_invitmax_tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` start_invitmax_tol
 
 start full inverse iteration when bracket on multiplier $\leq$ stop_start_invitmax_tol \* max( bracket ends)
 

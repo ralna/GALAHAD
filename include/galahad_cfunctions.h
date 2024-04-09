@@ -1,4 +1,4 @@
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
 #define arc_initialize arc_initialize_s
 #define arc_read_specfile arc_read_specfile_s
 #define arc_import arc_import_s

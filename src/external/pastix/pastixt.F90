@@ -64,7 +64,7 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, svalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, dvalues = VAL )
@@ -98,7 +98,7 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
@@ -134,7 +134,7 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )

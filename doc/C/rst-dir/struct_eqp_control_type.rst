@@ -17,32 +17,32 @@ eqp_control_type structure
 		// components
 	
 		bool :ref:`f_indexing<doxid-structeqp__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structeqp__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structeqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structeqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`factorization<doxid-structeqp__control__type_1a108359f1209601e6c6074c215e3abd8b>`;
-		int :ref:`max_col<doxid-structeqp__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		int :ref:`indmin<doxid-structeqp__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
-		int :ref:`valmin<doxid-structeqp__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
-		int :ref:`len_ulsmin<doxid-structeqp__control__type_1a600c95211b782597cd1b2475bb2c54c6>`;
-		int :ref:`itref_max<doxid-structeqp__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		int :ref:`cg_maxit<doxid-structeqp__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
-		int :ref:`preconditioner<doxid-structeqp__control__type_1adf7719f1a4491459e361e80a00c55656>`;
-		int :ref:`semi_bandwidth<doxid-structeqp__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		int :ref:`new_a<doxid-structeqp__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
-		int :ref:`new_h<doxid-structeqp__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		int :ref:`sif_file_device<doxid-structeqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`pivot_tol<doxid-structeqp__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`pivot_tol_for_basis<doxid-structeqp__control__type_1a1912d9ec51c4e88125762b7d03ef31a6>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`zero_pivot<doxid-structeqp__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`inner_fraction_opt<doxid-structeqp__control__type_1a5840187311d612d0efdfecf7078a2b7e>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`radius<doxid-structeqp__control__type_1a72757b6410f755f008e2fb6d711b61be>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`min_diagonal<doxid-structeqp__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`max_infeasibility_relative<doxid-structeqp__control__type_1a975d28c18ad695cd215c57948fac11c0>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`max_infeasibility_absolute<doxid-structeqp__control__type_1aebbb79536b216e3c116e5a9d21426840>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`inner_stop_relative<doxid-structeqp__control__type_1a7aedce06c5903f675a7c1496f42ff834>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`inner_stop_absolute<doxid-structeqp__control__type_1a80ae9dce0bca96a4691b0a222e3257b5>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`inner_stop_inter<doxid-structeqp__control__type_1a5f1bee15068a0476f5dd4e65dc4468ce>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structeqp__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structeqp__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structeqp__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization<doxid-structeqp__control__type_1a108359f1209601e6c6074c215e3abd8b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_col<doxid-structeqp__control__type_1abca2db33b9520095e98790d45a1be93f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`indmin<doxid-structeqp__control__type_1a5031bbc31f94e4cba6a540a3182b6d80>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`valmin<doxid-structeqp__control__type_1a0e142fa8dc9c363c3c2993b6129b0955>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`len_ulsmin<doxid-structeqp__control__type_1a600c95211b782597cd1b2475bb2c54c6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itref_max<doxid-structeqp__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_maxit<doxid-structeqp__control__type_1a7a1029142a22f3e2a1963c3428276849>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`preconditioner<doxid-structeqp__control__type_1adf7719f1a4491459e361e80a00c55656>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structeqp__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_a<doxid-structeqp__control__type_1a7bea45d51fd9384037bbbf82f7750ce6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_h<doxid-structeqp__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sif_file_device<doxid-structeqp__control__type_1a65c6f8382f1e75cd0b8abd5d148188d0>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pivot_tol<doxid-structeqp__control__type_1a133347eb5f45a24a77b63b4afd4212e8>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pivot_tol_for_basis<doxid-structeqp__control__type_1a1912d9ec51c4e88125762b7d03ef31a6>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_pivot<doxid-structeqp__control__type_1aed8525bc028ed7ae0a9dd1bb3154cda2>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`inner_fraction_opt<doxid-structeqp__control__type_1a5840187311d612d0efdfecf7078a2b7e>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`radius<doxid-structeqp__control__type_1a72757b6410f755f008e2fb6d711b61be>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`min_diagonal<doxid-structeqp__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_infeasibility_relative<doxid-structeqp__control__type_1a975d28c18ad695cd215c57948fac11c0>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_infeasibility_absolute<doxid-structeqp__control__type_1aebbb79536b216e3c116e5a9d21426840>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`inner_stop_relative<doxid-structeqp__control__type_1a7aedce06c5903f675a7c1496f42ff834>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`inner_stop_absolute<doxid-structeqp__control__type_1a80ae9dce0bca96a4691b0a222e3257b5>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`inner_stop_inter<doxid-structeqp__control__type_1a5f1bee15068a0476f5dd4e65dc4468ce>`;
 		bool :ref:`find_basis_by_transpose<doxid-structeqp__control__type_1aa88001d7f86370d329247cf28f8ff499>`;
 		bool :ref:`remove_dependencies<doxid-structeqp__control__type_1ae17a6b550239434c639239ddf45bc1ad>`;
 		bool :ref:`space_critical<doxid-structeqp__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
@@ -80,7 +80,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -90,7 +90,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -100,7 +100,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -110,7 +110,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization
 
 the factorization to be used. Possible values are /li 0 automatic /li 1 Schur-complement factorization /li 2 augmented-system factorization (OBSOLETE)
 
@@ -120,7 +120,7 @@ the factorization to be used. Possible values are /li 0 automatic /li 1 Schur-co
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_col
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_col
 
 the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLETE)
 
@@ -130,7 +130,7 @@ the maximum number of nonzeros in a column of A which is permitted with the Schu
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int indmin
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` indmin
 
 an initial guess as to the integer workspace required by SBLS (OBSOLETE)
 
@@ -140,7 +140,7 @@ an initial guess as to the integer workspace required by SBLS (OBSOLETE)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int valmin
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` valmin
 
 an initial guess as to the real workspace required by SBLS (OBSOLETE)
 
@@ -150,7 +150,7 @@ an initial guess as to the real workspace required by SBLS (OBSOLETE)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int len_ulsmin
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` len_ulsmin
 
 an initial guess as to the workspace required by ULS (OBSOLETE)
 
@@ -160,7 +160,7 @@ an initial guess as to the workspace required by ULS (OBSOLETE)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int itref_max
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` itref_max
 
 the maximum number of iterative refinements allowed (OBSOLETE)
 
@@ -170,7 +170,7 @@ the maximum number of iterative refinements allowed (OBSOLETE)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int cg_maxit
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` cg_maxit
 
 the maximum number of CG iterations allowed. If cg_maxit < 0, this number will be reset to the dimension of the system + 1
 
@@ -180,7 +180,7 @@ the maximum number of CG iterations allowed. If cg_maxit < 0, this number will b
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int preconditioner
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` preconditioner
 
 the preconditioner to be used for the CG. Possible values are
 
@@ -202,7 +202,7 @@ the preconditioner to be used for the CG. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int semi_bandwidth
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` semi_bandwidth
 
 the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE)
 
@@ -212,7 +212,7 @@ the semi-bandwidth of a band preconditioner, if appropriate (OBSOLETE)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_a
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_a
 
 how much has A changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -222,7 +222,7 @@ how much has A changed since last problem solved: 0 = not changed, 1 = values ch
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_h
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_h
 
 how much has H changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 
@@ -232,7 +232,7 @@ how much has H changed since last problem solved: 0 = not changed, 1 = values ch
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int sif_file_device
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` sif_file_device
 
 specifies the unit number to write generated SIF file describing the current problem
 
@@ -242,7 +242,7 @@ specifies the unit number to write generated SIF file describing the current pro
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` pivot_tol
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` pivot_tol
 
 the threshold pivot used by the matrix factorization. See the documentation for SBLS for details (OBSOLETE)
 
@@ -252,7 +252,7 @@ the threshold pivot used by the matrix factorization. See the documentation for 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` pivot_tol_for_basis
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` pivot_tol_for_basis
 
 the threshold pivot used by the matrix factorization when finding the ba See the documentation for ULS for details (OBSOLETE)
 
@@ -262,7 +262,7 @@ the threshold pivot used by the matrix factorization when finding the ba See the
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` zero_pivot
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` zero_pivot
 
 any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLETE)
 
@@ -272,7 +272,7 @@ any pivots smaller than zero_pivot in absolute value will be regarded to zero wh
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` inner_fraction_opt
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` inner_fraction_opt
 
 the computed solution which gives at least inner_fraction_opt times the optimal value will be found (OBSOLETE)
 
@@ -282,7 +282,7 @@ the computed solution which gives at least inner_fraction_opt times the optimal 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` radius
 
 an upper bound on the permitted step (-ve will be reset to an appropriat large value by eqp_solve)
 
@@ -292,7 +292,7 @@ an upper bound on the permitted step (-ve will be reset to an appropriat large v
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` min_diagonal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` min_diagonal
 
 diagonal preconditioners will have diagonals no smaller than min_diagonal (OBSOLETE)
 
@@ -302,7 +302,7 @@ diagonal preconditioners will have diagonals no smaller than min_diagonal (OBSOL
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` max_infeasibility_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` max_infeasibility_relative
 
 if the constraints are believed to be rank defficient and the residual at a "typical" feasible point is larger than max( max_infeasibility_relative \* norm A, max_infeasibility_absolute ) the problem will be marked as infeasible
 
@@ -312,7 +312,7 @@ if the constraints are believed to be rank defficient and the residual at a "typ
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` max_infeasibility_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` max_infeasibility_absolute
 
 see max_infeasibility_relative
 
@@ -322,7 +322,7 @@ see max_infeasibility_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` inner_stop_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` inner_stop_relative
 
 the computed solution is considered as an acceptable approximation to th minimizer of the problem if the gradient of the objective in the preconditioning(inverse) norm is less than max( inner_stop_relative \* initial preconditioning(inverse) gradient norm, inner_stop_absolute )
 
@@ -332,7 +332,7 @@ the computed solution is considered as an acceptable approximation to th minimiz
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` inner_stop_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` inner_stop_absolute
 
 see inner_stop_relative
 
@@ -342,7 +342,7 @@ see inner_stop_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` inner_stop_inter
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` inner_stop_inter
 
 see inner_stop_relative
 

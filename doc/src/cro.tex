@@ -62,20 +62,22 @@ or the matrix $\bmA$ of vectors $\bma_{i}$.
 
 %\subsection{Calling sequences}
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt QPT\_problem\_type},
 {\tt NLPT\_user\-data\-\_type},
@@ -94,6 +96,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -122,19 +128,19 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_crossover} and {\tt \packagename\_terminate}
 is suppressed if
 {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_crossover} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -142,20 +148,20 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{max\_schur\_complement} is a scalar variable of type default \integer,
+\itt{max\_schur\_complement} is a scalar variable of type \integer,
 that specifies
 the maximum number of columns permitted in the Schur complement when
 updating the solution (see Section~\ref{galmethod})
 before a re-factorization is triggered.
 The default is {\tt max\_schur\_complement = 75}.
 
-\itt{infinity} is a scalar variable of type default \realdp, that is used to
+\itt{infinity} is a scalar variable of type \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
 \itt{feasibility\_tolerance}
-is a scalar variables of type default \realdp, that specifies the
+is a scalar variables of type \realdp, that specifies the
 maximum violation of the KKT conditions that is permitted.
 The default iw {\tt feasibility\_toler\-ance =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
@@ -240,29 +246,29 @@ the calculation. The components of
 {\tt \packagename\_time\_type}
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time spent in the package.
 
-\itt{analyse} is a scalar variable of type default \realdp, that gives
+\itt{analyse} is a scalar variable of type \realdp, that gives
  the CPU time spent analysing the required matrices prior to factorization.
 
-\itt{factorize} is a scalar variable of type default \realdp, that gives
+\itt{factorize} is a scalar variable of type \realdp, that gives
  the CPU time spent factorizing the required matrices.
 
-\itt{solve} is a scalar variable of type default \realdp, that gives
+\itt{solve} is a scalar variable of type \realdp, that gives
  the CPU time spent computing corrections to the current solution.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+\itt{clock\_analyse} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent analysing the required matrices prior to
 factorization.
 
-\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+\itt{clock\_factorize} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent factorizing the required matrices.
 
-\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+\itt{clock\_solve} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent computing corrections to
  the current solution.
 
@@ -281,13 +287,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See Section~\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -296,7 +302,7 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{dependent} is a scalar variable of type default \integer, that
+\itt{dependent} is a scalar variable of type \integer, that
 gives the number of dependent active constraints.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
@@ -317,7 +323,7 @@ linear systems that might arise.
 See the documentation for the \galahad\ package {\tt ULS} for further details.
 In particular, default values are as for {\tt ULS}.
 
-\itt{scu\_status} is a scalar variable of type default \integer, that
+\itt{scu\_status} is a scalar variable of type \integer, that
 gives the return status from the Schur-complement updating package
 {\tt \libraryname\_SCU}.
 See the specification sheet for {\tt \libraryname\_SCU} for details.
@@ -421,34 +427,34 @@ The crossover algorithm is called as follows:
 
 %\vspace*{-3mm}
 \begin{description}
-\ittf{n} is a scalar \intentin\ argument of type default \integer,
+\ittf{n} is a scalar \intentin\ argument of type \integer,
  that must be set  to the number of optimization variables, $n$.
 \restriction {\tt n} $> 0$.
 
-\ittf{m} is a scalar \intentin\ argument of type default \integer,
+\ittf{m} is a scalar \intentin\ argument of type \integer,
  that must be set to the number of general linear constraints, $m$.
 \restriction {\tt m} $\geq 0$.
 
-\itt{m\_equal} is a scalar \intentin\ argument of type default \integer,
+\itt{m\_equal} is a scalar \intentin\ argument of type \integer,
  that must be set to the number of general linear constraints that
  are equalities, i.e., whose lower and upper bounds coincide.
 \restriction {\tt m} $\geq$ {\tt m\_equal} $> 0$.
 
 \itt{H\_val} is an \intentin\  rank-one array argument
-of dimension {\tt H\_ptr(n+1)-1} and type default \realdp, that must be set
+of dimension {\tt H\_ptr(n+1)-1} and type \realdp, that must be set
 to hold the values of the nonzero entries of the {\bf lower triangular} part
 of the Hessian matrix $\bmH$. The entries must be ordered so that those
 in row $i$ appear directly before those in row $i+1$ with no gaps;
 the order within each row is unimportant.
 
 \itt{H\_col} is an \intentin\ rank-one array argument
-of dimension {\tt H\_ptr(n+1)-1} and type default \integer, that must be set
+of dimension {\tt H\_ptr(n+1)-1} and type \integer, that must be set
 to hold the column indices of the {\bf lower triangular} part of
 $\bmH$. These must be ordered so that they correspond to the values stored
 in {\tt H\_val}.
 
 \itt{H\_ptr} is an \intentin\ rank-one array argument
-of dimension {\tt n+1} and type default \integer,
+of dimension {\tt n+1} and type \integer,
 whose $j$-th component, $j = 1, \ldots , n$, holds the
 starting position of row $j$ of the {\bf lower triangular} part of
 $\bmH$ as stored in {\tt H\_val} and {\tt H\_col}. The $n+1$-st
@@ -456,7 +462,7 @@ component must be set to the total number of entries in the lower
 triangular part of $\bmH$ plus one.
 
 \itt{A\_val} is an \intentin\  rank-one array argument
-of dimension {\tt A\_ptr(m+1)-1} and type default \realdp, that must be set
+of dimension {\tt A\_ptr(m+1)-1} and type \realdp, that must be set
 to hold the values of the nonzero entries
 of the Jacobian matrix $\bmA$. The entries must be ordered so that those
 in row $i$ appear directly before those in row $i+1$ with no gaps;
@@ -465,25 +471,25 @@ the order within each row is unimportant.
 so that the first {\tt m\_equal} are equality constraints.
 
 \itt{A\_col} is an \intentin\ rank-one array argument
-of dimension {\tt A\_ptr(m+1)-1} and type default \integer, that must be set
+of dimension {\tt A\_ptr(m+1)-1} and type \integer, that must be set
 to hold the column indices of $\bmA$. These must be ordered so that they
 correspond to the values stored in {\tt A\_val}.
 
 \itt{A\_ptr} is an \intentin\ rank-one array argument
-of dimension {\tt m+1} and type default \integer,
+of dimension {\tt m+1} and type \integer,
 whose $i$-th component, $i = 1, \ldots , m$, holds the  starting position
 of row $i$ of $\bmA$ as stored in {\tt A\_val} and {\tt A\_col}.
 The $m+1$-st component must be set to the total number of entries
 in $\bmA$ plus one.
 
 \ittf{G} is an \intentin\ rank-one array argument of dimension {\tt n}
-and type default \realdp, that holds the gradient $\bmg$
+and type \realdp, that holds the gradient $\bmg$
 of the linear term of the quadratic objective function.
 The $j$-th component of {\tt G}, $j = 1,  \ldots ,  n$, must be set to
 $\bmg_{j}$.
 
 \ittf{C\_l} is an \intentin\ rank-one array argument of dimension {\tt m}
-and type default \realdp, that holds the vector of lower bounds $\bmc^{l}$
+and type \realdp, that holds the vector of lower bounds $\bmc^{l}$
 on the general constraints. The $i$-th component of
 {\tt C\_l}, $i = 1, \ldots , m$, must be set to $\bmc_{i}^{l}$.
 Infinite bounds are allowed by setting the corresponding
@@ -492,7 +498,7 @@ where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
 \ittf{C\_u} is an \intentin\ rank-one array argument of dimension {\tt m}
-and type default \realdp, that holds the vector of upper bounds $\bmc^{u}$
+and type \realdp, that holds the vector of upper bounds $\bmc^{u}$
 on the general constraints. The $i$-th component of
 {\tt C\_u}, $i = 1,  \ldots ,  m$, must be set to $\bmc_{i}^{u}$.
 Infinite bounds are allowed by setting the corresponding
@@ -501,7 +507,7 @@ where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
 \ittf{X\_l} is an \intentin\ rank-one array argument of dimension {\tt n}
-and type default \realdp, that holds
+and type \realdp, that holds
 the vector of lower bounds $\bmx^{l}$ on the the variables.
 The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$,
 must be set to $\bmx_{j}^{l}$.
@@ -511,7 +517,7 @@ where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
 \ittf{X\_u} is an \intentin\  rank-one array argument of dimension {\tt n}
-and type default \realdp, that holds
+and type \realdp, that holds
 the vector of upper bounds $\bmx^{u}$ on the variables.
 The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$,
 must be set to $\bmx_{j}^{u}$.
@@ -521,27 +527,27 @@ where {\tt infinity} is a component of the control array {\tt control}
 (see Section~\ref{typecontrol}).
 
 \ittf{X} is an \intentinout\ rank-one array argument of dimension {\tt n}
-and type default \realdp,
+and type \realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, must be set to $x_{j}$
 on input, and may have been adjusted to provide another solution on output.
 
 \ittf{C} is an \intentinout\ rank-one array argument of dimension {\tt m}
-and type default \realdp, that holds
+and type \realdp, that holds
 the values $\bmA \bmx$ of the constraints.
 The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, must be set to
 $\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$
 on input, and may have been adjusted to provide another solution on output.
 
 \ittf{Y} is an \intentinout\ rank-one array argument of dimension {\tt m}
-and type default \realdp, that holds
+and type \realdp, that holds
 the values $\bmy$ of estimates  of the Lagrange multipliers
 corresponding to the general linear constraints (see Section~\ref{galmethod}).
 The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, must be set to $y_{i}$
 on input, and may have been adjusted to provide another solution on output.
 
 \ittf{Z} is an \intentinout\ rank-one array argument of dimension {\tt n}
-and type default \realdp, that holds
+and type \realdp, that holds
 the values $\bmz$ of estimates  of the dual variables
 corresponding to the simple bound constraints (see Section~\ref{galmethod}).
 The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, must be set to $z_{j}$
@@ -549,7 +555,7 @@ on input, and may have been adjusted to provide another solution on output.
 
 \itt{C\_stat} is an \intentin\ rank-one \intentinout\ array argument of
 dimension {\tt m}
-and type default \integer, that indicates which of the general linear
+and type \integer, that indicates which of the general linear
 constraints are in the current active set. Possible input values for
 {\tt C\_stat(i)}, {\tt i}$=1, \ldots ,$ {\tt m}, and their meanings are
 \begin{description}
@@ -577,7 +583,7 @@ is on its upper bound but linearly dependent on others, and
 
 \itt{X\_stat} is an \intentin\ rank-one \intentinout\ array argument of
 dimension {\tt n}
-and type default \integer, that indicates which of the simple bound
+and type \integer, that indicates which of the simple bound
 constraints are in the current active set. Possible input values for
 {\tt X\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt n}, and their meanings are
 \begin{description}
@@ -868,7 +874,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

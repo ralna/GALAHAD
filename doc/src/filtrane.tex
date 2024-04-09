@@ -93,20 +93,22 @@ the $\ell$-th group are considered.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types 
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt NLPT\_problem\_type}, 
 {\tt \packagename\_control\_type}, 
 {\tt \packagename\_inform\_type} 
@@ -133,6 +135,9 @@ integer arrays {\tt J\_row}, {\tt J\_col} and real array {\tt J\_val}.  The
 order is unimportant, but the total number of entries {\tt J\_size} is also
 required.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% symbols %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -167,19 +172,19 @@ components that are of interest in conjunction with \filtrane.
 We first review the components of the problem data type which must be set on
 entry in {\tt \packagename\_solve}.
 \begin{description}
-\ittf{n} is a scalar variable of type default \integer, 
+\ittf{n} is a scalar variable of type \integer, 
  that holds the number of problem variables, $n$.  
 
-\ittf{m} is a scalar variable of type default \integer, 
+\ittf{m} is a scalar variable of type \integer, 
  that holds the number of problem constraints, $m$.
 
 \ittf{x} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds the values $x$ of the problem variables at the
+\realdp, that holds the values $x$ of the problem variables at the
 initial point.The $j$-th component of {\tt x}, $j = 1,  \ldots , n$, contains
 $x_{j}$.
 
 \ittf{x\_l} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds
+\realdp, that holds
 the vector of lower bounds $\bmx^l$ on the problem variables.
 The $j$-th component of {\tt x\_l}, $j = 1, \ldots , n$, 
 contains $\bmx^l_{j}$.
@@ -187,7 +192,7 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt x\_l} to any value smaller than that {\tt -infinity}.
 
 \ittf{x\_u} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds
+\realdp, that holds
 the vector of upper bounds $\bmx^u$ on the problem variables.
 The $j$-th component of {\tt x\_u}, $j = 1, \ldots , n$, 
 contains $\bmx^u_{j}$.
@@ -195,28 +200,28 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt x\_u} to any value larger than that {\tt infinity}.
 
 \ittf{c\_l} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+\realdp, that holds the vector of lower bounds $\bmc^{l}$ 
 on the general constraints. The $i$-th component of 
 {\tt c\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
 Infinite bounds are allowed by setting the corresponding 
 components of {\tt c\_l} to any value smaller than {\tt -infinity}. 
 
 \ittf{c\_u} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp, that holds the vector of upper bounds $\bmc^{l}$ 
+\realdp, that holds the vector of upper bounds $\bmc^{l}$ 
 on the general constraints. The $i$-th component of 
 {\tt c\_u}, $i = 1, \ldots , m$, contains $\bmc_{i}^{u}$.
 Infinite bounds are allowed by setting the corresponding 
 components of {\tt c\_u} to any value larger than {\tt infinity}. 
 
-\itt{J\_size} is a scalar variable of type default \integer, 
+\itt{J\_size} is a scalar variable of type \integer, 
 which holds the number of nonzero entries of the constraints Jacobian matrix.
 
-\itt{J\_type} is a scalar variable of type default \integer, 
+\itt{J\_type} is a scalar variable of type \integer, 
 which specifies the format in which the constraints Jacobian is stored.
 Only the value {\sym GALAHAD\_COORDINATE} is allowed as this is the only
 storage scheme provided within \filtrane.
 
-\itt{infinity} is a scalar variable of type default \realdp, which
+\itt{infinity} is a scalar variable of type \realdp, which
 holds the value such that real numbers with absolute value less than
 {\tt infinity} are finite, all others being considered infinite.
 \end{description}
@@ -225,28 +230,28 @@ holds the value such that real numbers with absolute value less than
 In addition, the following components must be allocated:
 \begin{description}
 \itt{x\_status} is a rank-one allocatable array of dimension {\tt n} and type 
-default \integer,
+\integer,
 
 \ittf{c} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp,
+\realdp,
 
 \ittf{y} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp,
+\realdp,
 
 \ittf{g} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp,
+\realdp,
 
 \itt{equation} is a rank-one allocatable array of dimension {\tt n} and type 
 default \logical,
 
 \itt{J\_val} is a rank-one allocatable array of dimension {\tt J\_size + n} and
-type default \realdp,
+type \realdp,
 
 \itt{J\_row} is a rank-one allocatable array of dimension {\tt J\_size + n} and
-type default \integer,
+type \integer,
 
 \itt{J\_col} is a rank-one allocatable array of dimension {\tt J\_size + n} and
-type default \integer.
+type \integer.
 \end{description}
 However, they need not be assigned a value.
 
@@ -277,13 +282,13 @@ The components of
 are:
 
 \begin{description}
-\itt{c\_accuracy} is a scalar variable of type default \realdp, that
+\itt{c\_accuracy} is a scalar variable of type \realdp, that
 specifies an accuracy threshold such that the \filtrane\ iteration is
 successfully terminated if each constraint violation is under the threshold.
 The default is {\tt c\_accuracy} = $10^{-4}$ in single precision, and
 {\tt c\_accuracy} = $10^{-6}$ in double precision.
 
-\itt{g\_accuracy} is a scalar variable of type default \realdp, that
+\itt{g\_accuracy} is a scalar variable of type \realdp, that
 specifies an accuracy threshold such that the \filtrane\ iteration is
 successfully terminated if the (possibly preconditioned) Euclidean norm
 of $\nabla_x \theta$ is under the threshold.
@@ -305,20 +310,20 @@ is only possible for {prec\_used} = {\sym GALAHAD\_NONE} or for
 reset to .FALSE. in all other cases.
 The default is {\tt stop\_on\_g\_max} = {\tt .FALSE.}.
 
-\itt{max\_iterations} is a scalar variable of type default \integer, that
+\itt{max\_iterations} is a scalar variable of type \integer, that
 determines the maximum number of iterations of the filter-trust-region
 algorithm during a call to {\tt \packagename\_solve}. If negative, no upper
 limit is imposed on the number of iterations.
 The default is {\tt max\_iterations} = 1000.
 
-\itt{max\_cg\_iterations} is a scalar variable of type default \integer, such
+\itt{max\_cg\_iterations} is a scalar variable of type \integer, such
 that {\tt max\_cg\_iterations} times the number of problem's variables
 is the maximum number of Lanczos-conjugate-gradients iterations of the 
 Generalized Lanczos Trust-Region subproblems solver at each iteration of
 filter-trust-region algorithm during a call to {\tt \packagename\_solve}.
 The default is {\tt max\_cg\_iterations} = 15.
 
-\itt{grouping} is a scalar variable of type default \integer, that holds the
+\itt{grouping} is a scalar variable of type \integer, that holds the
 type of equations/inequalities/bounds groups required for the filter tests in
 the \filtrane\ algorithm. Valid values are:
 \begin{description}
@@ -331,7 +336,7 @@ the user and specified in {\tt group}.
 \end{description}
 The default is {\tt grouping} = {\sym GALAHAD\_NONE}.
 
-\itt{nbr\_groups} is a scalar variable of type default \integer, that
+\itt{nbr\_groups} is a scalar variable of type \integer, that
 specifies the number of constraints groups. 
 If {\tt grouping} is set to {\tt GALAHAD\_AUTOMATIC}, and {\tt
 nbr\_groups} is positive, the smallest between this value and the
@@ -345,7 +350,7 @@ nbr\_groups} is the number of user-defined constraints groups specified in {\tt
 group}. The parameter {\tt nbr\_groups} is not referenced if {\tt
 grouping} is {\sym GALAHAD\_NONE}.
 
-\itt{group} is a pointer to a vector of type default \integer\ of dimension
+\itt{group} is a pointer to a vector of type \integer\ of dimension
 equal to $m$ plus the number of bounded variables. It is only referenced if
 {\tt grouping} is set to {\sym GALAHAD\_USER\_DEFINED}. In this case,
 it must be allocated and {\tt group(i)}, its $i$-th component, for $i$ between
@@ -364,7 +369,7 @@ constraint violations (at the initial point) between the groups. It is
 relevant only if {\tt grouping} is set to {\sym GALAHAD\_AUTOMATIC}.
 The default is {\tt balance\_group\_values} = {\tt .FALSE.}.
 
-\itt{prec\_used} is a scalar variable of type default \integer, that indicates
+\itt{prec\_used} is a scalar variable of type \integer, that indicates
 which preconditioning strategy must be used. Valid values are:
 \begin{description}
 \item[\sym GALAHAD\_NONE:] no preconditioning,
@@ -378,7 +383,7 @@ communication interface (see Section~\ref{galreverse}).
 \end{description}
 The default is {\tt prec\_used} = {\sym GALAHAD\_NONE}.
 
-\itt{semi\_bandwidth} is a scalar variable of type default \integer, that 
+\itt{semi\_bandwidth} is a scalar variable of type \integer, that 
 specifies the semi-bandwidth of the banded preconditioner, in the case where
 {\tt prec\_used} is set to {\sym GALAHAD\_BANDED}. It must lie between
 0 (diagonal precondtioning) and $n$ (full preconditioning).
@@ -392,28 +397,28 @@ to be computed outside the package via the reverse communication interface ({\tt
 external\_J\_products} = {\tt .TRUE.}, see Section~\ref{galreverse}), in which
 case the Jacobian is not used at all inside \filtrane.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 unit number associated with the device used for normal output.
 The default is {\tt out} = 6.
 
-\itt{errout} is a scalar variable of type default \integer, that holds the
+\itt{errout} is a scalar variable of type \integer, that holds the
 unit number associated with the device used for error ouput.
 The default is {\tt errout} = 6.
 
-\itt{print\_level} is a scalar variable of type default \integer, that holds the
+\itt{print\_level} is a scalar variable of type \integer, that holds the
 level of printout requested by the user. See Section~\ref{galinfo}.
 The default is {\tt print\_level} = {\sym GALAHAD\_SILENT}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that holds
+\itt{start\_print} is a scalar variable of type \integer, that holds
 the index of the first \filtrane\ iteration at which printing must occur.
 The default is {\tt start\_print} = 0 (print from initialization on).
 
-\itt{stop\_print} is a scalar variable of type default \integer, that holds
+\itt{stop\_print} is a scalar variable of type \integer, that holds
 the index of the last \filtrane\ iteration at which printing must occur. If
 negative, printing does not stop once started.
 The default is {\tt stop\_print} = -1 (always print once started).
 
-\itt{model\_type} is a scalar variable of type default \integer, that holds
+\itt{model\_type} is a scalar variable of type \integer, that holds
 the type of model to be used by \filtrane\ for the objective function.  Valid
 values are:
 \begin{description}
@@ -426,13 +431,13 @@ respective past performance in terms or prediction or decrease.
 \end{description}
 The default is {\tt model\_type} = {\sym GALAHAD\_AUTOMATIC}.
 
-\itt{model\_inertia} is a scalar variable of type default \integer, that holds
+\itt{model\_inertia} is a scalar variable of type \integer, that holds
 the number of past iterations to consider for determining the actual model
 used. It must be at least 1 and is only relevant if {\tt model\_type}
 is set to {\sym GALAHAD\_AUTOMATIC}.
 The default is {\tt model\_inertia} = 5.
 
-\itt{model\_criterion} is a scalar variable of type default \integer, that
+\itt{model\_criterion} is a scalar variable of type \integer, that
 specifies the criterion to apply for the automatic model selection. Valid
 values are:
 \begin{description}
@@ -443,7 +448,7 @@ to a larger objective function reduction.
 \end{description}
 The default is {\tt model\_criterion} = {\sym GALAHAD\_BEST\_FIT}.
 
-\itt{inequality\_penalty\_type} is a scalar variable of type default \integer,
+\itt{inequality\_penalty\_type} is a scalar variable of type \integer,
 that specifies the type of penalty function used to measure constraint
 violations.  Valid values are:
 \begin{description}
@@ -454,7 +459,7 @@ violations.  Valid values are:
 The default is {\tt inequality\_penalty\_type} = 2, which corresponds to the
 use of the Euclidean norm in (\ref{thetadef}).
 
-\itt{subproblem\_accuracy} is a scalar variable of type default \integer,
+\itt{subproblem\_accuracy} is a scalar variable of type \integer,
 that specifies the type of accuracy requirement for stopping the trust-region
 subproblem solution. Valid values are
 \begin{description}
@@ -471,7 +476,7 @@ the (possibly preconditioned) norm of the residual at the current iterate.
 \end{description}
 The default is {\tt subproblem\_accuracy} = {\sym GALAHAD\_ADAPTIVE}.
 
-\itt{min\_gltr\_accuracy} is a scalar variable of type default \realdp, that
+\itt{min\_gltr\_accuracy} is a scalar variable of type \realdp, that
 holds the minimum relative accuracy $\epsilon_1$ in the accuracy
 requirement (\ref{gltr_stop}) for the subproblem solution.
 It is only relevant if {\tt subproblem\_accuracy} is set
@@ -479,14 +484,14 @@ to {\sym GALAHAD\_ADAPTIVE}, in which case it must be strictly between zero
 and one. 
 The default is {\tt min\_gltr\_accuracy} = 0.01.
 
-\itt{gltr\_accuracy\_power} is a scalar variable of type default \realdp, that
+\itt{gltr\_accuracy\_power} is a scalar variable of type \realdp, that
 holds the power $\epsilon_2$ at which the current residual norm is raised in
 the accuracy requirement (\ref{gltr_stop}) for the subproblem solution. 
 It is only relevant if {\tt subproblem\_accuracy} is set
 to {\sym GALAHAD\_ADAPTIVE}, in which case it must be positive.
 The default is {\tt gltr\_accuracy\_power} = 1.0.
 
-\itt{use\_filter} is a scalar variable of type default \integer, that
+\itt{use\_filter} is a scalar variable of type \integer, that
 specifies when the filter criterion must be used to accept new trial points.
 Valid values are:
 \begin{description}
@@ -510,7 +515,7 @@ algorithm reduces to a pure trust-region scheme.  If set to a negative value,
 no upper limit is set on the number of filter entries.
 The default is {\tt maximal\_filter\_size} = -1.
 
-\itt{filter\_size\_increment} is a scalar variable of type default \integer,
+\itt{filter\_size\_increment} is a scalar variable of type \integer,
 that holds the initial filter size (if used), and is also used as an increment
 for the case where the filter capacity (in memory) must be extended.
 The default is {\tt filter\_size\_increment} = 50.
@@ -522,7 +527,7 @@ filter points, at the expense of increased memory requirements and a
 (marginally) slower acceptance test. 
 The default is {\tt remove\_dominated} = {\tt .TRUE.}.
 
-\itt{margin\_type} is a scalar variable of type default \integer, that
+\itt{margin\_type} is a scalar variable of type \integer, that
 specifies the quantity that is used to determine the width of the filter
 margin. Valid values are:
 \begin{description}
@@ -534,23 +539,23 @@ itself is used,
 \end{description}
 The default is {\tt margin\_type} = {\sym GALAHAD\_CURRENT}.
 
-\itt{gamma\_f} is a scalar variable of type default \realdp, that holds the
+\itt{gamma\_f} is a scalar variable of type \realdp, that holds the
 value of the constant defining the filter margin.
 The default is {\tt gamma\_f} = 0.001.
 
-\itt{itr\_relax} is a scalar variable of type default \realdp, that holds the
+\itt{itr\_relax} is a scalar variable of type \realdp, that holds the
 value of the initial trust-region relaxation factor, that is the factor by
 which the trust-region constraint is relaxed during the initial sequence of
 unrestricted step.
 The default is {\tt itr\_relax} = $10^{20}$.
 
-\itt{str\_relax} is a scalar variable of type default \realdp, that holds the
+\itt{str\_relax} is a scalar variable of type \realdp, that holds the
 value of the secondary trust-region relaxation factor, that is the factor by
 which the trust-region constraint is relaxed after a first restricted step has
 been encountered.
 The default is {\tt str\_relax} = 1000.
 
-\itt{weak\_accept\_power} is a scalar variable of type default \realdp, 
+\itt{weak\_accept\_power} is a scalar variable of type \realdp, 
 that holds the power $\alpha_2$ in the ``weak acceptance criterion'' that
 accepts a trial point $x_k^+$ if
 \begin{equation}\label{wa}
@@ -562,38 +567,38 @@ by also accepting steps that produces sufficient descent.  If {\tt
 weak\_accept\_power} $<0$, this test is not used.
 The default is {\tt weak\_accept\_power} = 2.0.
 
-\itt{min\_weak\_accept\_factor} is a scalar variable of type default \realdp, 
+\itt{min\_weak\_accept\_factor} is a scalar variable of type \realdp, 
 that holds the parameter $\alpha_1$ in (\ref{wa}).  It is only relevant
 if {\tt weak\_accept\_power} $\geq 0$, in which case it must be strictly
 positive.
 The default is {\tt min\_weak\_accept\_factor} = 0.1.
 
-\itt{initial\_radius} is a scalar variable of type default \realdp, that
+\itt{initial\_radius} is a scalar variable of type \realdp, that
 holds the initial trust-region radius. It si only relevant if
 {\tt use\_filter} is different from {\sym GALAHAD\_NEVER}.
 The default is {\tt initial\_radius} = 1.0.
 
-\itt{eta\_1} is a scalar variable of type default \realdp, that holds the
+\itt{eta\_1} is a scalar variable of type \realdp, that holds the
 minimum ratio of achieved to predicted reduction
 for declaring a \filtrane\ iteration successful.
 The default is {\tt eta\_1} = 0.01.
 
-\itt{eta\_2} is a scalar variable of type default \realdp, that holds the
+\itt{eta\_2} is a scalar variable of type \realdp, that holds the
 minimum ratio of achieved to predicted reduction
 for declaring a \filtrane\ iteration very successful.
 The default is {\tt eta\_2} = 0.9.
 
-\itt{gamma\_0} is a scalar variable of type default \realdp, that holds the
+\itt{gamma\_0} is a scalar variable of type \realdp, that holds the
 strongest factor by which the trust-region radius is decreased when the ratio
 of achieved to predicted reduction is negative.
 The default is {\tt gamma\_0} = 0.0625.
 
-\itt{gamma\_1} is a scalar variable of type default \realdp, that holds the
+\itt{gamma\_1} is a scalar variable of type \realdp, that holds the
 factor by which the trust-region radius is decreased when the \filtrane\
 iteration is unsuccessful.
 The default is {\tt gamma\_1} = 0.25.
 
-\itt{gamma\_2} is a scalar variable of type default \realdp, that holds the
+\itt{gamma\_2} is a scalar variable of type \realdp, that holds the
 factor by which the trust-region radius is increased when the \filtrane\
 iteration is very successful.
 The default is {\tt gamma\_2} = 2.0.
@@ -605,7 +610,7 @@ returned as the final iterate.  This is only relevant when
 and requires the storage of an additional vector of dimension $n$.
 The default is {\tt save\_best\_point} = {\tt .FALSE.}.
 
-\itt{checkpoint\_freq} is a scalar variable of type default \integer, that
+\itt{checkpoint\_freq} is a scalar variable of type \integer, that
 holds the frequency (expressed in number of iterations) at which
 the current values of the problem's variables and the trust-region radius are
 saved on a checkpointing file for a possible package restart. It must be
@@ -617,7 +622,7 @@ length 30, that holds the name of the file use for storing checkpointing
 information on disk.
 The default is {\tt checkpoint\_file} = FILTRANE.sav.
 
-\itt{checkpoint\_dev} is a scalar variable of type default \integer, that
+\itt{checkpoint\_dev} is a scalar variable of type \integer, that
 holds the number of the device that must be used for input/output of
 checkpointing operations.
 The default is {\tt checkpoint\_dev} = 55.
@@ -643,7 +648,7 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. See Sections~\ref{galerrors} and \ref{galinfo}
 for details.
 
@@ -654,17 +659,17 @@ than contained in {\tt status}.
 It is printed out on device {\tt errout} at the end of execution
 unless {\tt print\_level} is {\sym GALAHAD\_SILENT}.
 
-\itt{nbr\_iterations} is a scalar variable of type default \integer, that
+\itt{nbr\_iterations} is a scalar variable of type \integer, that
 gives the the final number of \filtrane\ iterations.
 
-\itt{nbr\_cg\_iterations} is a scalar variable of type default \integer, that
+\itt{nbr\_cg\_iterations} is a scalar variable of type \integer, that
 gives the the final number of iterations performed by {\tt GALAHAD\_GLTR} in
 solving the subproblems on all successive \filtrane\ iterations.
 
-\itt{nbr\_c\_evaluations} is a scalar variable of type default \integer, that
+\itt{nbr\_c\_evaluations} is a scalar variable of type \integer, that
 gives the final number of evaluations of the constraints values.
 
-\itt{nbr\_J\_evaluations} is a scalar variable of type default \integer, that
+\itt{nbr\_J\_evaluations} is a scalar variable of type \integer, that
 gives the final number of Jacobian evaluations.
 \end{description}
 
@@ -1141,7 +1146,7 @@ Control parameters may be read from a file as follows:
 \def\baselinestretch{1.0}
 
 \begin{description}
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

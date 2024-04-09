@@ -1,4 +1,4 @@
-# THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 07:50 GMT.
+# THIS VERSION: GALAHAD 5.0 - 2024-03-24 AT 14:15 GMT.
 
 # Updates 12/Nov/2004 to allow for MA57, version 2
 #         29/Mar/2005 to allow for MA57, version 3
@@ -31,317 +31,74 @@
 #                     of GALAHAD
 #         19/Dec/2022 all mention of specific versions of ma48 and ma57 have
 #                     been removed
+#         24/Mar/2024 simplify everything so that all that is actually required
+#                     is HSLSUBSET, HSLARCHIVESUBSET and MKLPARDISO
 
-# Set directories for optional packages
-# Change these to override provided defaults containing dummy routines
+# -------------------------- HSL Software -----------------------------------
 
-# ---------------- HSL_ARCHIVE environment variable -------------------
+#  HSL software is not part of the GALAHAD distribution, but we thoroughly 
+#  recommend its use if at all possible, as it considerably improves 
+#  performance - if not, dummy, non-funtional, replacements, that are 
+#  included as part of GALAHAD, will be used instead.
 
-# The variable HSL_ARCHIVE should be set to the directory in which the source
-# codes for the HSL Archive packages ad02, ma27 and ma33 obtained from
+#  HSL is available in two forms:
 
-#   http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
+#  (1) The HSL subset - this is a fully-functional version that may be 
+#      DOWNLOADED WITHOUT CHARGE FOR PERSONAL USE by any academic with a 
+#      recognised academic email address. See
 
-HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
+#        http://www.hsl.rl.ac.uk/download/hsl-galahad/latest
 
-# NOTE that although the HSL Archive files are not strictly necessary,
-# they will significantly improve the performance of the library, particularly
-# for compilers that cannot support the default sparse solver, ssids
+#      for registration details. The registration process is handled manually,
+#      and so there may be a short delay
 
-# ================ IMPORTANT NEWS FOR POTENTIAL HSL USERS ==============
+#  (2) The HSL acrchive subset - this provides fully-functional versions of
+#      older HSL software (the packages ma27/ma28/ma33 and hsl_ad02) that may
+#      be used by anyone, but must not be passed on. See
 
-# From GALAHAD 2.4 onwards, all the optional HSL software used by GALAHAD
-# is available as a single tar.gz or gzip file. These files may be DOWNLOADED
-# WITHOUT CHARGE FOR PERSONAL USE by any academic with a recognised academic
-# email address. See
+#        http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
 
-#     http://www.hsl.rl.ac.uk/download/hsl-galahad/latest/d/
+#      The archive is normally available immediately. 
 
-# for registration details.
+#  The archive codes are part of the HSL subset, so option (2) is not
+#  needed if option (1) is possible.
 
-# This tar.gz/gzip file should be uncompressed in a convenient location.
-# Once this has been done, set the variables below to point to the
-# appropriate subdirectories created during the uncompression. The
-# commented versions below are appropriate if the HSL files are
-# uncompressed at the same level in your filesystem as you put GALAHAD.
+#  Once the tar.gz/gzip file been obtained, it should be uncompressed in 
+#  a convenient location - typically, we suggest that directory "below"
+#  the GALAHAD distribution, $GALAHAD/../ is suitable. Once this has 
+#  been done, set the variables  HSLSUBSET and HSLARCHIVESUBSET below 
+#  to point to the appropriate subdirectories created during the uncompression.
+#  The commented versions below are appropriate if the HSL files are
+#  uncompressed at the same level in your filesystem as you put GALAHAD.
 
-# ======================================================================
+# -------------------- HSLSUBSET environment variables ----------------------
+
+#  HSLSUBSET is the source directory for the HSL SUBSET packages. If the
+#  subset is available, set HSLSUBSET to its directory; if not, set 
+#  HSLSUBSET to $(GALAHAD)/src/external/hsl which contains dummy versions
+
+HSLSUBSET = $(GALAHAD)/src/external/hsl
+HSLSUBSET = $(GALAHAD)/../hsl_subset/src
+
+#  HSLSUBSET is the source directory for the HSL Archive SUBSET packages.
+#  If the actual HSL SUBSET files have been downloaded, these will
+#  include the archive, and so HSLARCHIVESUBSET = $(HSLSUBSET) is perfect
+
+HSLARCHIVESUBSET = $(HSLSUBSET)
+#HSLARCHIVESUBSET = $(GALAHAD)/../hslarchive/hsl_subset/src
 
 # ---------------- LINEARSOLVER environment variable -------------------
 
 # The variable LINEARSOLVER should be set to "ma57" if the user has access to
 # the HSL solver HSL_MA57 (version 4, post 3/2007), and "sils" if the default
 # solver (which is baed on MA27 from the HSL Archive) is to be used instead
-
-# HSL_MA57 is only available as a commercial product (unless you are a
-# registered academic, in which case all HSL packages are available without
-# charge for non-commercial purposes). See
-# http://www.cse.clrc.ac.uk/Activity/HSL for further details
-
-# NB (i) :-
-#  if you plan to use HSL_MA57, you may improve its performance if you use the
-#  external package Metis (version 4)
-#   http://www-users.cs.umn.edu/~karypis/metis/
-#  If Metis is unavailable, a dummy version will be substituted, but some
-#  options of HSL_MA57 will not possible.
-
-LINEARSOLVER = sils
-#LINEARSOLVER = ma57
-
-# -------------------- MA27 environment variable ------------------------
-
-#  MA27 is the actual source directory for the HSL package MA27
-#  This directory must contain files with the following names
-#     ma27 (single precision): ./ma27s.f
-#     ma27 (double precision): ./ma27d.f
-
-MA27 = $(GALAHAD)/src/dum
-#MA27 = $(GALAHAD)/../hslarchive-galahad/ma27
-
-# -------------------- MA33 environment variable ------------------------
-
-#  MA33 is the actual source directory for the HSL package MA33
-#  This directory must contain files with the following names
-#     ma33 (single precision): ./ma33s.f
-#     ma33 (double precision): ./ma33d.f
-#     auxiliary routines (single precision):
-#       ./mc13s.f ./mc20s.f ./mc21s.f
-#     auxiliary routines (single precision):
-#       ./mc13df ./mc20d.f ./mc21d.f
-
-MA33 = $(GALAHAD)/src/dum
-#MA33 = $(GALAHAD)/../hslarchive-galahad/ma33
-
-# -------------------- AD02 environment variable ------------------------
-
-#  AD02 is the actual source directory for the HSL_AD02 package
-#  This directory must contain files with the following names
-#     hsl_ad02 (single precision): ./hsl_ad02s.f90
-#     hsl_ad02 (double precision): ./hsl_ad02d.f90
-
-AD02 = $(GALAHAD)/src/dum
-#AD02 = $(GALAHAD)/../hslarchive-galahad/ad02
-
-# -------------------- MA57 environment variable ------------------------
-
-#  MA57 is the actual source directory for the HSL_MA57 package (version 4 only)
-#  For version 4, this directory must contain files with the following names
-#     hsl_ma57 (single precision): ./hsl_ma57s.f90
-#     hsl_ma57 (double precision): ./hsl_ma57d.f90
-#     auxiliary routines (single precision):
-#       ./ma57s.f ./mc21s.f ./mc34s.f ./mc47s.f ./mc59s.f ./mc64s.f
-#       ./mc71s.f and optionally ./metis.f
-#     auxiliary routines (double precision):
-#      ./ma57d.f ./mc21d.f ./mc34d.f ./mc47d.f ./mc59d.f ./mc64d.f
-#      ./mc71d.f and optionally ./metis.f
-
-MA57 = $(GALAHAD)/src/dum
-#MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
-
-# ---------------- ULINEARSOLVER environment variable -------------------
-
-# The variable ULINEARSOLVER should be set to "ma48" if the user has access
-# to the HSL solver HSL_MA48 (version 3) and "gls" if the default solver
-# (which is based on MA33 from the HSL Archive) is to be used instead.
-
-# HSL_MA48 is only available as a commercial product (unless you are a
-# registered academic, in which case all packages are available without
-# charge for non-commercial purposes). See
-# http://www.cse.clrc.ac.uk/Activity/HSL for further details
-
-ULINEARSOLVER = gls
-#ULINEARSOLVER = ma48
-
-# -------------------- MA48 environment variable ------------------------
-
-#  MA48 is the actual source directory for the HSL_MA48 package (version 3 only)
-#  This directory must contain files with the following names
-#     hsl_ma48 (single precision): ./hsl_ma48s.f90
-#     hsl_ma48 (double precision): ./hsl_ma48d.f90
-#     auxiliary routines (single precision): ./mc71s.f
-#       ./mc13s.f ./mc21s.f ./ma50s.f ./ma48s.f ./ma51s.f
-#       ./hsl_zb01s.f90 ./hsl_zb01i.f90
-#     auxiliary routines (double precision): ./mc71d.f
-#       ./mc13d.f ./mc21d.f ./ma50d.f ./ma48d.f ./ma51d.f
-#       ./hsl_zb01d.f90 ./hsl_zb01i.f90
-
-MA48 = $(GALAHAD)/src/dum
-#MA48 = $(GALAHAD)/../hsl-galahad/hsl_ma48
-
-# -------------------- MA61 environment variable ------------------------
-
-#  MA61 is the actual source directory for the HSL package MA61
-#  This directory must contain files with the following names
-#     hsl_ma61 (single precision): ./ma61s.f90
-#     hsl_ma61 (double precision): ./ma61d.f90
-
-MA61 = $(GALAHAD)/src/dum
-#MA61 = $(GALAHAD)/../hsl-galahad/ma61
-
-# -------------------- MA77 environment variable ------------------------
-
-#  MA77 is the actual source directory for the HSL package HSL_MA77
-#  This directory must contain files with the following names
-#     hsl_ma77 (single precision): ./hsl_ma77s.f90
-#     hsl_ma77 (double precision): ./hsl_ma77d.f90
-#     auxiliary routines (single precision): ./kb07i.f ./hsl_ma54s.f90
-#        ./hsl_of01s.f90 ./hsl_of01i.f90 ./hsl_kb22l.f90 ./hsl_ma64s.f90
-#     auxiliary routines (double precision): ./kb07i.f ./hsl_ma54d.f90
-#        ./hsl_of01d.f90 ./hsl_of01i.f90 ./hsl_kb22l.f90 ./hsl_ma64d.f90
-
-MA77 = $(GALAHAD)/src/dum
-#MA77 = $(GALAHAD)/../hsl-galahad/hsl_ma77
-
-# -------------------- MA86 environment variable ------------------------
-
-#  MA86 is the actual source directory for the HSL package HSL_MA86
-#  This directory must contain files with the following names
-#     hsl_ma86 (single precision): ./hsl_ma86s.f90
-#     hsl_ma86 (double precision): ./hsl_ma86d.f90
-#     auxiliary routines (single precision): ./hsl_mc34s.f90 ./hsl_mc78i.f90
-#       ./hsl_zb01i.f90
-#     auxiliary routines (double precision): ./hsl_mc34d.f90 ./hsl_mc78i.f90
-#       ./hsl_zb01i.f90
-
-MA86 = $(GALAHAD)/src/dum
-#MA86 = $(GALAHAD)/../hsl-galahad/hsl_ma86
-
-# ------------------ MA86_VERSION environment variable ------------------
-
-# The variable MA86_VERSION should be set to "ma86v2" if the user has access
-# to the HSL solver HSL_MA86 (version 2, post 6/2011), and "ma86v1" if only
-# the older (version 1, pre 6/2011) variant is available
-
-#MA86_VERSION = ma86v1
-MA86_VERSION = ma86v2
-
-# -------------------- MA87 environment variable ------------------------
-
-#  MA87 is the actual source directory for the HSL package HSL_MA87
-#  This directory must contain files with the following names
-#     hsl_ma87 (single precision): ./hsl_ma87s.f90
-#     hsl_ma87 (double precision): ./hsl_ma87d.f90
-#     auxiliary routines (single precision): ./hsl_mc34s.f90 ./hsl_mc78i.f90
-#       ./hsl_zb01i.f90
-#     auxiliary routines (double precision): ./hsl_mc34d.f90 ./hsl_mc78i.f90
-#       ./hsl_zb01i.f90
-
-MA87 = $(GALAHAD)/src/dum
-#MA87 = $(GALAHAD)/../hsl-galahad/hsl_ma87
-
-# -------------------- MA97 environment variable ------------------------
-
-#  MA97 is the actual source directory for the HSL package HSL_MA97
-#  This directory must contain files with the following names
-#     hsl_ma97 (single precision): ./hsl_ma97s.f90
-#     hsl_ma97 (double precision): ./hsl_ma97d.f90
-#     auxiliary routines (single precision): ./hsl_mc34s.f90 ./hsl_mc78i.f90
-#       ./mc64s.f ./hsl_mc68i.f90 ./hsl_mc69s.f90 ./mc77s.f
-#     auxiliary routines (double precision): ./hsl_mc34d.f90 ./hsl_mc78i.f90
-#       ./ma64d.f ./hsl_mc68i.f90 ./hsl_mc69d.f90 ./mc77d.f
-
-MA97 = $(GALAHAD)/src/dum
-#MA97 = $(GALAHAD)/../hsl-galahad/hsl_ma97
-
-# -------------------- MC61 environment variable ------------------------
-
-#  MC61 is the actual source directory for the HSL package MC61
-#  This directory must contain files with the following names
-#     mc61 (single precision): ./mc61s.f
-#     mc61 (double precision): ./mc61d.f
-#     auxiliary routines (single precision): ./mc60s.f
-#     auxiliary routines (double precision): ./mc60d.f
-
-MC61 = $(GALAHAD)/src/dum
-#MC61 = $(GALAHAD)/../hsl-galahad/mc61
-
-# -------------------- MC64 environment variable ------------------------
-
-#  MC64 is the actual source directory for the HSL package HSL_MC64
-#  This directory must contain files with the following names
-#     hsl_mc64 (single precision): ./hsl_mc64s.f90
-#     hsl_mc64 (double precision): ./hsl_mc64d.f90
-#     auxiliary routines (single precision):
-#      ./mc21s.f ./mc34s.f ./mc64s.f ./hsl_zd11s.f90
-#     auxiliary routines (double precision):
-#      ./mc21d.f ./mc34d.f ./mc64d.f ./hsl_zd11d.f90
-
-MC64 = $(GALAHAD)/src/dum
-#MC64 = $(GALAHAD)/../hsl-galahad/hsl_mc64
-
-# -------------------- MC68 environment variable ------------------------
-
-#  MC68 is the actual source directory for the HSL package HSL_MC68
-#  This directory must contain files with the following names
-#     hsl_mc68: ./hsl_mc68i.f90
-#     auxiliary routines: ./hsl_zb01i.f90
-
-MC68 = $(GALAHAD)/src/dum
-#MC68 = $(GALAHAD)/../hsl-galahad/hsl_mc68
-
-# -------------------- MC77 environment variable ------------------------
-
-#  MC77 is the actual source directory for the HSL package MC77
-#  This directory must contain files with the following names
-#     mc77 (single precision): ./mc77s.f
-#     mc77 (double precision): ./mc77d.f
-
-MC77 = $(GALAHAD)/src/dum
-#MC77 = $(GALAHAD)/../hsl-galahad/mc77
-
-# -------------------- MI20 environment variable ------------------------
-
-#  MI20 is the actual source directory for the HSL_MI20 package
-#  This directory must contain files with the following names
-#     hsl_mi20 (single precision): ./hsl_mi20s.f90
-#     hsl_mi20 (double precision): ./hsl_mi20d.f90
-#     auxiliary routines (single precision): ./hsl_mc65s.f90
-#     auxiliary routines (double precision): ./hsl_mc65d.f90
-
-MI20 = $(GALAHAD)/src/dum
-#MI20 = $(GALAHAD)/../hsl-galahad/hsl_mi20
-
-# -------------------- MI28 environment variable ------------------------
-
-#  MI28 is the actual source directory for the HSL_MI28 package
-#  This directory must contain files with the following names
-#     hsl_mi28 (single precision): ./hsl_mi28s.f90
-#     hsl_mi28 (double precision): ./hsl_mi28d.f90
-#     auxiliary routines (single precision): ./kb07i.f ./mc61s.f ./mc77s.f
-#      ./hsl_mc68i.f90 ./mc64s.f ./hsl_mc64s.f90 ./hsl_mc69s.f90
-#     auxiliary routines (double precision): ./kb07i.f ./mc61d.f ./mc77d.f
-#      ./hsl_mc68i.f90 ./mc64d.f ./hsl_mc64d.f90 ./hsl_mc69d.f90
-
-MI28 = $(GALAHAD)/src/dum
-#MI28 = $(GALAHAD)/../hsl-galahad/hsl_mi28
-
-# -------------------- MI35 environment variable ------------------------
-
-#  MI35 is the actual source directory for the HSL_MI35 package
-#  This directory must contain files with the following names
-#     hsl_mi35 (single precision): ./hsl_mi35s.f90
-#     hsl_mi35 (double precision): ./hsl_mi35d.f90
-#     auxiliary routines (single precision): ./kb07i.f ./mc61s.f ./mc77s.f
-#      ./hsl_mc68i.f90 ./mc64s.f ./hsl_mc64s.f90 ./hsl_mc69s.f90
-#     auxiliary routines (double precision): ./kb07i.f ./mc61d.f ./mc77d.f
-#      ./hsl_mc68i.f90 ./mc64d.f ./hsl_mc64d.f90 ./hsl_mc69d.f90
-
-MI35 = $(GALAHAD)/src/dum
-#MI35 = $(GALAHAD)/../hsl-galahad/hsl_mi35
-
-# -------------------- LA04 environment variable ------------------------
-
-#  LA04 is the actual source directory for the HSL package LA04
-#  This directory must contain files with the following names
-#     la04 (single precision): ./la04s.f
-#     la04 (double precision): ./la04d.f
-#     auxiliary routines (single precision): ./fa14s.f  ./fd15s.f  ./mc29s.f
-#       ./mc59s.f ./la15s.f
-#     auxiliary routines (double precision): ./fa14d.f  ./fd15d.f  ./mc29d.f
-#       ./mc59d.f ./la15d.f
-
-LA04 = $(GALAHAD)/src/dum
-#LA04 = $(GALAHAD)/../hsl-galahad/la04
+# Now implemented by ifneq, so this should probably be left alone
+
+ifneq "$(HSLSUBSET)" "$(GALAHAD)/src/external/hsl"
+  LINEARSOLVER = ma57
+else
+  LINEARSOLVER = sils
+endif
 
 # -------------------- MKLPARDISO environment variable ----------------------
 
@@ -353,3 +110,4 @@ LA04 = $(GALAHAD)/src/dum
 MKLPARDISO = $(GALAHAD)/src/dum
 #MKLPARDISO = /opt/intel/mkl/include
 #MKLPARDISO = /opt/intel/oneapi/mkl/latest/include
+

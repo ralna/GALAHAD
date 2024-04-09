@@ -308,15 +308,29 @@ $(LG)(lapack_interface_$(PRECIS).o): ../lapack/lapack_interface.F90
 	$(RMARFILES) gltr glrt sls trs rqs sha
 	@printf '[ OK ]\n'
 
-#  all metis packages
+#  metis package
 
 metis_silent: metis_$(PRECIS)
 metis: metis_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: metis ($(PRECIS) $(SUCC)"
-metis_single: dummy_metis_single metis4_single metis5_single
-metis_double: dummy_metis_double metis4_double metis5_double
-metis_single_64: dummy_metis_single_64 metis4_single_64 metis5_single_64
-metis_double_64: dummy_metis_double_64 metis4_double_64 metis5_double_64
+metis_single: metis_32
+metis_double: metis_32
+metis_single_64: metis_64
+metis_double_64: metis_64
+
+metis_32:
+	( cd ../metis ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) build \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../metis )
+metis_64:
+	( cd ../metis ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) build_64 \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../metis )
+
+#metis_single: dummy_metis_single metis4_single metis5_single
+#metis_double: dummy_metis_double metis4_double metis5_double
+#metis_single_64: dummy_metis_single_64 metis4_single_64 metis5_single_64
+#metis_double_64: dummy_metis_double_64 metis4_double_64 metis5_double_64
 
 #  dummy metis package
 

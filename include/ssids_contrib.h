@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 13:30 GMT
+ *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:30 GMT
  *
  *  \brief Defines C++ interface to routines from spral_ssids_contrib and
  *         spral_ssids_contrib_free modules.
@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 void spral_ssids_contrib_get_data_single(const void *const contrib,
       ipc_ *const n, const float* *const val, ipc_ *const ldval,
       const ipc_* *const rlist, ipc_ *const ndelay, 

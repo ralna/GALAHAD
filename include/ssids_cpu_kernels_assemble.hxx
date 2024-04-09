@@ -17,7 +17,7 @@
 #include "ssids_cpu_SymbolicNode.hxx"
 #include "ssids_cpu_Workspace.hxx"
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single
 #define spral_ssids_contrib_free spral_ssids_contrib_free_sgl
 #define FAPrecisionTraits FASingleTraits

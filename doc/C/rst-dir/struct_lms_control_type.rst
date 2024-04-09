@@ -16,11 +16,11 @@ lms_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structlms__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structlms__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structlms__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structlms__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`memory_length<doxid-structlms__control__type_1a43017042f3cf20a8e9b364b4f7be0104>`;
-		int :ref:`method<doxid-structlms__control__type_1adcc9a19ad3119f823a658f6a49a24e64>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structlms__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structlms__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structlms__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`memory_length<doxid-structlms__control__type_1a43017042f3cf20a8e9b364b4f7be0104>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`method<doxid-structlms__control__type_1adcc9a19ad3119f823a658f6a49a24e64>`;
 		bool :ref:`any_method<doxid-structlms__control__type_1a1314157047f4fc989c8d680141a32d6b>`;
 		bool :ref:`space_critical<doxid-structlms__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structlms__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
@@ -52,7 +52,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -62,7 +62,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -72,7 +72,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -82,7 +82,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int memory_length
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` memory_length
 
 limited memory length
 
@@ -92,7 +92,7 @@ limited memory length
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int method
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` method
 
 limited-memory formula required (others may be added in due course):
 

@@ -16,25 +16,25 @@ nls_subproblem_inform_type structure
 	struct nls_subproblem_inform_type {
 		// components
 	
-		int :ref:`status<doxid-structnls__subproblem__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structnls__subproblem__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structnls__subproblem__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structnls__subproblem__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structnls__subproblem__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		char :ref:`bad_eval<doxid-structnls__subproblem__inform__type_1a184c27298dc565470437c213a2bd2f3e>`[13];
-		int :ref:`iter<doxid-structnls__subproblem__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		int :ref:`cg_iter<doxid-structnls__subproblem__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		int :ref:`c_eval<doxid-structnls__subproblem__inform__type_1ab8312e1defeefffdcc0b5956bcb31ad4>`;
-		int :ref:`j_eval<doxid-structnls__subproblem__inform__type_1a47a079918ad01b32fd15ed6a0b8bd581>`;
-		int :ref:`h_eval<doxid-structnls__subproblem__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		int :ref:`factorization_max<doxid-structnls__subproblem__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
-		int :ref:`factorization_status<doxid-structnls__subproblem__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structnls__subproblem__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_iter<doxid-structnls__subproblem__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`c_eval<doxid-structnls__subproblem__inform__type_1ab8312e1defeefffdcc0b5956bcb31ad4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`j_eval<doxid-structnls__subproblem__inform__type_1a47a079918ad01b32fd15ed6a0b8bd581>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`h_eval<doxid-structnls__subproblem__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_max<doxid-structnls__subproblem__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_status<doxid-structnls__subproblem__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
 		int64_t :ref:`max_entries_factors<doxid-structnls__subproblem__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
 		int64_t :ref:`factorization_integer<doxid-structnls__subproblem__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
 		int64_t :ref:`factorization_real<doxid-structnls__subproblem__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`factorization_average<doxid-structnls__subproblem__inform__type_1a42d0c89df887685f68327d07c6e92f05>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structnls__subproblem__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_c<doxid-structnls__subproblem__inform__type_1a4969b17b30edb63a6bbcb89c7c10a340>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_g<doxid-structnls__subproblem__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`weight<doxid-structnls__subproblem__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorization_average<doxid-structnls__subproblem__inform__type_1a42d0c89df887685f68327d07c6e92f05>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structnls__subproblem__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_c<doxid-structnls__subproblem__inform__type_1a4969b17b30edb63a6bbcb89c7c10a340>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_g<doxid-structnls__subproblem__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`weight<doxid-structnls__subproblem__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
 		struct :ref:`nls_time_type<doxid-structnls__time__type>` :ref:`time<doxid-structnls__subproblem__inform__type_1a44dc03b1a33bf900f668c713cbac9498>`;
 		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` :ref:`rqs_inform<doxid-structnls__subproblem__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
 		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` :ref:`glrt_inform<doxid-structnls__subproblem__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
@@ -58,7 +58,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See NLS_solve for details
 
@@ -68,7 +68,7 @@ return status. See NLS_solve for details
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -98,7 +98,7 @@ the name of the user-supplied evaluation routine for which an error occurred
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iter
 
 the total number of iterations performed
 
@@ -108,7 +108,7 @@ the total number of iterations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int cg_iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` cg_iter
 
 the total number of CG iterations performed
 
@@ -118,7 +118,7 @@ the total number of CG iterations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int c_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` c_eval
 
 the total number of evaluations of the residual function c(x)
 
@@ -128,7 +128,7 @@ the total number of evaluations of the residual function c(x)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int j_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` j_eval
 
 the total number of evaluations of the Jacobian J(x) of c(x)
 
@@ -138,7 +138,7 @@ the total number of evaluations of the Jacobian J(x) of c(x)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int h_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` h_eval
 
 the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 
@@ -148,7 +148,7 @@ the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization_max
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization_max
 
 the maximum number of factorizations in a sub-problem solve
 
@@ -158,7 +158,7 @@ the maximum number of factorizations in a sub-problem solve
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization_status
 
 the return status from the factorization
 
@@ -198,7 +198,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` factorization_average
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` factorization_average
 
 the average number of factorizations per sub-problem solve
 
@@ -208,7 +208,7 @@ the average number of factorizations per sub-problem solve
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
 the value of the objective function $\frac{1}{2}\|c(x)\|^2_W$ at the best estimate the solution, x, determined by NLS_solve
 
@@ -218,7 +218,7 @@ the value of the objective function $\frac{1}{2}\|c(x)\|^2_W$ at the best estima
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_c
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_c
 
 the norm of the residual $\|c(x)\|_W$ at the best estimate of the solution x, determined by NLS_solve
 
@@ -228,7 +228,7 @@ the norm of the residual $\|c(x)\|_W$ at the best estimate of the solution x, de
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_g
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_g
 
 the norm of the gradient of $\|c(x)\|_W$ of the objective function at the best estimate, x, of the solution determined by NLS_solve
 
@@ -238,7 +238,7 @@ the norm of the gradient of $\|c(x)\|_W$ of the objective function at the best e
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` weight
 
 the final regularization weight used
 

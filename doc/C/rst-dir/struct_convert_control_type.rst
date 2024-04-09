@@ -16,9 +16,9 @@ convert_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structconvert__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structconvert__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structconvert__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structconvert__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structconvert__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structconvert__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structconvert__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
 		bool :ref:`transpose<doxid-structconvert__control__type_1a25a62de4b18dc349803bf5447052d673>`;
 		bool :ref:`sum_duplicates<doxid-structconvert__control__type_1a6a46ec71c5b01b04c75c9bf0038d1762>`;
 		bool :ref:`order<doxid-structconvert__control__type_1a0176c64e4b8b660bf4ac9cdc29b852ce>`;
@@ -52,7 +52,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -62,7 +62,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -72,7 +72,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 

@@ -15,8 +15,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -26,77 +27,77 @@ overview of functions provided
 
 	// global functions
 
-	void :ref:`dps_initialize<doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4>`(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status);
+	void :ref:`dps_initialize<doxid-galahad__dps_8h_1a29104b1214a3af5b4dc76dca722250b4>`(void **data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 	void :ref:`dps_read_specfile<doxid-galahad__dps_8h_1a2b7fed0d89483ec1c49b517be04acdcf>`(struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, const char specfile[]);
 
 	void :ref:`dps_import<doxid-galahad__dps_8h_1a7bc05b1c7fd874e96481d0521262bdee>`(
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[]
 	);
 
 	void :ref:`dps_reset_control<doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c>`(
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`dps_solve_tr_problem<doxid-galahad__dps_8h_1a0ce2d73010a90e735fd98393d63cb1a5>`(
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` radius,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	);
 
 	void :ref:`dps_solve_rq_problem<doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6>`(
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` power,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` weight,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	);
 
 	void :ref:`dps_resolve_tr_problem<doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d>`(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` radius,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	);
 
 	void :ref:`dps_resolve_rq_problem<doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a>`(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` power,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` weight,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	);
 
-	void :ref:`dps_information<doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6>`(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status);
+	void :ref:`dps_information<doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6>`(void **data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`dps_terminate<doxid-galahad__dps_8h_1a1e67ac91c520fc4ec65df30e4140f57e>`(
-		void** data,
+		void **data,
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
 		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
 	);
@@ -106,25 +107,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -135,7 +148,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void dps_initialize(void** data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, int* status)
+	void dps_initialize(void **data, struct :ref:`dps_control_type<doxid-structdps__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -160,7 +173,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -205,14 +218,14 @@ relate to the components of the control structure.
 
 	void dps_import(
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
 		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[]
 	)
 
 Import problem data into internal storage prior to solution.
@@ -238,7 +251,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -268,7 +281,7 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- H_type
@@ -278,22 +291,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
 
 .. index:: pair: function; dps_reset_control
 .. _doxid-galahad__dps_8h_1a445d31a1c3e3aa63af85ceddd9769a5c:
@@ -303,8 +316,8 @@ Import problem data into internal storage prior to solution.
 
 	void dps_reset_control(
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -330,7 +343,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * 1. The import was successful, and the package is ready for the solve phase
 
@@ -341,15 +354,15 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void dps_solve_tr_problem(
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` radius,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	)
 
 Find the global minimizer of the trust-region problem (1).
@@ -370,7 +383,7 @@ Find the global minimizer of the trust-region problem (1).
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package.
 		  
 		  Possible values are:
 		  
@@ -419,37 +432,37 @@ Find the global minimizer of the trust-region problem (1).
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the holds the constant term $f$ in the objective function.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the holds the constant term $f$ in the objective function.
 
 	*
 		- radius
 
-		- is a scalar variable pointer of type double, that holds the value of the trust-region radius, $\Delta > 0$.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the trust-region radius, $\Delta > 0$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_solve_rq_problem
 .. _doxid-galahad__dps_8h_1ae3baff5b8a4b59c37a6ada62dff67cc6:
@@ -458,16 +471,16 @@ Find the global minimizer of the trust-region problem (1).
 	:class: doxyrest-title-code-block
 
 	void dps_solve_rq_problem(
-		void** data,
-		int* status,
-		int n,
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` power,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` weight,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	)
 
 Find the global minimizer of the regularized-quadartic problem (2).
@@ -488,7 +501,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package.
 		  
 		  Possible values are:
 		  
@@ -537,42 +550,42 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the holds the constant term $f$ in the objective function.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the holds the constant term $f$ in the objective function.
 
 	*
 		- weight
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization weight, $\sigma > 0$.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the regularization weight, $\sigma > 0$.
 
 	*
 		- power
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization power, $p \geq 2$.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the regularization power, $p \geq 2$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_resolve_tr_problem
 .. _doxid-galahad__dps_8h_1af244a0e386040d5da2d11c3bd9d1e34d:
@@ -581,13 +594,13 @@ Find the global minimizer of the regularized-quadartic problem (2).
 	:class: doxyrest-title-code-block
 
 	void dps_resolve_tr_problem(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` radius,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	)
 
 Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
@@ -608,7 +621,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package.
 		  
 		  Possible values are:
 		  
@@ -643,27 +656,27 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the constant term $f$ in the objective function.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the constant term $f$ in the objective function.
 
 	*
 		- radius
 
-		- is a scalar variable pointer of type double, that holds the value of the trust-region radius, $\Delta > 0$.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the trust-region radius, $\Delta > 0$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_resolve_rq_problem
 .. _doxid-galahad__dps_8h_1a19e02a1d80eaedcb9e339f9963db352a:
@@ -672,14 +685,14 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 	:class: doxyrest-title-code-block
 
 	void dps_resolve_rq_problem(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` power,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` power,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` weight,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[]
 	)
 
 Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
@@ -700,7 +713,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package.
 		  
 		  Possible values are:
 		  
@@ -730,32 +743,32 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- c
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $c$ in the objective function. The j-th component of c, j = 0, ... , n-1, contains $c_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the holds the constant term $f$ in the objective function.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the holds the constant term $f$ in the objective function.
 
 	*
 		- weight
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization weight, $\sigma > 0$.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the regularization weight, $\sigma > 0$.
 
 	*
 		- power
 
-		- is a scalar variable pointer of type double, that holds the value of the regularization power, $p \geq 2$.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the regularization power, $p \geq 2$.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; dps_information
 .. _doxid-galahad__dps_8h_1a7617a692133347cb651f9a96244eb9f6:
@@ -763,7 +776,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void dps_information(void** data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, int* status)
+	void dps_information(void **data, struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -788,7 +801,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -800,7 +813,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void dps_terminate(
-		void** data,
+		void **data,
 		struct :ref:`dps_control_type<doxid-structdps__control__type>`* control,
 		struct :ref:`dps_inform_type<doxid-structdps__inform__type>`* inform
 	)

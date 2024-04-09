@@ -15,11 +15,11 @@ ir_inform_type structure
 	struct ir_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structir__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structir__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structir__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structir__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structir__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_initial_residual<doxid-structir__inform__type_1a5d35136316d3841bb7f2d87495b619a9>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_final_residual<doxid-structir__inform__type_1a95ba287dc64f4d10546b9ca9ea407fc2>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_initial_residual<doxid-structir__inform__type_1a5d35136316d3841bb7f2d87495b619a9>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_final_residual<doxid-structir__inform__type_1a95ba287dc64f4d10546b9ca9ea407fc2>`;
 	};
 .. _details-structir__inform__type:
 
@@ -37,7 +37,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 the return status. Possible values are:
 
@@ -70,7 +70,7 @@ the return status. Possible values are:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation.
 
@@ -90,7 +90,7 @@ the name of the array for which an allocation/deallocation error occurred.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_initial_residual
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_initial_residual
 
 the infinity norm of the initial residual
 
@@ -100,7 +100,7 @@ the infinity norm of the initial residual
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_final_residual
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_final_residual
 
 the infinity norm of the final residual
 

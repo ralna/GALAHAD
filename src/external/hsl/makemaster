@@ -1,11 +1,26 @@
-#  Main body of the installation makefile for GALAHAD's HSL packages
+#  Main body of the installation makefile for the HSL subset packages
 
-#  N. Gould
-#  This version: 2024-02-12
+#  The HSL subset comprises packages that are used optionally by 
+#  a variey of optimization solvers/libraries such as IPOPT and GALAHAD.
+#  Subset codes are templated, via C preprocessing commands, to support
+#  multiple real, integer and logical types. The subset provides a
+#  variety of linear-equation and linear-programming solvers, matrix 
+#  manipulation algorithms, and code automatic-differentiation utilities.
+#  Test programs are provided for each package, and these use additional
+#  HSL codes
 
-#  include standard GALAHAD HSL makefile definitions
+#  The packages were developed by members of the Computational Mathematics 
+#  Group at the STFC-Rutherford Appleton Laboratory in the UK, and are 
+#  subject to licencing conditions. See the LICENCE file (LICENCE.archive
+#  for the HSL Archive subset)  included as part of the distributed software.
+#  as part of the distributed software.
 
-include $(GALAHAD)/src/makedefs/hsl_definitions
+#  Nick Gould, for GALAHAD productions
+#  This version: 2024-03-27
+
+#  include standard HSL subset makefile definitions
+
+include $(GALAHAD)/src/makedefs/hsl_subset_definitions
 
 #  ===================
 #  compilation agendas
@@ -13,1757 +28,3105 @@ include $(GALAHAD)/src/makedefs/hsl_definitions
 
 #  all packages
 
+hsl_all: hsl hsl_ciface
+hsl_all_silent: hsl_silent hsl_ciface_silent
+
+#  all fortran packages
+
 hsl: hsl_$(PRECIS)
 	@printf ' %-21s\n' "HSL routines ($(PRECIS) $(SUCC)"
 hsl_silent: hsl_$(PRECIS)
-hsl_single: blas lapack metis kinds zd11 \
-            $(HLGS)(fa14s.o) $(HLGS)(fd15s.o) $(HLGS)(kb07i.o) \
-            $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) \
-            $(HLGS)(mc29s.o) $(HLGS)(mc30s.o) $(HLGS)(mc34s.o) \
-            $(HLGS)(mc47s.o) $(HLGS)(mc59s.o) $(HLGS)(mc61s.o) \
-            $(HLGS)(mc64s.o) $(HLGS)(mc71s.o) $(HLGS)(mc77s.o) \
-            $(HLGS)(la15s.o) $(HLGS)(la04s.o) $(HLGS)(ma27s.o) \
-            $(HLGS)(ma33s.o) $(HLGS)(ma57s.o) $(HLGS)(ma61s.o) \
-            $(HLGS)(mi21s.o) $(HLGS)(mi24s.o) $(HLGS)(mi26s.o) \
-            $(HLGS)(hsl_zb01s.o) $(HLGS)(hsl_zb01i.o) \
-            $(HLGS)(hsl_kb22l.o) $(HLGS)(hsl_mc34s.o) \
-            $(HLGS)(hsl_of01i.o) $(HLGS)(hsl_of01s.o) \
-            $(HLGS)(hsl_mc65s.o) $(HLGS)(hsl_mc68i.o) \
-            $(HLGS)(hsl_mc69s.o) $(HLGS)(hsl_mc64s.o) \
-            $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_mc80s.o) \
-            $(HLGS)(hsl_ma48s.o) $(HLGS)(hsl_ma57s.o) \
-            $(HLGS)(hsl_ma54s.o) $(HLGS)(hsl_ma64s.o) \
-            $(HLGS)(hsl_ma77s.o) $(HLGS)(hsl_ad02s.o) \
-            $(HLGS)(hsl_ma86s.o) $(HLGS)(hsl_ma87s.o) \
-            $(HLGS)(hsl_ma97s.o) $(HLGS)(hsl_mi32s.o) \
-            $(HLGS)(hsl_mi20s.o) $(HLGS)(hsl_mi28s.o) \
-            $(HLGS)(hsl_mi35s.o)
-hsl_double: blas lapack metis kinds zd11 \
-            $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(kb07i.o) \
-            $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) \
-            $(HLGD)(mc29d.o) $(HLGD)(mc30d.o) $(HLGD)(mc34d.o) \
-            $(HLGD)(mc47d.o) $(HLGD)(mc59d.o) $(HLGD)(mc61d.o) \
-            $(HLGD)(mc64d.o) $(HLGD)(mc71d.o) $(HLGD)(mc77d.o) \
-            $(HLGD)(la15d.o) $(HLGD)(la04d.o) $(HLGD)(ma27d.o) \
-            $(HLGD)(ma33d.o) $(HLGD)(ma57d.o) $(HLGD)(ma61d.o) \
-            $(HLGD)(mi21d.o) $(HLGD)(mi24d.o) $(HLGD)(mi26d.o) \
-            $(HLGD)(hsl_zb01d.o) $(HLGD)(hsl_zb01i.o) \
-            $(HLGD)(hsl_kb22l.o) $(HLGD)(hsl_mc34d.o) \
-            $(HLGD)(hsl_of01i.o) $(HLGD)(hsl_of01d.o) \
-            $(HLGD)(hsl_mc65d.o) $(HLGD)(hsl_mc68i.o) \
-            $(HLGD)(hsl_mc69d.o) $(HLGD)(hsl_mc64d.o) \
-            $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_mc80d.o) \
-            $(HLGD)(hsl_ma48d.o) $(HLGD)(hsl_ma57d.o) \
-            $(HLGD)(hsl_ma54d.o) $(HLGD)(hsl_ma64d.o) \
-            $(HLGD)(hsl_ma77d.o) $(HLGD)(hsl_ad02d.o) \
-            $(HLGD)(hsl_ma86d.o) $(HLGD)(hsl_ma87d.o) \
-            $(HLGD)(hsl_ma97d.o) $(HLGD)(hsl_mi32d.o) \
-            $(HLGD)(hsl_mi20d.o) $(HLGD)(hsl_mi28d.o) \
-            $(HLGD)(hsl_mi35d.o)
+hsl_single: hsl_galahad_single
+hsl_double: hsl_galahad_double
+hsl_single_64: hsl_galahad_single_64
+hsl_double_64: hsl_galahad_double_64
 
-hsl_single_64: blas lapack metis kinds zd11 \
-               $(HLGS64)(fa14s.o) $(HLGS64)(fd15s.o) $(HLGS64)(kb07i.o) \
-               $(HLGS64)(mc13s.o) $(HLGS64)(mc20s.o) $(HLGS64)(mc21s.o) \
-               $(HLGS64)(mc29s.o) $(HLGS64)(mc30s.o) $(HLGS64)(mc34s.o) \
-               $(HLGS64)(mc47s.o) $(HLGS64)(mc59s.o) $(HLGS64)(mc61s.o) \
-               $(HLGS64)(mc64s.o) $(HLGS64)(mc71s.o) $(HLGS64)(mc77s.o) \
-               $(HLGS64)(la15s.o) $(HLGS64)(la04s.o) $(HLGS64)(ma27s.o) \
-               $(HLGS64)(ma33s.o) $(HLGS64)(ma57s.o) $(HLGS64)(ma61s.o) \
-               $(HLGS64)(mi21s.o) $(HLGS64)(mi24s.o) $(HLGS64)(mi26s.o) \
-               $(HLGS64)(hsl_zb01s.o) $(HLGS64)(hsl_zb01i.o) \
-               $(HLGS64)(hsl_kb22l.o) $(HLGS64)(hsl_mc34s.o) \
-               $(HLGS64)(hsl_of01i.o) $(HLGS64)(hsl_of01s.o) \
-               $(HLGS64)(hsl_mc65s.o) $(HLGS64)(hsl_mc68i.o) \
-               $(HLGS64)(hsl_mc69s.o) $(HLGS64)(hsl_mc64s.o) \
-               $(HLGS64)(hsl_mc78i.o) $(HLGS64)(hsl_mc80s.o) \
-               $(HLGS64)(hsl_ma48s.o) $(HLGS64)(hsl_ma57s.o) \
-               $(HLGS64)(hsl_ma54s.o) $(HLGS64)(hsl_ma64s.o) \
-               $(HLGS64)(hsl_ma77s.o) $(HLGS64)(hsl_ad02s.o) \
-               $(HLGS64)(hsl_ma86s.o) $(HLGS64)(hsl_ma87s.o) \
-               $(HLGS64)(hsl_ma97s.o) $(HLGS64)(hsl_mi32s.o) \
-               $(HLGS64)(hsl_mi20s.o) $(HLGS64)(hsl_mi28s.o) \
-               $(HLGS64)(hsl_mi35s.o)
-hsl_double_64: blas lapack metis kinds zd11 \
-               $(HLGD64)(fa14d.o) $(HLGD64)(fd15d.o) $(HLGD64)(kb07i.o) \
-               $(HLGD64)(mc13d.o) $(HLGD64)(mc20d.o) $(HLGD64)(mc21d.o) \
-               $(HLGD64)(mc29d.o) $(HLGD64)(mc30d.o) $(HLGD64)(mc34d.o) \
-               $(HLGD64)(mc47d.o) $(HLGD64)(mc59d.o) $(HLGD64)(mc61d.o) \
-               $(HLGD64)(mc64d.o) $(HLGD64)(mc71d.o) $(HLGD64)(mc77d.o) \
-               $(HLGD64)(la15d.o) $(HLGD64)(la04d.o) $(HLGD64)(ma27d.o) \
-               $(HLGD64)(ma33d.o) $(HLGD64)(ma57d.o) $(HLGD64)(ma61d.o) \
-               $(HLGD64)(mi21d.o) $(HLGD64)(mi24d.o) $(HLGD64)(mi26d.o) \
-               $(HLGD64)(hsl_zb01d.o) $(HLGD64)(hsl_zb01i.o) \
-               $(HLGD64)(hsl_kb22l.o) $(HLGD64)(hsl_mc34d.o) \
-               $(HLGD64)(hsl_of01i.o) $(HLGD64)(hsl_of01d.o) \
-               $(HLGD64)(hsl_mc65d.o) $(HLGD64)(hsl_mc68i.o) \
-               $(HLGD64)(hsl_mc69d.o) $(HLGD64)(hsl_mc64d.o) \
-               $(HLGD64)(hsl_mc78i.o) $(HLGD64)(hsl_mc80d.o) \
-               $(HLGD64)(hsl_ma48d.o) $(HLGD64)(hsl_ma57d.o) \
-               $(HLGD64)(hsl_ma54d.o) $(HLGD64)(hsl_ma64d.o) \
-               $(HLGD64)(hsl_ma77d.o) $(HLGD64)(hsl_ad02d.o) \
-               $(HLGD64)(hsl_ma86d.o) $(HLGD64)(hsl_ma87d.o) \
-               $(HLGD64)(hsl_ma97d.o) $(HLGD64)(hsl_mi32d.o) \
-               $(HLGD64)(hsl_mi20d.o) $(HLGD64)(hsl_mi28d.o) \
-               $(HLGD64)(hsl_mi35d.o)
-             
+#  HSL packages for LANCELOT
+
+hsl_lancelot: hsl_lancelot_$(PRECIS)
+	@printf ' %-21s\n' "HSL LANCELOT routines ($(PRECIS) $(SUCC)"
+hsl_lancelot_silent: hsl_lancelot_$(PRECIS)
+hsl_lancelot_single: kinds $(LHS)(ma27s.o) metis_silent \
+                     $(LHS)(hsl_zd11s.o) $(LHS)(mc71s.o) $(LHS)(ma57s.o) \
+                     $(LHS)(mc21s.o) $(LHS)(mc34s.o) $(LHS)(mc47s.o) \
+                     $(LHS)(mc59s.o) $(LHS)(mc64s.o) $(LHS)(hsl_ma57s.o) \
+                     $(LHS)(ma61s.o) $(LHS)(hsl_ad02s.o)
+hsl_lancelot_double: kinds $(LHD)(ma27d.o) metis_silent \
+                     $(LHD)(hsl_zd11d.o) $(LHD)(mc71d.o) $(LHD)(ma57d.o) \
+                     $(LHD)(mc21d.o) $(LHD)(mc34d.o) $(LHD)(mc47d.o) \
+                     $(LHD)(mc59d.o) $(LHD)(mc64d.o) $(LHD)(hsl_ma57d.o) \
+                     $(LHD)(ma61d.o) $(LHD)(hsl_ad02d.o)
+hsl_lancelot_single_64: kinds $(LHS64)(ma27s_64.o) metis_silent \
+                        $(LHS64)(hsl_zd11s_64.o) \
+                        $(LHS64)(mc71s_64.o) $(LHS64)(ma57s_64.o) \
+                        $(LHS64)(mc21s_64.o) $(LHS64)(mc34s_64.o) \
+                        $(LHS64)(mc47s_64.o) $(LHS64)(mc59s_64.o) \
+                        $(LHS64)(mc64s_64.o) $(LHS64)(hsl_ma57s_64.o) \
+                        $(LHS64)(ma61s_64.o) $(LHS64)(hsl_ad02s_64.o)
+hsl_lancelot_double_64: kinds $(LHD64)(ma27d_64.o) metis_silent \
+                        $(LHD64)(hsl_zd11d_64.o) \
+                        $(LHD64)(mc71d_64.o) $(LHD64)(ma57d_64.o) \
+                        $(LHD64)(mc21d_64.o) $(LHD64)(mc34d_64.o) \
+                        $(LHD64)(mc47d_64.o) $(LHD64)(mc59d_64.o) \
+                        $(LHD64)(mc64d_64.o) $(LHD64)(hsl_ma57d_64.o) \
+                        $(LHD64)(ma61d_64.o) $(LHD64)(hsl_ad02d_64.o)
+
+#  HSL packages for GALAHAD
+
+hsl_galahad: hsl_galahad_$(PRECIS)
+	@printf ' %-21s\n' "HSL GALAHAD routines ($(PRECIS) $(SUCC)"
+hsl_galahad_silent: hsl_galahad_$(PRECIS)
+hsl_galahad_single: hsl_lancelot_single \
+                    $(LHS)(fa14s.o) $(LHS)(fd15s.o) $(LHS)(kb07i.o) \
+                    $(LHS)(kb07s.o) $(LHS)(mc13s.o) $(LHS)(mc19s.o) \
+                    $(LHS)(mc20s.o) $(LHS)(mc22s.o) $(LHS)(mc23s.o) \
+                    $(LHS)(mc24s.o) $(LHS)(mc29s.o) $(LHS)(mc30s.o) \
+                    $(LHS)(mc60s.o) $(LHS)(mc61s.o) $(LHS)(mc77s.o) \
+                    $(LHS)(la15s.o) $(LHS)(la04s.o) $(LHS)(ma27s.o) \
+                    $(LHS)(ma28s.o) $(LHS)(ma30s.o) $(LHS)(ma33s.o) \
+                    $(LHS)(mi21s.o) $(LHS)(mi24s.o) $(LHS)(mi26s.o) \
+                    $(LHS)(hsl_zb01i.o) $(LHS)(hsl_of01i.o) \
+                    $(LHS)(hsl_zb01s.o) $(LHS)(hsl_kb22l.o) \
+                    $(LHS)(hsl_mc34s.o) $(LHS)(hsl_of01s.o) \
+                    $(LHS)(hsl_mc65s.o) $(LHS)(hsl_mc68i.o) \
+                    $(LHS)(hsl_mc69s.o) $(LHS)(hsl_mc64s.o) \
+                    $(LHS)(hsl_mc78i.o) $(LHS)(hsl_mc80s.o) \
+                    $(LHS)(hsl_ma48s.o) $(LHS)(hsl_ma54s.o) \
+                    $(LHS)(hsl_ma64s.o) $(LHS)(hsl_ma77s.o) \
+                    $(LHS)(hsl_ma86s.o) $(LHS)(hsl_ma87s.o) \
+                    $(LHS)(hsl_ma97s.o) $(LHS)(hsl_mi32s.o) \
+                    $(LHS)(hsl_mi20s.o) $(LHS)(hsl_mi28s.o) \
+                    $(LHS)(hsl_mi35s.o)
+
+hsl_galahad_double: hsl_lancelot_double \
+                    $(LHD)(fa14d.o) $(LHD)(fd15d.o) $(LHD)(kb07i.o) \
+                    $(LHD)(kb07d.o) $(LHD)(mc13d.o) $(LHD)(mc19d.o) \
+                    $(LHD)(mc20d.o) $(LHD)(mc22d.o) $(LHD)(mc23d.o) \
+                    $(LHD)(mc24d.o) $(LHD)(mc29d.o) $(LHD)(mc30d.o) \
+                    $(LHD)(mc60d.o) $(LHD)(mc61d.o) $(LHD)(mc77d.o) \
+                    $(LHD)(la15d.o) $(LHD)(la04d.o) $(LHD)(ma27d.o) \
+                    $(LHD)(ma28d.o) $(LHD)(ma30d.o) $(LHD)(ma33d.o) \
+                    $(LHD)(mi21d.o) $(LHD)(mi24d.o) $(LHD)(mi26d.o) \
+                    $(LHD)(hsl_zb01i.o) $(LHD)(hsl_of01i.o) \
+                    $(LHD)(hsl_zb01d.o) $(LHD)(hsl_kb22l.o) \
+                    $(LHD)(hsl_mc34d.o) $(LHD)(hsl_of01d.o) \
+                    $(LHD)(hsl_mc65d.o) $(LHD)(hsl_mc68i.o) \
+                    $(LHD)(hsl_mc69d.o) $(LHD)(hsl_mc64d.o) \
+                    $(LHD)(hsl_mc78i.o) $(LHD)(hsl_mc80d.o) \
+                    $(LHD)(hsl_ma48d.o) $(LHD)(hsl_ma54d.o) \
+                    $(LHD)(hsl_ma64d.o) $(LHD)(hsl_ma77d.o) \
+                    $(LHD)(hsl_ma86d.o) $(LHD)(hsl_ma87d.o) \
+                    $(LHD)(hsl_ma97d.o) $(LHD)(hsl_mi32d.o) \
+                    $(LHD)(hsl_mi20d.o) $(LHD)(hsl_mi28d.o) \
+                    $(LHD)(hsl_mi35d.o)
+hsl_galahad_single_64: hsl_lancelot_single_64 \
+                       $(LHS64)(fa14s_64.o) $(LHS64)(fd15s_64.o) \
+                       $(LHS64)(kb07i_64.o) $(LHS64)(kb07s_64.o) \
+                       $(LHS64)(mc13s_64.o) $(LHS64)(mc19s_64.o) \
+                       $(LHS64)(mc20s_64.o) $(LHS64)(mc22s_64.o) \
+                       $(LHS64)(mc23s_64.o) $(LHS64)(mc24s_64.o) \
+                       $(LHS64)(mc29s_64.o) $(LHS64)(mc30s_64.o) \
+                       $(LHS64)(mc60s_64.o) $(LHS64)(mc61s_64.o) \
+                       $(LHS64)(mc77s_64.o) $(LHS64)(la15s_64.o) \
+                       $(LHS64)(la04s_64.o) $(LHS64)(ma27s_64.o) \
+                       $(LHS64)(ma28s_64.o) $(LHS64)(ma30s_64.o) \
+                       $(LHS64)(ma33s_64.o) $(LHS64)(mi21s_64.o) \
+                       $(LHS64)(mi24s_64.o) $(LHS64)(mi26s_64.o) \
+                       $(LHS64)(hsl_zb01i_64.o) $(LHS64)(hsl_of01i_64.o) \
+                       $(LHS64)(hsl_zb01s_64.o) $(LHS64)(hsl_kb22l_64.o) \
+                       $(LHS64)(hsl_mc34s_64.o) $(LHS64)(hsl_of01s_64.o) \
+                       $(LHS64)(hsl_mc65s_64.o) $(LHS64)(hsl_mc68i_64.o) \
+                       $(LHS64)(hsl_mc69s_64.o) $(LHS64)(hsl_mc64s_64.o) \
+                       $(LHS64)(hsl_mc78i_64.o) $(LHS64)(hsl_mc80s_64.o) \
+                       $(LHS64)(hsl_ma48s_64.o) $(LHS64)(hsl_ma54s_64.o) \
+                       $(LHS64)(hsl_ma64s_64.o) $(LHS64)(hsl_ma77s_64.o) \
+                       $(LHS64)(hsl_ma86s_64.o) $(LHS64)(hsl_ma87s_64.o) \
+                       $(LHS64)(hsl_ma97s_64.o) $(LHS64)(hsl_mi32s_64.o) \
+                       $(LHS64)(hsl_mi20s_64.o) $(LHS64)(hsl_mi28s_64.o) \
+                       $(LHS64)(hsl_mi35s_64.o)
+hsl_galahad_double_64: hsl_lancelot_double_64 \
+                       $(LHD64)(fa14d_64.o) $(LHD64)(fd15d_64.o) \
+                       $(LHD64)(kb07i_64.o) $(LHD64)(kb07d_64.o) \
+                       $(LHD64)(mc13d_64.o) $(LHD64)(mc19d_64.o) \
+                       $(LHD64)(mc20d_64.o) $(LHD64)(mc22d_64.o) \
+                       $(LHD64)(mc23d_64.o) $(LHD64)(mc24d_64.o) \
+                       $(LHD64)(mc29d_64.o) $(LHD64)(mc30d_64.o) \
+                       $(LHD64)(mc60d_64.o) $(LHD64)(mc61d_64.o) \
+                       $(LHD64)(mc77d_64.o) $(LHD64)(la15d_64.o) \
+                       $(LHD64)(la04d_64.o) $(LHD64)(ma27d_64.o) \
+                       $(LHD64)(ma28d_64.o) $(LHD64)(ma30d_64.o) \
+                       $(LHD64)(ma33d_64.o) $(LHD64)(mi21d_64.o) \
+                       $(LHD64)(mi24d_64.o) $(LHD64)(mi26d_64.o) \
+                       $(LHD64)(hsl_zb01i_64.o) $(LHD64)(hsl_of01i_64.o) \
+                       $(LHD64)(hsl_zb01d_64.o) $(LHD64)(hsl_kb22l_64.o) \
+                       $(LHD64)(hsl_mc34d_64.o) $(LHD64)(hsl_of01d_64.o) \
+                       $(LHD64)(hsl_mc65d_64.o) $(LHD64)(hsl_mc68i_64.o) \
+                       $(LHD64)(hsl_mc69d_64.o) $(LHD64)(hsl_mc64d_64.o) \
+                       $(LHD64)(hsl_mc78i_64.o) $(LHD64)(hsl_mc80d_64.o) \
+                       $(LHD64)(hsl_ma48d_64.o) $(LHD64)(hsl_ma54d_64.o) \
+                       $(LHD64)(hsl_ma64d_64.o) $(LHD64)(hsl_ma77d_64.o) \
+                       $(LHD64)(hsl_ma86d_64.o) $(LHD64)(hsl_ma87d_64.o) \
+                       $(LHD64)(hsl_ma97d_64.o) $(LHD64)(hsl_mi32d_64.o) \
+                       $(LHD64)(hsl_mi20d_64.o) $(LHD64)(hsl_mi28d_64.o) \
+                       $(LHD64)(hsl_mi35d_64.o)
+
+#  HSL C interfaces
+
 hsl_ciface: hsl_$(PRECIS) hsl_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL C routines ($(PRECIS) $(SUCC)"
 hsl_ciface_silent: hsl_$(PRECIS) hsl_ciface_$(PRECIS)
-hsl_ciface_single: $(HCLGS)(hsl_ma48s_ciface.o) \
-                   $(HCLGS)(hsl_ma57s_ciface.o) \
-                   $(HCLGS)(hsl_ma77s_ciface.o) \
-                   $(HCLGS)(hsl_ma86s_ciface.o) \
-                   $(HCLGS)(hsl_ma87s_ciface.o) \
-                   $(HCLGS)(hsl_ma97s_ciface.o) \
-                   $(HCLGS)(hsl_mi20s_ciface.o) \
-                   $(HCLGS)(hsl_mi28s_ciface.o)
-hsl_ciface_double: $(HCLGD)(hsl_ma48d_ciface.o) \
-                   $(HCLGD)(hsl_ma57d_ciface.o) \
-                   $(HCLGD)(hsl_ma77d_ciface.o) \
-                   $(HCLGD)(hsl_ma86d_ciface.o) \
-                   $(HCLGD)(hsl_ma87d_ciface.o) \
-                   $(HCLGD)(hsl_ma97d_ciface.o) \
-                   $(HCLGD)(hsl_mi20d_ciface.o) \
-                   $(HCLGD)(hsl_mi28d_ciface.o)
-hsl_ciface_single_64: $(HCLGS64)(hsl_ma48s_ciface.o) \
-                      $(HCLGS64)(hsl_ma57s_ciface.o) \
-                      $(HCLGS64)(hsl_ma77s_ciface.o) \
-                      $(HCLGS64)(hsl_ma86s_ciface.o) \
-                      $(HCLGS64)(hsl_ma87s_ciface.o) \
-                      $(HCLGS64)(hsl_ma97s_ciface.o) \
-                      $(HCLGS64)(hsl_mi20s_ciface.o) \
-                      $(HCLGS64)(hsl_mi28s_ciface.o)
-hsl_ciface_double_64: $(HCLGD64)(hsl_ma48d_ciface.o) \
-                      $(HCLGD64)(hsl_ma57d_ciface.o) \
-                      $(HCLGD64)(hsl_ma77d_ciface.o) \
-                      $(HCLGD64)(hsl_ma86d_ciface.o) \
-                      $(HCLGD64)(hsl_ma87d_ciface.o) \
-                      $(HCLGD64)(hsl_ma97d_ciface.o) \
-                      $(HCLGD64)(hsl_mi20d_ciface.o) \
-                      $(HCLGD64)(hsl_mi28d_ciface.o)
+hsl_ciface_single: $(LHCS)(hsl_ma48s_ciface.o) \
+                   $(LHCS)(hsl_ma57s_ciface.o) \
+                   $(LHCS)(hsl_ma77s_ciface.o) \
+                   $(LHCS)(hsl_ma86s_ciface.o) \
+                   $(LHCS)(hsl_ma87s_ciface.o) \
+                   $(LHCS)(hsl_ma97s_ciface.o) \
+                   $(LHCS)(hsl_mc64s_ciface.o) \
+                   $(LHCS)(hsl_mc68i_ciface.o) \
+                   $(LHCS)(hsl_mi20s_ciface.o) \
+                   $(LHCS)(hsl_mi28s_ciface.o)
+hsl_ciface_double: $(LHCD)(hsl_ma48d_ciface.o) \
+                   $(LHCD)(hsl_ma57d_ciface.o) \
+                   $(LHCD)(hsl_ma77d_ciface.o) \
+                   $(LHCD)(hsl_ma86d_ciface.o) \
+                   $(LHCD)(hsl_ma87d_ciface.o) \
+                   $(LHCD)(hsl_ma97d_ciface.o) \
+                   $(LHCD)(hsl_mc64d_ciface.o) \
+                   $(LHCD)(hsl_mc68i_ciface.o) \
+                   $(LHCD)(hsl_mi20d_ciface.o) \
+                   $(LHCD)(hsl_mi28d_ciface.o)
+hsl_ciface_single_64: $(LHCS64)(hsl_ma48s_64_ciface.o) \
+                      $(LHCS64)(hsl_ma57s_64_ciface.o) \
+                      $(LHCS64)(hsl_ma77s_64_ciface.o) \
+                      $(LHCS64)(hsl_ma86s_64_ciface.o) \
+                      $(LHCS64)(hsl_ma87s_64_ciface.o) \
+                      $(LHCS64)(hsl_ma97s_64_ciface.o) \
+                      $(LHCS64)(hsl_mc64s_64_ciface.o) \
+                      $(LHCS64)(hsl_mc68i_64_ciface.o) \
+                      $(LHCS64)(hsl_mi20s_64_ciface.o) \
+                      $(LHCS64)(hsl_mi28s_64_ciface.o)
+hsl_ciface_double_64: $(LHCD64)(hsl_ma48d_64_ciface.o) \
+                      $(LHCD64)(hsl_ma57d_64_ciface.o) \
+                      $(LHCD64)(hsl_ma77d_64_ciface.o) \
+                      $(LHCD64)(hsl_ma86d_64_ciface.o) \
+                      $(LHCD64)(hsl_ma87d_64_ciface.o) \
+                      $(LHCD64)(hsl_ma97d_64_ciface.o) \
+                      $(LHCD64)(hsl_mc64d_64_ciface.o) \
+                      $(LHCD64)(hsl_mc68i_64_ciface.o) \
+                      $(LHCD64)(hsl_mi20d_64_ciface.o) \
+                      $(LHCD64)(hsl_mi28d_64_ciface.o)
 
-#  ad02
+#  specific main packages
 
-ad02: ad02_$(PRECIS)
+#  hsl_ad02
+
+hsl_ad02: hsl_ad02_$(PRECIS)
 	@printf ' %-21s\n' "HSL AD02 routines ($(PRECIS) $(SUCC)"
-ad02_silent: ad02_$(PRECIS)
-ad02_single: $(HLGS)(hsl_ad02s.o)
-ad02_double: $(HLGD)(hsl_ad02d.o)
-ad02_single_64: $(HLGS64)(hsl_ad02s.o)
-ad02_double_64: $(HLGD64)(hsl_ad02d.o)
+hsl_ad02_silent: hsl_ad02_$(PRECIS)
+hsl_ad02_single: kinds $(LHS)(hsl_ad02s.o)
+hsl_ad02_double: kinds $(LHD)(hsl_ad02d.o)
+hsl_ad02_single_64: kinds $(LHS64)(hsl_ad02s_64.o)
+hsl_ad02_double_64: kinds $(LHD64)(hsl_ad02d_64.o)
 
 #  la04
 
 la04: la04_$(PRECIS)
 	@printf ' %-21s\n' "HSL LA04 routines ($(PRECIS) $(SUCC)"
 la04_silent: la04_$(PRECIS)
-la04_single: $(HLGS)(fa14s.o) $(HLGS)(fd15s.o) $(HLGS)(mc29s.o) \
-             $(HLGS)(mc59s.o) $(HLGS)(la15s.o) $(HLGS)(la04s.o)
-la04_double: $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(mc29d.o) \
-             $(HLGD)(mc59d.o) $(HLGD)(la15d.o) $(HLGD)(la04d.o)
-la04_single_64: $(HLGS64)(fa14s.o) $(HLGS64)(fd15s.o) $(HLGS64)(mc29s.o) \
-                $(HLGS64)(mc59s.o) $(HLGS64)(la15s.o) $(HLGS64)(la04s.o)
-la04_double_64: $(HLGD64)(fa14d.o) $(HLGD64)(fd15d.o) $(HLGD64)(mc29d.o) \
-                $(HLGD64)(mc59d.o) $(HLGD64)(la15d.o) $(HLGD64)(la04d.o)
+la04_single: kinds $(LHS)(fa14s.o) $(LHS)(fd15s.o) $(LHS)(mc29s.o) \
+             $(LHS)(mc59s.o) $(LHS)(la15s.o) $(LHS)(la04s.o)
+la04_double: kinds $(LHD)(fa14d.o) $(LHD)(fd15d.o) $(LHD)(mc29d.o) \
+             $(LHD)(mc59d.o) $(LHD)(la15d.o) $(LHD)(la04d.o)
+la04_single_64: kinds $(LHS64)(fa14s_64.o) $(LHS64)(fd15s_64.o) \
+                $(LHS64)(mc29s_64.o) $(LHS64)(mc59s_64.o) \
+                $(LHS64)(la15s_64.o) $(LHS64)(la04s_64.o)
+la04_double_64: kinds $(LHD64)(fa14d_64.o) $(LHD64)(fd15d_64.o) \
+                $(LHD64)(mc29d_64.o) $(LHD64)(mc59d_64.o) \
+                $(LHD64)(la15d_64.o) $(LHD64)(la04d_64.o)
 
 #  ma27
 
 ma27: ma27_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA27 routines ($(PRECIS) $(SUCC)"
 ma27_silent: ma27_$(PRECIS)
-ma27_single: $(HLGS)(ma27s.o)
-ma27_double: $(HLGD)(ma27d.o)
-ma27_single_64: $(HLGS64)(ma27s.o)
-ma27_double_64: $(HLGD64)(ma27d.o)
+ma27_single: kinds $(LHS)(ma27s.o)
+ma27_double: kinds $(LHD)(ma27d.o)
+ma27_single_64: kinds $(LHS64)(ma27s_64.o)
+ma27_double_64: kinds $(LHD64)(ma27d_64.o)
 
+#  ma28
+
+ma28: ma28_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA28 routines ($(PRECIS) $(SUCC)"
+ma28_silent: ma28_$(PRECIS)
+ma28_single: kinds $(LHS)(mc13s.o) $(LHS)(mc20s.o) $(LHS)(mc21s.o) \
+             $(LHS)(mc22s.o) $(LHS)(mc23s.o) $(LHS)(mc24s.o) \
+             $(LHS)(ma30s.o) $(LHS)(ma28s.o)
+ma28_double: kinds $(LHD)(mc13d.o) $(LHD)(mc20d.o) $(LHD)(mc21d.o) \
+             $(LHD)(mc22d.o) $(LHD)(mc23d.o) $(LHD)(mc24d.o) \
+             $(LHD)(ma30d.o) $(LHD)(ma28d.o)
+ma28_single_64: kinds $(LHS64)(mc13s_64.o) $(LHS64)(mc20s_64.o) \
+                $(LHS64)(mc21s_64.o) $(LHS64)(ma28s_64.o)
+ma28_double_64: kinds $(LHD64)(mc13d_64.o) $(LHD64)(mc20d_64.o) \
+                $(LHD64)(mc21d_64.o) $(LHD64)(ma28d_64.o)
 #  ma33
 
 ma33: ma33_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA33 routines ($(PRECIS) $(SUCC)"
 ma33_silent: ma33_$(PRECIS)
-ma33_single: $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) \
-             $(HLGS)(ma33s.o)
-ma33_double: $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) \
-             $(HLGD)(ma33d.o)
-ma33_single_64: $(HLGS64)(mc13s.o) $(HLGS64)(mc20s.o) $(HLGS64)(mc21s.o) \
-                $(HLGS64)(ma33s.o)
-ma33_double_64: $(HLGD64)(mc13d.o) $(HLGD64)(mc20d.o) $(HLGD64)(mc21d.o) \
-                $(HLGD64)(ma33d.o)
+ma33_single: kinds $(LHS)(mc13s.o) $(LHS)(mc20s.o) $(LHS)(mc21s.o) \
+             $(LHS)(ma33s.o)
+ma33_double: kinds $(LHD)(mc13d.o) $(LHD)(mc20d.o) $(LHD)(mc21d.o) \
+             $(LHD)(ma33d.o)
+ma33_single_64: kinds $(LHS64)(mc13s_64.o) $(LHS64)(mc20s_64.o) \
+                $(LHS64)(mc21s_64.o) $(LHS64)(ma33s_64.o)
+ma33_double_64: kinds $(LHD64)(mc13d_64.o) $(LHD64)(mc20d_64.o) \
+                $(LHD64)(mc21d_64.o) $(LHD64)(ma33d_64.o)
 
-#  ma48
+#  hsl_ma48
 
-ma48: ma48_$(PRECIS)
+hsl_ma48: hsl_ma48_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma48_silent: ma48_$(PRECIS)
-ma48_single: zd11 $(HLGS)(mc71s.o) $(HLGS)(hsl_zb01s.o) \
-             $(HLGS)(hsl_zb01i.o) $(HLGS)(hsl_ma48s.o)
-ma48_double: zd11 $(HLGD)(mc71d.o) $(HLGD)(hsl_zb01d.o) \
-             $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_ma48d.o)
-ma48_single_64: zd11 $(HLGS64)(mc71s.o) $(HLGS64)(hsl_zb01s.o) \
-                $(HLGS64)(hsl_zb01i.o) $(HLGS64)(hsl_ma48s.o)
-ma48_double_64: zd11 $(HLGD64)(mc71d.o) $(HLGD64)(hsl_zb01d.o) \
-                $(HLGD64)(hsl_zb01i.o) $(HLGD64)(hsl_ma48d.o)
+hsl_ma48_silent: hsl_ma48_$(PRECIS)
+hsl_ma48_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(mc71s.o) $(LHS)(hsl_zb01s.o) \
+                 $(LHS)(hsl_zb01i.o) $(LHS)(hsl_mc34s.o) $(LHS)(hsl_ma48s.o)
+hsl_ma48_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(mc71d.o) $(LHD)(hsl_zb01d.o) \
+                 $(LHD)(hsl_zb01i.o) $(LHD)(hsl_mc34d.o) $(LHD)(hsl_ma48d.o)
+hsl_ma48_single_64: kinds $(LHS64)(hsl_zd11s_64.o) $(LHS64)(mc71s_64.o) \
+                    $(LHS64)(hsl_zb01s_64.o) $(LHS64)(hsl_zb01i_64.o) \
+                    $(LHS64)(hsl_mc34s_64.o) $(LHS64)(hsl_ma48s_64.o)
+hsl_ma48_double_64: kinds $(LHD64)(hsl_zd11d_64.o) $(LHD64)(mc71d_64.o) \
+                    $(LHD64)(hsl_zb01d_64.o) $(LHD64)(hsl_zb01i_64.o) \
+                    $(LHD64)(hsl_mc34d_64.o) $(LHD64)(hsl_ma48d_64.o)
 
-ma48_ciface: ma48_ciface_$(PRECIS)
+hsl_ma48_ciface: hsl_ma48_ciface_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-ma48_ciface_silent: ma48_ciface_$(PRECIS)
-ma48_ciface_single: ma48_single $(HCLGS)(hsl_ma48s_ciface.o)
-ma48_ciface_double: ma48_double $(HCLGD)(hsl_ma48d_ciface.o)
-ma48_ciface_single_64: ma48_single_64 $(HCLGS64)(hsl_ma48s_ciface.o)
-ma48_ciface_double_64: ma48_double_64 $(HCLGD64)(hsl_ma48d_ciface.o)
+hsl_ma48_ciface_silent: hsl_ma48_ciface_$(PRECIS)
+hsl_ma48_ciface_single: hsl_ma48_single $(LHCS)(hsl_ma48s_ciface.o)
+hsl_ma48_ciface_double: hsl_ma48_double $(LHCD)(hsl_ma48d_ciface.o)
+hsl_ma48_ciface_single_64: hsl_ma48_single_64 $(LHCS64)(hsl_ma48s_64_ciface.o)
+hsl_ma48_ciface_double_64: hsl_ma48_double_64 $(LHCD64)(hsl_ma48d_64_ciface.o)
 
-#  ma57
+#  hsl_ma57
 
-ma57: ma57_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma57_silent: ma57_$(PRECIS)
-ma57_single: blas ma27 zd11 $(HLGS)(mc71s.o) $(HLGS)(ma57s.o) \
-             $(HLGS)(mc21s.o) $(HLGS)(mc34s.o) $(HLGS)(mc47s.o) \
-             $(HLGS)(mc59s.o) $(HLGS)(mc64s.o) $(HLGS)(hsl_ma57s.o)
-ma57_double: blas ma27 zd11 $(HLGD)(mc71d.o) $(HLGD)(ma57d.o) \
-             $(HLGD)(mc21d.o) $(HLGD)(mc34d.o) $(HLGD)(mc47d.o) \
-             $(HLGD)(mc59d.o) $(HLGD)(mc64d.o) $(HLGD)(hsl_ma57d.o)
-ma57_single_64: blas ma27 zd11 $(HLGS64)(mc71s.o) $(HLGS64)(ma57s.o) \
-                $(HLGS64)(mc21s.o) $(HLGS64)(mc34s.o) $(HLGS64)(mc47s.o) \
-                $(HLGS64)(mc59s.o) $(HLGS64)(mc64s.o) $(HLGS64)(hsl_ma57s.o)
-ma57_double_64: blas ma27 zd11 $(HLGD64)(mc71d.o) $(HLGD64)(ma57d.o) \
-                $(HLGD64)(mc21d.o) $(HLGD64)(mc34d.o) $(HLGD64)(mc47d.o) \
-                $(HLGD64)(mc59d.o) $(HLGD64)(mc64d.o) $(HLGD64)(hsl_ma57d.o)
+hsl_ma57: hsl_ma57_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA57 routines ($(PRECIS) $(SUCC)"
+hsl_ma57_silent: hsl_ma57_$(PRECIS)
+hsl_ma57_single: ma27_silent metis_silent $(LHS)(hsl_zd11s.o) \
+                 $(LHS)(mc71s.o) $(LHS)(ma57s.o) \
+                 $(LHS)(mc21s.o) $(LHS)(mc34s.o) $(LHS)(mc47s.o) \
+                 $(LHS)(mc59s.o) $(LHS)(mc64s.o) $(LHS)(hsl_ma57s.o)
+hsl_ma57_double: ma27_silent metis_silent $(LHD)(hsl_zd11d.o) \
+                 $(LHD)(mc71d.o) $(LHD)(ma57d.o) \
+                 $(LHD)(mc21d.o) $(LHD)(mc34d.o) $(LHD)(mc47d.o) \
+                 $(LHD)(mc59d.o) $(LHD)(mc64d.o) $(LHD)(hsl_ma57d.o)
+hsl_ma57_single_64: ma27_silent metis_silent $(LHS64)(hsl_zd11s_64.o) \
+                    $(LHS64)(mc71s_64.o) $(LHS64)(ma57s_64.o) \
+                    $(LHS64)(mc21s_64.o) $(LHS64)(mc34s_64.o) \
+                    $(LHS64)(mc47s_64.o) $(LHS64)(mc59s_64.o) \
+                    $(LHS64)(mc64s_64.o) $(LHS64)(hsl_ma57s_64.o)
+hsl_ma57_double_64: ma27_silent metis_silent $(LHD64)(hsl_zd11d_64.o) \
+                    $(LHD64)(mc71d_64.o) $(LHD64)(ma57d_64.o) \
+                    $(LHD64)(mc21d_64.o) $(LHD64)(mc34d_64.o) \
+                    $(LHD64)(mc47d_64.o) $(LHD64)(mc59d_64.o) \
+                    $(LHD64)(mc64d_64.o) $(LHD64)(hsl_ma57d_64.o)
 
-ma57_ciface: ma57_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-ma57_ciface_silent: ma57_ciface_$(PRECIS)
-ma57_ciface_single: ma57_single $(HCLGS)(hsl_ma57s_ciface.o)
-ma57_ciface_double: ma57_double $(HCLGD)(hsl_ma57d_ciface.o)
-ma57_ciface_single_64: ma57_single_64 $(HCLGS64)(hsl_ma57s_ciface.o)
-ma57_ciface_double_64: ma57_double_64 $(HCLGD64)(hsl_ma57d_ciface.o)
+hsl_ma57_ciface: hsl_ma57_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA57 C routines ($(PRECIS) $(SUCC)"
+hsl_ma57_ciface_silent: hsl_ma57_ciface_$(PRECIS)
+hsl_ma57_ciface_single: hsl_ma57_single $(LHCS)(hsl_ma57s_ciface.o)
+hsl_ma57_ciface_double: hsl_ma57_double $(LHCD)(hsl_ma57d_ciface.o)
+hsl_ma57_ciface_single_64: hsl_ma57_single_64 $(LHCS64)(hsl_ma57s_64_ciface.o)
+hsl_ma57_ciface_double_64: hsl_ma57_double_64 $(LHCD64)(hsl_ma57d_64_ciface.o)
 
 #  ma61
 
 ma61: ma61_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA61 routines ($(PRECIS) $(SUCC)"
 ma61_silent: ma61_$(PRECIS)
-ma61_single: $(HLGS)(ma61s.o)
-ma61_double: $(HLGD)(ma61d.o)
-ma61_single_64: $(HLGS64)(ma61s.o)
-ma61_double_64: $(HLGD64)(ma61d.o)
+ma61_single: kinds $(LHS)(ma61s.o)
+ma61_double: kinds $(LHD)(ma61d.o)
+ma61_single_64: kinds $(LHS64)(ma61s_64.o)
+ma61_double_64: kinds $(LHD64)(ma61d_64.o)
 
-#  ma77
+#  hsl_ma77
 
-ma77: ma77_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma77_silent: ma77_$(PRECIS)
-ma77_single: blas lapack $(HLGS)(kb07i.o) $(HLGS)(hsl_kb22l.o) \
-             $(HLGS)(hsl_ma54s.o) $(HLGS)(hsl_ma64s.o) $(HLGS)(hsl_of01i.o) \
-             $(HLGS)(hsl_of01s.o) $(HLGS)(hsl_ma77s.o)
-ma77_double: blas lapack $(HLGD)(kb07i.o) $(HLGD)(hsl_kb22l.o) \
-             $(HLGD)(hsl_ma54d.o) $(HLGD)(hsl_ma64d.o) $(HLGD)(hsl_of01i.o) \
-             $(HLGD)(hsl_of01d.o) $(HLGD)(hsl_ma77d.o)
-ma77_single_64: blas lapack $(HLGS64)(kb07i.o) $(HLGS64)(hsl_kb22l.o) \
-                $(HLGS64)(hsl_ma54s.o) $(HLGS64)(hsl_ma64s.o) \
-                $(HLGS64)(hsl_of01i.o) $(HLGS64)(hsl_of01s.o) \
-                $(HLGS64)(hsl_ma77s.o)
-ma77_double_64: blas lapack $(HLGD64)(kb07i.o) $(HLGD64)(hsl_kb22l.o) \
-                $(HLGD64)(hsl_ma54d.o) $(HLGD64)(hsl_ma64d.o) \
-                $(HLGD64)(hsl_of01i.o) $(HLGD64)(hsl_of01d.o) \
-                $(HLGD64)(hsl_ma77d.o)
+hsl_ma77: hsl_ma77_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA77 routines ($(PRECIS) $(SUCC)"
+hsl_ma77_silent: hsl_ma77_$(PRECIS)
+hsl_ma77_single: kinds $(LHS)(kb07i.o) $(LHS)(hsl_kb22l.o) \
+                 $(LHS)(hsl_ma54s.o) $(LHS)(hsl_ma64s.o) \
+                 $(LHS)(hsl_of01i.o) $(LHS)(hsl_of01s.o) \
+                 $(LHS)(hsl_ma77s.o)
+hsl_ma77_double: kinds $(LHD)(kb07i.o) $(LHD)(hsl_kb22l.o) \
+                 $(LHD)(hsl_ma54d.o) $(LHD)(hsl_ma64d.o) \
+                 $(LHD)(hsl_of01i.o) $(LHD)(hsl_of01d.o) \
+                 $(LHD)(hsl_ma77d.o)
+hsl_ma77_single_64: kinds $(LHS64)(kb07i_64.o) $(LHS64)(hsl_kb22l_64.o) \
+                    $(LHS64)(hsl_ma54s_64.o) $(LHS64)(hsl_ma64s_64.o) \
+                    $(LHS64)(hsl_of01i_64.o) $(LHS64)(hsl_of01s_64.o) \
+                    $(LHS64)(hsl_ma77s_64.o)
+hsl_ma77_double_64: kinds $(LHD64)(kb07i_64.o) $(LHD64)(hsl_kb22l_64.o) \
+                    $(LHD64)(hsl_ma54d_64.o) $(LHD64)(hsl_ma64d_64.o) \
+                    $(LHD64)(hsl_of01i_64.o) $(LHD64)(hsl_of01d_64.o) \
+                    $(LHD64)(hsl_ma77d_64.o)
 
-ma77_ciface: ma77_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-ma77_ciface_silent: ma77_ciface_$(PRECIS)
-ma77_ciface_single: ma77_single $(HCLGS)(hsl_ma77s_ciface.o)
-ma77_ciface_double: ma77_double $(HCLGD)(hsl_ma77d_ciface.o)
-ma77_ciface_single_64: ma77_single_64 $(HCLGS64)(hsl_ma77s_ciface.o)
-ma77_ciface_double_64: ma77_double_64 $(HCLGD64)(hsl_ma77d_ciface.o)
+hsl_ma77_ciface: hsl_ma77_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA77 C routines ($(PRECIS) $(SUCC)"
+hsl_ma77_ciface_silent: hsl_ma77_ciface_$(PRECIS)
+hsl_ma77_ciface_single: hsl_ma77_single $(LHCS)(hsl_ma77s_ciface.o)
+hsl_ma77_ciface_double: hsl_ma77_double $(LHCD)(hsl_ma77d_ciface.o)
+hsl_ma77_ciface_single_64: hsl_ma77_single_64 $(LHCS64)(hsl_ma77s_64_ciface.o)
+hsl_ma77_ciface_double_64: hsl_ma77_double_64 $(LHCD64)(hsl_ma77d_64_ciface.o)
 
-#  ma86
+#  hsl_ma86
 
-ma86: ma86_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma86_silent: ma86_$(PRECIS)
-ma86_single: blas lapack zd11 $(HLGS)(mc21s.o) $(HLGS)(mc64s.o) \
-             $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_ma86s.o)
-ma86_double: blas lapack zd11 $(HLGD)(mc64d.o) $(HLGD)(mc21d.o) \
-             $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_ma86d.o)
-ma86_single_64: blas lapack zd11 $(HLGS64)(mc21s.o) $(HLGS64)(mc64s.o) \
-                $(HLGS64)(hsl_mc34s.o) $(HLGS64)(hsl_mc78i.o) \
-                $(HLGS64)(hsl_ma86s.o)
-ma86_double_64: blas lapack zd11 $(HLGD64)(mc64d.o) $(HLGD64)(mc21d.o) \
-                $(HLGD64)(hsl_mc34d.o) $(HLGD64)(hsl_mc78i.o) \
-                $(HLGD64)(hsl_ma86d.o)
+hsl_ma86: hsl_ma86_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA86 routines ($(PRECIS) $(SUCC)"
+hsl_ma86_silent: hsl_ma86_$(PRECIS)
+hsl_ma86_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(mc21s.o) $(LHS)(mc64s.o) \
+                 $(LHS)(hsl_mc34s.o) $(LHS)(hsl_mc78i.o) $(LHS)(mc77s.o) \
+                 $(LHS)(hsl_ma86s.o)
+hsl_ma86_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(mc64d.o) $(LHD)(mc21d.o) \
+                 $(LHD)(hsl_mc34d.o) $(LHD)(hsl_mc78i.o) $(LHD)(mc77d.o) \
+                 $(LHD)(hsl_ma86d.o)
+hsl_ma86_single_64: kinds $(LHS64)(hsl_zd11s_64.o) \
+                    $(LHS64)(mc21s_64.o) $(LHS64)(mc64s_64.o) \
+                    $(LHS64)(hsl_mc34s_64.o) $(LHS64)(hsl_mc78i_64.o) \
+                    $(LHS64)(mc77s_64.o) $(LHS64)(hsl_ma86s_64.o)
+hsl_ma86_double_64: kinds $(LHD64)(hsl_zd11d_64.o) \
+                    $(LHD64)(mc64d_64.o) $(LHD64)(mc21d_64.o) \
+                    $(LHD64)(hsl_mc34d_64.o) $(LHD64)(hsl_mc78i_64.o) \
+                    $(LHD64)(mc77d_64.o) $(LHD64)(hsl_ma86d_64.o)
 
-ma86_ciface: ma86_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-ma86_ciface_silent: ma86_ciface_$(PRECIS)
-ma86_ciface_single: ma86_single $(HCLGS)(hsl_ma86s_ciface.o)
-ma86_ciface_double: ma86_double $(HCLGD)(hsl_ma86d_ciface.o)
-ma86_ciface_single_64: ma86_single_64 $(HCLGS64)(hsl_ma86s_ciface.o)
-ma86_ciface_double_64: ma86_double_64 $(HCLGD64)(hsl_ma86d_ciface.o)
+hsl_ma86_ciface: hsl_ma86_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA86 C routines ($(PRECIS) $(SUCC)"
+hsl_ma86_ciface_silent: hsl_ma86_ciface_$(PRECIS)
+hsl_ma86_ciface_single: hsl_ma86_single $(LHCS)(hsl_ma86s_ciface.o)
+hsl_ma86_ciface_double: hsl_ma86_double $(LHCD)(hsl_ma86d_ciface.o)
+hsl_ma86_ciface_single_64: hsl_ma86_single_64 $(LHCS64)(hsl_ma86s_64_ciface.o)
+hsl_ma86_ciface_double_64: hsl_ma86_double_64 $(LHCD64)(hsl_ma86d_64_ciface.o)
 
-#  ma87
+#  hsl_ma87
 
-ma87: ma87_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma87_silent: ma87_$(PRECIS)
-ma87_single: blas lapack zd11 $(HLGS)(hsl_mc34s.o) \
-             $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_ma87s.o)
-ma87_double: blas lapack zd11 $(HLGD)(hsl_mc34d.o) \
-             $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_ma87d.o)
-ma87_single_64: blas lapack zd11 $(HLGS64)(hsl_mc34s.o) \
-                $(HLGS64)(hsl_mc78i.o) $(HLGS64)(hsl_ma87s.o)
-ma87_double_64: blas lapack zd11 $(HLGD64)(hsl_mc34d.o) \
-                $(HLGD64)(hsl_mc78i.o) $(HLGD64)(hsl_ma87d.o)
+hsl_ma87: hsl_ma87_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA87 routines ($(PRECIS) $(SUCC)"
+hsl_ma87_silent: hsl_ma87_$(PRECIS)
+hsl_ma87_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(hsl_mc34s.o) \
+                 $(LHS)(hsl_mc78i.o) $(LHS)(hsl_ma87s.o)
+hsl_ma87_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(hsl_mc34d.o) \
+                 $(LHD)(hsl_mc78i.o) $(LHD)(hsl_ma87d.o)
+hsl_ma87_single_64: kinds $(LHS64)(hsl_zd11s_64.o) $(LHS64)(hsl_mc34s_64.o) \
+                    $(LHS64)(hsl_mc78i_64.o) $(LHS64)(hsl_ma87s_64.o)
+hsl_ma87_double_64: kinds $(LHD64)(hsl_zd11d_64.o) $(LHD64)(hsl_mc34d_64.o) \
+                    $(LHD64)(hsl_mc78i_64.o) $(LHD64)(hsl_ma87d_64.o)
 
-ma87_ciface: ma87_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-ma87_ciface_silent: ma87_ciface_$(PRECIS)
-ma87_ciface_single: ma87_single $(HCLGS)(hsl_ma87s_ciface.o)
-ma87_ciface_double: ma87_double $(HCLGD)(hsl_ma87d_ciface.o)
-ma87_ciface_single_64: ma87_single_64 $(HCLGS64)(hsl_ma87s_ciface.o)
-ma87_ciface_double_64: ma87_double_64 $(HCLGD64)(hsl_ma87d_ciface.o)
+hsl_ma87_ciface: hsl_ma87_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA87 C routines ($(PRECIS) $(SUCC)"
+hsl_ma87_ciface_silent: hsl_ma87_ciface_$(PRECIS)
+hsl_ma87_ciface_single: hsl_ma87_single $(LHCS)(hsl_ma87s_ciface.o)
+hsl_ma87_ciface_double: hsl_ma87_double $(LHCD)(hsl_ma87d_ciface.o)
+hsl_ma87_ciface_single_64: hsl_ma87_single_64 $(LHCS64)(hsl_ma87s_64_ciface.o)
+hsl_ma87_ciface_double_64: hsl_ma87_double_64 $(LHCD64)(hsl_ma87d_64_ciface.o)
 
-#  ma97
+#  hsl_ma97
 
-ma97: ma97_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma97_silent: ma97_$(PRECIS)
-ma97_single: blas lapack $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_zb01i.o) \
-             $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) $(HLGS)(mc64s.o) \
-             $(HLGS)(hsl_mc64s.o) $(HLGS)(mc30s.o) $(HLGS)(mc77s.o)     \
-             $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_mc80s.o) $(HLGS)(hsl_ma97s.o)
-ma97_double: blas lapack $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_zb01i.o) \
-             $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) $(HLGD)(mc64d.o) \
-             $(HLGD)(hsl_mc64d.o) $(HLGD)(mc30d.o) $(HLGD)(mc77d.o)     \
-             $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_mc80d.o) $(HLGD)(hsl_ma97d.o)
-ma97_single_64: blas lapack $(HLGS64)(hsl_mc34s.o) $(HLGS64)(hsl_zb01i.o) \
-                $(HLGS64)(hsl_mc68i.o) $(HLGS64)(hsl_mc69s.o) \
-                $(HLGS64)(mc64s.o) $(HLGS64)(hsl_mc64s.o) $(HLGS64)(mc30s.o) \
-                $(HLGS64)(mc77s.o) $(HLGS64)(hsl_mc78i.o) \
-                $(HLGS64)(hsl_mc80s.o) $(HLGS64)(hsl_ma97s.o)
-ma97_double_64: blas lapack $(HLGD64)(hsl_mc34d.o) $(HLGD64)(hsl_zb01i.o) \
-                $(HLGD64)(hsl_mc68i.o) $(HLGD64)(hsl_mc69d.o) \
-                $(HLGD64)(mc64d.o) $(HLGD64)(hsl_mc64d.o) $(HLGD64)(mc30d.o) \
-                $(HLGD64)(mc77d.o) $(HLGD64)(hsl_mc78i.o) \
-                $(HLGD64)(hsl_mc80d.o) $(HLGD64)(hsl_ma97d.o)
+hsl_ma97: hsl_ma97_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA97 routines ($(PRECIS) $(SUCC)"
+hsl_ma97_silent: hsl_ma97_$(PRECIS)
+hsl_ma97_single: metis_silent $(LHS)(hsl_mc34s.o) $(LHS)(hsl_zb01i.o) \
+                 $(LHS)(hsl_mc68i.o) $(LHS)(hsl_mc69s.o) $(LHS)(mc64s.o) \
+                 $(LHS)(hsl_mc64s.o) $(LHS)(mc30s.o) $(LHS)(mc77s.o)     \
+                 $(LHS)(hsl_mc78i.o) $(LHS)(hsl_mc80s.o) $(LHS)(hsl_ma97s.o)
+hsl_ma97_double: metis_silent $(LHD)(hsl_mc34d.o) $(LHD)(hsl_zb01i.o) \
+                 $(LHD)(hsl_mc68i.o) $(LHD)(hsl_mc69d.o) $(LHD)(mc64d.o) \
+                 $(LHD)(hsl_mc64d.o) $(LHD)(mc30d.o) $(LHD)(mc77d.o)     \
+                 $(LHD)(hsl_mc78i.o) $(LHD)(hsl_mc80d.o) $(LHD)(hsl_ma97d.o)
+hsl_ma97_single_64: metis_silent $(LHS64)(hsl_mc34s_64.o) \
+                    $(LHS64)(hsl_zb01i_64.o) $(LHS64)(hsl_mc68i_64.o) \
+                    $(LHS64)(hsl_mc69s_64.o) $(LHS64)(mc64s_64.o) \
+                    $(LHS64)(hsl_mc64s_64.o) $(LHS64)(mc30s_64.o) \
+                    $(LHS64)(mc77s_64.o) $(LHS64)(hsl_mc78i_64.o) \
+                    $(LHS64)(hsl_mc80s_64.o) $(LHS64)(hsl_ma97s_64.o)
+hsl_ma97_double_64: metis_silent $(LHD64)(hsl_mc34d_64.o) \
+                    $(LHD64)(hsl_zb01i_64.o) $(LHD64)(hsl_mc68i_64.o) \
+                    $(LHD64)(hsl_mc69d_64.o) $(LHD64)(mc64d_64.o) \
+                    $(LHD64)(hsl_mc64d_64.o) $(LHD64)(mc30d_64.o) \
+                    $(LHD64)(mc77d_64.o) $(LHD64)(hsl_mc78i_64.o) \
+                    $(LHD64)(hsl_mc80d_64.o) $(LHD64)(hsl_ma97d_64.o)
 
-ma97_ciface: ma97_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-ma97_ciface_silent: ma97_ciface_$(PRECIS)
-ma97_ciface_single: ma97_single $(HCLGS)(hsl_ma97s_ciface.o)
-ma97_ciface_double: ma97_double $(HCLGD)(hsl_ma97d_ciface.o)
-ma97_ciface_single_64: ma97_single_64 $(HCLGS64)(hsl_ma97s_ciface.o)
-ma97_ciface_double_64: ma97_double_64 $(HCLGD64)(hsl_ma97d_ciface.o)
+hsl_ma97_ciface: hsl_ma97_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA97 C routines ($(PRECIS) $(SUCC)"
+hsl_ma97_ciface_silent: hsl_ma97_ciface_$(PRECIS)
+hsl_ma97_ciface_single: hsl_ma97_single $(LHCS)(hsl_ma97s_ciface.o)
+hsl_ma97_ciface_double: hsl_ma97_double $(LHCD)(hsl_ma97d_ciface.o)
+hsl_ma97_ciface_single_64: hsl_ma97_single_64 $(LHCS64)(hsl_ma97s_64_ciface.o)
+hsl_ma97_ciface_double_64: hsl_ma97_double_64 $(LHCD64)(hsl_ma97d_64_ciface.o)
 
-#  mi20
+#  mc19
 
-mi20: mi20_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-mi20_silent: mi20_$(PRECIS)
-mi20_single: blas lapack zd11 ma48 $(HLGS)(hsl_mc65s.o) $(HLGD)(fd15s.o) \
-             $(HLGS)(mi21s.o) $(HLGS)(mi24s.o) $(HLGS)(mi26s.o) \
-             $(HLGS)(hsl_mi32s.o) $(HLGS)(hsl_mi20s.o)
-mi20_double: blas lapack zd11 ma48 $(HLGD)(hsl_mc65d.o) $(HLGD)(fd15d.o) \
-             $(HLGD)(mi21d.o) $(HLGD)(mi24d.o) $(HLGD)(mi26d.o) \
-             $(HLGD)(hsl_mi32d.o) $(HLGD)(hsl_mi20d.o)
-mi20_single_64: blas lapack zd11 ma48 $(HLGS64)(hsl_mc65s.o) \
-                $(HLGD64)(fd15s.o) $(HLGS64)(mi21s.o) \
-                $(HLGS64)(mi24s.o) $(HLGS64)(mi26s.o) \
-                $(HLGS64)(hsl_mi32s.o) $(HLGS64)(hsl_mi20s.o)
-mi20_double_64: blas lapack zd11 ma48 $(HLGD64)(hsl_mc65d.o) \
-                $(HLGD64)(fd15d.o) $(HLGD64)(mi21d.o) \
-                $(HLGD64)(mi24d.o) $(HLGD64)(mi26d.o) \
-                $(HLGD64)(hsl_mi32d.o) $(HLGD64)(hsl_mi20d.o)
+mc19: mc19_$(PRECIS)
+	@printf ' %-21s\n' "HSL MC19 routines ($(PRECIS) $(SUCC)"
+mc19_silent: mc19_$(PRECIS)
+mc19_single: kinds $(LHS)(mc19s.o)
+mc19_double: kinds $(LHD)(mc19d.o)
+mc19_single_64: kinds $(LHS64)(mc19s_64.o)
+mc19_double_64: kinds $(LHD64)(mc19d_64.o)
 
-mi20_ciface: mi20_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-mi20_ciface_silent: mi20_ciface_$(PRECIS)
-mi20_ciface_single: mi20_single $(HCLGS)(hsl_mi20s_ciface.o)
-mi20_ciface_double: mi20_double $(HCLGD)(hsl_mi20d_ciface.o)
-mi20_ciface_single_64: mi20_single_64 $(HCLGS64)(hsl_mi20s_ciface.o)
-mi20_ciface_double_64: mi20_double_64 $(HCLGD64)(hsl_mi20d_ciface.o)
+#  hsl_mc64
 
-#  mi28
+hsl_mc64: hsl_mc64_$(PRECIS)
+	@printf ' %-21s\n' "HSL MC64 routines ($(PRECIS) $(SUCC)"
+hsl_mc64_silent: hsl_mc64_$(PRECIS)
+hsl_mc64_single: kinds $(LHS)(hsl_zd11s.o) $(LHS)(fd15s.o) \
+                 $(LHS)(mc21s.o) $(LHS)(hsl_mc34s.o) \
+                 $(LHS)(hsl_mc69s.o) $(LHS)(hsl_mc64s.o)
+hsl_mc64_double: kinds $(LHD)(hsl_zd11d.o) $(LHD)(fd15d.o) \
+                 $(LHD)(mc21d.o) $(LHD)(hsl_mc34d.o) \
+                 $(LHD)(hsl_mc69d.o) $(LHD)(hsl_mc64d.o)
+hsl_mc64_single_64: kinds $(LHS64)(hsl_zd11s_64.o) $(LHS64)(fd15s_64.o) \
+                    $(LHS64)(mc21s_64.o) $(LHS64)(hsl_mc34s_64.o) \
+                    $(LHS64)(hsl_mc69s_64.o) $(LHS64)(hsl_mc64s_64.o)
+hsl_mc64_double_64: kinds $(LHD64)(hsl_zd11d_64.o) $(LHD64)(fd15d_64.o) \
+                    $(LHD64)(mc21d_64.o) $(LHD64)(hsl_mc34d_64.o) \
+                    $(LHD64)(hsl_mc69d_64.o) $(LHD64)(hsl_mc64d_64.o)
 
-mi28: mi28_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-mi28_silent: mi28_$(PRECIS)
-mi28_single: blas lapack metis $(HLGS)(kb07i.o) $(HLGS)(mc61s.o) \
-             $(HLGS)(mc77s.o) $(HLGS)(hsl_zb01i.o) \
-             $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) \
-             $(HLGS)(mc64s.o) $(HLGS)(hsl_mc64s.o) $(HLGS)(hsl_mi28s.o)
-mi28_double: blas lapack metis $(HLGD)(kb07i.o) $(HLGD)(mc61d.o) \
-             $(HLGD)(mc77d.o) $(HLGD)(hsl_zb01i.o) \
-             $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) \
-             $(HLGD)(mc64d.o) $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi28d.o)
-mi28_single_64: blas lapack metis $(HLGS64)(kb07i.o) $(HLGS64)(mc61s.o) \
-                $(HLGS64)(mc77s.o) $(HLGS64)(hsl_zb01i.o) \
-                $(HLGS64)(hsl_mc68i.o) $(HLGS64)(hsl_mc69s.o) \
-                $(HLGS64)(mc64s.o) $(HLGS64)(hsl_mc64s.o) $(HLGS64)(hsl_mi28s.o)
-mi28_double_64: blas lapack metis $(HLGD64)(kb07i.o) $(HLGD64)(mc61d.o) \
-                $(HLGD64)(mc77d.o) $(HLGD64)(hsl_zb01i.o) \
-                $(HLGD64)(hsl_mc68i.o) $(HLGD64)(hsl_mc69d.o) \
-                $(HLGD64)(mc64d.o) $(HLGD64)(hsl_mc64d.o) $(HLGD64)(hsl_mi28d.o)
+hsl_mc64_ciface: hsl_mc64_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MC64 C routines ($(PRECIS) $(SUCC)"
+hsl_mc64_ciface_silent: hsl_mc64_ciface_$(PRECIS)
+hsl_mc64_ciface_single: hsl_mc64_single $(LHCS)(hsl_mc64s_ciface.o)
+hsl_mc64_ciface_double: hsl_mc64_double $(LHCD)(hsl_mc64d_ciface.o)
+hsl_mc64_ciface_single_64: hsl_mc64_single_64 $(LHCS64)(hsl_mc64s_64_ciface.o)
+hsl_mc64_ciface_double_64: hsl_mc64_double_64 $(LHCD64)(hsl_mc64d_64_ciface.o)
 
-mi28_ciface: mi28_ciface_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
-mi28_ciface_silent: mi28_ciface_$(PRECIS)
-mi28_ciface_single: mi28_single $(HCLGS)(hsl_mi28s_ciface.o)
-mi28_ciface_double: mi28_double $(HCLGD)(hsl_mi28d_ciface.o)
-mi28_ciface_single_64: mi28_single_64 $(HCLGS64)(hsl_mi28s_ciface.o)
-mi28_ciface_double_64: mi28_double_64 $(HCLGD64)(hsl_mi28d_ciface.o)
+#  hsl_mc68
 
-#  mi35
+hsl_mc68: hsl_mc68_$(PRECIS)
+	@printf ' %-21s\n' "HSL MC68 routines ($(PRECIS) $(SUCC)"
+hsl_mc68_silent: hsl_mc68_$(PRECIS)
+hsl_mc68_single: metis_silent $(LHS)(hsl_zb01i.o) $(LHS)(hsl_mc68i.o)
+hsl_mc68_double: metis_silent $(LHD)(hsl_zb01i.o) $(LHD)(hsl_mc68i.o)
+hsl_mc68_single_64: metis_silent $(LHS64)(hsl_zb01i_64.o) \
+                    $(LHS64)(hsl_mc68i_64.o)
+hsl_mc68_double_64: metis_silent $(LHD64)(hsl_zb01i_64.o) \
+                    $(LHD64)(hsl_mc68i_64.o)
 
-mi35: mi35_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-mi35_silent: mi35_$(PRECIS)
-mi35_single: blas lapack $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_zb01i.o) \
-             $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) $(HLGS)(mc64s.o) \
-             $(HLGS)(hsl_mc64s.o) $(HLGS)(hsl_mi35s.o)
-mi35_double: blas lapack $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_zb01i.o) \
-             $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) $(HLGD)(mc64d.o) \
-             $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi35d.o)
-mi35_single_64: blas lapack $(HLGS64)(hsl_mc34s.o) $(HLGS64)(hsl_zb01i.o) \
-                $(HLGS64)(hsl_mc68i.o) $(HLGS64)(hsl_mc69s.o) \
-                $(HLGS64)(mc64s.o) $(HLGS64)(hsl_mc64s.o) $(HLGS64)(hsl_mi35s.o)
-mi35_double_64: blas lapack $(HLGD64)(hsl_mc34d.o) $(HLGD64)(hsl_zb01i.o) \
-                $(HLGD64)(hsl_mc68i.o) $(HLGD64)(hsl_mc69d.o) \
-                $(HLGD64)(mc64d.o) $(HLGD64)(hsl_mc64d.o) $(HLGD64)(hsl_mi35d.o)
+hsl_mc68_ciface: hsl_mc68_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MC68 C routines ($(PRECIS) $(SUCC)"
+hsl_mc68_ciface_silent: hsl_mc68_ciface_$(PRECIS)
+hsl_mc68_ciface_single: hsl_mc68_single $(LHCS)(hsl_mc68i_ciface.o)
+hsl_mc68_ciface_double: hsl_mc68_double $(LHCD)(hsl_mc68i_ciface.o)
+hsl_mc68_ciface_single_64: hsl_mc68_single_64 $(LHCS64)(hsl_mc68i_64_ciface.o)
+hsl_mc68_ciface_double_64: hsl_mc68_double_64 $(LHCD64)(hsl_mc68i_64_ciface.o)
 
-#  other packages
+#  hsl_mi20
 
-blas:
-	( cd $(GALAHAD)/src/general ; \
-             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             blas_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
-lapack:
-	( cd $(GALAHAD)/src/general ; \
-             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             lapack_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
-metis:
-	( cd $(GALAHAD)/src/general ; \
-             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            metis_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
-kinds:
-	( cd $(GALAHAD)/src/kinds ; \
-             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             kinds_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/kinds )
-zd11:
-	( cd $(GALAHAD)/src/zd11 ; \
-             $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             zd11_silent PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+hsl_mi20: hsl_mi20_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI20 routines ($(PRECIS) $(SUCC)"
+hsl_mi20_silent: hsl_mi20_$(PRECIS)
+hsl_mi20_single: hsl_ma48_silent $(LHS)(hsl_mc65s.o) $(LHS)(fd15s.o) \
+                 $(LHS)(mi21s.o) $(LHS)(mi24s.o) $(LHS)(mi26s.o) \
+                 $(LHS)(hsl_mi32s.o) $(LHS)(hsl_mi20s.o)
+hsl_mi20_double: hsl_ma48_silent $(LHD)(hsl_mc65d.o) $(LHD)(fd15d.o) \
+                 $(LHD)(mi21d.o) $(LHD)(mi24d.o) $(LHD)(mi26d.o) \
+                 $(LHD)(hsl_mi32d.o) $(LHD)(hsl_mi20d.o)
+hsl_mi20_single_64: hsl_ma48_silent $(LHS64)(hsl_mc65s_64.o) \
+                    $(LHS64)(fd15s_64.o) $(LHS64)(mi21s_64.o) \
+                    $(LHS64)(mi24s_64.o) $(LHS64)(mi26s_64.o) \
+                    $(LHS64)(hsl_mi32s_64.o) $(LHS64)(hsl_mi20s_64.o)
+hsl_mi20_double_64: hsl_ma48_silent $(LHD64)(hsl_mc65d_64.o) \
+                    $(LHD64)(fd15d_64.o) $(LHD64)(mi21d_64.o) \
+                    $(LHD64)(mi24d_64.o) $(LHD64)(mi26d_64.o) \
+                    $(LHD64)(hsl_mi32d_64.o) $(LHD64)(hsl_mi20d_64.o)
+
+hsl_mi20_ciface: hsl_mi20_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI20 C routines ($(PRECIS) $(SUCC)"
+hsl_mi20_ciface_silent: hsl_mi20_ciface_$(PRECIS)
+hsl_mi20_ciface_single: hsl_mi20_single $(LHCS)(hsl_mi20s_ciface.o)
+hsl_mi20_ciface_double: hsl_mi20_double $(LHCD)(hsl_mi20d_ciface.o)
+hsl_mi20_ciface_single_64: hsl_mi20_single_64 $(LHCS64)(hsl_mi20s_64_ciface.o)
+hsl_mi20_ciface_double_64: hsl_mi20_double_64 $(LHCD64)(hsl_mi20d_64_ciface.o)
+
+#  hsl_mi28
+
+hsl_mi28: hsl_mi28_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI28 routines ($(PRECIS) $(SUCC)"
+hsl_mi28_silent: hsl_mi28_$(PRECIS)
+hsl_mi28_single: metis_silent $(LHS)(kb07i.o) $(LHS)(mc60s.o) \
+             $(LHS)(mc61s.o) $(LHS)(mc77s.o) $(LHS)(hsl_zb01i.o) \
+             $(LHS)(hsl_mc68i.o) $(LHS)(hsl_mc69s.o) \
+             $(LHS)(hsl_zd11s.o) $(LHS)(hsl_mc34s.o) \
+             $(LHS)(mc64s.o) $(LHS)(hsl_mc64s.o) $(LHS)(hsl_mi28s.o)
+hsl_mi28_double: metis_silent $(LHD)(kb07i.o) $(LHD)(mc60d.o) \
+             $(LHD)(mc61d.o) $(LHD)(mc77d.o) $(LHD)(hsl_zb01i.o) \
+             $(LHD)(hsl_mc68i.o) $(LHD)(hsl_mc69d.o) \
+             $(LHD)(hsl_zd11d.o) $(LHD)(hsl_mc34d.o) \
+             $(LHD)(mc64d.o) $(LHD)(hsl_mc64d.o) $(LHD)(hsl_mi28d.o)
+hsl_mi28_single_64: metis_silent $(LHS64)(kb07i_64.o) \
+                $(LHS64)(mc60s_64.o) $(LHS64)(mc61s_64.o) \
+                $(LHS64)(mc77s_64.o) $(LHS64)(hsl_zb01i_64.o) \
+                $(LHS64)(hsl_mc68i_64.o) $(LHS64)(hsl_mc69s_64.o) \
+                $(LHS64)(hsl_zd11s_64.o) $(LHS64)(hsl_mc34s_64.o) \
+                $(LHS64)(mc64s_64.o) $(LHS64)(hsl_mc64s_64.o) \
+                $(LHS64)(hsl_mi28s_64.o)
+hsl_mi28_double_64: metis_silent $(LHD64)(kb07i_64.o) \
+                $(LHD64)(mc60d_64.o) $(LHD64)(mc61d_64.o) \
+                $(LHD64)(mc77d_64.o) $(LHD64)(hsl_zb01i_64.o) \
+                $(LHD64)(hsl_mc68i_64.o) $(LHD64)(hsl_mc69d_64.o) \
+                $(LHD64)(hsl_zd11d_64.o) $(LHD64)(hsl_mc34d_64.o) \
+                $(LHD64)(mc64d_64.o) $(LHD64)(hsl_mc64d_64.o) \
+                $(LHD64)(hsl_mi28d_64.o)
+
+hsl_mi28_ciface: hsl_mi28_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI28 C routines ($(PRECIS) $(SUCC)"
+hsl_mi28_ciface_silent: hsl_mi28_ciface_$(PRECIS)
+hsl_mi28_ciface_single: hsl_mi28_single $(LHCS)(hsl_mi28s_ciface.o)
+hsl_mi28_ciface_double: hsl_mi28_double $(LHCD)(hsl_mi28d_ciface.o)
+hsl_mi28_ciface_single_64: hsl_mi28_single_64 $(LHCS64)(hsl_mi28s_64_ciface.o)
+hsl_mi28_ciface_double_64: hsl_mi28_double_64 $(LHCD64)(hsl_mi28d_64_ciface.o)
+
+#  hsl_mi35
+
+hsl_mi35: hsl_mi35_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI35 routines ($(PRECIS) $(SUCC)"
+hsl_mi35_silent: hsl_mi35_$(PRECIS)
+hsl_mi35_single: kinds $(LHS)(hsl_mc34s.o) $(LHS)(hsl_zb01i.o) \
+                 $(LHS)(hsl_mc68i.o) $(LHS)(hsl_mc69s.o) $(LHS)(mc64s.o) \
+                 $(LHS)(hsl_mc64s.o) $(LHS)(hsl_mi35s.o)
+hsl_mi35_double: kinds $(LHD)(hsl_mc34d.o) $(LHD)(hsl_zb01i.o) \
+                 $(LHD)(hsl_mc68i.o) $(LHD)(hsl_mc69d.o) $(LHD)(mc64d.o) \
+                 $(LHD)(hsl_mc64d.o) $(LHD)(hsl_mi35d.o)
+hsl_mi35_single_64: kinds $(LHS64)(hsl_mc34s_64.o) \
+                    $(LHS64)(hsl_zb01i_64.o) $(LHS64)(hsl_mc68i_64.o) \
+                    $(LHS64)(hsl_mc69s_64.o) $(LHS64)(mc64s_64.o) \
+                    $(LHS64)(hsl_mc64s_64.o) $(LHS64)(hsl_mi35s_64.o)
+hsl_mi35_double_64: kinds $(LHD64)(hsl_mc34d_64.o) \
+                    $(LHD64)(hsl_zb01i_64.o) $(LHD64)(hsl_mc68i_64.o) \
+                    $(LHD64)(hsl_mc69d_64.o) $(LHD64)(mc64d_64.o) \
+                    $(LHD64)(hsl_mc64d_64.o) $(LHD64)(hsl_mi35d_64.o)
+
+#  metis
+
+metis_silent: metis_$(PRECIS)
+metis: metis_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: metis ($(PRECIS) $(SUCC)"
+metis_single: metis_32
+metis_double: metis_32
+metis_single_64: metis_64
+metis_double_64: metis_64
+
+metis_32:
+	( cd ./metis ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) build \
+           PRECIS=$(PRECIS) PWD=$(PWD)/metis )
+metis_64:
+	( cd ./metis ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) build_64 \
+           PRECIS=$(PRECIS) PWD=$(PWD)/metis )
+
+#  hsl_metis
+
+hsl_metis.o: $(LH)(hsl_metis$(HSL_64).o)
+
+$(LH)(hsl_metis$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_metis"
+	$(CP) $(HSLSRC)/hsl_metis/hsl_metis.f90 \
+           $(OBJ)/hsl_metis$(HSL_64).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_metis$(HSL_64).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_metis$(HSL_64).f90 )
+	cd $(OBJ); $(HARR) hsl_metis$(HSL_64).o; \
+          $(RM) hsl_metis$(HSL_64).f90 hsl_metis$(HSL_64).o
+	$(HRMARFILE) ma57$(HSL_PRECIS).o
+	$(RANLIB) $(LH)
+	@printf '[ OK ]\n'
+
+hsl_metis5_adapter.o: $(LH)(hsl_metis5_adapter$(HSL_64).o)
+
+$(LH)(hsl_metis5_adapter$(HSL_64).o): $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_metis5_adapter"
+	$(CP) $(HSLSRC)/hsl_metis/hsl_metis5_adapter.c \
+           $(OBJ)/hsl_metis5_adapter$(HSL_64).c
+	cd $(OBJ); $(CC) $(CFLAGS)  hsl_metis5_adapter$(HSL_64).c \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(CC) $(CFLAGSN) hsl_metis5_adapter$(HSL_64).c )
+	cd $(OBJ); $(HARR) hsl_metis5_adapter$(HSL_64).o; \
+          $(RM) hsl_metis5_adapter$(HSL_64).c hsl_metis5_adapter$(HSL_64).o
+	$(RANLIB) $(LH)
+	@printf '[ OK ]\n'
 
 #  =======================
 #  individual compilations
 #  =======================
 
-#  hsl_ad02
+#  hsl_kinds
 
-hsl_ad02d.o: $(HLG)(hsl_ad02d.o)
+kinds: $(LH)(hsl_kinds.o)
+hsl_kinds.o: $(LH)(hsl_kinds.o)
 
-$(HLG)(hsl_ad02d.o): $(HSL_ARCHIVE)/hsl_ad02/hsl_ad02d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ad02d"
-	$(CP) $(HSL_ARCHIVE)/hsl_ad02/hsl_ad02d.f90 \
-           $(OBJ)/hsl_ad02d.$(F95SUFFIX)
-	cd $(OBJ); $(FORTRAN) $(FFLAGS95) hsl_ad02d.$(F95SUFFIX) \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) $(FFLAGS95N) hsl_ad02d.$(F95SUFFIX) )
-	cd $(OBJ); $(HARR) hsl_ad02d.o; $(RM) hsl_ad02d.$(F95SUFFIX) hsl_ad02d.o
-	$(RMARFILE) uselanb.o
+$(LH)(hsl_kinds.o): $(HSLARCSRC)/hsl_kinds/hsl_kinds.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_kinds "
+	$(CP) $(HSLARCSRC)/hsl_kinds/hsl_kinds.f90 $(OBJ)/hsl_kinds.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_kinds.f90
+	cd $(OBJ); $(HARR) hsl_kinds.o ; $(RM) hsl_kinds.f90 hsl_kinds.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ad02s.o: $(HLG)(hsl_ad02s.o)
+#  hsl_ad02
 
-$(HLG)(hsl_ad02s.o): $(HSL_ARCHIVE)/hsl_ad02/hsl_ad02s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ad02s"
-	$(CP) $(HSL_ARCHIVE)/hsl_ad02/hsl_ad02s.f90 \
-           $(OBJ)/hsl_ad02s.$(F95SUFFIX)
-	cd $(OBJ); $(FORTRAN) $(FFLAGS95) hsl_ad02s.$(F95SUFFIX) \
+hsl_ad02.o: $(LH)(hsl_ad02$(HSL_PRECIS).o)
+
+$(LH)(hsl_ad02$(HSL_PRECIS).o): $(HSLARCSRC)/hsl_ad02/hsl_ad02r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ad02"
+	$(CP) $(HSLARCSRC)/hsl_ad02/hsl_ad02r.f90 \
+           $(OBJ)/hsl_ad02$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ad02$(HSL_PRECIS).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) $(FFLAGS95N) hsl_ad02s.$(F95SUFFIX) )
-	cd $(OBJ); $(HARR) hsl_ad02s.o; $(RM) hsl_ad02s.$(F95SUFFIX) hsl_ad02s.o
+                   $(FORTRAN) $(FFLAGSN) hsl_ad02$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ad02$(HSL_PRECIS).o; \
+          $(RM) hsl_ad02$(HSL_PRECIS).f90 hsl_ad02$(HSL_PRECIS).o
 	$(RMARFILE) uselanb.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
+	@printf '[ OK ]\n'
+
+#  fa01
+
+fa01.o: $(LH)(fa01$(HSL_PRECIS).o)
+
+$(LH)(fa01$(HSL_PRECIS).o): $(HSLSRC)/fa01/fa01r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fa01"
+	$(CP) $(HSLSRC)/fa01/fa01r.f \
+           $(OBJ)/fa01$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  fa01$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) fa01$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) fa01$(HSL_PRECIS).o; \
+          $(RM) fa01$(HSL_PRECIS).f90 fa01$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+#  fa04
+
+fa04.o: $(LH)(fa04$(HSL_PRECIS).o)
+
+$(LH)(fa04$(HSL_PRECIS).o): $(HSLSRC)/fa04/fa04r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fa04"
+	$(CP) $(HSLSRC)/fa04/fa04r.f \
+           $(OBJ)/fa04$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  fa04$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) fa04$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) fa04$(HSL_PRECIS).o; \
+          $(RM) fa04$(HSL_PRECIS).f90 fa04$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  fa14
 
-fa14s.o: $(HLG)(fa14s.o)
+fa14.o: $(LH)(fa14$(HSL_PRECIS).o)
 
-$(HLG)(fa14s.o): $(HSL)/fa14/fa14s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "fa14s"
-	$(CP) $(HSL)/fa14/fa14s.f $(OBJ)/fa14s.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) fa14s.f90
-	cd $(OBJ) ; $(HARR) fa14s.o ; $(RM) fa14s.f90 fa14s.o
+$(LH)(fa14$(HSL_PRECIS).o): $(HSLSRC)/fa14/fa14r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fa14"
+	$(CP) $(HSLSRC)/fa14/fa14r.f \
+           $(OBJ)/fa14$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  fa14$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) fa14$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) fa14$(HSL_PRECIS).o; \
+          $(RM) fa14$(HSL_PRECIS).f90 fa14$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
-fa14d.o: $(HLG)(fa14d.o)
+#  hsl_fa14
 
-$(HLG)(fa14d.o): $(HSL)/fa14/fa14d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "fa14d"
-	$(CP) $(HSL)/fa14/fa14d.f $(OBJ)/fa14d.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) fa14d.f90
-	cd $(OBJ) ; $(HARR) fa14d.o ; $(RM) fa14d.f90 fa14d.o
+hsl_fa14.o: $(LH)(hsl_fa14$(HSL_PRECIS).o)
+
+$(LH)(hsl_fa14$(HSL_PRECIS).o): $(HSLSRC)/hsl_fa14/hsl_fa14r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_fa14"
+	$(CP) $(HSLSRC)/hsl_fa14/hsl_fa14r.f90 \
+           $(OBJ)/hsl_fa14$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_fa14$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_fa14$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_fa14$(HSL_PRECIS).o; \
+          $(RM) hsl_fa14$(HSL_PRECIS).f90 hsl_fa14$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma86$(HSL_PRECIS).o
+	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  fd15
 
-fd15s.o: $(HLG)(fd15s.o)
+fd15.o: $(LH)(fd15$(HSL_PRECIS).o)
 
-$(HLG)(fd15s.o): $(HSL)/fd15/fd15s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "fd15s"
-	$(CP) $(HSL)/fd15/fd15s.f $(OBJ)/fd15s.f90
-	cd $(OBJ) ; $(FORTRAN) -o fd15s.o $(FFLAGS77) fd15s.f90
-	cd $(OBJ) ; $(HARR) fd15s.o ; $(RM) fd15s.f90 fd15s.o
-	@printf '[ OK ]\n'
-
-fd15d.o: $(HLG)(fd15d.o)
-
-$(HLG)(fd15d.o): $(HSL)/fd15/fd15d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "fd15d"
-	$(CP) $(HSL)/fd15/fd15d.f $(OBJ)/fd15d.f90
-	cd $(OBJ) ; $(FORTRAN) -o fd15d.o $(FFLAGS77) fd15d.f90
-	cd $(OBJ) ; $(HARR) fd15d.o ; $(RM) fd15d.f90 fd15d.o
+$(LH)(fd15$(HSL_PRECIS).o): $(HSLSRC)/fd15/fd15r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fd15"
+	$(CP) $(HSLSRC)/fd15/fd15r.f \
+           $(OBJ)/fd15$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  fd15$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) fd15$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) fd15$(HSL_PRECIS).o; \
+          $(RM) fd15$(HSL_PRECIS).f90 fd15$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  kb07
 
-kb07i.o: $(HLG)(kb07i.o)
+kb07.o: $(LH)(kb07$(HSL_PRECIS).o)
 
-$(HLG)(kb07i.o): $(HSL)/kb07/kb07i.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "kb07i"
-	$(CP) $(HSL)/kb07/kb07i.f $(OBJ)/kb07i.f90
-	cd $(OBJ) ; $(FORTRAN) -o kb07i.o $(FFLAGS77) kb07i.f90
-	cd $(OBJ) ; $(HARR) kb07i.o ; $(RM) kb07i.f90 kb07i.o
+$(LH)(kb07$(HSL_PRECIS).o): $(HSLSRC)/kb07/kb07r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "kb07"
+	$(CP) $(HSLSRC)/kb07/kb07r.f \
+           $(OBJ)/kb07$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  kb07$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) kb07$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) kb07$(HSL_PRECIS).o; \
+          $(RM) kb07$(HSL_PRECIS).f90 kb07$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+kb07i.o: $(LH)(kb07$(HSL_IPRECIS).o)
+
+$(LH)(kb07$(HSL_IPRECIS).o): $(HSLSRC)/kb07/kb07i.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "kb07"
+	$(CP) $(HSLSRC)/kb07/kb07i.f \
+           $(OBJ)/kb07$(HSL_IPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  kb07$(HSL_IPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) kb07$(HSL_IPRECIS).f90 )
+	cd $(OBJ); $(HARR) kb07$(HSL_IPRECIS).o; \
+          $(RM) kb07$(HSL_IPRECIS).f90 kb07$(HSL_IPRECIS).o
+	@printf '[ OK ]\n'
+
+#  kb21
+
+kb21.o: $(LH)(kb21$(HSL_IPRECIS).o)
+
+$(LH)(kb21$(HSL_IPRECIS).o): $(HSLSRC)/kb21/kb21i.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "kb21"
+	$(CP) $(HSLSRC)/kb21/kb21i.f \
+           $(OBJ)/kb21$(HSL_IPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  kb21$(HSL_IPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) kb21$(HSL_IPRECIS).f90 )
+	cd $(OBJ); $(HARR) kb21$(HSL_IPRECIS).o; \
+          $(RM) kb21$(HSL_IPRECIS).f90 kb21$(HSL_IPRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_kb22
 
-hsl_kb22l.o: $(HLG)(hsl_kb22l.o)
+hsl_kb22.o: $(LH)(hsl_kb22$(HSL_LPRECIS).o)
 
-$(HLG)(hsl_kb22l.o): $(HSL)/hsl_kb22/hsl_kb22l.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_kb22l"
-	$(CP) $(HSL)/hsl_kb22/hsl_kb22l.f90 $(OBJ)/hsl_kb22l.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_kb22l.o $(FFLAGS) hsl_kb22l.f90
-	cd $(OBJ); $(HARR) hsl_kb22l.o ; $(RM) hsl_kb22l.f90 hsl_kb22l.o
-	$(HRMARFILES) hsl_ma77s.o
-	$(HRMARFILED) hsl_ma77d.o
+$(LH)(hsl_kb22$(HSL_LPRECIS).o): $(HSLSRC)/hsl_kb22/hsl_kb22l.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_kb22"
+	$(CP) $(HSLSRC)/hsl_kb22/hsl_kb22l.f90 \
+           $(OBJ)/hsl_kb22$(HSL_LPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_kb22$(HSL_LPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_kb22$(HSL_LPRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_kb22$(HSL_LPRECIS).o; \
+          $(RM) hsl_kb22$(HSL_LPRECIS).f90 hsl_kb22$(HSL_LPRECIS).o
+	$(HRMARFILE) hsl_ma77$(HSL_PRECIS).o
 	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  la04
 
-la04s.o: $(HLG)(la04s.o)
+la04.o: $(LH)(la04$(HSL_PRECIS).o)
 
-$(HLG)(la04s.o): $(HSL)/la04/la04s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "la04s"
-	$(CP) $(HSL)/la04/la04s.f $(OBJ)/la04s.f90
-	cd $(OBJ) ; $(FORTRAN) -o la04s.o $(FFLAGS77) la04s.f90
-	cd $(OBJ) ; $(HARR) la04s.o ; $(RM) la04s.f90 la04s.o
+$(LH)(la04$(HSL_PRECIS).o): $(HSLSRC)/la04/la04r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "la04"
+	$(CP) $(HSLSRC)/la04/la04r.f \
+           $(OBJ)/la04$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  la04$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) la04$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) la04$(HSL_PRECIS).o; \
+          $(RM) la04$(HSL_PRECIS).f90 la04$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
-la04d.o: $(HLG)(la04d.o)
-
-$(HLG)(la04d.o): $(HSL)/la04/la04d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "la04d"
-	$(CP) $(HSL)/la04/la04d.f $(OBJ)/la04d.f90
-	cd $(OBJ) ; $(FORTRAN) -o la04d.o $(FFLAGS77) la04d.f90
-	cd $(OBJ) ; $(HARR) la04d.o ; $(RM) la04d.f90 la04d.o
-	@printf '[ OK ]\n'
 #  la15
 
-la15s.o: $(HLG)(la15s.o)
+la15.o: $(LH)(la15$(HSL_PRECIS).o)
 
-$(HLG)(la15s.o): $(HSL)/la15/la15s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "la15s"
-	$(CP) $(HSL)/la15/la15s.f $(OBJ)/la15s.f90
-	cd $(OBJ) ; $(FORTRAN) -o la15s.o $(FFLAGS77) la15s.f90
-	cd $(OBJ) ; $(HARR) la15s.o ; $(RM) la15s.f90 la15s.o
-	@printf '[ OK ]\n'
-
-la15d.o: $(HLG)(la15d.o)
-
-$(HLG)(la15d.o): $(HSL)/la15/la15d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "la15d"
-	$(CP) $(HSL)/la15/la15d.f $(OBJ)/la15d.f90
-	cd $(OBJ) ; $(FORTRAN) -o la15d.o $(FFLAGS77) la15d.f90
-	cd $(OBJ) ; $(HARR) la15d.o ; $(RM) la15d.f90 la15d.o
+$(LH)(la15$(HSL_PRECIS).o): $(HSLSRC)/la15/la15r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "la15"
+	$(CP) $(HSLSRC)/la15/la15r.f \
+           $(OBJ)/la15$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  la15$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) la15$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) la15$(HSL_PRECIS).o; \
+          $(RM) la15$(HSL_PRECIS).f90 la15$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  ma27
 
-ma27s.o: $(HLG)(ma27s.o)
+ma27.o: $(LH)(ma27$(HSL_PRECIS).o)
 
-$(HLG)(ma27s.o): $(HSL_ARCHIVE)/ma27/ma27s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma27s"
-	$(CP) $(HSL_ARCHIVE)/ma27/ma27s.f $(OBJ)/ma27s.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma27s.o $(FFLAGS77) ma27s.f90
-	cd $(OBJ) ; $(HARR) ma27s.o ; $(RM) ma27s.f90 ma27s.o
+$(LH)(ma27$(HSL_PRECIS).o): $(HSLARCSRC)/ma27/ma27r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma27"
+	$(CP) $(HSLARCSRC)/ma27/ma27r.f $(OBJ)/ma27$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  ma27$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ma27$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ma27$(HSL_PRECIS).o; \
+          $(RM) ma27$(HSL_PRECIS).f90 ma27$(HSL_PRECIS).o
 	$(RMARFILE) hslint.o
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-ma27d.o: $(HLG)(ma27d.o)
+#  ma28
 
-$(HLG)(ma27d.o): $(HSL_ARCHIVE)/ma27/ma27d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma27d"
-	$(CP) $(HSL_ARCHIVE)/ma27/ma27d.f $(OBJ)/ma27d.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma27d.o $(FFLAGS77) ma27d.f90
-	cd $(OBJ) ; $(HARR) ma27d.o ; $(RM) ma27d.f90 ma27d.o
+ma28.o: $(LH)(ma28$(HSL_PRECIS).o)
+
+$(LH)(ma28$(HSL_PRECIS).o): $(HSLARCSRC)/ma28/ma28r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma28"
+	$(CP) $(HSLARCSRC)/ma28/ma28r.f $(OBJ)/ma28$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  ma28$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ma28$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ma28$(HSL_PRECIS).o; \
+          $(RM) ma28$(HSL_PRECIS).f90 ma28$(HSL_PRECIS).o
 	$(RMARFILE) hslint.o
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
+	@printf '[ OK ]\n'
+
+#  ma30
+
+ma30.o: $(LH)(ma30$(HSL_PRECIS).o)
+
+$(LH)(ma30$(HSL_PRECIS).o): $(HSLARCSRC)/ma30/ma30r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma30"
+	$(CP) $(HSLARCSRC)/ma30/ma30r.f \
+           $(OBJ)/ma30$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  ma30$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ma30$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ma30$(HSL_PRECIS).o; \
+          $(RM) ma30$(HSL_PRECIS).f90 ma30$(HSL_PRECIS).o
+	$(RMARFILE) hslint.o
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  ma33
 
-ma33s.o: $(HLG)(ma33s.o)
+ma33.o: $(LH)(ma33$(HSL_PRECIS).o)
 
-$(HLG)(ma33s.o): $(HSL_ARCHIVE)/ma33/ma33s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma33s"
-	$(CP) $(HSL_ARCHIVE)/ma33/ma33s.f $(OBJ)/ma33s.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33s.f90
-	cd $(OBJ); $(HARR) ma33s.o ; $(RM) ma33s.f90 ma33s.o
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-ma33d.o: $(HLG)(ma33d.o)
-
-$(HLG)(ma33d.o): $(HSL_ARCHIVE)/ma33/ma33d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma33d"
-	$(CP) $(HSL_ARCHIVE)/ma33/ma33d.f $(OBJ)/ma33d.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33d.f90
-	cd $(OBJ); $(HARR) ma33d.o ; $(RM) ma33d.f90 ma33d.o
-	$(RANLIB) $(HLG)
+$(LH)(ma33$(HSL_PRECIS).o): $(HSLARCSRC)/ma33/ma33r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma33"
+	$(CP) $(HSLARCSRC)/ma33/ma33r.f $(OBJ)/ma33$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  ma33$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ma33$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ma33$(HSL_PRECIS).o; \
+          $(RM) ma33$(HSL_PRECIS).f90 ma33$(HSL_PRECIS).o
+	$(RMARFILE) hslint.o
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_ma48
 
-hsl_ma48s.o: $(HLG)(hsl_ma48s.o)
+hsl_ma48.o: $(LH)(hsl_ma48$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma48s.o): $(HSL)/hsl_ma48/hsl_ma48s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48s"
-	$(CP) $(HSL)/hsl_ma48/hsl_ma48s.f90 $(OBJ)/hsl_ma48s.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48s.f90
-	cd $(OBJ); $(HARR) hsl_ma48s.o ; $(RM) hsl_ma48s.f90 hsl_ma48s.o
+$(LH)(hsl_ma48$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma48/hsl_ma48r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48"
+	$(CP) $(HSLSRC)/hsl_ma48/hsl_ma48r.f90 \
+           $(OBJ)/hsl_ma48$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma48$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma48$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma48$(HSL_PRECIS).o; \
+          $(RM) hsl_ma48$(HSL_PRECIS).f90 hsl_ma48$(HSL_PRECIS).o
 	$(RMARFILE) sbls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ma48d.o: $(HLG)(hsl_ma48d.o)
+hsl_ma48_ciface.o: $(LHC)(hsl_ma48$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_ma48d.o): $(HSL)/hsl_ma48/hsl_ma48d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48d "
-	$(CP) $(HSL)/hsl_ma48/hsl_ma48d.f90 $(OBJ)/hsl_ma48d.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48d.f90
-	cd $(OBJ); $(HARR) hsl_ma48d.o ; $(RM) hsl_ma48d.f90 hsl_ma48d.o
-	$(RMARFILE) sbls.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma48s_ciface.o: $(HCLG)(hsl_ma48s_ciface.o)
-
-$(HCLG)(hsl_ma48s_ciface.o): $(HSL)/hsl_ma48/C/hsl_ma48s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48s_ciface"
-	$(CP) $(HSL)/hsl_ma48/C/hsl_ma48s_ciface.f90 $(OBJ)/hsl_ma48s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma48s_ciface.o $(FFLAGS) \
-                      hsl_ma48s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma48s_ciface.o ; \
-                    $(RM) hsl_ma48s_ciface.f90 hsl_ma48s_ciface.o
+$(LHC)(hsl_ma48$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_ma48/C/hsl_ma48r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48_ciface"
+	$(CP) $(HSLSRC)/hsl_ma48/C/hsl_ma48r_ciface.f90 \
+           $(OBJ)/hsl_ma48$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma48$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma48$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_ma48$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_ma48$(HSL_PRECIS)_ciface.f90 hsl_ma48$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) uls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_ma48d_ciface.o: $(HCLG)(hsl_ma48d_ciface.o)
-
-$(HCLG)(hsl_ma48d_ciface.o): $(HSL)/hsl_ma48/C/hsl_ma48d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48d_ciface"
-	$(CP) $(HSL)/hsl_ma48/C/hsl_ma48d_ciface.f90 $(OBJ)/hsl_ma48d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma48d_ciface.o $(FFLAGS) \
-                      hsl_ma48d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma48d_ciface.o ; \
-                    $(RM) hsl_ma48d_ciface.f90 hsl_ma48d_ciface.o
-	$(CRMARFILE) uls_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  hsl_ma54
 
-hsl_ma54s.o: $(HLG)(hsl_ma54s.o)
+hsl_ma54.o: $(LH)(hsl_ma54$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma54s.o): $(HSL)/hsl_ma54/hsl_ma54s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma54s"
-	$(CP) $(HSL)/hsl_ma54/hsl_ma54s.f90 $(OBJ)/hsl_ma54s.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_ma54s.o $(FFLAGS) hsl_ma54s.f90
-	cd $(OBJ); $(HARR) hsl_ma54s.o ; $(RM) hsl_ma54s.f90 hsl_ma54s.o
-	$(HRMARFILES) hsl_ma77s.o
+$(LH)(hsl_ma54$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma54/hsl_ma54r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma54"
+	$(CP) $(HSLSRC)/hsl_ma54/hsl_ma54r.f90 \
+           $(OBJ)/hsl_ma54$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma54$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma54$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma54$(HSL_PRECIS).o; \
+          $(RM) hsl_ma54$(HSL_PRECIS).f90 hsl_ma54$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma77$(HSL_PRECIS).o
 	$(MVMODS)
-	@printf '[ OK ]\n'
-
-hsl_ma54d.o: $(HLG)(hsl_ma54d.o)
-
-$(HLG)(hsl_ma54d.o): $(HSL)/hsl_ma54/hsl_ma54d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma54d"
-	$(CP) $(HSL)/hsl_ma54/hsl_ma54d.f90 $(OBJ)/hsl_ma54d.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_ma54d.o $(FFLAGS) hsl_ma54d.f90
-	cd $(OBJ); $(HARR) hsl_ma54d.o ; $(RM) hsl_ma54d.f90 hsl_ma54d.o
-	$(HRMARFILED) hsl_ma77d.o
-	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  ma57
 
-ma57s.o: $(HLG)(ma57s.o)
+ma57.o: $(LH)(ma57$(HSL_PRECIS).o)
 
-$(HLG)(ma57s.o): $(HSL)/ma57/ma57s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma57s"
-	$(CP) $(HSL)/ma57/ma57s.f $(OBJ)/ma57s.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma57s.o $(FFLAGS77) \
-                     -DMETIS_NODEND=galahad_metis ma57s.f90
-	cd $(OBJ) ; $(HARR) ma57s.o ; $(RM) ma57s.f90 ma57s.o
-	@printf '[ OK ]\n'
-
-ma57d.o: $(HLG)(ma57d.o)
-
-$(HLG)(ma57d.o): $(HSL)/ma57/ma57d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma57d"
-	$(CP) $(HSL)/ma57/ma57d.f $(OBJ)/ma57d.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma57d.o $(FFLAGS77) \
-                      -DMETIS_NODEND=galahad_metis ma57d.f90
-	cd $(OBJ) ; $(HARR) ma57d.o ; $(RM) ma57d.f90 ma57d.o
+$(LH)(ma57$(HSL_PRECIS).o): $(HSLSRC)/ma57/ma57r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma57"
+	$(CP) $(HSLSRC)/ma57/ma57r.f \
+           $(OBJ)/ma57$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma57$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ma57$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ma57$(HSL_PRECIS).o; \
+          $(RM) ma57$(HSL_PRECIS).f90 ma57$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_ma57
 
-hsl_ma57s.o: $(HLG)(hsl_ma57s.o)
+hsl_ma57.o: $(LH)(hsl_ma57$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma57s.o): $(HSL)/hsl_ma57/hsl_ma57s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57s"
-	$(CP) $(HSL)/hsl_ma57/hsl_ma57s.f90 $(OBJ)/hsl_ma57s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57s.o $(FFLAGS) \
-                      -DMETIS_NODEND=galahad_metis hsl_ma57s.f90
-	cd $(OBJ) ; $(HARR) hsl_ma57s.o ; $(RM) hsl_ma57s.f90 hsl_ma57s.o
-	$(RMARFILES) mdchl.o
-	$(RMARFILES) lancelot_types.o
-	$(RMARFILES) qpd.o
-	$(RMARFILES) sls.o
+$(LH)(hsl_ma57$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma57/hsl_ma57r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57"
+	$(CP) $(HSLSRC)/hsl_ma57/hsl_ma57r.f90 \
+           $(OBJ)/hsl_ma57$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma57$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma57$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma57$(HSL_PRECIS).o; \
+          $(RM) hsl_ma57$(HSL_PRECIS).f90 hsl_ma57$(HSL_PRECIS).o
+	$(RMARFILE) mdchl.o
+	$(RMARFILE) lancelot_types.o
+	$(RMARFILE) qpd.o
+	$(RMARFILE) sls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ma57d.o: $(HLG)(hsl_ma57d.o)
+hsl_ma57_ciface.o: $(LHC)(hsl_ma57$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_ma57d.o): $(HSL)/hsl_ma57/hsl_ma57d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57d"
-	$(CP) $(HSL)/hsl_ma57/hsl_ma57d.f90 $(OBJ)/hsl_ma57d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d.o $(FFLAGS) \
-                      -DMETIS_NODEND=galahad_metis hsl_ma57d.f90
-	cd $(OBJ) ; $(HARR) hsl_ma57d.o ; $(RM) hsl_ma57d.f90 hsl_ma57d.o
-	$(RMARFILED) mdchl.o
-	$(RMARFILED) lancelot_types.o
-	$(RMARFILED) qpd.o
-	$(RMARFILED) sls.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma57s_ciface.o: $(HCLG)(hsl_ma57s_ciface.o)
-
-$(HCLG)(hsl_ma57s_ciface.o): $(HSL)/hsl_ma57/C/hsl_ma57s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57s_ciface"
-	$(CP) $(HSL)/hsl_ma57/C/hsl_ma57s_ciface.f90 $(OBJ)/hsl_ma57s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57s_ciface.o $(FFLAGS) \
-                      hsl_ma57s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma57s_ciface.o ; \
-                    $(RM) hsl_ma57s_ciface.f90 hsl_ma57s_ciface.o
+$(LHC)(hsl_ma57$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_ma57/C/hsl_ma57r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57_ciface"
+	$(CP) $(HSLSRC)/hsl_ma57/C/hsl_ma57r_ciface.f90 \
+           $(OBJ)/hsl_ma57$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma57$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma57$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_ma57$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_ma57$(HSL_PRECIS)_ciface.f90 hsl_ma57$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_ma57d_ciface.o: $(HCLG)(hsl_ma57d_ciface.o)
-
-$(HCLG)(hsl_ma57d_ciface.o): $(HSL)/hsl_ma57/C/hsl_ma57d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57d_ciface"
-	$(CP) $(HSL)/hsl_ma57/C/hsl_ma57d_ciface.f90 $(OBJ)/hsl_ma57d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d_ciface.o $(FFLAGS) \
-                      hsl_ma57d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma57d_ciface.o ; \
-                    $(RM) hsl_ma57d_ciface.f90 hsl_ma57d_ciface.o
-	$(CRMARFILE) sls_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  ma61
 
-ma61s.o: $(HLG)(ma61s.o)
+ma61.o: $(LH)(ma61$(HSL_PRECIS).o)
 
-$(HLG)(ma61s.o): $(HSL)/ma61/ma61s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma61s"
-	$(CP) $(HSL)/ma61/ma61s.f $(OBJ)/ma61s.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma61s.o $(FFLAGS77) ma61s.f90
-	cd $(OBJ); $(HARR) ma61s.o; $(RM) ma61s.f90 ma61s.o
+$(LH)(ma61$(HSL_PRECIS).o): $(HSLSRC)/ma61/ma61r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma61"
+	$(CP) $(HSLSRC)/ma61/ma61r.f \
+           $(OBJ)/ma61$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77)  ma61$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ma61$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ma61$(HSL_PRECIS).o; \
+          $(RM) ma61$(HSL_PRECIS).f90 ma61$(HSL_PRECIS).o
 	$(RMARFILE) hslint.o
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-ma61d.o: $(HLG)(ma61d.o)
-
-$(HLG)(ma61d.o): $(HSL)/ma61/ma61d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "ma61d"
-	$(CP) $(HSL)/ma61/ma61d.f $(OBJ)/ma61d.f90
-	cd $(OBJ) ; $(FORTRAN) -o ma61d.o $(FFLAGS77) ma61d.f90
-	cd $(OBJ); $(HARR) ma61d.o; $(RM) ma61d.f90 ma61d.o
-	$(RMARFILE) hslint.o
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_ma64
 
-hsl_ma64s.o: $(HLG)(hsl_ma64s.o)
+hsl_ma64.o: $(LH)(hsl_ma64$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma64s.o): $(HSL)/hsl_ma64/hsl_ma64s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64s"
-	$(CP) $(HSL)/hsl_ma64/hsl_ma64s.f90 $(OBJ)/hsl_ma64s.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_ma64s.o $(FFLAGS) hsl_ma64s.f90
-	cd $(OBJ); $(HARR) hsl_ma64s.o ; $(RM) hsl_ma64s.f90 hsl_ma64s.o
-	$(HRMARFILES) hsl_ma77s.o
+$(LH)(hsl_ma64$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma64/hsl_ma64r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64"
+	$(CP) $(HSLSRC)/hsl_ma64/hsl_ma64r.f90 \
+           $(OBJ)/hsl_ma64$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma64$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma64$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma64$(HSL_PRECIS).o; \
+          $(RM) hsl_ma64$(HSL_PRECIS).f90 hsl_ma64$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma77$(HSL_PRECIS).o
 	$(MVMODS)
-	@printf '[ OK ]\n'
-
-hsl_ma64d.o: $(HLG)(hsl_ma64d.o)
-
-$(HLG)(hsl_ma64d.o): $(HSL)/hsl_ma64/hsl_ma64d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma64d"
-	$(CP) $(HSL)/hsl_ma64/hsl_ma64d.f90 $(OBJ)/hsl_ma64d.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_ma64d.o $(FFLAGS) hsl_ma64d.f90
-	cd $(OBJ); $(HARR) hsl_ma64d.o ; $(RM) hsl_ma64d.f90 hsl_ma64d.o
-	$(HRMARFILED) hsl_ma77d.o
-	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_ma77
 
-hsl_ma77s.o: $(HLG)(hsl_ma77s.o)
+hsl_ma77.o: $(LH)(hsl_ma77$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma77s.o): $(HSL)/hsl_ma77/hsl_ma77s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma77s"
-	$(CP) $(HSL)/hsl_ma77/hsl_ma77s.f90 $(OBJ)/hsl_ma77s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77s.o $(FFLAGSOMP) hsl_ma77s.f90
-	cd $(OBJ) ; $(HARR) hsl_ma77s.o ; $(RM) hsl_ma77s.f90 hsl_ma77s.o
-	$(RMARFILES) sls.o
+$(LH)(hsl_ma77$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma77/hsl_ma77r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma77"
+	$(CP) $(HSLSRC)/hsl_ma77/hsl_ma77r.f90 \
+           $(OBJ)/hsl_ma77$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma77$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma77$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma77$(HSL_PRECIS).o; \
+          $(RM) hsl_ma77$(HSL_PRECIS).f90 hsl_ma77$(HSL_PRECIS).o
+	$(RMARFILE) sls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ma77d.o: $(HLG)(hsl_ma77d.o)
+hsl_ma77_ciface.o: $(LHC)(hsl_ma77$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_ma77d.o): $(HSL)/hsl_ma77/hsl_ma77d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma77d"
-	$(CP) $(HSL)/hsl_ma77/hsl_ma77d.f90 $(OBJ)/hsl_ma77d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77d.o $(FFLAGSOMP) hsl_ma77d.f90
-	cd $(OBJ) ; $(HARR) hsl_ma77d.o ; $(RM) hsl_ma77d.f90 hsl_ma77d.o
-	$(RMARFILED) sls.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma77s_ciface.o: $(HCLG)(hsl_ma77s_ciface.o)
-
-$(HCLG)(hsl_ma77s_ciface.o): $(HSL)/hsl_ma77/C/hsl_ma77s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma77s_ciface"
-	$(CP) $(HSL)/hsl_ma77/C/hsl_ma77s_ciface.f90 $(OBJ)/hsl_ma77s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77s_ciface.o $(FFLAGSOMP) \
-                      hsl_ma77s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma77s_ciface.o ; \
-                    $(RM) hsl_ma77s_ciface.f90 hsl_ma77s_ciface.o
+$(LHC)(hsl_ma77$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_ma77/C/hsl_ma77r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma77_ciface"
+	$(CP) $(HSLSRC)/hsl_ma77/C/hsl_ma77r_ciface.f90 \
+           $(OBJ)/hsl_ma77$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma77$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma77$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_ma77$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_ma77$(HSL_PRECIS)_ciface.f90 hsl_ma77$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_ma77d_ciface.o: $(HCLG)(hsl_ma77d_ciface.o)
-
-$(HCLG)(hsl_ma77d_ciface.o): $(HSL)/hsl_ma77/C/hsl_ma77d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma77d_ciface"
-	$(CP) $(HSL)/hsl_ma77/C/hsl_ma77d_ciface.f90 $(OBJ)/hsl_ma77d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77d_ciface.o $(FFLAGSOMP) \
-                      hsl_ma77d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma77d_ciface.o ; \
-                    $(RM) hsl_ma77d_ciface.f90 hsl_ma77d_ciface.o
-	$(CRMARFILE) sls_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  hsl_ma86
 
-hsl_ma86s.o: $(HLG)(hsl_ma86s.o)
+hsl_ma86.o: $(LH)(hsl_ma86$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma86s.o): $(HSL)/hsl_ma86/hsl_ma86s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86s"
-	$(CP) $(HSL)/hsl_ma86/hsl_ma86s.f90 $(OBJ)/hsl_ma86s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86s.o $(FFLAGSOMP) hsl_ma86s.f90
-	cd $(OBJ) ; $(HARR) hsl_ma86s.o ; $(RM) hsl_ma86s.f90 hsl_ma86s.o
-	$(RMARFILES) sls.o
+$(LH)(hsl_ma86$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma86/hsl_ma86r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86"
+	$(CP) $(HSLSRC)/hsl_ma86/hsl_ma86r.f90 \
+           $(OBJ)/hsl_ma86$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma86$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma86$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma86$(HSL_PRECIS).o; \
+          $(RM) hsl_ma86$(HSL_PRECIS).f90 hsl_ma86$(HSL_PRECIS).o
+	$(RMARFILE) sls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ma86d.o: $(HLG)(hsl_ma86d.o)
+hsl_ma86_ciface.o: $(LHC)(hsl_ma86$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_ma86d.o): $(HSL)/hsl_ma86/hsl_ma86d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86d"
-	$(CP) $(HSL)/hsl_ma86/hsl_ma86d.f90 $(OBJ)/hsl_ma86d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86d.o $(FFLAGSOMP) hsl_ma86d.f90
-	cd $(OBJ) ; $(HARR) hsl_ma86d.o ; $(RM) hsl_ma86d.f90 hsl_ma86d.o
-	$(RMARFILED) sls.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma86s_ciface.o: $(HCLG)(hsl_ma86s_ciface.o)
-
-$(HCLG)(hsl_ma86s_ciface.o): $(HSL)/hsl_ma86/C/hsl_ma86s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86s_ciface"
-	$(CP) $(HSL)/hsl_ma86/C/hsl_ma86s_ciface.f90 $(OBJ)/hsl_ma86s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86s_ciface.o $(FFLAGSOMP) \
-                      hsl_ma86s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma86s_ciface.o ; \
-                    $(RM) hsl_ma86s_ciface.f90 hsl_ma86s_ciface.o
+$(LHC)(hsl_ma86$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_ma86/C/hsl_ma86r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86_ciface"
+	$(CP) $(HSLSRC)/hsl_ma86/C/hsl_ma86r_ciface.f90 \
+           $(OBJ)/hsl_ma86$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma86$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma86$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_ma86$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_ma86$(HSL_PRECIS)_ciface.f90 hsl_ma86$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_ma86d_ciface.o: $(HCLG)(hsl_ma86d_ciface.o)
-
-$(HCLG)(hsl_ma86d_ciface.o): $(HSL)/hsl_ma86/C/hsl_ma86d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma86d_ciface"
-	$(CP) $(HSL)/hsl_ma86/C/hsl_ma86d_ciface.f90 $(OBJ)/hsl_ma86d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86d_ciface.o $(FFLAGSOMP) \
-                      hsl_ma86d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma86d_ciface.o ; \
-                    $(RM) hsl_ma86d_ciface.f90 hsl_ma86d_ciface.o
-	$(CRMARFILE) sls_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  hsl_ma87
 
-hsl_ma87s.o: $(HLG)(hsl_ma87s.o)
+hsl_ma87.o: $(LH)(hsl_ma87$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma87s.o): $(HSL)/hsl_ma87/hsl_ma87s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87s"
-	$(CP) $(HSL)/hsl_ma87/hsl_ma87s.f90 $(OBJ)/hsl_ma87s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87s.o $(FFLAGSOMP) hsl_ma87s.f90
-	cd $(OBJ) ; $(HARR) hsl_ma87s.o ; $(RM) hsl_ma87s.f90 hsl_ma87s.o
-	$(RMARFILES) sls.o
+$(LH)(hsl_ma87$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma87/hsl_ma87r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87"
+	$(CP) $(HSLSRC)/hsl_ma87/hsl_ma87r.f90 \
+           $(OBJ)/hsl_ma87$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma87$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma87$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma87$(HSL_PRECIS).o; \
+          $(RM) hsl_ma87$(HSL_PRECIS).f90 hsl_ma87$(HSL_PRECIS).o
+	$(RMARFILE) sls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ma87d.o: $(HLG)(hsl_ma87d.o)
+hsl_ma87_ciface.o: $(LHC)(hsl_ma87$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_ma87d.o): $(HSL)/hsl_ma87/hsl_ma87d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87d"
-	$(CP) $(HSL)/hsl_ma87/hsl_ma87d.f90 $(OBJ)/hsl_ma87d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87d.o $(FFLAGSOMP) hsl_ma87d.f90
-	cd $(OBJ) ; $(HARR) hsl_ma87d.o ; $(RM) hsl_ma87d.f90 hsl_ma87d.o
-	$(RMARFILED) sls.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma87s_ciface.o: $(HCLG)(hsl_ma87s_ciface.o)
-
-$(HCLG)(hsl_ma87s_ciface.o): $(HSL)/hsl_ma87/C/hsl_ma87s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87s_ciface"
-	$(CP) $(HSL)/hsl_ma87/C/hsl_ma87s_ciface.f90 $(OBJ)/hsl_ma87s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87s_ciface.o $(FFLAGSOMP) \
-                      hsl_ma87s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma87s_ciface.o ; \
-                    $(RM) hsl_ma87s_ciface.f90 hsl_ma87s_ciface.o
+$(LHC)(hsl_ma87$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_ma87/C/hsl_ma87r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87_ciface"
+	$(CP) $(HSLSRC)/hsl_ma87/C/hsl_ma87r_ciface.f90 \
+           $(OBJ)/hsl_ma87$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma87$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma87$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_ma87$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_ma87$(HSL_PRECIS)_ciface.f90 hsl_ma87$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_ma87d_ciface.o: $(HCLG)(hsl_ma87d_ciface.o)
-
-$(HCLG)(hsl_ma87d_ciface.o): $(HSL)/hsl_ma87/C/hsl_ma87d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87d_ciface"
-	$(CP) $(HSL)/hsl_ma87/C/hsl_ma87d_ciface.f90 $(OBJ)/hsl_ma87d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87d_ciface.o $(FFLAGSOMP) \
-                      hsl_ma87d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma87d_ciface.o ; \
-                    $(RM) hsl_ma87d_ciface.f90 hsl_ma87d_ciface.o
-	$(CRMARFILE) sls_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  hsl_ma97
 
-hsl_ma97s.o: $(HLG)(hsl_ma97s.o)
+hsl_ma97.o: $(LH)(hsl_ma97$(HSL_PRECIS).o)
 
-$(HLG)(hsl_ma97s.o): $(HSL)/hsl_ma97/hsl_ma97s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97s"
-	$(CP) $(HSL)/hsl_ma97/hsl_ma97s.f90 $(OBJ)/hsl_ma97s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97s.o $(FFLAGSOMP) hsl_ma97s.f90
-	cd $(OBJ) ; $(HARR) hsl_ma97s.o ; $(RM) hsl_ma97s.f90 hsl_ma97s.o
-	$(RMARFILES) sls.o
+$(LH)(hsl_ma97$(HSL_PRECIS).o): $(HSLSRC)/hsl_ma97/hsl_ma97r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97"
+	$(CP) $(HSLSRC)/hsl_ma97/hsl_ma97r.f90 \
+           $(OBJ)/hsl_ma97$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma97$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma97$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_ma97$(HSL_PRECIS).o; \
+          $(RM) hsl_ma97$(HSL_PRECIS).f90 hsl_ma97$(HSL_PRECIS).o
+	$(RMARFILE) sls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_ma97d.o: $(HLG)(hsl_ma97d.o)
+hsl_ma97_ciface.o: $(LHC)(hsl_ma97$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_ma97d.o): $(HSL)/hsl_ma97/hsl_ma97d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97d"
-	echo $(MA97BUGSEDS) $(HSL)/hsl_ma97/hsl_ma97d.f90 > $(OBJ)/hsl_ma97d.f90
-	$(CP) $(HSL)/hsl_ma97/hsl_ma97d.f90 $(OBJ)/hsl_ma97d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97d.o $(FFLAGSOMP) hsl_ma97d.f90
-	cd $(OBJ) ; $(HARR) hsl_ma97d.o ; $(RM) hsl_ma97d.f90 hsl_ma97d.o
-	$(RMARFILED) sls.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma97s_ciface.o: $(HCLG)(hsl_ma97s_ciface.o)
-
-$(HCLG)(hsl_ma97s_ciface.o): $(HSL)/hsl_ma97/C/hsl_ma97s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97s_ciface"
-	$(CP) $(HSL)/hsl_ma97/C/hsl_ma97s_ciface.f90 $(OBJ)/hsl_ma97s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97s_ciface.o $(FFLAGSOMP) \
-                      hsl_ma97s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma97s_ciface.o ; \
-                    $(RM) hsl_ma97s_ciface.f90 hsl_ma97s_ciface.o
+$(LHC)(hsl_ma97$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_ma97/C/hsl_ma97r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97_ciface"
+	$(CP) $(HSLSRC)/hsl_ma97/C/hsl_ma97r_ciface.f90 \
+           $(OBJ)/hsl_ma97$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS)  hsl_ma97$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_ma97$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_ma97$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_ma97$(HSL_PRECIS)_ciface.f90 hsl_ma97$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_ma97d_ciface.o: $(HCLG)(hsl_ma97d_ciface.o)
-
-$(HCLG)(hsl_ma97d_ciface.o): $(HSL)/hsl_ma97/C/hsl_ma97d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma97d_ciface"
-	$(CP) $(HSL)/hsl_ma97/C/hsl_ma97d_ciface.f90 $(OBJ)/hsl_ma97d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97d_ciface.o $(FFLAGSOMP) \
-                      hsl_ma97d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_ma97d_ciface.o ; \
-                    $(RM) hsl_ma97d_ciface.f90 hsl_ma97d_ciface.o
-	$(CRMARFILE) sls_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  mc13
 
-mc13s.o: $(HLG)(mc13s.o)
+mc13.o: $(LH)(mc13$(HSL_PRECIS).o)
 
-$(HLG)(mc13s.o): $(HSL_ARCHIVE)/mc13/mc13s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc13s"
-	$(CP) $(HSL_ARCHIVE)/mc13/mc13s.f $(OBJ)/mc13s.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13s.f90
-	cd $(OBJ) ; $(HARR) mc13s.o ; $(RM) mc13s.f90 mc13s.o
+$(LH)(mc13$(HSL_PRECIS).o): $(HSLARCSRC)/mc13/mc13r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc13"
+	$(CP) $(HSLARCSRC)/mc13/mc13r.f $(OBJ)/mc13$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc13$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc13$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc13$(HSL_PRECIS).o; \
+          $(RM) mc13$(HSL_PRECIS).f90 mc13$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
-mc13d.o: $(HLG)(mc13d.o)
+#  mc19
 
-$(HLG)(mc13d.o): $(HSL_ARCHIVE)/mc13/mc13d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc13d"
-	$(CP) $(HSL_ARCHIVE)/mc13/mc13d.f $(OBJ)/mc13d.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13d.f90
-	cd $(OBJ) ; $(HARR) mc13d.o ; $(RM) mc13d.f90 mc13d.o
+mc19.o: $(LH)(mc19$(HSL_PRECIS).o)
+
+$(LH)(mc19$(HSL_PRECIS).o): $(HSLSRC)/mc19/mc19r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc19"
+	$(CP) $(HSLSRC)/mc19/mc19r.f $(OBJ)/mc19$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc19$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc19$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc19$(HSL_PRECIS).o; \
+          $(RM) mc19$(HSL_PRECIS).f90 mc19$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc20
 
-mc20s.o: $(HLG)(mc20s.o)
+mc20.o: $(LH)(mc20$(HSL_PRECIS).o)
 
-$(HLG)(mc20s.o): $(HSL_ARCHIVE)/mc20/mc20s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc20s"
-	$(CP) $(HSL_ARCHIVE)/mc20/mc20s.f $(OBJ)/mc20s.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc20s.f90
-	cd $(OBJ) ; $(HARR) mc20s.o ; $(RM) mc20s.f90 mc20s.o
-	@printf '[ OK ]\n'
-
-mc20d.o: $(HLG)(mc20d.o)
-
-$(HLG)(mc20d.o): $(HSL_ARCHIVE)/mc20/mc20d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc20d"
-	$(CP) $(HSL_ARCHIVE)/mc20/mc20d.f $(OBJ)/mc20d.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc20d.f90
-	cd $(OBJ) ; $(HARR) mc20d.o ; $(RM) mc20d.f90 mc20d.o
+$(LH)(mc20$(HSL_PRECIS).o): $(HSLARCSRC)/mc20/mc20r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc20"
+	$(CP) $(HSLARCSRC)/mc20/mc20r.f $(OBJ)/mc20$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc20$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc20$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc20$(HSL_PRECIS).o; \
+          $(RM) mc20$(HSL_PRECIS).f90 mc20$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc21
 
-mc21s.o: $(HLG)(mc21s.o)
+mc21.o: $(LH)(mc21$(HSL_PRECIS).o)
 
-$(HLG)(mc21s.o): $(HSL_ARCHIVE)/mc21/mc21s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc21s"
-	$(CP) $(HSL_ARCHIVE)/mc21/mc21s.f $(OBJ)/mc21s.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21s.f90
-	cd $(OBJ) ; $(HARR) mc21s.o ; $(RM) mc21s.f90 mc21s.o
+$(LH)(mc21$(HSL_PRECIS).o): $(HSLARCSRC)/mc21/mc21r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc21"
+	$(CP) $(HSLARCSRC)/mc21/mc21r.f $(OBJ)/mc21$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc21$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc21$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc21$(HSL_PRECIS).o; \
+          $(RM) mc21$(HSL_PRECIS).f90 mc21$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
-mc21d.o: $(HLG)(mc21d.o)
+#  mc22
 
-$(HLG)(mc21d.o): $(HSL_ARCHIVE)/mc21/mc21d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc21d"
-	$(CP) $(HSL_ARCHIVE)/mc21/mc21d.f $(OBJ)/mc21d.f90
-	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21d.f90
-	cd $(OBJ) ; $(HARR) mc21d.o ; $(RM) mc21d.f90 mc21d.o
+mc22.o: $(LH)(mc22$(HSL_PRECIS).o)
+
+$(LH)(mc22$(HSL_PRECIS).o): $(HSLARCSRC)/mc22/mc22r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc22"
+	$(CP) $(HSLARCSRC)/mc22/mc22r.f $(OBJ)/mc22$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc22$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc22$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc22$(HSL_PRECIS).o; \
+          $(RM) mc22$(HSL_PRECIS).f90 mc22$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc23
+
+mc23.o: $(LH)(mc23$(HSL_PRECIS).o)
+
+$(LH)(mc23$(HSL_PRECIS).o): $(HSLARCSRC)/mc23/mc23r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc23"
+	$(CP) $(HSLARCSRC)/mc23/mc23r.f $(OBJ)/mc23$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc23$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc23$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc23$(HSL_PRECIS).o; \
+          $(RM) mc23$(HSL_PRECIS).f90 mc23$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc24
+
+mc24.o: $(LH)(mc24$(HSL_PRECIS).o)
+
+$(LH)(mc24$(HSL_PRECIS).o): $(HSLARCSRC)/mc24/mc24r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc24"
+	$(CP) $(HSLARCSRC)/mc24/mc24r.f $(OBJ)/mc24$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc24$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc24$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc24$(HSL_PRECIS).o; \
+          $(RM) mc24$(HSL_PRECIS).f90 mc24$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc29
 
-mc29s.o: $(HLG)(mc29s.o)
+mc29.o: $(LH)(mc29$(HSL_PRECIS).o)
 
-$(HLG)(mc29s.o): $(HSL)/mc29/mc29s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc29s"
-	$(CP) $(HSL)/mc29/mc29s.f $(OBJ)/mc29s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc29s.o $(FFLAGS77) mc29s.f90
-	cd $(OBJ) ; $(HARR) mc29s.o ; $(RM) mc29s.f90 mc29s.o
-	@printf '[ OK ]\n'
-
-mc29d.o: $(HLG)(mc29d.o)
-
-$(HLG)(mc29d.o): $(HSL)/mc29/mc29d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc29d"
-	$(CP) $(HSL)/mc29/mc29d.f $(OBJ)/mc29d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc29d.o $(FFLAGS77) mc29d.f90
-	cd $(OBJ) ; $(HARR) mc29d.o ; $(RM) mc29d.f90 mc29d.o
+$(LH)(mc29$(HSL_PRECIS).o): $(HSLSRC)/mc29/mc29r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc29"
+	$(CP) $(HSLSRC)/mc29/mc29r.f $(OBJ)/mc29$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc29$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc29$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc29$(HSL_PRECIS).o; \
+          $(RM) mc29$(HSL_PRECIS).f90 mc29$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc30
 
-mc30s.o: $(HLG)(mc30s.o)
+mc30.o: $(LH)(mc30$(HSL_PRECIS).o)
 
-$(HLG)(mc30s.o): $(HSL)/mc30/mc30s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc30s"
-	$(CP) $(HSL)/mc30/mc30s.f $(OBJ)/mc30s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc30s.o $(FFLAGS77) mc30s.f90
-	cd $(OBJ) ; $(HARR) mc30s.o ; $(RM) mc30s.f90 mc30s.o
-	@printf '[ OK ]\n'
-
-mc30d.o: $(HLG)(mc30d.o)
-
-$(HLG)(mc30d.o): $(HSL)/mc30/mc30d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc30d"
-	$(CP) $(HSL)/mc30/mc30d.f $(OBJ)/mc30d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc30d.o $(FFLAGS77) mc30d.f90
-	cd $(OBJ) ; $(HARR) mc30d.o ; $(RM) mc30d.f90 mc30d.o
+$(LH)(mc30$(HSL_PRECIS).o): $(HSLSRC)/mc30/mc30r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc30"
+	$(CP) $(HSLSRC)/mc30/mc30r.f $(OBJ)/mc30$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc30$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc30$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc30$(HSL_PRECIS).o; \
+          $(RM) mc30$(HSL_PRECIS).f90 mc30$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc34
 
-mc34s.o: $(HLG)(mc34s.o)
+mc34.o: $(LH)(mc34$(HSL_PRECIS).o)
 
-$(HLG)(mc34s.o): $(HSL)/mc34/mc34s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc34s"
-	$(CP) $(HSL)/mc34/mc34s.f $(OBJ)/mc34s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc34s.o $(FFLAGS77) mc34s.f90
-	cd $(OBJ) ; $(HARR) mc34s.o ; $(RM) mc34s.f90 mc34s.o
-	@printf '[ OK ]\n'
-
-mc34d.o: $(HLG)(mc34d.o)
-
-$(HLG)(mc34d.o): $(HSL)/mc34/mc34d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc34d"
-	$(CP) $(HSL)/mc34/mc34d.f $(OBJ)/mc34d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc34d.o $(FFLAGS77) mc34d.f90
-	cd $(OBJ) ; $(HARR) mc34d.o ; $(RM) mc34d.f90 mc34d.o
+$(LH)(mc34$(HSL_PRECIS).o): $(HSLSRC)/mc34/mc34r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc34"
+	$(CP) $(HSLSRC)/mc34/mc34r.f $(OBJ)/mc34$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc34$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc34$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc34$(HSL_PRECIS).o; \
+          $(RM) mc34$(HSL_PRECIS).f90 mc34$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_mc34
 
-hsl_mc34s.o: $(HLG)(hsl_mc34s.o)
+hsl_mc34.o: $(LH)(hsl_mc34$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mc34s.o): $(HSL)/hsl_mc34/hsl_mc34s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc34s"
-	$(CP) $(HSL)/hsl_mc34/hsl_mc34s.f90 $(OBJ)/hsl_mc34s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc34s.o $(FFLAGSOMP) hsl_mc34s.f90
-	cd $(OBJ) ; $(HARR) hsl_mc34s.o ; $(RM) hsl_mc34s.f90 hsl_mc34s.o
-	$(HRMARFILES) hsl_ma86s.o
+$(LH)(hsl_mc34$(HSL_PRECIS).o): $(HSLSRC)/hsl_mc34/hsl_mc34r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc34"
+	$(CP) $(HSLSRC)/hsl_mc34/hsl_mc34r.f90 \
+           $(OBJ)/hsl_mc34$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc34$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc34$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc34$(HSL_PRECIS).o; \
+          $(RM) hsl_mc34$(HSL_PRECIS).f90 hsl_mc34$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma86$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_mc34d.o: $(HLG)(hsl_mc34d.o)
+#  mc37
 
-$(HLG)(hsl_mc34d.o): $(HSL)/hsl_mc34/hsl_mc34d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc34d"
-	$(CP) $(HSL)/hsl_mc34/hsl_mc34d.f90 $(OBJ)/hsl_mc34d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc34d.o $(FFLAGSOMP) hsl_mc34d.f90
-	cd $(OBJ) ; $(HARR) hsl_mc34d.o ; $(RM) hsl_mc34d.f90 hsl_mc34d.o
-	$(HRMARFILED) hsl_ma86d.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
+mc37.o: $(LH)(mc37$(HSL_PRECIS).o)
+
+$(LH)(mc37$(HSL_PRECIS).o): $(HSLSRC)/mc37/mc37r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc37"
+	$(CP) $(HSLSRC)/mc37/mc37r.f $(OBJ)/mc37$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc37$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc37$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc37$(HSL_PRECIS).o; \
+          $(RM) mc37$(HSL_PRECIS).f90 mc37$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc47
 
-mc47s.o: $(HLG)(mc47s.o)
+mc47.o: $(LH)(mc47$(HSL_PRECIS).o)
 
-$(HLG)(mc47s.o): $(HSL)/mc47/mc47s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc47s"
-	$(CP) $(HSL)/mc47/mc47s.f $(OBJ)/mc47s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc47s.o $(FFLAGS77) mc47s.f90
-	cd $(OBJ) ; $(HARR) mc47s.o ; $(RM) mc47s.f90 mc47s.o
+$(LH)(mc47$(HSL_PRECIS).o): $(HSLSRC)/mc47/mc47r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc47"
+	$(CP) $(HSLSRC)/mc47/mc47r.f $(OBJ)/mc47$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc47$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc47$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc47$(HSL_PRECIS).o; \
+          $(RM) mc47$(HSL_PRECIS).f90 mc47$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
-mc47d.o: $(HLG)(mc47d.o)
+#  mc49
 
-$(HLG)(mc47d.o): $(HSL)/mc47/mc47d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc47d"
-	$(CP) $(HSL)/mc47/mc47d.f $(OBJ)/mc47d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc47d.o $(FFLAGS77) mc47d.f90
-	cd $(OBJ) ; $(HARR) mc47d.o ; $(RM) mc47d.f90 mc47d.o
+mc49.o: $(LH)(mc49$(HSL_PRECIS).o)
+
+$(LH)(mc49$(HSL_PRECIS).o): $(HSLSRC)/mc49/mc49r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc49"
+	$(CP) $(HSLSRC)/mc49/mc49r.f $(OBJ)/mc49$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc49$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc49$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc49$(HSL_PRECIS).o; \
+          $(RM) mc49$(HSL_PRECIS).f90 mc49$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc54
+
+mc54.o: $(LH)(mc54$(HSL_PRECIS).o)
+
+$(LH)(mc54$(HSL_PRECIS).o): $(HSLSRC)/mc54/mc54r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc54"
+	$(CP) $(HSLSRC)/mc54/mc54r.f $(OBJ)/mc54$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc54$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc54$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc54$(HSL_PRECIS).o; \
+          $(RM) mc54$(HSL_PRECIS).f90 mc54$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc57
+
+mc57.o: $(LH)(mc57$(HSL_PRECIS).o)
+
+$(LH)(mc57$(HSL_PRECIS).o): $(HSLSRC)/mc57/mc57r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc57"
+	$(CP) $(HSLSRC)/mc57/mc57r.f $(OBJ)/mc57$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc57$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc57$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc57$(HSL_PRECIS).o; \
+          $(RM) mc57$(HSL_PRECIS).f90 mc57$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc59
 
-mc59s.o: $(HLG)(mc59s.o)
+mc59.o: $(LH)(mc59$(HSL_PRECIS).o)
 
-$(HLG)(mc59s.o): $(HSL)/mc59/mc59s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc59s"
-	$(CP) $(HSL)/mc59/mc59s.f $(OBJ)/mc59s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc59s.o $(FFLAGS77) mc59s.f90
-	cd $(OBJ) ; $(HARR) mc59s.o ; $(RM) mc59s.f90 mc59s.o
+$(LH)(mc59$(HSL_PRECIS).o): $(HSLSRC)/mc59/mc59r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc59"
+	$(CP) $(HSLSRC)/mc59/mc59r.f $(OBJ)/mc59$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc59$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc59$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc59$(HSL_PRECIS).o; \
+          $(RM) mc59$(HSL_PRECIS).f90 mc59$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
-mc59d.o: $(HLG)(mc59d.o)
+#  mc60
 
-$(HLG)(mc59d.o): $(HSL)/mc59/mc59d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc59d"
-	$(CP) $(HSL)/mc59/mc59d.f $(OBJ)/mc59d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc59d.o $(FFLAGS77) mc59d.f90
-	cd $(OBJ) ; $(HARR) mc59d.o ; $(RM) mc59d.f90 mc59d.o
+mc60.o: $(LH)(mc60$(HSL_PRECIS).o)
+
+$(LH)(mc60$(HSL_PRECIS).o): $(HSLSRC)/mc60/mc60r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc60"
+	$(CP) $(HSLSRC)/mc60/mc60r.f $(OBJ)/mc60$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc60$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc60$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc60$(HSL_PRECIS).o; \
+          $(RM) mc60$(HSL_PRECIS).f90 mc60$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc61
 
-mc61s.o: $(HLG)(mc61s.o)
+mc61.o: $(LH)(mc61$(HSL_PRECIS).o)
 
-$(HLG)(mc61s.o): $(HSL)/mc61/mc61s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc61s"
-	$(CP) $(HSL)/mc61/mc61s.f $(OBJ)/mc61s.f90
-	cd $(OBJ); $(FORTRAN) -o mc61s.o $(FFLAGS77) mc61s.f90
-	cd $(OBJ); $(HARR) mc61s.o ; $(RM) mc61s.f90 mc61s.o
-	@printf '[ OK ]\n'
-
-mc61d.o: $(HLG)(mc61d.o)
-
-$(HLG)(mc61d.o): $(HSL)/mc61/mc61d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc61d"
-	$(CP) $(HSL)/mc61/mc61d.f $(OBJ)/mc61d.f90
-	cd $(OBJ); $(FORTRAN) -o mc61d.o $(FFLAGS77) mc61d.f90
-	cd $(OBJ); $(HARR) mc61d.o ; $(RM) mc61d.f90 mc61d.o
+$(LH)(mc61$(HSL_PRECIS).o): $(HSLSRC)/mc61/mc61r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61"
+	$(CP) $(HSLSRC)/mc61/mc61r.f $(OBJ)/mc61$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc61$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc61$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc61$(HSL_PRECIS).o; \
+          $(RM) mc61$(HSL_PRECIS).f90 mc61$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc64
 
-mc64s.o: $(HLG)(mc64s.o)
+mc64.o: $(LH)(mc64$(HSL_PRECIS).o)
 
-$(HLG)(mc64s.o): $(HSL)/mc64/mc64s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc64s"
-	$(CP) $(HSL)/mc64/mc64s.f $(OBJ)/mc64s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc64s.o $(FFLAGS77) mc64s.f90
-	cd $(OBJ) ; $(HARR) mc64s.o ; $(RM) mc64s.f90 mc64s.o
-	@printf '[ OK ]\n'
-
-mc64d.o: $(HLG)(mc64d.o)
-
-$(HLG)(mc64d.o): $(HSL)/mc64/mc64d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc64d"
-	$(CP) $(HSL)/mc64/mc64d.f $(OBJ)/mc64d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc64d.o $(FFLAGS77) mc64d.f90
-	cd $(OBJ) ; $(HARR) mc64d.o ; $(RM) mc64d.f90 mc64d.o
+$(LH)(mc64$(HSL_PRECIS).o): $(HSLSRC)/mc64/mc64r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc64"
+	$(CP) $(HSLSRC)/mc64/mc64r.f \
+           $(OBJ)/mc64$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc64$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc64$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc64$(HSL_PRECIS).o; \
+          $(RM) mc64$(HSL_PRECIS).f90 mc64$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_mc64
 
-hsl_mc64s.o: $(HLG)(hsl_mc64s.o)
+hsl_mc64.o: $(LH)(hsl_mc64$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mc64s.o): $(HSL)/hsl_mc64/hsl_mc64s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64s"
-	$(CP) $(HSL)/hsl_mc64/hsl_mc64s.f90 $(OBJ)/hsl_mc64s.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_mc64s.o $(FFLAGS) hsl_mc64s.f90
-	cd $(OBJ); $(HARR) hsl_mc64s.o ; $(RM) hsl_mc64s.f90 hsl_mc64s.o
-	$(HRMARFILES) hsl_ma97s.o
-	$(HRMARFILES) hsl_mi28s.o
+$(LH)(hsl_mc64$(HSL_PRECIS).o): $(HSLSRC)/hsl_mc64/hsl_mc64r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64"
+	$(CP) $(HSLSRC)/hsl_mc64/hsl_mc64r.f90 \
+           $(OBJ)/hsl_mc64$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc64$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc64$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc64$(HSL_PRECIS).o; \
+          $(RM) hsl_mc64$(HSL_PRECIS).f90 hsl_mc64$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma97$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_mi28$(HSL_PRECIS).o
 	$(RMARFILE) sls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_mc64d.o: $(HLG)(hsl_mc64d.o)
+hsl_mc64_ciface.o: hsl_mc64.o $(LHC)(hsl_mc64$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_mc64d.o): $(HSL)/hsl_mc64/hsl_mc64d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64d"
-	$(CP) $(HSL)/hsl_mc64/hsl_mc64d.f90 $(OBJ)/hsl_mc64d.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_mc64d.o $(FFLAGS) hsl_mc64d.f90
-	cd $(OBJ); $(HARR) hsl_mc64d.o ; $(RM) hsl_mc64d.f90 hsl_mc64d.o
-	$(HRMARFILED) hsl_ma97d.o
-	$(HRMARFILED) hsl_mi28d.o
-	$(RMARFILE) sls.o
+$(LHC)(hsl_mc64$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_mc64/C/hsl_mc64r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc64_ciface"
+	$(CP) $(HSLSRC)/hsl_mc64/C/hsl_mc64r_ciface.f90 \
+           $(OBJ)/hsl_mc64$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc64$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc64$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_mc64$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_mc64$(HSL_PRECIS)_ciface.f90 hsl_mc64$(HSL_PRECIS)_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  hsl_mc65
 
-hsl_mc65s.o: $(HLG)(hsl_mc65s.o)
+hsl_mc65.o: $(LH)(hsl_mc65$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mc65s.o): $(HSL)/hsl_mc65/hsl_mc65s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc65s"
-	$(CP) $(HSL)/hsl_mc65/hsl_mc65s.f90 $(OBJ)/hsl_mc65s.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_mc65s.o $(FFLAGS) hsl_mc65s.f90
-	cd $(OBJ); $(HARR) hsl_mc65s.o ; $(RM) hsl_mc65s.f90 hsl_mc65s.o
-	$(HRMARFILE) hsl_mi20s.o
+$(LH)(hsl_mc65$(HSL_PRECIS).o): $(HSLSRC)/hsl_mc65/hsl_mc65r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc65"
+	$(CP) $(HSLSRC)/hsl_mc65/hsl_mc65r.f90 \
+           $(OBJ)/hsl_mc65$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc65$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc65$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc65$(HSL_PRECIS).o; \
+          $(RM) hsl_mc65$(HSL_PRECIS).f90 hsl_mc65$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_mi20$(HSL_PRECIS).o
 	$(MVMODS)
-	@printf '[ OK ]\n'
-
-hsl_mc65d.o: $(HLG)(hsl_mc65d.o)
-
-$(HLG)(hsl_mc65d.o): $(HSL)/hsl_mc65/hsl_mc65d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc65d"
-	$(CP) $(HSL)/hsl_mc65/hsl_mc65d.f90 $(OBJ)/hsl_mc65d.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_mc65d.o $(FFLAGS) hsl_mc65d.f90
-	cd $(OBJ); $(HARR) hsl_mc65d.o ; $(RM) hsl_mc65d.f90 hsl_mc65d.o
-	$(HRMARFILE) hsl_mi20d.o
-	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_mc68
 
-hsl_mc68i.o: $(HLG)(hsl_mc68i.o)
+hsl_mc68.o: $(LH)(hsl_mc68$(HSL_IPRECIS).o)
 
-$(HLG)(hsl_mc68i.o): $(HSL)/hsl_mc68/hsl_mc68i.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc68i"
-	$(CP) $(HSL)/hsl_mc68/hsl_mc68i.f90 $(OBJ)/hsl_mc68i.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68i.o $(FFLAGSOMP) \
-                      -Dmetis_nodend=galahad_metis hsl_mc68i.f90
-	cd $(OBJ) ; $(HARR) hsl_mc68i.o ; $(RM) hsl_mc68i.f90 hsl_mc68i.o
-	$(HRMARFILED) hsl_ma97d.o
+$(LH)(hsl_mc68$(HSL_IPRECIS).o): $(HSLSRC)/hsl_mc68/hsl_mc68i.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc68"
+	$(CP) $(HSLSRC)/hsl_mc68/hsl_mc68i.f90 \
+           $(OBJ)/hsl_mc68$(HSL_IPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc68$(HSL_IPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc68$(HSL_IPRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc68$(HSL_IPRECIS).o; \
+          $(RM) hsl_mc68$(HSL_IPRECIS).f90 hsl_mc68$(HSL_IPRECIS).o
+	$(HRMARFILE) hsl_ma97$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
+hsl_mc68_ciface.o: hsl_mc68.o $(LHC)(hsl_mc68$(HSL_IPRECIS)_ciface.o)
+
+$(LHC)(hsl_mc68$(HSL_IPRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_mc68/C/hsl_mc68i_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc68_ciface"
+	$(CP) $(HSLSRC)/hsl_mc68/C/hsl_mc68i_ciface.f90 \
+           $(OBJ)/hsl_mc68$(HSL_IPRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc68$(HSL_IPRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc68$(HSL_IPRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_mc68$(HSL_IPRECIS)_ciface.o; \
+          $(RM) hsl_mc68$(HSL_IPRECIS)_ciface.f90 \
+                hsl_mc68$(HSL_IPRECIS)_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(LHC)
+	@printf '[ OK ]\n'
 #  hsl_mc69
 
-hsl_mc69s.o: $(HLG)(hsl_mc69s.o)
+hsl_mc69.o: $(LH)(hsl_mc69$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mc69s.o): $(HSL)/hsl_mc69/hsl_mc69s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc69s"
-	$(CP) $(HSL)/hsl_mc69/hsl_mc69s.f90 $(OBJ)/hsl_mc69s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc69s.o $(FFLAGSOMP) hsl_mc69s.f90
-	cd $(OBJ) ; $(HARR) hsl_mc69s.o ; $(RM) hsl_mc69s.f90 hsl_mc69s.o
-	$(HRMARFILES) hsl_ma97s.o
+$(LH)(hsl_mc69$(HSL_PRECIS).o): $(HSLSRC)/hsl_mc69/hsl_mc69r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc69"
+	$(CP) $(HSLSRC)/hsl_mc69/hsl_mc69r.f90 \
+           $(OBJ)/hsl_mc69$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc69$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc69$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc69$(HSL_PRECIS).o; \
+          $(RM) hsl_mc69$(HSL_PRECIS).f90 hsl_mc69$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma97$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_mc69d.o: $(HLG)(hsl_mc69d.o)
-
-$(HLG)(hsl_mc69d.o): $(HSL)/hsl_mc69/hsl_mc69d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc69d"
-	$(CP) $(HSL)/hsl_mc69/hsl_mc69d.f90 $(OBJ)/hsl_mc69d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc69d.o $(FFLAGSOMP) hsl_mc69d.f90
-	cd $(OBJ) ; $(HARR) hsl_mc69d.o ; $(RM) hsl_mc69d.f90 hsl_mc69d.o
-	$(HRMARFILED) hsl_ma97d.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  mc71
 
-mc71s.o: $(HLG)(mc71s.o)
+mc71.o: $(LH)(mc71$(HSL_PRECIS).o)
 
-$(HLG)(mc71s.o): $(HSL)/mc71/mc71s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc71s"
-	$(CP) $(HSL)/mc71/mc71s.f $(OBJ)/mc71s.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc71s.f90
-	cd $(OBJ); $(HARR) mc71s.o ; $(RM) mc71s.f90 mc71s.o
-	@printf '[ OK ]\n'
-
-mc71d.o: $(HLG)(mc71d.o)
-
-$(HLG)(mc71d.o): $(HSL)/mc71/mc71d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc71d"
-	$(CP) $(HSL)/mc71/mc71d.f $(OBJ)/mc71d.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc71d.f90
-	cd $(OBJ); $(HARR) mc71d.o ; $(RM) mc71d.f90 mc71d.o
+$(LH)(mc71$(HSL_PRECIS).o): $(HSLSRC)/mc71/mc71r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc71"
+	$(CP) $(HSLSRC)/mc71/mc71r.f $(OBJ)/mc71$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc71$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc71$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc71$(HSL_PRECIS).o; \
+          $(RM) mc71$(HSL_PRECIS).f90 mc71$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mc77
 
-mc77s.o: $(HLG)(mc77s.o)
+mc77.o: $(LH)(mc77$(HSL_PRECIS).o)
 
-$(HLG)(mc77s.o): $(HSL)/mc77/mc77s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc77s"
-	$(CP) $(HSL)/mc77/mc77s.f $(OBJ)/mc77s.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc77s.o $(FFLAGS77) mc77s.f90
-	cd $(OBJ) ; $(HARR) mc77s.o ; $(RM) mc77s.f90 mc77s.o
-	@printf '[ OK ]\n'
-
-mc77d.o: $(HLG)(mc77d.o)
-
-$(HLG)(mc77d.o): $(HSL)/mc77/mc77d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mc77d"
-	$(CP) $(HSL)/mc77/mc77d.f $(OBJ)/mc77d.f90
-	cd $(OBJ) ; $(FORTRAN) -o mc77d.o $(FFLAGS77) mc77d.f90
-	cd $(OBJ) ; $(HARR) mc77d.o ; $(RM) mc77d.f90 mc77d.o
+$(LH)(mc77$(HSL_PRECIS).o): $(HSLSRC)/mc77/mc77r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc77"
+	$(CP) $(HSLSRC)/mc77/mc77r.f $(OBJ)/mc77$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mc77$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mc77$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mc77$(HSL_PRECIS).o; \
+          $(RM) mc77$(HSL_PRECIS).f90 mc77$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_mc78
 
-hsl_mc78i.o: $(HLG)(hsl_mc78i.o)
+hsl_mc78.o: $(LH)(hsl_mc78$(HSL_IPRECIS).o)
 
-$(HLG)(hsl_mc78i.o): $(HSL)/hsl_mc78/hsl_mc78i.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc78i"
-	$(CP) $(HSL)/hsl_mc78/hsl_mc78i.f90 $(OBJ)/hsl_mc78i.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc78i.o $(FFLAGSOMP) hsl_mc78i.f90
-	cd $(OBJ) ; $(HARR) hsl_mc78i.o ; $(RM) hsl_mc78i.f90 hsl_mc78i.o
-	$(HRMARFILES) hsl_ma86s.o
-	$(HRMARFILED) hsl_ma86d.o
+$(LH)(hsl_mc78$(HSL_IPRECIS).o): $(HSLSRC)/hsl_mc78/hsl_mc78i.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc78"
+	$(CP) $(HSLSRC)/hsl_mc78/hsl_mc78i.f90 \
+           $(OBJ)/hsl_mc78$(HSL_IPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc78$(HSL_IPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc78$(HSL_IPRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc78$(HSL_IPRECIS).o; \
+          $(RM) hsl_mc78$(HSL_IPRECIS).f90 hsl_mc78$(HSL_IPRECIS).o
+	$(HRMARFILE) hsl_ma86$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_mc80
 
-hsl_mc80s.o: $(HLG)(hsl_mc80s.o)
+hsl_mc80.o: $(LH)(hsl_mc80$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mc80s.o): $(HSL)/hsl_mc80/hsl_mc80s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc80s"
-	$(CP) $(HSL)/hsl_mc80/hsl_mc80s.f90 $(OBJ)/hsl_mc80s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc80s.o $(FFLAGSOMP) hsl_mc80s.f90
-	cd $(OBJ) ; $(HARR) hsl_mc80s.o ; $(RM) hsl_mc80s.f90 hsl_mc80s.o
-	$(HRMARFILES) hsl_ma97s.o
+$(LH)(hsl_mc80$(HSL_PRECIS).o): $(HSLSRC)/hsl_mc80/hsl_mc80r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc80"
+	$(CP) $(HSLSRC)/hsl_mc80/hsl_mc80r.f90 \
+           $(OBJ)/hsl_mc80$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mc80$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mc80$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mc80$(HSL_PRECIS).o; \
+          $(RM) hsl_mc80$(HSL_PRECIS).f90 hsl_mc80$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma97$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_mc80d.o: $(HLG)(hsl_mc80d.o)
-
-$(HLG)(hsl_mc80d.o): $(HSL)/hsl_mc80/hsl_mc80d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mc80d"
-	$(CP) $(HSL)/hsl_mc80/hsl_mc80d.f90 $(OBJ)/hsl_mc80d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mc80d.o $(FFLAGSOMP) hsl_mc80d.f90
-	cd $(OBJ) ; $(HARR) hsl_mc80d.o ; $(RM) hsl_mc80d.f90 hsl_mc80d.o
-	$(HRMARFILED) hsl_ma97d.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_mi20
 
-hsl_mi20s.o: $(HLG)(hsl_mi20s.o)
+hsl_mi20.o: $(LH)(hsl_mi20$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mi20s.o): $(HSL)/hsl_mi20/hsl_mi20s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20s"
-	$(CP) $(HSL)/hsl_mi20/hsl_mi20s.f90 $(OBJ)/hsl_mi20s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20s.o $(FFLAGS) hsl_mi20s.f90
-	cd $(OBJ) ; $(HARR) hsl_mi20s.o ; $(RM) hsl_mi20s.f90 hsl_mi20s.o
+$(LH)(hsl_mi20$(HSL_PRECIS).o): $(HSLSRC)/hsl_mi20/hsl_mi20r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20"
+	$(CP) $(HSLSRC)/hsl_mi20/hsl_mi20r.f90 \
+           $(OBJ)/hsl_mi20$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mi20$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mi20$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mi20$(HSL_PRECIS).o; \
+          $(RM) hsl_mi20$(HSL_PRECIS).f90 hsl_mi20$(HSL_PRECIS).o
 	$(RMARFILE) ermo.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_mi20d.o: $(HLG)(hsl_mi20d.o)
+hsl_mi20_ciface.o: $(LHC)(hsl_mi20$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_mi20d.o): $(HSL)/hsl_mi20/hsl_mi20d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20d"
-	$(CP) $(HSL)/hsl_mi20/hsl_mi20d.f90 $(OBJ)/hsl_mi20d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20d.o $(FFLAGSS) hsl_mi20d.f90
-	cd $(OBJ) ; $(HARR) hsl_mi20d.o ; $(RM) hsl_mi20d.f90 hsl_mi20d.o
-	$(RMARFILE) ermo.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_mi20s_ciface.o: $(HCLG)(hsl_mi20s_ciface.o)
-
-$(HCLG)(hsl_mi20s_ciface.o): $(HSL)/hsl_mi20/C/hsl_mi20s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20s_ciface"
-	$(CP) $(HSL)/hsl_mi20/C/hsl_mi20s_ciface.f90 $(OBJ)/hsl_mi20s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20s_ciface.o $(FFLAGS) \
-                      hsl_mi20s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_mi20s_ciface.o ; \
-                    $(RM) hsl_mi20s_ciface.f90 hsl_mi20s_ciface.o
+$(LHC)(hsl_mi20$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_mi20/C/hsl_mi20r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20_ciface"
+	$(CP) $(HSLSRC)/hsl_mi20/C/hsl_mi20r_ciface.f90 \
+           $(OBJ)/hsl_mi20$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mi20$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mi20$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_mi20$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_mi20$(HSL_PRECIS)_ciface.f90 hsl_mi20$(HSL_PRECIS)_ciface.o
 	$(CRMARFILE) ermo_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_mi20d_ciface.o: $(HCLG)(hsl_mi20d_ciface.o)
-
-$(HCLG)(hsl_mi20d_ciface.o): $(HSL)/hsl_mi20/C/hsl_mi20d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20d_ciface"
-	$(CP) $(HSL)/hsl_mi20/C/hsl_mi20d_ciface.f90 $(OBJ)/hsl_mi20d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20d_ciface.o $(FFLAGS) \
-                      hsl_mi20d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_mi20d_ciface.o ; \
-                    $(RM) hsl_mi20d_ciface.f90 hsl_mi20d_ciface.o
-	$(CRMARFILE) ermo_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  mi21
 
-mi21s.o: $(HLG)(mi21s.o)
+mi21.o: $(LH)(mi21$(HSL_PRECIS).o)
 
-$(HLG)(mi21s.o): $(HSL)/mi21/mi21s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mi21s"
-	$(CP) $(HSL)/mi21/mi21s.f $(OBJ)/mi21s.f90
-	cd $(OBJ); $(FORTRAN) -o mi21s.o $(FFLAGS77) mi21s.f90
-	cd $(OBJ); $(HARR) mi21s.o ; $(RM) mi21s.f90 mi21s.o
-	@printf '[ OK ]\n'
-
-mi21d.o: $(HLG)(mi21d.o)
-
-$(HLG)(mi21d.o): $(HSL)/mi21/mi21d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mi21d"
-	$(CP) $(HSL)/mi21/mi21d.f $(OBJ)/mi21d.f90
-	cd $(OBJ); $(FORTRAN) -o mi21d.o $(FFLAGS77) mi21d.f90
-	cd $(OBJ); $(HARR) mi21d.o ; $(RM) mi21d.f90 mi21d.o
+$(LH)(mi21$(HSL_PRECIS).o): $(HSLSRC)/mi21/mi21r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mi21"
+	$(CP) $(HSLSRC)/mi21/mi21r.f $(OBJ)/mi21$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mi21$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mi21$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mi21$(HSL_PRECIS).o; \
+          $(RM) mi21$(HSL_PRECIS).f90 mi21$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mi24
 
-mi24s.o: $(HLG)(mi24s.o)
+mi24.o: $(LH)(mi24$(HSL_PRECIS).o)
 
-$(HLG)(mi24s.o): $(HSL)/mi24/mi24s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mi24s"
-	$(CP) $(HSL)/mi24/mi24s.f $(OBJ)/mi24s.f90
-	cd $(OBJ); $(FORTRAN) -o mi24s.o $(FFLAGS77) mi24s.f90
-	cd $(OBJ); $(HARR) mi24s.o ; $(RM) mi24s.f90 mi24s.o
-	@printf '[ OK ]\n'
-
-mi24d.o: $(HLG)(mi24d.o)
-
-$(HLG)(mi24d.o): $(HSL)/mi24/mi24d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mi24d"
-	$(CP) $(HSL)/mi24/mi24d.f $(OBJ)/mi24d.f90
-	cd $(OBJ); $(FORTRAN) -o mi24d.o $(FFLAGS77) mi24d.f90
-	cd $(OBJ); $(HARR) mi24d.o ; $(RM) mi24d.f90 mi24d.o
+$(LH)(mi24$(HSL_PRECIS).o): $(HSLSRC)/mi24/mi24r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mi24"
+	$(CP) $(HSLSRC)/mi24/mi24r.f $(OBJ)/mi24$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mi24$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mi24$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mi24$(HSL_PRECIS).o; \
+          $(RM) mi24$(HSL_PRECIS).f90 mi24$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  mi26
 
-mi26s.o: $(HLG)(mi26s.o)
+mi26.o: $(LH)(mi26$(HSL_PRECIS).o)
 
-$(HLG)(mi26s.o): $(HSL)/mi26/mi26s.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mi26s"
-	$(CP) $(HSL)/mi26/mi26s.f $(OBJ)/mi26s.f90
-	cd $(OBJ); $(FORTRAN) -o mi26s.o $(FFLAGS77) mi26s.f90
-	cd $(OBJ); $(HARR) mi26s.o ; $(RM) mi26s.f90 mi26s.o
-	@printf '[ OK ]\n'
-
-mi26d.o: $(HLG)(mi26d.o)
-
-$(HLG)(mi26d.o): $(HSL)/mi26/mi26d.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "mi26d"
-	$(CP) $(HSL)/mi26/mi26d.f $(OBJ)/mi26d.f90
-	cd $(OBJ); $(FORTRAN) -o mi26d.o $(FFLAGS77) mi26d.f90
-	cd $(OBJ); $(HARR) mi26d.o ; $(RM) mi26d.f90 mi26d.o
+$(LH)(mi26$(HSL_PRECIS).o): $(HSLSRC)/mi26/mi26r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mi26"
+	$(CP) $(HSLSRC)/mi26/mi26r.f $(OBJ)/mi26$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) mi26$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) mi26$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) mi26$(HSL_PRECIS).o; \
+          $(RM) mi26$(HSL_PRECIS).f90 mi26$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_mi28
 
-hsl_mi28s.o: $(HLG)(hsl_mi28s.o)
+hsl_mi28.o: $(LH)(hsl_mi28$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mi28s.o): $(HSL)/hsl_mi28/hsl_mi28s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28s"
-	$(CP) $(HSL)/hsl_mi28/hsl_mi28s.f90 $(OBJ)/hsl_mi28s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28s.o $(FFLAGS) hsl_mi28s.f90
-	cd $(OBJ) ; $(HARR) hsl_mi28s.o ; $(RM) hsl_mi28s.f90 hsl_mi28s.o
+$(LH)(hsl_mi28$(HSL_PRECIS).o): $(HSLSRC)/hsl_mi28/hsl_mi28r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28"
+	$(CP) $(HSLSRC)/hsl_mi28/hsl_mi28r.f90 \
+           $(OBJ)/hsl_mi28$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mi28$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mi28$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mi28$(HSL_PRECIS).o; \
+          $(RM) hsl_mi28$(HSL_PRECIS).f90 hsl_mi28$(HSL_PRECIS).o
 	$(RMARFILE) psls.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_mi28d.o: $(HLG)(hsl_mi28d.o)
+hsl_mi28_ciface.o: $(LHC)(hsl_mi28$(HSL_PRECIS)_ciface.o)
 
-$(HLG)(hsl_mi28d.o): $(HSL)/hsl_mi28/hsl_mi28d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28d"
-	$(CP) $(HSL)/hsl_mi28/hsl_mi28d.f90 $(OBJ)/hsl_mi28d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28d.o $(FFLAGSS) hsl_mi28d.f90
-	cd $(OBJ) ; $(HARR) hsl_mi28d.o ; $(RM) hsl_mi28d.f90 hsl_mi28d.o
-	$(RMARFILE) psls.o
+$(LHC)(hsl_mi28$(HSL_PRECIS)_ciface.o): \
+          $(HSLSRC)/hsl_mi28/C/hsl_mi28r_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28_ciface"
+	$(CP) $(HSLSRC)/hsl_mi28/C/hsl_mi28r_ciface.f90 \
+           $(OBJ)/hsl_mi28$(HSL_PRECIS)_ciface.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mi28$(HSL_PRECIS)_ciface.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mi28$(HSL_PRECIS)_ciface.f90 )
+	cd $(OBJ); $(HCARR) hsl_mi28$(HSL_PRECIS)_ciface.o; \
+          $(RM) hsl_mi28$(HSL_PRECIS)_ciface.f90 hsl_mi28$(HSL_PRECIS)_ciface.o
+	$(CRMARFILE) psls_ciface.o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_mi28s_ciface.o: $(HCLG)(hsl_mi28s_ciface.o)
-
-$(HCLG)(hsl_mi28s_ciface.o): $(HSL)/hsl_mi28/C/hsl_mi28s_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28s_ciface"
-	$(CP) $(HSL)/hsl_mi28/C/hsl_mi28s_ciface.f90 $(OBJ)/hsl_mi28s_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28s_ciface.o $(FFLAGS) \
-                      hsl_mi28s_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_mi28s_ciface.o ; \
-                    $(RM) hsl_mi28s_ciface.f90 hsl_mi28s_ciface.o
-	$(CRMARFILE) ermo_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
-	@printf '[ OK ]\n'
-
-hsl_mi28d_ciface.o: $(HCLG)(hsl_mi28d_ciface.o)
-
-$(HCLG)(hsl_mi28d_ciface.o): $(HSL)/hsl_mi28/C/hsl_mi28d_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28d_ciface"
-	$(CP) $(HSL)/hsl_mi28/C/hsl_mi28d_ciface.f90 $(OBJ)/hsl_mi28d_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28d_ciface.o $(FFLAGS) \
-                      hsl_mi28d_ciface.f90
-	cd $(OBJ) ; $(HCARR) hsl_mi28d_ciface.o ; \
-                    $(RM) hsl_mi28d_ciface.f90 hsl_mi28d_ciface.o
-	$(CRMARFILE) ermo_ciface.o
-	$(MVMODS)
-	$(RANLIB) $(HCLG)
+	$(RANLIB) $(LHC)
 	@printf '[ OK ]\n'
 
 #  hsl_mi32
 
-hsl_mi32s.o: $(HLG)(hsl_mi32s.o)
+hsl_mi32.o: $(LH)(hsl_mi32$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mi32s.o): $(HSL)/hsl_mi32/hsl_mi32s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi32s"
-	$(CP) $(HSL)/hsl_mi32/hsl_mi32s.f90 $(OBJ)/hsl_mi32s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi32s.o $(FFLAGS) hsl_mi32s.f90
-	cd $(OBJ) ; $(HARR) hsl_mi32s.o ; $(RM) hsl_mi32s.f90 hsl_mi32s.o
-	$(HRMARFILE) hsl_mi20s.o
+$(LH)(hsl_mi32$(HSL_PRECIS).o): $(HSLSRC)/hsl_mi32/hsl_mi32r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi32"
+	$(CP) $(HSLSRC)/hsl_mi32/hsl_mi32r.f90 \
+           $(OBJ)/hsl_mi32$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mi32$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mi32$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mi32$(HSL_PRECIS).o; \
+          $(RM) hsl_mi32$(HSL_PRECIS).f90 hsl_mi32$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_mi20$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_mi32d.o: $(HLG)(hsl_mi32d.o)
-
-$(HLG)(hsl_mi32d.o): $(HSL)/hsl_mi32/hsl_mi32d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi32d"
-	$(CP) $(HSL)/hsl_mi32/hsl_mi32d.f90 $(OBJ)/hsl_mi32d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi32d.o $(FFLAGSS) hsl_mi32d.f90
-	cd $(OBJ) ; $(HARR) hsl_mi32d.o ; $(RM) hsl_mi32d.f90 hsl_mi32d.o
-	$(HRMARFILE) hsl_mi20d.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
 #  hsl_mi35
 
-hsl_mi35s.o: $(HLG)(hsl_mi35s.o)
+hsl_mi35.o: $(LH)(hsl_mi35$(HSL_PRECIS).o)
 
-$(HLG)(hsl_mi35s.o): $(HSL)/hsl_mi35/hsl_mi35s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35s"
-	$(CP) $(HSL)/hsl_mi35/hsl_mi35s.f90 $(OBJ)/hsl_mi35s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35s.o $(FFLAGS) hsl_mi35s.f90
-	cd $(OBJ) ; $(HARR) hsl_mi35s.o ; $(RM) hsl_mi35s.f90 hsl_mi35s.o
+$(LH)(hsl_mi35$(HSL_PRECIS).o): $(HSLSRC)/hsl_mi35/hsl_mi35r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35"
+	$(CP) $(HSLSRC)/hsl_mi35/hsl_mi35r.f90 \
+           $(OBJ)/hsl_mi35$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_mi35$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_mi35$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_mi35$(HSL_PRECIS).o; \
+          $(RM) hsl_mi35$(HSL_PRECIS).f90 hsl_mi35$(HSL_PRECIS).o
 	$(MVMODS)
-	$(RANLIB) $(HLG)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
-
-hsl_mi35d.o: $(HLG)(hsl_mi35d.o)
-
-$(HLG)(hsl_mi35d.o): $(HSL)/hsl_mi35/hsl_mi35d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35d"
-	$(CP) $(HSL)/hsl_mi35/hsl_mi35d.f90 $(OBJ)/hsl_mi35d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35d.o $(FFLAGS) hsl_mi35d.f90
-	cd $(OBJ) ; $(HARR) hsl_mi35d.o ; $(RM) hsl_mi35d.f90 hsl_mi35d.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
 
 #  hsl_of01
 
-hsl_of01s.o: $(HLG)(hsl_of01s.o)
+hsl_of01.o: $(LH)(hsl_of01$(HSL_PRECIS).o)
 
-$(HLG)(hsl_of01s.o): $(HSL)/hsl_of01/hsl_of01s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_of01s"
-	$(CP) $(HSL)/hsl_of01/hsl_of01s.f90 $(OBJ)/hsl_of01s.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_of01s.o $(FFLAGS) hsl_of01s.f90
-	cd $(OBJ); $(HARR) hsl_of01s.o ; $(RM) hsl_of01s.f90 hsl_of01s.o
-	$(HRMARFILES) hsl_ma77s.o
+$(LH)(hsl_of01$(HSL_PRECIS).o): $(HSLSRC)/hsl_of01/hsl_of01r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_of01"
+	$(CP) $(HSLSRC)/hsl_of01/hsl_of01r.f90 \
+           $(OBJ)/hsl_of01$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_of01$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_of01$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_of01$(HSL_PRECIS).o; \
+          $(RM) hsl_of01$(HSL_PRECIS).f90 hsl_of01$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma77$(HSL_PRECIS).o
 	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_of01d.o: $(HLG)(hsl_of01d.o)
+hsl_of01i.o: $(LH)(hsl_of01$(HSL_IPRECIS).o)
 
-$(HLG)(hsl_of01d.o): $(HSL)/hsl_of01/hsl_of01d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_of01d"
-	$(CP) $(HSL)/hsl_of01/hsl_of01d.f90 $(OBJ)/hsl_of01d.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_of01d.o $(FFLAGS) hsl_of01d.f90
-	cd $(OBJ); $(HARR) hsl_of01d.o ; $(RM) hsl_of01d.f90 hsl_of01d.o
-	$(HRMARFILED) hsl_ma77d.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-hsl_of01i.o: $(HLG)(hsl_of01i.o)
-
-$(HLG)(hsl_of01i.o): $(HSL)/hsl_of01/hsl_of01i.f90
+$(LH)(hsl_of01$(HSL_IPRECIS).o): $(HSLSRC)/hsl_of01/hsl_of01i.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_of01i"
-	$(CP) $(HSL)/hsl_of01/hsl_of01i.f90 $(OBJ)/hsl_of01i.f90
-	cd $(OBJ); $(FORTRAN) -o hsl_of01i.o $(FFLAGS) hsl_of01i.f90
-	cd $(OBJ); $(HARR) hsl_of01i.o ; $(RM) hsl_of01i.f90 hsl_of01i.o
-	$(HRMARFILES) hsl_ma77s.o
-	$(HRMARFILED) hsl_ma77d.o
+	$(CP) $(HSLSRC)/hsl_of01/hsl_of01i.f90 \
+           $(OBJ)/hsl_of01$(HSL_IPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_of01$(HSL_IPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_of01$(HSL_IPRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_of01$(HSL_IPRECIS).o; \
+          $(RM) hsl_of01$(HSL_IPRECIS).f90 hsl_of01$(HSL_IPRECIS).o
+	$(HRMARFILE) hsl_ma77$(HSL_IPRECIS).o
 	$(MVMODS)
+	$(RANLIB) $(LH)
+	@printf '[ OK ]\n'
+
+#  ym01
+
+ym01.o: $(LH)(ym01$(HSL_PRECIS).o)
+
+$(LH)(ym01$(HSL_PRECIS).o): $(HSLSRC)/ym01/ym01r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ym01"
+	$(CP) $(HSLSRC)/ym01/ym01r.f $(OBJ)/ym01$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ym01$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ym01$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ym01$(HSL_PRECIS).o; \
+          $(RM) ym01$(HSL_PRECIS).f90 ym01$(HSL_PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ym11
+
+ym11.o: $(LH)(ym11$(HSL_PRECIS).o)
+
+$(LH)(ym11$(HSL_PRECIS).o): $(HSLSRC)/ym11/ym11r.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ym11"
+	$(CP) $(HSLSRC)/ym11/ym11r.f $(OBJ)/ym11$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ym11$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGS77N) ym11$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) ym11$(HSL_PRECIS).o; \
+          $(RM) ym11$(HSL_PRECIS).f90 ym11$(HSL_PRECIS).o
 	@printf '[ OK ]\n'
 
 #  hsl_zb01
 
-hsl_zb01s.o: $(HLG)(hsl_zb01s.o)
+hsl_zb01.o: $(LH)(hsl_zb01$(HSL_PRECIS).o)
 
-$(HLG)(hsl_zb01s.o): $(HSL)/hsl_zb01/hsl_zb01s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01s "
-	$(CP) $(HSL)/hsl_zb01/hsl_zb01s.f90 $(OBJ)/hsl_zb01s.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01s.f90
-	cd $(OBJ); $(HARR) hsl_zb01s.o ; $(RM) hsl_zb01s.f90 hsl_zb01s.o
-	$(HRMARFILE) hsl_ma48s.o
-	$(RANLIB) $(HLG)
+$(LH)(hsl_zb01$(HSL_PRECIS).o): $(HSLSRC)/hsl_zb01/hsl_zb01r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01"
+	$(CP) $(HSLSRC)/hsl_zb01/hsl_zb01r.f90 \
+           $(OBJ)/hsl_zb01$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_zb01$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_zb01$(HSL_PRECIS).o; \
+          $(RM) hsl_zb01$(HSL_PRECIS).f90 hsl_zb01$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma48$(HSL_PRECIS).o
+	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_zb01d.o: $(HLG)(hsl_zb01d.o)
+hsl_zb01i.o: $(LH)(hsl_zb01$(HSL_IPRECIS).o)
 
-$(HLG)(hsl_zb01d.o): $(HSL)/hsl_zb01/hsl_zb01d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01d "
-	$(CP) $(HSL)/hsl_zb01/hsl_zb01d.f90 $(OBJ)/hsl_zb01d.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01d.f90
-	cd $(OBJ); $(HARR) hsl_zb01d.o ; $(RM) hsl_zb01d.f90 hsl_zb01d.o
-	$(HRMARFILE) hsl_ma48d.o
-	$(RANLIB) $(HLG)
+$(LH)(hsl_zb01$(HSL_IPRECIS).o): $(HSLSRC)/hsl_zb01/hsl_zb01i.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01i"
+	$(CP) $(HSLSRC)/hsl_zb01/hsl_zb01i.f90 \
+           $(OBJ)/hsl_zb01$(HSL_IPRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01$(HSL_IPRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_zb01$(HSL_IPRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_zb01$(HSL_IPRECIS).o; \
+          $(RM) hsl_zb01$(HSL_IPRECIS).f90 hsl_zb01$(HSL_IPRECIS).o
+	$(HRMARFILE) hsl_mc68$(HSL_IPRECIS).o
+	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
-hsl_zb01i.o: $(HLG)(hsl_zb01i.o)
+#  hsl_zd11
 
-$(HLG)(hsl_zb01i.o): $(HSL)/hsl_zb01/hsl_zb01i.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01i "
-	$(CP) $(HSL)/hsl_zb01/hsl_zb01i.f90 $(OBJ)/hsl_zb01i.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01i.f90
-	cd $(OBJ); $(HARR) hsl_zb01i.o ; $(RM) hsl_zb01i.f90 hsl_zb01i.o
-	$(HRMARFILE) hsl_ma48s.o
-	$(HRMARFILE) hsl_ma48d.o
-	$(RANLIB) $(HLG)
+hsl_zd11.o: $(LH)(hsl_zd11$(HSL_PRECIS).o)
+
+$(LH)(hsl_zd11$(HSL_PRECIS).o): $(HSLSRC)/hsl_zd11/hsl_zd11r.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zd11"
+	$(CP) $(HSLSRC)/hsl_zd11/hsl_zd11r.f90 \
+           $(OBJ)/hsl_zd11$(HSL_PRECIS).f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zd11$(HSL_PRECIS).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) $(FFLAGSN) hsl_zd11$(HSL_PRECIS).f90 )
+	cd $(OBJ); $(HARR) hsl_zd11$(HSL_PRECIS).o; \
+          $(RM) hsl_zd11$(HSL_PRECIS).f90 hsl_zd11$(HSL_PRECIS).o
+	$(HRMARFILE) hsl_ma48$(HSL_PRECIS).o
+	$(MVMODS)
+	$(RANLIB) $(LH)
 	@printf '[ OK ]\n'
 
+#  ===========================
+#  comprehensive test programs
+#  ===========================
+
+#  all packages
+
+hsl_test_all: hsl_test hsl_ciface_test
+
+#  all fortran packages
+
+hsl_test: hsl fa04t fa14t fd15t kb07t kb07it la04t la15t ma27t ma28t ma30t \
+          ma33t ma57t ma61t mc13t mc19t mc20t mc21t mc22t mc23t mc24t \
+          mc29t mc30t mc34t mc37t mc47t mc49t mc54t mc57t mc59t mc60t \
+          mc61t mc64t mc71t mc77t mi21t mi24t mi26t ym01t ym11t \
+          hsl_ad02t hsl_fa14t hsl_kb22t hsl_ma48t hsl_ma54t hsl_ma57t \
+          hsl_ma64t hsl_ma77t hsl_ma86t hsl_ma87t hsl_ma97t hsl_mc34t \
+          hsl_mc64t hsl_mc65t hsl_mc68t hsl_mc69t hsl_mc78t hsl_mc80t \
+          hsl_mi20t hsl_mi28t hsl_mi32t hsl_mi35t hsl_of01t hsl_of01it \
+          hsl_zb01t hsl_zb01it hsl_zd11t
+
+#  all C interface packages
+
+hsl_ciface_test: hsl_ciface hsl_ma48cs hsl_ma57cs hsl_ma77cs \
+                 hsl_ma86cs hsl_ma87cs hsl_ma97cs hsl_mc64cs \
+                 hsl_mc68cs hsl_mi20cs hsl_mi28cs
+
+#  fa04
+
+fa04t:  fa04.o ../test/fa04/fa04rt.f
+	echo " Exhaustive test of subroutine interface to fa04"
+	$(CP) ../test/fa04/fa04rt.f $(OBJ)/fa04rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o fa04t_$(PRECIS).o $(FFLAGS77S) fa04rt.f90
+	$(RM) $(OBJ)/fa04rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_fa04 $(OBJ)/fa04t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_fa04 > ../test/fa04/fa04t_$(PRECIS).output 2>&1
+	$(CAT) ../test/fa04/fa04t_$(PRECIS).output
+	$(RM) ./run_fa04 $(OBJ)/fa04t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  fa14
+
+fa14t:  fa14.o ../test/fa14/fa14rt.f
+	echo " Exhaustive test of subroutine interface to fa14"
+	$(CP) ../test/fa14/fa14rt.f $(OBJ)/fa14rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o fa14t_$(PRECIS).o $(FFLAGS77S) fa14rt.f90
+	$(RM) $(OBJ)/fa14rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_fa14 $(OBJ)/fa14t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_fa14 > ../test/fa14/fa14t_$(PRECIS).output 2>&1
+	$(CAT) ../test/fa14/fa14t_$(PRECIS).output
+	$(RM) ./run_fa14 $(OBJ)/fa14t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  fd15
+
+fd15t:  fd15.o ../test/fd15/fd15rt.f
+	echo " Exhaustive test of subroutine interface to fd15"
+	$(CP) ../test/fd15/fd15rt.f $(OBJ)/fd15rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o fd15t_$(PRECIS).o $(FFLAGS77S) fd15rt.f90
+	$(RM) $(OBJ)/fd15rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_fd15 $(OBJ)/fd15t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_fd15 > ../test/fd15/fd15t_$(PRECIS).output 2>&1
+	$(CAT) ../test/fd15/fd15t_$(PRECIS).output
+	$(RM) ./run_fd15 $(OBJ)/fd15t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  kb07
+
+kb07it:  kb07i.o fa04.o ../test/kb07/kb07it.f
+	echo " Exhaustive test of subroutine interface to kb07"
+	$(CP) ../test/kb07/kb07it.f $(OBJ)/kb07it.f90
+	cd $(OBJ) ; $(FORTRAN) -o kb07t_$(PRECIS).o $(FFLAGS77S) kb07it.f90
+	$(RM) $(OBJ)/kb07it.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_kb07 $(OBJ)/kb07t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_kb07 > ../test/kb07/kb07t_$(PRECIS).output 2>&1
+	$(CAT) ../test/kb07/kb07t_$(PRECIS).output
+	$(RM) ./run_kb07 $(OBJ)/kb07t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+kb07t:  kb07.o ../test/kb07/kb07rt.f
+	echo " Exhaustive test of subroutine interface to kb07"
+	$(CP) ../test/kb07/kb07rt.f $(OBJ)/kb07rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o kb07t_$(PRECIS).o $(FFLAGS77S) kb07rt.f90
+	$(RM) $(OBJ)/kb07rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_kb07 $(OBJ)/kb07t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_kb07 > ../test/kb07/kb07t_$(PRECIS).output 2>&1
+	$(CAT) ../test/kb07/kb07t_$(PRECIS).output
+	$(RM) ./run_kb07 $(OBJ)/kb07t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  la04
+
+la04t:  fa01.o la15.o la04.o ../test/la04/la04rt.f
+	echo " Exhaustive test of subroutine interface to la04"
+	$(CP) ../test/la04/la04rt.f $(OBJ)/la04rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o la04t_$(PRECIS).o $(FFLAGS77S) la04rt.f90
+	$(RM) $(OBJ)/la04rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_la04 $(OBJ)/la04t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_la04 < ../test/la04/la04rt.data \
+                     > ../test/la04/la04t_$(PRECIS).output 2>&1
+	$(CAT) ../test/la04/la04t_$(PRECIS).output
+	$(MV) ./la04*.capture ../test/la04/
+	$(RM) ./run_la04 $(OBJ)/la04t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  la15
+
+la15t:  fa01.o la15.o ../test/la15/la15rt.f
+	echo " Exhaustive test of subroutine interface to la15"
+	$(CP) ../test/la15/la15rt.f $(OBJ)/la15rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o la15t_$(PRECIS).o $(FFLAGS77S) la15rt.f90
+	$(RM) $(OBJ)/la15rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_la15 $(OBJ)/la15t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_la15 > ../test/la15/la15t_$(PRECIS).output 2>&1
+	$(CAT) ../test/la15/la15t_$(PRECIS).output
+	$(RM) ./run_la15 $(OBJ)/la15t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ma27
+
+ma27t:  fa01.o ma27.o ../test/ma27/ma27rt.f
+	echo " Exhaustive test of subroutine interface to ma27"
+	$(CP) ../test/ma27/ma27rt.f $(OBJ)/ma27rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma27t_$(PRECIS).o $(FFLAGS77S) ma27rt.f90
+	$(RM) $(OBJ)/ma27rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ma27 $(OBJ)/ma27t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ma27 > ../test/ma27/ma27t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ma27/ma27t_$(PRECIS).output
+	$(RM) ./run_ma27 $(OBJ)/ma27t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ma28
+
+ma28t:  fa01.o ma28.o ../test/ma28/ma28rt.f
+	echo " Exhaustive test of subroutine interface to ma28"
+	$(CP) ../test/ma28/ma28rt.f $(OBJ)/ma28rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma28t_$(PRECIS).o $(FFLAGS77S) ma28rt.f90
+	$(RM) $(OBJ)/ma28rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ma28 $(OBJ)/ma28t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ma28
+#	- ./run_ma28 > ../test/ma28/ma28t_$(PRECIS).output 2>&1
+#	$(CAT) ../test/ma28/ma28t_$(PRECIS).output
+	$(RM) ./run_ma28 $(OBJ)/ma28t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ma30
+
+ma30t:  fa01.o mc22.o mc23.o ma30.o ../test/ma30/ma30rt.f
+	echo " Exhaustive test of subroutine interface to ma30"
+	$(CP) ../test/ma30/ma30rt.f $(OBJ)/ma30rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma30t_$(PRECIS).o $(FFLAGS77S) ma30rt.f90
+	$(RM) $(OBJ)/ma30rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ma30 $(OBJ)/ma30t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ma30 > ../test/ma30/ma30t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ma30/ma30t_$(PRECIS).output
+	$(RM) ./run_ma30 $(OBJ)/ma30t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ma33
+
+ma33t:  ma33 ../test/ma33/ma33rt.f
+	echo " Exhaustive test of subroutine interface to ma33"
+	$(CP) ../test/ma33/ma33rt.f $(OBJ)/ma33rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma33t_$(PRECIS).o $(FFLAGS77S) ma33rt.f90
+	$(RM) $(OBJ)/ma33rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ma33 $(OBJ)/ma33t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ma33 > ../test/ma33/ma33t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ma33/ma33t_$(PRECIS).output
+	$(RM) ./run_ma33 $(OBJ)/ma33t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ma57
+
+ma57t:  fa01.o ma57.o ym11.o mc54.o mc71.o ../test/ma57/ma57rt.f
+	echo " Exhaustive test of subroutine interface to ma57"
+	$(CP) ../test/ma57/ma57rt.f $(OBJ)/ma57rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma57t_$(PRECIS).o $(FFLAGS77S) ma57rt.f90
+	$(RM) $(OBJ)/ma57rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ma57 $(OBJ)/ma57t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ma57 < ../test/ma57/ma57rt.data \
+                     > ../test/ma57/ma57t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ma57/ma57t_$(PRECIS).output
+	$(RM) ./run_ma57 $(OBJ)/ma57t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ma61
+
+ma61t:  ma61 ../test/ma61/ma61rt.f
+	echo " Exhaustive test of subroutine interface to ma61"
+	$(CP) ../test/ma61/ma61rt.f $(OBJ)/ma61rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma61t_$(PRECIS).o $(FFLAGS77S) ma61rt.f90
+	$(RM) $(OBJ)/ma61rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ma61 $(OBJ)/ma61t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ma61 > ../test/ma61/ma61t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ma61/ma61t_$(PRECIS).output
+	$(RM) ./run_ma61 $(OBJ)/ma61t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc13
+
+mc13t:  fa01.o la15.o mc13.o ../test/mc13/mc13rt.f
+	echo " Exhaustive test of subroutine interface to mc13"
+	$(CP) ../test/mc13/mc13rt.f $(OBJ)/mc13rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc13t_$(PRECIS).o $(FFLAGS77S) mc13rt.f90
+	$(RM) $(OBJ)/mc13rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc13 $(OBJ)/mc13t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc13 < ../test/mc13/mc13rt.data \
+                     > ../test/mc13/mc13t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc13/mc13t_$(PRECIS).output
+	$(RM) ./run_mc13 $(OBJ)/mc13t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc19
+
+mc19t:  fa01.o mc19.o ../test/mc19/mc19rt.f
+	echo " Exhaustive test of subroutine interface to mc19"
+	$(CP) ../test/mc19/mc19rt.f $(OBJ)/mc19rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc19t_$(PRECIS).o $(FFLAGS77S) mc19rt.f90
+	$(RM) $(OBJ)/mc19rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc19 $(OBJ)/mc19t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc19 > ../test/mc19/mc19t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc19/mc19t_$(PRECIS).output
+	$(RM) ./run_mc19 $(OBJ)/mc19t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc20
+
+mc20t:  fa01.o mc20.o ../test/mc20/mc20rt.f
+	echo " Exhaustive test of subroutine interface to mc20"
+	$(CP) ../test/mc20/mc20rt.f $(OBJ)/mc20rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc20t_$(PRECIS).o $(FFLAGS77S) mc20rt.f90
+	$(RM) $(OBJ)/mc20rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc20 $(OBJ)/mc20t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc20 > ../test/mc20/mc20t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc20/mc20t_$(PRECIS).output
+	$(RM) ./run_mc20 $(OBJ)/mc20t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc21
+
+mc21t:  fa01.o mc21.o ../test/mc21/mc21rt.f
+	echo " Exhaustive test of subroutine interface to mc21"
+	$(CP) ../test/mc21/mc21rt.f $(OBJ)/mc21rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc21t_$(PRECIS).o $(FFLAGS77S) mc21rt.f90
+	$(RM) $(OBJ)/mc21rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc21 $(OBJ)/mc21t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc21 > ../test/mc21/mc21t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc21/mc21t_$(PRECIS).output
+	$(RM) ./run_mc21 $(OBJ)/mc21t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc22
+
+mc22t:  fa01.o mc22.o ../test/mc22/mc22rt.f
+	echo " Exhaustive test of subroutine interface to mc22"
+	$(CP) ../test/mc22/mc22rt.f $(OBJ)/mc22rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc22t_$(PRECIS).o $(FFLAGS77S) mc22rt.f90
+	$(RM) $(OBJ)/mc22rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc22 $(OBJ)/mc22t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc22 > ../test/mc22/mc22t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc22/mc22t_$(PRECIS).output
+	$(RM) ./run_mc22 $(OBJ)/mc22t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc23
+
+mc23t:  fa01.o mc23.o ../test/mc23/mc23rt.f
+	echo " Exhaustive test of subroutine interface to mc23"
+	$(CP) ../test/mc23/mc23rt.f $(OBJ)/mc23rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc23t_$(PRECIS).o $(FFLAGS77S) mc23rt.f90
+	$(RM) $(OBJ)/mc23rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc23 $(OBJ)/mc23t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc23 > ../test/mc23/mc23t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc23/mc23t_$(PRECIS).output
+	$(RM) ./run_mc23 $(OBJ)/mc23t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc24
+
+mc24t:  fa01.o mc23.o mc24.o ../test/mc24/mc24rt.f
+	echo " Exhaustive test of subroutine interface to mc24"
+	$(CP) ../test/mc24/mc24rt.f $(OBJ)/mc24rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc24t_$(PRECIS).o $(FFLAGS77S) mc24rt.f90
+	$(RM) $(OBJ)/mc24rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc24 $(OBJ)/mc24t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc24 > ../test/mc24/mc24t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc24/mc24t_$(PRECIS).output
+	$(RM) ./run_mc24 $(OBJ)/mc24t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc29
+
+mc29t:  fa01.o mc29.o ../test/mc29/mc29rt.f
+	echo " Exhaustive test of subroutine interface to mc29"
+	$(CP) ../test/mc29/mc29rt.f $(OBJ)/mc29rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc29t_$(PRECIS).o $(FFLAGS77S) mc29rt.f90
+	$(RM) $(OBJ)/mc29rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc29 $(OBJ)/mc29t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc29 > ../test/mc29/mc29t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc29/mc29t_$(PRECIS).output
+	$(RM) ./run_mc29 $(OBJ)/mc29t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc30
+
+mc30t:  fa01.o mc30.o ../test/mc30/mc30rt.f
+	echo " Exhaustive test of subroutine interface to mc30"
+	$(CP) ../test/mc30/mc30rt.f $(OBJ)/mc30rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc30t_$(PRECIS).o $(FFLAGS77S) mc30rt.f90
+	$(RM) $(OBJ)/mc30rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc30 $(OBJ)/mc30t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc30 > ../test/mc30/mc30t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc30/mc30t_$(PRECIS).output
+	$(RM) ./run_mc30 $(OBJ)/mc30t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc34
+
+mc34t:  mc34.o ../test/mc34/mc34rt.f
+	echo " Exhaustive test of subroutine interface to mc34"
+	$(CP) ../test/mc34/mc34rt.f $(OBJ)/mc34rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc34t_$(PRECIS).o $(FFLAGS77S) mc34rt.f90
+	$(RM) $(OBJ)/mc34rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc34 $(OBJ)/mc34t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc34 < ../test/mc34/mc34rt.data \
+                     > ../test/mc34/mc34t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc34/mc34t_$(PRECIS).output
+	$(RM) ./run_mc34 $(OBJ)/mc34t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc37
+
+mc37t:  ym01.o fa04.o mc37.o mc37.o ../test/mc37/mc37rt.f
+	echo " Exhaustive test of subroutine interface to mc37"
+	$(CP) ../test/mc37/mc37rt.f $(OBJ)/mc37rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc37t_$(PRECIS).o $(FFLAGS77S) mc37rt.f90
+	$(RM) $(OBJ)/mc37rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc37 $(OBJ)/mc37t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc37 < ../test/mc37/mc37rt.data \
+                     > ../test/mc37/mc37t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc37/mc37t_$(PRECIS).output
+	$(RM) ./run_mc37 $(OBJ)/mc37t_$(PRECIS).o
+	@printf '[ OK ]\n'
+#  mc47
+
+mc47t:  ma57 ym01.o mc47.o ../test/mc47/mc47rt.f
+	echo " Exhaustive test of subroutine interface to mc47"
+	$(CP) ../test/mc47/mc47rt.f $(OBJ)/mc47rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc47t_$(PRECIS).o $(FFLAGS77S) mc47rt.f90
+	$(RM) $(OBJ)/mc47rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc47 $(OBJ)/mc47t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc47 < ../test/mc47/mc47rt.data \
+                     > ../test/mc47/mc47t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc47/mc47t_$(PRECIS).output
+	$(RM) ./run_mc47 $(OBJ)/mc47t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc49
+
+mc49t:  ma57 ym01.o mc49.o ../test/mc49/mc49rt.f
+	echo " Exhaustive test of subroutine interface to mc49"
+	$(CP) ../test/mc49/mc49rt.f $(OBJ)/mc49rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc49t_$(PRECIS).o $(FFLAGS77S) mc49rt.f90
+	$(RM) $(OBJ)/mc49rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc49 $(OBJ)/mc49t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc49 > ../test/mc49/mc49t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc49/mc49t_$(PRECIS).output
+	$(RM) ./run_mc49 $(OBJ)/mc49t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc54
+
+mc54t:  ma57 ym01.o mc54.o ../test/mc54/mc54rt.f
+	echo " Exhaustive test of subroutine interface to mc54"
+	$(CP) ../test/mc54/mc54rt.f $(OBJ)/mc54rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc54t_$(PRECIS).o $(FFLAGS77S) mc54rt.f90
+	$(RM) $(OBJ)/mc54rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc54 $(OBJ)/mc54t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc54 < ../test/mc54/mc54rt.data \
+                     > ../test/mc54/mc54t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc54/mc54t_$(PRECIS).output
+	$(RM) ./run_mc54 $(OBJ)/mc54t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc57
+
+mc57t:  ym01.o fa04.o mc37.o mc57.o ../test/mc57/mc57rt.f
+	echo " Exhaustive test of subroutine interface to mc57"
+	$(CP) ../test/mc57/mc57rt.f $(OBJ)/mc57rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc57t_$(PRECIS).o $(FFLAGS77S) mc57rt.f90
+	$(RM) $(OBJ)/mc57rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc57 $(OBJ)/mc57t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc57 < ../test/mc57/mc57rt.data \
+                     > ../test/mc57/mc57t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc57/mc57t_$(PRECIS).output
+	$(RM) ./run_mc57 $(OBJ)/mc57t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc59
+
+mc59t:  fa01.o mc59.o ../test/mc59/mc59rt.f
+	echo " Exhaustive test of subroutine interface to mc59"
+	$(CP) ../test/mc59/mc59rt.f $(OBJ)/mc59rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc59t_$(PRECIS).o $(FFLAGS77S) mc59rt.f90
+	$(RM) $(OBJ)/mc59rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc59 $(OBJ)/mc59t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc59 > ../test/mc59/mc59t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc59/mc59t_$(PRECIS).output
+	$(RM) ./run_mc59 $(OBJ)/mc59t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc60
+
+mc60t:  kb21.o ym01.o mc49.o mc60.o ../test/mc60/mc60rt.f
+	echo " Exhaustive test of subroutine interface to mc60"
+	$(CP) ../test/mc60/mc60rt.f $(OBJ)/mc60rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc60t_$(PRECIS).o $(FFLAGS77S) mc60rt.f90
+	$(RM) $(OBJ)/mc60rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc60 $(OBJ)/mc60t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc60 < ../test/mc60/mc60rt.data \
+                     > ../test/mc60/mc60t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc60/mc60t_$(PRECIS).output
+	$(RM) ./run_mc60 $(OBJ)/mc60t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc61
+
+mc61t:  mc61.o ../test/mc61/mc61rt.f
+	echo " Exhaustive test of subroutine interface to mc61"
+	$(CP) ../test/mc61/mc61rt.f $(OBJ)/mc61rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc61t_$(PRECIS).o $(FFLAGS77S) mc61rt.f90
+	$(RM) $(OBJ)/mc61rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc61 $(OBJ)/mc61t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc61 < ../test/mc61/mc61rt.data \
+                     > ../test/mc61/mc61t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc61/mc61t_$(PRECIS).output
+	$(RM) ./run_mc61 $(OBJ)/mc61t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc64
+
+mc64t:  ym01.o fa01.o fa04.o mc64.o ../test/mc64/mc64rt.f
+	echo " Exhaustive test of subroutine interface to mc64"
+	$(CP) ../test/mc64/mc64rt.f $(OBJ)/mc64rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc64t_$(PRECIS).o $(FFLAGS77S) mc64rt.f90
+	$(RM) $(OBJ)/mc64rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc64 $(OBJ)/mc64t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc64 > ../test/mc64/mc64t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc64/mc64t_$(PRECIS).output
+	$(RM) ./run_mc64 $(OBJ)/mc64t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc71
+
+mc71t:  mc71.o ../test/mc71/mc71rt.f
+	echo " Exhaustive test of subroutine interface to mc71"
+	$(CP) ../test/mc71/mc71rt.f $(OBJ)/mc71rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc71t_$(PRECIS).o $(FFLAGS77S) mc71rt.f90
+	$(RM) $(OBJ)/mc71rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc71 $(OBJ)/mc71t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc71 < ../test/mc71/mc71rt.data \
+                     > ../test/mc71/mc71t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc71/mc71t_$(PRECIS).output
+	$(RM) ./run_mc71 $(OBJ)/mc71t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mc77
+
+mc77t:  ym11.o mc77.o ../test/mc77/mc77rt.f
+	echo " Exhaustive test of subroutine interface to mc77"
+	$(CP) ../test/mc77/mc77rt.f $(OBJ)/mc77rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc77t_$(PRECIS).o $(FFLAGS77S) mc77rt.f90
+	$(RM) $(OBJ)/mc77rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mc77 $(OBJ)/mc77t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mc77 > ../test/mc77/mc77t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mc77/mc77t_$(PRECIS).output
+	$(RM) ./run_mc77 $(OBJ)/mc77t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mi21
+
+mi21t:  mi21.o ../test/mi21/mi21rt.f
+	echo " Exhaustive test of subroutine interface to mi21"
+	$(CP) ../test/mi21/mi21rt.f $(OBJ)/mi21rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mi21t_$(PRECIS).o $(FFLAGS77S) mi21rt.f90
+	$(RM) $(OBJ)/mi21rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mi21 $(OBJ)/mi21t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mi21 > ../test/mi21/mi21t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mi21/mi21t_$(PRECIS).output
+	$(RM) ./run_mi21 $(OBJ)/mi21t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mi24
+
+mi24t:  mi24.o ../test/mi24/mi24rt.f
+	echo " Exhaustive test of subroutine interface to mi24"
+	$(CP) ../test/mi24/mi24rt.f $(OBJ)/mi24rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mi24t_$(PRECIS).o $(FFLAGS77S) mi24rt.f90
+	$(RM) $(OBJ)/mi24rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mi24 $(OBJ)/mi24t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mi24 > ../test/mi24/mi24t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mi24/mi24t_$(PRECIS).output
+	$(RM) ./run_mi24 $(OBJ)/mi24t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  mi26
+
+mi26t:  fa14.o mi26.o ../test/mi26/mi26rt.f
+	echo " Exhaustive test of subroutine interface to mi26"
+	$(CP) ../test/mi26/mi26rt.f $(OBJ)/mi26rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mi26t_$(PRECIS).o $(FFLAGS77S) mi26rt.f90
+	$(RM) $(OBJ)/mi26rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_mi26 $(OBJ)/mi26t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_mi26 > ../test/mi26/mi26t_$(PRECIS).output 2>&1
+	$(CAT) ../test/mi26/mi26t_$(PRECIS).output
+	$(RM) ./run_mi26 $(OBJ)/mi26t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ym01
+
+ym01t:  ../test/ym01/ym01rt.f
+	echo " Exhaustive test of subroutine interface to ym01"
+	$(CP) ../test/ym01/ym01rt.f $(OBJ)/ym01rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ym01t_$(PRECIS).o $(FFLAGS77S) ym01rt.f90
+	$(RM) $(OBJ)/ym01rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ym01 $(OBJ)/ym01t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ym01  < ../test/ym01/ym01rt.data \
+                      > ../test/ym01/ym01t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ym01/ym01t_$(PRECIS).output
+	$(RM) ./run_ym01 $(OBJ)/ym01t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ym11
+
+ym11t:  ../test/ym11/ym11rt.f
+	echo " Exhaustive test of subroutine interface to ym11"
+	$(CP) ../test/ym11/ym11rt.f $(OBJ)/ym11rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o ym11t_$(PRECIS).o $(FFLAGS77S) ym11rt.f90
+	$(RM) $(OBJ)/ym11rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_ym11 $(OBJ)/ym11t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_ym11  < ../test/ym11/ym11rt.data \
+                      > ../test/ym11/ym11t_$(PRECIS).output 2>&1
+	$(CAT) ../test/ym11/ym11t_$(PRECIS).output
+	$(RM) ./run_ym11 $(OBJ)/ym11t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_ad02
+
+hsl_ad02t: hsl_ad02 ../test/hsl_ad02/hsl_ad02rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ad02"
+	$(CP) ../test/hsl_ad02/hsl_ad02rt.f90 $(OBJ)/hsl_ad02rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ad02t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ad02rt.f90
+	$(RM) $(OBJ)/hsl_ad02rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ad02 $(OBJ)/hsl_ad02t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ad02 > ../test/hsl_ad02/hsl_ad02t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ad02/hsl_ad02t_$(PRECIS).output
+	$(RM) ./run_hsl_ad02 $(OBJ)/hsl_ad02t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_fa14
+
+hsl_fa14t: hsl_fa14.o ../test/hsl_fa14/hsl_fa14rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_fa14"
+	$(CP) ../test/hsl_fa14/hsl_fa14rt.f90 $(OBJ)/hsl_fa14rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_fa14t_$(PRECIS).o \
+          $(FFLAGSS) hsl_fa14rt.f90
+	$(RM) $(OBJ)/hsl_fa14rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_fa14 $(OBJ)/hsl_fa14t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_fa14 > ../test/hsl_fa14/hsl_fa14t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_fa14/hsl_fa14t_$(PRECIS).output
+	$(RM) ./run_hsl_fa14 $(OBJ)/hsl_fa14t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_kb22
+
+hsl_kb22t: hsl_kb22.o ../test/hsl_kb22/hsl_kb22lt.f90
+	echo " Exhaustive test of subroutine interface to hsl_kb22l"
+	$(CP) ../test/hsl_kb22/hsl_kb22lt.f90 $(OBJ)/hsl_kb22lt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_kb22lt_$(PRECIS).o \
+          $(FFLAGSS) hsl_kb22lt.f90
+	$(RM) $(OBJ)/hsl_kb22lt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_kb22l $(OBJ)/hsl_kb22lt_$(PRECIS).o $(LIBS)
+	- ./run_hsl_kb22l > ../test/hsl_kb22/hsl_kb22lt_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_kb22/hsl_kb22lt_$(PRECIS).output
+	$(RM) ./run_hsl_kb22l $(OBJ)/hsl_kb22lt_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_ma48
+
+hsl_ma48t: hsl_ma48 hsl_fa14.o mc54.o ym11.o ../test/hsl_ma48/hsl_ma48rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma48"
+	$(CP) ../test/hsl_ma48/hsl_ma48rt.f90 $(OBJ)/hsl_ma48rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma48t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma48rt.f90
+	$(RM) $(OBJ)/hsl_ma48rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma48 $(OBJ)/hsl_ma48t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ma48 < ../test/hsl_ma48/hsl_ma48rt.data \
+                         > ../test/hsl_ma48/hsl_ma48t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma48/hsl_ma48t_$(PRECIS).output
+	$(RM) ./run_hsl_ma48 $(OBJ)/hsl_ma48t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_ma48cs: ../test/hsl_ma48/C/hsl_ma48rs.c
+	echo " Exhaustive test of C function interface to hsl_ma48"
+	$(CP) ../test/hsl_ma48/C/hsl_ma48rs.c $(OBJ)/hsl_ma48cs.c
+	cd $(OBJ) ; $(CC) -o hsl_ma48cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_ma48cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_ma48cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_ma48 $(OBJ)/hsl_ma48cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_ma48 < ../test/hsl_ma48/C/hsl_ma48rs.data \
+                         > ../test/hsl_ma48/C/hsl_ma48cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma48/C/hsl_ma48cs_$(PRECIS).output
+	$(RM) ./run_hsl_ma48
+	@printf '[ OK ]\n'
+
+#  hsl_ma54
+
+hsl_ma54t: hsl_ma54.o hsl_fa14.o ym11.o ../test/hsl_ma54/hsl_ma54rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma54"
+	$(CP) ../test/hsl_ma54/hsl_ma54rt.f90 $(OBJ)/hsl_ma54rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma54t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma54rt.f90
+	$(RM) $(OBJ)/hsl_ma54rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma54 $(OBJ)/hsl_ma54t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ma54 > ../test/hsl_ma54/hsl_ma54t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma54/hsl_ma54t_$(PRECIS).output
+	$(RM) ./run_hsl_ma54 $(OBJ)/hsl_ma54t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_ma57
+
+hsl_ma57t: hsl_ma57 fa14.o hsl_fa14.o ym11.o mc54.o \
+          ../test/hsl_ma57/hsl_ma57rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma57"
+	$(CP) ../test/hsl_ma57/hsl_ma57rt.f90 $(OBJ)/hsl_ma57rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma57rt.f90
+	$(RM) $(OBJ)/hsl_ma57rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma57 $(OBJ)/hsl_ma57t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ma57 < ../test/hsl_ma57/hsl_ma57rt.data \
+                         > ../test/hsl_ma57/hsl_ma57t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma57/hsl_ma57t_$(PRECIS).output
+	$(RM) ./run_hsl_ma57 $(OBJ)/hsl_ma57t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_ma57cs: ../test/hsl_ma57/C/hsl_ma57rs.c
+	echo " Exhaustive test of C function interface to hsl_ma57"
+	$(CP) ../test/hsl_ma57/C/hsl_ma57rs.c $(OBJ)/hsl_ma57cs.c
+	cd $(OBJ) ; $(CC) -o hsl_ma57cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_ma57cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_ma57cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_ma57 $(OBJ)/hsl_ma57cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_ma57 < ../test/hsl_ma57/C/hsl_ma57rs.data \
+                         > ../test/hsl_ma57/C/hsl_ma57cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma57/C/hsl_ma57cs_$(PRECIS).output
+	$(RM) ./run_hsl_ma57
+	@printf '[ OK ]\n'
+
+#  hsl_ma64
+
+hsl_ma64t: hsl_ma64.o hsl_fa14.o ym11.o ../test/hsl_ma64/hsl_ma64rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma64"
+	$(CP) ../test/hsl_ma64/hsl_ma64rt.f90 $(OBJ)/hsl_ma64rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma64t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma64rt.f90
+	$(RM) $(OBJ)/hsl_ma64rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma64 $(OBJ)/hsl_ma64t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ma64 < ../test/hsl_ma64/hsl_ma64rt.data \
+                         > ../test/hsl_ma64/hsl_ma64t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma64/hsl_ma64t_$(PRECIS).output
+	$(RM) ./run_hsl_ma64 $(OBJ)/hsl_ma64t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_ma77
+
+hsl_ma77t: hsl_ma77 hsl_fa14.o mc47.o mc34.o ym11.o mc54.o \
+          ../test/hsl_ma77/hsl_ma77rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma77"
+	$(CP) ../test/hsl_ma77/hsl_ma77rt.f90 $(OBJ)/hsl_ma77rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma77rt.f90
+	$(RM) $(OBJ)/hsl_ma77rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma77 $(OBJ)/hsl_ma77t_$(PRECIS).o $(LIBS)
+	$(RMOOC)
+	- ./run_hsl_ma77 > ../test/hsl_ma77/hsl_ma77t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma77/hsl_ma77t_$(PRECIS).output
+	[ ! -f ./hsl_ma77rt.capture ] || \
+          $(MV) ./hsl_ma77rt.capture ../test/hsl_ma77/
+	$(RMOOC)
+	$(RM) ./run_hsl_ma77 $(OBJ)/hsl_ma77t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_ma77cs: ../test/hsl_ma77/C/hsl_ma77rs.c
+	echo " Exhaustive test of C function interface to hsl_ma77"
+	$(CP) ../test/hsl_ma77/C/hsl_ma77rs.c $(OBJ)/hsl_ma77cs.c
+	cd $(OBJ) ; $(CC) -o hsl_ma77cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_ma77cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_ma77cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_ma77 $(OBJ)/hsl_ma77cs_$(PRECIS).o $(CLIBS)
+	$(RM) ./factor_integer ./factor_real ./work_real ./temp1 ./delay_real
+	- ./run_hsl_ma77 < ../test/hsl_ma77/C/hsl_ma77rs.data \
+                         > ../test/hsl_ma77/C/hsl_ma77cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma77/C/hsl_ma77cs_$(PRECIS).output
+	[ ! -f ./hsl_ma77rt.capture ] || \
+          $(MV) ./hsl_ma77rt.capture ../test/hsl_ma77/
+	$(RM) ./run_hsl_ma77
+	@printf '[ OK ]\n'
+
+
+#  hsl_ma86
+
+hsl_ma86t: hsl_ma86 hsl_fa14.o mc54.o ym11.o ../test/hsl_ma86/hsl_ma86rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma86"
+	$(CP) ../test/hsl_ma86/hsl_ma86rt.f90 $(OBJ)/hsl_ma86rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma86t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma86rt.f90
+	$(RM) $(OBJ)/hsl_ma86rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma86 $(OBJ)/hsl_ma86t_$(PRECIS).o $(LIBS)
+	./run_hsl_ma86
+	- ./run_hsl_ma86 > ../test/hsl_ma86/hsl_ma86t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma86/hsl_ma86t_$(PRECIS).output
+	$(MV) ./hsl_ma86*.capture ../test/hsl_ma86/
+#	$(RM) ./run_hsl_ma86 $(OBJ)/hsl_ma86t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_ma86cs: ../test/hsl_ma86/C/hsl_ma86rs.c
+	echo " Exhaustive test of C function interface to hsl_ma86"
+	$(CP) ../test/hsl_ma86/C/hsl_ma86rs.c $(OBJ)/hsl_ma86cs.c
+	cd $(OBJ) ; $(CC) -o hsl_ma86cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_ma86cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_ma86cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_ma86 $(OBJ)/hsl_ma86cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_ma86 < ../test/hsl_ma86/C/hsl_ma86rs.data \
+                         > ../test/hsl_ma86/C/hsl_ma86cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma86/C/hsl_ma86cs_$(PRECIS).output
+	$(RM) ./run_hsl_ma86
+	@printf '[ OK ]\n'
+
+#  hsl_ma87
+
+hsl_ma87t: hsl_ma87 hsl_fa14.o mc54.o ym11.o ../test/hsl_ma87/hsl_ma87rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma87"
+	$(CP) ../test/hsl_ma87/hsl_ma87rt.f90 $(OBJ)/hsl_ma87rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma87rt.f90
+	$(RM) $(OBJ)/hsl_ma87rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma87 $(OBJ)/hsl_ma87t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ma87 > ../test/hsl_ma87/hsl_ma87t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma87/hsl_ma87t_$(PRECIS).output
+	$(MV) ./hsl_ma87*.capture ../test/hsl_ma87/
+	$(RM) ./run_hsl_ma87 $(OBJ)/hsl_ma87t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_ma87cs: ../test/hsl_ma87/C/hsl_ma87rs.c
+	echo " Exhaustive test of C function interface to hsl_ma87"
+	$(CP) ../test/hsl_ma87/C/hsl_ma87rs.c $(OBJ)/hsl_ma87cs.c
+	cd $(OBJ) ; $(CC) -o hsl_ma87cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_ma87cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_ma87cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_ma87 $(OBJ)/hsl_ma87cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_ma87 < ../test/hsl_ma87/C/hsl_ma87rs.data \
+                         > ../test/hsl_ma87/C/hsl_ma87cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma87/C/hsl_ma87cs_$(PRECIS).output
+	$(RM) ./run_hsl_ma87
+	@printf '[ OK ]\n'
+
+#  hsl_ma97
+
+hsl_ma97t: hsl_ma97 hsl_fa14.o mc54.o ym11.o ../test/hsl_ma97/hsl_ma97rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_ma97"
+	$(CP) ../test/hsl_ma97/hsl_ma97rt.f90 $(OBJ)/hsl_ma97rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma97t_$(PRECIS).o \
+          $(FFLAGSS) hsl_ma97rt.f90
+	$(RM) $(OBJ)/hsl_ma97rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_ma97 $(OBJ)/hsl_ma97t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_ma97 > ../test/hsl_ma97/hsl_ma97t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma97/hsl_ma97t_$(PRECIS).output
+	$(RM) ./run_hsl_ma97 $(OBJ)/hsl_ma97t_$(PRECIS).o ./we.out ./dl.out
+	@printf '[ OK ]\n'
+
+hsl_ma97cs: ../test/hsl_ma97/C/hsl_ma97rs.c
+	echo " Exhaustive test of C function interface to hsl_ma97"
+	$(CP) ../test/hsl_ma97/C/hsl_ma97rs.c $(OBJ)/hsl_ma97cs.c
+	cd $(OBJ) ; $(CC) -o hsl_ma97cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_ma97cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_ma97cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_ma97 $(OBJ)/hsl_ma97cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_ma97 < ../test/hsl_ma97/C/hsl_ma97rs.data \
+                         > ../test/hsl_ma97/C/hsl_ma97cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_ma97/C/hsl_ma97cs_$(PRECIS).output
+	$(RM) ./run_hsl_ma97
+	@printf '[ OK ]\n'
+
+#  hsl_mc34
+
+hsl_mc34t: hsl_mc34.o hsl_fa14.o mc54.o ym11.o ../test/hsl_mc34/hsl_mc34rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc34"
+	$(CP) ../test/hsl_mc34/hsl_mc34rt.f90 $(OBJ)/hsl_mc34rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc34t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc34rt.f90
+	$(RM) $(OBJ)/hsl_mc34rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc34 $(OBJ)/hsl_mc34t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mc34 < ../test/hsl_mc34/hsl_mc34rt.data \
+                         > ../test/hsl_mc34/hsl_mc34t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc34/hsl_mc34t_$(PRECIS).output
+	$(RM) ./run_hsl_mc34 $(OBJ)/hsl_mc34t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_mc64
+
+hsl_mc64t: hsl_mc64 hsl_mc69.o ym11.o fa14.o hsl_zd11.o \
+          ../test/hsl_mc64/hsl_mc64rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc64"
+	$(CP) ../test/hsl_mc64/hsl_mc64rt.f90 $(OBJ)/hsl_mc64rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc64t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc64rt.f90
+	$(RM) $(OBJ)/hsl_mc64rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc64 $(OBJ)/hsl_mc64t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mc64 > ../test/hsl_mc64/hsl_mc64t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc64/hsl_mc64t_$(PRECIS).output
+	$(RM) ./run_hsl_mc64 $(OBJ)/hsl_mc64t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_mc64cs: hsl_mc64_ciface ../test/hsl_mc64/C/hsl_mc64rs.c
+	echo " Exhaustive test of C function interface to hsl_mc64"
+	$(CP) ../test/hsl_mc64/C/hsl_mc64rs.c $(OBJ)/hsl_mc64cs.c
+	cd $(OBJ) ; $(CC) -o hsl_mc64cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_mc64cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_mc64cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_mc64 $(OBJ)/hsl_mc64cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_mc64 < ../test/hsl_mc64/C/hsl_mc64rs.data \
+                         > ../test/hsl_mc64/C/hsl_mc64cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc64/C/hsl_mc64cs_$(PRECIS).output
+	$(RM) ./run_hsl_mc64
+	@printf '[ OK ]\n'
+
+#  hsl_mc65
+
+hsl_mc65t: hsl_mc65.o hsl_fa14.o hsl_zd11.o ../test/hsl_mc65/hsl_mc65rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc65"
+	$(CP) ../test/hsl_mc65/hsl_mc65rt.f90 $(OBJ)/hsl_mc65rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc65t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc65rt.f90
+	$(RM) $(OBJ)/hsl_mc65rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc65 $(OBJ)/hsl_mc65t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mc65 > ../test/hsl_mc65/hsl_mc65t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc65/hsl_mc65t_$(PRECIS).output
+	$(RM) ./run_hsl_mc65 $(OBJ)/hsl_mc65t_$(PRECIS).o
+	$(RM) ./a_*
+#	$(MV) ./a_* ../test/hsl_mc65/
+	@printf '[ OK ]\n'
+
+#  hsl_mc68
+
+hsl_mc68t: hsl_mc68 fa14.o hsl_mc69.o ym11.o ../test/hsl_mc68/hsl_mc68it.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc68"
+	$(CP) ../test/hsl_mc68/hsl_mc68it.f90 $(OBJ)/hsl_mc68it.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc68t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc68it.f90
+	$(RM) $(OBJ)/hsl_mc68it.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc68 $(OBJ)/hsl_mc68t_$(PRECIS).o $(LIBS)
+	$(CP) ../test/hsl_mc68/hsl_mc68it.data ./
+	- ./run_hsl_mc68 > ../test/hsl_mc68/hsl_mc68t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc68/hsl_mc68t_$(PRECIS).output
+	$(RM) ./run_hsl_mc68 $(OBJ)/hsl_mc68t_$(PRECIS).o ./hsl_mc68it.data
+	@printf '[ OK ]\n'
+
+hsl_mc68cs: hsl_mc68_ciface ../test/hsl_mc68/C/hsl_mc68is.c
+	echo " Exhaustive test of C function interface to hsl_mc68"
+	$(CP) ../test/hsl_mc68/C/hsl_mc68is.c $(OBJ)/hsl_mc68cs.c
+	cd $(OBJ) ; $(CC) -o hsl_mc68cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_mc68cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_mc68cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_mc68 $(OBJ)/hsl_mc68cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_mc68 < ../test/hsl_mc68/C/hsl_mc68is.data \
+                         > ../test/hsl_mc68/C/hsl_mc68cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc68/C/hsl_mc68cs_$(PRECIS).output
+	$(RM) ./run_hsl_mc68
+	@printf '[ OK ]\n'
+
+#  hsl_mc69
+
+hsl_mc69t: hsl_mc69.o fa14.o ../test/hsl_mc69/hsl_mc69rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc69"
+	$(CP) ../test/hsl_mc69/hsl_mc69rt.f90 $(OBJ)/hsl_mc69rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc69t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc69rt.f90
+	$(RM) $(OBJ)/hsl_mc69rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc69 $(OBJ)/hsl_mc69t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mc69 > ../test/hsl_mc69/hsl_mc69t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc69/hsl_mc69t_$(PRECIS).output
+	$(RM) ./run_hsl_mc69 $(OBJ)/hsl_mc69t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_mc78
+
+hsl_mc78t: hsl_mc78.o mc57.o hsl_fa14.o hsl_mc34.o hsl_mc68.o hsl_mc69.o \
+          hsl_zd11.o ../test/hsl_mc78/hsl_mc78it.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc78"
+	$(CP) ../test/hsl_mc78/hsl_mc78it.f90 $(OBJ)/hsl_mc78it.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc78t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc78it.f90
+	$(RM) $(OBJ)/hsl_mc78it.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc78 $(OBJ)/hsl_mc78t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mc78 > ../test/hsl_mc78/hsl_mc78t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc78/hsl_mc78t_$(PRECIS).output
+	$(RM) ./run_hsl_mc78 $(OBJ)/hsl_mc78t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_mc80
+
+hsl_mc80t: hsl_mc80.o hsl_mc34.o hsl_fa14.o hsl_zd11.o \
+          ../test/hsl_mc80/hsl_mc80rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mc80"
+	$(CP) ../test/hsl_mc80/hsl_mc80rt.f90 $(OBJ)/hsl_mc80rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mc80t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mc80rt.f90
+	$(RM) $(OBJ)/hsl_mc80rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mc80 $(OBJ)/hsl_mc80t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mc80 > ../test/hsl_mc80/hsl_mc80t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mc80/hsl_mc80t_$(PRECIS).output
+	$(RM) ./run_hsl_mc80 $(OBJ)/hsl_mc80t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_mi20
+
+hsl_mi20t: hsl_mi20 hsl_zd11.o hsl_fa14.o hsl_mc65.o ym11.o \
+          ../test/hsl_mi20/hsl_mi20rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mi20"
+	$(CP) ../test/hsl_mi20/hsl_mi20rt.f90 $(OBJ)/hsl_mi20rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mi20rt.f90
+	$(RM) $(OBJ)/hsl_mi20rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mi20 $(OBJ)/hsl_mi20t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mi20 > ../test/hsl_mi20/hsl_mi20t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mi20/hsl_mi20t_$(PRECIS).output
+	$(RM) ./run_hsl_mi20 $(OBJ)/hsl_mi20t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_mi20cs: hsl_mi20_ciface ../test/hsl_mi20/C/hsl_mi20rs.c
+	echo " Exhaustive test of C function interface to hsl_mi20"
+	$(CP) ../test/hsl_mi20/C/hsl_mi20rs.c $(OBJ)/hsl_mi20cs.c
+	cd $(OBJ) ; $(CC) -o hsl_mi20cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_mi20cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_mi20cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_mi20 $(OBJ)/hsl_mi20cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_mi20 > ../test/hsl_mi20/C/hsl_mi20cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mi20/C/hsl_mi20cs_$(PRECIS).output
+	$(RM) ./run_hsl_mi20
+	@printf '[ OK ]\n'
+
+#  hsl_mi28
+
+hsl_mi28t: hsl_mi28 metis mc54.o hsl_mc68 hsl_mc69.o hsl_fa14.o ym11.o \
+          ../test/hsl_mi28/hsl_mi28rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mi28"
+	$(CP) ../test/hsl_mi28/hsl_mi28rt.f90 $(OBJ)/hsl_mi28rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mi28rt.f90
+	$(RM) $(OBJ)/hsl_mi28rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mi28 $(OBJ)/hsl_mi28t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mi28
+	- ./run_hsl_mi28 > ../test/hsl_mi28/hsl_mi28t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mi28/hsl_mi28t_$(PRECIS).output
+	$(RM) ./run_hsl_mi28 $(OBJ)/hsl_mi28t_$(PRECIS).o ./we_double.out
+	@printf '[ OK ]\n'
+
+hsl_mi28cs: hsl_mi28 ../test/hsl_mi28/C/hsl_mi28rs.c
+	echo " Exhaustive test of C function interface to hsl_mi28"
+	$(CP) ../test/hsl_mi28/C/hsl_mi28rs.c $(OBJ)/hsl_mi28cs.c
+	cd $(OBJ) ; $(CC) -o hsl_mi28cs_$(PRECIS).o \
+                      $(CFLAGS) hsl_mi28cs.c -I $(OBJ)
+	$(RM) $(OBJ)//hsl_mi28cs.c
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          $(NOFMAIN) -o run_hsl_mi28 $(OBJ)/hsl_mi28cs_$(PRECIS).o $(CLIBS)
+	$(RMOOC)
+	- ./run_hsl_mi28 < ../test/hsl_mi28/C/hsl_mi28rs.data \
+                         > ../test/hsl_mi28/C/hsl_mi28cs_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mi28/C/hsl_mi28cs_$(PRECIS).output
+	$(RM) ./run_hsl_mi28
+	@printf '[ OK ]\n'
+
+#  hsl_mi32
+
+hsl_mi32t: hsl_mi32.o hsl_fa14.o ../test/hsl_mi32/hsl_mi32rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mi32"
+	$(CP) ../test/hsl_mi32/hsl_mi32rt.f90 $(OBJ)/hsl_mi32rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi32t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mi32rt.f90
+	$(RM) $(OBJ)/hsl_mi32rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mi32 $(OBJ)/hsl_mi32t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mi32 > ../test/hsl_mi32/hsl_mi32t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mi32/hsl_mi32t_$(PRECIS).output
+	$(RM) ./run_hsl_mi32 $(OBJ)/hsl_mi32t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_mi35
+
+hsl_mi35t: hsl_mi35 hsl_fa14.o ym11.o ../test/hsl_mi35/hsl_mi35rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_mi35"
+	$(CP) ../test/hsl_mi35/hsl_mi35rt.f90 $(OBJ)/hsl_mi35rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35t_$(PRECIS).o \
+          $(FFLAGSS) hsl_mi35rt.f90
+	$(RM) $(OBJ)/hsl_mi35rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mi35 $(OBJ)/hsl_mi35t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_mi35 > ../test/hsl_mi35/hsl_mi35t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_mi35/hsl_mi35t_$(PRECIS).output
+	$(RM) ./run_hsl_mi35 $(OBJ)/hsl_mi35t_$(PRECIS).o ./we_double.out
+	@printf '[ OK ]\n'
+
+#  hsl_of01
+
+hsl_of01t: hsl_of01.o fa14.o ../test/hsl_of01/hsl_of01rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_of01"
+	$(CP) ../test/hsl_of01/hsl_of01rt.f90 $(OBJ)/hsl_of01rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_of01t_$(PRECIS).o \
+          $(FFLAGSS) hsl_of01rt.f90
+	$(RM) $(OBJ)/hsl_of01rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_of01 $(OBJ)/hsl_of01t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_of01 > ../test/hsl_of01/hsl_of01t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_of01/hsl_of01t_$(PRECIS).output
+	$(RM) ./run_hsl_of01 $(OBJ)/hsl_of01t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_of01it: hsl_of01i.o fa14.o ../test/hsl_of01/hsl_of01it.f90
+	echo " Exhaustive test of subroutine interface to hsl_of01i"
+	$(CP) ../test/hsl_of01/hsl_of01it.f90 $(OBJ)/hsl_of01it.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_of01it_$(PRECIS).o \
+          $(FFLAGSS) hsl_of01it.f90
+	$(RM) $(OBJ)/hsl_of01it.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_of01i $(OBJ)/hsl_of01it_$(PRECIS).o $(LIBS)
+	- ./run_hsl_of01i > ../test/hsl_of01/hsl_of01it_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_of01/hsl_of01it_$(PRECIS).output
+	$(RM) ./run_hsl_of01i $(OBJ)/hsl_of01it_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_zb01
+
+hsl_zb01t: hsl_zb01.o ../test/hsl_zb01/hsl_zb01rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_zb01"
+	$(CP) ../test/hsl_zb01/hsl_zb01rt.f90 $(OBJ)/hsl_zb01rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_zb01t_$(PRECIS).o \
+          $(FFLAGSS) hsl_zb01rt.f90
+	$(RM) $(OBJ)/hsl_zb01rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_zb01 $(OBJ)/hsl_zb01t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_zb01 > ../test/hsl_zb01/hsl_zb01t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_zb01/hsl_zb01t_$(PRECIS).output
+	$(RM) ./run_hsl_zb01 $(OBJ)/hsl_zb01t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+hsl_zb01it: hsl_zb01i.o ../test/hsl_zb01/hsl_zb01it.f90
+	echo " Exhaustive test of subroutine interface to hsl_zb01i"
+	$(CP) ../test/hsl_zb01/hsl_zb01it.f90 $(OBJ)/hsl_zb01it.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_zb01it_$(PRECIS).o \
+          $(FFLAGSS) hsl_zb01it.f90
+	$(RM) $(OBJ)/hsl_zb01it.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_zb01i $(OBJ)/hsl_zb01it_$(PRECIS).o $(LIBS)
+	- ./run_hsl_zb01i > ../test/hsl_zb01/hsl_zb01it_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_zb01/hsl_zb01it_$(PRECIS).output
+	$(RM) ./run_hsl_zb01i $(OBJ)/hsl_zb01it_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  hsl_zd11
+
+hsl_zd11t: hsl_zd11.o ../test/hsl_zd11/hsl_zd11rt.f90
+	echo " Exhaustive test of subroutine interface to hsl_zd11"
+	$(CP) ../test/hsl_zd11/hsl_zd11rt.f90 $(OBJ)/hsl_zd11rt.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_zd11t_$(PRECIS).o \
+          $(FFLAGSS) hsl_zd11rt.f90
+	$(RM) $(OBJ)/hsl_zd11rt.f90
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_zd11 $(OBJ)/hsl_zd11t_$(PRECIS).o $(LIBS)
+	- ./run_hsl_zd11 > ../test/hsl_zd11/hsl_zd11t_$(PRECIS).output 2>&1
+	$(CAT) ../test/hsl_zd11/hsl_zd11t_$(PRECIS).output
+	$(RM) ./run_hsl_zd11 $(OBJ)/hsl_zd11t_$(PRECIS).o
+	@printf '[ OK ]\n'
+
+#  ============
 #  book keeping
+#  ============
 
 clean:
 	@printf ' %-9s\t\t' "Removing $(package) files"
-	$(RMARFILE) $(package)_$(PRECIS).o
+	$(HRMARFILE) $(package)_$(PRECIS).o
 	$(RM) $(OBJ)/$(package)t_$(PRECIS).o $(OBJ)/$(package)s_$(PRECIS).o
 	@printf '[ OK ]\n'
 
@@ -1776,5 +3139,10 @@ cleanall:
 cleanallc:
 	@printf ' %-9s\t' \
           "Removing all $(PRECIS) precision C-interface object and module files"
-	$(RM) $(OBJ)/libgalahad_c.a $(MOD)/*ciface.mod
+	$(RM) $(OBJ)/libhsl_c.a $(MOD)/*ciface.mod
 	@printf '[ OK ]\n'
+
+names: 
+	@echo "HSLSUBSET: $(HSLSUBSET)"
+	@echo "HSLARCHIVESUBSET: $(HSLARCHIVESUBSET)"
+

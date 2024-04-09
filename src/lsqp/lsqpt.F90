@@ -143,7 +143,7 @@
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
    control%stop_c = 10.0_rp_ ** ( - 37 )
 #else
    control%stop_c = 10.0_rp_ ** ( - 80 )

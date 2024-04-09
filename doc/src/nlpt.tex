@@ -86,22 +86,22 @@ Ph. L. Toint, University of Namur, Belgium.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived type
+If it is required to use more than one of the modules at the same time, 
+the derived type
 {\tt NLPT\_problem\_type}, 
 (Section~\ref{galtype})
 must be renamed on one of the {\tt USE} statements.
@@ -215,6 +215,10 @@ respectively, and where the vector inequalities hold componentwise.
 The dual first-order optimality condition is equivalent to
 the condition that $\bmg_L( \bmx,\bmy, \bmz) = 0$.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtype
@@ -227,7 +231,7 @@ The components are:
 \itt{pname} is a scalar variable of type default {\tt CHARACTER( LEN = 10 )},
 that holds the problem's name.
 
-\ittf{n} is a scalar variable of type default \integer, 
+\ittf{n} is a scalar variable of type \integer, 
  that holds the number of optimization variables, $n$.  
 
 \itt{vnames} is a rank-one allocatable array of dimension {\tt n} and type 
@@ -236,12 +240,12 @@ variables. The $j$-th component of {\tt vnames}, $j = 1,  \ldots , n$,
 contains the name of $x_{j}$.  
               
 \ittf{x} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, 
+\realdp, 
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt x}, $j = 1,  \ldots , n$, contains $x_{j}$.  
 
 \ittf{x\_l} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds
+\realdp, that holds
 the vector of lower bounds $\bmx^{l}$ on the variables.
 The $j$-th component of {\tt x\_l}, $j = 1, \ldots , n$, 
 contains $\bmx_{j}^{l}$.
@@ -249,7 +253,7 @@ Infinite bounds are allowed by setting the corresponding
 components of {\tt x\_l} to any value smaller than {\tt -infinity}.
 
 \ittf{x\_u} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds
+\realdp, that holds
 the vector of upper bounds $\bmx^{u}$ on the variables.
 The $j$-th component of {\tt x\_u}, $j = 1, \ldots , n$, 
 contains $\bmx_{j}^{u}$.
@@ -263,7 +267,7 @@ corresponding to the simple bound constraints (see Section~\ref{galopt}).
 The $j$-th component of {\tt z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.  
 
 \itt{x\_status} is  a rank-one allocatable array of dimension {\tt n} and type 
-default \integer, that holds the status of the problem's variables
+\integer, that holds the status of the problem's variables
 corresponding to the presence of their bounds. The $j$-th component of 
 {\tt x\_status}, $j = 1,  \ldots ,  n$, contains the status of $\bmx_j$.
 Typical values are
@@ -272,37 +276,37 @@ Typical values are
 {\sym GALAHAD\_ELIMINATED}, {\sym GALAHAD\_ACTIVE}, 
 {\sym GALAHAD\_INACTIVE} or {\sym GALAHAD\_UNDEFINED}.
         
-\ittf{f} is a scalar variable of type default \realdp,
+\ittf{f} is a scalar variable of type \realdp,
 that holds the current value of the objective function.
 
 \ittf{g} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds the gradient $\bmg$ 
+\realdp, that holds the gradient $\bmg$ 
 of of the objective function.
 The $j$-th component of 
 {\tt g}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
 
-\itt{H\_type} is a scalar variable of type default \integer, 
+\itt{H\_type} is a scalar variable of type \integer, 
 that specifies the type of storage used for the lower triangle of the 
 objective function's or Lagrangian's Hessian $\bmH$
 Possible values are {\sym GALAHAD\_DENSE}, {\sym GALAHAD\_COORDINATE} 
 or {\sym GALAHAD\_SPARSE\_BY\_ROWS}.
 
-\itt{H\_ne} is a scalar variable of type default \integer, 
+\itt{H\_ne} is a scalar variable of type \integer, 
 that holds the number of non-zero entries in the lower triangle of the
 objective function's or Lagrangian's Hessian $\bmH$.
 
-\itt{H\_val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{H\_val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
 of the Hessian matrix $\bmH$ in any of the 
 storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{H\_row} is a rank-one allocatable array of type default \integer,
+\itt{H\_row} is a rank-one allocatable array of type \integer,
 that holds the row indices of the {\bf lower triangular} part of $\bmH$ 
 in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}). 
 It need not be allocated for either of the other two schemes.
 
-\itt{H\_col} is a rank-one allocatable array variable of type default \integer,
+\itt{H\_col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of the {\bf lower triangular} part of 
 $\bmH$ in either the sparse co-ordinate 
 (see Section~\ref{coordinate}), or the sparse row-wise 
@@ -310,13 +314,13 @@ $\bmH$ in either the sparse co-ordinate
 It need not be allocated when the dense storage scheme is used.
 
 \itt{H\_ptr} is a rank-one allocatable array of dimension {\tt n+1} and type 
-default \integer, that holds the starting position of 
+\integer, that holds the starting position of 
 each row of the {\bf lower triangular} part of $\bmH$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
 other schemes are used.
 
-\ittf{m} is a scalar variable of type default \integer, 
+\ittf{m} is a scalar variable of type \integer, 
  that holds the number of general linear constraints, $m$.
 
 \ittf{c} is a rank-one allocatable array of dimension {\tt m} and type default 
@@ -326,14 +330,14 @@ The $i$-th component of {\tt c}, $i = 1,  \ldots ,  m$, contains
 $\bmc_{i}(\bmx)$.  
 
 \ittf{c\_l} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+\realdp, that holds the vector of lower bounds $\bmc^{l}$ 
 on the general constraints. The $i$-th component of 
 {\tt c\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
 Infinite bounds are allowed by setting the corresponding 
 components of {\tt c\_l} to any value smaller than {\tt -infinity}. 
 
 \ittf{c\_u} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp, that holds the vector of upper bounds $\bmc^{u}$ 
+\realdp, that holds the vector of upper bounds $\bmc^{u}$ 
 on the general constraints. The $i$-th component of 
 {\tt c\_u}, $i = 1,  \ldots ,  m$, contains $\bmc_{i}^{u}$.
 Infinite bounds are allowed by setting the corresponding 
@@ -350,13 +354,13 @@ The $i$-th component of {\tt linear} is {\tt .TRUE.}
 iff the $i$-th constraint is linear.
 
 \ittf{y} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp, that holds
+\realdp, that holds
 the values $\bmy$ of estimates  of the Lagrange multipliers
 corresponding to the general constraints (see Section~\ref{galopt}).
 The $i$-th component of {\tt y}, $i = 1,  \ldots ,  m$, contains $\bmy_{i}$.  
 
 \itt{c\_status} is  a rank-one allocatable array of dimension {\tt m} and type 
-default \integer, that holds the status of the problem's constraints
+\integer, that holds the status of the problem's constraints
 corresponding to the presence of their bounds. The $i$-th component of 
 {\tt c\_status}, $j = 1,  \ldots ,  m$, contains the status of $\bmc_i$.
 Typical values are
@@ -365,40 +369,40 @@ Typical values are
 {\sym GALAHAD\_ELIMINATED}, {\sym GALAHAD\_ACTIVE}, 
 {\sym GALAHAD\_INACTIVE} or {\sym GALAHAD\_UNDEFINED}.
         
-\itt{J\_type} is a scalar variable of type default \integer, 
+\itt{J\_type} is a scalar variable of type \integer, 
 that specifies the type of storage used for the 
 constraints' Jacobian $\bmJ$.
 Possible values are {\sym GALAHAD\_DENSE}, {\sym GALAHAD\_COORDINATE} 
 or {\sym GALAHAD\_SPARSE\_BY\_ROWS}.
               
-\itt{J\_ne} is a scalar variable of type default \integer, 
+\itt{J\_ne} is a scalar variable of type \integer, 
 that holds the number of non-zero entries in the 
 constraints' Jacobian $\bmJ$.
 
-\itt{J\_val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{J\_val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the Jacobian matrix $\bmJ$ in any of the 
 storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{J\_row} is a rank-one allocatable array of type default \integer,
+\itt{J\_row} is a rank-one allocatable array of type \integer,
 that holds the row indices of $\bmJ$ in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}). 
 It need not be allocated for either of the other two schemes.
 
-\itt{J\_col} is a rank-one allocatable array variable of type default \integer,
+\itt{J\_col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of $\bmJ$ in either the sparse co-ordinate 
 (see Section~\ref{coordinate}), or the sparse row-wise 
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated when the dense storage scheme is used.
 
 \itt{J\_ptr} is a rank-one allocatable array of dimension {\tt m+1} and type 
-default \integer, that holds the 
+\integer, that holds the 
 starting position of each row of $\bmJ$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
 other schemes are used.
 
 \ittf{gL} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds the gradient $\bmg_L$ 
+\realdp, that holds the gradient $\bmg_L$ 
 of of the problem's Lagrangian $\bmL$ with respect to $\bmx$.
 The $j$-th component of 
 {\tt gL}, $j = 1,  \ldots ,  n$, contains $[\bmg_L]_{j}$.
@@ -457,7 +461,7 @@ by using the call
 \itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
 that holds the problem for which statistics must be written.
 
-\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+\ittf{out} is a scalar \intentin\ argument of type \integer, that
 holds the device number on which problem statistics should be written.
 \end{description}
 
@@ -483,7 +487,7 @@ by using the call
 that holds the problem for which variables values, bounds and duals must be
 written.
 
-\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+\ittf{out} is a scalar \intentin\ argument of type \integer, that
 holds the device number on which problem variables values, bounds and duals
 should be written.
 \end{description}
@@ -513,7 +517,7 @@ by using the call
 that holds the problem for which constraints values, bounds and multipliers
 must be written.
 
-\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+\ittf{out} is a scalar \intentin\ argument of type \integer, that
 holds the device number on which problem constraints values, bounds and
 multipliers should be written.
 \end{description}
@@ -540,10 +544,10 @@ The most important data of a problem can be output by the call
 \itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
 that holds the problem whose data must be written.
 
-\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+\ittf{out} is a scalar \intentin\ argument of type \integer, that
 holds the device number on which the problem data should be written.
 
-\itt{print\_level} is a scalar \intentin\ argument of type default \integer,
+\itt{print\_level} is a scalar \intentin\ argument of type \integer,
 that holds the level of details required for output. Possible values are:
 \begin{description}
 \item[\sym GALAHAD\_SILENT:] no output is produced;
@@ -608,16 +612,16 @@ vectors can be obatined by the call
 NLPT\_problem\_type}, that holds the Jacobian matrix to transform. Note that
 we must have {problem\%J\_type} $=$ {\sym GALAHAD\_COORDINATE}.
 
-\itt{perm} is an allocatable to a vector \intentout\ of type default \integer\ and
+\itt{perm} is an allocatable to a vector \intentout\ of type \integer\ and
 dimension equal to {\tt problem\%J\_nnz}, that returns the permutation of the
 elements of {\tt problem\%J\_val} that must be applied to transform the
 Jacobian from co-ordinate storage to sparse-by-rows.
 
-\ittf{col} is an allocatable to a vector \intentout\ of type default \integer\ and
+\ittf{col} is an allocatable to a vector \intentout\ of type \integer\ and
 dimension {\tt problem\%J\_ne} whose $k$-th component is the column index of 
 the $k$-th element of {\tt problem\%J\_val} after permutation by {\tt perm}.
 
-\ittf{ptr} is an allocatable to a vector \intentout\ of type default \integer\ and
+\ittf{ptr} is an allocatable to a vector \intentout\ of type \integer\ and
 dimension {\tt problem\%m} $+1$ whose $i$-the component is the index in {\tt
 problem\%J\_val} (after permutation by {\tt perm}) of the first entry of row
 $i$. Moreover,
@@ -644,16 +648,16 @@ vectors can be obtained by the call
 NLPT\_problem\_type}, that holds the Jacobian matrix to transform. Note that
 we must have {problem\%J\_type} $=$ {\sym GALAHAD\_COORDINATE}.
 
-\itt{perm} is an allocatable to a vector \intentout\ of type default \integer\ and
+\itt{perm} is an allocatable to a vector \intentout\ of type \integer\ and
 dimension equal to {\tt problem\%J\_nnz}, that returns the permutation of the
 elements of {\tt problem\%J\_val} that must be applied to transform the
 Jacobian from co-ordinate storage to sparse-by-columns.
 
-\ittf{col} is an allocatable to a vector \intentout\ of type default \integer\ and
+\ittf{col} is an allocatable to a vector \intentout\ of type \integer\ and
 dimension {\tt problem\%J\_ne} whose $k$-th component is the row index of 
 the $k$-th element of {\tt problem\%J\_val} after permutation by {\tt perm}.
 
-\ittf{ptr} is an allocatable to a vector \intentout\ of type default \integer\ and
+\ittf{ptr} is an allocatable to a vector \intentout\ of type \integer\ and
 dimension {\tt problem\%m} $+1$ whose $i$-the component is the index in {\tt
 problem\%J\_val} (after permutation by {\tt perm}) of the first entry of column
 $i$. Moreover,

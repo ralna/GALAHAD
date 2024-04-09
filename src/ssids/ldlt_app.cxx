@@ -1,6 +1,6 @@
 /** \file \copyright 2016 The Science and Technology Facilities Council
  *  (STFC) \licence BSD licence, see LICENCE file for details \author
- *  Jonathan Hogg \version GALAHAD 4.3 - 2024-02-03 AT 61:10 GMT
+ *  Jonathan Hogg \version GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT
  */
 #include "ssids_cpu_kernels_ldlt_app.hxx"
 
@@ -32,7 +32,7 @@
 #include "ssids_cpu_kernels_common.hxx"
 #include "ssids_cpu_kernels_wrappers.hxx"
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define ldlt_app_internal ldlt_app_internal_sgl
 #define ldlt_app_factor_mem_required ldlt_app_factor_mem_required_sgl
 #else

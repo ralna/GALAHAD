@@ -15,20 +15,20 @@ sbls_inform_type structure
 	struct sbls_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structsbls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structsbls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structsbls__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structsbls__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structsbls__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`sort_status<doxid-structsbls__inform__type_1acb9e43ddb17591d930fc31faa3e6f69f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sort_status<doxid-structsbls__inform__type_1acb9e43ddb17591d930fc31faa3e6f69f>`;
 		int64_t :ref:`factorization_integer<doxid-structsbls__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
 		int64_t :ref:`factorization_real<doxid-structsbls__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		int :ref:`preconditioner<doxid-structsbls__inform__type_1adf7719f1a4491459e361e80a00c55656>`;
-		int :ref:`factorization<doxid-structsbls__inform__type_1a108359f1209601e6c6074c215e3abd8b>`;
-		int :ref:`d_plus<doxid-structsbls__inform__type_1a9e94a7e5692a82e8c239c857be5b80ea>`;
-		int :ref:`rank<doxid-structsbls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`preconditioner<doxid-structsbls__inform__type_1adf7719f1a4491459e361e80a00c55656>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization<doxid-structsbls__inform__type_1a108359f1209601e6c6074c215e3abd8b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`d_plus<doxid-structsbls__inform__type_1a9e94a7e5692a82e8c239c857be5b80ea>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`rank<doxid-structsbls__inform__type_1a6cfd95afd0afebd625b889fb6e58371c>`;
 		bool :ref:`rank_def<doxid-structsbls__inform__type_1aad74061a53e6daf7ca65b2e82290871b>`;
 		bool :ref:`perturbed<doxid-structsbls__inform__type_1a6e04ee4d6dc38d2c5231d39d4f21be75>`;
-		int :ref:`iter_pcg<doxid-structsbls__inform__type_1a1694e6d072d1a8d796f85f4da8a054af>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_residual<doxid-structsbls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter_pcg<doxid-structsbls__inform__type_1a1694e6d072d1a8d796f85f4da8a054af>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_residual<doxid-structsbls__inform__type_1a1f77ff3a30a89cc31d4de01c54343e86>`;
 		bool :ref:`alternative<doxid-structsbls__inform__type_1a48c07c7da1803ed8af25ca949f4854b5>`;
 		struct :ref:`sbls_time_type<doxid-structsbls__time__type>` :ref:`time<doxid-structsbls__inform__type_1aaa565e03cbc8470593f946cf00beb639>`;
 		struct :ref:`sls_inform_type<doxid-structsls__inform__type>` :ref:`sls_inform<doxid-structsbls__inform__type_1a0a9d7a6860aca6894830ccaabe3ceac0>`;
@@ -50,7 +50,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See SBLS_form_and_factorize for details
 
@@ -60,7 +60,7 @@ return status. See SBLS_form_and_factorize for details
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -80,7 +80,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int sort_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` sort_status
 
 the return status from the sorting routines
 
@@ -110,7 +110,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int preconditioner
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` preconditioner
 
 the preconditioner used
 
@@ -120,7 +120,7 @@ the preconditioner used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization
 
 the factorization used
 
@@ -130,7 +130,7 @@ the factorization used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int d_plus
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` d_plus
 
 how many of the diagonals in the factorization are positive
 
@@ -140,7 +140,7 @@ how many of the diagonals in the factorization are positive
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int rank
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` rank
 
 the computed rank of $A$
 
@@ -170,7 +170,7 @@ has the used preconditioner been perturbed to guarantee correct inertia?
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iter_pcg
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iter_pcg
 
 the total number of projected CG iterations required
 
@@ -180,7 +180,7 @@ the total number of projected CG iterations required
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_residual
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_residual
 
 the norm of the residual
 

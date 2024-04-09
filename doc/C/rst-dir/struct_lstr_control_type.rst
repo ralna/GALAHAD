@@ -16,21 +16,21 @@ lstr_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structlstr__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structlstr__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structlstr__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structlstr__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`start_print<doxid-structlstr__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
-		int :ref:`stop_print<doxid-structlstr__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
-		int :ref:`print_gap<doxid-structlstr__control__type_1a31edaef6b722ef2721633484405a649b>`;
-		int :ref:`itmin<doxid-structlstr__control__type_1aa385135920896920e910796e164637eb>`;
-		int :ref:`itmax<doxid-structlstr__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
-		int :ref:`itmax_on_boundary<doxid-structlstr__control__type_1a884ad04ad051e3dbe3d05f56c8b411c8>`;
-		int :ref:`bitmax<doxid-structlstr__control__type_1a3a99fb44bd37e908c09195de8dc8e455>`;
-		int :ref:`extra_vectors<doxid-structlstr__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_relative<doxid-structlstr__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_absolute<doxid-structlstr__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`fraction_opt<doxid-structlstr__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`time_limit<doxid-structlstr__control__type_1a935b207da67876f712cee43d1e055d75>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structlstr__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structlstr__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structlstr__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`start_print<doxid-structlstr__control__type_1ae0eb21dc79b53664e45ce07c9109b3aa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stop_print<doxid-structlstr__control__type_1a9a3d9960a04602d2a18009c82ae2124e>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_gap<doxid-structlstr__control__type_1a31edaef6b722ef2721633484405a649b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itmin<doxid-structlstr__control__type_1aa385135920896920e910796e164637eb>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itmax<doxid-structlstr__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itmax_on_boundary<doxid-structlstr__control__type_1a884ad04ad051e3dbe3d05f56c8b411c8>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`bitmax<doxid-structlstr__control__type_1a3a99fb44bd37e908c09195de8dc8e455>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_vectors<doxid-structlstr__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_relative<doxid-structlstr__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_absolute<doxid-structlstr__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`fraction_opt<doxid-structlstr__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`time_limit<doxid-structlstr__control__type_1a935b207da67876f712cee43d1e055d75>`;
 		bool :ref:`steihaug_toint<doxid-structlstr__control__type_1a33316102c81d1b21da04eb70850aae95>`;
 		bool :ref:`space_critical<doxid-structlstr__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structlstr__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
@@ -62,7 +62,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -72,7 +72,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -82,7 +82,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -92,7 +92,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int start_print
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` start_print
 
 any printing will start on this iteration
 
@@ -102,7 +102,7 @@ any printing will start on this iteration
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int stop_print
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` stop_print
 
 any printing will stop on this iteration
 
@@ -112,7 +112,7 @@ any printing will stop on this iteration
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_gap
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_gap
 
 the number of iterations between printing
 
@@ -122,7 +122,7 @@ the number of iterations between printing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int itmin
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` itmin
 
 the minimum number of iterations allowed (-ve = no bound)
 
@@ -132,7 +132,7 @@ the minimum number of iterations allowed (-ve = no bound)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int itmax
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` itmax
 
 the maximum number of iterations allowed (-ve = no bound)
 
@@ -142,7 +142,7 @@ the maximum number of iterations allowed (-ve = no bound)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int itmax_on_boundary
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` itmax_on_boundary
 
 the maximum number of iterations allowed once the boundary has been encountered (-ve = no bound)
 
@@ -152,7 +152,7 @@ the maximum number of iterations allowed once the boundary has been encountered 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int bitmax
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` bitmax
 
 the maximum number of Newton inner iterations per outer iteration allowe (-ve = no bound)
 
@@ -162,7 +162,7 @@ the maximum number of Newton inner iterations per outer iteration allowe (-ve = 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int extra_vectors
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` extra_vectors
 
 the number of extra work vectors of length n used
 
@@ -172,7 +172,7 @@ the number of extra work vectors of length n used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_relative
 
 the iteration stops successfully when $\|A^Tr\|$ is less than max( stop_relative \* $\|A^Tr_{initial} \|$, stop_absolute )
 
@@ -182,7 +182,7 @@ the iteration stops successfully when $\|A^Tr\|$ is less than max( stop_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_absolute
 
 see stop_relative
 
@@ -192,7 +192,7 @@ see stop_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` fraction_opt
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` fraction_opt
 
 an estimate of the solution that gives at least .fraction_opt times the optimal objective value will be found
 
@@ -202,7 +202,7 @@ an estimate of the solution that gives at least .fraction_opt times the optimal 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` time_limit
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` time_limit
 
 the maximum elapsed time allowed (-ve means infinite)
 

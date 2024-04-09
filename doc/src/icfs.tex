@@ -39,25 +39,22 @@ enhanced for modern fortran by N. I. M. Gould, Rutherford Appleton Laboratory.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-The user is {\bf strongly advised} to use the double
-precision version unless single precision corresponds to 8-byte arithmetic.
-
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type}
@@ -74,6 +71,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -99,7 +100,7 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_analyse},
 {\tt \packagename\_estimate}
@@ -107,20 +108,20 @@ and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_analyse} and {\tt \packagename\_estimate}
 is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $> 01$, details of any data errors encountered
 will be reported.
 The default is {\tt print\_level = 0}.
 
-\itt{icfs\_vectors} is a scalar variable of type default \integer, that holds
+\itt{icfs\_vectors} is a scalar variable of type \integer, that holds
 the number of extra vectors of length $n$ required by the
 incomplete Cholesky preconditioner.
 Usually, the larger the number, the
@@ -128,7 +129,7 @@ better the preconditioner, but the more space and effort required to
 use it. Any negative value will be regarded as {\tt 0}.
 The default is {\tt icfs\_vectors = 10}.
 
-\itt{shift} is a scalar variable of type default \realdp, that holds
+\itt{shift} is a scalar variable of type \realdp, that holds
 an initial estimate of the shift $\alpha$ used so that the incomplete
 factorization of $\bmA + \bmD$ is positive definite, where $\bmD$ is
 a diagonal matrix whose entries are no larger than $\alpha$.
@@ -169,22 +170,22 @@ the calculation. The components of
 {\tt \packagename\_time\_type}
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time spent in the package.
 
-\itt{factorize} is a scalar variable of type default \realdp, that gives
+\itt{factorize} is a scalar variable of type \realdp, that gives
  the CPU time spent factorizing the required matrices.
 
-\itt{solve} is a scalar variable of type default \realdp, that gives
+\itt{solve} is a scalar variable of type \realdp, that gives
  the CPU time spent solving the resulting triangular systems.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+\itt{clock\_factorize} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent factorizing the required matrices.
 
-\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+\itt{clock\_solve} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent solving the resulting triangular systems.
 
 \end{description}
@@ -201,11 +202,11 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 See Section~\ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -214,7 +215,7 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{shift} is a scalar variable of type default \realdp, that holds
+\itt{shift} is a scalar variable of type \realdp, that holds
 the final value of the shift $\alpha$ used so that the incomplete
 factorization of $\bmA + \bmD$ is positive definite, where $\bmD$ is
 a diagonal matrix whose entries are no larger than $\alpha$.
@@ -324,12 +325,12 @@ $\bmA$ are determined, is performed as follows:
 \vspace*{-2mm}
 \begin{description}
 \ittf{n}
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to $n$ the dimension of the matrix $\bmA$.
 \restrictions {\tt n} $> 0$.
 
 \ittf{PTR} is a scalar \intentin\ rank-one array argument of type
-default \integer\ and dimension {\tt n + 1}, whose {\tt j}-th component
+\integer\ and dimension {\tt n + 1}, whose {\tt j}-th component
 gives the starting address for list of nonzero values and their
 corresponding row  indices in column {\tt j} of the
 {\bf strict lower triangular part} of $\bmA$ (The entry $a_{i,j}$ is in
@@ -341,16 +342,16 @@ Note that {\tt PTR(n+1)} points to the first position beyond that needed
 to store $\bmA$.
 
 \ittf{ROW} is a scalar \intentin\ rank-one array argument of type
-default \integer\ and dimension at least {\tt  PTR(n+1)-1},
+\integer\ and dimension at least {\tt  PTR(n+1)-1},
 that contains the row indices of the strict lower triangular part of $\bmA$
 in the compressed column storage format described above.
 
 \itt{DIAG} is a scalar \intentin\ rank-one array argument of type
-default \realdp\ and dimension {\tt n}, whose {\tt j}-th component
+\realdp\ and dimension {\tt n}, whose {\tt j}-th component
 contains the value of the {\tt j}-th diagonal of $\bmA$.
 
 \ittf{VAL} is a scalar \intentin\ rank-one array argument of type
-default \realdp\ and dimension at least {\tt  PTR(n+1)-1},
+\realdp\ and dimension at least {\tt  PTR(n+1)-1},
 that contains the values of the entries strict lower triangular part of $\bmA$
 that correspond to the row indices described above.
 
@@ -396,7 +397,7 @@ exactly as described and input to {\tt \packagename\_factorize},
 and must not have been changed in the interim.
 
 \ittf{X} is a scalar \intentinout\ rank-one array argument of type
-default \realdp, and dimension {\tt n}, that  must be set on input so that
+\realdp, and dimension {\tt n}, that  must be set on input so that
 {\tt X(}$i${\tt)} contains the component $b_i$, $i = 1, \ldots,$ {\tt n}
 of the vector $\bmb$. On output, this will have been overwritten by the
 desired vector $\bmx$.
@@ -600,7 +601,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

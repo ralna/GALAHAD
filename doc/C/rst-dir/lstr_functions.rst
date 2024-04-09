@@ -14,8 +14,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -25,9 +26,9 @@ overview of functions provided
 	// global functions
 
 	void :ref:`lstr_initialize<doxid-galahad__lstr_8h_1ae423bf7ffc77c89f461448ca1f5c286c>`(
-		void** data,
+		void **data,
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`lstr_read_specfile<doxid-galahad__lstr_8h_1a3d3fa989fe4c3b40cd7e296249d2205d>`(
@@ -37,25 +38,25 @@ overview of functions provided
 
 	void :ref:`lstr_import_control<doxid-galahad__lstr_8h_1a1a8ad63d944dc046fd2040554d6d01e5>`(
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`lstr_solve_problem<doxid-galahad__lstr_8h_1af3355e5a8df63a9c7173eb974a1e7562>`(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` radius,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[]
 	);
 
-	void :ref:`lstr_information<doxid-galahad__lstr_8h_1a5929f00ea00af253ede33a6749451481>`(void** data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status);
+	void :ref:`lstr_information<doxid-galahad__lstr_8h_1a5929f00ea00af253ede33a6749451481>`(void **data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`lstr_terminate<doxid-galahad__lstr_8h_1aa198189942e179e52699e1fedfcdf9d1>`(
-		void** data,
+		void **data,
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
 		struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform
 	);
@@ -65,25 +66,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -95,9 +108,9 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void lstr_initialize(
-		void** data,
+		void **data,
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Set default control values and initialize private data
@@ -123,7 +136,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -171,8 +184,8 @@ relate to the components of the control structure.
 
 	void lstr_import_control(
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Import control parameters prior to solution.
@@ -198,7 +211,7 @@ Import control parameters prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -211,14 +224,14 @@ Import control parameters prior to solution.
 	:class: doxyrest-title-code-block
 
 	void lstr_solve_problem(
-		void** data,
-		int* status,
-		int m,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` radius,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` radius,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[]
 	)
 
 Solve the trust-region least-squares problem using reverse communication.
@@ -239,7 +252,7 @@ Solve the trust-region least-squares problem using reverse communication.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  This must be set to
 		  
@@ -303,32 +316,32 @@ Solve the trust-region least-squares problem using reverse communication.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of equations (i.e., rows of $A$), $m > 0$
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of equations (i.e., rows of $A$), $m > 0$
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables (i.e., columns of $A$), $n > 0$
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables (i.e., columns of $A$), $n > 0$
 
 	*
 		- radius
 
-		- is a scalar of type double, that holds the trust-region radius, $\Delta > 0$
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the trust-region radius, $\Delta > 0$
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the solution $x$. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- u
 
-		- is a one-dimensional array of size m and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that should be used and reset appropriately when status = 1 to 5 as directed by status.
 
 .. index:: pair: function; lstr_information
 .. _doxid-galahad__lstr_8h_1a5929f00ea00af253ede33a6749451481:
@@ -336,7 +349,7 @@ Solve the trust-region least-squares problem using reverse communication.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void lstr_information(void** data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, int* status)
+	void lstr_information(void **data, struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -361,7 +374,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -373,7 +386,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void lstr_terminate(
-		void** data,
+		void **data,
 		struct :ref:`lstr_control_type<doxid-structlstr__control__type>`* control,
 		struct :ref:`lstr_inform_type<doxid-structlstr__inform__type>`* inform
 	)

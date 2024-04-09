@@ -20,8 +20,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -31,27 +32,27 @@ overview of functions provided
 
 	// global functions
 
-	void :ref:`fdc_initialize<doxid-galahad__fdc_8h_1a09ed47873fc4b54eac5b10958939459b>`(void** data, struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, int* status);
+	void :ref:`fdc_initialize<doxid-galahad__fdc_8h_1a09ed47873fc4b54eac5b10958939459b>`(void **data, struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 	void :ref:`fdc_read_specfile<doxid-galahad__fdc_8h_1aa5e20e6a3ed015cdd927c1bfc7f00a2a>`(struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, const char specfile[]);
 
 	void :ref:`fdc_find_dependent_rows<doxid-galahad__fdc_8h_1a37ea723b9a1b8799e7971344858d020a>`(
 		struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control,
-		void** data,
+		void **data,
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform,
-		int* status,
-		int m,
-		int n,
-		int A_ne,
-		const int A_col[],
-		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
-		int* n_depen,
-		int depen[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` b[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *n_depen,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` depen[]
 	);
 
 	void :ref:`fdc_terminate<doxid-galahad__fdc_8h_1a9c0167379258891dee32b35e0529b9f9>`(
-		void** data,
+		void **data,
 		struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control,
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform
 	);
@@ -61,25 +62,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -90,7 +103,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void fdc_initialize(void** data, struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, int* status)
+	void fdc_initialize(void **data, struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -115,7 +128,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -160,18 +173,18 @@ relate to the components of the control structure.
 
 	void fdc_find_dependent_rows(
 		struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control,
-		void** data,
+		void **data,
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform,
-		int* status,
-		int m,
-		int n,
-		int A_ne,
-		const int A_col[],
-		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` b[],
-		int* n_depen,
-		int depen[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` b[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *n_depen,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` depen[]
 	)
 
 Find dependent rows and, if any, check if $A x = b$ is consistent
@@ -202,7 +215,7 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  Possible exit values are:
 		  
@@ -248,47 +261,47 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of rows of $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of rows of $A$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of columns of $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of columns of $A$.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of nonzero entries in $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of nonzero entries in $A$.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
+		- is a one-dimensional array of size A_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of $A$ in a row-wise storage scheme. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of $A$, as well as the total number of entries.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the $A$ ordered as in A_col and A_ptr.
+		- is a one-dimensional array of size a_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the $A$ ordered as in A_col and A_ptr.
 
 	*
 		- b
 
-		- is a one-dimensional array of size m and type double, that holds the linear term $b$ in the constraints. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $b$ in the constraints. The i-th component of b, i = 0, ... , m-1, contains $b_i$.
 
 	*
 		- n_depen
 
-		- is a scalar variable of type int, that holds the number of dependent constraints, if any.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of dependent constraints, if any.
 
 	*
 		- depen
 
-		- is a one-dimensional array of size m and type int, whose first n_depen components contain the indices of dependent constraints.
+		- is a one-dimensional array of size m and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, whose first n_depen components contain the indices of dependent constraints.
 
 .. index:: pair: function; fdc_terminate
 .. _doxid-galahad__fdc_8h_1a9c0167379258891dee32b35e0529b9f9:
@@ -297,7 +310,7 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 	:class: doxyrest-title-code-block
 
 	void fdc_terminate(
-		void** data,
+		void **data,
 		struct :ref:`fdc_control_type<doxid-structfdc__control__type>`* control,
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>`* inform
 	)
