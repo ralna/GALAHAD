@@ -176,8 +176,6 @@ libgalahad_double_src = []
 
 # Fortran files *.f
 libgalahad_f_src = []
-libgalahad_f_single_src = []
-libgalahad_f_double_src = []
 
 # Fortran files that contain programs
 galahad_binaries = []
@@ -454,7 +452,7 @@ if build_single
   endif
   pp_sources_single = gen_single.process(to_process_single)
 
-  to_process_f_single = [libgalahad_f_src, libgalahad_f_single_src]
+  to_process_f_single = [libgalahad_f_src]
   pp_sources_f_single = gen_f_single.process(to_process_f_single)
 
   sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
@@ -497,7 +495,7 @@ if build_double
   endif
   pp_sources_double = gen_double.process(to_process_double)
 
-  to_process_f_double = [libgalahad_f_src, libgalahad_f_double_src]
+  to_process_f_double = [libgalahad_f_src]
   pp_sources_f_double = gen_f_double.process(to_process_f_double)
 
   sources_double = [pp_sources_double, pp_sources_f_double, libgalahad_cpp_src, libgalahad_cc_src]
