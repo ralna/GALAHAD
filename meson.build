@@ -253,7 +253,7 @@ if host_machine.system() != 'linux'
 endif
 
 extra_args_single = ['-DSINGLE']
-extra_args_double = ['']
+extra_args_double = ['-DDOUBLE']
 
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
