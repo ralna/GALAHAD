@@ -1,26 +1,5 @@
 libgalahad_cutest_dummy_src = files('cutest_dummy.F90')
 
-if not libhsl.found()
-  libgalahad_c_single_src += files()
-
-  libgalahad_c_double_src += files()
-
-  libgalahad_c_src += files()
-
-  libgalahad_single_src += files()
-
-  libgalahad_double_src += files()
-
-  libgalahad_src += files()
-
-  libgalahad_f_src += files()
-
-  libgalahad_f_single_src += files()
-
-  libgalahad_f_double_src += files()
-
-endif
-
 if not libwsmp.found()
   libgalahad_src += files('wsmp.F90')
 endif
