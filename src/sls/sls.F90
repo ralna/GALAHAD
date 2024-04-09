@@ -3982,7 +3982,7 @@
          data%spm%dof = 1
          CALL spmUpdateComputedFields( data%spm )
          CALL spmAlloc( data%spm )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, svalues = data%VAL )
 #else

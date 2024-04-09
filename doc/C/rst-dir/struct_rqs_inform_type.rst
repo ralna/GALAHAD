@@ -15,16 +15,16 @@ rqs_inform_type structure
 	struct rqs_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structrqs__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structrqs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		int :ref:`factorizations<doxid-structrqs__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structrqs__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structrqs__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorizations<doxid-structrqs__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
 		int64_t :ref:`max_entries_factors<doxid-structrqs__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
-		int :ref:`len_history<doxid-structrqs__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structrqs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj_regularized<doxid-structrqs__inform__type_1a1631e243108715d623e2ddb83310fa33>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`x_norm<doxid-structrqs__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`multiplier<doxid-structrqs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`pole<doxid-structrqs__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`len_history<doxid-structrqs__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structrqs__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj_regularized<doxid-structrqs__inform__type_1a1631e243108715d623e2ddb83310fa33>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structrqs__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`multiplier<doxid-structrqs__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`pole<doxid-structrqs__inform__type_1ad2dc9016b1d2b00a970ec28129f7000d>`;
 		bool :ref:`dense_factorization<doxid-structrqs__inform__type_1a107cef1ccaad53efc9d7a578d400f324>`;
 		bool :ref:`hard_case<doxid-structrqs__inform__type_1a22215075b7081ccac9f121daf07a0f7e>`;
 		char :ref:`bad_alloc<doxid-structrqs__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
@@ -49,7 +49,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 reported return status:
 
@@ -91,7 +91,7 @@ reported return status:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 STAT value after allocate failure.
 
@@ -101,7 +101,7 @@ STAT value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorizations
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorizations
 
 the number of factorizations performed
 
@@ -121,7 +121,7 @@ the maximum number of entries in the factors
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int len_history
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` len_history
 
 the number of $(\|x\|_M,\lambda)$ pairs in the history
 
@@ -131,7 +131,7 @@ the number of $(\|x\|_M,\lambda)$ pairs in the history
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
 the value of the quadratic function
 
@@ -141,7 +141,7 @@ the value of the quadratic function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj_regularized
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj_regularized
 
 the value of the regularized quadratic function
 
@@ -151,7 +151,7 @@ the value of the regularized quadratic function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_norm
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` x_norm
 
 the $M$ -norm of $x$, $\|x\|_M$
 
@@ -161,7 +161,7 @@ the $M$ -norm of $x$, $\|x\|_M$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` multiplier
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` multiplier
 
 the Lagrange multiplier corresponding to the regularization
 
@@ -171,7 +171,7 @@ the Lagrange multiplier corresponding to the regularization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` pole
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` pole
 
 a lower bound max $(0,-\lambda_1)$, where $\lambda_1$ is the left-most eigenvalue of $(H,M)$
 

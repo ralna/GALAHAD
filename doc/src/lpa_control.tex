@@ -1,17 +1,17 @@
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate} is suppressed if
 {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -19,18 +19,18 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that specifies
+\itt{start\_print} is a scalar variable of type \integer, that specifies
 the first iteration for which printing will occur in {\tt \packagename\_solve}.
 If {\tt start\_print} is negative, printing will occur from the outset.
 The default is {\tt start\_print = -1}.
 
-\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+\itt{stop\_print} is a scalar variable of type \integer, that specifies
 the last iteration for which printing will occur in  {\tt \packagename\_solve}.
 If {\tt stop\_print} is negative, printing will occur once it has been
 started by {\tt start\_print}.
 The default is {\tt stop\_print = -1}.
 
-\itt{maxit} is a scalar variable of type default \integer, that holds the
+\itt{maxit} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
 The default is {\tt maxit = 1000}.
 
@@ -40,35 +40,35 @@ the maximum number of iterative refinements per linear system solved
 that may be attempted.
 The default is {\tt max\_iterative\_refinements = 0}.
 
-\itt{min\_real\_factor\_size} is a scalar variable of type default \integer,
+\itt{min\_real\_factor\_size} is a scalar variable of type \integer,
 that specifies the amount of real storage that will initially be
 allocated for the factors and other data.
 The default is {\tt min\_real\_factor\_size = 10000},
 and this default is used if {\tt min\_real\_factor\_size < 1}.
 
-\itt{min\_integer\_factor\_size} is a scalar variable of type default \integer,
+\itt{min\_integer\_factor\_size} is a scalar variable of type \integer,
 that specifies the amount of integer storage that will initially be
 allocated for the factors and other data.
 The default is {\tt min\_integer\_factor\_size = 20000},
 and this default is used if {\tt min\_integer\_factor\_size < 1}.
 
-\itt{random\_number\_seed} is a scalar variable of type default \integer,
+\itt{random\_number\_seed} is a scalar variable of type \integer,
 that holds the initial seed used by the random-number generator.
 The default is {\tt random\_number\_seed = 0}.
 
-\itt{infinity} is a scalar variable of type default \realdp, that is used to
+\itt{infinity} is a scalar variable of type \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
-\itt{tol\_data} is a scalar variable of type default \realdp, that hold the
+\itt{tol\_data} is a scalar variable of type \realdp, that hold the
 maximum violation that a constraint is allowed and be still considered to be
 feasible.
 The default is {\tt tol\_data =} $u^{2/3}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{feas\_tol} is a scalar variable of type default \realdp, that hold the
+\itt{feas\_tol} is a scalar variable of type \realdp, that hold the
 maximum violation that a constraint is allowed and be still considered to be
 feasible.
 The default is {\tt feas\_tol =} $u^{2/3}$,
@@ -81,7 +81,7 @@ stability of the factorizations of the basis matrices that arise as the
 iteration proceeds.
 The default is {\tt relative\_pivot\_tolerance = 0.1}.
 
-\itt{growth\_limit} is a scalar variable of type default \realdp, that
+\itt{growth\_limit} is a scalar variable of type \realdp, that
 specifies the maximum growth in the entries of the factors of a basis
 matrix that will be tolerated before a refactorization is required.
 The default is {\tt growth\_limit = $1/u^{2/3}$},
@@ -98,7 +98,7 @@ The default is {\tt zero\_tolerance = $u$},
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{change\_tolerance} is a scalar variable of type default \realdp, that
+\itt{change\_tolerance} is a scalar variable of type \realdp, that
 provides a tolerance whose purpose is to assess when a
 change to a solution component may be neglected. Specifically
 any change that is smaller than this tolerence times the
@@ -108,7 +108,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
 \itt{identical\_bounds\_tol}
-is a scalar variable of type default \realdp.
+is a scalar variable of type \realdp.
 Every pair of constraint bounds
 $(c_{i}^{l}, c_{i}^{u})$ or $(x_{j}^{l}, x_{j}^{u})$
 that is closer than {\tt identical\_bounds\_tol}
@@ -119,12 +119,12 @@ The default is {\tt identical\_bounds\_tol =} $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+\itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
 
-\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+\itt{clock\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.

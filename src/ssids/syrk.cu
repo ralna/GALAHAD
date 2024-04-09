@@ -2,7 +2,7 @@
  * Copyright (c) 2013 NVIDIA
  * Authors: Evgueni Ovtchinnikov (STFC)
  *          Jeremy Appleyard (NVIDIA)
- * This version: GALAHAD 4.3 - 2024-02-03 AT 09:40 GMT
+ * This version: GALAHAD 4.3 - 2024-02-18 AT 08:40 GMT
  */
 
 #include <cuda_runtime.h>
@@ -13,7 +13,7 @@
 #include "ssids_gpu_kernels_datatypes.h"
 #include "spral_cuda_cuda_check.h"
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #define loadDevToSmem_generic loadDevToSmem_generic_single
 #define multisyrk_type multisyrk_type_single
 #define multielm_data multielm_data_single

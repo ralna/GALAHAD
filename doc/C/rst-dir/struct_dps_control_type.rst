@@ -16,17 +16,17 @@ dps_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structdps__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structdps__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structdps__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`problem<doxid-structdps__control__type_1a540c0b4e7d398c31890f62ad69cd551c>`;
-		int :ref:`print_level<doxid-structdps__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`new_h<doxid-structdps__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
-		int :ref:`taylor_max_degree<doxid-structdps__control__type_1a338fa3956816be173e13bfd4198c4078>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`eigen_min<doxid-structdps__control__type_1a133028d7b94139b129034f5b820ffdef>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`lower<doxid-structdps__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`upper<doxid-structdps__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_normal<doxid-structdps__control__type_1a3573530258a38cc836b106b9f7a54565>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_absolute_normal<doxid-structdps__control__type_1a02066d2241f2971e375ca4a56532bc2c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structdps__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structdps__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`problem<doxid-structdps__control__type_1a540c0b4e7d398c31890f62ad69cd551c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structdps__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`new_h<doxid-structdps__control__type_1ae60c5b5b987dd62f25253ba4164813f5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`taylor_max_degree<doxid-structdps__control__type_1a338fa3956816be173e13bfd4198c4078>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`eigen_min<doxid-structdps__control__type_1a133028d7b94139b129034f5b820ffdef>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`lower<doxid-structdps__control__type_1a965ee2cfb38687d6f158d35586595eed>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`upper<doxid-structdps__control__type_1ab8b6572a40141ada6d5f0455eb806d41>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_normal<doxid-structdps__control__type_1a3573530258a38cc836b106b9f7a54565>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_absolute_normal<doxid-structdps__control__type_1a02066d2241f2971e375ca4a56532bc2c>`;
 		bool :ref:`goldfarb<doxid-structdps__control__type_1a732b25a17a3b8c219c0a3a948520278c>`;
 		bool :ref:`space_critical<doxid-structdps__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structdps__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
@@ -61,7 +61,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -71,7 +71,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -81,7 +81,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int problem
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` problem
 
 unit to write problem data into file problem_file
 
@@ -91,7 +91,7 @@ unit to write problem data into file problem_file
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -101,7 +101,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int new_h
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` new_h
 
 how much of $H$ has changed since the previous call. Possible values are
 
@@ -117,7 +117,7 @@ how much of $H$ has changed since the previous call. Possible values are
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int taylor_max_degree
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` taylor_max_degree
 
 maximum degree of Taylor approximant allowed
 
@@ -127,7 +127,7 @@ maximum degree of Taylor approximant allowed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` eigen_min
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` eigen_min
 
 smallest allowable value of an eigenvalue of the block diagonal factor of $H$
 
@@ -137,7 +137,7 @@ smallest allowable value of an eigenvalue of the block diagonal factor of $H$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` lower
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` lower
 
 lower and upper bounds on the multiplier, if known
 
@@ -147,7 +147,7 @@ lower and upper bounds on the multiplier, if known
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` upper
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` upper
 
 see lower
 
@@ -157,7 +157,7 @@ see lower
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_normal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_normal
 
 stop trust-region solution when $| ||x||_M - \delta | \leq$ max( .stop_normal \* delta, .stop_absolute_normal )
 
@@ -167,7 +167,7 @@ stop trust-region solution when $| ||x||_M - \delta | \leq$ max( .stop_normal \*
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_absolute_normal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_absolute_normal
 
 see stop_normal
 

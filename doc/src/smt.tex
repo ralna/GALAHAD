@@ -32,22 +32,22 @@ the type {\tt ZD11\_type} available from the HSL package {\tt ZD11}.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived type
+If it is required to use more than one of the modules at the same time, 
+the derived type
 {\tt \packagename\_type} 
 (Section~\ref{galtype}),
 the subroutine
@@ -56,6 +56,10 @@ and the function
 {\tt \packagename\_get} 
 (Section~\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -66,36 +70,36 @@ application, only those components which are needed will be set.
 The components are:
 
 \begin{description}
-\ittf{id} is an allocatable array of rank one and type default \character\, that  
-may be used to hold the name of the matrix. 
+\ittf{id} is an allocatable array of rank one and type default \character\, 
+that may be used to hold the name of the matrix. 
  
-\ittf{type} is an allocatable array of rank one and type default \character\, that  
-may be used to hold a key which indicates the type (or kind) of the matrix in 
-question.  
+\ittf{type} is an allocatable array of rank one and type default \character\, 
+that may be used to hold a key which indicates the type (or kind) of the 
+matrix in question.  
  
-\ittf{m} is a scalar component of type default \integer\, 
+\ittf{m} is a scalar component of type \integer\, 
 that may be used to hold the number of rows in the matrix. 
  
-\ittf{n} is a scalar component of type default \integer\, 
+\ittf{n} is a scalar component of type \integer\, 
 that may be used to hold the number of columns in the matrix. 
  
-\ittf{ne} is a scalar component of type default \integer\, 
+\ittf{ne} is a scalar component of type \integer\, 
 that may be used to hold the number of entries in the matrix. 
  
 \ittf{row} is an allocatable array of rank one and  
-type default \integer\, that may be used to hold 
+type \integer\, that may be used to hold 
 the row indices of the entries of the matrix. 
  
 \ittf{col} is an allocatable array of rank one and  
-type default \integer\, that may be used to hold 
+type \integer\, that may be used to hold 
 the column indices of the entries of the matrix. 
  
 \ittf{val} is an allocatable array of rank one and  
-type default \realdp\, that may be used to hold 
+type \realdp\, that may be used to hold 
 the numerical values of the entries of the matrix. 
  
 \ittf{ptr} is an allocatable array of rank one and  
-type default \integer\, that may be used to hold 
+type \integer\, that may be used to hold 
 the starting positions of each row in a row-wise storage scheme, 
 or the starting positions of each column in a column-wise storage  
 scheme. 
@@ -141,7 +145,7 @@ with any character length.
 
 \itt{stat} is an 
 %\optional, 
-\intentout\ argument of type default \integer.
+\intentout\ argument of type \integer.
 %If present, 
 An {\tt ALLOCATE} statement with this as its {\tt STAT=}
 variable is executed and a successful allocation will be indicated

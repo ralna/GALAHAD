@@ -15,13 +15,13 @@ llst_inform_type structure
 	struct llst_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structllst__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structllst__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
-		int :ref:`factorizations<doxid-structllst__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
-		int :ref:`len_history<doxid-structllst__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`r_norm<doxid-structllst__inform__type_1ae908410fabf891cfd89626c3605c38ca>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`x_norm<doxid-structllst__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`multiplier<doxid-structllst__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structllst__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structllst__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorizations<doxid-structllst__inform__type_1a9a6a5a0de7d7a6048b4170a768c0c86f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`len_history<doxid-structllst__inform__type_1a2087c1ee7c5859aa738d2f07ba91b4a6>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`r_norm<doxid-structllst__inform__type_1ae908410fabf891cfd89626c3605c38ca>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`x_norm<doxid-structllst__inform__type_1a32b3ba51ed1b0d7941f34e736da26ae3>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`multiplier<doxid-structllst__inform__type_1ac8bfb1ed777319ef92b7039c66f9a9b0>`;
 		char :ref:`bad_alloc<doxid-structllst__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 		struct :ref:`llst_time_type<doxid-structllst__time__type>` :ref:`time<doxid-structllst__inform__type_1a10b8942e28c4ade61bd53f705e70b05f>`;
 		struct :ref:`llst_history_type<doxid-structllst__history__type>` :ref:`history<doxid-structllst__inform__type_1a486763b587db55dd7984ae315c4a6513>`[100];
@@ -45,7 +45,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 reported return status:
 
@@ -83,7 +83,7 @@ reported return status:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 STAT value after allocate failure.
 
@@ -93,7 +93,7 @@ STAT value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorizations
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorizations
 
 the number of factorizations performed
 
@@ -103,7 +103,7 @@ the number of factorizations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int len_history
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` len_history
 
 the number of ($\|x\|_S$, $\lambda$) pairs in the history
 
@@ -113,7 +113,7 @@ the number of ($\|x\|_S$, $\lambda$) pairs in the history
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` r_norm
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` r_norm
 
 corresponding value of the two-norm of the residual, $\|A x(\lambda) - b\|$
 
@@ -123,7 +123,7 @@ corresponding value of the two-norm of the residual, $\|A x(\lambda) - b\|$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_norm
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` x_norm
 
 the S-norm of x, $\|x\|_S$
 
@@ -133,7 +133,7 @@ the S-norm of x, $\|x\|_S$
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` multiplier
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` multiplier
 
 the Lagrange multiplier corresponding to the trust-region constraint
 

@@ -1,0 +1,15 @@
+%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%
+
+\galkinds
+We use the terms integer and real to refer to the fortran
+keywords {\tt REAL(rp\_)} and {\tt INTEGER(ip\_)}, where 
+{\tt rp\_} and {\tt ip\_} are the relevant kind values for the
+real and integer types employed by the particular module in use. 
+The former are equivalent to
+default {\tt REAL} for the single precision versions and 
+{\tt DOUBLE PRECISION} for the double precision cases, and 
+correspond to {\tt rp\_ = real32} and {\tt rp\_ = real64},
+respectively, as supplied by the fortran {\tt iso\_fortran\_env} module.
+The latter are default (32-bit) and long (64-bit) integers, and
+correspond to {\tt ip\_ = int32} and {\tt ip\_ = int64},
+respectively, again from the {\tt iso\_fortran\_env} module.

@@ -95,7 +95,7 @@ PROGRAM TEST_PARDISO
 ! IPARM( 20 ) = 0 ! Output: Numbers of CG Iterations
 ! IPARM( 27 ) = 1 ! check matrix
 ! IPARM( 28 ) = 0 ! double precision, = 1 is single precision
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
   IPARM( 28 ) = 1
 #else
   IPARM( 28 ) = 0

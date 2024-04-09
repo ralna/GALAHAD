@@ -96,14 +96,14 @@
 
    SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,    &
                                ldx, info )
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        USE GALAHAD_KINDS, ONLY : ipc_, spc_
 #else
        USE GALAHAD_KINDS, ONLY : ipc_, dpc_
 #endif
      USE spmf_enums, ONLY : spmatrix_t, spm_int_t
      IMPLICIT NONE
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
      REAL ( KIND = spc_ ), INTENT( IN ) :: eps
 #else
      REAL ( KIND = dpc_ ), INTENT( IN ) :: eps

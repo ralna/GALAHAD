@@ -128,7 +128,7 @@
       REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
       REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
       REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
       REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 7 )
 #else
       REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 15 )

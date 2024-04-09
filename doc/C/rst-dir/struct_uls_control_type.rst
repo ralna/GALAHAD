@@ -16,30 +16,30 @@ uls_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structuls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structuls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`warning<doxid-structuls__control__type_1af44472f3bdd4c3af6ed5465266b25312>`;
-		int :ref:`out<doxid-structuls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structuls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`print_level_solver<doxid-structuls__control__type_1afc17ef86601030a3cb1c7edb7a79a39f>`;
-		int :ref:`initial_fill_in_factor<doxid-structuls__control__type_1a9a5f5bbcbc09508812a16fee01fc812d>`;
-		int :ref:`min_real_factor_size<doxid-structuls__control__type_1a60c3d0376bbe5c06260509a9be31c562>`;
-		int :ref:`min_integer_factor_size<doxid-structuls__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structuls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`warning<doxid-structuls__control__type_1af44472f3bdd4c3af6ed5465266b25312>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structuls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structuls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level_solver<doxid-structuls__control__type_1afc17ef86601030a3cb1c7edb7a79a39f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`initial_fill_in_factor<doxid-structuls__control__type_1a9a5f5bbcbc09508812a16fee01fc812d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`min_real_factor_size<doxid-structuls__control__type_1a60c3d0376bbe5c06260509a9be31c562>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`min_integer_factor_size<doxid-structuls__control__type_1addaddc306c33f5d7e6ebf7eeeab2612e>`;
 		int64_t :ref:`max_factor_size<doxid-structuls__control__type_1ae7e9983ad0ee9b1e837f3e1cacc9f4e9>`;
-		int :ref:`blas_block_size_factorize<doxid-structuls__control__type_1aa2177c655d92533f17fcff58482e52c1>`;
-		int :ref:`blas_block_size_solve<doxid-structuls__control__type_1a1af3c20cdeaaee431f309395f9f09564>`;
-		int :ref:`pivot_control<doxid-structuls__control__type_1a7489428a42ce1420b4891f638153c99f>`;
-		int :ref:`pivot_search_limit<doxid-structuls__control__type_1a9a4b5f33dbbc1f6e9aa81dee63af5d2e>`;
-		int :ref:`minimum_size_for_btf<doxid-structuls__control__type_1ac1bd945b4d891a5f407f98afccb2c357>`;
-		int :ref:`max_iterative_refinements<doxid-structuls__control__type_1ab044fd598767830ddc06560a91b80936>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`blas_block_size_factorize<doxid-structuls__control__type_1aa2177c655d92533f17fcff58482e52c1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`blas_block_size_solve<doxid-structuls__control__type_1a1af3c20cdeaaee431f309395f9f09564>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivot_control<doxid-structuls__control__type_1a7489428a42ce1420b4891f638153c99f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`pivot_search_limit<doxid-structuls__control__type_1a9a4b5f33dbbc1f6e9aa81dee63af5d2e>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`minimum_size_for_btf<doxid-structuls__control__type_1ac1bd945b4d891a5f407f98afccb2c357>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_iterative_refinements<doxid-structuls__control__type_1ab044fd598767830ddc06560a91b80936>`;
 		bool :ref:`stop_if_singular<doxid-structuls__control__type_1a5d1b79218a7bf1f16c3195835a311195>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`array_increase_factor<doxid-structuls__control__type_1a6189cbfe4360772c9fa6b554e93a9b2b>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`switch_to_full_code_density<doxid-structuls__control__type_1a95f87bc195563b7a846fd33107fbe09c>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`array_decrease_factor<doxid-structuls__control__type_1abee09e4efae03be7d0d1a8503b338ce7>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`relative_pivot_tolerance<doxid-structuls__control__type_1a65344e4192516e9b621cc7416f09045c>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`absolute_pivot_tolerance<doxid-structuls__control__type_1aa5e25bdcf567fac1fb496199a7c06d5a>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`zero_tolerance<doxid-structuls__control__type_1afb83ea8401da6498362914aa88ae823f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`acceptable_residual_relative<doxid-structuls__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`acceptable_residual_absolute<doxid-structuls__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`array_increase_factor<doxid-structuls__control__type_1a6189cbfe4360772c9fa6b554e93a9b2b>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`switch_to_full_code_density<doxid-structuls__control__type_1a95f87bc195563b7a846fd33107fbe09c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`array_decrease_factor<doxid-structuls__control__type_1abee09e4efae03be7d0d1a8503b338ce7>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`relative_pivot_tolerance<doxid-structuls__control__type_1a65344e4192516e9b621cc7416f09045c>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`absolute_pivot_tolerance<doxid-structuls__control__type_1aa5e25bdcf567fac1fb496199a7c06d5a>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`zero_tolerance<doxid-structuls__control__type_1afb83ea8401da6498362914aa88ae823f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`acceptable_residual_relative<doxid-structuls__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`acceptable_residual_absolute<doxid-structuls__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
 		char :ref:`prefix<doxid-structuls__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
 	};
 .. _details-structuls__control__type:
@@ -68,7 +68,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -78,7 +78,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int warning
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` warning
 
 unit for warning messages
 
@@ -88,7 +88,7 @@ unit for warning messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -98,7 +98,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -108,7 +108,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level_solver
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level_solver
 
 controls level of diagnostic output from external solver
 
@@ -118,7 +118,7 @@ controls level of diagnostic output from external solver
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int initial_fill_in_factor
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` initial_fill_in_factor
 
 prediction of factor by which the fill-in will exceed the initial number of nonzeros in $A$
 
@@ -128,7 +128,7 @@ prediction of factor by which the fill-in will exceed the initial number of nonz
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int min_real_factor_size
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` min_real_factor_size
 
 initial size for real array for the factors and other data
 
@@ -138,7 +138,7 @@ initial size for real array for the factors and other data
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int min_integer_factor_size
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` min_integer_factor_size
 
 initial size for integer array for the factors and other data
 
@@ -158,7 +158,7 @@ maximum size for real array for the factors and other data
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int blas_block_size_factorize
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` blas_block_size_factorize
 
 level 3 blocking in factorize
 
@@ -168,7 +168,7 @@ level 3 blocking in factorize
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int blas_block_size_solve
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` blas_block_size_solve
 
 level 2 and 3 blocking in solve
 
@@ -178,7 +178,7 @@ level 2 and 3 blocking in solve
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int pivot_control
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` pivot_control
 
 pivot control:
 
@@ -198,7 +198,7 @@ pivot control:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int pivot_search_limit
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` pivot_search_limit
 
 number of rows/columns pivot selection restricted to (0 = no restriction)
 
@@ -208,7 +208,7 @@ number of rows/columns pivot selection restricted to (0 = no restriction)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int minimum_size_for_btf
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` minimum_size_for_btf
 
 the minimum permitted size of blocks within the block-triangular form
 
@@ -218,7 +218,7 @@ the minimum permitted size of blocks within the block-triangular form
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_iterative_refinements
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_iterative_refinements
 
 maximum number of iterative refinements allowed
 
@@ -238,7 +238,7 @@ stop if the matrix is found to be structurally singular
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` array_increase_factor
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` array_increase_factor
 
 factor by which arrays sizes are to be increased if they are too small
 
@@ -248,7 +248,7 @@ factor by which arrays sizes are to be increased if they are too small
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` switch_to_full_code_density
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` switch_to_full_code_density
 
 switch to full code when the density exceeds this factor
 
@@ -258,7 +258,7 @@ switch to full code when the density exceeds this factor
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` array_decrease_factor
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` array_decrease_factor
 
 if previously allocated internal workspace arrays are greater than array_decrease_factor times the currently required sizes, they are reset to current requirements
 
@@ -268,7 +268,7 @@ if previously allocated internal workspace arrays are greater than array_decreas
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` relative_pivot_tolerance
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` relative_pivot_tolerance
 
 pivot threshold
 
@@ -278,7 +278,7 @@ pivot threshold
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` absolute_pivot_tolerance
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` absolute_pivot_tolerance
 
 any pivot small than this is considered zero
 
@@ -288,7 +288,7 @@ any pivot small than this is considered zero
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` zero_tolerance
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` zero_tolerance
 
 any entry smaller than this in modulus is reset to zero
 
@@ -298,7 +298,7 @@ any entry smaller than this in modulus is reset to zero
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` acceptable_residual_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` acceptable_residual_relative
 
 refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
@@ -308,7 +308,7 @@ refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( accept
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` acceptable_residual_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` acceptable_residual_absolute
 
 see acceptable_residual_relative
 

@@ -19,8 +19,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -30,7 +31,7 @@ overview of functions provided
 	// global functions
 
 	void :ref:`lhs_initialize<doxid-galahad__lhs_8h_1ae5e561917c238f90b8f6549a80c9d3d8>`(
-		void** data,
+		void **data,
 		struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform
 	);
@@ -38,20 +39,20 @@ overview of functions provided
 	void :ref:`lhs_read_specfile<doxid-galahad__lhs_8h_1a38254f580fde3732f4f4e83e08180e63>`(struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control, const char specfile[]);
 
 	void :ref:`lhs_ihs<doxid-galahad__lhs_8h_1a2a2e504e820685237f3ec3f8c97722ad>`(
-		int n_dimen,
-		int n_points,
-		int* seed,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_dimen,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_points,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *seed,
 		int** X,
 		const struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform,
-		void** data
+		void **data
 	);
 
-	void :ref:`lhs_get_seed<doxid-galahad__lhs_8h_1add3dc91a7fe9b311898e516798d81e14>`(int* seed);
-	void :ref:`lhs_information<doxid-galahad__lhs_8h_1a5366dfb6b11cd47fbdb407ecbfcf60a9>`(void** data, struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, int* status);
+	void :ref:`lhs_get_seed<doxid-galahad__lhs_8h_1add3dc91a7fe9b311898e516798d81e14>`(int *seed);
+	void :ref:`lhs_information<doxid-galahad__lhs_8h_1a5366dfb6b11cd47fbdb407ecbfcf60a9>`(void **data, struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`lhs_terminate<doxid-galahad__lhs_8h_1a24f8433561128e5c05e588d053b22f29>`(
-		void** data,
+		void **data,
 		struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform
 	);
@@ -61,25 +62,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -91,7 +104,7 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void lhs_initialize(
-		void** data,
+		void **data,
 		struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform
 	)
@@ -159,13 +172,13 @@ relate to the components of the control structure.
 	:class: doxyrest-title-code-block
 
 	void lhs_ihs(
-		int n_dimen,
-		int n_points,
-		int* seed,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_dimen,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_points,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *seed,
 		int** X,
 		const struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform,
-		void** data
+		void **data
 	)
 
 The improved distributed hyper-cube sampling algorithm.
@@ -200,22 +213,22 @@ Sampling, American Institute of Aeronautics and Astronautics Paper
 	*
 		- n_dimen
 
-		- is a scalar variable of type int that specifies the spatial dimension
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>` that specifies the spatial dimension
 
 	*
 		- n_points
 
-		- is a scalar variable of type int that specifies the number of points to be generated
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>` that specifies the number of points to be generated
 
 	*
 		- seed
 
-		- is a scalar variable of type int, that gives a seed for the random number generator used
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives a seed for the random number generator used
 
 	*
 		- X
 
-		- is an array variable of type int with dimensions [n_dimen][n_points] that gives the hyper-cube points
+		- is an array variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>` with dimensions [n_dimen][n_points] that gives the hyper-cube points
 
 	*
 		- control
@@ -238,7 +251,7 @@ Sampling, American Institute of Aeronautics and Astronautics Paper
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void lhs_get_seed(int* seed)
+	void lhs_get_seed(int *seed)
 
 Get a seed for the random number generator.
 
@@ -252,7 +265,7 @@ Get a seed for the random number generator.
 	*
 		- seed
 
-		- is a scalar variable of type int that gives the pseudorandom seed value.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>` that gives the pseudorandom seed value.
 
 .. index:: pair: function; lhs_information
 .. _doxid-galahad__lhs_8h_1a5366dfb6b11cd47fbdb407ecbfcf60a9:
@@ -260,7 +273,7 @@ Get a seed for the random number generator.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void lhs_information(void** data, struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, int* status)
+	void lhs_information(void **data, struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -285,7 +298,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -297,7 +310,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void lhs_terminate(
-		void** data,
+		void **data,
 		struct :ref:`lhs_control_type<doxid-structlhs__control__type>`* control,
 		struct :ref:`lhs_inform_type<doxid-structlhs__inform__type>`* inform
 	)

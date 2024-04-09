@@ -16,10 +16,10 @@ slls_time_type structure
 	struct slls_time_type {
 		// components
 	
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`total<doxid-structslls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`analyse<doxid-structslls__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`factorize<doxid-structslls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`solve<doxid-structslls__time__type_1a4c971b10c915041b89daa05a29125376>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structslls__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`analyse<doxid-structslls__time__type_1a9c5b9155e1665977103d8c32881d9f00>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorize<doxid-structslls__time__type_1a79e62dbb4cbb6e99d82167e60c703015>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`solve<doxid-structslls__time__type_1a4c971b10c915041b89daa05a29125376>`;
 	};
 .. _details-structslls__time__type:
 
@@ -37,7 +37,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` total
 
 the total CPU time spent in the package
 
@@ -47,7 +47,7 @@ the total CPU time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` analyse
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` analyse
 
 the CPU time spent analysing the required matrices prior to factorization
 
@@ -57,7 +57,7 @@ the CPU time spent analysing the required matrices prior to factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` factorize
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` factorize
 
 the CPU time spent factorizing the required matrices
 
@@ -67,7 +67,7 @@ the CPU time spent factorizing the required matrices
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` solve
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` solve
 
 the CPU time spent in the linear solution phase
 

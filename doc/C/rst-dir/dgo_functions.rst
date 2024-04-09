@@ -18,8 +18,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -29,92 +30,92 @@ overview of functions provided
 
 	// function calls
 
-	void :ref:`dgo_initialize<doxid-galahad__dgo_8h_1a80425d4671e565a45c13aa026f6897ef>`(void** data, struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control, int* status);
+	void :ref:`dgo_initialize<doxid-galahad__dgo_8h_1a80425d4671e565a45c13aa026f6897ef>`(void **data, struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 	void :ref:`dgo_read_specfile<doxid-galahad__dgo_8h_1ab8ba227e6d624a0197afab9f77bbe66a>`(struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control, const char specfile[]);
 
 	void :ref:`dgo_import<doxid-galahad__dgo_8h_1ace7cbe696d8be7026753681d9b7cd149>`(
 		struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[]
 	);
 
 	void :ref:`dgo_reset_control<doxid-galahad__dgo_8h_1ab52e88675fc811f7e9bc38148d42e932>`(
 		struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`dgo_solve_with_mat<doxid-galahad__dgo_8h_1a3b573f5a56c7162383a757221a5b7a36>`(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_h,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
+		void **data,
+		void *userdata,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_g,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_h,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_hprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_prec
 	);
 
 	void :ref:`dgo_solve_without_mat<doxid-galahad__dgo_8h_1a6ea7cfa79c25e784d21e10cc26ed9954>`(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], int, const int[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], int*, int[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_shprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
+		void **data,
+		void *userdata,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_g,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_hprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, const int[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], int*, int[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_shprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_prec
 	);
 
 	void :ref:`dgo_solve_reverse_with_mat<doxid-galahad__dgo_8h_1a02f408b215596c01b0e3836dfa301b9f>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[]
 	);
 
 	void :ref:`dgo_solve_reverse_without_mat<doxid-galahad__dgo_8h_1a878a7d98d55794fa38f885a5d76aa4f0>`(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		int index_nz_v[],
-		int* nnz_v,
-		const int index_nz_u[],
-		int nnz_u
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` index_nz_v[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nnz_v,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` index_nz_u[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` nnz_u
 	);
 
-	void :ref:`dgo_information<doxid-galahad__dgo_8h_1aea0c208de08f507be7a31fe3ab7d3b91>`(void** data, struct :ref:`dgo_inform_type<doxid-structdgo__inform__type>`* inform, int* status);
+	void :ref:`dgo_information<doxid-galahad__dgo_8h_1aea0c208de08f507be7a31fe3ab7d3b91>`(void **data, struct :ref:`dgo_inform_type<doxid-structdgo__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`dgo_terminate<doxid-galahad__dgo_8h_1ad12337a0c7ad3ac74e7f8c0783fbbfab>`(
-		void** data,
+		void **data,
 		struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control,
 		struct :ref:`dgo_inform_type<doxid-structdgo__inform__type>`* inform
 	);
@@ -125,25 +126,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -154,7 +167,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void dgo_initialize(void** data, struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control, int* status)
+	void dgo_initialize(void **data, struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -179,7 +192,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -224,16 +237,16 @@ relate to the components of the control structure.
 
 	void dgo_import(
 		struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
 		const char H_type[],
-		int ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[]
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[]
 	)
 
 Import problem data into internal storage prior to solution.
@@ -259,7 +272,7 @@ Import problem data into internal storage prior to solution.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **1**
                     The import was successful, and the package is ready
@@ -290,17 +303,17 @@ Import problem data into internal storage prior to solution.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of x_l, $j = 0, \ldots, n-1$, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x^l$ of the lower bounds on the optimization variables $x$. The j-th component of x_l, $j = 0, \ldots, n-1$, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of x_u, $j = 0, \ldots, n-1$, contains $x^u_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x^u$ of the upper bounds on the optimization variables $x$. The j-th component of x_u, $j = 0, \ldots, n-1$, contains $x^u_j$.
 
 	*
 		- H_type
@@ -310,22 +323,22 @@ Import problem data into internal storage prior to solution.
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL
 
 .. index:: pair: function; dgo_reset_control
 .. _doxid-galahad__dgo_8h_1ab52e88675fc811f7e9bc38148d42e932:
@@ -335,8 +348,8 @@ Import problem data into internal storage prior to solution.
 
 	void dgo_reset_control(
 		struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control,
-		void** data,
-		int* status
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Reset control parameters after import if required.
@@ -362,7 +375,7 @@ Reset control parameters after import if required.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * 1. The import was successful, and the package is ready for the solve phase
 
@@ -373,18 +386,18 @@ Reset control parameters after import if required.
 	:class: doxyrest-title-code-block
 
 	void dgo_solve_with_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_h,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
+		void **data,
+		void *userdata,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_g,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, :ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_h,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_hprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_prec
 	)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a partition-and-bound trust-region method.
@@ -412,7 +425,7 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -494,22 +507,22 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- eval_f
@@ -519,7 +532,7 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_f( int n, const double x[], double *f, const void *userdata )
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_f( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` *f, const void *userdata )
 		  
 		  The value of the objective function $f(x)$ evaluated at x= $x$ must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
 
@@ -531,7 +544,7 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_g( int n, const double x[], double g[], const void *userdata )
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_g( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` g[], const void *userdata )
 		  
 		  The components of the gradient $g = \nabla_x f(x$) of the objective function evaluated at x= $x$ must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
 
@@ -543,7 +556,7 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_h( int n, int ne, const double x[], double h[],
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_h( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`ipc_<doxid-galahad__ipc_8h_>` ne, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` h[],
 		  	            const void *userdata )
 		  
 		  The nonzeros of the Hessian $H = \nabla_{xx}f(x)$ of the objective function evaluated at x= $x$ must be assigned to h in the same order as presented to dgo_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_h`` via the structure ``userdata``.
@@ -556,7 +569,7 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_prec( int n, const double x[], double u[], const double v[],
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_prec( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` u[], const :ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		  	               const void *userdata )
 		  
 		  The product $u = P(x) v$ of the user's preconditioner $P(x)$ evaluated at $x$ with the vector v = $v$, the result $u$ must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
@@ -568,17 +581,17 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 	:class: doxyrest-title-code-block
 
 	void dgo_solve_without_mat(
-		void** data,
-		void* userdata,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`*, const void*) eval_f,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_g,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_hprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], int, const int[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], int*, int[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], bool, const void*) eval_shprod,
-		int(*)(int, const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`[], const void*) eval_prec
+		void **data,
+		void *userdata,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`*, const void*) eval_f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_g,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_hprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`ipc_<doxid-galahad__ipc_8h_>`, const int[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], int*, int[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], bool, const void*) eval_shprod,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>`(*)(:ref:`ipc_<doxid-galahad__ipc_8h_>`, const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const :ref:`rpc_<doxid-galahad__rpc_8h_>`[], const void*) eval_prec
 	)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a partition-and-bound trust-region method.
@@ -606,7 +619,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -683,17 +696,17 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- eval_f
@@ -703,7 +716,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_f( int n, const double x[], double *f, const void *userdata )
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_f( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` *f, const void *userdata )
 		  
 		  The value of the objective function $f(x)$ evaluated at x= $x$ must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_f`` via the structure ``userdata``.
 
@@ -715,7 +728,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_g( int n, const double x[], double g[], const void *userdata )
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_g( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` g[], const void *userdata )
 		  
 		  The components of the gradient $g = \nabla_x f(x$) of the objective function evaluated at x= $x$ must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_g`` via the structure ``userdata``.
 
@@ -727,7 +740,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_hprod( int n, const double x[], double u[], const double v[],
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_hprod( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` u[], const :ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		  	                bool got_h, const void *userdata )
 		  
 		  The sum $u + \nabla_{xx}f(x) v$ of the product of the Hessian $\nabla_{xx}f(x)$ of the objective function evaluated at x= $x$ with the vector v= $v$ and the vector $ $u$ must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_hprod`` via the structure ``userdata``.
@@ -740,9 +753,9 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_shprod( int n, const double x[], int nnz_v,
-		  	                 const int index_nz_v[], const double v[],
-		  	                 int *nnz_u, int index_nz_u[], double u[],
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_shprod( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`ipc_<doxid-galahad__ipc_8h_>` nnz_v,
+		  	                 const :ref:`ipc_<doxid-galahad__ipc_8h_>` index_nz_v[], const :ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
+		  	                 :ref:`ipc_<doxid-galahad__ipc_8h_>` *nnz_u, :ref:`ipc_<doxid-galahad__ipc_8h_>` index_nz_u[], :ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
 		  	                 bool got_h, const void *userdata )
 		  
 		  The product $u = \nabla_{xx}f(x) v$ of the Hessian $\nabla_{xx}f(x)$ of the objective function evaluated at $x$ with the sparse vector v= $v$ must be returned in u, and the function return value set to 0. Only the components index_nz_v[0:nnz_v-1] of v are nonzero, and the remaining components may not have been be set. On exit, the user must indicate the nnz_u indices of u that are nonzero in index_nz_u[0:nnz_u-1], and only these components of u need be set. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into ``eval_prec`` via the structure ``userdata``.
@@ -755,7 +768,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		  
 		  .. ref-code-block:: cpp
 		  
-		  	int eval_prec( int n, const double x[], double u[], const double v[],
+		  	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_prec( :ref:`ipc_<doxid-galahad__ipc_8h_>` n, const :ref:`rpc_<doxid-galahad__rpc_8h_>` x[], :ref:`rpc_<doxid-galahad__rpc_8h_>` u[], const :ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
 		  	               const void *userdata )
 		  
 		  The product $u = P(x) v$ of the user's preconditioner $P(x)$ evaluated at $x$ with the vector v = $v$, the result $u$ must be retured in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into ``eval_prec`` via the structure ``userdata``.
@@ -767,17 +780,17 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 	:class: doxyrest-title-code-block
 
 	void dgo_solve_reverse_with_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		int ne,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` ne,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[]
 	)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a partition-and-bound trust-region method.
@@ -800,7 +813,7 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -958,47 +971,47 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 	*
 		- eval_status
 
-		- is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the objective function.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the objective function.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- u
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see above for details)
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see above for details)
 
 .. index:: pair: function; dgo_solve_reverse_without_mat
 .. _doxid-galahad__dgo_8h_1a878a7d98d55794fa38f885a5d76aa4f0:
@@ -1007,19 +1020,19 @@ This call is for the case where $H = \nabla_{xx}f(x)$ is provided specifically, 
 	:class: doxyrest-title-code-block
 
 	void dgo_solve_reverse_without_mat(
-		void** data,
-		int* status,
-		int* eval_status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` v[],
-		int index_nz_v[],
-		int* nnz_v,
-		const int index_nz_u[],
-		int nnz_u
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *eval_status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` f,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` v[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` index_nz_v[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *nnz_v,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` index_nz_u[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` nnz_u
 	)
 
 Find an approximation to the global minimizer of a given function subject to simple bounds on the variables using a partition-and-bound trust-region method.
@@ -1042,7 +1055,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the entry and exit status from the package.
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the entry and exit status from the package.
 		  
 		  On initial entry, status must be set to 1.
 		  
@@ -1202,57 +1215,57 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 	*
 		- eval_status
 
-		- is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- f
 
-		- is a scalar variable pointer of type double, that holds the value of the objective function.
+		- is a scalar variable pointer of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the value of the objective function.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the gradient $g = \nabla_xf(x)$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- u
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see status=5,6,7 above for details)
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see status=5,6,7 above for details)
 
 	*
 		- v
 
-		- is a one-dimensional array of size n and type double, that is used for reverse communication (see status=5,6,7 above for details)
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that is used for reverse communication (see status=5,6,7 above for details)
 
 	*
 		- index_nz_v
 
-		- is a one-dimensional array of size n and type int, that is used for reverse communication (see status=7 above for details)
+		- is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=7 above for details)
 
 	*
 		- nnz_v
 
-		- is a scalar variable of type int, that is used for reverse communication (see status=7 above for details)
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=7 above for details)
 
 	*
 		- index_nz_u
 
-		- s a one-dimensional array of size n and type int, that is used for reverse communication (see status=7 above for details)
+		- s a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=7 above for details)
 
 	*
 		- nnz_u
 
-		- is a scalar variable of type int, that is used for reverse communication (see status=7 above for details). On initial (status=1) entry, nnz_u should be set to an (arbitrary) nonzero value, and nnz_u=0 is recommended
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that is used for reverse communication (see status=7 above for details). On initial (status=1) entry, nnz_u should be set to an (arbitrary) nonzero value, and nnz_u=0 is recommended
 
 .. index:: pair: function; dgo_information
 .. _doxid-galahad__dgo_8h_1aea0c208de08f507be7a31fe3ab7d3b91:
@@ -1260,7 +1273,7 @@ This call is for the case where access to $H = \nabla_{xx}f(x)$ is provided by H
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void dgo_information(void** data, struct :ref:`dgo_inform_type<doxid-structdgo__inform__type>`* inform, int* status)
+	void dgo_information(void **data, struct :ref:`dgo_inform_type<doxid-structdgo__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -1285,7 +1298,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -1297,7 +1310,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void dgo_terminate(
-		void** data,
+		void **data,
 		struct :ref:`dgo_control_type<doxid-structdgo__control__type>`* control,
 		struct :ref:`dgo_inform_type<doxid-structdgo__inform__type>`* inform
 	)

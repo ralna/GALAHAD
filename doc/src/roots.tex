@@ -33,23 +33,22 @@ method to find all the real roots of a real polynomial.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time,
-the derived types 
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_control\_type}, 
 {\tt \packagename\_inform\_type} 
 and
@@ -59,6 +58,10 @@ and the subroutine
 {\tt \packagename\_\-solve},
 (Section~\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -83,24 +86,24 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in 
 {\tt \packagename\_solve} and {\tt \packagename\_terminate} is suppressed if 
 {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in 
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {\tt print\_level} $\leq 0$. If 
 {\tt print\_level} $\geq 1$, debugging information will be provided.
 The default is {\tt print\_level = 0}.
 
-\ittf{tol} is an \intentin\ scalar of type default \realdp\, that should
+\ittf{tol} is an \intentin\ scalar of type \realdp\, that should
 be set to the required accuracy of the roots. Every effort
 will be taken to ensure that each computed root $x_c$ lies within
 $\pm$ {\tt tol} $x_e$ of 
@@ -144,13 +147,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. 
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See Section~\ref{galerrors} 
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -242,17 +245,17 @@ The roots of the polynomial \req{poly} are found as follows
 
 \vspace*{-1mm}
 \begin{description}
-\ittf{A} is an \intentin\ rank-one array of type default \realdp, whose 
+\ittf{A} is an \intentin\ rank-one array of type \realdp, whose 
 lower bound must be {\tt 0} and whose upper bound specifies the degree, $d$,
 of the polynomial. The entries {\tt A}$(i), i = 0$, \ldots, {\tt UBOUND(A)},
 must contain the values of the real coefficients $a_i$, $0 \leq i \leq d$.
 \restrictions {\tt UBOUND(A,1)} $\geq 0$.
 
-\itt{nroots} is an \intentout\ scalar of type default \integer,
+\itt{nroots} is an \intentout\ scalar of type \integer,
 that gives the number of real roots of the polynomial.
 
 \itt{ROOTS} is an \intentout\ rank-one array of length $d$ and 
-type default \realdp. On exit, {\tt ROOTS(:nroots)} give the values
+type \realdp. On exit, {\tt ROOTS(:nroots)} give the values
 of the real roots of the polynomial in increasing order.
 \restrictions {\tt SIZE(ROOTS)} $\geq$ {\tt UBOUND(A,1)}.
 
@@ -469,7 +472,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated 
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

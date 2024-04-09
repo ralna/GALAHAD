@@ -166,8 +166,8 @@ In particular, fixed variables, and
 free (unbounded on both sides) constraints are temporarily removed.
 In addition, an attempt to identify and remove linearly dependent
 equality constraints may be made by factorizing
-$$\left(\begin{array}{cc}\alpha I & A^T_{\cal E} \\ A^{}_{\cal E} & 0,
-\end{array}\right)$$, where $A_{\cal E}$ denotes the gradients of 
+$$\left(\begin{array}{cc}\alpha I & A^T_{\cal E} \\ A^{}_{\cal E} & 0
+\end{array}\right),$$ where $A_{\cal E}$ denotes the gradients of 
 the equality constraints and $\alpha > 0$ is a given scaling factor,
 using ``SBLS``, and examining small pivot blocks.
 

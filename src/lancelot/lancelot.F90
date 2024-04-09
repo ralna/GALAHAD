@@ -17,7 +17,7 @@
 !!$ #define GALAHAD_SILS_single HSL_MA57_single
 !!$ #endif
 
-!!$ #ifdef GALAHAD_SINGLE
+!!$ #ifdef SINGLE
 !!$ #ifdef LANCELOT_USE_MA57
 !!$ #define GALAHAD_SILS_precision HSL_MA57_single
 !!$ #else

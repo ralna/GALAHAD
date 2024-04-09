@@ -1,12 +1,10 @@
-//* \file hsl_mc68.h */
-
 /*
+ * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 09:40 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 2 March 2011
  * All rights reserved
  *
  * Written by: Jonathan Hogg
- * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MC68 package
@@ -40,17 +38,25 @@
  *
  */
 
-#ifdef __cplusplus
-extern "C" {
-#else
-#include <stdbool.h>
-#endif
-
 #ifndef HSL_MC68I
 #define HSL_MC68I
 
-// precision
-#include "galahad_precision.h"
+/* precision */
+#include "hsl_precision.h"
+
+#ifndef mc68_default_control
+#ifdef INTEGER_64
+#define mc68_control mc68_control_i_64
+#define mc68_info mc68_info_i_64
+#define mc68_default_control mc68_default_control_i_64
+#define mc68_order mc68_order_i_64
+#else
+#define mc68_control mc68_control_i
+#define mc68_info mc68_info_i
+#define mc68_default_control mc68_default_control_i
+#define mc68_order mc68_order_i
+#endif
+#endif
 
 struct mc68_control {
    /* Extra options for C version */
@@ -82,8 +88,10 @@ struct mc68_info {
    ipc_ n_dense_rows;    /* holds number of dense rows from amdd */
 };
 
-#endif
+/* Set default values for control struct */
+void mc68_default_control(struct mc68_control *control);
+/* Perform ordering */
+void mc68_order(ipc_ ord, ipc_ n, const ipc_ ptr[], const ipc_ row[],
+   ipc_ perm[], const struct mc68_control *control, struct mc68_info *info);
 
-#ifdef __cplusplus
-} /* extern "C" */
 #endif

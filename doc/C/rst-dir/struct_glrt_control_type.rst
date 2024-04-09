@@ -16,19 +16,19 @@ glrt_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structglrt__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structglrt__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structglrt__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structglrt__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`itmax<doxid-structglrt__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
-		int :ref:`stopping_rule<doxid-structglrt__control__type_1a39dcb82333184b2fa9251a89c3e30e1a>`;
-		int :ref:`freq<doxid-structglrt__control__type_1ae0d22272b68e75d19ac0b80c01f806b6>`;
-		int :ref:`extra_vectors<doxid-structglrt__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
-		int :ref:`ritz_printout_device<doxid-structglrt__control__type_1aa733751a194838432e841fce75b56682>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_relative<doxid-structglrt__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`stop_absolute<doxid-structglrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`fraction_opt<doxid-structglrt__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`rminvr_zero<doxid-structglrt__control__type_1a1326abe392007db57e814413298b152f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`f_0<doxid-structglrt__control__type_1a221da497cd332f1acdcdb2919f282fb4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structglrt__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structglrt__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structglrt__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itmax<doxid-structglrt__control__type_1ac8da2a7f67eddd46d6b08817471e3063>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stopping_rule<doxid-structglrt__control__type_1a39dcb82333184b2fa9251a89c3e30e1a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`freq<doxid-structglrt__control__type_1ae0d22272b68e75d19ac0b80c01f806b6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_vectors<doxid-structglrt__control__type_1ac24a274f1682ee791e15979f6c4341e1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ritz_printout_device<doxid-structglrt__control__type_1aa733751a194838432e841fce75b56682>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_relative<doxid-structglrt__control__type_1ae3103abf29cabc33010d53428da2f2fc>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`stop_absolute<doxid-structglrt__control__type_1a16e43fc1e4c1e1b4c671a9b1fbbcd3e6>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`fraction_opt<doxid-structglrt__control__type_1a3a722628453f92a1fb510e15f0bd71bb>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`rminvr_zero<doxid-structglrt__control__type_1a1326abe392007db57e814413298b152f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`f_0<doxid-structglrt__control__type_1a221da497cd332f1acdcdb2919f282fb4>`;
 		bool :ref:`unitm<doxid-structglrt__control__type_1ae18a96ff3d3a13fe7a965fc39325d25c>`;
 		bool :ref:`impose_descent<doxid-structglrt__control__type_1a837f5d19d77de4475c6acc7974230bad>`;
 		bool :ref:`space_critical<doxid-structglrt__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
@@ -63,7 +63,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -73,7 +73,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -83,7 +83,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required is specified by print_level
 
@@ -93,7 +93,7 @@ the level of output required is specified by print_level
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int itmax
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` itmax
 
 the maximum number of iterations allowed (-ve = no bound)
 
@@ -103,7 +103,7 @@ the maximum number of iterations allowed (-ve = no bound)
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int stopping_rule
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` stopping_rule
 
 the stopping rule used (see below). Possible values are:
 
@@ -119,7 +119,7 @@ the stopping rule used (see below). Possible values are:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int freq
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` freq
 
 frequency for solving the reduced tri-diagonal problem
 
@@ -129,7 +129,7 @@ frequency for solving the reduced tri-diagonal problem
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int extra_vectors
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` extra_vectors
 
 the number of extra work vectors of length n used
 
@@ -139,7 +139,7 @@ the number of extra work vectors of length n used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int ritz_printout_device
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` ritz_printout_device
 
 the unit number for writing debug Ritz values
 
@@ -149,7 +149,7 @@ the unit number for writing debug Ritz values
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_relative
 
 the iteration stops successfully when the gradient in the $M^{-1}$ norm is smaller than max( stop_relative \* min( 1, stopping_rule ) \* norm initial gradient, stop_absolute )
 
@@ -159,7 +159,7 @@ the iteration stops successfully when the gradient in the $M^{-1}$ norm is small
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` stop_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` stop_absolute
 
 see stop_relative
 
@@ -169,7 +169,7 @@ see stop_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` fraction_opt
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` fraction_opt
 
 an estimate of the solution that gives at least .fraction_opt times the optimal objective value will be found
 
@@ -179,7 +179,7 @@ an estimate of the solution that gives at least .fraction_opt times the optimal 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` rminvr_zero
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` rminvr_zero
 
 the smallest value that the square of the M norm of the gradient of the objective may be before it is considered to be zero
 
@@ -189,7 +189,7 @@ the smallest value that the square of the M norm of the gradient of the objectiv
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f_0
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` f_0
 
 the constant term, f0, in the objective function
 

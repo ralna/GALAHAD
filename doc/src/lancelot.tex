@@ -181,22 +181,22 @@ available as part of {\sf LANCELOT A}, and supersedes them.
 
 \galhowto
 
-\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time, the derived types
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \fullpackagename\_problem\_type},
 {\tt \fullpackagename\_\-time\_type},
 {\tt \fullpackagename\_control\_type},
@@ -211,6 +211,10 @@ and
 {\tt \fullpackagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%
 
@@ -227,24 +231,24 @@ are:
 
 \begin{description}
 
-\ittf{n} is a scalar variable of type default \integer, that holds
+\ittf{n} is a scalar variable of type \integer, that holds
 the number of optimization variables, $n$.
 
-\ittf{ng} is a scalar variable of type default \integer, that holds
+\ittf{ng} is a scalar variable of type \integer, that holds
 the number of group functions, $n_g$.
 
-\ittf{nel} is a scalar variable of type default \integer, that holds
+\ittf{nel} is a scalar variable of type \integer, that holds
 the number of nonlinear element functions, $n_{e}$.
 
 \itt{IELING} is a rank-one allocatable array of dimension {\tt ISTADG(ng+1)-1}
-and type default \integer, that holds the indices of the nonlinear elements
+and type \integer, that holds the indices of the nonlinear elements
 $\calE_i$ used by each group.
 The indices for group $i$ must immediately precede those for
 group $i+1$ and each group's indices must appear in a contiguous
 list.  See Section~\ref{galexample} for an example.
 
 \itt{ISTADG} is a rank-one allocatable array of dimension {\tt ng+1} and
-type default \integer, whose $i$-th value gives the position in
+type \integer, whose $i$-th value gives the position in
 {\tt IELING} of the first nonlinear element in group function $i$.  In
 addition, {\tt ISTADG(ng+1)} should be equal to the position in
 {\tt IELING} of the last nonlinear element in group {\tt ng} plus one. See
@@ -274,13 +278,13 @@ and {\tt ISTADG}}
 \vspace*{-4mm}
 
 \itt{IELVAR} is a rank-one allocatable array of dimension {\tt ISTAEV(nel+1)-1}
-and type  default \integer, that holds
+and type  \integer, that holds
 the indices of the variables in the first nonlinear element $e_1$,
 followed by those in the second nonlinear element $e_2$,
 \ldots.   See Section~\ref{galexample} for an example.
 
 \itt{ISTAEV} is a rank-one allocatable array of dimension {\tt nel+1} and type
-default \integer, whose $k$-th value is the position of the first variable
+\integer, whose $k$-th value is the position of the first variable
 of the $k$-th nonlinear element function,
 in the list {\tt IELVAR}. In addition, {\tt ISTAEV($n_e$+1)}
 must be equal to the position of the last variable of element
@@ -309,14 +313,14 @@ in $\bmx^e_1$ & in $\bmx^e_2$
 \vspace*{-4mm}
 
 \itt{INTVAR} is a rank-one allocatable array of dimension {\tt nel+1} and
-type default \integer, whose $i$-th value must be set to the number of
+type \integer, whose $i$-th value must be set to the number of
 internal variables required for the $i$-th nonlinear element function
 $e_i$ on initial entry.  See Section~\ref{internal_and_ranges} for the
 precise definition of internal variables and Section~\ref{galexample}
 for an example.
 
 \itt{ISTADH} is a rank-one allocatable array of dimension {\tt nel+1} and
-type default \integer, that is set in \solver\ so that its $i$-th value
+type \integer, that is set in \solver\ so that its $i$-th value
 $(1 \leq i \leq n_e )$ gives the position in the array {\tt FUVALS} (see
 Sections~\ref{min} and \ref{efv}, and (particularly)
 Tables~\ref{2.4a} and \ref{2.4b}) of
@@ -328,13 +332,13 @@ element {\tt ISTADH($n_e +1$)} gives the position in {\tt FUVALS} of the
 first component of the gradient of the objective function.
 
 \itt{ICNA} is a rank-one allocatable array of dimension {\tt ISTADA(ng+1)-1}
-and type default \integer, that holds the indices of the
+and type \integer, that holds the indices of the
 nonzero components of $a_1$, the gradient of the first linear element,
 in any order, followed by those in $a_2$, etc.
 See Table~\ref{2.3a} and Section~\ref{galexample} for an example.
 
 \itt{ISTADA} is a rank-one allocatable array of dimension {\tt ng+1} and type
-default \integer, whose $i$-th
+\integer, whose $i$-th
 value is the position  of the  first nonzero component of
 the $i$-th linear element gradient, $a_i$,
 in the list {\tt ICNA}. In addition,
@@ -367,7 +371,7 @@ in $\bma_1$  & in $\bma_2$ &             & in $\bma_{n_g}$ &             \\
 \vspace*{-4mm}
 
 \itt{KNDOFG} is a rank-one allocatable array of dimension {\tt ng} and type
-default \integer, that is used to indicate which of the groups are to be
+\integer, that is used to indicate which of the groups are to be
 included in the objective function, which define equality constraints,
 and which are to be ignored. If {\tt KNDOFG} is not
 \associated, all groups will be included in the objective
@@ -387,12 +391,12 @@ different subsets of constraints, or when a feasible point is sought
 without reference to the objective.
 
 \itt{ITYPEE} is a rank-one allocatable array of dimension {\tt nel} and type
-default \integer, that is used to indicate the types (See Section~\ref{ft})
+\integer, that is used to indicate the types (See Section~\ref{ft})
 of the nonlinear element functions. The $i$-th component of {\tt ITYPEE}
 specifies the type of element $i$.
 
 \itt{ISTEPA} is a rank-one allocatable array of dimension {\tt nel + 1} and type
-default \integer, whose $i$-th component gives the position in
+\integer, whose $i$-th component gives the position in
 {\tt EPVALU} (see below) of the first parameter for element function $i$.  In
 addition, {\tt ISTEPA(nel+1)} is the position in
 {\tt EPVALU} of the last  parameter for element function $n_e$ plus one. See
@@ -419,12 +423,12 @@ in $\bmp^e_1$ & in $\bmp^e_2$
 \vspace*{-4mm}
 
 \itt{ITYPEG} is a rank-one allocatable array of dimension {\tt ng} and type
-default \integer, that is used to indicate the types (See Section~\ref{ft})
+\integer, that is used to indicate the types (See Section~\ref{ft})
 of the group functions. The $i$-th component of {\tt ITYPEG}
 specifies the type of group $i$.
 
 \itt{ISTGPA} is a rank-one allocatable array of dimension {\tt ng +1} and type
-default \integer, whose $i$-th component gives the position in
+\integer, whose $i$-th component gives the position in
 {\tt GPVALU} (see below) of the first parameter for group function $i$.  In
 addition, {\tt ISTGPA(ng+1)} is the position in
 {\tt GPVALU} of the last  parameter for element function $n_g$ plus one. See
@@ -451,7 +455,7 @@ in $\bmp^g_1$ & in $\bmp^g_2$
 \vspace*{-4mm}
 
 \itt{A} is a rank-one array of dimension {\tt ISTADA(ng+1)-1} and type
-default \realdp, that holds the values of the nonzero components of the
+\realdp, that holds the values of the nonzero components of the
 gradients of the linear element functions,
 $\bma_i$, $i = 1, \ldots, n_g$.
 The values must appear in the same order as their indices appear in
@@ -461,28 +465,28 @@ will have value {\tt A($k$)}.
 See Table~\ref{2.3a} and Section~\ref{galexample} for an example.
 
 \itt{B} is a rank-one array of dimension {\tt ng} and type
-default \realdp, whose $i$-th entry holds the value of the constant
+\realdp, whose $i$-th entry holds the value of the constant
 $b_i$ for each group.
 
 \itt{BL} is a rank-one array of dimension {\tt n} and type
-default \realdp, whose $i$-th entry must be set
+\realdp, whose $i$-th entry must be set
 to the value of the lower bound $l_i$ on the $i$-th variable.
 If the $i$-th variable has no lower bound, {\tt BL($i$)} should be set to
 a large negative number.
 
 \itt{BU} is a rank-one array of dimension {\tt n} and type
-default \realdp, whose $i$-th
+\realdp, whose $i$-th
 entry must be set
 to the value of the upper bound $u_i$ on the $i$-th variable.
 If the $i$-th variable has no upper bound, {\tt BU($i$)} should be set to
 a large positive number.
 
 \itt{X} is a rank-one array of dimension {\tt n} and type
-default \realdp, that holds the current values of the
+\realdp, that holds the current values of the
 minimization variables, $\bmx$.
 
 \itt{C} is a rank-one array of dimension {\tt ng} and type
-default \realdp, that holds the current estimates of the values of the
+\realdp, that holds the current estimates of the values of the
 equality constraints
 for the problem.
 If {\tt KNDOFG($i$)} $<2$, {\tt C($i$)}
@@ -492,7 +496,7 @@ of the $i$-th constraint \req{constraints}.
 {\tt C} need not be \associated\ if {\tt KNDOFG} is not.
 
 \itt{Y} is a rank-one array of dimension {\tt ng} and type
-default \realdp, that holds the current estimates of the Lagrange multipliers,
+\realdp, that holds the current estimates of the Lagrange multipliers,
 $\bmy$, for the problem. If {\tt KNDOFG($i$)} $<2$, {\tt Y($i$)}
 will not be set, but if {\tt KNDOFG($i$)} $= 2$, {\tt Y($i$)} contains
 the multiplier estimate $y_i$
@@ -500,11 +504,11 @@ for the $i$-th constraint \req{constraints}.
 {\tt Y} need not be \associated\ if {\tt KNDOFG} is not.
 
 \itt{GSCALE} is a rank-one array of dimension {\tt ng} and type
-default \realdp, whose $i$-th entry holds
+\realdp, whose $i$-th entry holds
 the value of $i$-th group weight $w^g_i$.
 
 \itt{ESCALE} is a rank-one array of dimension {\tt ISTADG(ng+1)-1} and type
-default \realdp, whose entries hold the values of element weights
+\realdp, whose entries hold the values of element weights
 $w^e_{ij}$. The weights must occur in the same order as the indices of the
 elements assigned to each group
 in {\tt IELING}, with the weights for the elements
@@ -512,7 +516,7 @@ in group $i$ preceding those in group $i+1$, $i=1, \ldots, {\tt ng-1}$.
 See Table~\ref{2.1a} and Section~\ref{galexample} for an example.
 
 \itt{VSCALE} is a rank-one array of dimension {\tt n} and type
-default \realdp, that holds suitable positive scale
+\realdp, that holds suitable positive scale
 factors for the problem variables $\bmx$.
 The {i}-th variable $x_i$ will implicitly be divided by
 {\tt VSCALE($i$)} within \solver. The scale factors should ideally
@@ -523,14 +527,14 @@ Good variable scalings can result in considerable savings in
 computing times.
 
 \itt{EPVALU} is a rank-one array of dimension {\tt ISTEPA(nel+1)-1}
-and type default \realdp, that holds
+and type \realdp, that holds
 the values of the element parameters $\bmp^e_i$, $i = 1, \ldots,
 n_e$. The indices for the parameters for element $i$ immediately precede
 those for element $i+1$, and each element's parameters appear in a contiguous
 list. See Table~\ref{3.2a} for an illustration.
 
 \itt{GPVALU} is a rank-one array of dimension {\tt ISTGPA(ng+1)-1}
-and type default \realdp, that holds
+and type \realdp, that holds
 the values of the group parameters $\bmp^g_i$, $i = 1, \ldots,
 n_g$. The indices for the parameters for group $i$ immediately precede
 those for group $i+1$, and each group's parameters appear in a contiguous
@@ -575,20 +579,20 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 \solver\ and {\tt \fullpackagename\_terminate} is suppressed if
 {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in
 \solver\
 is suppressed if {\tt out} $\leq$ 0.
 The default is {\tt out} $=$ 6.
 
-\itt{alive\_unit} is a scalar variable of type default \integer.
+\itt{alive\_unit} is a scalar variable of type \integer.
 If {\tt alive\_unit} $>$ 0, a temporary file named {\tt alive\_file} (see below)
 will be created on stream number {\tt alive\_unit} on initial entry to
 \solver, and execution of \solver\ will continue so
@@ -603,7 +607,7 @@ The default is {\tt alive\_unit} $=$ 60.
 {\tt alive\_unit} terminates execution of \solver.
 The default is {\tt alive\_unit} $=$ {\tt ALIVE.d}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {tt print\_level} $\leq$ 0. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -613,28 +617,28 @@ If {\tt print\_level} $\geq 3$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{maxit} is a scalar variable of type default \integer, that holds the
+\itt{maxit} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in \solver.
 The default is {\tt maxit = 1000}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that specifies
+\itt{start\_print} is a scalar variable of type \integer, that specifies
 the first iteration for which printing will be permitted in \solver.
 If {\tt start\_print} is negative, printing will be permitted from the outset.
 The default is {\tt start\_print = -1}.
 
-\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+\itt{stop\_print} is a scalar variable of type \integer, that specifies
 the last iteration for which printing will be permitted in  \solver.
 If {\tt stop\_print} is negative, printing will be permitted once it has been
 started by {\tt start\_print}.
 The default is {\tt stop\_print = -1}.
 
-\itt{print\_gap} is a scalar variable of type default \integer.
+\itt{print\_gap} is a scalar variable of type \integer.
 Once printing has been started, output will occur once every
 {\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
 printing will be permitted on every iteration.
 The default is {\tt print\_gap = 1}.
 
-\itt{linear\_solver} is a scalar variable of type default \integer, that
+\itt{linear\_solver} is a scalar variable of type \integer, that
 is used to specify the method used to solve the linear systems of equations
 which arise at each iteration of the minimization algorithm.
  Possible values are:
@@ -710,7 +714,7 @@ which arise at each iteration of the minimization algorithm.
 Any other value of {\tt linear\_solver} will be regarded as {\tt 1}.
 The default is {\tt linear\_solver = 8}.
 
-\itt{icfact} is a scalar variable of type default \integer, that specifies
+\itt{icfact} is a scalar variable of type \integer, that specifies
 the number of extra vectors of length {\tt prob\%n} used by the Lin and
 Mor\'{e} preconditioner ({\tt linear\_solver = 4}) if requested.
 Usually, the larger the number, the
@@ -718,12 +722,12 @@ better the preconditioner, but the more space and effort required to
 use it. Any negative value will be regarded as {\tt 0}.
 The default is {\tt icfact = 5}.
 
-\itt{semibandwidth} is a scalar variable of type default \integer, that holds
+\itt{semibandwidth} is a scalar variable of type \integer, that holds
 the semi-bandwidth used if the band preconditioner ({\tt linear\_solver = 8})
 is selected. Any negative value will be regarded as {\tt 0}.
 The default is {\tt semibandwidth = 5}.
 
-\itt{max\_sc} is a scalar variable of type default \integer, that specifies
+\itt{max\_sc} is a scalar variable of type \integer, that specifies
 the maximum number of variables that are allowed to hit their bounds
 during the calculation of the step before a refactorization of the
 preconditioner is triggered. A dense Schur-complement matrix of order
@@ -733,19 +737,19 @@ large, dense Schur complement must be made.
 Any non-positive value will be regarded as {\tt 1}.
 The default is {\tt max\_sc = 75}.
 
-\itt{io\_buffer} is a scalar variable of type default \integer, that holds
+\itt{io\_buffer} is a scalar variable of type \integer, that holds
 the unit number of an input/output buffer for writing temporary files
 during array-size re-allocations, if needed.
 The default is {\tt io\_buffer = 75}.
 
-\itt{more\_toraldo} is a scalar variable of type default \integer, that
+\itt{more\_toraldo} is a scalar variable of type \integer, that
 specifies the number of Mor\'{e}-Toraldo projected searches
 that are to be used to improve upon the Cauchy point when finding the
 step. Any non-positive value results in a standard add-one-at-a-time
 conjugate-gradient search.
 The default is {\tt more\_toraldo = 0}.
 
-\itt{non\_monotone} is a scalar variable of type default \integer, that
+\itt{non\_monotone} is a scalar variable of type \integer, that
 specifies the history-length for non-monotone descent strategy.
 Any non-positive value results in standard monotone descent, for which
 merit function improvement occurs at each iteration. There are often
@@ -756,7 +760,7 @@ the merit function surface.
 However, we do not usually recommend large values of {\tt non\_monotone}.
 The default is {\tt non\_monotone = 1}.
 
-\itt{first\_derivatives} is a scalar variable of type default \integer,
+\itt{first\_derivatives} is a scalar variable of type \integer,
 that specifies what sort of first derivative
 approximation to use. If the user is able to provide
 analytical first derivatives for each nonlinear
@@ -769,7 +773,7 @@ The default is {\tt first\_derivatives = 0}.
 {\bf N.B.} This value will be ignored whenever the user provides the
 optional argument {\tt ELDERS} to \solver.
 
-\itt{second\_derivatives} is a scalar variable of type default \integer,
+\itt{second\_derivatives} is a scalar variable of type \integer,
 that specifies what sort of second derivative
 approximation to use. If the user is able to
 provide analytical second derivatives for each nonlinear element function,
@@ -788,35 +792,35 @@ The default is {\tt second\_derivatives = 0}.
 {\bf N.B.} This value will be ignored whenever the user provides the
 optional argument {\tt ELDERS} to \solver.
 
-\itt{stopg} is a scalar variable of type default \realdp,
+\itt{stopg} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted (infinity)
 norm of the projected gradient of the Lagrangian function
 (see Section~\ref{galmethod}) at the estimate of the solution sought.
 The default is {\tt stopg =} $10^{-5}$.
 
-\itt{stopc} is a scalar variable of type default \realdp, that is used to
+\itt{stopc} is a scalar variable of type \realdp, that is used to
 specify the maximum permitted violation (measured in infinity
 norm) of the constraints at the estimate of the solution sought.
 The default is {\tt stopc =} $10^{-5}$.
 
-\itt{min\_aug} is a scalar variable of type default \realdp, that is used
+\itt{min\_aug} is a scalar variable of type \realdp, that is used
 to specify the smallest permitted value of the merit function
 \req{objectiveb}. Any smaller value will result in the minimization
 being terminated. The default is {\tt min\_aug = - HUGE(1.0)/8.0}.
 
-\itt{acccg} is a scalar variable of type default \realdp, that is used to
+\itt{acccg} is a scalar variable of type \realdp, that is used to
 specify the least relative reduction in (two-) norm of the residual
 of the reduced gradient of the model function that is required
 from the conjugate gradient iteration.
 The default is {\tt acccg = 0.01}.
 
-\itt{initial\_radius} is a scalar variable of type default \realdp, that holds
+\itt{initial\_radius} is a scalar variable of type \realdp, that holds
 the required initial value of the trust-region radius. If
 {\tt initial\_radius} $\leq 0$, the radius will be chosen automatically
 by \solver\
 The default is {\tt initial\_radius = - 1.0}.
 
-\itt{maximum\_radius} is a scalar variable of type default \realdp, that holds
+\itt{maximum\_radius} is a scalar variable of type \realdp, that holds
 the maximum permitted value of the trust-region radius. Any radius that
 exceeds the larger of {\tt maximum\_radius} and one
 during the calculation will be reset to
@@ -842,7 +846,7 @@ The defaults are
 {\tt eta\_extremely\_successful = 0.95}.
 
 \itt{gamma\_smallest\rm ,} {\tt gamma\_decrease} and
-{\tt gamma\_increase} are scalar variables of type default \realdp, that
+{\tt gamma\_increase} are scalar variables of type \realdp, that
 control the maximum amounts by which the trust-region radius can
 contract or expand during an iteration. The radius will be decreased by
 powers of {\tt gamma\_decrease} until it is smaller than the larger
@@ -855,7 +859,7 @@ The defaults are
 {\tt gamma\_increase = 2.0}.
 
 \itt{mu\_meaningful\_model} and
-{\tt mu\_meaningful\_group} are scalar variables of type default \realdp, that
+{\tt mu\_meaningful\_group} are scalar variables of type \realdp, that
 hold tolerances that determine whether a group (and its model)
 is ``meaningful'' when a structured trust-region is being used
 (see {\tt structured\_tr} below). A model of an individual group
@@ -872,32 +876,32 @@ The defaults are
 {\tt mu\_meaningful\_model = 0.01} and
 {\tt mu\_meaningful\_group = 0.1}.
 
-\itt{initial\_mu} is a scalar variable of type default \realdp, that specifies
+\itt{initial\_mu} is a scalar variable of type \realdp, that specifies
 the initial value of the penalty parameter, $\mu$. Any value smaller than
 $u$ will be replaced by $u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_dou\-ble}).
 The default is {\tt initial\_mu = 0.1}.
 
-\itt{mu\_tol} is a scalar variable of type default \realdp, that holds a
+\itt{mu\_tol} is a scalar variable of type \realdp, that holds a
 threshold value of the penalty parameter, above which no attempt will be
 made to update Lagrange multiplier estimates.
 The default is {\tt mu\_tol = 0.1}.
 
-\itt{firstg} is a scalar variable of type default \realdp, that is used to
+\itt{firstg} is a scalar variable of type \realdp, that is used to
 specify the maximum permitted (infinity)
 norm of the projected gradient of the Lagrangian function
 (see Section~\ref{galmethod}) at the end of the first major iteration.
 The default is {\tt firstg = 0.1}.
 
-\itt{firstc} is a scalar variable of type default \realdp, that is used to
+\itt{firstc} is a scalar variable of type \realdp, that is used to
 specify the maximum hoped-for violation (measured in infinity
 norm) of the constraints at the end of the first major iteration.
 No attempt will be made to update Lagrange multiplier estimates until the
 violation falls below this threshold.
 The default is {\tt firstc = 0.1}.
 
-\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+\itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
@@ -991,82 +995,82 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. See Sections~\ref{reverse} and
 \ref{galerrors} for details. A value {\tt status = 0} indicates
 successful termination.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or de-allocation.
 
-\itt{iter} is a scalar variable of type default \integer, that gives
+\itt{iter} is a scalar variable of type \integer, that gives
 the number of iterations that have been performed since the start of the
 minimization. This is one fewer than the number of
 problem function evaluations that have been made.
 
-\itt{itercg} is a scalar variable of type default \integer, that gives
+\itt{itercg} is a scalar variable of type \integer, that gives
 the number of conjugate-gradient iterations that have
 been performed since the start of the minimization.
 
-\itt{itcgmx} is a scalar variable of type default \integer, that gives
+\itt{itcgmx} is a scalar variable of type \integer, that gives
 the maximum number of conjugate-gradient iterations that will be allowed
 at each iteration of the inner minimization.
 
-\itt{ncalcf} is a scalar variable of type default \integer, that gives
+\itt{ncalcf} is a scalar variable of type \integer, that gives
 the number of element functions that must be re-evaluated when the
 reverse-communication mode is used to evaluate element values.
 
-\itt{ncalcg} is a scalar variable of type default \integer, that gives
+\itt{ncalcg} is a scalar variable of type \integer, that gives
 the number of group functions that must be re-evaluated when the
 reverse-communication mode is used to evaluate group values.
 
-\itt{nvar} is a scalar variable of type default \integer, that gives
+\itt{nvar} is a scalar variable of type \integer, that gives
 the current number of free variables, that is the number of variables
 which do not lie on either simple bounds.
 
-\itt{ngeval} is a scalar variable of type default \integer, that gives
+\itt{ngeval} is a scalar variable of type \integer, that gives
 the number of problem function gradient evaluations that have
 been made since the start of the minimization.
 
-\itt{iskip} is a scalar variable of type default \integer, that gives
+\itt{iskip} is a scalar variable of type \integer, that gives
 the number of times that an approximation to the
 second derivatives of an element function has been rejected.
 
-\itt{ifixed} is a scalar variable of type default \integer, that gives
+\itt{ifixed} is a scalar variable of type \integer, that gives
 the index of the variable that most recently
 encountered one of its bounds in the minimization process.
 
-\itt{nsemib} is a scalar variable of type default \integer, that gives
+\itt{nsemib} is a scalar variable of type \integer, that gives
 the bandwidth used if the band
 or expanding band preconditioner is selected.
 ({\tt control\%linear\_solver = 4} or {\tt 8}).
 
-\itt{aug} is a scalar variable of type default \realdp, that gives
+\itt{aug} is a scalar variable of type \realdp, that gives
 the current value of the augmented Lagrangian merit function.
 
-\itt{obj} is a scalar variable of type default \realdp, that gives
+\itt{obj} is a scalar variable of type \realdp, that gives
 the current value of the objective function.
 
-\itt{pjgnrm} is a scalar variable of type default \realdp, that gives
+\itt{pjgnrm} is a scalar variable of type \realdp, that gives
 the (infinity) norm of the current projected gradient of the Lagrangian
 function (see Section~\ref{galmethod}).
 
-\itt{cnorm} is a scalar variable of type default \realdp, that gives
+\itt{cnorm} is a scalar variable of type \realdp, that gives
 the (infinity) norm of the current violation of the constraints.
 
-\itt{ratio} is a scalar variable of type default \realdp, that gives
+\itt{ratio} is a scalar variable of type \realdp, that gives
 the ratio of the actual reduction that has been made in the
 merit function value during the current iteration to that
 predicted by the model function.  A value close to one is to be expected
 as the algorithm converges.
 
-\itt{mu} is a scalar variable of type default \realdp, that gives
+\itt{mu} is a scalar variable of type \realdp, that gives
 the current value of the penalty parameter.
 
-\itt{radius} is a scalar variable of type default \realdp, that gives
+\itt{radius} is a scalar variable of type \realdp, that gives
 the current value of the radius of the trust-region.
 
-\itt{ciccg} is a scalar variable of type default \realdp, that gives
+\itt{ciccg} is a scalar variable of type \realdp, that gives
 the current value of the pivot tolerance that is
 used when Munksgaard's incomplete Cholesky factorization
 ({\tt control\%linear\_sol\-ver = 5}) is chosen for preconditioning.
@@ -1227,7 +1231,7 @@ See Section~\ref{internal_and_ranges} for details.
 {\tt RANGE}  must be declared {\tt EXTERNAL} in the calling program.
 
 \itt{GVALS} is a rank-two \intentout array argument of
-shape {\tt (prob\%ng, 3)} and type default \realdp\,
+shape {\tt (prob\%ng, 3)} and type \realdp\,
 that is used to store function and derivative information for the
 group functions. The user may be asked to provide values for these functions
 and/or derivatives, evaluated at
@@ -1239,7 +1243,7 @@ in specified locations within {\tt GVALS}.
 Details of the required information are given in Section~\ref{reverse}.
 
 \itt{FT} is a rank-one \intentinout array argument of
-dimension {\tt prob\%ng} and type default \realdp\, that is set within \solver\
+dimension {\tt prob\%ng} and type \realdp\, that is set within \solver\
 to a trial value of the argument of the $i$-th group function
 at which the user may be required to evaluate the values and/or derivatives
 of that function. Precisely what group function information
@@ -1247,7 +1251,7 @@ is required at {\tt FT} is under the control of the
 variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
 
 \itt{XT} is a rank-one \intentinout array argument of
-dimension {\tt prob\%n} and type default \realdp\, that is set within \solver\
+dimension {\tt prob\%n} and type \realdp\, that is set within \solver\
 to a trial value of the variables $\bmx$ at which the
 user may be required to evaluate the values and/or derivatives
 of the nonlinear elements functions. Precisely what element function
@@ -1255,7 +1259,7 @@ information is required at {\tt XT} is under the control of the
 variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
 
 \itt{FUVALS} is a rank-one \intentinout array argument of
-dimension {\tt lfuval} and type default \realdp\, that is used to store
+dimension {\tt lfuval} and type \realdp\, that is used to store
 function and derivative information for the nonlinear element functions.
 The user is asked to provide values for these functions and/or derivatives,
 evaluated at the argument {\tt XT} (see {\tt XT}), at specified
@@ -1307,7 +1311,7 @@ particular interest in many applications areas.  In particular they are
 often called shadow prices, and are used to assess the sensitivity of
 the solution to variations in the bounds on the variables.
 
-\itt{lfuval} is a scalar \intentin\ argument of type default \integer,
+\itt{lfuval} is a scalar \intentin\ argument of type \integer,
 that must be set to the actual length of {\tt FUVALS} in the calling program.
 The required length may be calculated using the following code segment:
 \begin{verbatim}
@@ -1318,7 +1322,7 @@ The required length may be calculated using the following code segment:
 \end{verbatim}
 
 \itt{ICALCF} is a rank-one \intentinout array argument of
-dimension {\tt prob\%nel} and type default \integer.
+dimension {\tt prob\%nel} and type \integer.
 If the user has chosen not to perform internal element evaluations,
 and if the value of {\tt inform\%status} on return from \solver\
 indicates that further element functions values or their derivatives
@@ -1331,7 +1335,7 @@ is required is under the control of the
 variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
 
 \itt{ICALCG} is a rank-one \intentinout array argument of
-dimension {\tt prob\%ng} and type default \integer.
+dimension {\tt prob\%ng} and type \integer.
 If the user has chosen not to perform internal group evaluations,
 and if the value of {\tt inform\%status} on return from \solver\
 indicates that further group functions values or their derivatives
@@ -1344,12 +1348,12 @@ is required is under the control of the
 variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
 
 \itt{IVAR} is a rank-one \intentinout array argument of
-dimension {\tt prob\%n} and type default \integer\, that is
+dimension {\tt prob\%n} and type \integer\, that is
 required when the user is providing a special preconditioner
 for the conjugate gradient inner iteration (see Section~\ref{reverse}).
 
 \itt{Q} and {\tt DGRAD} are rank-one \intentinout array arguments of
-dimension {\tt prob\%n} and type default \realdp\, that are
+dimension {\tt prob\%n} and type \realdp\, that are
 required when the user is providing a special preconditioner
 for the conjugate gradient inner iteration
 (see Section~\ref{reverse}).
@@ -1377,7 +1381,7 @@ solved. It must not have been altered {\bf by the user} since the last call to
 
 
 \itt{ELDERS} is an \optional\ rank-two \intentinout array argument of
-shape {\tt (2, prob\%nel)} and type default \integer\,
+shape {\tt (2, prob\%nel)} and type \integer\,
 that may be used to specify what kind of first- and second-derivative
 approximations will be required for each nonlinear element function.
 If {\tt ELDERS} is not present, the first- and second-derivative
@@ -1678,7 +1682,7 @@ The routine has the following argument list:
 
 \begin{description}
 
-\itt{ielemn} is a scalar \intentin\ argument of type default \integer,
+\itt{ielemn} is a scalar \intentin\ argument of type \integer,
 that gives the index of the nonlinear element whose transformation is
 required by \solver.
 
@@ -1689,38 +1693,38 @@ array {\tt W1}. Otherwise, the subroutine must supply the result of the
 transposed transformation $\bmW^T \bmu$
 in the array {\tt W2}, where $\bmu$ is input in the array {\tt W1}.
 
-\ittf{W1} is a rank-one \intentin array argument of type default \realdp\,
+\ittf{W1} is a rank-one \intentin array argument of type \realdp\,
 whose dimension is the number of elemental variables
 if {\tt transp} is \false\
 and the number of internal variables otherwise.
 
-\ittf{W2} is a rank-one \intentout array argument of type default \realdp\,
+\ittf{W2} is a rank-one \intentout array argument of type \realdp\,
 whose dimension is
 the number of internal variables if {\tt transp} is
 \false\ and the number of elemental variables otherwise.
 The result of the transformation of {\tt W1} or its transpose, as
 defined by {\tt transp}, must be set in {\tt W2}.
 
-\itt{nelvar} is a scalar \intentin\ argument of type default \integer,
+\itt{nelvar} is a scalar \intentin\ argument of type \integer,
 that gives the number of elemental variables for the element specified
 by {\tt ielemn}.
 
-\itt{ninvar} is a scalar \intentin\ argument of type default \integer,
+\itt{ninvar} is a scalar \intentin\ argument of type \integer,
 which gives the number of internal variables for the element specified
 by {\tt ielemn}.
 
-\itt{ieltyp} is a scalar \intentin\ argument of type default \integer,
+\itt{ieltyp} is a scalar \intentin\ argument of type \integer,
 that defines the type for the element specified
 by {\tt ielemn}.
 
-\ittf{lw1} is a scalar \intentin\ argument of type default \integer,
+\ittf{lw1} is a scalar \intentin\ argument of type \integer,
 that will have been set to the actual length of {\tt W1}.
 
 \restriction
 {\tt lw1 $\geq$ ninvar} if {\tt transp} is \true\ and
 {\tt lw1 $\geq$ nelvar} if {\tt transp} is \false\ .
 
-\ittf{lw2} is a scalar \intentin\ argument of type default \integer,
+\ittf{lw2} is a scalar \intentin\ argument of type \integer,
 that will have been set to the actual length of {\tt W2}.
 
 \restriction
@@ -1756,7 +1760,7 @@ The routine has the following argument list:
 \begin{description}
 
 \itt{FUVALS} is a rank-one \intentinout array argument of
-dimension {\tt lfuval} and type default \realdp\,
+dimension {\tt lfuval} and type \realdp\,
 which is used to store
 function and derivative information for the nonlinear element functions.
 The subroutine is asked to provide values for these functions
@@ -1799,36 +1803,36 @@ Hessian matrices, again taken with respect to their internal variables,
 as described by {\tt ISTADH} below.
 
 \itt{XVALUE} is a rank-one \intentin array argument of
-dimension {\tt lxvalu} and type default \realdp\,
+dimension {\tt lxvalu} and type \realdp\,
 that contains the values of $\bmx$ at which the
 subroutine is required to evaluate the values or derivatives
 of the nonlinear elements functions.
 
 \itt{EPVALU} is a rank-one \intentin array argument of
-dimension {\tt lepvlu}  and type default \realdp\,
+dimension {\tt lepvlu}  and type \realdp\,
 that contains the values of the element parameters $\bmp^e_i$, $i = 1, \ldots,
 n_e$. The indices for the parameters for element $i$ immediately precede
 those for element $i+1$, and each element's parameters appear in a contiguous
 list. See Table~\ref{3.2a} for an illustration.
 
-\itt{ncalcf} is a scalar \intentin\ argument of type default \integer,
+\itt{ncalcf} is a scalar \intentin\ argument of type \integer,
 that specifies how many of the nonlinear element functions or their
 derivatives are to be evaluated.
 
 \itt{ITYPEE} is a rank-one \intentin array argument of
-dimension {\tt ltypee} and type default \integer\,
+dimension {\tt ltypee} and type \integer\,
 whose $i$-th component specifies the type of element $i$.
 
 \itt{ISTAEV} is a rank-one \intentin array argument of
-dimension {\tt lstaev} and type default \integer\,
+dimension {\tt lstaev} and type \integer\,
 exactly as described in Section~\ref{typeprob}.
 
 \itt{IELVAR} is a rank-one \intentin array argument of
-dimension {\tt lelvar} and type default \integer\,
+dimension {\tt lelvar} and type \integer\,
 exactly as described in Section~\ref{typeprob}.
 
 \itt{INTVAR} is a rank-one \intentin array argument of
-dimension {\tt lntvar} and type default \integer\,
+dimension {\tt lntvar} and type \integer\,
 whose $i$-th component $(1 \leq i \leq n_e )$
 gives the position in the array {\tt FUVALS} of the first component of
 the gradient of the $i$-th nonlinear element function, {\em with respect
@@ -1863,7 +1867,7 @@ gradient of $e_{n_e}$ wrt & . & {\tt FUVALS} \\
 \vspace*{-4mm}
 
 \itt{ISTADH} is a rank-one \intentin array argument of
-dimension {\tt lstadh} and type default \integer\,
+dimension {\tt lstadh} and type \integer\,
 whose $i$-th component
 $(1 \leq i \leq n_e )$ gives the position in the array {\tt FUVALS} of
 the first component of the Hessian matrix of the $i$-th nonlinear
@@ -1903,7 +1907,7 @@ Hessian of $e_{n_e}$ wrt & {\tt FUVALS} \\
 {\tt FUVALS}}
 
 \itt{ISTEPA} is a rank-one \intentin array argument of
-dimension {\tt lstepa} and type default \integer\,
+dimension {\tt lstepa} and type \integer\,
 whose $i$-th component gives the position in
 {\tt EPVALU} of the first parameter for element function $i$.  In
 addition, {\tt ISTEPA($n_e$+1)} is the position in
@@ -1911,7 +1915,7 @@ addition, {\tt ISTEPA($n_e$+1)} is the position in
 Table~\ref{3.2a} for an illustration.
 
 \itt{ICALCF} is a rank-one \intentin array argument of
-dimension {\tt lcalcf} and type default \integer\,
+dimension {\tt lcalcf} and type \integer\,
 whose first {\tt ncalcf} components
 gives the indices of the nonlinear element functions whose values or
 derivatives are to be evaluated.
@@ -1926,7 +1930,7 @@ derivatives are to be evaluated.
 {\tt lfuval},
 {\tt lxvalu} and
 {\tt lepvlu}
-are all scalar \intentin\ arguments of type default \integer.
+are all scalar \intentin\ arguments of type \integer.
 They will have been set to the actual lengths of
 {\tt ITYPEE},
 {\tt ISTAEV},
@@ -1951,7 +1955,7 @@ They will have been set to the actual lengths of
 {\tt lxvalu $\geq$ prob\%n}, and
 {\tt lepvlu $\geq$ ISTEPA(prob\%nel+1)-1}.
 
-\itt{ifflag} is a scalar \intentin\ argument of type default \integer,
+\itt{ifflag} is a scalar \intentin\ argument of type \integer,
 whose value defines whether it is the values of the element functions
 that are required ({\tt ifflag = 1}) or if it is the derivatives
 ({\tt ifflag $>$ 1}). Possible values and their requirements are:
@@ -1987,7 +1991,7 @@ intends to use approximate first derivatives
 \solver\ will never call {\tt ELFUN} with {\tt ifflag = 2} or {\tt 3}, so the
 user need then not provide gradient or Hessian values.
 
-\itt{ifstat} is a scalar \intentout\ argument of type default \integer,
+\itt{ifstat} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if all of the required values have been found,
 and to any nonzero value if, for any reason, one or more of the required
 values could not be determined. For instance, if the value of a
@@ -2030,13 +2034,13 @@ The routine has the following argument list:
 {\tt ifstat} are all exactly as described for subroutine {\tt ELFUN}
 in Section~\ref{efv}
 
-\itt{llders} is a scalar \intentin\ argument of type default \integer, that
+\itt{llders} is a scalar \intentin\ argument of type \integer, that
 will have been set to the actual length of {\tt ELDERS}.
 
 \restriction
 {\tt llders $\geq$ prob\%nel}.
 
-\itt{ifflag} is a scalar \intentin\ argument of type default \integer,
+\itt{ifflag} is a scalar \intentin\ argument of type \integer,
 whose value defines whether it is the values of the element functions
 that are required ({\tt ifflag = 1}) or if it is the derivatives
 ({\tt ifflag $>$ 1}). If
@@ -2048,7 +2052,7 @@ derivative values specified by {\tt ELDERS} (see below) are required.
 
 \itt{ELDERS}
 is an rank-two \intentinout array argument of
-shape {\tt (2, llders)} and type default \integer\,
+shape {\tt (2, llders)} and type \integer\,
 that specifies what first- and second-derivative information (if any) is
 required for each nonlinear element function when {\tt ifflag $>$ 1}.
 Specifically, in this case, the gradient of each nonlinear element function
@@ -2084,7 +2088,7 @@ The routine has the following argument list:
 \begin{description}
 
 \itt{GVALUE} is a rank-two \intentout array argument of
-shape {\tt (lgvalu, 3)} and type default \realdp.
+shape {\tt (lgvalu, 3)} and type \realdp.
 The value and first and second derivative of the $i$-th group
 function are held in
 {\tt GVALUE($i$,1)},
@@ -2092,7 +2096,7 @@ function are held in
 {\tt GVALUE($i$,3)}
 respectively.
 
-\itt{lgvalu} is a scalar \intentin\ argument of type default \integer,
+\itt{lgvalu} is a scalar \intentin\ argument of type \integer,
 that will have been set to the actual length of the leading dimension
 of {\tt GVALUE}.
 
@@ -2100,28 +2104,28 @@ of {\tt GVALUE}.
 {\tt lgvalu $\geq$ prob\%ng}.
 
 \itt{FVALUE} is a rank-one \intentin array argument of
-dimension {\tt lfvalu} and type default \realdp\,
+dimension {\tt lfvalu} and type \realdp\,
 whose $i$-th component contains the value of group variable at which the
 subroutine is required to evaluate the value or derivatives
 of the $i$-th group function.
 
 \itt{GPVALU} is a rank-one \intentin array argument of
-dimension {\tt lgpvlu}  and type default \realdp\,
+dimension {\tt lgpvlu}  and type \realdp\,
 that contains the values of the group parameters $\bmp^g_i$, $i = 1, \ldots,
 n_g$. The indices for the parameters for group $i$ immediately precede
 those for group $i+1$, and each group's parameters appear in a contiguous
 list. See Table~\ref{4.2a} for an illustration.
 
-\itt{ncalcg} is a scalar \intentin\ argument of type default \integer,
+\itt{ncalcg} is a scalar \intentin\ argument of type \integer,
 that specifies how many of the group functions or their
 derivatives are to be evaluated.
 
 \itt{ITYPEG} is a rank-one \intentin array argument of
-dimension {\tt ltypeg} and type default \integer\,
+dimension {\tt ltypeg} and type \integer\,
 whose $i$-th component specifies the type of group $i$.
 
 \itt{ISTGPA} is a rank-one \intentin array argument of
-dimension {\tt lstgpa} and type default \integer\,
+dimension {\tt lstgpa} and type \integer\,
 whose $i$-th component gives the position in
 {\tt GPVALU} of the first parameter for group function $i$.  In
 addition, {\tt ISTGPA($n_g$+1)} is the position in
@@ -2129,7 +2133,7 @@ addition, {\tt ISTGPA($n_g$+1)} is the position in
 Table~\ref{4.2a} for an illustration.
 
 \itt{ICALCG} is a rank-one \intentin array argument of
-dimension {\tt lcalcg} and type default \integer\,
+dimension {\tt lcalcg} and type \integer\,
 whose first {\tt ncalcg} components
 gives the indices of the nonlinear group functions whose values or
 derivatives are to be evaluated.
@@ -2139,7 +2143,7 @@ derivatives are to be evaluated.
 {\tt lcalcg},
 {\tt lfvalu} and
 {\tt lgpvlu}
-are all scalar \intentin\ arguments of type default \integer.
+are all scalar \intentin\ arguments of type \integer.
 They will have been set to the actual lengths of
 {\tt ITYPEG},
 {\tt ISTGPA},
@@ -2167,7 +2171,7 @@ and
 {\tt GVALUE(ICALCF($i$),3)}
 respectively.
 
-\itt{igstat} is a scalar \intentout\ argument of type default \integer,
+\itt{igstat} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if all of the required values have been found,
 and to any nonzero value if, for any reason, one or more of the required
 values could not be determined. For instance, if the value of a
@@ -2605,7 +2609,7 @@ permitted string values.}
 \hline
 \ectable{\label{string}String values and their interpretation.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

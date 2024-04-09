@@ -42,7 +42,7 @@
 
 \newcommand{\libraryname}{GA\-LA\-H\-AD}
 %\newcommand{\releasename}{GALAHAD Optimization Library version $2.\epsilon$}
-\newcommand{\releasename}{GALAHAD Optimization Library version $4.2$}
+\newcommand{\releasename}{GALAHAD Optimization Library version $5.0$}
 
 \newcommand\@ptsize{}
 \newif\if@restonecol
@@ -813,6 +813,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galtype}{\subsection{The derived data type\label{galtype}}}
 \newcommand{\galtypes}{\subsection{The derived data types\label{galtypes}}}
 \newcommand{\galopenmp}{\subsection{OpenMP}}\label{galopenmp}
+\newcommand{\galkinds}{\subsection{Real and integer kinds}}\label{galkinds}
 \newcommand{\galintkinds}{\subsection{Integer kinds}}\label{galintkinds}
 \newcommand{\galarguments}{\subsection{Argument lists and calling sequences\label{galarguments}}}
 \newcommand{\galreverse}{\subsection{Reverse communication\label{galreverse}}}
@@ -850,14 +851,16 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 % data types
 
 \newcommand{\present}{{\tt PRESENT}}
-\newcommand{\integer}{{\tt INTEGER}}
+%\newcommand{\integer}{{\tt INTEGER}}
+\newcommand{\integer}{{\tt INTEGER(ip\_)}}
 \newcommand{\shortinteger}{{\tt INTEGER(short)}}
-\newcommand{\longinteger}{{\tt INTEGER(long)}}
+\newcommand{\longinteger}{{\tt INTEGER(int64)}}
 \newcommand{\logical}{{\tt LOGICAL}}
 \newcommand{\character}{{\tt CHARACTER}}
 \newcommand{\real}{{\tt REAL}}
-\newcommand{\realdp}{{\tt REAL} (double precision
- in {\tt \fullpackagename\-\_\-double})}
+\newcommand{\realdp}{{\tt REAL(rp\_)}}
+%\newcommand{\realdp}{{\tt REAL} (double precision
+% in {\tt \fullpackagename\-\_\-double})}
 \newcommand{\complex}{{\tt COMPLEX}}
 \newcommand{\complexdp}{{\tt COMPLEX} (double precision complex
  in {\tt \fullpackagename\_\-double})}

@@ -16,14 +16,14 @@ ugo_inform_type structure
 	struct ugo_inform_type {
 		// components
 	
-		int :ref:`status<doxid-structugo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`eval_status<doxid-structugo__inform__type_1a7b88f94f39913a54e69ea23c12d3e4bd>`;
-		int :ref:`alloc_status<doxid-structugo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structugo__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`eval_status<doxid-structugo__inform__type_1a7b88f94f39913a54e69ea23c12d3e4bd>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structugo__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structugo__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`iter<doxid-structugo__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		int :ref:`f_eval<doxid-structugo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		int :ref:`g_eval<doxid-structugo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		int :ref:`h_eval<doxid-structugo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structugo__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`f_eval<doxid-structugo__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`g_eval<doxid-structugo__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`h_eval<doxid-structugo__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
 		struct :ref:`ugo_time_type<doxid-structugo__time__type>` :ref:`time<doxid-structugo__inform__type_1a9113f4cf33f961d4a1a97455a054eac6>`;
 	};
 .. _details-structugo__inform__type:
@@ -42,7 +42,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See UGO_solve for details
 
@@ -52,7 +52,7 @@ return status. See UGO_solve for details
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int eval_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` eval_status
 
 evaluation status for reverse communication interface
 
@@ -62,7 +62,7 @@ evaluation status for reverse communication interface
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -82,7 +82,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iter
 
 the total number of iterations performed
 
@@ -92,7 +92,7 @@ the total number of iterations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int f_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` f_eval
 
 the total number of evaluations of the objective function
 
@@ -102,7 +102,7 @@ the total number of evaluations of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int g_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` g_eval
 
 the total number of evaluations of the gradient of the objective function
 
@@ -112,7 +112,7 @@ the total number of evaluations of the gradient of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int h_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` h_eval
 
 the total number of evaluations of the Hessian of the objective function
 

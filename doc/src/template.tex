@@ -30,23 +30,30 @@ Ph. L. Toint, University of Namur, Belgium.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
-If it is required to use both modules at the same time, the derived types 
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 (Section~\ref{galtypes})
 and the subroutines
 (Section~\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -63,18 +70,18 @@ are:
 
 \begin{description}
 
-\itt{n} is a scalar variable of type default \integer, that holds \ldots
+\itt{n} is a scalar variable of type \integer, that holds \ldots
 
 \itt{on} is a scalar variable of type default \logical, that holds \ldots
 
 \itt{time} is a scalar variable of type default \real, that holds \ldots
 
-\itt{f} is a scalar variable of type default \realdp, that holds \ldots
+\itt{f} is a scalar variable of type \realdp, that holds \ldots
 
-\itt{A} is a rank-one pointer array of type default \realdp, that holds \ldots
+\itt{A} is a rank-one pointer array of type \realdp, that holds \ldots
 
 \itt{X} is a rank-one array of dimension {\tt n} and type 
-default \realdp, that holds \ldots
+\realdp, that holds \ldots
 
 \end{description}
 
@@ -92,20 +99,20 @@ are:
 
 \begin{description}
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {tt print\_level} $\leq$ 0. If 
 {\tt print\_level} $=$ 1, \ldots .
 The default is {\tt print\_level} $=$ 0.
 
-\itt{out} is a scalar variable of type default \integer, that holds the
+\itt{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in 
 {\tt \packagename\_solve}
 is suppressed if {\tt out} $<$ 0.
 The default is {\tt out} $=$ 6.
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages.
 Printing of error messages in 
 {\tt \packagename\_solve}
@@ -128,7 +135,7 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. See Sections~\ref{galerrors} and \ref{galinfo}
 for details.
 \end{description}
@@ -231,7 +238,7 @@ is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \itt{v} is an \optional\ rank-one \intentin\ pointer array of type 
- default \realdp,  that holds \ldots
+ \realdp,  that holds \ldots
 
 \end{description}
 

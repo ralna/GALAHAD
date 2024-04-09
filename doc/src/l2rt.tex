@@ -48,20 +48,22 @@ $\bmv + \bmA^T \bmu$.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time, the derived types
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_control\_type}, {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type},
 (Section~\ref{galtypes})
@@ -73,6 +75,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -92,20 +98,20 @@ is used to hold controlling data. Default values may be obtained by calling
 are:
 
 \begin{description}
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages.
 Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if ${\tt error} \leq {\tt 0}$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer,
+\itt{print\_level} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output which is required. No
 informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
@@ -114,26 +120,26 @@ iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output
 will be increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{itmin} is a scalar variable of type default \integer, that holds the
+\itt{itmin} is a scalar variable of type \integer, that holds the
 minimum number of iterations which will be performed by
 {\tt \packagename\_solve}.
 The default is {\tt itmin = -1}.
 
-\itt{itmax} is a scalar variable of type default \integer, that holds the
+\itt{itmax} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in
 {\tt \packagename\_solve}.
 If {\tt itmax} is set to a negative number, it will be reset by
 {\tt \packagename\_solve} to $\max(m,n)+10$.
 The default is {\tt itmax = -1}.
 
-\itt{bitmax} is a scalar variable of type default \integer, that holds the
+\itt{bitmax} is a scalar variable of type \integer, that holds the
 maximum number of Newton inner iterations which will be allowed for each
 main iteration in {\tt \packagename\_solve}.
 If {\tt bitmax} is set to a negative number, it will be reset by
 {\tt \packagename\_solve} to $10$.
 The default is {\tt bitmax = -1}.
 
-\itt{extra\_vectors} is a scalar variable of type default \integer,
+\itt{extra\_vectors} is a scalar variable of type \integer,
 that specifies the number of additional vectors of length $n$
 that will be allocated to try to speed up the computation during the
 second pass.
@@ -199,11 +205,11 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 current status of the algorithm. See Sections~\ref{galreverse} and
 \ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer,
+\itt{alloc\_status} is a scalar variable of type \integer,
 that gives the status of the last internal array allocation
 or deallocation. This will be 0 if {\tt status = 0}.
 
@@ -222,21 +228,21 @@ $\sqrt{\| \bmA \bmx - \bmb\|_2^2 + \mu \| \bmx \|_2^2}
 $\lambda = \mu + \sigma \|\bmx\|_2^{p-2}
  \sqrt{\| \bmA \bmx - \bmb \|_2^2 + \mu \|\bmx\|_2^2}$.
 
-\itt{x\_norm} is a scalar variable of type default \realdp,
+\itt{x\_norm} is a scalar variable of type \realdp,
 that holds the current value of $\|\bmx\|_2$.
 
-\itt{r\_norm} is a scalar variable of type default \realdp,
+\itt{r\_norm} is a scalar variable of type \realdp,
 that holds the current value of
 $\| \bmA \bmx - \bmb \|_2$.
 
-\itt{Atr\_norm} is a scalar variable of type default \realdp,
+\itt{Atr\_norm} is a scalar variable of type \realdp,
 that holds the current value of
 $\|\bmA^T ( \bmA \bmx - \bm b ) + \lambda \bmx \|_2$.
 
-\ittf{iter} is a scalar variable of type default \integer, that holds the
+\ittf{iter} is a scalar variable of type \integer, that holds the
 current number of Lanczos vectors used.
 
-\itt{iter\_pass2} is a scalar variable of type default \integer, that holds the
+\itt{iter\_pass2} is a scalar variable of type \integer, that holds the
 current number of Lanczos vectors used in the second pass.
 
 \end{description}
@@ -323,10 +329,10 @@ The optimization problem solution algorithm is called as follows:
 
 \begin{description}
 
-\ittf{m} is a scalar \intentin\ argument of type default \integer, that must be
+\ittf{m} is a scalar \intentin\ argument of type \integer, that must be
 set to the number of equations, $m$. {\bf Restriction: } $m > 0$.
 
-\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
+\ittf{n} is a scalar \intentin\ argument of type \integer, that must be
 set to the number of unknowns, $n$. {\bf Restriction: } $n > 0$.
 
 \ittf{p} is a scalar \intentin\ variable of type default
@@ -346,14 +352,14 @@ that must be set on initial entry to the value of the shift $\mu$.
 {\bf Restriction: } $\mu \geq 0$.
 
 \ittf{X} is an array \intentinout\ argument of dimension {\tt n} and
-type default \realdp,
+type \realdp,
 that holds an estimate of the solution $\bmx$ of the linear system.
 On initial entry, {\tt X} need not be set.
 It must not be changed between entries.
 On exit, {\tt X} contains the current best estimate of the solution.
 
 \ittf{U} is an array \intentinout\ argument of dimension {\tt m} and
-type default \realdp,
+type \realdp,
 that is used to hold left-Lanczos vectors used during the iteration.
 On initial entry, {\tt U} must contain the vector $\bmb$.
 If {\tt inform\%status} = 2 or 4 on exit, {\tt U} must be reset
@@ -361,7 +367,7 @@ as directed by  {\tt inform\%status}; otherwise
 it must be left unchanged.
 
 \ittf{V} is an array \intentinout\ argument of dimension {\tt n} and
-type default \realdp,
+type \realdp,
 that is used to hold left-Lanczos vectors used during the iteration.
 It need not be set on initial entry.
 If {\tt inform\%status} = 3 on exit, {\tt V} must be reset
@@ -669,7 +675,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

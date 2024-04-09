@@ -40,20 +40,22 @@ iterative refinement.}
 
 \subsection{Calling sequences}
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time, the derived types
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
@@ -69,6 +71,10 @@ and
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtypes
@@ -82,23 +88,23 @@ The components of {\tt SMT\_type} are:
 
 \begin{description}
 
-\ittf{n} is a scalar variable of type default \integer, that holds
+\ittf{n} is a scalar variable of type \integer, that holds
 the order $n$ of the matrix  $\bmA$.
 \restriction {\tt n} $\geq$ {\tt 1}.
 
-\ittf{ne} is a scalar variable of type default \integer, that holds the
+\ittf{ne} is a scalar variable of type \integer, that holds the
 number of matrix entries.
 \restriction {\tt ne} $\geq$ {\tt 0}.
 
-\ittf{VAL} is a rank-one allocatable array of type default \realdp,
+\ittf{VAL} is a rank-one allocatable array of type \realdp,
 and dimension at least {\tt ne}, that holds the values of the entries.
 Each pair of off-diagonal entries $a_{ij} = a_{ji} $
 is represented as a single entry. Duplicated entries are summed.
 
-\ittf{ROW} is a rank-one allocatable array of type default \integer,
+\ittf{ROW} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that holds the row indices of the entries.
 
-\ittf{COL} is a rank-one allocatable array of type default \integer,
+\ittf{COL} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that holds the column indices of the entries.
 
 \end{description}
@@ -116,20 +122,20 @@ is used to hold controlling data. Default values may be obtained by calling
 are:
 
 \begin{description}
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages.
 Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if ${\tt error} \leq {\tt 0}$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer,
+\itt{print\_level} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output which is required. No
 informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
@@ -138,7 +144,7 @@ iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output
 will be increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{itref\_max} is a scalar variable of type default \integer, that holds
+\itt{itref\_max} is a scalar variable of type \integer, that holds
 the maximum number of iterative refinements which will be allowed.
 The default is {\tt itref\_max = 1}.
 
@@ -198,10 +204,10 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 current status of the algorithm. See Section~\ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer,
+\itt{alloc\_status} is a scalar variable of type \integer,
 that gives the status of the last internal array allocation
 or deallocation. This will be 0 if {\tt status = 0}.
 
@@ -303,7 +309,7 @@ the matrix $\bmA$.  All components must be unaltered since the call
 to {\tt SLS\_factorize}.
 
 \ittf{X} is an array \intentinout\ argument of dimension {\tt A\%n} and
-type default \realdp, that must be set on input to contain the vector $\bmb$.
+type \realdp, that must be set on input to contain the vector $\bmb$.
 On exit, {\tt X} holds an estimate of the solution $\bmx$
 
 \itt{data} is a scalar \intentinout argument of type
@@ -534,7 +540,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

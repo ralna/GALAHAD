@@ -16,28 +16,28 @@ bllsb_inform_type structure
 	struct bllsb_inform_type {
 		// components
 	
-		int :ref:`status<doxid-structbllsb__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structbllsb__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structbllsb__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structbllsb__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structbllsb__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`iter<doxid-structbllsb__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		int :ref:`factorization_status<doxid-structbllsb__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structbllsb__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_status<doxid-structbllsb__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
 		int64_t :ref:`factorization_integer<doxid-structbllsb__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
 		int64_t :ref:`factorization_real<doxid-structbllsb__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		int :ref:`nfacts<doxid-structbllsb__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
-		int :ref:`nbacts<doxid-structbllsb__inform__type_1a4b9a11ae940f04846c342978808696d6>`;
-		int :ref:`threads<doxid-structbllsb__inform__type_1a4f987a98d3e1221916748962e45399fe>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structbllsb__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`primal_infeasibility<doxid-structbllsb__inform__type_1a2bce6cd733ae08834689fa66747f53b9>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`dual_infeasibility<doxid-structbllsb__inform__type_1a979cebdf2e5f1e043f48a615a46b0299>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`complementary_slackness<doxid-structbllsb__inform__type_1aa9bb6bfb5903021b1942fe5a02f23f06>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`init_primal_infeasibility<doxid-structbllsb__inform__type_1a85355c90bdd4cdd2e09bfed7fd9f66e1>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`init_dual_infeasibility<doxid-structbllsb__inform__type_1a8a03c79f840170d644609f1fb95d06e3>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`init_complementary_slackness<doxid-structbllsb__inform__type_1adbb8b72850a5e57700268fc582064615>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`potential<doxid-structbllsb__inform__type_1a85f37aa42c9e051ea61ae035ff63059e>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`non_negligible_pivot<doxid-structbllsb__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nfacts<doxid-structbllsb__inform__type_1af54a1b17cb663c1e89a5bcd5f1e9961f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nbacts<doxid-structbllsb__inform__type_1a4b9a11ae940f04846c342978808696d6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`threads<doxid-structbllsb__inform__type_1a4f987a98d3e1221916748962e45399fe>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structbllsb__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`primal_infeasibility<doxid-structbllsb__inform__type_1a2bce6cd733ae08834689fa66747f53b9>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`dual_infeasibility<doxid-structbllsb__inform__type_1a979cebdf2e5f1e043f48a615a46b0299>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`complementary_slackness<doxid-structbllsb__inform__type_1aa9bb6bfb5903021b1942fe5a02f23f06>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`init_primal_infeasibility<doxid-structbllsb__inform__type_1a85355c90bdd4cdd2e09bfed7fd9f66e1>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`init_dual_infeasibility<doxid-structbllsb__inform__type_1a8a03c79f840170d644609f1fb95d06e3>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`init_complementary_slackness<doxid-structbllsb__inform__type_1adbb8b72850a5e57700268fc582064615>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`potential<doxid-structbllsb__inform__type_1a85f37aa42c9e051ea61ae035ff63059e>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`non_negligible_pivot<doxid-structbllsb__inform__type_1a827ddb7fead8e375404c9b770b67e771>`;
 		bool :ref:`feasible<doxid-structbllsb__inform__type_1aa43a71eb35dd7b8676c0b6236ceee321>`;
-		int :ref:`checkpointsIter<doxid-structbllsb__inform__type_1acb0789a29239327ab8a4e929e0fbc65b>`[16];
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`checkpointsTime<doxid-structbllsb__inform__type_1af2d3b92abc0ea9392d412ab45438eeb9>`[16];
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`checkpointsIter<doxid-structbllsb__inform__type_1acb0789a29239327ab8a4e929e0fbc65b>`[16];
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`checkpointsTime<doxid-structbllsb__inform__type_1af2d3b92abc0ea9392d412ab45438eeb9>`[16];
 		struct :ref:`bllsb_time_type<doxid-structbllsb__time__type>` :ref:`time<doxid-structbllsb__inform__type_1a437e235d4db7a908d3a2bdef228584a7>`;
 		struct :ref:`fdc_inform_type<doxid-structfdc__inform__type>` :ref:`fdc_inform<doxid-structbllsb__inform__type_1a966b6933e7b53fb2d71f55f267ad00f4>`;
 		struct :ref:`sbls_inform_type<doxid-structsbls__inform__type>` :ref:`sbls_inform<doxid-structbllsb__inform__type_1a7e7617645ca9908f4f75e5216bb7cf68>`;
@@ -62,7 +62,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See BLLSB_solve for details.
 
@@ -72,7 +72,7 @@ return status. See BLLSB_solve for details.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation.
 
@@ -92,7 +92,7 @@ the name of the array for which an allocation/deallocation error occurred.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iter
 
 the total number of iterations required
 
@@ -102,7 +102,7 @@ the total number of iterations required
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization_status
 
 the return status from the factorization
 
@@ -132,7 +132,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nfacts
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nfacts
 
 the total number of factorizations performed
 
@@ -142,7 +142,7 @@ the total number of factorizations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nbacts
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nbacts
 
 the total number of "wasted" function evaluations during the linesearch
 
@@ -152,7 +152,7 @@ the total number of "wasted" function evaluations during the linesearch
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int threads
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` threads
 
 the number of threads used
 
@@ -162,7 +162,7 @@ the number of threads used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
 the value of the objective function at the best estimate of the solution determined by BLLSB_solve
 
@@ -172,7 +172,7 @@ the value of the objective function at the best estimate of the solution determi
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` primal_infeasibility
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` primal_infeasibility
 
 the value of the primal infeasibility
 
@@ -182,7 +182,7 @@ the value of the primal infeasibility
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` dual_infeasibility
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` dual_infeasibility
 
 the value of the dual infeasibility
 
@@ -192,7 +192,7 @@ the value of the dual infeasibility
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` complementary_slackness
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` complementary_slackness
 
 the value of the complementary slackness
 
@@ -202,7 +202,7 @@ the value of the complementary slackness
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` non_negligible_pivot
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` non_negligible_pivot
 
 the smallest pivot which was not judged to be zero when detecting linear dependent constraints
 
@@ -222,7 +222,7 @@ is the returned "solution" feasible?
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int checkpointsIter[16]
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` checkpointsIter[16]
 
 checkpoints(i) records the iteration at which the criticality measures first fall below $10^{-i-1}$, i = 0, ..., 15 (-1 means not achieved)
 
@@ -232,7 +232,7 @@ checkpoints(i) records the iteration at which the criticality measures first fal
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` checkpointsTime[16]
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` checkpointsTime[16]
 
 see checkpointsIter
 

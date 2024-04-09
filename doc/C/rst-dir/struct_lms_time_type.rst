@@ -15,14 +15,14 @@ lms_time_type structure
 	struct lms_time_type {
 		// fields
 	
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`total<doxid-structlms__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`setup<doxid-structlms__time__type_1aaa0ec60bfc99c0ffd31001a4f59036b4>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`form<doxid-structlms__time__type_1a8ac63de5e103d8e01b0e0f88bb7d230d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`apply<doxid-structlms__time__type_1a9d8129bf5b1a9f21dfcc24dc5c706274>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_total<doxid-structlms__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_setup<doxid-structlms__time__type_1ac2bdffea5b986f6acd6b53c4d2344910>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_form<doxid-structlms__time__type_1ab275f3b71b8e019aa35acf43c3fd7473>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_apply<doxid-structlms__time__type_1afbbb1dd5fc63c640620fbd32a0481493>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`total<doxid-structlms__time__type_1ad3803b3bb79c5c74d9300520fbe733f4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`setup<doxid-structlms__time__type_1aaa0ec60bfc99c0ffd31001a4f59036b4>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`form<doxid-structlms__time__type_1a8ac63de5e103d8e01b0e0f88bb7d230d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`apply<doxid-structlms__time__type_1a9d8129bf5b1a9f21dfcc24dc5c706274>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structlms__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_setup<doxid-structlms__time__type_1ac2bdffea5b986f6acd6b53c4d2344910>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_form<doxid-structlms__time__type_1ab275f3b71b8e019aa35acf43c3fd7473>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_apply<doxid-structlms__time__type_1afbbb1dd5fc63c640620fbd32a0481493>`;
 	};
 .. _details-structlms__time__type:
 
@@ -40,7 +40,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` total
 
 total cpu time spent in the package
 
@@ -50,7 +50,7 @@ total cpu time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` setup
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` setup
 
 cpu time spent setting up space for the secant approximation
 
@@ -60,7 +60,7 @@ cpu time spent setting up space for the secant approximation
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` form
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` form
 
 cpu time spent updating the secant approximation
 
@@ -70,7 +70,7 @@ cpu time spent updating the secant approximation
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` apply
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` apply
 
 cpu time spent applying the secant approximation
 
@@ -80,7 +80,7 @@ cpu time spent applying the secant approximation
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_total
 
 total clock time spent in the package
 
@@ -90,7 +90,7 @@ total clock time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_setup
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_setup
 
 clock time spent setting up space for the secant approximation
 
@@ -100,7 +100,7 @@ clock time spent setting up space for the secant approximation
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_form
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_form
 
 clock time spent updating the secant approximation
 
@@ -110,7 +110,7 @@ clock time spent updating the secant approximation
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_apply
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_apply
 
 clock time spent applying the secant approximation
 

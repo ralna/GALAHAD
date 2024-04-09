@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-03 AT 11:35 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-02-18 AT 08:45 GMT.
 
-#ifdef SPRAL_SINGLE
+#ifdef SINGLE
 #ifdef INTEGER_64
 #define SPRAL_KINDS_precision SPRAL_KINDS_single_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64

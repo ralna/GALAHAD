@@ -215,6 +215,7 @@ galahad_python_tests = []
 # Folders that contain headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
+                      include_directories('src/metis/include'),
                       include_directories('src/ampl')] + libhsl_modules + libhwloc_include
 
 libgalahad_single_include = libgalahad_include + libcutest_single_modules
@@ -253,8 +254,8 @@ if host_machine.system() != 'linux'
   endif
 endif
 
-extra_args_single = ['-DGALAHAD_SINGLE', '-DSPRAL_SINGLE']
-extra_args_double = ['-DGALAHAD_DOUBLE', '-DSPRAL_DOUBLE']
+extra_args_single = ['-DSINGLE']
+extra_args_double = ['']
 
 if not libblas.found()
   extra_args_single += '-DGALAHAD_BLAS'
@@ -373,6 +374,7 @@ subdir('src/lsqp')
 subdir('src/lsrb')
 subdir('src/lsrt')
 subdir('src/lstr')
+subdir('src/metis')
 subdir('src/miqr')
 subdir('src/mop')
 subdir('src/nlpt')

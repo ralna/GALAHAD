@@ -57,22 +57,22 @@ or from a user-provided subroutine.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type},
 {\tt QPT\_problem\_type},
 {\tt NLPT\_userdata\-\_type},
@@ -147,6 +147,10 @@ array {\tt A\%val}, respectively.
 For sparse matrices, the row- and column-wise storage schemes almost always
 requires less storage than their predecessor.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtypes
@@ -160,33 +164,33 @@ The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
-\ittf{m} is a scalar component of type default \integer,
+\ittf{m} is a scalar component of type \integer,
 that holds the number of rows in the matrix.
 
-\ittf{n} is a scalar component of type default \integer,
+\ittf{n} is a scalar component of type \integer,
 that holds the number of columns in the matrix.
 
-\ittf{ne} is a scalar variable of type default \integer, that
+\ittf{ne} is a scalar variable of type \integer, that
 holds the number of matrix entries.
 
 \ittf{type} is a rank-one allocatable array of type default \character, that
 is used to indicate the matrix storage scheme used. Its precise length and
 content depends on the type of matrix to be stored (see \S\ref{typeprob}).
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\,
+\ittf{val} is a rank-one allocatable array of type \realdp\,
 and dimension at least {\tt ne}, that holds the values of the entries.
 Any duplicated entries that appear in the sparse
 coordinate or row-wise schemes will be summed.
 
-\ittf{row} is a rank-one allocatable array of type default \integer,
+\ittf{row} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the row indices of the entries.
 (see \S\ref{coordinate} and \S\ref{columnwise}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer,
+\ittf{col} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer,
+\ittf{ptr} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt m + 1}, that may hold the pointers to
 the first entry in each row (see \S\ref{rowwise}).
 or dimension at least {\tt n + 1}, that may hold the pointers to
@@ -204,10 +208,10 @@ are:
 
 \begin{description}
 
-\ittf{n} is a scalar variable of type default \integer,
+\ittf{n} is a scalar variable of type \integer,
  that holds the number of optimization variables, $n$.
 
-\ittf{o} is a scalar variable of type default \integer,
+\ittf{o} is a scalar variable of type \integer,
  that holds the number of residuals, $o$.
 
 \ittf{Ao} is scalar variable of type {\tt SMT\_TYPE}
@@ -257,33 +261,33 @@ for further details on the use of {\tt SMT\_put}.
 (and access provided to  $\bmA_o$ provided by other means, see later sections), 
 and in this case the remaining components of {\tt A} need not be set.
 
-\itt{Ao\%ne} is a scalar variable of type default \integer, that
+\itt{Ao\%ne} is a scalar variable of type \integer, that
 holds the number of entries in $\bmA_o$
 in the sparse coordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
-\itt{Ao\%val} is a rank-one allocatable array of type default \realdp, that 
+\itt{Ao\%val} is a rank-one allocatable array of type \realdp, that 
 holds the values of the entries of the design matrix $\bmA_o$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{Ao\%row} is a rank-one allocatable array of type default \integer,
+\itt{Ao\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of $\bmA_o$ in the sparse coordinate storage
 scheme (see Section~\ref{coordinate}).
 It need not be allocated for any of the other three schemes.
 
-\itt{Ao\%col} is a rank-one allocatable array variable of type default \integer,
+\itt{Ao\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of $\bmA_o$ in either the sparse coordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated when the dense or column-wise storage schemes are used.
 
-\itt{Ao\%row} is a rank-one allocatable array variable of type default \integer,
+\itt{Ao\%row} is a rank-one allocatable array variable of type \integer,
 that holds the row indices of $\bmA_o$ in either the sparse coordinate
 (see Section~\ref{coordinate}), or the sparse column-wise
 (see Section~\ref{columnwise}) storage scheme.
 It need not be allocated when the dense or row-wise storage schemes are used.
 
-\itt{Ao\%ptr} is a rank-one allocatable array and type default \integer,
+\itt{Ao\%ptr} is a rank-one allocatable array and type \integer,
 that must be of dimension {\tt o+1}
 and hold the starting position of each row of $\bmA_o$, as well
 as the total number of entries plus one, in the sparse row-wise storage
@@ -298,21 +302,21 @@ other schemes are used.
 \end{description}
 
 \ittf{B} is a rank-one allocatable array of dimension {\tt o} and type
-default \realdp, that holds the constant term $\bmb$ in the residuals.
+\realdp, that holds the constant term $\bmb$ in the residuals.
 The $i$-th component of {\tt B}, $i = 1, \ldots, o$, contains $\bmb_{i}$.
 
 \ittf{R} is a rank-one allocatable array of dimension {\tt o} and type
-default \realdp, that holds the residuals, $\bmr(\bmx) = \bmA_o \bmx - \bmb$,
+\realdp, that holds the residuals, $\bmr(\bmx) = \bmA_o \bmx - \bmb$,
 at the point $\bmx$. The $i$-th component of
 {\tt R}, $i = 1, \ldots, o$, contains $\bmr_{i}(\bmx)$.
 
 \ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that holds the gradient of the objective
+\realdp, that holds the gradient of the objective
  $\bmg(\bmx) = \bmA_o^T \bmW \bmr(\bmx)$, at the point $\bmx$. 
 The $j$-th component of {\tt G}, $j = 1, \ldots, n$, contains $\bmg_{j}(\bmx)$.
 
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp,
+\realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 
@@ -342,18 +346,18 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -361,34 +365,34 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that specifies
+\itt{start\_print} is a scalar variable of type \integer, that specifies
 the first iteration for which printing will be permitted in \solver.
 If {\tt start\_print} is negative, printing will be permitted from the outset.
 The default is {\tt start\_print = -1}.
 
-\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+\itt{stop\_print} is a scalar variable of type \integer, that specifies
 the last iteration for which printing will be permitted in  \solver.
 If {\tt stop\_print} is negative, printing will be permitted once it has been
 started by {\tt start\_print}.
 The default is {\tt stop\_print = -1}.
 
-\itt{print\_gap} is a scalar variable of type default \integer.
+\itt{print\_gap} is a scalar variable of type \integer.
 Once printing has been started, output will occur once every
 {\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
 printing will be permitted on every iteration.
 The default is {\tt print\_gap = 1}.
 
-\itt{maxit} is a scalar variable of type default \integer, that holds the
+\itt{maxit} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in \solver.
 The default is {\tt maxit = 1000}.
 
-\itt{cold\_start} is a scalar variable of type default \integer, that
+\itt{cold\_start} is a scalar variable of type \integer, that
 should be set to 0 if a warm start is required (with variables
 assigned according to {\tt X\_stat}, see below), and to any other value if the
 values given in {\tt prob\%X} suffice.
 The default is {\tt cold\_start = 1}.
 
-\itt{preconditioner} is a scalar variable of type default \integer, that
+\itt{preconditioner} is a scalar variable of type \integer, that
 specifies the type of preconditioner (scaling) used when computing the
 search direction. Currently this can be 
 {\tt 0} (no preconditioner), 
@@ -399,25 +403,25 @@ see \S\ref{reverse}),
 although other values may be introduced
 in future. The default is {\tt preconditioner = 1}.
 
-\itt{change\_max} is a scalar variable of type default \integer, that
+\itt{change\_max} is a scalar variable of type \integer, that
 specifies the maximum number of per-iteration changes in the working set
 permitted when allowing subspace solution rather than steepest descent
 (see \S\ref{galmethod}).
 The default is {\tt change\_max = 2}.
 
-\itt{cg\_maxit} is a scalar variable of type default \integer, that holds the
+\itt{cg\_maxit} is a scalar variable of type \integer, that holds the
 maximum number of conjugate-gradient iterations which will be allowed
 per main iteration in \solver.
 The default is {\tt cg\_maxit = 1000}, and any negative value will
 be interpreted as $n$ + 1.
 
-\itt{arcsearch\_max\_steps} is a scalar variable of type default \integer,
+\itt{arcsearch\_max\_steps} is a scalar variable of type \integer,
 that specifies the maximum number of steps allowed in an individual
 piecewise arc search.
 The default is {\tt arcsearch\_max\_steps = 1000}, and a negative value
 removes the limit.
 
-\itt{weight} is a scalar variable of type default \realdp, that is used to
+\itt{weight} is a scalar variable of type \realdp, that is used to
 specify the weight $\sigma$ that controls regularization of the objective 
 function. Any value smaller than $0$ will be regarded as zero.
 The default is {\tt weight =} $0.0$.
@@ -430,7 +434,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
 \itt{stop\_cg\_relative} and {\tt stop\_cg\_absolute}
-are scalar variables of type default \realdp,
+are scalar variables of type \realdp,
 that hold the relative and absolute convergence tolerances for the
 conjugate-gradient iteration that occurs in the face of currently-active
 constraints when constructing the search direction.
@@ -439,27 +443,27 @@ and \sloppy {\tt stop\_cg\_absolute =} $\sqrt{u}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{alpha\_max} is a scalar variable of type default \realdp, that specifies
+\itt{alpha\_max} is a scalar variable of type \realdp, that specifies
 The default is {\tt alpha\_max =} $10^{20}$.
 
-\itt{alpha\_initial} is a scalar variable of type default \realdp, that
+\itt{alpha\_initial} is a scalar variable of type \realdp, that
 specifies the initial arc length during the inexact piecewise arc search.
 The default is {\tt alpha\_initial = 1.0}.
 
-\itt{alpha\_reduction} is a scalar variable of type default \realdp, that
+\itt{alpha\_reduction} is a scalar variable of type \realdp, that
 specifies the arc length reduction factor for the inexact piecewise arc search.
 The default is {\tt alpha\_reduction = 0.5}.
 
-\itt{arcsearch\_acceptance\_tol} is a scalar variable of type default \realdp,
+\itt{arcsearch\_acceptance\_tol} is a scalar variable of type \realdp,
 that specifies the required relative reduction during the inexact arc search
 The default is {\tt arcsearch\_acceptance\_tol = 0.01}.
 
-\itt{stabilisation\_weight} is a scalar variable of type default \realdp,
+\itt{stabilisation\_weight} is a scalar variable of type \realdp,
 that specifies the weight added to the search-direction subproblem to 
 stabilise the computation.
 The default is {\tt stabilisation\_weight =} $10^{-12}$.
 
-\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+\itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
@@ -551,13 +555,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See Section~\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -566,13 +570,13 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{factorization\_status} is a scalar variable of type default \integer, that
+\itt{factorization\_status} is a scalar variable of type \integer, that
 gives the return status from the matrix factorization.
 
-\itt{iter} is a scalar variable of type default \integer, that
+\itt{iter} is a scalar variable of type \integer, that
 gives the number of iterations performed.
 
-\ittf{obj} is a scalar variable of type default \realdp, that holds the
+\ittf{obj} is a scalar variable of type \realdp, that holds the
 value of the objective function at the best estimate of the solution found.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
@@ -614,12 +618,12 @@ Components of variables of type {\tt NLPT\_userdata\-\_type} may be allocated as
 necessary. The following components are available:
 
 \begin{description}
-\itt{integer} is a rank-one allocatable array of type default \integer.
+\itt{integer} is a rank-one allocatable array of type \integer.
 \ittf{real} is a rank-one allocatable array of type default  \realdp
 \itt{complex} is a rank-one allocatable array of type default \complexdp.
 \itt{character} is a rank-one allocatable array of type default \character.
 \itt{logical} is a rank-one allocatable array of type default \logical.
-\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
+\itt{integer\_pointer} is a rank-one pointer array of type \integer.
 \itt{real\_pointer} is a rank-one pointer array of type default  \realdp
 \itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
 \itt{character\_pointer} is a rank-one pointer array of type default \character.
@@ -639,33 +643,33 @@ are:
 
 \begin{description}
 
-\itt{nz\_v\_start} is a scalar variable of type default \integer, that
+\itt{nz\_v\_start} is a scalar variable of type \integer, that
 may be used to hold the starting position in {\tt NZ\_v} (see below)
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{nz\_v\_end} is a scalar variable of type default \integer, that
+\itt{nz\_v\_end} is a scalar variable of type \integer, that
 may be used to hold the finishing position in {\tt NZ\_v} (see below)
 of the list of indices of nonzero components of $\bmv$.
 
 \itt{NZ\_v} is a rank-one allocatable array of dimension $n$
-and type default \integer, that may be used to hold the indices of the
+and type \integer, that may be used to hold the indices of the
 nonzero components of $\bmv$. If used, components
 {\tt NZ\_v(nz\_v\_start:nz\_v\_end)} of {\tt V} (see below) will be nonzero.
 
 \itt{V} is a rank-one allocatable array of dimension $n$
-and type default \realdp, that is used to hold the components of the
+and type \realdp, that is used to hold the components of the
 output vector $\bmv$.
 
 \itt{P} is a rank-one allocatable array of dimension $o$
-and type default \realdp, that is used to record the components of the
+and type \realdp, that is used to record the components of the
 resulting vector $\bmA_o \bmv$.
 
-\itt{nz\_p\_end} is a scalar variable of type default \integer, that
+\itt{nz\_p\_end} is a scalar variable of type \integer, that
 is used to record the finishing position in {\tt NZ\_p} (see below)
 of the list of indices of nonzero components of $\bmA_o \bmv$ if required.
 
 \itt{NZ\_p} is a rank-one allocatable array of dimension $n$
-and type default \integer, that is used to record the list of
+and type \integer, that is used to record the list of
 indices of nonzero components of $\bmA_o \bmv$ if required. Components
 {\tt NZ\_p(1:nz\_prod\_end)} of {\tt P} should then be nonzero.
 
@@ -779,7 +783,7 @@ and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
                   {\tt SPARSE\_BY\_COLUMNS}$\}$.
 
 \itt{X\_stat} is a rank-one \intentinout\ array argument of dimension {\tt prob\%n}
-and type default \integer, that indicates which of the simple bound
+and type \integer, that indicates which of the simple bound
 constraints are in the current working set. Possible values for
 {\tt X\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt prob\%n}, and their meanings are
 \begin{description}
@@ -826,7 +830,7 @@ to and from the \optional\ subroutines
  {\tt eval\_APROD} and {\tt eval\_ASPROD} (see below).
 
 \ittf{W} is an \optional\ rank-one \intentinout\ array argument of dimension 
-{\tt prob\%n} and type default \realdp\ that if present contains the weights
+{\tt prob\%n} and type \realdp\ that if present contains the weights
 $\bmw$. If {\tt W} is absent, weights of one will be used instead.
 
 \itt{reverse} is an \optional\ scalar \intentinout\ argument of type
@@ -954,7 +958,7 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 sum $\bmp + \bmA_o \bmv$ or $\bmp + \bmA_o^T\bmv$
 and to a non-zero value if the evaluation has not been possible.
@@ -970,10 +974,10 @@ default that will be set \true\ if the product involves the transpose
 of the Jacobian $\bmA_o^T$ and \false\ if the product involves
 the Jacobian $\bmA_o$ itself.
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$.
 
-\ittf{P} is a rank-one \intentinout\ array argument of type default \realdp\
+\ittf{P} is a rank-one \intentinout\ array argument of type \realdp\
 whose components on input contain the vector $\bmp$ and on output the
 sum $\bmp + \bmA_o \bmv$ when {\tt \%transpose} is \false\ or
 $\bmp + \bmA_o^T \bmv$ when {\tt \%transpose} is \true.
@@ -999,7 +1003,7 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 product $\bmA_o \bmv$
 and to a non-zero value if the evaluation has not been possible.
@@ -1009,7 +1013,7 @@ and to a non-zero value if the evaluation has not been possible.
 to communicate user-supplied data to and from the
 subroutine (see Section~\ref{typeuserdata}).
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$.
 If components
 {\tt nz\_in\_start},
@@ -1021,7 +1025,7 @@ only components {\tt NZ\_in(nz\_in\_start:nz\_in\_end)} of {\tt V}
 will be nonzero and the remaining components of {\tt V} should be
 ignored. Otherwise, all components of {\tt V} should be presumed to be nonzero.
 
-\ittf{P} is a rank-one \intentout\ array argument of type default \realdp\
+\ittf{P} is a rank-one \intentout\ array argument of type \realdp\
 whose components on output contain the required components of $\bmA_o \bmv$.
 If components
 {\tt nz\_out\_end}
@@ -1032,16 +1036,16 @@ only the nonzero components {\tt NZ\_out(1:nz\_out\_end)} of {\tt P}
 need be assigned.
 Otherwise, all components of {\tt P} must be set.
 
-\itt{nz\_in\_start} is an \optional\ scalar variable of type default \integer,
+\itt{nz\_in\_start} is an \optional\ scalar variable of type \integer,
 that, if \present, holds the starting position in {\tt NZ\_in}
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{nz\_in\_end} is an \optional\ scalar variable of type default \integer,
+\itt{nz\_in\_end} is an \optional\ scalar variable of type \integer,
 that, if \present, holds the finishing position in {\tt NZ\_in}
 of the list of indices of nonzero components of $\bmv$.
 
 \itt{NZ\_in} is an \optional\  rank-one array of dimension $n$
-and type default \integer, that, if \present, holds the indices of the
+and type \integer, that, if \present, holds the indices of the
 nonzero components of $\bmv$. If any of
 {\tt nz\_in\_start},
 {\tt nz\_in\_end}
@@ -1049,12 +1053,12 @@ and
 {\tt NZ\_in}
 are absent, all components of {\tt V} are assumed to be nonzero.
 
-\itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer,
+\itt{nz\_out\_end} is an \optional\ scalar variable of type \integer,
 that, if \present, must be set to record the number of non-zeros in
 $\bmA_o \bmv$.
 
 \itt{NZ\_out} is an \optional\ rank-one array of dimension $o$
-and type default \integer, that, if \present, must be set to record the list
+and type \integer, that, if \present, must be set to record the list
 of indices of nonzero components of $\bmA_o \bmv$.
 If either of
 {\tt nz\_out\_end}
@@ -1084,7 +1088,7 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 sum $\bmA_o \bmv$ or $\bmA_o^T\bmv$
 and to a non-zero value if the evaluation has not been possible.
@@ -1100,12 +1104,12 @@ default that will be set \true\ if the product involves the transpose
 of the Jacobian $\bmA_o^T$ and \false\ if the product involves
 the Jacobian $\bmA_o$ itself.
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$. If {\tt transpose} is \false\
 only those components whose indices {\tt FREE(:n\_free)} (see below)
 will by set, and the remainder will be presumed to be zero.
 
-\ittf{P} is a rank-one \intentout\ array argument of type default \realdp\
+\ittf{P} is a rank-one \intentout\ array argument of type \realdp\
 whose components on output must be set to the
 product $\bmA_o \bmv$ when {\tt \%transpose} is \false. If
 {\tt \%transpose} is \true, components with indices {\tt FREE(:n\_free)}
@@ -1113,14 +1117,14 @@ product $\bmA_o \bmv$ when {\tt \%transpose} is \false. If
 product $\bmA_o^T \bmv$, and the remaining components ignored.
 
 \itt{FREE} is a rank-one \intentin\ array argument of
-type default \integer\ that flags the input components of $\bmv$ that are set
+type \integer\ that flags the input components of $\bmv$ that are set
 (when {\tt transpose} is \false) or output components of $\bmA_o^T \bmv$ that
 are required (when {\tt transpose} is \true). Specifically, only indices
 {\tt FREE(:n\_free)} of the relevant vector is set or required, and the
 remainder should be treated as zero (if {\tt transpose} is \false)
 or ignored  (if {\tt transpose} is \true).
 
-\itt{n\_free} is a scalar \intentin\ argument of type default \integer,
+\itt{n\_free} is a scalar \intentin\ argument of type \integer,
 that specifies the number of components of {\tt FREE} that need be considered.
 
 \end{description}
@@ -1149,7 +1153,7 @@ of $\bmP^{-1} \bmA_o^T \bmA_o^{}$ are clustered around a small number of values
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate the
 product $\bmP^{-1} \bmv$, 
 and to a non-zero value if the evaluation has not been possible.
@@ -1160,10 +1164,10 @@ to communicate user-supplied data to and from the subroutines
 {\tt eval\_APROD}
 (see Section~\ref{typeuserdata}).
 
-\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{V} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmv$.
 
-\ittf{P} is a rank-one \intentinout\ array argument of type default \realdp\
+\ittf{P} is a rank-one \intentinout\ array argument of type \realdp\
 whose components on output contain the vector $\bmp = \bmP^{-1} \bmv$.
 
 \end{description}
@@ -1482,7 +1486,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

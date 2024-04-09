@@ -254,7 +254,7 @@
 !      ||g||_2 <= MAX( %stop_g_absolute, %stop_g_relative * ||g_initial||_2,
 !     or if the step is less than %stop_s
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
        REAL ( KIND = rp_ ) :: stop_c_absolute = ten ** ( - 3 )
        REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 3 )
 #else

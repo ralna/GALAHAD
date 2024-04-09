@@ -15,10 +15,10 @@ presolve_inform_type structure
 	struct presolve_inform_type {
 		// fields
 	
-		int :ref:`status<doxid-structpresolve__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`status_continue<doxid-structpresolve__inform__type_1ab9d0ea9275be048bd854d13bd68b06d1>`;
-		int :ref:`status_continued<doxid-structpresolve__inform__type_1ae9021be7a578e777cc20e3cd5f0ab51d>`;
-		int :ref:`nbr_transforms<doxid-structpresolve__inform__type_1ac678d67797411ebadaab2a5e07f62e8a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structpresolve__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status_continue<doxid-structpresolve__inform__type_1ab9d0ea9275be048bd854d13bd68b06d1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status_continued<doxid-structpresolve__inform__type_1ae9021be7a578e777cc20e3cd5f0ab51d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nbr_transforms<doxid-structpresolve__inform__type_1ac678d67797411ebadaab2a5e07f62e8a>`;
 		char :ref:`message<doxid-structpresolve__inform__type_1ad3ed7aeb962cfe24345625354d733206>`[3][81];
 	};
 .. _details-structpresolve__inform__type:
@@ -37,7 +37,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 The presolve exit condition. It can take the following values (symbol in parentheses is the related Fortran code):
 
@@ -340,7 +340,7 @@ The presolve exit condition. It can take the following values (symbol in parenth
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nbr_transforms
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nbr_transforms
 
 The final number of problem transformations, as reported to the user at exit.
 

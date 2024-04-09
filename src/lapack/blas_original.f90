@@ -6623,3 +6623,280 @@
          END IF
          RETURN
        END SUBROUTINE
+
+       SUBROUTINE DSPMV(uplo, n, alpha, ap, x, incx, beta, y, incy)
+         DOUBLE PRECISION :: alpha, beta
+         INTEGER :: incx, incy, n
+         CHARACTER :: uplo
+         DOUBLE PRECISION :: ap(*), x(*), y(*)
+         DOUBLE PRECISION :: one, zero
+         PARAMETER (one=1.0D+0, zero=0.0D+0)
+         DOUBLE PRECISION :: temp1, temp2
+         INTEGER :: i, info, ix, iy, j, jx, jy, k, kk, kx, ky
+         LOGICAL :: LSAME
+         EXTERNAL :: LSAME
+         EXTERNAL :: XERBLA
+         info = 0
+         IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
+           info = 1
+         ELSE IF (n<0) THEN
+           info = 2
+         ELSE IF (incx==0) THEN
+           info = 6
+         ELSE IF (incy==0) THEN
+           info = 9
+         END IF
+         IF (info/=0) THEN
+           CALL XERBLA('DSPMV ', info)
+           RETURN
+         END IF
+         IF ((n==0) .OR. ((alpha==zero) .AND. (beta==one))) RETURN
+         IF (incx>0) THEN
+           kx = 1
+         ELSE
+           kx = 1 - (n-1)*incx
+         END IF
+         IF (incy>0) THEN
+           ky = 1
+         ELSE
+           ky = 1 - (n-1)*incy
+         END IF
+         IF (beta/=one) THEN
+           IF (incy==1) THEN
+             IF (beta==zero) THEN
+               DO i = 1, n
+                 y(i) = zero
+               END DO
+             ELSE
+               DO i = 1, n
+                 y(i) = beta*y(i)
+               END DO
+             END IF
+           ELSE
+             iy = ky
+             IF (beta==zero) THEN
+               DO i = 1, n
+                 y(iy) = zero
+                 iy = iy + incy
+               END DO
+             ELSE
+               DO i = 1, n
+                 y(iy) = beta*y(iy)
+                 iy = iy + incy
+               END DO
+             END IF
+           END IF
+         END IF
+         IF (alpha==zero) RETURN
+         kk = 1
+         IF (LSAME(uplo,'U')) THEN
+           IF ((incx==1) .AND. (incy==1)) THEN
+             DO j = 1, n
+               temp1 = alpha*x(j)
+               temp2 = zero
+               k = kk
+               DO i = 1, j - 1
+                 y(i) = y(i) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(i)
+                 k = k + 1
+               END DO
+               y(j) = y(j) + temp1*ap(kk+j-1) + alpha*temp2
+               kk = kk + j
+             END DO
+           ELSE
+             jx = kx
+             jy = ky
+             DO j = 1, n
+               temp1 = alpha*x(jx)
+               temp2 = zero
+               ix = kx
+               iy = ky
+               DO k = kk, kk + j - 2
+                 y(iy) = y(iy) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(ix)
+                 ix = ix + incx
+                 iy = iy + incy
+               END DO
+               y(jy) = y(jy) + temp1*ap(kk+j-1) + alpha*temp2
+               jx = jx + incx
+               jy = jy + incy
+               kk = kk + j
+             END DO
+           END IF
+         ELSE
+           IF ((incx==1) .AND. (incy==1)) THEN
+             DO j = 1, n
+               temp1 = alpha*x(j)
+               temp2 = zero
+               y(j) = y(j) + temp1*ap(kk)
+               k = kk + 1
+               DO i = j + 1, n
+                 y(i) = y(i) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(i)
+                 k = k + 1
+               END DO
+               y(j) = y(j) + alpha*temp2
+               kk = kk + (n-j+1)
+             END DO
+           ELSE
+             jx = kx
+             jy = ky
+             DO j = 1, n
+               temp1 = alpha*x(jx)
+               temp2 = zero
+               y(jy) = y(jy) + temp1*ap(kk)
+               ix = jx
+               iy = jy
+               DO k = kk + 1, kk + n - j
+                 ix = ix + incx
+                 iy = iy + incy
+                 y(iy) = y(iy) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(ix)
+               END DO
+               y(jy) = y(jy) + alpha*temp2
+               jx = jx + incx
+               jy = jy + incy
+               kk = kk + (n-j+1)
+             END DO
+           END IF
+         END IF
+         RETURN
+       END SUBROUTINE
+       SUBROUTINE SSPMV(uplo, n, alpha, ap, x, incx, beta, y, incy)
+         REAL :: alpha, beta
+         INTEGER :: incx, incy, n
+         CHARACTER :: uplo
+         REAL :: ap(*), x(*), y(*)
+         REAL :: one, zero
+         PARAMETER (one=1.0E+0, zero=0.0E+0)
+         REAL :: temp1, temp2
+         INTEGER :: i, info, ix, iy, j, jx, jy, k, kk, kx, ky
+         LOGICAL :: LSAME
+         EXTERNAL :: LSAME
+         EXTERNAL :: XERBLA
+         info = 0
+         IF (.NOT. LSAME(uplo,'U') .AND. .NOT. LSAME(uplo,'L')) THEN
+           info = 1
+         ELSE IF (n<0) THEN
+           info = 2
+         ELSE IF (incx==0) THEN
+           info = 6
+         ELSE IF (incy==0) THEN
+           info = 9
+         END IF
+         IF (info/=0) THEN
+           CALL XERBLA('SSPMV ', info)
+           RETURN
+         END IF
+         IF ((n==0) .OR. ((alpha==zero) .AND. (beta==one))) RETURN
+         IF (incx>0) THEN
+           kx = 1
+         ELSE
+           kx = 1 - (n-1)*incx
+         END IF
+         IF (incy>0) THEN
+           ky = 1
+         ELSE
+           ky = 1 - (n-1)*incy
+         END IF
+         IF (beta/=one) THEN
+           IF (incy==1) THEN
+             IF (beta==zero) THEN
+               DO i = 1, n
+                 y(i) = zero
+               END DO
+             ELSE
+               DO i = 1, n
+                 y(i) = beta*y(i)
+               END DO
+             END IF
+           ELSE
+             iy = ky
+             IF (beta==zero) THEN
+               DO i = 1, n
+                 y(iy) = zero
+                 iy = iy + incy
+               END DO
+             ELSE
+               DO i = 1, n
+                 y(iy) = beta*y(iy)
+                 iy = iy + incy
+               END DO
+             END IF
+           END IF
+         END IF
+         IF (alpha==zero) RETURN
+         kk = 1
+         IF (LSAME(uplo,'U')) THEN
+           IF ((incx==1) .AND. (incy==1)) THEN
+             DO j = 1, n
+               temp1 = alpha*x(j)
+               temp2 = zero
+               k = kk
+               DO i = 1, j - 1
+                 y(i) = y(i) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(i)
+                 k = k + 1
+               END DO
+               y(j) = y(j) + temp1*ap(kk+j-1) + alpha*temp2
+               kk = kk + j
+             END DO
+           ELSE
+             jx = kx
+             jy = ky
+             DO j = 1, n
+               temp1 = alpha*x(jx)
+               temp2 = zero
+               ix = kx
+               iy = ky
+               DO k = kk, kk + j - 2
+                 y(iy) = y(iy) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(ix)
+                 ix = ix + incx
+                 iy = iy + incy
+               END DO
+               y(jy) = y(jy) + temp1*ap(kk+j-1) + alpha*temp2
+               jx = jx + incx
+               jy = jy + incy
+               kk = kk + j
+             END DO
+           END IF
+         ELSE
+           IF ((incx==1) .AND. (incy==1)) THEN
+             DO j = 1, n
+               temp1 = alpha*x(j)
+               temp2 = zero
+               y(j) = y(j) + temp1*ap(kk)
+               k = kk + 1
+               DO i = j + 1, n
+                 y(i) = y(i) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(i)
+                 k = k + 1
+               END DO
+               y(j) = y(j) + alpha*temp2
+               kk = kk + (n-j+1)
+             END DO
+           ELSE
+             jx = kx
+             jy = ky
+             DO j = 1, n
+               temp1 = alpha*x(jx)
+               temp2 = zero
+               y(jy) = y(jy) + temp1*ap(kk)
+               ix = jx
+               iy = jy
+               DO k = kk + 1, kk + n - j
+                 ix = ix + incx
+                 iy = iy + incy
+                 y(iy) = y(iy) + temp1*ap(k)
+                 temp2 = temp2 + ap(k)*x(ix)
+               END DO
+               y(jy) = y(jy) + alpha*temp2
+               jx = jx + incx
+               jy = jy + incy
+               kk = kk + (n-j+1)
+             END DO
+           END IF
+         END IF
+         RETURN
+       END SUBROUTINE

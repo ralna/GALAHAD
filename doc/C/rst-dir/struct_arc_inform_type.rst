@@ -16,23 +16,23 @@ arc_inform_type structure
 	struct arc_inform_type {
 		// components
 	
-		int :ref:`status<doxid-structarc__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
-		int :ref:`alloc_status<doxid-structarc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`status<doxid-structarc__inform__type_1a6e27f49150e9a14580fb313cc2777e00>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`alloc_status<doxid-structarc__inform__type_1a4335d5f44067aca76d5fff71eeb7d381>`;
 		char :ref:`bad_alloc<doxid-structarc__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
-		int :ref:`iter<doxid-structarc__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
-		int :ref:`cg_iter<doxid-structarc__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
-		int :ref:`f_eval<doxid-structarc__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
-		int :ref:`g_eval<doxid-structarc__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
-		int :ref:`h_eval<doxid-structarc__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
-		int :ref:`factorization_status<doxid-structarc__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
-		int :ref:`factorization_max<doxid-structarc__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`iter<doxid-structarc__inform__type_1aab6f168571c2073e01e240524b8a3da0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`cg_iter<doxid-structarc__inform__type_1ad37cf7ad93af3413bc01b6515aad692a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`f_eval<doxid-structarc__inform__type_1aa9c29d7119d66d8540900c7531b2dcfa>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`g_eval<doxid-structarc__inform__type_1acd459eb95ff0f2d74e9cc3931d8e5469>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`h_eval<doxid-structarc__inform__type_1af1410cb1718f2a083dd8a7dee9ab643a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_status<doxid-structarc__inform__type_1aa448fed9eb03e70d5a03300b4fbbf210>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`factorization_max<doxid-structarc__inform__type_1a97dadabf3b7bdf921c4dcd1f43129f05>`;
 		int64_t :ref:`max_entries_factors<doxid-structarc__inform__type_1a177e429e737cfa2cd3df051a65fcfb68>`;
 		int64_t :ref:`factorization_integer<doxid-structarc__inform__type_1a29cd3a5b0f30227170f825116d9ade9e>`;
 		int64_t :ref:`factorization_real<doxid-structarc__inform__type_1ad73643c24d3cd34c356c3ccd2ebfb1cc>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`factorization_average<doxid-structarc__inform__type_1a42d0c89df887685f68327d07c6e92f05>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`obj<doxid-structarc__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`norm_g<doxid-structarc__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`weight<doxid-structarc__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`factorization_average<doxid-structarc__inform__type_1a42d0c89df887685f68327d07c6e92f05>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`obj<doxid-structarc__inform__type_1a0cbcb28977ac1f47ab67d27e4216626d>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_g<doxid-structarc__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`weight<doxid-structarc__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
 		struct :ref:`arc_time_type<doxid-structarc__time__type>` :ref:`time<doxid-structarc__inform__type_1a4288efaa60a28f967b947ef1b07cf445>`;
 		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` :ref:`rqs_inform<doxid-structarc__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
 		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` :ref:`glrt_inform<doxid-structarc__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
@@ -58,7 +58,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` status
 
 return status. See ARC_solve for details
 
@@ -68,7 +68,7 @@ return status. See ARC_solve for details
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int alloc_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` alloc_status
 
 the status of the last attempted allocation/deallocation
 
@@ -88,7 +88,7 @@ the name of the array for which an allocation/deallocation error occurred
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` iter
 
 the total number of iterations performed
 
@@ -98,7 +98,7 @@ the total number of iterations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int cg_iter
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` cg_iter
 
 the total number of CG iterations performed
 
@@ -108,7 +108,7 @@ the total number of CG iterations performed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int f_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` f_eval
 
 the total number of evaluations of the objective function
 
@@ -118,7 +118,7 @@ the total number of evaluations of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int g_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` g_eval
 
 the total number of evaluations of the gradient of the objective functio
 
@@ -128,7 +128,7 @@ the total number of evaluations of the gradient of the objective functio
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int h_eval
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` h_eval
 
 the total number of evaluations of the Hessian of the objective function
 
@@ -138,7 +138,7 @@ the total number of evaluations of the Hessian of the objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization_status
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization_status
 
 the return status from the factorization
 
@@ -148,7 +148,7 @@ the return status from the factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int factorization_max
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` factorization_max
 
 the maximum number of factorizations in a sub-problem solve
 
@@ -188,7 +188,7 @@ the total real workspace required for the factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` factorization_average
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` factorization_average
 
 the average number of factorizations per sub-problem solve
 
@@ -198,7 +198,7 @@ the average number of factorizations per sub-problem solve
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` obj
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` obj
 
 the value of the objective function at the best estimate of the solution determined by the package.
 
@@ -208,7 +208,7 @@ the value of the objective function at the best estimate of the solution determi
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` norm_g
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` norm_g
 
 the norm of the gradient of the objective function at the best estimate of the solution determined by the package.
 
@@ -218,7 +218,7 @@ the norm of the gradient of the objective function at the best estimate of the s
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` weight
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` weight
 
 the current value of the regularization weight
 

@@ -52,20 +52,22 @@ may be found efficiently.
 
 \galhowto
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time, the derived types
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_TYPE},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_history\_\-type},
@@ -125,10 +127,9 @@ its predecessor.
 %and the first $n$ components of the array {\tt H\%val} may be used for
 %the purpose.
 
-\subsection{Integer kinds}\label{Integer kinds}
-We use the term
-long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
-{\tt long = selected\_int\_kind(18))}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -148,20 +149,20 @@ The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
-\ittf{m} is a scalar component of type default \integer,
+\ittf{m} is a scalar component of type \integer,
 that holds the number of rows in the matrix.
 
-\ittf{n} is a scalar component of type default \integer,
+\ittf{n} is a scalar component of type \integer,
 that holds the number of columns in the matrix.
 
-\ittf{ne} is a scalar variable of type default \integer, that
+\ittf{ne} is a scalar variable of type \integer, that
 holds the number of matrix entries.
 
 \ittf{type} is a rank-one allocatable array of type default \character, that
 is used to indicate the matrix storage scheme used. Its precise length and
 content depends on the type of matrix to be stored.
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\,
+\ittf{val} is a rank-one allocatable array of type \realdp\,
 and dimension at least {\tt ne}, that holds the values of the entries.
 Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of the {\em symmetric}
 matrix $\bmH$ is represented as a single entry
@@ -169,15 +170,15 @@ matrix $\bmH$ is represented as a single entry
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
-\ittf{row} is a rank-one allocatable array of type default \integer,
+\ittf{row} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the row indices of the entries.
 (see \S\ref{coordinate}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer,
+\ittf{col} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer,
+\ittf{ptr} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt n + 1}, that may holds the pointers to
 the first entry in each row (see \S\ref{rowwise}).
 
@@ -196,20 +197,20 @@ is used to hold controlling data. Default values may be obtained by calling
 are:
 
 \begin{description}
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages.
 Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if ${\tt error} \leq {\tt 0}$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer,
+\itt{print\_level} is a scalar variable of type \integer,
 that is used
 to control the amount of informational output which is required. No
 informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
@@ -218,7 +219,7 @@ iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output
 will be increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{new\_h} is a scalar variable of type default \integer, that is used
+\itt{new\_h} is a scalar variable of type \integer, that is used
 to indicate how $\bmH$ has changed (if at all) since the previous call
 to {\tt \packagename\_solve}. Possible values are:
 \begin{description}
@@ -229,7 +230,7 @@ is as before.
 \end{description}
 The default is {\tt new\_h = 2}.
 
-\itt{taylor\_max\_degree} is a scalar variable of type default \integer,
+\itt{taylor\_max\_degree} is a scalar variable of type \integer,
 that specifies the maximum degree of Taylor approximant that will be used
 to approximate the secular function when trying to improve $\lambda$;
 a first-degree approximant results in Newton's method.
@@ -338,29 +339,29 @@ the calculation. The components of
 {\tt \packagename\_time\_type}
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time spent in the package.
 
-\itt{analyse} is a scalar variable of type default \realdp, that gives
+\itt{analyse} is a scalar variable of type \realdp, that gives
  the CPU time spent analysing required matrices prior to factorization.
 
-\itt{factorize} is a scalar variable of type default \realdp, that gives
+\itt{factorize} is a scalar variable of type \realdp, that gives
  the CPU time spent factorizing the required matrices.
 
-\itt{solve} is a scalar variable of type default \realdp, that gives
+\itt{solve} is a scalar variable of type \realdp, that gives
  the CPU time spent solving diagonal trust-region or regularization subproblems.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+\itt{clock\_analyse} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent analysing required matrices prior to
 factorization.
 
-\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+\itt{clock\_factorize} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent factorizing the required matrices.
 
-\itt{clock\_solve} is a scalar variable of type default \realdp,
+\itt{clock\_solve} is a scalar variable of type \realdp,
  that gives the elapsed time spent solving diagonal trust-region or
  regularization subproblems.
 
@@ -378,10 +379,10 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 current status of the algorithm. See Section~\ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer,
+\itt{alloc\_status} is a scalar variable of type \integer,
 that gives the status of the last internal array allocation
 or deallocation. This will be 0 if {\tt status = 0}.
 
@@ -390,28 +391,28 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\itt{mod\_1by1} is a scalar variable of type default \integer,
+\itt{mod\_1by1} is a scalar variable of type \integer,
 that gives the number of eigenvalues from 1 by 1 blocks from the
 factorization of $\bmH$ that were modified when constructing $\bmM$.
 
-\itt{mod\_2by2} is a scalar variable of type default \integer,
+\itt{mod\_2by2} is a scalar variable of type \integer,
 that gives the number of eigenvalues from 2 by 2 blocks from the
 factorization of $\bmH$ that were modified when constructing $\bmM$.
 
-\itt{obj} is a scalar variable of type default \realdp, that holds the
+\itt{obj} is a scalar variable of type \realdp, that holds the
 value of the objective function $\half \bmx^T \bmH \bmx  +  \bmc^T \bmx + f$.
 
-\itt{obj\_regularized} is a scalar variable of type default \realdp, that
+\itt{obj\_regularized} is a scalar variable of type \realdp, that
 holds the value of the regularized objective function $\half \bmx^T \bmH \bmx
  + \bmc^T \bmx + f + \sfrac{1}{p} \sigma \|\bmx\|_{\bmM}^p$.
 
-\itt{multiplier} is a scalar variable of type default \realdp, that holds the
+\itt{multiplier} is a scalar variable of type \realdp, that holds the
 value of the Lagrange multiplier $\lambda$ associated with the constraint.
 
-\itt{x\_norm} is a scalar variable of type default \realdp,
+\itt{x\_norm} is a scalar variable of type \realdp,
 that holds the value of $\|\bmx\|_{\bmM}$.
 
-\itt{pole} is a scalar variable of type default \realdp, that holds a lower
+\itt{pole} is a scalar variable of type \realdp, that holds a lower
 bound on $\max(0,-\lambda_1)$, where $\lambda_1$ is the left-most eigenvalue of
 the matrix pencil $(H,M)$.
 
@@ -515,7 +516,7 @@ The optimization problem solution algorithm is called as follows:
 
 \begin{description}
 
-\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
+\ittf{n} is a scalar \intentin\ argument of type \integer, that must be
 set to the number of unknowns, $n$. {\bf Restriction: } $n  >  0$.
 
 \ittf{H} is scalar \intentin\ argument of type {\tt SMT\_TYPE}
@@ -556,23 +557,23 @@ we may simply
 See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{H\%ne} is a scalar variable of type default \integer, that
+\itt{H\%ne} is a scalar variable of type \integer, that
 holds the number of entries in the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
-\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{H\%val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
 of the Hessian matrix $\bmH$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{H\%row} is a rank-one allocatable array of type default \integer,
+\itt{H\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}).
 It need not be allocated for any of the other schemes.
 
-\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+\itt{H\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of the {\bf lower triangular} part of
 $\bmH$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
@@ -582,7 +583,7 @@ It need not be allocated when the dense
 storage scheme is used.
 
 \itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
-default \integer, that holds the starting position of
+\integer, that holds the starting position of
 each row of the {\bf lower triangular} part of $\bmH$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
@@ -590,14 +591,14 @@ other schemes are used.
 \end{description}
 
 \ittf{C} is an array \intentin\ argument of dimension {\tt n} and
-type default \realdp,  whose $i$-th entry holds the component $c_i$ of
+type \realdp,  whose $i$-th entry holds the component $c_i$ of
 the vector $\bmc$ for the objective function.
 
-\ittf{f} is a scalar \intentin\ variable of type default \realdp, that holds
+\ittf{f} is a scalar \intentin\ variable of type \realdp, that holds
 the scalar value $f$ for the objective function.
 
 \ittf{X} is an array \intentout\ argument of dimension {\tt n} and
-type default \realdp, that holds an estimate of the solution $\bmx$
+type \realdp, that holds an estimate of the solution $\bmx$
 of the problem \req{trs} or \req{rqs} on exit.
 
 \itt{data} is a scalar \intentinout argument of type
@@ -659,12 +660,12 @@ with modified problem data as follows:
 
 \begin{description}
 
-\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
+\ittf{n} is a scalar \intentin\ argument of type \integer, that must be
 set to the number of unknowns, $n$. This should not have been changed
 since the last call to {\tt \packagename\_solve}.
 
 \ittf{X} is an array \intentout\ argument of dimension {\tt n} and
-type default \realdp, that holds an estimate of the solution $\bmx$
+type \realdp, that holds an estimate of the solution $\bmx$
 of the problem \req{trs} or \req{rqs} on exit.
 
 \itt{data} is a scalar \intentinout argument of type
@@ -688,10 +689,10 @@ is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \ittf{C} is an \optional\ array \intentin\ argument of dimension {\tt n} and
-type default \realdp, that if \present\ whose $i$-th entry holds the
+type \realdp, that if \present\ whose $i$-th entry holds the
 component $c_i$ of a new vector $\bmc$ for the objective function.
 
-\ittf{f} is an \optional\ scalar \intentin\ variable of type default \realdp,
+\ittf{f} is an \optional\ scalar \intentin\ variable of type \realdp,
 that if \present\ holds the a new value of the scalar
 $f$ for the objective function.
 
@@ -950,7 +951,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

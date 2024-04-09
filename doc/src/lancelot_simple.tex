@@ -118,24 +118,29 @@ Ph. L. Toint, University of Namur - FUNDP, Belgium.
 
 \subsection{Calling sequences}
 
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
-
-\hskip0.5in {\tt USE \fullpackagename\_single}
-
-\medskip\noindent{\em Double precision version}
-
-\hskip0.5in {\tt USE  \fullpackagename\_double}
-
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
 \medskip
 
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip
 \noindent
-If it is required to use both modules at the same time,
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
+\noindent
+If it is required to use more than one of the modules at the same time, 
 the subroutine
 {\tt \fullpackagename}
 (Section~\ref{galarguments})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%
 
@@ -153,12 +158,12 @@ The minimization subroutine {\tt LANCELOT\_simple} is called as follows:
 \noindent
 where
 \begin{description}
-\ittf{n} is a scalar variable of type default \integer, that holds
+\ittf{n} is a scalar variable of type \integer, that holds
 the number of optimization variables, $n$ which must all be set on entry. It
 will thereafter be unaltered.
 
 \itt{X} is a rank-one array of dimension {\tt n} and type
-default \realdp, that holds the current values of the
+\realdp, that holds the current values of the
 minimization variables, $\bmx$. On input, it must contain the values of the
 variables corresponding to the minimization starting point.  On output, it
 contains the best point found by the routine.
@@ -169,10 +174,10 @@ and constraint values. See Section~\ref{pfe} for details.
 The subroutine associated with the variable must be declared \external\
 in the calling program.
 
-\itt{fx} is a scalar variable of type default \realdp, that
+\itt{fx} is a scalar variable of type \realdp, that
 holds  on output the value of the objective function $f$ at {\tt X}.
 
-\itt{exit\_code} is a scalar variable of type default \integer, that holds
+\itt{exit\_code} is a scalar variable of type \integer, that holds
 on output the final status for the minimization, a value 0 indicating
 success.  Other values are described below (see Section~\ref{serrors}).
 
@@ -192,13 +197,13 @@ or if {\tt MY\_GRAD} is not present,
 second derivatives will be estimated by secant formulae.
 
 \itt{BL} is an \optional\ rank-one array of dimension {\tt n} and type
- default \realdp, whose $i$-th entry may be set
+ \realdp, whose $i$-th entry may be set
 to the value of the lower bound $l_i$ on the $i$-th variable.
 If the $i$-th variable has no lower bound, {\tt BL($i$)} should be set to
 a large negative number. It is not altered by the routine.
 
 \itt{BU} is an \optional\ rank-one array of dimension {\tt n} and type
-default \realdp, whose $i$-th entry may be set
+\realdp, whose $i$-th entry may be set
 to the value of the upper bound $u_i$ on the $i$-th variable.
 If the $i$-th variable has no upper bound, {\tt BU($i$)} should be set to
 a large positive number.  It is not altered by the routine.
@@ -213,47 +218,47 @@ input) the ``name'' of the $i$-th equality constraint  for
 default \character\ and length 10, whose $j$-th entry contains (on input) the
 ``name'' of the $j$-th variable.  It is not altered by the routine.
 
-\itt{neq} is an \optional\ scalar variable of type default \integer, that holds
+\itt{neq} is an \optional\ scalar variable of type \integer, that holds
 the number of equality constraints. If not present on input, it is assumed
 that there are no inequality constraints {\tt neq = 0}). It is not altered by
 the routine.
 
-\itt{nin} is an \optional\ scalar variable of type default \integer, that holds
+\itt{nin} is an \optional\ scalar variable of type \integer, that holds
 the number of inequality constraints. If not present on input, it is assumed
 that there are no inequality constraints {\tt nin = 0}). It is not altered by
 the routine.
 
 \itt{CX} is an \optional\ rank-one array of dimension {\tt neq + nin} and type
-default \realdp, whose $i$-th component holds on output the current
+\realdp, whose $i$-th component holds on output the current
 estimates of the values of the equality constraints ({\tt i = 1, ..., neq}),
 and of the inequality constraints  ({\tt i = neq+1, ..., neq+nin}).
 
 \itt{Y} is an \optional\ rank-one array of dimension {\tt neq+nin} and type
-default \realdp, whose $i$-th component holds on output the current
+\realdp, whose $i$-th component holds on output the current
 estimates of the Lagrange multipliers, $\bmy$, for the equality constraints
 ({\tt i = 1, ..., neq}), and for the inequality constraints  ({\tt i = neq+1,
   ..., neq+nin}).
 
-\itt{iters} is an \optional\ scalar variable of type default \integer, that gives
+\itt{iters} is an \optional\ scalar variable of type \integer, that gives
 on output the number of iterations that have been performed since the start of
 the  minimization.
 
-\itt{maxit} is an \optional\ scalar variable of type default \integer, that
+\itt{maxit} is an \optional\ scalar variable of type \integer, that
 holds the maximum number of iterations which will be allowed in the solver.
 The default is {\tt maxit = 1000}.
 
-\itt{gradtol} is an \optional\ scalar variable of type default \realdp,
+\itt{gradtol} is an \optional\ scalar variable of type \realdp,
 that is used to specify on input the maximum permitted (infinity)
 norm of the projected gradient of the Lagrangian function
 (see Section~\ref{galmethod}) at the estimate of the solution sought.
 The default is {\tt gradtol =} $10^{-5}$.  It is not altered by the routine.
 
-\itt{feastol} is an \optional\ scalar variable of type default \realdp,
+\itt{feastol} is an \optional\ scalar variable of type \realdp,
 that is used to specify on input the maximum permitted violation (measured in
 infinity norm) of the constraints at the estimate of the solution sought.
 The default is {\tt feastol =} $10^{-5}$.
 
-\itt{print\_level} is an \optional\ scalar variable of type default \integer,
+\itt{print\_level} is an \optional\ scalar variable of type \integer,
 that is used to control on input the amount of informational output which is
 required. No informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -285,16 +290,16 @@ list:
 where
 \begin{description}
 \itt{X} is a rank-one \intentin array argument of
-dimension {\tt n} and type default \realdp,
+dimension {\tt n} and type \realdp,
 that contains the values of $\bmx$ at which the
 subroutine is required to evaluate the values
 of the objective or constraint functions.
 
 \itt{fx} is a rank-one \intentout scalar argument of
-  type default \realdp, that contains the value of the relevant
+  type \realdp, that contains the value of the relevant
   function evaluated at $\bmx$.
 
-\itt{i} is an \optional\ scalar \intentin\ argument of type default \integer,
+\itt{i} is an \optional\ scalar \intentin\ argument of type \integer,
 that, if present, specifies the index of the constraint function to be
 evaluated  ({\tt i = 1, ..., neq+nin}).  The values of {\tt i}
 between 1 and {\tt neq} correspond to equality constraints, those between
@@ -333,16 +338,16 @@ list:
 where
 \begin{description}
 \itt{X} is a rank-one \intentin\ array argument of
-dimension {\tt n} and type default \realdp,
+dimension {\tt n} and type \realdp,
 that contains the values of $\bmx$ at which the
 subroutine is required to evaluate the gradient
 of the objective or constraint function.
 
 \itt{G} is a rank-one \intentout\ array argument of dimension {\tt n}  and
-  type default \realdp, that contains the value of the relevant
+  type \realdp, that contains the value of the relevant
   gradient evaluated at $\bmx$.
 
-\itt{i} is an \optional\ scalar \intentin\ argument of type default \integer,
+\itt{i} is an \optional\ scalar \intentin\ argument of type \integer,
 that, if present, specifies the index of the constraint function whose
 gradient must be evaluated  ({\tt i = 1, ..., neq+nin}).  The values of {\tt i}
 between 1 and {\tt neq} correspond to equality constraints, those between
@@ -376,19 +381,19 @@ argument list:
 where
 \begin{description}
 \itt{X} is a rank-one \intentin\ array argument of
-dimension {\tt n} and type default \realdp,
+dimension {\tt n} and type \realdp,
 that contains the value of $\bmx$ at which the
 subroutine is required to evaluate the Hessian
 of the objective or constraint function.
 
 \itt{H} is a rank-one \intentout\ array argument of dimension {\tt n*(n+1)/2}
-  and type default \realdp, that contains the value of the relevant
+  and type \realdp, that contains the value of the relevant
   Hessian evaluated at $\bmx$. Only the ``upper triangular'' part of the
   required Hessians should be specified columnwise. In other words, the
   component of the Hessian with respect to  variables $p$ and $j$, with
   $p \leq j$, must be  placed in {\tt H( j*(j-1)/2 + p )}.
 
-\itt{i} is an \optional\ scalar \intentin\ argument of type default \integer,
+\itt{i} is an \optional\ scalar \intentin\ argument of type \integer,
 that, if present, specifies the index of the constraint function whose
 Hessian must be evaluated  ({\tt i = 1, ..., neq+nin}). The values of {\tt i}
 between 1 and {\tt neq} correspond to equality constraints, those between

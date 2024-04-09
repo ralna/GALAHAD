@@ -1,12 +1,12 @@
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. 
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See Section~\ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -15,48 +15,48 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}. 
 
-\itt{major\_iter} is a scalar variable of type default \integer, that gives the
+\itt{major\_iter} is a scalar variable of type \integer, that gives the
 total number of major iterations required.
 
-\ittf{iter} is a scalar variable of type default \integer, that gives the
+\ittf{iter} is a scalar variable of type \integer, that gives the
 total number of iterations required.
 
-\itt{cg\_iter} is a scalar variable of type default \integer, that gives the
+\itt{cg\_iter} is a scalar variable of type \integer, that gives the
 total number of conjugate-gradient inner iterations required.
 
-\itt{factorization\_status} is a scalar variable of type default \integer, that 
+\itt{factorization\_status} is a scalar variable of type \integer, that 
 gives the return status from the matrix factorization.
 
 \itt{factorization\_integer} is a scalar variable of type long
 \integer, that gives the amount of integer storage used for the matrix 
 factorization.
 
-\itt{factorization\_real} is a scalar variable of type long \integer, 
+\itt{factorization\_real} is a scalar variable of type \longinteger, 
 that gives the amount of real storage used for the matrix factorization.
 
-\itt{nfacts} is a scalar variable of type default \integer, that gives the
+\itt{nfacts} is a scalar variable of type \integer, that gives the
 total number of factorizations performed.
 
-\itt{nmods} is a scalar variable of type default \integer, that gives the
+\itt{nmods} is a scalar variable of type \integer, that gives the
 total number of factorizations which were modified to 
 ensure that the matrix is an appropriate preconditioner. 
 
-\itt{num\_g\_infeas} is a scalar variable of type default \integer, that 
+\itt{num\_g\_infeas} is a scalar variable of type \integer, that 
 gives the total number of general constraints that are violated.
 
-\itt{num\_b\_infeas} is a scalar variable of type default \integer, that 
+\itt{num\_b\_infeas} is a scalar variable of type \integer, that 
 gives the total number of simple bound constraints that are violated.
 
-\ittf{obj} is a scalar variable of type default \realdp, that holds the
+\ittf{obj} is a scalar variable of type \realdp, that holds the
 value of the objective function at the best estimate of the solution found.
 
-\itt{infeas\_g} is a scalar variable of type default \realdp, that holds the
+\itt{infeas\_g} is a scalar variable of type \realdp, that holds the
 value of the infeasibility $v_g(\bmx)$.
 
-\itt{infeas\_b} is a scalar variable of type default \realdp, that holds the
+\itt{infeas\_b} is a scalar variable of type \realdp, that holds the
 value of the infeasibility $v_b(\bmx)$.
 
-\itt{merit} is a scalar variable of type default \realdp, that holds the
+\itt{merit} is a scalar variable of type \realdp, that holds the
 value of the merit function $q(\bmx) + \rho_g v_g(\bmx) + \rho_b v_b(\bmx)$ 
 at the best estimate of the solution found.
 

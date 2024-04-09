@@ -55,25 +55,22 @@ accelerate the iteration using the Hessian approximation.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-The user is {\bf strongly advised} to use the double
-precision version unless single precision corresponds to 8-byte arithmetic.
-
-If it is required to use both modules at the same time, the derived types 
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_control\_type}, 
 {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type}
@@ -90,6 +87,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -115,7 +116,7 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in 
 {\tt \packagename\_analyse},
 {\tt \packagename\_estimate} 
@@ -123,20 +124,20 @@ and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in 
 {\tt \packagename\_analyse} and {\tt \packagename\_estimate} 
 is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {\tt print\_level} $\leq 0$. If 
 {\tt print\_level} $> 01$, details of any data errors encountered 
 will be reported.
 The default is {\tt print\_level = 0}.
 
-\itt{approximation\_algorithm} is a scalar variable of type default \integer, 
+\itt{approximation\_algorithm} is a scalar variable of type \integer, 
 that is used to select which approximation algorithm employed. This may be
 \begin{enumerate}
 \item 1. unsymmetric (Algorithm 2.1 in paper)
@@ -148,7 +149,7 @@ that is used to select which approximation algorithm employed. This may be
 Any value outside this range will be reset to the default;
 the default is {\tt approximation\_algorithm = 4}.
 
-\itt{dense\_linear\_solver} is a scalar variable of type default \integer, 
+\itt{dense\_linear\_solver} is a scalar variable of type \integer, 
 that specifies which (LAPACK) dense linear equation solver to use when finding
 the values of entries in each row of $\bmB$. This may be
 \begin{enumerate}
@@ -160,12 +161,12 @@ the values of entries in each row of $\bmB$. This may be
 Any value outside this range will be reset to the default;
 the default is {\tt dense\_linear\_solver = 3}.
 
-\itt{max\_sparse\_degree} is a scalar variable of type default \integer, 
+\itt{max\_sparse\_degree} is a scalar variable of type \integer, 
 that is used to specify the maximum sparse degree if a composite algorithm
 ({\tt \%approximation\_algorithm = 3, 4, 5} is employed.
 The default is {\tt max\_sparse\_degree = 100}.
 
-\itt{extra\_differences} is a scalar variable of type default \integer, 
+\itt{extra\_differences} is a scalar variable of type \integer, 
 that is used to specify how may additional gradients (in addition to the number
 output in {\tt inform\%differences\_needed} from {\tt \packagename\_\-analyse})
 are available when calling {\tt \packagename\_\-estimate}.
@@ -205,11 +206,11 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. 
 See Section~\ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -218,22 +219,22 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}. 
 
-\itt{max\_degree} is a scalar variable of type default \integer, 
+\itt{max\_degree} is a scalar variable of type \integer, 
 that holds the maximum degree in the adjacency graph.
 
-\itt{differences\_needed} is a scalar variable of type default \integer, 
+\itt{differences\_needed} is a scalar variable of type \integer, 
 that holds the number of differences that will be needed (more may be helpful)
 by {\tt \packagename\_\-estimate}. This value is computed by
 {\tt \packagename\_\-analyse}.
 
-\itt{max\_reduced\_degree} is a scalar variable of type default \integer, 
+\itt{max\_reduced\_degree} is a scalar variable of type \integer, 
 that holds the maximum reduced degree in the adjacency graph.
 
 \itt{approximation\_algorithm\_used}  is a scalar variable of type 
-default \integer, that specifies the actual approximation algorithm used
+\integer, that specifies the actual approximation algorithm used
 (see {\tt control\%approximation\_algorithm}).
 
-\itt{bad\_row} is a scalar variable of type default \integer, that holds the 
+\itt{bad\_row} is a scalar variable of type \integer, that holds the 
 index of the first row for which a failure occurred when forming its Hessian
 values (or 0 if the data if no failures occurred).
 
@@ -336,19 +337,19 @@ its values, is called as follows:
 \vspace*{-2mm}
 \begin{description}
 \ittf{n} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be 
+is a scalar \intentin\ scalar argument of type \integer, that must be 
 set to $n$ the dimension of the Hessian matrix, i.e. the number of
 variables in the function $f$. 
 \restrictions {\tt n} $>$ {\tt 0}.
 
 \ittf{nz} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the number of nonzero entries on and above the diagonal of the Hessian
 matrix.
 \restrictions {\tt nz} $\ge$ {\tt 0}.
 
 \ittf{ROW} and {\tt COL} are a scalar \intentin\ rank-one array arguments 
-of type  default \integer\ and dimension {\tt nz}, that are used to describe 
+of type  \integer\ and dimension {\tt nz}, that are used to describe 
 the sparsity structure of the Hessian matrix, $\bmH(\bmx)$. 
 They must be set so that
 {\tt ROW(}$i${\tt)} and {\tt COL(}$i${\tt)}, $i = 1, \ldots,$ {\tt nz},
@@ -402,44 +403,44 @@ exactly as described and input to {\tt \packagename\_analyse},
 and must not have been changed in the interim.
 
 \itt{m\_available} 
-is a scalar \intentin\ scalar argument of type default \integer, that should 
+is a scalar \intentin\ scalar argument of type \integer, that should 
 be set to the number of differences provided; ideally this will
 be as large as {\tt inform\%differences\_needed} as reported by
 {\tt \packagename\_\-analyse}, but better still there should be a 
 further {\tt control\%extra\_differences} to allow for unlikely singularities.
 
 \ittf{S} is a scalar \intentin\ rank-two array argument of type 
-default \realdp, and dimension ({\tt ls1, ls2}), that should be set on input
+\realdp, and dimension ({\tt ls1, ls2}), that should be set on input
 so that the $i$-th entry of the $k$-th difference $s_i^{(k)}$ lies in
 {\tt S(}$i, k${\tt )}.  
 
 \ittf{ls1} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the leading dimension of {\tt S}, and must be at least
 {\tt n}. 
 
 \ittf{ls2} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the trailing dimension of {\tt S}, and must be at least
 {\tt m\_available}. 
 
 \ittf{Y} is a scalar \intentin\ rank-two array argument of type 
-default \realdp, and dimension ({\tt ly1, ly2}), that should be set on input
+\realdp, and dimension ({\tt ly1, ly2}), that should be set on input
 so that the $i$-th entry of the $k$-th difference $y_i^{(k)}$ lies in
 {\tt Y(}$i, k${\tt )}.  
 
 \ittf{ly1} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the leading dimension of {\tt Y}, and must be at least
 {\tt n}. 
 
 \ittf{ly2} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the trailing dimension of {\tt Y}, and must be at least
 {\tt m\_available}. 
 
 \ittf{VAL} is a scalar \intentout\ rank-one array argument of type 
-default \realdp, and dimension {\tt nz}, that will be set on output
+\realdp, and dimension {\tt nz}, that will be set on output
 to the non-zeros of the Hessian approximation $\bmB$ in the
 order defined by the list stored in {\tt ROW} and {\tt COL}.
 
@@ -681,7 +682,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated 
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

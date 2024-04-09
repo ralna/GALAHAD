@@ -44,25 +44,25 @@ and Ph. L. Toint, The University of Namur, Belgium.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
-
 \noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
+
 The user is {\bf strongly advised} to use the double
 precision version unless single precision corresponds to 8-byte arithmetic.
 
-If it is required to use both modules at the same time, the derived types 
+\noindent
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_control\_type}, 
 {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type}
@@ -79,6 +79,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -104,7 +108,7 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in 
 {\tt \packagename\_analyse},
 {\tt \packagename\_estimate} 
@@ -112,13 +116,13 @@ and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in 
 {\tt \packagename\_analyse} and {\tt \packagename\_estimate} 
 is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {\tt print\_level} $\leq 0$. If 
 {\tt print\_level} $> 01$, details of any data errors encountered 
@@ -159,12 +163,12 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. 
 See Sections~\ref{reverse} and \ref{galerrors}
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -173,11 +177,11 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}. 
 
-\ittf{bad\_row} is a scalar variable of type default \integer, that holds the 
+\ittf{bad\_row} is a scalar variable of type \integer, that holds the 
 index of the first row in which inconsistent data occurred (or 0 if the data is 
 consistent).
 
-\itt{products} is a scalar variable of type default \integer, that gives the
+\itt{products} is a scalar variable of type \integer, that gives the
 number of gradient evaluations (to be) used to estimate the Hessian.
 
 \end{description}
@@ -209,12 +213,12 @@ Components of variables of type {\tt NLPT\_userdata\_\-type} may be allocated as
 necessary. The following components are available:
 
 \begin{description}
-\itt{integer} is a rank-one allocatable array of type default \integer.
+\itt{integer} is a rank-one allocatable array of type \integer.
 \ittf{real} is a rank-one allocatable array of type default  \realdp
 \itt{complex} is a rank-one allocatable array of type default \complexdp.
 \itt{character} is a rank-one allocatable array of type default \character.
 \itt{logical} is a rank-one allocatable array of type default \logical.
-\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
+\itt{integer\_pointer} is a rank-one pointer array of type \integer.
 \itt{real\_pointer} is a rank-one pointer array of type default  \realdp
 \itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
 \itt{character\_pointer} is a rank-one pointer array of type default \character.
@@ -304,19 +308,19 @@ its values, is called as follows:
 \vspace*{-2mm}
 \begin{description}
 \ittf{n} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be 
+is a scalar \intentin\ scalar argument of type \integer, that must be 
 set to $n$ the dimension of the Hessian matrix, i.e. the number of
 variables in the function $f$. 
 \restrictions {\tt n} $> 0$.
 
 \ittf{nz} 
-is a scalar \intentin\ scalar argument of type default \integer, that must be
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the number of nonzero entries on and below the diagonal of the Hessian
 matrix.
 \restrictions {\tt n} $\le$ {\tt nz} $\le$ {\tt n} $\ast$ {\tt (n+1)/2}.
 
 \ittf{ROW} is a scalar \intentinout\ rank-one array argument of type 
-default \integer\ and dimension {\tt nz}, that is used to describe 
+\integer\ and dimension {\tt nz}, that is used to describe 
 the sparsity structure of the Hessian matrix. It must be set so that
  {\tt ROW(}$i${\tt)}, $i = 1, \ldots,$ {\tt nz} contain the row 
 numbers of the successive nonzero elements of the {\bf lower triangular part
@@ -330,7 +334,7 @@ $j \leq$ {\tt ROW(}$j${\tt)} $\leq n$ , $j = 1, \ldots,$ {\tt nz}.
 
 \itt{DIAG} 
 is a scalar \intentin\ rank-one array argument of type 
-default \integer\ and dimension {\tt n}, that is used to describe 
+\integer\ and dimension {\tt n}, that is used to describe 
 the sparsity structure of the Hessian matrix. It must be set so that
  {\tt DIAG(}$i${\tt)} $i$, $i = 1, \ldots,$ {\tt n}
 contain the position of the $i$th diagonal of the matrix in the list held
@@ -382,24 +386,24 @@ exactly as described and input to {\tt \packagename\_analyse},
 and must not have been changed in the interim.
 
 \ittf{X} is a scalar \intentin\ rank-one array argument of type 
-default \realdp, and dimension {\tt n}, that  must be set so that
+\realdp, and dimension {\tt n}, that  must be set so that
 {\tt X(}$i${\tt)} contains the component $x_i$, $i = 1, \ldots,$ {\tt n} 
 of the point $\bmx$ at which the user wishes to estimate $\bmH(\bmx)$.
 
 \ittf{G} is a scalar \intentin\ rank-one array argument of type 
-default \realdp, and dimension {\tt n}, that must be set so that
+\realdp, and dimension {\tt n}, that must be set so that
 {\tt G(}$i${\tt)} contains the component $g_i(\bmx)$, $i = 1, \ldots,$ {\tt n} 
 of the gradient $\bmg(\bmx)$ of $f$ at the point $\bmx$ input in {\tt X}.
 
 \itt{STEPSIZE} is a scalar \intentin\ rank-one array argument of type 
-default \realdp, and dimension {\tt n}, that must be set to the stepsizes
+\realdp, and dimension {\tt n}, that must be set to the stepsizes
 to be used in the finite difference scheme.  One can roughly say that 
 {\tt STEPSIZE(}$i${\tt)} is the step used to evaluate the $i$th column 
 of the Hessian---recommended values are between $10^{-7}$ and $10^{-3}$
 times the corresponding  component of {\tt X}.
 
 \ittf{H} is a scalar \intentinout\ rank-one array argument of type 
-default \realdp, and dimension {\tt nz}, that needs not be set on input,
+\realdp, and dimension {\tt nz}, that needs not be set on input,
 but that will be set to the non-zeros of the Hessian $\bmH(\bmx)$ in the
 order defined by the list stored in {\tt ROW}.
 
@@ -498,12 +502,12 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate
 the gradient of the objective function
 and to a non-zero value if the evaluation has not been possible.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+\ittf{X} is a rank-one \intentin\ array argument of type \realdp\
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type 
@@ -511,7 +515,7 @@ whose components contain the vector $\bmx$.
 to communicate user-supplied data to and from the subroutine {\tt eval\_G}
 (see Section~\ref{typeuserdata}). 
 
-\itt{G} is a rank-one \intentout\ argument of type default \realdp,
+\itt{G} is a rank-one \intentout\ argument of type \realdp,
 whose components should be set to the values of the gradient 
 of the objective function $\bmg(\bmx) = \nabla_x f(\bmx)$
 evaluated at the vector $\bmx$ input in {\tt X}.
@@ -709,7 +713,7 @@ that each affects are given in Table~\ref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated 
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

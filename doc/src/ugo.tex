@@ -41,22 +41,22 @@ and
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt \packagename\_time\_\-type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
@@ -72,6 +72,10 @@ and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -96,18 +100,18 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in
 {\tt \packagename\_solve} and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No
 informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -115,43 +119,43 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{start\_print} is a scalar variable of type default \integer, that specifies
+\itt{start\_print} is a scalar variable of type \integer, that specifies
 the first iteration for which printing will occur in {\tt \packagename\_solve}.
 If {\tt start\_print} is negative, printing will occur from the outset.
 The default is {\tt start\_print = -1}.
 
-\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+\itt{stop\_print} is a scalar variable of type \integer, that specifies
 the last iteration for which printing will occur in  {\tt \packagename\_solve}.
 If {\tt stop\_print} is negative, printing will occur once it has been
 started by {\tt start\_print}.
 The default is {\tt stop\_print = -1}.
 
-\itt{print\_gap} is a scalar variable of type default \integer.
+\itt{print\_gap} is a scalar variable of type \integer.
 Once printing has been started, output will occur once every
 {\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
 printing will be permitted on every iteration.
 The default is {\tt print\_gap = 1}.
 
-\itt{maxit} is a scalar variable of type default \integer, that holds the
+\itt{maxit} is a scalar variable of type \integer, that holds the
 maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
 The default is {\tt maxit = 1000}.
 
-\itt{initial\_points} is a scalar variable of type default \integer, that
+\itt{initial\_points} is a scalar variable of type \integer, that
 gives the number of initial (uniformly-spaced) evaluation points; if
 {\tt initial\_points} < 2, it will be reset to 2.
 The default is {\tt initial\_points = 2}.
 
-\itt{storage\_increment} is a scalar variable of type default \integer, that
+\itt{storage\_increment} is a scalar variable of type \integer, that
 specifies the incremement size of additional workspace storage that will be
 allocated as needed; if {\tt storage\_increment} < 1000, it will be reset
 to 1000.
 The default is {\tt storage\_increment = 1000}.
 
-\itt{buffer} is a scalar variable of type default \integer, that specifies
+\itt{buffer} is a scalar variable of type \integer, that specifies
 the unit number for any out-of-core i/o when expanding workspace arrays.
 The default is {\tt buffer = 70}.
 
-\itt{lipschitz\_estimate\_used} is a scalar variable of type default \integer,
+\itt{lipschitz\_estimate\_used} is a scalar variable of type \integer,
 that specifies what sort of Lipschitz constant estimate will be used.
 Possible values are
 \begin{description}
@@ -161,7 +165,7 @@ Possible values are
 \end{description}
 The default is {\tt lipschitz\_estimate\_used = 3}.
 
-\itt{next\_interval\_selection} is a scalar variable of type default \integer,
+\itt{next\_interval\_selection} is a scalar variable of type \integer,
 that specifies how the next interval for examination is chosen. Possible
 values are
 \begin{description}
@@ -171,12 +175,12 @@ values are
 \end{description}
 The default is {\tt next\_interval\_selection = 1}.
 
-\itt{refine\_with\_newton} is a scalar variable of type default \integer, that
+\itt{refine\_with\_newton} is a scalar variable of type \integer, that
 specifies the maximum number of Newton steps that may be used in the
 vacinity of a global  minimizer to try to improve the estimate.
 The default is {\tt refine\_with\_newton = 5}.
 
-\itt{alive\_unit} is a scalar variable of type default \integer.
+\itt{alive\_unit} is a scalar variable of type \integer.
 If {\tt alive\_unit} $>$ 0, a temporary file named {\tt alive\_file} (see below)
 will be created on stream number {\tt alive\_unit} on initial entry to
 \solver, and execution of \solver\ will continue so
@@ -186,25 +190,25 @@ If {\tt alive\_unit} $\leq$ 0, no temporary file will be created, and
 execution cannot be terminated in this way.
 The default is {\tt alive\_unit} $=$ 40.
 
-\itt{stop\_length} is a scalar variable of type default \realdp, that is used to
+\itt{stop\_length} is a scalar variable of type \realdp, that is used to
 assess convergence. The method will stop if all sub-intervals that could
 cntain the global minimizer are smaller than {\tt stop\_length} in length.
 The default is {\tt stop\_length =} $10^{-5}$.
 
-\itt{small\_g\_for\_newton} is a scalar variable of type default \realdp,
+\itt{small\_g\_for\_newton} is a scalar variable of type \realdp,
 that is used to assess when to use a Newton correction. If the absolute value
 of the gradient (first derivative) of $f$ is smaller than
 {\tt small\_g\_for\_newton}, the next evaluation point may be at a
 Newton estimate of a local minimizer.
 The default is {\tt small\_g\_for\_newton =} $10^{-3}$.
 
-\itt{small\_g} is a scalar variable of type default \realdp, that is used to
+\itt{small\_g} is a scalar variable of type \realdp, that is used to
 assess when no Newton search is necessary. This will be the case if
 the absolute value of the gradient at the end of the interval search is
 smaller than {\tt small\_g}.
 The default is {\tt = small\_g} $10^{-6}$.
 
-\itt{obj\_sufficient} is a scalar variable of type default \realdp,
+\itt{obj\_sufficient} is a scalar variable of type \realdp,
 that may be used to stop the iteration if a value of $x$ is found for which
 the objective function is sufficiently small. Specifically, the search
 will stop if the objective function is smaller than {\tt obj\_sufficient}.
@@ -212,12 +216,12 @@ The default is {\tt obj\_sufficient =} $-u^{-2}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{global\_lipschitz\_constant} is a scalar variable of type default \realdp,
+\itt{global\_lipschitz\_constant} is a scalar variable of type \realdp,
 that is used to specify the global Lipschitz constant for the gradient;
 a negative value indicates that the value is unknown.
 The default is {\tt global\_lipschitz\_constant =} -1.0.
 
-\itt{reliability\_parameter} is a scalar variable of type default \realdp,
+\itt{reliability\_parameter} is a scalar variable of type \realdp,
 that is used to boost insufficiently large estimates of the Lipschitz constant
 if necessary. If {\tt reliability\_parameter} is not positive, it will be
 reset to {\tt 1.2} when second derivatives are provided
@@ -225,17 +229,17 @@ reset to {\tt 1.2} when second derivatives are provided
 are not.
 The default is {\tt reliability\_parameter =} -1.0.
 
-\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp,
+\itt{lipschitz\_lower\_bound} is a scalar variable of type \realdp,
 that provides a lower bound on the Lipschitz constant for the gradient.
 This must be non-negative (and not zero unless the function is constant).
 The default is {\tt lipschitz\_lower\_bound =} $10^{-8}$.
 
-\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+\itt{cpu\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
 
-\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+\itt{clock\_time\_limit} is a scalar variable of type \realdp,
 that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.
@@ -304,11 +308,11 @@ of the algorithm. The components of
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm.
 See Sections~\ref{reverse} and \ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -317,19 +321,19 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}.
 
-\ittf{iter} is a scalar variable of type default \integer, that holds the
+\ittf{iter} is a scalar variable of type \integer, that holds the
 number of iterations performed.
 
-\itt{f\_eval} is a scalar variable of type default \integer, that gives the
+\itt{f\_eval} is a scalar variable of type \integer, that gives the
 total number of evaluations of the objective function.
 
-\itt{g\_eval} is a scalar variable of type default \integer, that gives the
+\itt{g\_eval} is a scalar variable of type \integer, that gives the
 total number of evaluations of the first derivative of the objective function.
 
-\itt{h\_eval} is a scalar variable of type default \integer, that gives the
+\itt{h\_eval} is a scalar variable of type \integer, that gives the
 total number of evaluations of the second derivative of the objective function.
 
-\itt{dx\_best} is a scalar variable of type default \integer,
+\itt{dx\_best} is a scalar variable of type \integer,
 that gives the length of the largest remaining search interval.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
@@ -431,17 +435,17 @@ The minimization algorithm is called as follows:
 \vspace*{-2mm}
 \begin{description}
 \itt{x\_l} and {\tt x\_u} are scalar \intentin\ variables
-of type default \realdp that must be set to the lower and upper
+of type \realdp that must be set to the lower and upper
 interval bounds $x^l$ and $x^u$, respectively.
 
-\ittf{x} is a scalar \intentinout\ variable of type default \realdp that holds
+\ittf{x} is a scalar \intentinout\ variable of type \realdp that holds
 the next value of $x$ at which the user is required to evaluate the
 objective (and its derivatives) when {\tt inform\%status > 0},
 or the value of the approximate global minimizer
 when {\tt inform\%status = 0}.
 {\tt x} need not be set on initial ({\tt inform\%status = 1}) entry.
 
-\ittf{f} is a scalar \intentinout\ variable of type default \realdp that must
+\ittf{f} is a scalar \intentinout\ variable of type \realdp that must
 be set by the user to hold the value of the objective $f(x)$ at $x$ given
 in {\tt x} whenever {\tt \packagename\_solve} returns with
 {\tt inform\%status > 0}.
@@ -450,7 +454,7 @@ approximate global minimum $f(x)$ at the approximate minimizer $x$
 given in {\tt x}.
 {\tt f} need not be set on initial ({\tt inform\%status = 1}) entry.
 
-\ittf{g} is a scalar \intentinout\ variable of type default \realdp that must
+\ittf{g} is a scalar \intentinout\ variable of type \realdp that must
 be set by the user to hold the value of the first derivative $f^{\prime}(x)$
 of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns
 with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt g}
@@ -458,7 +462,7 @@ will contain the value of the gradient of
 $f(x)$ at the approximate minimizer $x$ given in {\tt x}.
 {\tt g} need not be set on initial ({\tt inform\%status = 1}) entry.
 
-\ittf{h} is a scalar \intentinout\ variable of type default \realdp that must
+\ittf{h} is a scalar \intentinout\ variable of type \realdp that must
 be set by the user to hold the value of the second derivative $f^{\prime\prime}(x)$
 of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns
 with {\tt inform\%status = 4}
@@ -572,12 +576,12 @@ The routine must be specified as
 \noindent whose arguments are as follows:
 
 \begin{description}
-\itt{status} is a scalar \intentout\ argument of type default \integer,
+\itt{status} is a scalar \intentout\ argument of type \integer,
 that should be set to 0 if the routine has been able to evaluate
 the objective function and its derivatives,
 and to a non-zero value if the evaluation has not been possible.
 
-\ittf{x} is a scalar \intentin\ array argument of type default \realdp\
+\ittf{x} is a scalar \intentin\ array argument of type \realdp\
 whose components contain the value $x$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -585,16 +589,16 @@ whose components contain the value $x$.
 to communicate user-supplied data to and from the
 subroutine (see Section~\ref{typeuserdata}).
 
-\ittf{f} is a scalar \intentout\ argument of type default \realdp,
+\ittf{f} is a scalar \intentout\ argument of type \realdp,
 that should be set to the value of the objective function $f(x)$
 evaluated at the vector $x$ input in {\tt x}.
 
-\ittf{g} is a scalar \intentout\ argument of type default \realdp,
+\ittf{g} is a scalar \intentout\ argument of type \realdp,
 that should be set to the value of the first derivative
 $f^{\prime}(x)$ of the objective function $f(x)$
 evaluated at the vector $x$ input in {\tt x}.
 
-\ittf{h} is a scalar \intentout\ argument of type default \realdp,
+\ittf{h} is a scalar \intentout\ argument of type \realdp,
 that should be set to the value of the second derivative
 $f^{\prime\prime}(x)$ of the objective function $f(x)$
 evaluated at the vector $x$ input in {\tt x} if
@@ -833,7 +837,7 @@ that each affects are given in Table~\vref{specfile}.
 \ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message

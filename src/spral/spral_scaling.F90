@@ -1439,7 +1439,7 @@ contains
       if ((nunchanged                  .ge. options%max_unchanged(3)) .and. &
          (ratio .ge. options%min_proportion(3))) exit
       ! Update epsilon scaling
-      eps = min(1.0_rp_, eps+1.0_rp_/(n+1))
+      eps = min(1.0_rp_, eps+1.0_rp_/real(n+1,rp_))
       ! Now iterate over all unmatched entries listed in next(1:tail)
       ! As we progress, build list for next iteration in next(1:insert)
       insert = 0
@@ -1641,8 +1641,8 @@ contains
    if (m .eq. n) then
       ! Square
       ! Just perform post-processing and magnitude adjustment
-      ravg = sum(rscaling(1:m)) / m
-      cavg = sum(cscaling(1:n)) /n
+      ravg = sum(rscaling(1:m)) / real(m,rp_)
+      cavg = sum(cscaling(1:n)) / real(n,rp_)
       adjust = (ravg - cavg) / 2
       rscaling(1:m) = rscaling(1:m) - adjust
       cscaling(1:n) = cscaling(1:n) + adjust
@@ -1662,8 +1662,8 @@ contains
          ravg = ravg + rscaling(i)
          cavg = cavg + cscaling(match(i))
       end do
-      ravg = ravg / nmatch
-      cavg = cavg / nmatch
+      ravg = ravg / real(nmatch,rp_)
+      cavg = cavg / real(nmatch,rp_)
       adjust = (ravg - cavg) / 2
       rscaling(1:m) = rscaling(1:m) - adjust
       cscaling(1:n) = cscaling(1:n) + adjust
@@ -1702,8 +1702,8 @@ contains
          ravg = ravg + rscaling(i)
          cavg = cavg + cscaling(match(i))
       end do
-      ravg = ravg / nmatch
-      cavg = cavg / nmatch
+      ravg = ravg / real(nmatch,rp_)
+      cavg = cavg / real(nmatch,rp_)
       adjust = (ravg - cavg) / 2
       rscaling(1:m) = rscaling(1:m) - adjust
       cscaling(1:n) = cscaling(1:n) + adjust

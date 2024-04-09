@@ -16,13 +16,13 @@ sha_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structsha__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`approximation_algorithm<doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7>`;
-		int :ref:`dense_linear_solver<doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1>`;
-		int :ref:`max_sparse_degree<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
-		int :ref:`extra_differences<doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`approximation_algorithm<doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dense_linear_solver<doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_sparse_degree<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_differences<doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe>`;
 		bool :ref:`space_critical<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structsha__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
@@ -53,7 +53,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 error and warning diagnostics occur on stream error
 
@@ -63,7 +63,7 @@ error and warning diagnostics occur on stream error
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 general output occurs on stream out
 
@@ -73,7 +73,7 @@ general output occurs on stream out
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 the level of output required. <= 0 gives no output, = 1 gives a one-line summary for every iteration, = 2 gives a summary of the inner iteration for each iteration, >= 3 gives increasingly verbose (debugging) output
 
@@ -83,7 +83,7 @@ the level of output required. <= 0 gives no output, = 1 gives a one-line summary
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int approximation_algorithm
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` approximation_algorithm
 
 which approximation algorithm should be used?
 
@@ -103,7 +103,7 @@ which approximation algorithm should be used?
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dense_linear_solver
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dense_linear_solver
 
 which dense linear equation solver should be used?
 
@@ -121,7 +121,7 @@ which dense linear equation solver should be used?
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_sparse_degree
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_sparse_degree
 
 the maximum sparse degree if the combined version is used
 
@@ -131,7 +131,7 @@ the maximum sparse degree if the combined version is used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int extra_differences
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` extra_differences
 
 if available use an addition extra_differences differences
 

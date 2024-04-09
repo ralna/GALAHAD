@@ -64,22 +64,22 @@ Ph. L. Toint, University of Namur, Belgium.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_TYPE}
 and
 {\tt QPT\_problem\_type},
@@ -193,6 +193,10 @@ known as the Lagrange multipliers for
 the general linear constraints, and the dual variables for the bounds,
 respectively, and where the vector inequalities hold componentwise.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtype
@@ -213,16 +217,16 @@ and $\bmH$. The components of {\tt SMT\_TYPE} used here are:
 \ittf{type} is an allocatable array of rank one and type default \character, that
 holds a string which indicates the storage scheme used.
 
-\ittf{m} is a scalar component of type default \integer,
+\ittf{m} is a scalar component of type \integer,
 that holds the number of rows in the matrix.
 
-\ittf{n} is a scalar component of type default \integer,
+\ittf{n} is a scalar component of type \integer,
 that holds the number of columns in the matrix.
 
-\ittf{ne} is a scalar variable of type default \integer, that may
+\ittf{ne} is a scalar variable of type \integer, that may
 hold the number of matrix entries (see \S\ref{coordinate}).
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\,
+\ittf{val} is a rank-one allocatable array of type \realdp\,
 and dimension at least {\tt ne}, that holds the values of the entries.
 Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of a {\em symmetric}
 matrix $\bmH$ is represented as a single entry
@@ -230,15 +234,15 @@ matrix $\bmH$ is represented as a single entry
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
-\ittf{row} is a rank-one allocatable array of type default \integer,
+\ittf{row} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the row indices of the entries
 (see \S\ref{coordinate}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer,
+\ittf{col} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer,
+\ittf{ptr} is a rank-one allocatable array of type \integer,
 and dimension at least {\tt m + 1}, that may hold the pointers to
 the first entry in each row (see \S\ref{rowwise}).
 
@@ -273,13 +277,13 @@ may be used to hold the name of the problem.
  that are fixed (both bounds are the same) or free (the lower and upper
  bounds are $\pm$ infinity, respectively).
 
-\ittf{n} is a scalar variable of type default \integer,
+\ittf{n} is a scalar variable of type \integer,
  that holds the number of optimization variables, $n$.
 
-\ittf{m} is a scalar variable of type default \integer,
+\ittf{m} is a scalar variable of type \integer,
  that holds the number of general linear constraints, $m$.
 
-\itt{Hessian\_kind} is a scalar variable of type default \integer,
+\itt{Hessian\_kind} is a scalar variable of type \integer,
 that is used to indicate what type of Hessian the problem involves.
 Possible values for {\tt Hessian\_kind} are:
 
@@ -349,12 +353,12 @@ we may simply
 See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{H\%ne} is a scalar variable of type default \integer, that
+\itt{H\%ne} is a scalar variable of type \integer, that
 holds the number of entries in the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other schemes.
 
-\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{H\%val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
 of the Hessian matrix $\bmH$ in any of non-trivial storage schemes
 mentioned in Sections~\ref{coordinate}--\ref{diagonal}.
@@ -362,12 +366,12 @@ For the scaled-identity scheme (see Section~\ref{scaled-identity}),
 the first component, {\tt H\%val(1)}, holds the scale factor $h_{11}$.
 It need not be allocated for any of the remaining schemes.
 
-\itt{H\%row} is a rank-one allocatable array of type default \integer,
+\itt{H\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be allocated for any of the other schemes.
 
-\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+\itt{H\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of the {\bf lower triangular} part of
 $\bmH$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
@@ -375,7 +379,7 @@ $\bmH$ in either the sparse co-ordinate
 It need not be allocated when any of the other storage schemes are used.
 
 \itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
-default \integer, that holds the starting position of
+\integer, that holds the starting position of
 each row of the {\bf lower triangular} part of $\bmH$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
@@ -383,13 +387,13 @@ other schemes are used.
 \end{description}
 If {\tt Hessian\_kind} $\geq 0$, the components of {\tt H} need not be set.
 
-\itt{WEIGHT} is a rank-one allocatable array type default \realdp, that
+\itt{WEIGHT} is a rank-one allocatable array type \realdp, that
 should be allocated to have length {\tt n}, and its $j$-th component
 filled with the value $w_{j}$ for $j = 1, \ldots , n$,
 whenever {\tt Hessian\_kind} $>1$.
 If {\tt Hessian\_kind} $\leq 1$, {\tt WEIGHT} need not be allocated.
 
-\itt{target\_kind} is a scalar variable of type default \integer,
+\itt{target\_kind} is a scalar variable of type \integer,
 that is used to indicate whether the components of the targets $\bmx^0$
 (if they are used) have special or general values. Possible values for
 {\tt target\_kind} are:
@@ -402,14 +406,14 @@ that is used to indicate whether the components of the targets $\bmx^0$
      and will be provided in the component {\tt X0} (see below).
 \end{description}
 
-\ittf{X0} is a rank-one allocatable array type default \realdp, that
+\ittf{X0} is a rank-one allocatable array type \realdp, that
 should be allocated to have length {\tt n}, and its $j$-th component
 filled with the value $x_{j}^0$ for $j = 1, \ldots , n$,
 whenever {\tt Hessian\_kind} $>0$ and {\tt target\_kind} $\neq 0,1$.
 If {\tt Hessian\_kind} $\leq 0$ or {\tt target\_kind} $= 0,1$,
 {\tt X0} need not be allocated.
 
-\itt{gradient\_kind} is a scalar variable of type default \integer,
+\itt{gradient\_kind} is a scalar variable of type \integer,
 that is used to indicate whether the components of the gradient $\bmg$
 have special or general values. Possible values for {\tt gradient\_kind} are:
 \begin{description}
@@ -421,20 +425,20 @@ have special or general values. Possible values for {\tt gradient\_kind} are:
      and will be provided in the component {\tt G} (see below).
 \end{description}
 
-\ittf{G} is a rank-one allocatable array type default \realdp, that
+\ittf{G} is a rank-one allocatable array type \realdp, that
 should be allocated to have length {\tt n}, and its $j$-th component
 filled with the value $g_{j}$ for $j = 1, \ldots , n$,
 whenever {\tt gradient\_kind} $\neq$ 0,1.
 If {\tt gradient\_kind} {= 0, 1}, {\tt G} need not be allocated.
 
 \ittf{DG} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may hold the gradient $\delta \bmg$
+\realdp, that may hold the gradient $\delta \bmg$
 of the parametric linear term of the quadratic objective function.
 The $j$-th component of
 {\tt DG}, $j = 1,  \ldots ,  n$, contains $\delta g_{j}$.
 
 \ittf{f} is a scalar variable of type
-default \realdp, that holds
+\realdp, that holds
 the constant term, $f$, in the objective function.
 
 \ittf{A} is scalar variable of type {\tt SMT\_TYPE}
@@ -470,28 +474,28 @@ storage scheme, we may simply
 %\vspace*{-4mm}
 \noindent
 
-\itt{A\%ne} is a scalar variable of type default \integer, that
+\itt{A\%ne} is a scalar variable of type \integer, that
 holds the number of entries in $\bmA$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for either of the other two appropriate schemes.
 
-\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
+\itt{A\%val} is a rank-one allocatable array of type \realdp, that holds
 the values of the entries of the Jacobian matrix $\bmA$ in any of the
 appropriate storage schemes discussed in Section~\ref{galmatrix}.
 
-\itt{A\%row} is a rank-one allocatable array of type default \integer,
+\itt{A\%row} is a rank-one allocatable array of type \integer,
 that holds the row indices of $\bmA$ in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}).
 It need not be allocated for either of the other two appropriate schemes.
 
-\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
+\itt{A\%col} is a rank-one allocatable array variable of type \integer,
 that holds the column indices of $\bmA$ in either the sparse co-ordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated when the dense storage scheme is used.
 
 \itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type
-default \integer, that holds the
+\integer, that holds the
 starting position of each row of $\bmA$, as well
 as the total number of entries plus one, in the sparse row-wise storage
 scheme (see Section~\ref{rowwise}). It need not be allocated when the
@@ -500,7 +504,7 @@ other appropriate schemes are used.
 \end{description}
 
 \ittf{C\_l} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds the vector of lower bounds $\bmc^{l}$
+\realdp, that holds the vector of lower bounds $\bmc^{l}$
 on the general constraints. The $i$-th component of
 {\tt C\_l}, $i = 1, \ldots , m$, contains $c_{i}^{l}$.
 Infinite bounds are allowed by setting the corresponding
@@ -509,7 +513,7 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds the vector of upper bounds $\bmc^{u}$
+\realdp, that holds the vector of upper bounds $\bmc^{u}$
 on the general constraints. The $i$-th component of
 {\tt C\_u}, $i = 1,  \ldots ,  m$, contains $c_{i}^{u}$.
 Infinite bounds are allowed by setting the corresponding
@@ -518,21 +522,21 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{DC\_l} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that may hold the vector of parametric lower bounds
+\realdp, that may hold the vector of parametric lower bounds
 $\delta \bmc^{l}$ on the general constraints. The $i$-th component of
 {\tt DC\_l}, $i = 1, \ldots , m$, contains $\delta c_{i}^{l}$.
 Only components corresponding to finite lower bounds $c_{i}^{l}$
 need be set.
 
 \ittf{DC\_u} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that may hold the vector of parametric upper bounds
+\realdp, that may hold the vector of parametric upper bounds
 $\delta \bmc^{u}$  on the general constraints. The $i$-th component of
 {\tt DC\_u}, $i = 1,  \ldots ,  m$, contains $\delta c_{i}^{u}$.
 Only components corresponding to finite upper bounds $c_{i}^{u}$
 need be set.
 
 \ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that holds
+\realdp, that holds
 the vector of lower bounds $\bmx^{l}$ on the variables.
 The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$,
 contains $x_{j}^{l}$.
@@ -542,7 +546,7 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that holds
+\realdp, that holds
 the vector of upper bounds $\bmx^{u}$ on the variables.
 The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$,
 contains $x_{j}^{u}$.
@@ -552,26 +556,26 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{DX\_l} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may hold the vector of parametric lower bounds
+\realdp, that may hold the vector of parametric lower bounds
 $\delta \bmx^{l}$ on the variables. The $j$-th component of
 {\tt DX\_l}, $j = 1, \ldots , n$, contains $\delta x_{j}^{l}$.
 Only components corresponding to finite lower bounds $x_{j}^{l}$
 need be set.
 
 \ittf{DX\_u} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may hold the vector of parametric upper bounds
+\realdp, that may hold the vector of parametric upper bounds
 $\delta \bmx^{u}$  on the variables. The $j$-th component of
 {\tt DX\_u}, $j = 1,  \ldots ,  n$, contains $\delta x_{j}^{u}$.
 Only components corresponding to finite upper bounds $x_{j}^{u}$
 need be set.
 
 \ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp,
+\realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 
 \itt{X\_status} is a rank-one allocatable array of dimension {\tt m} and type
-default \integer, that holds the status of the problem variables (active or
+\integer, that holds the status of the problem variables (active or
 inactive). Variable $j$ is said to be inactive if its value is fixed to the
 current value of {\tt X(j)}, in which case it can be interpreted as a
 parameter of the problem.
@@ -583,7 +587,7 @@ corresponding to the simple bound constraints (see Section~\ref{galopt}).
 The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.
 
 \ittf{Z\_l} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may be used to hold
+\realdp, that may be used to hold
 a vector of lower bounds $\bmz^{l}$ on the dual variables.
 The $j$-th component of {\tt Z\_l}, $j = 1, \ldots , n$,
 contains $z_{j}^{l}$.
@@ -593,7 +597,7 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{Z\_u} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may be used to hold
+\realdp, that may be used to hold
 a vector of upper bounds $\bmz^{u}$ on the dual variables.
 The $j$-th component of {\tt Z\_u}, $j = 1, \ldots , n$,
 contains $z_{j}^{u}$.
@@ -609,18 +613,18 @@ The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains
 $\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.
 
 \itt{C\_status} is a rank-one allocatable array of dimension {\tt m} and type
-default \integer, that holds the status of the problem constraints (active or
+\integer, that holds the status of the problem constraints (active or
 inactive). A constraint is said to be inactive if it is not included in the
 formulation of the problem under consideration.
 
 \ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds
+\realdp, that holds
 the values $\bmy$ of estimates  of the Lagrange multipliers
 corresponding to the general linear constraints (see Section~\ref{galopt}).
 The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.
 
 \ittf{Y\_l} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may be used to hold
+\realdp, that may be used to hold
 a vector of lower bounds $\bmy^{l}$ on the Lagrange multipliers
 The $i$-th component of {\tt Y\_l}, $i = 1, \ldots , m$,
 contains $y_{i}^{l}$.
@@ -630,7 +634,7 @@ where {\tt infinity} is a  solver-dependent value that will be recognised as
 infinity.
 
 \ittf{Y\_u} is a rank-one allocatable array of dimension {\tt n} and type
-default \realdp, that may be used to hold
+\realdp, that may be used to hold
 a vector of upper bounds $\bmy^{u}$ on the Lagrange multipliers
 The $i$-th component of {\tt Y\_u}, $i = 1, \ldots , m$,
 contains $y_{i}^{u}$.

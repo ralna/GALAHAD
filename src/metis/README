@@ -1,0 +1,86 @@
+---------------------------------------------------------------
+Specialised metis_nodend libraries for 32- and 64-bit HSL usage
+---------------------------------------------------------------
+
+A number of HSL and other sparse-matrix-factorization packages
+rely optionally on the open-source graph reordering package MeTiS,
+and specifically to its NodeND procedure. Traditionally, access to
+MeTiS 4 has been required, but since MeTiS  4 has long been superseded
+by the improved MeTiS 5, this has become increasingly inconvenient,
+particularly as the MeTiS 4 binaries have to be obtained and compiled
+from source.
+
+Of late, an ISO-C wrapper has been provided to enable HSL to call
+the MeTiS 5 NodeND procedure. Many Linux distributions provide 
+shared 32-bit MeTiS libraries. Thus all appeared to be well.
+
+However, two issues have arisen. The first is that in some cases
+supplying null arguments via the (void *)0 syntax that worked
+well with MeTiS 5.1, seem not to work reliably with Metis 5.2 (and
+vice versa), for which NULL seemingly has to be used instead - most
+MeTiS binary distributions are based on 5.1, while 5.2 has extra
+enhancements and fixes. Presumably this could be fixed by a 
+sufficiently proficient C programmer.
+
+The second - more serious - issue is that many binary distributions 
+only support 32-bit integers, while the MeTiS source itself is perfectly 
+capable of producing both 32- and 64-bit variants. As we move to support
+both 32- and 64-bit calling libraries, we will rely increasingly on the 
+same for MeTiS.
+
+Thus, for the foreseeable future, we have decided instead to provide
+a cut-down version of the source codes that only builds the NodeND
+components, along with a simple Makefile that will produce separate
+32- and 64-bit static libraries. This will be distributed as part of 
+the upcoming sparseHSL project, but in the interim is available with 
+the HSL subset library for users of IPOPT, GALAHAD and other 
+optimization packages under MeTiS's open-source licence.
+
+We are extremely grateful to George Karypis, Vipin Kumar and their
+collaborators for developing and maintaining this wonderful software.
+
+................................
+Basic install on a Linux system:
+................................
+
+To build both 32- and 64-bit integer static libraries:
+
+ make
+
+To build just the 32-bit-integer library:
+
+ make build_32
+
+To build just the 64-bit-integer library:
+
+ make build_64
+
+To run a simple sanity test of both 32- and 64-bit-integer builds:
+
+ make test
+
+with either
+
+ make test_32
+
+or
+
+ make test_64
+
+as appropriate for the separate tests.
+
+To start again:
+
+  make cleanall
+
+Adjust the compiler by specifying CC= (default gcc) and compiler flags
+with CFLAGS= (default is -O3 -pipe -I ./include).
+
+This install will happen by default for those building the HSL subset
+from its source.
+
+.........................
+
+Nick Gould, STFC-RAL
+for the sparseHSL project
+2024-03-22

@@ -16,18 +16,18 @@ psls_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structpsls__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structpsls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structpsls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structpsls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`preconditioner<doxid-structpsls__control__type_1adf7719f1a4491459e361e80a00c55656>`;
-		int :ref:`semi_bandwidth<doxid-structpsls__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
-		int :ref:`scaling<doxid-structpsls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
-		int :ref:`ordering<doxid-structpsls__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
-		int :ref:`max_col<doxid-structpsls__control__type_1abca2db33b9520095e98790d45a1be93f>`;
-		int :ref:`icfs_vectors<doxid-structpsls__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
-		int :ref:`mi28_lsize<doxid-structpsls__control__type_1a97a46af6187162b529821f79d1559827>`;
-		int :ref:`mi28_rsize<doxid-structpsls__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`min_diagonal<doxid-structpsls__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structpsls__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structpsls__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structpsls__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`preconditioner<doxid-structpsls__control__type_1adf7719f1a4491459e361e80a00c55656>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`semi_bandwidth<doxid-structpsls__control__type_1abf884043df0f9c0d95bcff6fae1bf9bb>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`scaling<doxid-structpsls__control__type_1a26f0572eeeaa419eabb09dc89c00b89d>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ordering<doxid-structpsls__control__type_1a4175ebe476addcfc3433fc97c19e0708>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_col<doxid-structpsls__control__type_1abca2db33b9520095e98790d45a1be93f>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`icfs_vectors<doxid-structpsls__control__type_1adb095f545799aab1d69fcdca912d4afd>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mi28_lsize<doxid-structpsls__control__type_1a97a46af6187162b529821f79d1559827>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`mi28_rsize<doxid-structpsls__control__type_1a8cd04d404e41a2a09c29eeb2de78cd85>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`min_diagonal<doxid-structpsls__control__type_1a984528c49e15a61a1d30fc8fa2d166cc>`;
 		bool :ref:`new_structure<doxid-structpsls__control__type_1ada98b778d8b7622af0d49b064b56b8ba>`;
 		bool :ref:`get_semi_bandwidth<doxid-structpsls__control__type_1a0e41e53b327ab70366ccb2f06a23a868>`;
 		bool :ref:`get_norm_residual<doxid-structpsls__control__type_1acdcd8a05219b5c554c279137cb409a03>`;
@@ -64,7 +64,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -74,7 +74,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -84,7 +84,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -94,7 +94,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int preconditioner
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` preconditioner
 
 which preconditioner to use:
 
@@ -128,7 +128,7 @@ which preconditioner to use:
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int semi_bandwidth
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` semi_bandwidth
 
 the semi-bandwidth for band(H) when .preconditioner = 2,3
 
@@ -138,7 +138,7 @@ the semi-bandwidth for band(H) when .preconditioner = 2,3
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int scaling
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` scaling
 
 not used at present
 
@@ -148,7 +148,7 @@ not used at present
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int ordering
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` ordering
 
 see scaling
 
@@ -158,7 +158,7 @@ see scaling
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int max_col
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_col
 
 maximum number of nonzeros in a column of $A$ for Schur-complement factorization to accommodate newly deleted rpws and columns
 
@@ -168,7 +168,7 @@ maximum number of nonzeros in a column of $A$ for Schur-complement factorization
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int icfs_vectors
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` icfs_vectors
 
 number of extra vectors of length n required by the Lin-More' incomplete Cholesky preconditioner when .preconditioner = 6
 
@@ -178,7 +178,7 @@ number of extra vectors of length n required by the Lin-More' incomplete Cholesk
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int mi28_lsize
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` mi28_lsize
 
 the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28 when .preconditioner = 7. In general, increasing mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0
 
@@ -188,7 +188,7 @@ the maximum number of fill entries within each column of the incomplete factor L
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int mi28_rsize
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` mi28_rsize
 
 the maximum number of entries within each column of the strictly lower triangular matrix $R$ used in the computation of the preconditioner by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size .mi28_rsize \* n are allocated internally to hold $R$. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
 
@@ -198,7 +198,7 @@ the maximum number of entries within each column of the strictly lower triangula
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` min_diagonal
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` min_diagonal
 
 the minimum permitted diagonal in diag(max(H,.min_diagonal))
 

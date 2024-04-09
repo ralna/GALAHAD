@@ -1,17 +1,17 @@
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in 
 {\tt \packagename\_solve} and {\tt \packagename\_terminate} 
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in 
 {\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {\tt print\_level} $\leq 0$. If 
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -19,7 +19,7 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-%\itt{preconditioner} is a scalar variable of type default \integer, 
+%\itt{preconditioner} is a scalar variable of type \integer, 
 %that specifies which preconditioner to be used. When finding
 %the required minimizer, the system matrix
 %\disp{ \bmK_{H} = \mat{cc}{ \bmH & \bmA^T \\ \bmA  & \bmzero }}
@@ -58,16 +58,16 @@ The default is {\tt print\_level = 0}.
 %Other values may be added in future.
 %The default is {\tt preconditioner = 0}.
 
-%\itt{min\_diagonal} is a scalar variable of type default \realdp, that 
+%\itt{min\_diagonal} is a scalar variable of type \realdp, that 
 %specifies the smallest value of the diagonal when diagonal preconditioning,
 %{\tt precon = 3}, is used. The default is {\tt min\_diagonal = 0.00001}.
 
-%\itt{semi\_bandwidth} is a scalar variable of type default \integer, that 
+%\itt{semi\_bandwidth} is a scalar variable of type \integer, that 
 %specifies the semi-bandwidth of the band preconditioner when {\tt precon = 4}, 
 %if appropriate.
 %The default is {\tt semi\_bandwidth = 5}.
 
-%\itt{factorization} is a scalar variable of type default \integer, that 
+%\itt{factorization} is a scalar variable of type \integer, that 
 %specifies which factorization of the preconditioner should be used.  
 %Possible values are:
 
@@ -81,32 +81,32 @@ The default is {\tt print\_level = 0}.
 %\end{description}
 %The default is {\tt factorization = 0}.
 
-%\itt{max\_col} is a scalar variable of type default \integer, that specifies
+%\itt{max\_col} is a scalar variable of type \integer, that specifies
 %the maximum number of nonzeros in a column of $\bmA$ which is permitted
 %by the Schur-complement factorization.
 %The default is {\tt max\_col = 35}.
 
-%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%\itt{indmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of integer workspace required by 
 %the factorization package {\tt SILS}.
 %The default is {\tt indmin = 1000}.
 
-%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%\itt{valmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of real workspace required by 
 %the factorization package {\tt SILS}.
 %The default is {\tt valmin = 1000}.
 
-%\itt{len\_ulsmin} is a scalar variable of type default \integer, that specifies
+%\itt{len\_ulsmin} is a scalar variable of type \integer, that specifies
 %an initial estimate as to the amount of workspace required by 
 %the factorization package {\tt ULS}.
 %The default is {\tt len\_ulsmin = 1000}.
 
-%\itt{itref\_max} is a scalar variable of type default \integer, that specifies 
+%\itt{itref\_max} is a scalar variable of type \integer, that specifies 
 %the maximum number of iterative refinements allowed with each application 
 %of the preconditioner.
 %The default is {\tt itref\_max = 1}.
 
-\itt{new\_h} is a scalar variable of type default \integer, that is used
+\itt{new\_h} is a scalar variable of type \integer, that is used
 to indicate how $\bmH$ has changed (if at all) since the previous call
 to {\tt \packagename\_solve}. Possible values are:
 \begin{description}
@@ -117,7 +117,7 @@ is as before.
 \end{description}
 The default is {\tt new\_h = 2}.
 
-\itt{new\_a} is a scalar variable of type default \integer, that is used
+\itt{new\_a} is a scalar variable of type \integer, that is used
 to indicate how $\bmA$ has changed (if at all) since the previous call
 to {\tt \packagename\_solve}. Possible values are:
 \begin{description}
@@ -128,7 +128,7 @@ is as before.
 \end{description}
 The default is {\tt new\_a = 2}.
 
-\itt{cg\_maxit} is a scalar variable of type default \integer, that is used
+\itt{cg\_maxit} is a scalar variable of type \integer, that is used
 to limit the number of conjugate-gradient iterations performed in 
 the optimality phase. If 
 {\tt cg\_maxit} is negative, no limit will be impossed. The default
@@ -149,7 +149,7 @@ is {\tt cg\_maxit = 200}.
 %value of {\tt pivot\_tol\_for\_basis} than of {\tt pivot\_tol}.
 %The default is {\tt pivot\_tol\_for\_basis = 0.5}.
 
-%\itt{zero\_pivot} is a scalar variable of type default \realdp, 
+%\itt{zero\_pivot} is a scalar variable of type \realdp, 
 %that is used to detect singularity. Any pivot encountered during the
 %factorization whose absolute value is less than or equal to  {\tt zero\_pivot}
 %will be regarded as zero, and the matrix as singular.
@@ -182,7 +182,7 @@ default value, {\tt initial\_radius = SQRT(0.1*HUGE(1.0))}
 %The default is {\tt inner\_fraction\_opt = 0.1}.
 
 \itt{inner\_stop\_relative} and {\tt inner\_stop\_absolute} 
-are scalar variables of type default \realdp, 
+are scalar variables of type \realdp, 
 that hold the relative and absolute convergence tolerances for the
 iterative solution of the optimality phase of the problem using the package 
 {\tt \libraryname\_GLTR},
@@ -196,7 +196,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
 \itt{max\_infeasibility\_relative} and {\tt max\_infeasibility\_absolute} 
-are scalar variables of type default \realdp, 
+are scalar variables of type \realdp, 
 that hold the relative and absolute tolerances for assessing 
 infeasibility in the feasibility phase.  If the constraints are believed to be 
 rank defficient and the norm of the residual $\bmA \bmx_T + \bmc$

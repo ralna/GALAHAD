@@ -1,12 +1,10 @@
-//* \file hsl_ma48.h */
-
 /*
+ * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 09:50 GMT
  * COPYRIGHT (c) 2012 Science and Technology Facilities Council (STFC)
  * Original date 4 January 2012
  * All rights reserved
  *
  * Written by: Jonathan Hogg
- * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MA48 package
@@ -39,19 +37,75 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef HSL_MA48D_H
+#define HSL_MA48D_H
 
-#ifdef __cplusplus
-extern "C" {
+/* precision */
+#include "hsl_precision.h"
+
+#ifndef ma48_control
+#ifdef SINGLE
+#ifdef INTEGER_64
+#define ma48_control ma48_control_s_64
+#define ma48_ainfo ma48_ainfo_s_64
+#define ma48_finfo ma48_finfo_s_64
+#define ma48_sinfo ma48_sinfo_s_64
+#define ma48_initialize ma48_initialize_s_64
+#define ma48_default_control ma48_default_control_s_64
+#define ma48_analyse ma48_analyse_s_64
+#define ma48_get_perm ma48_get_perm_s_64
+#define ma48_factorize ma48_factorize_s_64
+#define ma48_solve ma48_solve_s_64
+#define ma48_finalize ma48_finalize_s_64
+#define ma48_special_rows_and_cols ma48_special_rows_and_cols_s_64
+#define ma48_determinant ma48_determinant_s_64
 #else
-#include <stdbool.h>
+#define ma48_control ma48_control_s
+#define ma48_ainfo ma48_ainfo_s
+#define ma48_finfo ma48_finfo_s
+#define ma48_sinfo ma48_sinfo_s
+#define ma48_initialize ma48_initialize_s
+#define ma48_default_control ma48_default_control_s
+#define ma48_analyse ma48_analyse_s
+#define ma48_get_perm ma48_get_perm_s
+#define ma48_factorize ma48_factorize_s
+#define ma48_solve ma48_solve_s
+#define ma48_finalize ma48_finalize_s
+#define ma48_special_rows_and_cols ma48_special_rows_and_cols_s
+#define ma48_determinant ma48_determinant_s
 #endif
-
-// include guard
-#ifndef HSL_MA48_H
-#define HSL_MA48_H
-
-// precision
-#include "galahad_precision.h"
+#else
+#ifdef INTEGER_64
+#define ma48_control ma48_control_d_64
+#define ma48_ainfo ma48_ainfo_d_64
+#define ma48_finfo ma48_finfo_d_64
+#define ma48_sinfo ma48_sinfo_d_64
+#define ma48_initialize ma48_initialize_d_64
+#define ma48_default_control ma48_default_control_d_64
+#define ma48_analyse ma48_analyse_d_64
+#define ma48_get_perm ma48_get_perm_d_64
+#define ma48_factorize ma48_factorize_d_64
+#define ma48_solve ma48_solve_d_64
+#define ma48_finalize ma48_finalize_d_64
+#define ma48_special_rows_and_cols ma48_special_rows_and_cols_d_64
+#define ma48_determinant ma48_determinant_d_64
+#else
+#define ma48_control ma48_control_d
+#define ma48_ainfo ma48_ainfo_d
+#define ma48_finfo ma48_finfo_d
+#define ma48_sinfo ma48_sinfo_d
+#define ma48_initialize ma48_initialize_d
+#define ma48_default_control ma48_default_control_d
+#define ma48_analyse ma48_analyse_d
+#define ma48_get_perm ma48_get_perm_d
+#define ma48_factorize ma48_factorize_d
+#define ma48_solve ma48_solve_d
+#define ma48_finalize ma48_finalize_d
+#define ma48_special_rows_and_cols ma48_special_rows_and_cols_d
+#define ma48_determinant ma48_determinant_d
+#endif
+#endif
+#endif
 
 struct ma48_control {
    ipc_ f_arrays; /* If eval to true, use 1-based indexing, else 0-based */
@@ -81,20 +135,20 @@ struct ma48_ainfo {
    rpc_ ops; /* Number of operations in elimination */
    ipc_ flag; /* Return code */
    ipc_ more; /* More information on failure */
-   long lena_analyse; /* Size for analysis (main arrays) */
-   long lenj_analyse; /* Size for analysis (integer aux array) */
-   long lena_factorize; /* Size for factorize (real array) */
-   long leni_factorize; /* Size for factorize (integer array) */
+   int64_t lena_analyse; /* Size for analysis (main arrays) */
+   int64_t lenj_analyse; /* Size for analysis (integer aux array) */
+   int64_t lena_factorize; /* Size for factorize (real array) */
+   int64_t leni_factorize; /* Size for factorize (integer array) */
    ipc_ ncmpa; /* Number of compresses in analyse */
    ipc_ rank; /* Estimated rank */
-   long drop; /* Number of entries dropped */
+   int64_t drop; /* Number of entries dropped */
    ipc_ struc_rank; /* Structural rank of matrix */
-   long oor; /* Number of indices out-of-range */
-   long dup; /* Number of duplicates */
+   int64_t oor; /* Number of indices out-of-range */
+   int64_t dup; /* Number of duplicates */
    ipc_ stat; /* Fortran STAT value after allocate failure */
    ipc_ lblock; /* Size largest non-triangular block */
    ipc_ sblock; /* Sum of orders of non-triangular blocks */
-   long tblock; /* Total entries in all non-triangular blocks */
+   int64_t tblock; /* Total entries in all non-triangular blocks */
 };
 
 
@@ -102,13 +156,14 @@ struct ma48_finfo {
    rpc_ ops; /* Number of operations in elimination */
    ipc_ flag; /* Return code */
    ipc_ more; /* More information on failure */
-   long size_factor; /* Number of words to hold factors */
-   long lena_factorize; /* Size for factorize (real array) */
-   long leni_factorize; /* Size for factorize (integer array) */
-   long drop; /* Number of entries dropped */
+   int64_t size_factor; /* Number of words to hold factors */
+   int64_t lena_factorize; /* Size for factorize (real array) */
+   int64_t leni_factorize; /* Size for factorize (integer array) */
+   int64_t drop; /* Number of entries dropped */
    ipc_ rank; /* Estimated rank */
    ipc_ stat; /* Fortran STAT value after allocate failure */
 };
+
 
 struct ma48_sinfo {
    ipc_ flag; /* Return code */
@@ -116,8 +171,35 @@ struct ma48_sinfo {
    ipc_ stat; /* Fortran STAT value after allocate failure */
 };
 
-#endif
+void ma48_default_control(struct ma48_control *control);
 
-#ifdef __cplusplus
-} /* extern "C" */
+void ma48_initialize(void **factors);
+
+void ma48_analyse(ipc_ m, ipc_ n, int64_t ne, const ipc_ row[],
+      const ipc_ col[], const rpc_ val[], void *factors,
+      const struct ma48_control *control, struct ma48_ainfo *ainfo,
+      struct ma48_finfo *finfo, const ipc_ perm[], const ipc_ endcol[]);
+
+void ma48_get_perm(ipc_ m, ipc_ n, const void *factors, ipc_ perm[], 
+                     const struct ma48_control *control);
+
+void ma48_factorize(ipc_ m, ipc_ n, int64_t ne, const ipc_ row[],
+      const ipc_ col[], const rpc_ val[], void *factors,
+      const struct ma48_control *control, struct ma48_finfo *finfo,
+      ipc_ fast, ipc_ partial);
+
+void ma48_solve(ipc_ m, ipc_ n, int64_t ne, const ipc_ row[],
+      const ipc_ col[], const rpc_ val[], const void *factors,
+      const rpc_ rhs[], rpc_ x[],
+      const struct ma48_control *control, struct ma48_sinfo *sinfo,
+      ipc_ trans, rpc_ resid[], rpc_ *error);
+
+ipc_ ma48_finalize(void **factors, const struct ma48_control *control);
+
+ipc_ ma48_determinant(const void *factors, ipc_ *sgndet,
+      rpc_ *logdet, const struct ma48_control *control);
+
+ipc_ ma48_special_rows_and_cols(const void *factors, ipc_ *rank,
+      ipc_ rows[], ipc_ cols[], const struct ma48_control *control);
+
 #endif

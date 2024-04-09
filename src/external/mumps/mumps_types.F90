@@ -19,7 +19,7 @@
 
 !  include the current mumps derived types
 
-#ifdef GALAHAD_SINGLE
+#ifdef SINGLE
      INCLUDE 'smumps_struc.h'
 #else
      INCLUDE 'dmumps_struc.h'

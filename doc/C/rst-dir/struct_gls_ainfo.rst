@@ -15,21 +15,21 @@ gls_ainfo structure
 	struct gls_ainfo {
 		// fields
 	
-		int :ref:`flag<doxid-structgls__ainfo_1adf916204820072417ed73a32de1cefcf>`;
-		int :ref:`more<doxid-structgls__ainfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
-		int :ref:`len_analyse<doxid-structgls__ainfo_1aa0296ccd8aa2c86d573fc176876ad1b3>`;
-		int :ref:`len_factorize<doxid-structgls__ainfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
-		int :ref:`ncmpa<doxid-structgls__ainfo_1a5e8b1d7aba05cfece368396811da24a3>`;
-		int :ref:`rank<doxid-structgls__ainfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
-		int :ref:`drop<doxid-structgls__ainfo_1a56da9169fe581b834e971dee4997ecfd>`;
-		int :ref:`struc_rank<doxid-structgls__ainfo_1adb25a546fdb408d29ea28385fe414361>`;
-		int :ref:`oor<doxid-structgls__ainfo_1afa0283d540a2a393c746b5eb05c3431c>`;
-		int :ref:`dup<doxid-structgls__ainfo_1adc4cf3f551bb367858644559d69cfdf5>`;
-		int :ref:`stat<doxid-structgls__ainfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-		int :ref:`lblock<doxid-structgls__ainfo_1a1e1f13a9a57bbd9e84303bdc2b49b2fc>`;
-		int :ref:`sblock<doxid-structgls__ainfo_1ad319083836152d74198f05040820282b>`;
-		int :ref:`tblock<doxid-structgls__ainfo_1aed4a0eb964f83e8a0a29ae1f2e0f5cce>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`ops<doxid-structgls__ainfo_1af0a337c9f4d03e088123ec071639aad7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`flag<doxid-structgls__ainfo_1adf916204820072417ed73a32de1cefcf>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`more<doxid-structgls__ainfo_1a4628f2fb17af64608416810cc4e5a9d0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`len_analyse<doxid-structgls__ainfo_1aa0296ccd8aa2c86d573fc176876ad1b3>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`len_factorize<doxid-structgls__ainfo_1a41ce64037dc7aae66b5a4ac582a2985a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ncmpa<doxid-structgls__ainfo_1a5e8b1d7aba05cfece368396811da24a3>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`rank<doxid-structgls__ainfo_1a6cfd95afd0afebd625b889fb6e58371c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`drop<doxid-structgls__ainfo_1a56da9169fe581b834e971dee4997ecfd>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`struc_rank<doxid-structgls__ainfo_1adb25a546fdb408d29ea28385fe414361>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`oor<doxid-structgls__ainfo_1afa0283d540a2a393c746b5eb05c3431c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dup<doxid-structgls__ainfo_1adc4cf3f551bb367858644559d69cfdf5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stat<doxid-structgls__ainfo_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`lblock<doxid-structgls__ainfo_1a1e1f13a9a57bbd9e84303bdc2b49b2fc>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sblock<doxid-structgls__ainfo_1ad319083836152d74198f05040820282b>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`tblock<doxid-structgls__ainfo_1aed4a0eb964f83e8a0a29ae1f2e0f5cce>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`ops<doxid-structgls__ainfo_1af0a337c9f4d03e088123ec071639aad7>`;
 	};
 .. _details-structgls__ainfo:
 
@@ -47,7 +47,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int flag
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` flag
 
 Flags success or failure case.
 
@@ -57,7 +57,7 @@ Flags success or failure case.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int more
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` more
 
 More information on failure.
 
@@ -67,7 +67,7 @@ More information on failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int len_analyse
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` len_analyse
 
 Size for analysis.
 
@@ -77,7 +77,7 @@ Size for analysis.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int len_factorize
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` len_factorize
 
 Size for factorize.
 
@@ -87,7 +87,7 @@ Size for factorize.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int ncmpa
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` ncmpa
 
 Number of compresses.
 
@@ -97,7 +97,7 @@ Number of compresses.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int rank
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` rank
 
 Estimated rank.
 
@@ -107,7 +107,7 @@ Estimated rank.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int drop
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` drop
 
 Number of entries dropped.
 
@@ -117,7 +117,7 @@ Number of entries dropped.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int struc_rank
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` struc_rank
 
 Structural rank of matrix.
 
@@ -127,7 +127,7 @@ Structural rank of matrix.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int oor
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` oor
 
 Number of indices out-of-range.
 
@@ -137,7 +137,7 @@ Number of indices out-of-range.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dup
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dup
 
 Number of duplicates.
 
@@ -147,7 +147,7 @@ Number of duplicates.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int stat
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` stat
 
 STAT value after allocate failure.
 
@@ -157,7 +157,7 @@ STAT value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int lblock
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` lblock
 
 Size largest non-triangular block.
 
@@ -167,7 +167,7 @@ Size largest non-triangular block.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int sblock
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` sblock
 
 Sum of orders of non-triangular blocks.
 
@@ -177,7 +177,7 @@ Sum of orders of non-triangular blocks.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int tblock
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` tblock
 
 Total entries in all non-tringular blocks.
 
@@ -187,7 +187,7 @@ Total entries in all non-tringular blocks.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` ops
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` ops
 
 Number of operations in elimination.
 

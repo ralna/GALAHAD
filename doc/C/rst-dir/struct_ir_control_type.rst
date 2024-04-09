@@ -16,13 +16,13 @@ ir_control_type structure
 		// fields
 	
 		bool :ref:`f_indexing<doxid-structir__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
-		int :ref:`error<doxid-structir__control__type_1a11614f44ef4d939bdd984953346a7572>`;
-		int :ref:`out<doxid-structir__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
-		int :ref:`print_level<doxid-structir__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
-		int :ref:`itref_max<doxid-structir__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`acceptable_residual_relative<doxid-structir__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`acceptable_residual_absolute<doxid-structir__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`required_residual_relative<doxid-structir__control__type_1a9d3614debfe53f901305b68d9e460163>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structir__control__type_1a11614f44ef4d939bdd984953346a7572>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structir__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structir__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`itref_max<doxid-structir__control__type_1a903ba4ef0869186a65d4c32459a6a0ed>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`acceptable_residual_relative<doxid-structir__control__type_1a97a6571829dbdccad7598f7b5c3ddfbd>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`acceptable_residual_absolute<doxid-structir__control__type_1a5ee0e70d90b1398019054b19b68057a0>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`required_residual_relative<doxid-structir__control__type_1a9d3614debfe53f901305b68d9e460163>`;
 		bool :ref:`record_residuals<doxid-structir__control__type_1aee80ae09cedfc446424c56719b30cfca>`;
 		bool :ref:`space_critical<doxid-structir__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structir__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
@@ -54,7 +54,7 @@ use C or Fortran sparse matrix indexing
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int error
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` error
 
 unit for error messages
 
@@ -64,7 +64,7 @@ unit for error messages
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int out
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` out
 
 unit for monitor output
 
@@ -74,7 +74,7 @@ unit for monitor output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int print_level
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` print_level
 
 controls level of diagnostic output
 
@@ -84,7 +84,7 @@ controls level of diagnostic output
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int itref_max
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` itref_max
 
 maximum number of iterative refinements allowed
 
@@ -94,7 +94,7 @@ maximum number of iterative refinements allowed
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` acceptable_residual_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` acceptable_residual_relative
 
 refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( acceptable_residual_relative \* $\|b\|$, acceptable_residual_absolute )
 
@@ -104,7 +104,7 @@ refinement will cease as soon as the residual $\|Ax-b\|$ falls below max( accept
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` acceptable_residual_absolute
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` acceptable_residual_absolute
 
 see acceptable_residual_relative
 
@@ -114,7 +114,7 @@ see acceptable_residual_relative
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` required_residual_relative
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` required_residual_relative
 
 refinement will be judged to have failed if the residual $\|Ax-b\| \geq$ required_residual_relative \* $\|b\|$. No checking if required_residual_relative < 0
 

@@ -1,12 +1,10 @@
-//* \file hsl_ma86.h */
-
 /*
+ * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 10:05 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 25 Feburary 2011
  * All rights reserved
  *
  * Written by: Jonathan Hogg
- * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MA86 package
@@ -40,18 +38,55 @@
  *
  */
 
-#ifdef __cplusplus
-extern "C" {
+#ifndef HSL_MA86D_H
+#define HSL_MA86D_H
+
+/* precision */
+#include "hsl_precision.h"
+
+#ifndef ma86_default_control
+#ifdef SINGLE
+#ifdef INTEGER_64
+#define ma86_control ma86_control_s_64
+#define ma86_info ma86_info_s_64
+#define ma86_default_control ma86_default_control_s_64
+#define ma86_analyse ma86_analyse_s_64
+#define ma86_factor ma86_factor_s_64
+#define ma86_factor_solve ma86_factor_solve_s_64
+#define ma86_solve ma86_solve_s_64
+#define ma86_finalise ma86_finalise_s_64
 #else
-#include <stdbool.h>
+#define ma86_control ma86_control_s
+#define ma86_info ma86_info_s
+#define ma86_default_control ma86_default_control_s
+#define ma86_analyse ma86_analyse_s
+#define ma86_factor ma86_factor_s
+#define ma86_factor_solve ma86_factor_solve_s
+#define ma86_solve ma86_solve_s
+#define ma86_finalise ma86_finalise_s
 #endif
-
-// include guard
-#ifndef HSL_MA86_H
-#define HSL_MA86_H
-
-// precision
-#include "galahad_precision.h"
+#else
+#ifdef INTEGER_64
+#define ma86_control ma86_control_d_64
+#define ma86_info ma86_info_d_64
+#define ma86_default_control ma86_default_control_d_64
+#define ma86_analyse ma86_analyse_d_64
+#define ma86_factor ma86_factor_d_64
+#define ma86_factor_solve ma86_factor_solve_d_64
+#define ma86_solve ma86_solve_d_64
+#define ma86_finalise ma86_finalise_d_64
+#else
+#define ma86_control ma86_control_d
+#define ma86_info ma86_info_d
+#define ma86_default_control ma86_default_control_d
+#define ma86_analyse ma86_analyse_d
+#define ma86_factor ma86_factor_d
+#define ma86_factor_solve ma86_factor_solve_d
+#define ma86_solve ma86_solve_d
+#define ma86_finalise ma86_finalise_d
+#endif
+#endif
+#endif
 
 /* Data type for user controls */
 struct ma86_control {
@@ -69,55 +104,76 @@ struct ma86_control {
                      1: as 0 plus basic diagnostic printing.
                      2: as 1 plus some more detailed diagnostic messages.
                      3: as 2 plus all entries of user-supplied arrays.       */
-   ipc_ unit_diagnostics;   /* unit for diagnostic messages
+   ipc_ unit_diagnostics;  /* unit for diagnostic messages
                               Printing is suppressed if unit_diagnostics < 0. */
-   ipc_ unit_error;         /* unit for error messages
+   ipc_ unit_error;        /* unit for error messages
                               Printing is suppressed if unit_error  <  0.     */
-   ipc_ unit_warning;       /* unit for warning messages
+   ipc_ unit_warning;      /* unit for warning messages
                               Printing is suppressed if unit_warning  <  0.   */
 
    /* Controls used by ma86_analyse */
-   ipc_ nemin;  /* Node amalgamation parameter. A child node is merged with its
+   ipc_ nemin; /* Node amalgamation parameter. A child node is merged with its
                   parent if they both involve fewer than nemin eliminations.*/
-   ipc_ nb;     /* Controls the size of the blocks used within each node (used to
+   ipc_ nb;    /* Controls the size of the blocks used within each node (used to
                   set nb within node_type)*/
 
    /* Controls used by ma86_factor and ma86_factor_solve */
-   ipc_ action;      /* Keep going even if matrix is singular if true, or abort
-                        if false */
-   ipc_ nbi;         /* Inner block size for use with ma64*/
-   ipc_ pool_size;   /* Size of task pool arrays*/
-   rpc_ small_;  /* Pivots less than small are treated as zero*/
-   rpc_ static_; /* Control static pivoting*/
-   rpc_ u;       /* Pivot tolerance*/
-   rpc_ umin;    /* Minimum pivot tolerance*/
-   ipc_ scaling;     /* Scaling algorithm to use */
+   ipc_ action; /* Keep going even if matrix is singular if true, or abort
+                  if false */
+   ipc_ nbi;    /* Inner block size for use with ma64*/
+   ipc_ pool_size; /* Size of task pool arrays*/
+   rpc_ small_; /* Pivots less than small are treated as zero*/
+   rpc_ static_;/* Control static pivoting*/
+   rpc_ u;      /* Pivot tolerance*/
+   rpc_ umin;   /* Minimum pivot tolerance*/
+   ipc_ scaling;            /* Scaling algorithm to use */
 };
 
 /***************************************************/
 
 /* data type for returning information to user.*/
 struct ma86_info {
-   rpc_ detlog;     /* Holds logarithm of abs det A (or 0) */
-   ipc_ detsign;        /* Holds sign of determinant (+/-1 or 0) */
-   ipc_ flag;           /* Error return flag (0 on success) */
-   ipc_ matrix_rank;    /* Rank of matrix */
-   ipc_ maxdepth;       /* Maximum depth of the tree. */
-   ipc_ num_delay;      /* Number of delayed pivots */
-   long num_factor;     /* Number of entries in the factor. */
-   long num_flops;      /* Number of flops for factor. */
-   ipc_ num_neg;        /* Number of negative pivots */
-   ipc_ num_nodes;      /* Number of nodes */
-   ipc_ num_nothresh;   /* Number of pivots not satisfying u */
-   ipc_ num_perturbed;  /* Number of perturbed pivots */
-   ipc_ num_two;        /* Number of 2x2 pivots */
-   ipc_ pool_size;      /* Maximum size of task pool used */
-   ipc_ stat;           /* STAT value on error return -1. */
-   rpc_ usmall;     /* smallest threshold parameter used */
+   rpc_ detlog;          /* Holds logarithm of abs det A (or 0) */
+   ipc_ detsign;         /* Holds sign of determinant (+/-1 or 0) */
+   ipc_ flag;            /* Error return flag (0 on success) */
+   ipc_ matrix_rank;     /* Rank of matrix */
+   ipc_ maxdepth;        /* Maximum depth of the tree. */
+   ipc_ num_delay;       /* Number of delayed pivots */
+   int64_t num_factor;   /* Number of entries in the factor. */
+   int64_t num_flops;    /* Number of flops for factor. */
+   ipc_ num_neg;         /* Number of negative pivots */
+   ipc_ num_nodes;       /* Number of nodes */
+   ipc_ num_nothresh;    /* Number of pivots not satisfying u */
+   ipc_ num_perturbed;   /* Number of perturbed pivots */
+   ipc_ num_two;         /* Number of 2x2 pivots */
+   ipc_ pool_size;       /* Maximum size of task pool used */
+   ipc_ stat;            /* STAT value on error return -1. */
+   rpc_ usmall;          /* smallest threshold parameter used */
 };
 
-#endif
+/* Initialise control with default values */
+void ma86_default_control(struct ma86_control *control);
+/* Analyse the sparsity pattern and prepare for factorization */
+void ma86_analyse(const ipc_ n, const ipc_ ptr[], const ipc_ row[], ipc_ order[],
+      void **keep, const struct ma86_control *control,
+      struct ma86_info *info);
+/* To factorize the matrix */
+void ma86_factor(const ipc_ n, const ipc_ ptr[], const ipc_ row[],
+      const rpc_ val[], const ipc_ order[], void **keep,
+      const struct ma86_control *control, struct ma86_info *info,
+      const rpc_ scale[]);
+/* To factorize the matrix AND solve AX = B */
+void ma86_factor_solve(const ipc_ n, const ipc_ ptr[], const ipc_ row[],
+      const rpc_ val[], const ipc_ order[], void **keep,
+      const struct ma86_control *control, struct ma86_info *info,
+      const ipc_ nrhs, const ipc_ ldx, rpc_ x[],
+      const rpc_ scale[]);
+/* To solve AX = B using the computed factors */
+void ma86_solve(const ipc_ job, const ipc_ nrhs, const ipc_ ldx,
+      rpc_ *x, const ipc_ order[], void **keep,
+      const struct ma86_control *control, struct ma86_info *info,
+      const rpc_ scale[]);
+/* To clean up memory in keep */
+void ma86_finalise(void **keep, const struct ma86_control *control);
 
-#ifdef __cplusplus
-} /* extern "C" */
 #endif

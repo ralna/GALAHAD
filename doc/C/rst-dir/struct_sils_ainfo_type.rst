@@ -15,23 +15,23 @@ sils_ainfo_type structure
 	struct sils_ainfo_type {
 		// fields
 	
-		int :ref:`flag<doxid-structsils__ainfo__type_1adf916204820072417ed73a32de1cefcf>`;
-		int :ref:`more<doxid-structsils__ainfo__type_1a4628f2fb17af64608416810cc4e5a9d0>`;
-		int :ref:`nsteps<doxid-structsils__ainfo__type_1aa2414080b021dbb9b56eeaeedec0ffa2>`;
-		int :ref:`nrltot<doxid-structsils__ainfo__type_1a87d1fb870bb3dc94213c3adf550a7a3a>`;
-		int :ref:`nirtot<doxid-structsils__ainfo__type_1af19131d647173a929ed0594f33c46999>`;
-		int :ref:`nrlnec<doxid-structsils__ainfo__type_1a812f6ee1b4bd452745b3876b084cd4af>`;
-		int :ref:`nirnec<doxid-structsils__ainfo__type_1a2db255a81b52a84b3fec32d8c1a4ec17>`;
-		int :ref:`nrladu<doxid-structsils__ainfo__type_1a881410b19c211fe38617f51dcb6709d7>`;
-		int :ref:`niradu<doxid-structsils__ainfo__type_1a900738bbb8814829eb8e674c53a68ae3>`;
-		int :ref:`ncmpa<doxid-structsils__ainfo__type_1a5e8b1d7aba05cfece368396811da24a3>`;
-		int :ref:`oor<doxid-structsils__ainfo__type_1afa0283d540a2a393c746b5eb05c3431c>`;
-		int :ref:`dup<doxid-structsils__ainfo__type_1adc4cf3f551bb367858644559d69cfdf5>`;
-		int :ref:`maxfrt<doxid-structsils__ainfo__type_1a1a03f6fb5030d0b1d6bf3703d8c24cc4>`;
-		int :ref:`stat<doxid-structsils__ainfo__type_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
-		int :ref:`faulty<doxid-structsils__ainfo__type_1a6dfcf1d95eca288e459a114d6418d6f1>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`opsa<doxid-structsils__ainfo__type_1a5514c74cf880eb762c480fe9c94b45dd>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`opse<doxid-structsils__ainfo__type_1ae4d20d784bebe9b7f04a435f016e20d6>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`flag<doxid-structsils__ainfo__type_1adf916204820072417ed73a32de1cefcf>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`more<doxid-structsils__ainfo__type_1a4628f2fb17af64608416810cc4e5a9d0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nsteps<doxid-structsils__ainfo__type_1aa2414080b021dbb9b56eeaeedec0ffa2>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nrltot<doxid-structsils__ainfo__type_1a87d1fb870bb3dc94213c3adf550a7a3a>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nirtot<doxid-structsils__ainfo__type_1af19131d647173a929ed0594f33c46999>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nrlnec<doxid-structsils__ainfo__type_1a812f6ee1b4bd452745b3876b084cd4af>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nirnec<doxid-structsils__ainfo__type_1a2db255a81b52a84b3fec32d8c1a4ec17>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`nrladu<doxid-structsils__ainfo__type_1a881410b19c211fe38617f51dcb6709d7>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`niradu<doxid-structsils__ainfo__type_1a900738bbb8814829eb8e674c53a68ae3>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`ncmpa<doxid-structsils__ainfo__type_1a5e8b1d7aba05cfece368396811da24a3>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`oor<doxid-structsils__ainfo__type_1afa0283d540a2a393c746b5eb05c3431c>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dup<doxid-structsils__ainfo__type_1adc4cf3f551bb367858644559d69cfdf5>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`maxfrt<doxid-structsils__ainfo__type_1a1a03f6fb5030d0b1d6bf3703d8c24cc4>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`stat<doxid-structsils__ainfo__type_1a7d6f8a25e94209bd3ba29b2051ca4f08>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`faulty<doxid-structsils__ainfo__type_1a6dfcf1d95eca288e459a114d6418d6f1>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`opsa<doxid-structsils__ainfo__type_1a5514c74cf880eb762c480fe9c94b45dd>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`opse<doxid-structsils__ainfo__type_1ae4d20d784bebe9b7f04a435f016e20d6>`;
 	};
 .. _details-structsils__ainfo__type:
 
@@ -49,7 +49,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int flag
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` flag
 
 Flags success or failure case.
 
@@ -59,7 +59,7 @@ Flags success or failure case.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int more
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` more
 
 More information on failure.
 
@@ -69,7 +69,7 @@ More information on failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nsteps
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nsteps
 
 Number of elimination steps.
 
@@ -79,7 +79,7 @@ Number of elimination steps.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nrltot
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nrltot
 
 Size for a without compression.
 
@@ -89,7 +89,7 @@ Size for a without compression.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nirtot
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nirtot
 
 Size for iw without compression.
 
@@ -99,7 +99,7 @@ Size for iw without compression.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nrlnec
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nrlnec
 
 Size for a with compression.
 
@@ -109,7 +109,7 @@ Size for a with compression.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nirnec
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nirnec
 
 Size for iw with compression.
 
@@ -119,7 +119,7 @@ Size for iw with compression.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int nrladu
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` nrladu
 
 Number of reals to hold factors.
 
@@ -129,7 +129,7 @@ Number of reals to hold factors.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int niradu
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` niradu
 
 Number of integers to hold factors.
 
@@ -139,7 +139,7 @@ Number of integers to hold factors.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int ncmpa
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` ncmpa
 
 Number of compresses.
 
@@ -149,7 +149,7 @@ Number of compresses.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int oor
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` oor
 
 Number of indices out-of-range.
 
@@ -159,7 +159,7 @@ Number of indices out-of-range.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int dup
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` dup
 
 Number of duplicates.
 
@@ -169,7 +169,7 @@ Number of duplicates.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int maxfrt
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` maxfrt
 
 Forecast maximum front size.
 
@@ -179,7 +179,7 @@ Forecast maximum front size.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int stat
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` stat
 
 STAT value after allocate failure.
 
@@ -189,7 +189,7 @@ STAT value after allocate failure.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	int faulty
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` faulty
 
 legacy component, now not used
 
@@ -199,7 +199,7 @@ legacy component, now not used
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` opsa
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` opsa
 
 Anticipated number of operations in assembly.
 
@@ -209,7 +209,7 @@ Anticipated number of operations in assembly.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` opse
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` opse
 
 Anticipated number of operations in elimination.
 

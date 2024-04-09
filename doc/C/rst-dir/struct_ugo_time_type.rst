@@ -16,8 +16,8 @@ ugo_time_type structure
 	struct ugo_time_type {
 		// components
 	
-		:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` :ref:`total<doxid-structugo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` :ref:`clock_total<doxid-structugo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
+		:ref:`spc_<doxid-galahad__spc_8h_>` :ref:`total<doxid-structugo__time__type_1aa7b2ccce10ffc8ef240d5be56ec1fbbc>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`clock_total<doxid-structugo__time__type_1ae9145eea8e19f9cae77904d3d00c5d1f>`;
 	};
 .. _details-structugo__time__type:
 
@@ -35,7 +35,7 @@ components
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>` total
+	:ref:`spc_<doxid-galahad__spc_8h_>` total
 
 the total CPU time spent in the package
 
@@ -45,7 +45,7 @@ the total CPU time spent in the package
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` clock_total
+	:ref:`rpc_<doxid-galahad__rpc_8h_>` clock_total
 
 the total clock time spent in the package
 

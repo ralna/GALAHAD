@@ -19,8 +19,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -29,77 +30,77 @@ overview of functions provided
 
 	// global functions
 
-	void :ref:`rpd_initialize<doxid-galahad__rpd_8h_1a6805ebb5cc097db7df39723c64cef793>`(void** data, struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, int* status);
+	void :ref:`rpd_initialize<doxid-galahad__rpd_8h_1a6805ebb5cc097db7df39723c64cef793>`(void **data, struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`rpd_get_stats<doxid-galahad__rpd_8h_1ad0148374adcd7bf5f34f378ba0995a21>`(
 		char qplib_file[],
-		int qplib_file_len,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` qplib_file_len,
 		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
-		void** data,
-		int* status,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		char p_type[4],
-		int* n,
-		int* m,
-		int* h_ne,
-		int* a_ne,
-		int* h_c_ne
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *h_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *a_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *h_c_ne
 	);
 
-	void :ref:`rpd_get_g<doxid-galahad__rpd_8h_1aa5be687c00e4a7980c5ea7c258717d3a>`(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[]);
-	void :ref:`rpd_get_f<doxid-galahad__rpd_8h_1a38dc68ed79b192e3fcd961b8589d202c>`(void** data, int* status, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f);
+	void :ref:`rpd_get_g<doxid-galahad__rpd_8h_1aa5be687c00e4a7980c5ea7c258717d3a>`(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`rpc_<doxid-galahad__rpc_8h_>` g[]);
+	void :ref:`rpd_get_f<doxid-galahad__rpd_8h_1a38dc68ed79b192e3fcd961b8589d202c>`(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`rpc_<doxid-galahad__rpc_8h_>`* f);
 
 	void :ref:`rpd_get_xlu<doxid-galahad__rpd_8h_1a6a5cbf68b561cc6db0ba08304d28787c>`(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[]
 	);
 
 	void :ref:`rpd_get_clu<doxid-galahad__rpd_8h_1aa3b44968b109ed194ed2bb04009f35ac>`(
-		void** data,
-		int* status,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_u[]
 	);
 
 	void :ref:`rpd_get_h<doxid-galahad__rpd_8h_1a02021324df6f485160d327f2f5fca0d3>`(
-		void** data,
-		int* status,
-		int h_ne,
-		int h_row[],
-		int h_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_val[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_row[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_col[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` h_val[]
 	);
 
 	void :ref:`rpd_get_a<doxid-galahad__rpd_8h_1a8b0c3c507b12512b09ee4ec92596148e>`(
-		void** data,
-		int* status,
-		int a_ne,
-		int a_row[],
-		int a_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` a_val[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_row[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_col[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` a_val[]
 	);
 
 	void :ref:`rpd_get_h_c<doxid-galahad__rpd_8h_1a55ae091188ad0d88920565549bd47451>`(
-		void** data,
-		int* status,
-		int h_c_ne,
-		int h_c_ptr[],
-		int h_c_row[],
-		int h_c_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_c_val[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_ptr[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_row[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_col[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` h_c_val[]
 	);
 
-	void :ref:`rpd_get_x_type<doxid-galahad__rpd_8h_1af784ecc65c925575788a494bd8118f4d>`(void** data, int* status, int n, int x_type[]);
-	void :ref:`rpd_get_x<doxid-galahad__rpd_8h_1afbc831595295e9153e4740d852a35c27>`(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[]);
-	void :ref:`rpd_get_y<doxid-galahad__rpd_8h_1ac9fd1a08acf460b7962ad5393d69fff5>`(void** data, int* status, int m, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[]);
-	void :ref:`rpd_get_z<doxid-galahad__rpd_8h_1ab1579a81766096bd1764f0fb0cc10db3>`(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[]);
-	void :ref:`rpd_information<doxid-galahad__rpd_8h_1a6deb3fc67d1b4e1d1cd1661af237d6b3>`(void** data, struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, int* status);
+	void :ref:`rpd_get_x_type<doxid-galahad__rpd_8h_1af784ecc65c925575788a494bd8118f4d>`(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`ipc_<doxid-galahad__ipc_8h_>` x_type[]);
+	void :ref:`rpd_get_x<doxid-galahad__rpd_8h_1afbc831595295e9153e4740d852a35c27>`(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`rpc_<doxid-galahad__rpc_8h_>` x[]);
+	void :ref:`rpd_get_y<doxid-galahad__rpd_8h_1ac9fd1a08acf460b7962ad5393d69fff5>`(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` m, :ref:`rpc_<doxid-galahad__rpc_8h_>` y[]);
+	void :ref:`rpd_get_z<doxid-galahad__rpd_8h_1ab1579a81766096bd1764f0fb0cc10db3>`(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`rpc_<doxid-galahad__rpc_8h_>` z[]);
+	void :ref:`rpd_information<doxid-galahad__rpd_8h_1a6deb3fc67d1b4e1d1cd1661af237d6b3>`(void **data, struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status);
 
 	void :ref:`rpd_terminate<doxid-galahad__rpd_8h_1af49fc46839c605dd71d2666189d0d8a9>`(
-		void** data,
+		void **data,
 		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
 		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform
 	);
@@ -109,25 +110,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -138,7 +151,7 @@ function calls
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_initialize(void** data, struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, int* status)
+	void rpd_initialize(void **data, struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Set default control values and initialize private data
 
@@ -163,7 +176,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -176,16 +189,16 @@ Set default control values and initialize private data
 
 	void rpd_get_stats(
 		char qplib_file[],
-		int qplib_file_len,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` qplib_file_len,
 		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
-		void** data,
-		int* status,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
 		char p_type[4],
-		int* n,
-		int* m,
-		int* h_ne,
-		int* a_ne,
-		int* h_c_ne
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *h_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *a_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *h_c_ne
 	)
 
 Read the data from a specified QPLIB file into internal storage, and report the type of problem encoded, along with problem-specific dimensions.
@@ -203,7 +216,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- qplib_file_len
 
-		- is a scalar variable of type int, that gives the number of characters in the name encoded in qplib_file.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the number of characters in the name encoded in qplib_file.
 
 	*
 		- control
@@ -219,7 +232,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -305,27 +318,27 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general constraints.
 
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $H$ stored in the sparse symmetric co-ordinate storage scheme.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of $H$ stored in the sparse symmetric co-ordinate storage scheme.
 
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in $A$ stored in the sparse co-ordinate storage scheme.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in $A$ stored in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $H_c$ stored in the joint sparse co-ordinate storage scheme.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of $H_c$ stored in the joint sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_g
 .. _doxid-galahad__rpd_8h_1aa5be687c00e4a7980c5ea7c258717d3a:
@@ -333,7 +346,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_get_g(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[])
+	void rpd_get_g(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`rpc_<doxid-galahad__rpc_8h_>` g[])
 
 Recover the linear term $g$ from in objective function
 
@@ -353,7 +366,7 @@ Recover the linear term $g$ from in objective function
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -364,12 +377,12 @@ Recover the linear term $g$ from in objective function
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that gives the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 .. index:: pair: function; rpd_get_f
 .. _doxid-galahad__rpd_8h_1a38dc68ed79b192e3fcd961b8589d202c:
@@ -377,7 +390,7 @@ Recover the linear term $g$ from in objective function
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_get_f(void** data, int* status, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f)
+	void rpd_get_f(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`rpc_<doxid-galahad__rpc_8h_>`* f)
 
 Recover the constant term $f$ in the objective function.
 
@@ -397,7 +410,7 @@ Recover the constant term $f$ in the objective function.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -408,7 +421,7 @@ Recover the constant term $f$ in the objective function.
 	*
 		- f
 
-		- is a scalar of type double, that gives the constant term $f$ from the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the constant term $f$ from the objective function.
 
 .. index:: pair: function; rpd_get_xlu
 .. _doxid-galahad__rpd_8h_1a6a5cbf68b561cc6db0ba08304d28787c:
@@ -417,11 +430,11 @@ Recover the constant term $f$ in the objective function.
 	:class: doxyrest-title-code-block
 
 	void rpd_get_xlu(
-		void** data,
-		int* status,
-		int n,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[]
 	)
 
 Recover the variable lower and upper bounds $x_l$ and $x_u$.
@@ -442,7 +455,7 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -453,17 +466,17 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that gives the lower bounds $x_l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $(x_l)_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the lower bounds $x_l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $(x_l)_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that gives the upper bounds $x_u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $(x_u)_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the upper bounds $x_u$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $(x_u)_j$.
 
 .. index:: pair: function; rpd_get_clu
 .. _doxid-galahad__rpd_8h_1aa3b44968b109ed194ed2bb04009f35ac:
@@ -472,11 +485,11 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 	:class: doxyrest-title-code-block
 
 	void rpd_get_clu(
-		void** data,
-		int* status,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_u[]
 	)
 
 Recover the constraint lower and upper bounds $c_l$ and $c_u$.
@@ -497,7 +510,7 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -508,17 +521,17 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general constraints.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type double, that gives the lower bounds $c_l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $(c_l)_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the lower bounds $c_l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $(c_l)_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type double, that gives the upper bounds $c_u$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $(c_u)_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the upper bounds $c_u$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $(c_u)_i$.
 
 .. index:: pair: function; rpd_get_h
 .. _doxid-galahad__rpd_8h_1a02021324df6f485160d327f2f5fca0d3:
@@ -527,12 +540,12 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 	:class: doxyrest-title-code-block
 
 	void rpd_get_h(
-		void** data,
-		int* status,
-		int h_ne,
-		int h_row[],
-		int h_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_val[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_row[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_col[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` h_val[]
 	)
 
 Recover the Hessian term $H$ in the objective function.
@@ -553,7 +566,7 @@ Recover the Hessian term $H$ in the objective function.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -564,22 +577,22 @@ Recover the Hessian term $H$ in the objective function.
 	*
 		- h_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- h_row
 
-		- is a one-dimensional array of size h_ne and type int, that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the row indices of the lower triangular part of $H$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1symmetric_matrix_coordinate>`.
 
 	*
 		- h_col
 
-		- is a one-dimensional array of size h_ne and type int, that gives the column indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the column indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme.
 
 	*
 		- h_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in the sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_a
 .. _doxid-galahad__rpd_8h_1a8b0c3c507b12512b09ee4ec92596148e:
@@ -588,12 +601,12 @@ Recover the Hessian term $H$ in the objective function.
 	:class: doxyrest-title-code-block
 
 	void rpd_get_a(
-		void** data,
-		int* status,
-		int a_ne,
-		int a_row[],
-		int a_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` a_val[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_row[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` a_col[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` a_val[]
 	)
 
 Recover the Jacobian term $A$ in the constraints.
@@ -614,7 +627,7 @@ Recover the Jacobian term $A$ in the constraints.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -625,22 +638,22 @@ Recover the Jacobian term $A$ in the constraints.
 	*
 		- a_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix $A$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the constraint Jacobian matrix $A$.
 
 	*
 		- a_row
 
-		- is a one-dimensional array of size a_ne and type int, that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size a_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the row indices of $A$ in the :ref:`sparse co-ordinate storage scheme <doxid-index_1unsymmetric_matrix_coordinate>`.
 
 	*
 		- a_col
 
-		- is a one-dimensional array of size a_ne and type int, that gives the column indices of $A$ in the sparse co-ordinate, storage scheme.
+		- is a one-dimensional array of size a_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the column indices of $A$ in the sparse co-ordinate, storage scheme.
 
 	*
 		- a_val
 
-		- is a one-dimensional array of size a_ne and type double, that gives the values of the entries of the constraint Jacobian matrix $A$ in the sparse co-ordinate scheme.
+		- is a one-dimensional array of size a_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the values of the entries of the constraint Jacobian matrix $A$ in the sparse co-ordinate scheme.
 
 .. index:: pair: function; rpd_get_h_c
 .. _doxid-galahad__rpd_8h_1a55ae091188ad0d88920565549bd47451:
@@ -649,13 +662,13 @@ Recover the Jacobian term $A$ in the constraints.
 	:class: doxyrest-title-code-block
 
 	void rpd_get_h_c(
-		void** data,
-		int* status,
-		int h_c_ne,
-		int h_c_ptr[],
-		int h_c_row[],
-		int h_c_col[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` h_c_val[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_ptr[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_row[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` h_c_col[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` h_c_val[]
 	)
 
 Recover the Hessian terms $H_c$ in the constraints.
@@ -676,7 +689,7 @@ Recover the Hessian terms $H_c$ in the constraints.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -687,27 +700,27 @@ Recover the Hessian terms $H_c$ in the constraints.
 	*
 		- h_c_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the Hessian matrix $H$.
 
 	*
 		- h_c_ptr
 
-		- is a one-dimensional array of size h_c_ne and type int, that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
+		- is a one-dimensional array of size h_c_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the constraint indices of the lower triangular part of $H_c$ in the :ref:`joint sparse co-ordinate storage scheme <doxid-index_1joint_symmetric_matrix_coordinate>`.
 
 	*
 		- h_c_row
 
-		- is a one-dimensional array of size h_c_ne and type int, that gives the row indices of the lower triangular part of $H_c$ in the joint sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the row indices of the lower triangular part of $H_c$ in the joint sparse co-ordinate storage scheme.
 
 	*
 		- h_c_col
 
-		- is a one-dimensional array of size h_c_ne and type int, that gives the column indices of the lower triangular part of $H_c$ in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the column indices of the lower triangular part of $H_c$ in the sparse co-ordinate storage scheme.
 
 	*
 		- h_c_val
 
-		- is a one-dimensional array of size h_c_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H_c$ in the sparse co-ordinate storage scheme.
+		- is a one-dimensional array of size h_c_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H_c$ in the sparse co-ordinate storage scheme.
 
 .. index:: pair: function; rpd_get_x_type
 .. _doxid-galahad__rpd_8h_1af784ecc65c925575788a494bd8118f4d:
@@ -715,7 +728,7 @@ Recover the Hessian terms $H_c$ in the constraints.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_get_x_type(void** data, int* status, int n, int x_type[])
+	void rpd_get_x_type(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`ipc_<doxid-galahad__ipc_8h_>` x_type[])
 
 Recover the types of the variables $x$.
 
@@ -735,7 +748,7 @@ Recover the types of the variables $x$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -746,13 +759,13 @@ Recover the types of the variables $x$.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- x_type
 
 		- 
-		  is a one-dimensional array of size n and type int, that specifies the type of each variable $x$. Specifically, for j = 0, ... , n-1, x(j) =
+		  is a one-dimensional array of size n and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that specifies the type of each variable $x$. Specifically, for j = 0, ... , n-1, x(j) =
 		  
 		  * 0 variable $x_j$ is continuous,
 		  
@@ -766,7 +779,7 @@ Recover the types of the variables $x$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_get_x(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[])
+	void rpd_get_x(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`rpc_<doxid-galahad__rpc_8h_>` x[])
 
 Recover the initial values of the variables $x$.
 
@@ -786,7 +799,7 @@ Recover the initial values of the variables $x$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -797,12 +810,12 @@ Recover the initial values of the variables $x$.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that gives the initial values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the initial values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 .. index:: pair: function; rpd_get_y
 .. _doxid-galahad__rpd_8h_1ac9fd1a08acf460b7962ad5393d69fff5:
@@ -810,7 +823,7 @@ Recover the initial values of the variables $x$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_get_y(void** data, int* status, int m, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[])
+	void rpd_get_y(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` m, :ref:`rpc_<doxid-galahad__rpc_8h_>` y[])
 
 Recover the initial values of the Lagrange multipliers $y$.
 
@@ -830,7 +843,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -841,12 +854,12 @@ Recover the initial values of the Lagrange multipliers $y$.
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general constraints.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that gives the initial values $y$ of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the initial values $y$ of the Lagrange multipliers for the general constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
 
 .. index:: pair: function; rpd_get_z
 .. _doxid-galahad__rpd_8h_1ab1579a81766096bd1764f0fb0cc10db3:
@@ -854,7 +867,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_get_z(void** data, int* status, int n, :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[])
+	void rpd_get_z(void **data, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status, :ref:`ipc_<doxid-galahad__ipc_8h_>` n, :ref:`rpc_<doxid-galahad__rpc_8h_>` z[])
 
 Recover the initial values of the dual variables $z$.
 
@@ -874,7 +887,7 @@ Recover the initial values of the dual variables $z$.
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The statistics have been recovered successfully.
@@ -885,12 +898,12 @@ Recover the initial values of the dual variables $z$.
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that gives the initial values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that gives the initial values $z$ of the dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 .. index:: pair: function; rpd_information
 .. _doxid-galahad__rpd_8h_1a6deb3fc67d1b4e1d1cd1661af237d6b3:
@@ -898,7 +911,7 @@ Recover the initial values of the dual variables $z$.
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	void rpd_information(void** data, struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, int* status)
+	void rpd_information(void **data, struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform, :ref:`ipc_<doxid-galahad__ipc_8h_>` *status)
 
 Provides output information
 
@@ -923,7 +936,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -935,7 +948,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void rpd_terminate(
-		void** data,
+		void **data,
 		struct :ref:`rpd_control_type<doxid-structrpd__control__type>`* control,
 		struct :ref:`rpd_inform_type<doxid-structrpd__inform__type>`* inform
 	)

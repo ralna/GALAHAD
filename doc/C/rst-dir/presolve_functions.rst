@@ -19,8 +19,9 @@ overview of functions provided
 
 	// typedefs
 
-	typedef float :ref:`real_sp_<doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b>`;
-	typedef double :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`;
+	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
+	typedef double :ref:`rpc_<doxid-galahad__rpc_8h_>`;
+	typedef int :ref:`ipc_<doxid-galahad__ipc_8h_>`;
 
 	// structs
 
@@ -30,9 +31,9 @@ overview of functions provided
 	// global functions
 
 	void :ref:`presolve_initialize<doxid-galahad__presolve_8h_1a30348a4e0a189046f55d995941693ed9>`(
-		void** data,
+		void **data,
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`presolve_read_specfile<doxid-galahad__presolve_8h_1a78f57f6dd2885f41e9b79cc784ff673f>`(
@@ -42,84 +43,84 @@ overview of functions provided
 
 	void :ref:`presolve_import_problem<doxid-galahad__presolve_8h_1aca96df1bce848a32af9f599a11c4c991>`(
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
 		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
 		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		int* n_out,
-		int* m_out,
-		int* H_ne_out,
-		int* A_ne_out
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` c_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` c_u[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *n_out,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m_out,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *H_ne_out,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *A_ne_out
 	);
 
 	void :ref:`presolve_transform_problem<doxid-galahad__presolve_8h_1af6da8ac04a1d4fdfd1b91cd8868791a1>`(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		int H_ne,
-		int H_col[],
-		int H_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		int A_ne,
-		int A_col[],
-		int A_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_u[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z_u[]
 	);
 
 	void :ref:`presolve_restore_solution<doxid-galahad__presolve_8h_1acf572e4805407de63003cd712f0fc495>`(
-		void** data,
-		int* status,
-		int n_in,
-		int m_in,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_in[],
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_in,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_in,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_in[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` c_in[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` y_in[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` z_in[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[]
 	);
 
 	void :ref:`presolve_information<doxid-galahad__presolve_8h_1adc22ebe32d1361b83889645ff473ca9b>`(
-		void** data,
+		void **data,
 		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	);
 
 	void :ref:`presolve_terminate<doxid-galahad__presolve_8h_1abe2d3138390135885716064c3befb36b>`(
-		void** data,
+		void **data,
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
 		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform
 	);
@@ -129,25 +130,37 @@ overview of functions provided
 typedefs
 --------
 
-.. index:: pair: typedef; real_sp_
-.. _doxid-galahad__precision_8h_1a3455cab03087949fd428a31cf302f98b:
+.. index:: pair: typedef; spc_
+.. _doxid-galahad__spc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef float real_sp_
+	typedef float spc_
 
-``real_sp_`` is real single precision
+``spc_`` is real single precision
 
-.. index:: pair: typedef; real_wp_
-.. _doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e:
+.. index:: pair: typedef; rpc_
+.. _doxid-galahad__rpc_8h_:
 
 .. ref-code-block:: cpp
 	:class: doxyrest-title-code-block
 
-	typedef double real_wp_
+	typedef double rpc_
 
-``real_wp_`` is the real working precision used
+``rpc_`` is the real working precision used, but may be changed to ``float`` by
+defining the  preprocessor variable ``SINGLE``.
+
+.. index:: pair: typedef; ipc_
+.. _doxid-galahad__ipc_8h_:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	typedef int ipc_
+
+``ipc_`` is the default integer word length used, but may be changed to 
+``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
 --------------
@@ -159,9 +172,9 @@ function calls
 	:class: doxyrest-title-code-block
 
 	void presolve_initialize(
-		void** data,
+		void **data,
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Set default control values and initialize private data
@@ -187,7 +200,7 @@ Set default control values and initialize private data
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The initialization was successful.
@@ -236,32 +249,32 @@ relate to the components of the control structure.
 
 	void presolve_import_problem(
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
-		void** data,
-		int* status,
-		int n,
-		int m,
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
 		const char H_type[],
-		int H_ne,
-		const int H_row[],
-		const int H_col[],
-		const int H_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` f,
 		const char A_type[],
-		int A_ne,
-		const int A_row[],
-		const int A_col[],
-		const int A_ptr[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		int* n_out,
-		int* m_out,
-		int* H_ne_out,
-		int* A_ne_out
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_row[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		const :ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` c_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` c_u[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *n_out,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m_out,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *H_ne_out,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *A_ne_out
 	)
 
 Import the initial data, and apply the presolve algorithm to report crucial characteristics of the transformed variant
@@ -287,7 +300,7 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The import was successful
@@ -321,12 +334,12 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints.
 
 	*
 		- H_type
@@ -336,37 +349,37 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- H_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- H_row
 
-		- is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of the lower triangular part of $H$ in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size H_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the lower triangular part of $H$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the lower triangular part of $H$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
+		- is a one-dimensional array of size h_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the Hessian matrix $H$ in any of the available storage schemes.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the constant term $f$ of the objective function.
 
 	*
 		- A_type
@@ -376,67 +389,67 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.
 
 	*
 		- A_row
 
-		- is a one-dimensional array of size A_ne and type int, that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the row indices of $A$ in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes, and in this case can be NULL.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size A_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of $A$ in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of $A$, as well as the total number of entries, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
+		- is a one-dimensional array of size a_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the constraint Jacobian matrix $A$ in any of the available storage schemes.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type double, that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type double, that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- n_out
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables in the transformed problem.
 
 	*
 		- m_out
 
-		- is a scalar variable of type int, that holds the number of general linear constraints in the transformed problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints in the transformed problem.
 
 	*
 		- H_ne_out
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of $H$ in the transformed problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of $H$ in the transformed problem.
 
 	*
 		- A_ne_out
 
-		- is a scalar variable of type int, that holds the number of entries in $A$ in the transformed problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in $A$ in the transformed problem.
 
 .. index:: pair: function; presolve_transform_problem
 .. _doxid-galahad__presolve_8h_1af6da8ac04a1d4fdfd1b91cd8868791a1:
@@ -445,28 +458,28 @@ Import the initial data, and apply the presolve algorithm to report crucial char
 	:class: doxyrest-title-code-block
 
 	void presolve_transform_problem(
-		void** data,
-		int* status,
-		int n,
-		int m,
-		int H_ne,
-		int H_col[],
-		int H_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` H_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` g[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>`* f,
-		int A_ne,
-		int A_col[],
-		int A_ptr[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` A_val[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_u[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_l[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_u[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_col[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` H_ptr[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` H_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` g[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>`* f,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ne,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_col[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` A_ptr[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` A_val[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y_u[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z_l[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z_u[]
 	)
 
 Apply the presolve algorithm to simplify the input problem, and output the transformed variant
@@ -487,7 +500,7 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The import was successful
@@ -516,102 +529,102 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
 
 	*
 		- H_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the lower triangular part of the transformed $H$. This must match the value H_ne_out from the last call to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the lower triangular part of the transformed $H$. This must match the value H_ne_out from the last call to presolve_import_problem.
 
 	*
 		- H_col
 
-		- is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size H_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
 
 	*
 		- H_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the lower triangular part of the transformed $H$ in the sparse row-wise storage scheme.
 
 	*
 		- H_val
 
-		- is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the the transformed Hessian matrix $H$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size h_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the lower triangular part of the the transformed Hessian matrix $H$ in the sparse row-wise storage scheme.
 
 	*
 		- g
 
-		- is a one-dimensional array of size n and type double, that holds the the transformed linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the the transformed linear term $g$ of the objective function. The j-th component of g, j = 0, ... , n-1, contains $g_j$.
 
 	*
 		- f
 
-		- is a scalar of type double, that holds the transformed constant term $f$ of the objective function.
+		- is a scalar of type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed constant term $f$ of the objective function.
 
 	*
 		- A_ne
 
-		- is a scalar variable of type int, that holds the number of entries in the transformed $A$. This must match the value A_ne_out from the last call to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of entries in the transformed $A$. This must match the value A_ne_out from the last call to presolve_import_problem.
 
 	*
 		- A_col
 
-		- is a one-dimensional array of size A_ne and type int, that holds the column indices of the transformed $A$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size A_ne and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the column indices of the transformed $A$ in the sparse row-wise storage scheme.
 
 	*
 		- A_ptr
 
-		- is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the transformed $A$, as well as the total number of entries, in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size n+1 and type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the starting position of each row of the transformed $A$, as well as the total number of entries, in the sparse row-wise storage scheme.
 
 	*
 		- A_val
 
-		- is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the transformed constraint Jacobian matrix $A$ in the sparse row-wise storage scheme.
+		- is a one-dimensional array of size a_ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the entries of the transformed constraint Jacobian matrix $A$ in the sparse row-wise storage scheme.
 
 	*
 		- c_l
 
-		- is a one-dimensional array of size m and type double, that holds the transformed lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed lower bounds $c^l$ on the constraints $A x$. The i-th component of c_l, i = 0, ... , m-1, contains $c^l_i$.
 
 	*
 		- c_u
 
-		- is a one-dimensional array of size m and type double, that holds the transformed upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed upper bounds $c^l$ on the constraints $A x$. The i-th component of c_u, i = 0, ... , m-1, contains $c^u_i$.
 
 	*
 		- x_l
 
-		- is a one-dimensional array of size n and type double, that holds the transformed lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed lower bounds $x^l$ on the variables $x$. The j-th component of x_l, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- x_u
 
-		- is a one-dimensional array of size n and type double, that holds the transformed upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed upper bounds $x^l$ on the variables $x$. The j-th component of x_u, j = 0, ... , n-1, contains $x^l_j$.
 
 	*
 		- y_l
 
-		- is a one-dimensional array of size m and type double, that holds the implied lower bounds $y^l$ on the transformed Lagrange multipliers $y$. The i-th component of y_l, i = 0, ... , m-1, contains $y^l_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the implied lower bounds $y^l$ on the transformed Lagrange multipliers $y$. The i-th component of y_l, i = 0, ... , m-1, contains $y^l_i$.
 
 	*
 		- y_u
 
-		- is a one-dimensional array of size m and type double, that holds the implied upper bounds $y^u$ on the transformed Lagrange multipliers $y$. The i-th component of y_u, i = 0, ... , m-1, contains $y^u_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the implied upper bounds $y^u$ on the transformed Lagrange multipliers $y$. The i-th component of y_u, i = 0, ... , m-1, contains $y^u_i$.
 
 	*
 		- z_l
 
-		- is a one-dimensional array of size m and type double, that holds the implied lower bounds $y^l$ on the transformed dual variables $z$. The j-th component of z_l, j = 0, ... , n-1, contains $z^l_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the implied lower bounds $y^l$ on the transformed dual variables $z$. The j-th component of z_l, j = 0, ... , n-1, contains $z^l_i$.
 
 	*
 		- z_u
 
-		- is a one-dimensional array of size m and type double, that holds the implied upper bounds $y^u$ on the transformed dual variables $z$. The j-th component of z_u, j = 0, ... , n-1, contains $z^u_i$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the implied upper bounds $y^u$ on the transformed dual variables $z$. The j-th component of z_u, j = 0, ... , n-1, contains $z^u_i$.
 
 .. index:: pair: function; presolve_restore_solution
 .. _doxid-galahad__presolve_8h_1acf572e4805407de63003cd712f0fc495:
@@ -620,20 +633,20 @@ Apply the presolve algorithm to simplify the input problem, and output the trans
 	:class: doxyrest-title-code-block
 
 	void presolve_restore_solution(
-		void** data,
-		int* status,
-		int n_in,
-		int m_in,
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y_in[],
-		const :ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z_in[],
-		int n,
-		int m,
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` x[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` c[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` y[],
-		:ref:`real_wp_<doxid-galahad__precision_8h_1ab82133d435678ff159433d2e50cf295e>` z[]
+		void **data,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n_in,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m_in,
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` x_in[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` c_in[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` y_in[],
+		const :ref:`rpc_<doxid-galahad__rpc_8h_>` z_in[],
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` n,
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` m,
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` x[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` c[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` y[],
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` z[]
 	)
 
 Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to recover the solution (x,c,y,z) to the original
@@ -654,7 +667,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are:
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are:
 		  
 		  * **0**
                     The import was successful
@@ -683,62 +696,62 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	*
 		- n_in
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables in the transformed problem. This must match the value n_out from the last call to presolve_import_problem.
 
 	*
 		- m_in
 
-		- is a scalar variable of type int, that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints. This must match the value m_out from the last call to presolve_import_problem.
 
 	*
 		- x_in
 
-		- is a one-dimensional array of size n_in and type double, that holds the transformed values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n_in and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c_in
 
-		- is a one-dimensional array of size m and type double, that holds the transformed residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
 
 	*
 		- y_in
 
-		- is a one-dimensional array of size n_in and type double, that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n_in and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
 
 	*
 		- z_in
 
-		- is a one-dimensional array of size n_in and type double, that holds the values $z$ of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n_in and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 	*
 		- n
 
-		- is a scalar variable of type int, that holds the number of variables in the transformed problem. This must match the value n as input to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of variables in the transformed problem. This must match the value n as input to presolve_import_problem.
 
 	*
 		- m
 
-		- is a scalar variable of type int, that holds the number of general linear constraints. This must match the value m as input to presolve_import_problem.
+		- is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number of general linear constraints. This must match the value m as input to presolve_import_problem.
 
 	*
 		- x
 
-		- is a one-dimensional array of size n and type double, that holds the transformed values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed values $x$ of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains $x_j$.
 
 	*
 		- c
 
-		- is a one-dimensional array of size m and type double, that holds the transformed residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
+		- is a one-dimensional array of size m and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the transformed residual $c(x)$. The i-th component of c, j = 0, ... , n-1, contains $c_j(x)$.
 
 	*
 		- y
 
-		- is a one-dimensional array of size n and type double, that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $y$ of the transformed Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains $y_j$.
 
 	*
 		- z
 
-		- is a one-dimensional array of size n and type double, that holds the values $z$ of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
+		- is a one-dimensional array of size n and type :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values $z$ of the transformed dual variables. The j-th component of z, j = 0, ... , n-1, contains $z_j$.
 
 .. index:: pair: function; presolve_information
 .. _doxid-galahad__presolve_8h_1adc22ebe32d1361b83889645ff473ca9b:
@@ -747,9 +760,9 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 	:class: doxyrest-title-code-block
 
 	void presolve_information(
-		void** data,
+		void **data,
 		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform,
-		int* status
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` *status
 	)
 
 Provides output information
@@ -775,7 +788,7 @@ Provides output information
 		- status
 
 		- 
-		  is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently):
+		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit status from the package. Possible values are (currently):
 		  
 		  * **0**
                     The values were recorded successfully
@@ -787,7 +800,7 @@ Provides output information
 	:class: doxyrest-title-code-block
 
 	void presolve_terminate(
-		void** data,
+		void **data,
 		struct :ref:`presolve_control_type<doxid-structpresolve__control__type>`* control,
 		struct :ref:`presolve_inform_type<doxid-structpresolve__inform__type>`* inform
 	)

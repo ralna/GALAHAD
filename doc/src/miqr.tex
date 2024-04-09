@@ -46,22 +46,22 @@ Rutherford Appleton Laboratory.
 
 \galhowto
 
-%\subsection{Calling sequences}
-
-Access to the package requires a {\tt USE} statement such as
-
-\medskip\noindent{\em Single precision version}
+The package is available using both single and double precision reals, 
+and either 32-bit or 64-bit integers. Access to the 32-bit integer,
+single precision version requires the {\tt USE} statement
+\medskip
 
 \hspace{8mm} {\tt USE \fullpackagename\_single}
 
-\medskip\noindent{\em Double precision version}
-
-\hspace{8mm} {\tt USE  \fullpackagename\_double}
-
 \medskip
+\noindent
+with the obvious substitution {\tt \fullpackagename\_double},
+{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use both modules at the same time, the derived types 
+If it is required to use more than one of the modules at the same time, 
+the derived types
 {\tt SMT\_type}, 
 {\tt \packagename\_time\_type}, 
 {\tt \packagename\_control\_type}, 
@@ -126,6 +126,10 @@ integer array {\tt A\%row}, and real array {\tt A\%val}, respectively.
 For sparse matrices, the row and column schemes almost always requires 
 less storage than the coordinate and dense schemes.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%% kinds %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{kinds}
+
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
 %\input{parallel}
@@ -143,10 +147,10 @@ The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
 
-\ittf{m} is a scalar component of type default \integer, 
+\ittf{m} is a scalar component of type \integer, 
 that holds the number of rows in the matrix. 
  
-\ittf{n} is a scalar component of type default \integer, 
+\ittf{n} is a scalar component of type \integer, 
 that holds the number of columns in the matrix. 
  
 \ittf{type} is a rank-one allocatable array of type default \character, that
@@ -180,23 +184,23 @@ and we wish to use the co-ordinate storage scheme, we may simply
 See the documentation for the \galahad\ package {\tt SMT} 
 for further details on the use of {\tt SMT\_put}.
 
-\ittf{ne} is a scalar variable of type default \integer, that
+\ittf{ne} is a scalar variable of type \integer, that
 holds the number of matrix entries.
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+\ittf{val} is a rank-one allocatable array of type \realdp\, 
 and dimension at least {\tt ne}, that holds the values of the entries. 
 Any duplicated entries that appear in the sparse 
 co-ordinate or row-wise schemes will be summed. 
 
-\ittf{row} is a rank-one allocatable array of type default \integer, 
+\ittf{row} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt ne}, that may hold the row indices of the entries. 
 (see \S\ref{coordinate} and \S\ref{colwise}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer, 
+\ittf{col} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
-\ittf{ptr} is a rank-one allocatable array of type default \integer, 
+\ittf{ptr} is a rank-one allocatable array of type \integer, 
 and dimension at least {\tt m + 1}, that may hold the pointers to
 the first entry in each row (see \S\ref{rowwise}) or of dimension
 at least {\tt n + 1}, that may hold the pointers to
@@ -223,20 +227,20 @@ are:
 
 \begin{description}
 
-\itt{error} is a scalar variable of type default \integer, that holds the
+\itt{error} is a scalar variable of type \integer, that holds the
 stream number for error messages. Printing of error messages in 
 {\tt \packagename\_form}, {\tt \packagename\_apply} 
 and {\tt \packagename\_terminate} 
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
-\ittf{out} is a scalar variable of type default \integer, that holds the
+\ittf{out} is a scalar variable of type \integer, that holds the
 stream number for informational messages. Printing of informational messages in 
 {\tt \packagename\_form}, {\tt \packagename\_apply} 
 is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
-\itt{print\_level} is a scalar variable of type default \integer, that is used
+\itt{print\_level} is a scalar variable of type \integer, that is used
 to control the amount of informational output which is required. No 
 informational output will occur if {\tt print\_level} $\leq 0$. If 
 {\tt print\_level} $= 1$, a single line of output will be produced for each
@@ -244,79 +248,79 @@ level of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of the factorization.
 The default is {\tt print\_level = 0}.
 
-\itt{max\_level} is a scalar variable of type default \integer, that is used
+\itt{max\_level} is a scalar variable of type \integer, that is used
 to specify the maximum level allowed when a multi-level factorization (MIQR)
 is attempted (see {\tt multi\_level} below).
 The default is {\tt max\_level = 4}.
 
-\itt{max\_order} is a scalar variable of type default \integer, that is used
+\itt{max\_order} is a scalar variable of type \integer, that is used
 to specify the maximum number of columns that will be processed per level 
 when a multi-level factorization (MIQR) is attempted 
 (see {\tt multi\_level} below).
 Any non-positive value will be interpreted as {\tt n}.
 The default is {\tt max\_order = -1}.
 
-\itt{max\_fill} is a scalar variable of type default \integer, that is used
+\itt{max\_fill} is a scalar variable of type \integer, that is used
 is used to control the incomplete factorization. In particular
 the maximum number of elements allowed in each column of $\bmR$ will not exceed
 {\tt max\_fill}.
 Any negative value will be interpreted as {\tt n}.
 The default is {\tt max\_fill = 100}.
 
-\itt{max\_fill\_q} is a scalar variable of type default \integer, that is used
+\itt{max\_fill\_q} is a scalar variable of type \integer, that is used
 is used to control the incomplete factorization. In particular
 the maximum number of elements allowed in each column of $\bmQ$ will not exceed
 {\tt max\_fill\_q}.
 Any negative value will be interpreted as {\tt m}.
 The default is {\tt max\_fill\_q = 100}.
 
-\itt{increase\_size}  is a scalar variable of type default \integer, that is 
+\itt{increase\_size}  is a scalar variable of type \integer, that is 
 used increase array sizes in chunks of this when needed.
 The default is {\tt increase\_size = 100}.
 
-\itt{buffer} is a scalar variable of type default \integer, that is used
+\itt{buffer} is a scalar variable of type \integer, that is used
 to specify the unit for any out-of-core writing when expanding arrays
 needed to store $\bmR$ and other intermediary data. 
 The default is {\tt buffer = 70}.
 
-\itt{smallest\_diag} is a scalar variable of type default \realdp, that is used
+\itt{smallest\_diag} is a scalar variable of type \realdp, that is used
 to identify those diagonal entries of $\bmR$ that are considered to be zero
 (and thus indicate rank deficiency). Any diagonal entry in the $\bmR$
 factor that is smaller than {\tt smallest\_dia} will be judged to be zero, 
 and modified accordingly.
 The default is {\tt smallest\_diag = }$10^{-10}$.
 
-\itt{tol\_level} is a scalar variable of type default \realdp, that is used
+\itt{tol\_level} is a scalar variable of type \realdp, that is used
 as a tolerance for stopping multi-level phase. In particular, the
 multi-level phase ends if the dimension of the reduced problem 
 is no smaller that {\tt tol\_level} times that of the previous
 reduced problem.
 The default is {\tt tol\_level = 0.3}.
 
-\itt{tol\_orthogonal} is a scalar variable of type default \realdp, 
+\itt{tol\_orthogonal} is a scalar variable of type \realdp, 
 that is used to judge if two vectors are roughly orthogonal; specifically
 vectors $u$ and $v$ are orthogonal if $|u^T v| \leq$ {\tt tol\_orthogonal} 
 $\ast \|u\| \|v\|$.
 The default is {\tt tol\_orthogonal = 0.0}.
 
-\itt{tol\_orthogonal\_increase} is a scalar variable of type default \realdp, 
+\itt{tol\_orthogonal\_increase} is a scalar variable of type \realdp, 
 that is used to indicate the increase in the orthogonality tolerance 
 that will be applied at each successive level.
 The default is {\tt tol\_orthogonal\_increase = 0.01}.
 
-\itt{average\_max\_fill} is a scalar variable of type default \realdp, that 
+\itt{average\_max\_fill} is a scalar variable of type \realdp, that 
 is used to control the incomplete factorization. In particular
  the maximum number of elements allowed in each column of $\bmR$ will not exceed
 {\tt average\_max\_fill} {\tt * ne / n}.
 The default is {\tt average\_max\_fill = 6.0}.
 
-\itt{average\_max\_fill\_q} is a scalar variable of type default \realdp, that 
+\itt{average\_max\_fill\_q} is a scalar variable of type \realdp, that 
 is used to control the incomplete factorization. In particular
  the maximum number of elements allowed in each column of $\bmQ$ will not exceed
 {\tt average\_max\_fill\_q} {\tt * ne / m}.
 The default is {\tt average\_max\_fill\_q = 24.0}.
 
-\itt{tol\_drop} is a scalar variable of type default \realdp, that is used
+\itt{tol\_drop} is a scalar variable of type \realdp, that is used
 as a dropping tolerance for small generated entries. Any entry smaller
 than  {\tt tol\_drop} will be excluded from the factorization.
 The default is {\tt tol\_drop = 0.01}.
@@ -386,37 +390,37 @@ the calculation. The components of
 {\tt \packagename\_time\_type} 
 are:
 \begin{description}
-\itt{total} is a scalar variable of type default \realdp, that gives
+\itt{total} is a scalar variable of type \realdp, that gives
  the total CPU time spent in the package.
 
-\itt{form} is a scalar variable of type default \realdp, that gives
+\itt{form} is a scalar variable of type \realdp, that gives
  the CPU time spent computing the multi-level incomplete factorization.
 
-\itt{levels} is a scalar variable of type default \realdp, that gives
+\itt{levels} is a scalar variable of type \realdp, that gives
  the CPU time spent in the multi-level phase of the factorization.
 
-\itt{iqr} is a scalar variable of type default \realdp, that gives
+\itt{iqr} is a scalar variable of type \realdp, that gives
  the CPU time spent in the incomplete QR phase of the factorization.
 
-\itt{apply} is a scalar variable of type default \realdp, that gives
+\itt{apply} is a scalar variable of type \realdp, that gives
  the CPU time spent  solving systems involving the computed factor $\bmR$.
 
-\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+\itt{clock\_total} is a scalar variable of type \realdp, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_form} is a scalar variable of type default \realdp, that gives
+\itt{clock\_form} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent computing the multi-level incomplete 
 factorization.
 
-\itt{clock\_levels} is a scalar variable of type default \realdp, that gives
+\itt{clock\_levels} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent in the multi-level phase of the 
 factorization.
 
-\itt{clock\_iqr} is a scalar variable of type default \realdp, that gives
+\itt{clock\_iqr} is a scalar variable of type \realdp, that gives
 the elapsed system clock time spent in the incomplete QR phase of the 
 factorization.
 
-\itt{clock\_apply} is a scalar variable of type default \realdp, that gives
+\itt{clock\_apply} is a scalar variable of type \realdp, that gives
  the elapsed system clock time spent solving systems involving the computed 
 factor $\bmR$.
 
@@ -436,13 +440,13 @@ are:
 
 \begin{description}
 
-\itt{status} is a scalar variable of type default \integer, that gives the
+\itt{status} is a scalar variable of type \integer, that gives the
 exit status of the algorithm. 
 %See Sections~\ref{galerrors} and \ref{galinfo}
 See \S\ref{galerrors} 
 for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+\itt{alloc\_status} is a scalar variable of type \integer, that gives
 the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
@@ -451,14 +455,14 @@ and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
 This will be the null string if {\tt status = 0}. 
 
-\itt{entries\_in\_factors} is a scalar variable of type default \integer, that 
+\itt{entries\_in\_factors} is a scalar variable of type \integer, that 
 gives the number of nonzeros in the incomplete factor $\bmR$.
 
-\itt{drop} is a scalar variable of type default \integer, that 
+\itt{drop} is a scalar variable of type \integer, that 
 gives the number of entries that were dropped during the incomplete 
 factorization.
 
-\itt{zero\_diagonals} is a scalar variable of type default \integer, that 
+\itt{zero\_diagonals} is a scalar variable of type \integer, that 
 gives the number of diagonal entries of $\bmR$ that were judged to be zero
 during the incomplete factorization.
 
@@ -859,7 +863,7 @@ components of {\tt control}.}
 %just as described in the documentation for the \galahad\ packages 
 %{\tt SLS} and {\tt ULS}.
 
-\itt{device} is a scalar \intentin argument of type default \integer,
+\itt{device} is a scalar \intentin argument of type \integer,
 that must be set to the unit number on which the specfile
 has been opened. If {\tt device} is not open, {\tt control} will
 not be altered and execution will continue, but an error message
