@@ -422,7 +422,7 @@ subdir('src/uls')
 subdir('src/userdata')
 subdir('src/warm')
 subdir('src/wcp')
-subdir('src/zd11')
+# subdir('src/zd11')
 
 # Libraries
 if build_single
