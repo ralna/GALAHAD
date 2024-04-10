@@ -136,7 +136,6 @@ module hsl_ma48_real
 contains
 
    subroutine ma48_initialize_real(factors,control)
-      USE GALAHAD_SYMBOLS
       type(ma48_factors), optional :: factors
       type(ma48_control), optional :: control
 
@@ -147,7 +146,6 @@ contains
 
    subroutine ma48_analyse_real(matrix,factors,control,ainfo,finfo,          &
                                   perm,lastcol)
-      USE GALAHAD_SYMBOLS
       type(zd11_type), Intent(in) :: matrix
       type(ma48_factors), intent(inout) :: factors
       type(ma48_control), intent(in) :: control
@@ -170,7 +168,6 @@ contains
    end subroutine ma48_analyse_real
 
    subroutine ma48_factorize_real(matrix,factors,control,finfo,fast,partial)
-      USE GALAHAD_SYMBOLS
       type(zd11_type), intent(in) :: matrix
       type(ma48_factors), intent(inout) :: factors
       type(ma48_control), intent(in) :: control
@@ -192,7 +189,6 @@ contains
 
    subroutine ma48_solve_real(matrix,factors,rhs,x,control,sinfo,trans, &
                          resid,error)
-      USE GALAHAD_SYMBOLS
       type(zd11_type), intent(in) :: matrix
       type(ma48_factors), intent(in) :: factors
       real(rp_), intent(in) :: rhs(:)
@@ -217,7 +213,6 @@ contains
    end subroutine ma48_solve_real
 
    subroutine ma48_finalize_real(factors,control,info)
-      USE GALAHAD_SYMBOLS
       type(ma48_factors), intent(inout) :: factors
       type(ma48_control), intent(in) :: control
       integer(ip_) :: info
