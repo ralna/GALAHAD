@@ -20,8 +20,6 @@
 #define spmf_enums spmf_enums_64
 #define pastixf_interfaces pastixf_interfaces_64
 #define pastixf_enums pastixf_enums_64
-#define galahad_metis galahad_metis_64
-#define galahad_metis_setopt galahad_metis_setopt_64
 #endif
 
 #ifdef SINGLE
@@ -1958,8 +1956,6 @@
 #define hsl_of01_precision gal_hsl_of01_single_64
 #define hsl_zb01_precision gal_hsl_zb01_single_64
 #define hsl_zd11_precision gal_hsl_zd11_single_64
-#define GLS_MC13ED GALAHAD_MC13E_64
-#define GLS_MC21BD GALAHAD_MC21B_64
 #else
 #define hsl_ma48_precision_ciface gal_hsl_ma48_single_ciface
 #define hsl_ma57_precision_ciface gal_hsl_ma57_single_ciface
@@ -1993,8 +1989,6 @@
 #define hsl_of01_precision gal_hsl_of01_single
 #define hsl_zb01_precision gal_hsl_zb01_single
 #define hsl_zd11_precision gal_hsl_zd11_single
-#define GLS_MC13ED GALAHAD_MC13E
-#define GLS_MC21BD GALAHAD_MC21B
 #endif
 #else
 #ifdef INTEGER_64
@@ -2030,8 +2024,6 @@
 #define hsl_of01_precision gal_hsl_of01_double_64
 #define hsl_zb01_precision gal_hsl_zb01_double_64
 #define hsl_zd11_precision gal_hsl_zd11_double_64
-#define GLS_MC13ED GALAHAD_MC13ED_64
-#define GLS_MC21BD GALAHAD_MC21BD_64
 #else
 #define hsl_ma48_precision_ciface gal_hsl_ma48_double_ciface
 #define hsl_ma57_precision_ciface gal_hsl_ma57_double_ciface
@@ -2065,8 +2057,6 @@
 #define hsl_of01_precision gal_hsl_of01_double
 #define hsl_zb01_precision gal_hsl_zb01_double
 #define hsl_zd11_precision gal_hsl_zd11_double
-#define GLS_MC13ED GALAHAD_MC13ED
-#define GLS_MC21BD GALAHAD_MC21BD
 #endif
 #endif
 #else
@@ -2112,8 +2102,6 @@
 #define hsl_of01_precision hsl_of01_single_64
 #define hsl_zb01_precision hsl_zb01_single_64
 #define hsl_zd11_precision hsl_zd11_single_64
-#define GLS_MC13ED MC13E_64
-#define GLS_MC21BD MC21B_64
 #define hsl_ma48_single_ciface hsl_ma48_single_64_ciface
 #define hsl_ma57_single_ciface hsl_ma57_single_64_ciface
 #define hsl_ma77_single_ciface hsl_ma77_single_64_ciface
@@ -2179,8 +2167,6 @@
 #define hsl_of01_precision hsl_of01_single
 #define hsl_zb01_precision hsl_zb01_single
 #define hsl_zd11_precision hsl_zd11_single
-#define GLS_MC13ED MC13E
-#define GLS_MC21BD MC21B
 #endif
 #else
 #ifdef INTEGER_64
@@ -2216,8 +2202,6 @@
 #define hsl_of01_precision hsl_of01_double_64
 #define hsl_zb01_precision hsl_zb01_double_64
 #define hsl_zd11_precision hsl_zd11_double_64
-#define GLS_MC13ED MC13ED_64
-#define GLS_MC21BD MC21BD_64
 #define hsl_ma48_double_ciface hsl_ma48_double_64_ciface
 #define hsl_ma57_double_ciface hsl_ma57_double_64_ciface
 #define hsl_ma77_double_ciface hsl_ma77_double_64_ciface
@@ -2283,8 +2267,6 @@
 #define hsl_of01_precision hsl_of01_double
 #define hsl_zb01_precision hsl_zb01_double
 #define hsl_zd11_precision hsl_zd11_double
-#define GLS_MC13ED MC13ED
-#define GLS_MC21BD MC21BD
 #endif
 #endif
 #endif

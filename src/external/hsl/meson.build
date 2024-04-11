@@ -1,9 +1,15 @@
+if libmetis.found()
+  libgalahad_src += files('hsl_metis/hsl_metis.f90')
+  libgalahad_cc_src += files('hsl_metis/hsl_metis5_adapter.c')
+else
+  libgalahad_src += files('hsl_metis/dummy_metis.f90')
+endif
+
 if not libhsl.found()
     libgalahad_cc_src += files('hsl_metis/hsl_metis5_adapter.c')
 
     libgalahad_src += files('hsl_kinds/hsl_kinds.f90',
                             'hsl_ad02/hsl_ad02r.f90',
-                            'hsl_metis/hsl_metis.f90',
                             'hsl_kb22/hsl_kb22l.f90',
                             'hsl_ma48/hsl_ma48r.f90',
                             'hsl_ma54/hsl_ma54r.f90',

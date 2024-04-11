@@ -253,7 +253,6 @@ if host_machine.system() != 'linux'
 endif
 
 extra_args_single = ['-DSINGLE']
-#extra_args_double = ['-DDOUBLE']
 extra_args_double = []
 
 if not libblas.found()
@@ -297,6 +296,10 @@ endif
 if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'
+endif
+if not libmetis_version == '4'
+  extra_args_single += '-DMETIS4'
+  extra_args_double += '-DMETIS4'
 endif
 
 # Compile GALAHAD with 64-bit integer
@@ -423,7 +426,6 @@ subdir('src/uls')
 subdir('src/userdata')
 subdir('src/warm')
 subdir('src/wcp')
-# subdir('src/zd11')
 
 # Libraries
 if build_single
