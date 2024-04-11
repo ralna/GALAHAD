@@ -608,9 +608,9 @@ make_ssids_dum:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
 
 make_zd11:
-	( cd $(GALAHAD)/src/zd11 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+	( cd $(GALAHAD)/src/external/hsl ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hsl_zd11_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/hsl )
 
 #  external packages
 
@@ -1239,9 +1239,9 @@ make_all_ssids_dum:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
 
 make_all_zd11:
-	( cd $(GALAHAD)/src/zd11 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+	( cd $(GALAHAD)/src/external/hsl ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hsl_zd11_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/hsl )
 
 #  lancelot packages
 
@@ -1851,11 +1851,6 @@ make_ciface_ssids_dum:
 	( cd $(GALAHAD)/src/dum ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
-
-make_ciface_zd11:
-	( cd $(GALAHAD)/src/zd11 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
 #  external packages
 
@@ -2508,11 +2503,6 @@ make_pyiface_ssids_dum:
 	( cd $(GALAHAD)/src/dum ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
-
-make_pyiface_zd11:
-	( cd $(GALAHAD)/src/zd11 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
 #  external packages
 

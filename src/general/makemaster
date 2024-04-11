@@ -125,9 +125,9 @@ norms_silent:
 #  zd11 package
 
 zd11_silent:
-	( cd $(GALAHAD)/src/zd11 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+	( cd $(GALAHAD)/src/external/hsl ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hsl_zd11_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/hsl )
 
 #  smt package
 

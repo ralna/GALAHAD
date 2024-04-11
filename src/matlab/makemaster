@@ -258,8 +258,9 @@ allgo_double: basic_double bgo dgo ugo
 #  basic packages
 
 smt:
-	( cd ../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../zd11 )
+	( cd $(GALAHAD)/src/external/hsl ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hsl_zd11_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/hsl )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             smt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 basic_single:

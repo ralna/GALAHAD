@@ -36,15 +36,15 @@
 
 # -------------------------- HSL Software -----------------------------------
 
-#  HSL software is not part of the GALAHAD distribution, but we thoroughly 
-#  recommend its use if at all possible, as it considerably improves 
-#  performance - if not, dummy, non-funtional, replacements, that are 
+#  HSL software is not part of the GALAHAD distribution, but we thoroughly
+#  recommend its use if at all possible, as it considerably improves
+#  performance - if not, dummy, non-funtional, replacements, that are
 #  included as part of GALAHAD, will be used instead.
 
 #  HSL is available in two forms:
 
-#  (1) The HSL subset - this is a fully-functional version that may be 
-#      DOWNLOADED WITHOUT CHARGE FOR PERSONAL USE by any academic with a 
+#  (1) The HSL subset - this is a fully-functional version that may be
+#      DOWNLOADED WITHOUT CHARGE FOR PERSONAL USE by any academic with a
 #      recognised academic email address. See
 
 #        http://www.hsl.rl.ac.uk/download/hsl-galahad/latest
@@ -58,15 +58,15 @@
 
 #        http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
 
-#      The archive is normally available immediately. 
+#      The archive is normally available immediately.
 
 #  The archive codes are part of the HSL subset, so option (2) is not
 #  needed if option (1) is possible.
 
-#  Once the tar.gz/gzip file been obtained, it should be uncompressed in 
+#  Once the tar.gz/gzip file been obtained, it should be uncompressed in
 #  a convenient location - typically, we suggest that directory "below"
-#  the GALAHAD distribution, $GALAHAD/../ is suitable. Once this has 
-#  been done, set the variables  HSLSUBSET and HSLARCHIVESUBSET below 
+#  the GALAHAD distribution, $GALAHAD/../ is suitable. Once this has
+#  been done, set the variables  HSLSUBSET and HSLARCHIVESUBSET below
 #  to point to the appropriate subdirectories created during the uncompression.
 #  The commented versions below are appropriate if the HSL files are
 #  uncompressed at the same level in your filesystem as you put GALAHAD.
@@ -74,11 +74,11 @@
 # -------------------- HSLSUBSET environment variables ----------------------
 
 #  HSLSUBSET is the source directory for the HSL SUBSET packages. If the
-#  subset is available, set HSLSUBSET to its directory; if not, set 
+#  subset is available, set HSLSUBSET to its directory; if not, set
 #  HSLSUBSET to $(GALAHAD)/src/external/hsl which contains dummy versions
 
 HSLSUBSET = $(GALAHAD)/src/external/hsl
-HSLSUBSET = $(GALAHAD)/../hsl_subset/src
+#HSLSUBSET = $(GALAHAD)/../hsl_subset/src
 
 #  HSLSUBSET is the source directory for the HSL Archive SUBSET packages.
 #  If the actual HSL SUBSET files have been downloaded, these will
@@ -110,4 +110,3 @@ endif
 MKLPARDISO = $(GALAHAD)/src/dum
 #MKLPARDISO = /opt/intel/mkl/include
 #MKLPARDISO = /opt/intel/oneapi/mkl/latest/include
-
