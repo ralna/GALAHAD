@@ -44,7 +44,7 @@ To force Meson to not use a dependency compiled with 32-bit integers, you can us
 where `libdep` is an option described below to provide the name of the library.
 
 ```shell
-meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true -Dlibblas= -Dliblapack= -Dlibmetis=
+meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true -Dlibblas= -Dliblapack=
 ```
 
 For instance, GALAHAD is compiled without METIS and our own version of BLAS and LAPACK.
@@ -76,7 +76,6 @@ Currently supported options with their default value:
 * `-Dssids=true`: build ssids;
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;
-* `-Dlibmetis=metis`: METIS library against which to link;
 * `-Dlibhsl=hsl`: HSL library against which to link;
 * `-Dlibcutest=cutest`: HSL library against which to link;
 * `-Dlibwsmp=wsmp`: WSMP library against which to link;
@@ -90,7 +89,6 @@ Currently supported options with their default value:
 * `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
-* `-Dlibmetis_path=[]`: additional directories to search for the METIS library;
 * `-Dlibhsl_path=[]`: additional directories to search for the HSL library;
 * `-Dlibcutest_path=[]`: additional directories to search for the CUTEST library;
 * `-Dlibwsmp_path=[]`: additional directories to search for the WSMP library;
@@ -102,7 +100,6 @@ Currently supported options with their default value:
 * `-Dlibhwloc_path=[]`: Additional directories to search for the HWLOC library;
 * `-Dlibhwloc_include=[]`: Additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
-* `-Dlibmetis_version=5`: version of the METIS library;
 * `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer.
 
 Note that the Intel MKL Pardiso linear solver is only available when GALAHAD

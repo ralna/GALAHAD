@@ -1,10 +1,10 @@
 #ifdef INTEGER_64
-#define hsl_metis hsl_metis_64
-#define hsl_metis_setup metis_setup_64
-#define hsl_metis5_adapter metis5_adapter_64
-#define METIS_NodeND METIS_NodeND_64
-#define METIS_Free METIS_Free_64
-#define METIS_SetDefaultOptions METIS_SetDefaultOptions_64
+#define hsl_metis galahad_metis_64
+#else
+#define hsl_metis galahad_metis
+#endif
+
+#ifdef INTEGER_64
 #ifdef DUMMY_HSL
 #define HSL_KINDS gal_hsl_kinds_64
 #define HSL_KINDS_single gal_hsl_kinds_single_64
@@ -22,7 +22,7 @@
 #else
 #define HSL_KINDS hsl_kinds_64
 #define HSL_KINDS_single hsl_kinds_single_64
-#define HSL_KINDS_double hsl_kinds_double_64
+#define HSL_KINDS_double hsl_kinds_double_64_metis
 #define hsl_kinds hsl_kinds_64
 #define hsl_kinds_single hsl_kinds_single_64
 #define hsl_kinds_double hsl_kinds_double_64
@@ -413,7 +413,7 @@
 #define hsl_mi28_real gal_hsl_mi28_single
 #define hsl_mi28_real_ciface gal_hsl_mi28_single_ciface
 #define hsl_mi32_real gal_hsl_mi32_single
-#define hsl_mi35_real hsl_mi35_single
+#define hsl_mi35_real gal_hsl_mi35_single
 #define hsl_of01_real gal_hsl_of01_single
 #define hsl_zb01_real gal_hsl_zb01_single
 #define hsl_zd11_real gal_hsl_zd11_single

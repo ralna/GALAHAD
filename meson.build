@@ -1,7 +1,7 @@
 project(
   'GALAHAD',
   'c', 'cpp', 'fortran',
-  version: '4.2.0',
+  version: '4.3.0',
   license: 'BSD-3',
   meson_version: '>= 0.63.0',
   default_options: [
@@ -84,7 +84,6 @@ build_ssids = get_option('ssids')
 
 libblas_name = get_option('libblas')
 liblapack_name = get_option('liblapack')
-libmetis_name = get_option('libmetis')
 libhsl_name = get_option('libhsl')
 libwsmp_name = get_option('libwsmp')
 libpardiso_name = get_option('libpardiso')
@@ -100,7 +99,6 @@ libhwloc_name = get_option('libhwloc')
 libmumps_path = get_option('libmumps_path')
 libblas_path = get_option('libblas_path')
 liblapack_path = get_option('liblapack_path')
-libmetis_path = get_option('libmetis_path')
 libhsl_path = get_option('libhsl_path')
 libwsmp_path = get_option('libwsmp_path')
 libpardiso_path = get_option('libpardiso_path')
@@ -111,8 +109,6 @@ libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
 libhwloc_path = get_option('libhwloc_path')
 
-libmetis_version = get_option('libmetis_version')
-
 libhwloc_include = get_option('libhwloc_include')
 libcutest_single_modules = get_option('libcutest_single_modules')
 libcutest_double_modules = get_option('libcutest_double_modules')
@@ -121,7 +117,6 @@ libhsl_modules = get_option('libhsl_modules')
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
 liblapack = fc.find_library(liblapack_name, dirs : liblapack_path, required : false)
-libmetis = fc.find_library(libmetis_name, dirs : libmetis_path, required : false)
 libhsl = fc.find_library(libhsl_name, dirs : libhsl_path, required : false)
 libcutest_single = fc.find_library(libcutest_single_name, dirs : libcutest_single_path, required : false)
 libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_double_path, required : false)
@@ -165,8 +160,8 @@ endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]
-libgalahad_deps = [libblas, liblapack, libmetis, libhsl,
-                   libwsmp, libpardiso, libspmf, libpastixf,
+libgalahad_deps = [libblas, liblapack, libhsl, libwsmp,
+                   libpardiso, libspmf, libpastixf,
                    libampl, libmpi, libhwloc]
 
 # Fortran files *.F90 or *.f90
@@ -296,10 +291,6 @@ endif
 if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'
-endif
-if libmetis_version == '4'
-  extra_args_single += '-DMETIS4'
-  extra_args_double += '-DMETIS4'
 endif
 
 # Compile GALAHAD with 64-bit integer
