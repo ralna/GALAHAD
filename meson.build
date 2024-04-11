@@ -297,7 +297,7 @@ if not libhsl.found()
   extra_args_single += '-DDUMMY_HSL'
   extra_args_double += '-DDUMMY_HSL'
 endif
-if not libmetis_version == '4'
+if libmetis_version == '4'
   extra_args_single += '-DMETIS4'
   extra_args_double += '-DMETIS4'
 endif
