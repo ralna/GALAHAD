@@ -8,8 +8,8 @@
 !  Copyright reserved
 !  April 10th 2006
 
-      SUBROUTINE MA33AR( n, ICN, A, licn, LENR, LENRL, IDISP,
-     *                   IP, IQ, IRN, lirn, LENC, IFIRST, LASTR,
+      SUBROUTINE MA33AR( n, ICN, A, licn, LENR, LENRL, 
+     *                   IDISP, IP, IQ, IRN, lirn, LENC, IFIRST, LASTR,
      *                   NEXTR, LASTC, NEXTC, IPTR, IPC, u, iflag,
      *                   ICNTL, CNTL, INFO, RINFO )
 
@@ -66,8 +66,8 @@
 
       END SUBROUTINE MA33AR
 
-      SUBROUTINE MA33CR( n, ICN, A, licn, LENR, LENRL, LENOFF,
-     *                   IDISP, IP, IQ, X, W, mtype, RINFO )
+      SUBROUTINE MA33CR( n, ICN, A, licn, LENR, LENRL,
+     *                   LENOFF, IDISP, IP, IQ, X, W, mtype, RINFO )
 
       USE HSL_KINDS_real, ONLY: ip_, rp_
 
