@@ -8,8 +8,8 @@
 !  Copyright reserved
 !  February 13th 1995
 
-      SUBROUTINE MA27AR( n, nz, IRN, ICN, IW, liw, IKEEP, IW1,
-     *                   nsteps, iflag, ICNTL, CNTL, INFO, ops )
+      SUBROUTINE MA27AR( n, nz, IRN, ICN, IW, liw, IKEEP,
+     *                   IW1, nsteps, iflag, ICNTL, CNTL, INFO, ops )
 
       USE HSL_KINDS_real, ONLY: ip_, rp_
 
@@ -53,8 +53,8 @@
 
       END SUBROUTINE MA27AR
 
-      SUBROUTINE MA27BR( n, nz, IRN, ICN, A, la, IW, liw, IKEEP,
-     *                   nsteps, maxfrt, IW1, ICNTL, CNTL, INFO )
+      SUBROUTINE MA27BR( n, nz, IRN, ICN, A, la, IW, liw,
+     *                   IKEEP, nsteps, maxfrt, IW1, ICNTL, CNTL, INFO )
 
       USE HSL_KINDS_real, ONLY: ip_, rp_
 
@@ -97,8 +97,8 @@
 
       END SUBROUTINE MA27BR
 
-      SUBROUTINE MA27CR( n, A, la, IW, liw, W, maxfrt, RHS, IW1,
-     *                   nsteps, ICNTL, INFO )
+      SUBROUTINE MA27CR( n, A, la, IW, liw, W, maxfrt, RHS, 
+     *                   IW1, nsteps, ICNTL, INFO )
 
       USE HSL_KINDS_real, ONLY: ip_, rp_
 
@@ -174,8 +174,8 @@
 
       END SUBROUTINE MA27IR
 
-      SUBROUTINE MA27QR( n, A, la, IW, liw, W, maxfnt, RHS, IW2,
-     *                   nblk, latop, ICNTL )
+      SUBROUTINE MA27QR( n, A, la, IW, liw, W, maxfnt, RHS,
+     *                   IW2, nblk, latop, ICNTL )
 
       USE HSL_KINDS_real, ONLY: ip_, rp_
 
