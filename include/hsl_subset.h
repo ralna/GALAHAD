@@ -13,8 +13,6 @@
 #define hsl_of01_integer gal_hsl_of01_integer_64
 #define HSL_OF01_integer gal_hsl_of01_integer_64
 #define hsl_zb01_integer gal_hsl_zb01_integer_64
-#define KB07AI GALAHAD_KB07AI_64
-#define kb07ai galahad_kb07ai_64
 #define HSL_METIS hsl_metis_64
 #define hsl_metis hsl_metis_64
 #define hsl_metis_setup hsl_metis_setup_64
@@ -36,8 +34,6 @@
 #define hsl_of01_integer hsl_of01_integer_64
 #define HSL_OF01_integer hsl_of01_integer_64
 #define hsl_zb01_integer hsl_zb01_integer_64
-#define KB07AI KB07AI_64
-#define kb07ai kb07ai_64
 #define HSL_METIS hsl_metis_64
 #define hsl_metis hsl_metis_64
 #define hsl_metis_setup hsl_metis_setup_64
@@ -61,8 +57,6 @@
 #define hsl_of01_integer gal_hsl_of01_integer
 #define HSL_OF01_integer gal_hsl_of01_integer
 #define hsl_zb01_integer gal_hsl_zb01_integer
-#define KB07AI GALAHAD_KB07AI
-#define kb07ai galahad_kb07ai
 #define METIS_NodeND GALAHAD_METIS_NodeND
 #define METIS_Free GALAHAD_METIS_Free
 #define METIS_SetDefaultOptions GALAHAD_METIS_SetDefaultOptions
@@ -645,7 +639,9 @@
 #endif
 
 #ifdef INTEGER_64
+#ifdef DUMMY_HSL
 #define KB07AI GALAHAD_KB07AI_64
+#define kb07ai galahad_kb07ai_64
 #define KB21AI GALAHAD_KB21AI_64
 #define KB21BI GALAHAD_KB21BI_64
 #define KB21CI GALAHAD_KB21CI_64
@@ -654,10 +650,9 @@
 #define KB21FI GALAHAD_KB21FI_64
 #define KB21GI GALAHAD_KB21GI_64
 #define KB21HI GALAHAD_KB21HI_64
-#define kb07ai galahad_kb07ai_64
-#ifdef DUMMY_HSL
 #else
 #define KB07AI KB07AI_64
+#define kb07ai kb07ai_64
 #define KB21AI KB21AI_64
 #define KB21BI KB21BI_64
 #define KB21CI KB21CI_64
@@ -666,7 +661,19 @@
 #define KB21FI KB21FI_64
 #define KB21GI KB21GI_64
 #define KB21HI KB21HI_64
-#define kb07ai kb07ai_64
+#endif
+#else
+#ifdef DUMMY_HSL
+#define KB07AI GALAHAD_KB07AI
+#define kb07ai galahad_kb07ai
+#define KB21AI GALAHAD_KB21AI
+#define KB21BI GALAHAD_KB21BI
+#define KB21CI GALAHAD_KB21CI
+#define KB21DI GALAHAD_KB21DI
+#define KB21EI GALAHAD_KB21EI
+#define KB21FI GALAHAD_KB21FI
+#define KB21GI GALAHAD_KB21GI
+#define KB21HI GALAHAD_KB21HI
 #endif
 #endif
 

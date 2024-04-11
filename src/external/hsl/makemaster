@@ -1,16 +1,16 @@
 #  Main body of the installation makefile for the HSL subset packages
 
-#  The HSL subset comprises packages that are used optionally by 
+#  The HSL subset comprises packages that are used optionally by
 #  a variey of optimization solvers/libraries such as IPOPT and GALAHAD.
 #  Subset codes are templated, via C preprocessing commands, to support
 #  multiple real, integer and logical types. The subset provides a
-#  variety of linear-equation and linear-programming solvers, matrix 
+#  variety of linear-equation and linear-programming solvers, matrix
 #  manipulation algorithms, and code automatic-differentiation utilities.
 #  Test programs are provided for each package, and these use additional
 #  HSL codes
 
-#  The packages were developed by members of the Computational Mathematics 
-#  Group at the STFC-Rutherford Appleton Laboratory in the UK, and are 
+#  The packages were developed by members of the Computational Mathematics
+#  Group at the STFC-Rutherford Appleton Laboratory in the UK, and are
 #  subject to licencing conditions. See the LICENCE file (LICENCE.archive
 #  for the HSL Archive subset)  included as part of the distributed software.
 #  as part of the distributed software.
@@ -604,6 +604,16 @@ hsl_mi35_double_64: kinds $(LHD64)(hsl_mc34d_64.o) \
                     $(LHD64)(hsl_zb01i_64.o) $(LHD64)(hsl_mc68i_64.o) \
                     $(LHD64)(hsl_mc69d_64.o) $(LHD64)(mc64d_64.o) \
                     $(LHD64)(hsl_mc64d_64.o) $(LHD64)(hsl_mi35d_64.o)
+
+#  hsl_zd11
+
+hsl_zd11: hsl_zd11_$(PRECIS)
+	@printf ' %-21s\n' "HSL ZD11 routines ($(PRECIS) $(SUCC)"
+hsl_zd11_silent: hsl_zd11_$(PRECIS)
+hsl_zd11_single: kinds $(LHS)(hsl_zd11s.o)
+hsl_zd11_double: kinds $(LHD)(hsl_zd11d.o)
+hsl_zd11_single_64: kinds $(LHS64)(hsl_zd11s_64.o)
+hsl_zd11_double_64: kinds $(LHD64)(hsl_zd11d_64.o)
 
 #  metis
 
@@ -3142,7 +3152,6 @@ cleanallc:
 	$(RM) $(OBJ)/libhsl_c.a $(MOD)/*ciface.mod
 	@printf '[ OK ]\n'
 
-names: 
+names:
 	@echo "HSLSUBSET: $(HSLSUBSET)"
 	@echo "HSLARCHIVESUBSET: $(HSLARCHIVESUBSET)"
-
