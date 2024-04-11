@@ -6,6 +6,7 @@
 !
 
 #ifdef INTEGER_64
+#define galahad_metis galahad_metis_64
 #define spral_metis_wrapper spral_metis_wrapper_64
 #define spral_kinds spral_kinds_64
 #endif
