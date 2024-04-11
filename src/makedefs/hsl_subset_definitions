@@ -1,0 +1,165 @@
+#  Standard HSL subset makefile definitions
+
+#  Nick Gould, STFC-RAL
+#  This version: 2024-03-17
+
+SHELL = /bin/$(BINSHELL)
+
+ifeq "$(PRECIS)" "single_64"
+  DPREC = -DSINGLE -DINTEGER_64
+  HSL_64 = _64
+  HSL_PRECIS = s_64
+  HSL_IPRECIS = i_64
+  HSL_LPRECIS = l_64
+else ifeq "$(PRECIS)" "double_64"
+  DPREC = -DINTEGER_64
+  HSL_64 = _64
+  HSL_PRECIS = d_64
+  HSL_IPRECIS = i_64
+  HSL_LPRECIS = l_64
+else ifeq "$(PRECIS)" "single"
+  DPREC = -DSINGLE
+  HSL_64 =
+  HSL_PRECIS = s
+  HSL_IPRECIS = i
+  HSL_LPRECIS = l
+else
+  DPREC =
+  HSL_64 =
+  HSL_PRECIS = d
+  HSL_IPRECIS = i
+  HSL_LPRECIS = l
+endif
+
+ifeq "$(BLASTYPE)" "reference"
+  SUFF64 = -DNO_SYMBOL_INTEGER_64
+else ifeq "$(BLASTYPE)" "galahad"
+  SUFF64 =
+else ifeq "$(BLASTYPE)" "openblas"
+  SUFF64 = -DNO_UNDERSCORE_INTEGER_64
+else ifeq "$(BLASTYPE)" "mkl"
+  SUFF64 = -DNO_UNDERSCORE_INTEGER_64
+else ifeq "$(BLASTYPE)" "apple"
+  SUFF64 = -DDOUBLE_UNDERSCORE_INTEGER_64
+endif
+
+ifeq "$(METISVERSION)" "4"
+  USEMETIS = -DMETIS4
+else ifeq "$(METISVERSION)" "51"
+  USEMETIS = -DMETIS51
+else
+  USEMETIS =
+endif
+
+CPPDEFINES = $(DPREC) $(SUFF64) $(USEMETIS)
+
+#  source files for subset and archive subset
+
+#HSLSRC = $(HSLSUBSET)/src
+#HSLARCSRC = $(HSLARCHIVESUBSET)/src
+HSLSRC = $(HSLSUBSET)
+HSLARCSRC = $(HSLARCHIVESUBSET)
+
+#  compiler flags
+
+FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+             $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+               $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+               $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGS77 = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+             $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+               $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGS95  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F95) $(USUAL) \
+               $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGS95S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F95) $(SPECIAL) \
+               $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGS95N = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F95) \
+               $(CPPDEFINES) -I $(GALAHAD)/include
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+               $(CPPDEFINES) -I $(GALAHAD)/include $(OPENMP)
+CFLAGS  = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG) \
+            $(CPPDEFINES) -I $(GALAHAD)/include -I ./include
+CFLAGSN = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG) \
+            $(CPPDEFINES) -I $(GALAHAD)/include
+
+#  libraries used when linking for tests
+
+ifeq "$(HSL_64)" "_64"
+  LIBS = -L$(OBJ) $(HSL) $(METIS64) $(LAPACK64) $(BLAS64)
+else
+  LIBS = -L$(OBJ) $(HSL) $(METIS) $(LAPACK) $(BLAS)
+endif
+CLIBS = $(HSL) $(HSL_C) $(LIBS)
+
+#  linking and run flags
+
+RUNFFLAGS =    $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LH  = $(OBJ)/libhsl.a
+LHS = $(OBJS)/libhsl.a
+LHD = $(OBJD)/libhsl.a
+LHS64 = $(OBJS64)/libhsl.a
+LHD64 = $(OBJD64)/libhsl.a
+
+LHC  = $(OBJ)/libhsl_c.a
+LHCS = $(OBJS)/libhsl_c.a
+LHCD = $(OBJD)/libhsl_c.a
+LHCS64 = $(OBJS64)/libhsl_c.a
+LHCD64 = $(OBJD64)/libhsl_c.a
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+LGS64 = $(OBJS64)/libgalahad.a
+LGD64 = $(OBJD64)/libgalahad.a
+
+CLG  = $(OBJ)/libgalahad_c.a
+CLGS = $(OBJS)/libgalahad_c.a
+CLGD = $(OBJD)/libgalahad_c.a
+CLGS64 = $(OBJS64)/libgalahad_c.a
+CLGD64 = $(OBJD64)/libgalahad_c.a
+
+MSTATIC = libmetis_nodend.a
+MSTATIC64 = libmetis64_nodend.a
+LM  = $(OBJ)/$(MSTATIC)
+LM64 = $(OBJ)/$(MSTATIC64)
+LMS = $(OBJS)/$(MSTATIC)
+LMD = $(OBJD)/$(MSTATIC)
+LMS64 = $(OBJS64)/$(MSTATIC64)
+LMD64 = $(OBJD64)/$(MSTATIC64)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(LG) $(PRECIS)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG) $(PRECIS)
+
+HARR = $(AR) $(ARREPFLAGS) $(LH)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LH)
+
+HCARR = $(AR) $(ARREPFLAGS) $(LHC)
+HCRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LHC)
+
+MARR = $(AR) $(ARREPFLAGS)
+
+#  strings
+
+SUCC = precision version) compiled successfully
+
+#  remove out-of-core direct-access files
+
+RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
+              work_indefinite_ooc work_real_ooc
+
+RMOOCC = $(RM) factor_integer factor_real work_real temp1
