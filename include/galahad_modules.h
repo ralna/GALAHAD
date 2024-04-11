@@ -20,6 +20,7 @@
 #define spmf_enums spmf_enums_64
 #define pastixf_interfaces pastixf_interfaces_64
 #define pastixf_enums pastixf_enums_64
+#define galahad_metis galahad_metis_64
 #endif
 
 #ifdef SINGLE
