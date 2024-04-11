@@ -48,11 +48,6 @@ option('liblapack',
        value : 'openblas',
        description : 'LAPACK library against which to link')
 
-option('libmetis',
-       type : 'string',
-       value : 'metis',
-       description : 'METIS library against which to link')
-
 option('libhsl',
        type : 'string',
        value : 'hsl',
@@ -117,11 +112,6 @@ option('liblapack_path',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the LAPACK library')
-
-option('libmetis_path',
-       type : 'array',
-       value : [],
-       description : 'Additional directories to search for the METIS library')
 
 option('libhsl_path',
        type : 'array',
@@ -192,12 +182,6 @@ option('libcutest_double_modules',
        type : 'array',
        value : [],
        description : 'Additional directories to search for the CUTEST modules in double precision')
-
-option('libmetis_version',
-       type : 'combo',
-       choices : ['4', '5'],
-       value : '5',
-       description : 'Version of the METIS library')
 
 option('galahad_int64',
        type : 'boolean',
