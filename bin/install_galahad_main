@@ -6,7 +6,7 @@
 # syntax: install_galahad_main
 
 # N. Gould, D. Orban & Ph. Toint
-# ( Last modified on 26 October 2022 at 09:40 GMT )
+# ( Last modified on 12 April 2024 at 08:20 GMT )
 
 #  function to create missing symblic links
 
@@ -511,8 +511,14 @@ fi
 if [[ "$SPRAL" == "" ]]; then
   SPRAL="-lgalahad_spral"
 fi
-if [[ "$METIS4" == "" ]]; then
-  METIS4="-lgalahad_metis4"
+if [[ "$METISVERSION" == "" ]]; then
+  METISVERSION="52"
+fi
+if [[ "$METIS" == "" ]]; then
+  METIS="-lmetis_nodend"
+fi
+if [[ "$METIS64" == "" ]]; then
+  METIS64="-lmetis64_nodend"
 fi
 if [[ "$PARDISO" == "" ]]; then
   PARDISO="-lgalahad_pardiso"
@@ -564,9 +570,8 @@ echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
 echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
 echo 'HSL="'$HSL'"'                                                >> $SYSFILE
 echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
-echo 'METIS=-lgalahad_metis_dummy'                                 >> $SYSFILE
-#echo 'METIS4="'$METIS4'"'                                          >> $SYSFILE
-#echo 'METIS5="'$METIS5'"'                                          >> $SYSFILE
+echo 'METIS="'$METIS'"'                                            >> $SYSFILE
+echo 'METIS64="'$METIS64'"'                                        >> $SYSFILE
 echo 'PARMETIS="'$PARMETIS'"'                                      >> $SYSFILE
 echo 'SCOTCH="'$SCOTCH'"'                                          >> $SYSFILE
 echo 'PTSCOTCH="'$PTSCOTCH'"'                                      >> $SYSFILE
@@ -618,8 +623,10 @@ echo 'PRECIS = double'                                             >> $MAKEFILE
 echo 'OBJ = $(GALAHAD)/objects/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
 echo 'OBJS = $(GALAHAD)/objects/$(VERSION)/single'                 >> $MAKEFILE
 echo 'OBJD = $(GALAHAD)/objects/$(VERSION)/double'                 >> $MAKEFILE
+echo 'OBJQ = $(GALAHAD)/objects/$(VERSION)/quadruple'              >> $MAKEFILE
 echo 'OBJS64 = $(GALAHAD)/objects/$(VERSION)/single_64'            >> $MAKEFILE
 echo 'OBJD64 = $(GALAHAD)/objects/$(VERSION)/double_64'            >> $MAKEFILE
+echo 'OBJQ64 = $(GALAHAD)/objects/$(VERSION)/quadruple_64'         >> $MAKEFILE
 echo 'MOD = $(GALAHAD)/modules/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
 if (( $CUTEST_REQUIRED )) ; then
   echo 'CUTESTMOD = $(CUTEST)/modules/$(CUTESTVERSION)/$(PRECIS)'  >> $MAKEFILE
@@ -660,6 +667,7 @@ echo 'F95SUFFIX  = '$F95SUFFIX                                     >> $MAKEFILE
 echo 'TIMER = '$TIMER                                              >> $MAKEFILE
 echo 'NOT64 = '$NOT64                                              >> $MAKEFILE
 echo 'INTEGER = '$INTEGER                                          >> $MAKEFILE
+echo 'QUADREAL = '$QUADFLAG                                        >> $MAKEFILE
 echo 'PLPLOTUSED = '$PLPLOTUSED                                    >> $MAKEFILE
 echo 'IEEECK = '$IEEECK                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
@@ -719,11 +727,11 @@ echo '#  -- SPRAL --'                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- Metis --'                                              >> $MAKEFILE
+echo '#  -- Metis -- (METISVERSION = 4, 51 or 52, with default 52 files included)' >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo 'METIS = -lgalahad_metis_dummy'                               >> $MAKEFILE
-#echo 'METIS4 = '$METIS4                                            >> $MAKEFILE
-#echo 'METIS5 = '$METIS5                                            >> $MAKEFILE
+echo 'METISVERSION = '$METISVERSION                                >> $MAKEFILE
+echo 'METIS = '$METIS                                              >> $MAKEFILE
+echo 'METIS64 = '$METIS64                                          >> $MAKEFILE
 echo 'PARMETIS = '$PARMETIS                                        >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- Scotch --'                                             >> $MAKEFILE

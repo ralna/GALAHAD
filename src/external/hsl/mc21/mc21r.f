@@ -2,8 +2,17 @@ C  THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 09:00 GMT.
 
 #include "hsl_subset.h"
 
-      SUBROUTINE MC21AR( )
+      SUBROUTINE MC21AR(N,ICN,LICN,IP,LENR,IPERM,
+     +                  NUMNZ,IW)
+      USE HSL_KINDS, ONLY: ip_
+      INTEGER(ip_) LICN,N,NUMNZ
+      INTEGER(ip_) ICN(LICN),IP(N),IPERM(N),IW(N,4),LENR(N)
       END SUBROUTINE MC21AR
 
-      SUBROUTINE MC21BR( )
+      SUBROUTINE MC21BR(N,ICN,LICN,IP,LENR,IPERM,NUMNZ,
+     +                  PR,ARP,CV,OUT)
+      USE HSL_KINDS, ONLY: ip_
+      INTEGER(ip_) LICN,N,NUMNZ
+      INTEGER(ip_) ARP(N),CV(N),ICN(LICN),IP(N),IPERM(N),
+     +             LENR(N),OUT(N),PR(N)
       END SUBROUTINE MC21BR
