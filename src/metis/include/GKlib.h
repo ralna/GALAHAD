@@ -5,6 +5,7 @@
  *
  * $Id: GKlib.h 14866 2013-08-03 16:40:04Z karypis $
  *
+ * modified by Nick Gould for GALAHAD version 2024-04-12
  */
 
 #ifndef _GKLIB_H_
@@ -19,9 +20,7 @@
 #define __ICC__
 #endif
 
-
 #include "gk_arch.h" /*!< This should be here, prior to the includes */
-
 
 /*************************************************************************
 * Header file inclusion section
@@ -43,25 +42,11 @@
 #include <assert.h>
 #include <sys/stat.h>
 
-#if defined(__WITHPCRE__)
-  #include <pcreposix.h>
-#else
-  #if defined(USE_GKREGEX)
-    #include "gkregex.h"
-  #else
-    #include <regex.h>
-  #endif /* defined(USE_GKREGEX) */
-#endif /* defined(__WITHPCRE__) */
-
-
+#include "gkregex.h"
 
 #if defined(__OPENMP__) 
 #include <omp.h>
 #endif
-
-
-
-
 #include <gk_types.h>
 #include <gk_struct.h>
 #include <gk_externs.h>
@@ -78,7 +63,6 @@
 #include <gk_mkutils.h>
 
 #include <gk_proto.h>
-
 
 #endif  /* GKlib.h */
 

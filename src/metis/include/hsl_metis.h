@@ -5,6 +5,7 @@
 \author George
 \date   Started 8/9/02, currently Version 5.2.1.
 \version\verbatim $Id$\endverbatim
+ * modified by Nick Gould for GALAHAD version 2024-04-12
 */
 
 #ifndef _METIS_H_
