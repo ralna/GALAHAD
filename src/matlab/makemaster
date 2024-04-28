@@ -192,7 +192,7 @@ all_double: basic_double sils sls sbls bqp bqpb blls slls clls bllsb \
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single_64:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_single_64:
+all_doublee_64:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
 
 #broken lpb cqp llst qpc qp rqs trs
@@ -712,7 +712,7 @@ $(MLG)(galahad_matlab.o): galahad_matlab.F90
 
 #  transfer matrices from Matlab to fortran
 
-galahad_transfer_matlab.o: basic $(MLG)(galahad_transfer_matlab.o)
+galahad_transfer_matlab.o: basic_double $(MLG)(galahad_transfer_matlab.o)
 
 $(MLG)(galahad_transfer_matlab.o): galahad_transfer_matlab.F90
 	@printf ' %-9s %-15s\t' "Compiling" "galahad_transfer_matlab"

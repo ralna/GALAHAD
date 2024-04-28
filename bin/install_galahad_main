@@ -466,16 +466,16 @@ if [[ ! -e $OBJDIR ]]; then
     $MKDIR $OBJDIR/double $OBJDIR/single $OBJDIR/double_64 $OBJDIR/single_64
 else
     if [[ ! -e $OBJDIR/double ]]; then
-    $MKDIR $OBJDIR/double
+    $MKDIR -p $OBJDIR/double
     fi
     if [[ ! -e $OBJDIR/single ]]; then
-    $MKDIR $OBJDIR/single
+    $MKDIR -p $OBJDIR/single
     fi
     if [[ ! -e $OBJDIR/double_64 ]]; then
-    $MKDIR $OBJDIR/double_64
+    $MKDIR -p $OBJDIR/double_64
     fi
     if [[ ! -e $OBJDIR/single_64 ]]; then
-    $MKDIR $OBJDIR/single_64
+    $MKDIR -p $OBJDIR/single_64
     fi
 fi
 
@@ -484,16 +484,16 @@ if [[ ! -e $MODDIR ]]; then
     $MKDIR $MODDIR/double $MODDIR/single $OBJDIR/double_64 $OBJDIR/single_64
 else
     if [[ ! -e $MODDIR/double ]]; then
-    $MKDIR $MODDIR/double
+    $MKDIR -p $MODDIR/double
     fi
     if [[ ! -e $MODDIR/single ]]; then
-    $MKDIR $MODDIR/single
+    $MKDIR -p $MODDIR/single
     fi
     if [[ ! -e $OBJDIR/double_64 ]]; then
-    $MKDIR $OBJDIR/double_64
+    $MKDIR -p $OBJDIR/double_64
     fi
     if [[ ! -e $OBJDIR/single_64 ]]; then
-    $MKDIR $OBJDIR/single_64
+    $MKDIR -p $OBJDIR/single_64
     fi
 fi
 
