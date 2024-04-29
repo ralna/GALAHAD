@@ -18,7 +18,7 @@ task:
       echo "JULIA_GALAHAD_LIBRARY_PATH=/usr/local/lib" >> $CIRRUS_ENV
     else
       brew install python meson gcc openblas pipx
-      pipx install numpy
+      pip --break-system-packages install numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/opt/homebrew/lib" >> $CIRRUS_ENV
     fi
     echo "JULIA_PROJECT_SUBDIR=GALAHAD.jl" >> $CIRRUS_ENV
