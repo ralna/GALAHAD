@@ -184,6 +184,9 @@ jobs:
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
           fi
+          if [[ ( "${{matrix.os}}" == "windows-latest" ) && ( "${{matrix.compiler}}" == "gcc" ) ]]; then
+￼            FLDFLAGS="-lregex"
+          fi
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
           fi
@@ -199,6 +202,7 @@ jobs:
                                --prefix=$GITHUB_WORKSPACE/galahad \
                                -Dc_std=$CSTD \
                                -Dcpp_std=$CPPSTD \
+                               -Dfortran_link_args=$FLDFLAGS \
                                -Dexamples=true \
                                -Dtests=true \
                                -Dssids=$SSIDS \
