@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-13]
+        arch: ['x64']
         version: ['11']
         int: ['32', '64']
         include:
@@ -34,11 +35,11 @@ jobs:
             int: '64'
           - os: macos-13
             compiler: intel-classic
-            version: '2021.9'
+            version: '2021.10'
             int: '32'
           - os: macos-13
             compiler: intel-classic
-            version: '2021.9'
+            version: '2021.10'
             int: '64'
           - os: windows-latest
             compiler: intel
