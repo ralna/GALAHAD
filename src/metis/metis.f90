@@ -37,7 +37,14 @@
       END SUBROUTINE galahad_metis5_adapter
     END INTERFACE
     ! call MeTiS 5 to get ordering via C MeTiS 4 to 5 adapter
+!write(6,*) ' n ', n
+!write(6,*) ' iptr ', iptr
+!write(6,*) ' irn ', irn( : iptr( n + 1 ) - 1 )
+!write(6,*) ' metftn ', metftn
+!write(6,*) ' metopt ', metopt
     CALL galahad_metis5_adapter( n, iptr, irn, metftn, metopt, invprm, perm )
+!write(6,*) ' invprm ', invprm
+!write(6,*) ' perm ', perm
 #endif
   RETURN
   END SUBROUTINE galahad_metis

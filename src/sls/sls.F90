@@ -979,7 +979,7 @@
 
      INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
-     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 1, 2 /)
+     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 2, 1 /)
      INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
      TYPE ( mc68_control ) :: control_mc68
