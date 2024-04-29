@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-13]
         version: ['11']
         int: ['32', '64']
         include:
@@ -32,11 +32,11 @@ jobs:
             compiler: intel-classic
             version: '2021.10'
             int: '64'
-          - os: macos-latest
+          - os: macos-13
             compiler: intel-classic
             version: '2021.10'
             int: '32'
-          - os: macos-latest
+          - os: macos-13
             compiler: intel-classic
             version: '2021.10'
             int: '64'
@@ -86,7 +86,7 @@ jobs:
             echo "LIBDIR=lib" >> $GITHUB_ENV
             echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
           fi
-          if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+          if [[ "${{matrix.os}}" == "macos-13" ]]; then
             echo "LIBDIR=lib" >> $GITHUB_ENV
             echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
           fi
@@ -104,7 +104,7 @@ jobs:
           if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
             PLATFORM="x86_64-linux-gnu"
           fi
-          if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+          if [[ "${{matrix.os}}" == "macos-13" ]]; then
             PLATFORM="x86_64-apple-darwin"
           fi
           if [[ "${{matrix.os}}" == "windows-latest" ]]; then
@@ -126,7 +126,7 @@ jobs:
             echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
             echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
           fi
-          if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+          if [[ "${{matrix.os}}" == "macos-13" ]]; then
             echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
             echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
             echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
@@ -156,7 +156,7 @@ jobs:
 
       # Uncomment this section to obtain ssh access to VM
       # - name: Setup tmate session
-      #   if: matrix.os == 'macos-latest'
+      #   if: matrix.os == 'macos-13'
       #   uses: mxschmitt/action-tmate@v3
 
       - name: Setup GALAHAD
@@ -172,6 +172,10 @@ jobs:
           LAPACK_PATH=""
           PYTHON_INTERFACE="true"
           SHARED_STATIC="shared"
+          LD_CLASSIC=""
+          if [[ "${{matrix.os}}" == "macos-13" ]]; then
+            LD_CLASSIC="-Wl,-ld_classic"
+          fi
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" ]]; then
             CSTD="none"
             CPPSTD="none"
@@ -190,7 +194,7 @@ jobs:
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
           fi
-          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "macos-latest" ) ]]; then
+          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "macos-13" ) ]]; then
             PYTHON_INTERFACE="false"
           fi
           if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
@@ -210,7 +214,9 @@ jobs:
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
                                -Dlibblas=$BLAS \
-                               -Dliblapack=$LAPACK
+                               -Dliblapack=$LAPACK \
+                               -Dfortran_link_args=${LD_CLASSIC} \
+                               -Dc_link_args=${LD_CLASSIC}
 
       - name: Build GALAHAD
         shell: bash
@@ -233,7 +239,7 @@ jobs:
           path: builddir/meson-logs/install-log.txt
 
       - name: Test GALAHAD
-        if: (matrix.int != '64' || matrix.os != 'macos-latest')
+        if: (matrix.int != '64' || matrix.os != 'macos-13')
         shell: bash
         run: |
           meson test -C builddir
