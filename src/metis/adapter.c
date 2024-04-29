@@ -9,13 +9,13 @@
 #define METIS_SetDefaultOptions METIS_SetDefaultOptions_64
 #endif
 
-#include "metis.h" /* from MeTiS 5 */
+#include "galahad_metis.h" /* from MeTiS 5.2 */
 #include "stdio.h"
 
 /* name change to avoid any possible conflicts */
 
-void galahad_metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy, 
-                            idx_t* numflag, idx_t* options, idx_t* perm, 
+void galahad_metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
+                            idx_t* numflag, idx_t* options, idx_t* perm,
                             idx_t* iperm){
     idx_t options5[METIS_NOPTIONS];
 
@@ -79,5 +79,6 @@ void galahad_metis5_adapter(idx_t* nvtxs, idx_t* xadj, idx_t* adjncy,
     }
 
     /* Call MeTiS 5 to get ordering */
-    METIS_NodeND(nvtxs, xadj, adjncy, (void*)0, options5, perm, iperm);
+    /* METIS_NodeND(nvtxs, xadj, adjncy, (void*)0, options5, perm, iperm); */
+    METIS_NodeND(nvtxs, xadj, adjncy, NULL, options5, perm, iperm);
 }

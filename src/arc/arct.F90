@@ -64,7 +64,8 @@
      CALL ARC_initialize( data, control,inform ) ! Initialize control parameters
      CALL WHICH_sls( control )
      control%out = 0 ; control%error = 0
-!     control%print_level = 4
+!    control%out = 6 ; control%error = 6
+!    control%print_level = 4
 !     control%RQS_control%print_level = 4
 !     control%GLTR_control%print_level = 4
      inform%status = 1                            ! set for initial entry
