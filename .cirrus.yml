@@ -7,7 +7,7 @@ task:
         - JULIA_VERSION: 1
     - name: MacOS M1
       macos_instance:
-        image: ghcr.io/cirruslabs/macos-monterey-base:latest
+        image: ghcr.io/cirruslabs/macos-ventura-base:latest
       env:
         - JULIA_VERSION: 1
   dependencies_script: |
@@ -17,8 +17,7 @@ task:
       pip install numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/usr/local/lib" >> $CIRRUS_ENV
     else
-      brew install python meson gcc openblas
-      pip3 install numpy
+      brew install python meson gcc openblas numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/opt/homebrew/lib" >> $CIRRUS_ENV
     fi
     echo "JULIA_PROJECT_SUBDIR=GALAHAD.jl" >> $CIRRUS_ENV
@@ -29,7 +28,7 @@ task:
     if [ "$(uname -s)" = "FreeBSD" ]; then
       FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true -Dpythoniface=true
     else
-      FC=gfortran-12 CC=gcc-12 CXX=g++-12 meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true -Dpythoniface=true
+      FC=gfortran-13 CC=gcc-13 CXX=g++-13 meson setup builddir --buildtype=debug -Dexamples=true -Dtests=true -Dpythoniface=true -Dfortran_link_args=${LD_CLASSIC} -Dc_link_args=${LD_CLASSIC}
     fi
   build_script: |
     meson compile -C builddir

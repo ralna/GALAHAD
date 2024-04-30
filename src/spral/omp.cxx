@@ -8,8 +8,6 @@
  */
 #include "spral_omp.hxx"
 
-#include <cstdio>
-
 /* This file wraps the C interface for OpenMP in C++ for style/safety */
 namespace spral { namespace omp {
 
