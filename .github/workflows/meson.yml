@@ -41,7 +41,7 @@ jobs:
           #   compiler: intel-classic
           #   version: '2021.10'
           #   int: '64'
-          # - os: windows-latest
+          - os: windows-latest
             compiler: intel
             version: '2023.2'
             int: '32'
