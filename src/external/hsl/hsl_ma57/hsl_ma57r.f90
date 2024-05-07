@@ -437,7 +437,7 @@ contains
       sinfo%flag = GALAHAD_unavailable_option
    end subroutine ma57_get_factors
 
-   pure integer function ma57_get_n__(factors)
+   pure integer(ip_) function ma57_get_n__(factors)
       type(ma57_factors), intent(in) :: factors
       ma57_get_n__ = factors%n
    end function ma57_get_n__
