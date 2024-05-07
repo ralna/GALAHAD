@@ -22,7 +22,7 @@
 #else
 #define HSL_KINDS hsl_kinds_64
 #define HSL_KINDS_single hsl_kinds_single_64
-#define HSL_KINDS_double hsl_kinds_double_64_metis
+#define HSL_KINDS_double hsl_kinds_double_64
 #define hsl_kinds hsl_kinds_64
 #define hsl_kinds_single hsl_kinds_single_64
 #define hsl_kinds_double hsl_kinds_double_64

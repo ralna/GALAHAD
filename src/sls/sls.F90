@@ -1002,7 +1002,7 @@
 !  check to see if the MeTiS ordering packages is available
 
      CALL galahad_metis_setopt( ICNTL_metis )
-     CALL galahad_metis( n_dummy, PTR, ROW, 1, ICNTL_metis, INVP, PERM )
+     CALL galahad_metis( n_dummy, PTR, ROW, 1_ip_, ICNTL_metis, INVP, PERM )
      metis_available = PERM( 1 ) > 0
 !write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
 !write(6,*) ' solver ', TRIM( inform%solver )
