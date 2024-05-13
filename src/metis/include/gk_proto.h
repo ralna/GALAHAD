@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 /*-------------------------------------------------------------
- * blas.c 
+ * blas.c
  *-------------------------------------------------------------*/
 GK_MKBLAS_PROTO(gk_c,   char,     int)
 GK_MKBLAS_PROTO(gk_i,   int,      int)
@@ -37,8 +37,10 @@ GK_MKBLAS_PROTO(gk_idx, gk_idx_t, gk_idx_t)
  *-------------------------------------------------------------*/
 FILE *gk_fopen(char *, char *, const char *);
 void gk_fclose(FILE *);
+/*
 ssize_t gk_read(int fd, void *vbuf, size_t count);
 ssize_t gk_write(int fd, void *vbuf, size_t count);
+*/
 ssize_t gk_getline(char **lineptr, size_t *n, FILE *stream);
 char **gk_readfile(char *fname, size_t *r_nlines);
 int32_t *gk_i32readfile(char *fname, size_t *r_nlines);
@@ -66,7 +68,7 @@ size_t gk_dwritefilebin(char *fname, size_t n, double *a);
 int gk_fexists(char *);
 int gk_dexists(char *);
 ssize_t gk_getfsize(char *);
-void gk_getfilestats(char *fname, size_t *r_nlines, size_t *r_ntokens, 
+void gk_getfilestats(char *fname, size_t *r_nlines, size_t *r_ntokens,
           size_t *r_max_nlntokens, size_t *r_nbytes);
 char *gk_getbasename(char *path);
 char *gk_getextname(char *path);
@@ -171,8 +173,8 @@ char   *gk_strchr_replace(char *str, char *fromlist, char *tolist);
 int     gk_strstr_replace(char *str, char *pattern, char *replacement, char *options, char **new_str);
 char   *gk_strtprune(char *, char *);
 char   *gk_strhprune(char *, char *);
-char   *gk_strtoupper(char *); 
-char   *gk_strtolower(char *); 
+char   *gk_strtoupper(char *);
+char   *gk_strtolower(char *);
 char   *gk_strdup(char *orgstr);
 int     gk_strcasecmp(char *s1, char *s2);
 int     gk_strrcmp(char *s1, char *s2);
@@ -183,7 +185,7 @@ int     gk_GetStringID(gk_StringMap_t *strmap, char *key);
 
 
 /*-------------------------------------------------------------
- * sort.c 
+ * sort.c
  *-------------------------------------------------------------*/
 void gk_csorti(size_t, char *);
 void gk_csortd(size_t, char *);
@@ -233,7 +235,7 @@ int  gk_ifkvkselect(size_t, int, gk_fkv_t *);
 
 
 /*-------------------------------------------------------------
- * Priority queue 
+ * Priority queue
  *-------------------------------------------------------------*/
 GK_MKPQUEUE_PROTO(gk_ipq,   gk_ipq_t,   int,      gk_idx_t)
 GK_MKPQUEUE_PROTO(gk_i32pq, gk_i32pq_t, int32_t,  gk_idx_t)
@@ -256,7 +258,7 @@ int          HTable_GetNext(gk_HTable_t *htable, int key, int *val, int type);
 int          HTable_SearchAndDelete(gk_HTable_t *htable, int key);
 void         HTable_Destroy(gk_HTable_t *htable);
 int          HTable_HFunction(int nelements, int key);
- 
+
 
 /*-------------------------------------------------------------
  * Tokenizer routines
@@ -344,7 +346,7 @@ int gk_csr_FindConnectedComponents(gk_csr_t *mat, int32_t *cptr, int32_t *cind,
         int32_t *cids);
 gk_csr_t *gk_csr_MakeSymmetric(gk_csr_t *mat, int op);
 gk_csr_t *gk_csr_ReorderSymmetric(gk_csr_t *mat, int32_t *perm, int32_t *iperm);
-void gk_csr_ComputeBFSOrderingSymmetric(gk_csr_t *mat, int maxdegree, int v, 
+void gk_csr_ComputeBFSOrderingSymmetric(gk_csr_t *mat, int maxdegree, int v,
           int32_t **r_perm, int32_t **r_iperm);
 void gk_csr_ComputeBestFOrderingSymmetric(gk_csr_t *mat, int v, int type,
           int32_t **r_perm, int32_t **r_iperm);
@@ -390,7 +392,7 @@ gk_graph_t *gk_graph_Create();
 void gk_graph_Init(gk_graph_t *graph);
 void gk_graph_Free(gk_graph_t **graph);
 void gk_graph_FreeContents(gk_graph_t *graph);
-gk_graph_t *gk_graph_Read(char *filename, int format, int hasvals, 
+gk_graph_t *gk_graph_Read(char *filename, int format, int hasvals,
                  int numbering, int isfewgts, int isfvwgts, int isfvsizes);
 void gk_graph_Write(gk_graph_t *graph, char *filename, int format, int numbering);
 gk_graph_t *gk_graph_Dup(gk_graph_t *graph);
@@ -398,7 +400,7 @@ gk_graph_t *gk_graph_Transpose(gk_graph_t *graph);
 gk_graph_t *gk_graph_ExtractSubgraph(gk_graph_t *graph, int vstart, int nvtxs);
 gk_graph_t *gk_graph_Reorder(gk_graph_t *graph, int32_t *perm, int32_t *iperm);
 int gk_graph_FindComponents(gk_graph_t *graph, int32_t *cptr, int32_t *cind);
-void gk_graph_ComputeBFSOrdering(gk_graph_t *graph, int v, int32_t **r_perm, 
+void gk_graph_ComputeBFSOrdering(gk_graph_t *graph, int v, int32_t **r_perm,
          int32_t **r_iperm);
 void gk_graph_ComputeBestFOrdering0(gk_graph_t *graph, int v, int type,
               int32_t **r_perm, int32_t **r_iperm);
@@ -423,4 +425,3 @@ double gk_cacheGetHitRate(gk_cache_t *cache);
 
 
 #endif
-
