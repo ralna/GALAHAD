@@ -3,7 +3,7 @@
 \brief This file contains function prototypes
 
 \date   Started 3/27/2007
-\author George
+\author George, very slightly modified by Nick Gould, STFC-RAL, 2024-05-1, below
 \version\verbatim $Id: gk_proto.h 22010 2018-05-14 20:20:26Z karypis $ \endverbatim
 */
 
@@ -37,7 +37,7 @@ GK_MKBLAS_PROTO(gk_idx, gk_idx_t, gk_idx_t)
  *-------------------------------------------------------------*/
 FILE *gk_fopen(char *, char *, const char *);
 void gk_fclose(FILE *);
-/*
+/* unused
 ssize_t gk_read(int fd, void *vbuf, size_t count);
 ssize_t gk_write(int fd, void *vbuf, size_t count);
 */

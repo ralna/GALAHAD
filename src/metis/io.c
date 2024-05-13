@@ -5,7 +5,7 @@
 This file contains various functions that perform I/O.
 
 \date Started 4/10/95
-\author George
+\author George, very slightly modified by Nick Gould, STFC-RAL, 2024-05-1, below
 \version\verbatim $Id: io.c 18951 2015-08-08 20:10:46Z karypis $ \endverbatim
 */
 
@@ -54,7 +54,7 @@ void gk_fclose(FILE *fp)
     reached.
 */
 /*************************************************************************/
-/* not needed
+/* commented as not needed
 ssize_t gk_read(int fd, void *vbuf, size_t count)
 {
   char *buf = (char *)vbuf;
@@ -76,7 +76,7 @@ ssize_t gk_read(int fd, void *vbuf, size_t count)
     that all data is been written, by issueing multiple write requests.
 */
 /*************************************************************************/
-/* not needed
+/* comented as not needed
 ssize_t gk_write(int fd, void *vbuf, size_t count)
 {
   char *buf = (char *)vbuf;
