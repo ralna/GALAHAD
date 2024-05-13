@@ -18,6 +18,10 @@ This file contains various functions that perform I/O.
 
 #include <GKlib.h>
 
+#ifdef __MSC__
+#include <windows.h>
+#endif
+
 /*************************************************************************
 * This function opens a file
 **************************************************************************/
@@ -48,7 +52,7 @@ void gk_fclose(FILE *fp)
 
 
 /*************************************************************************/
-/*! This function is a wrapper around the read() function that ensures 
+/*! This function is a wrapper around the read() function that ensures
     that all data is been read, by issuing multiple read requests.
     The only time when not 'count' items are read is when the EOF has been
     reached.
@@ -71,7 +75,7 @@ ssize_t gk_read(int fd, void *vbuf, size_t count)
 
 
 /*************************************************************************/
-/*! This function is a wrapper around the write() function that ensures 
+/*! This function is a wrapper around the write() function that ensures
     that all data is been written, by issueing multiple write requests.
 */
 /*************************************************************************/
@@ -94,7 +98,7 @@ ssize_t gk_write(int fd, void *vbuf, size_t count)
 /*************************************************************************/
 /*! This function is the GKlib implementation of glibc's getline()
     function.
-    \returns -1 if the EOF has been reached, otherwise it returns the 
+    \returns -1 if the EOF has been reached, otherwise it returns the
              number of bytes read.
 */
 /*************************************************************************/
@@ -107,7 +111,7 @@ ssize_t gk_getline(char **lineptr, size_t *n, FILE *stream)
   int ch;
 
   if (feof(stream))
-    return -1;  
+    return -1;
 
   /* Initial memory allocation if *lineptr is NULL */
   if (*lineptr == NULL || *n == 0) {
@@ -121,11 +125,11 @@ ssize_t gk_getline(char **lineptr, size_t *n, FILE *stream)
     (*lineptr)[i++] = (char)ch;
 
     /* reallocate memory if reached at the end of the buffer. The +1 is for '\0' */
-    if (i+1 == *n) { 
+    if (i+1 == *n) {
       *n = 2*(*n);
       *lineptr = gk_realloc(*lineptr, (*n)*sizeof(char), "gk_getline: lineptr");
     }
-      
+
     if (ch == '\n')
       break;
   }
@@ -377,7 +381,7 @@ int32_t *gk_i32readfilebin(char *fname, size_t *r_nelmnts)
   array = gk_i32malloc(nelmnts, "gk_i32readfilebin: array");
 
   fpin = gk_fopen(fname, "rb", "gk_i32readfilebin");
-  
+
   if (fread(array, sizeof(int32_t), nelmnts, fpin) != nelmnts) {
     gk_errexit(SIGERR, "Failed to read the number of words requested. %zd\n", nelmnts);
     gk_free((void **)&array, LTERM);
@@ -444,7 +448,7 @@ int64_t *gk_i64readfilebin(char *fname, size_t *r_nelmnts)
   array = gk_i64malloc(nelmnts, "gk_i64readfilebin: array");
 
   fpin = gk_fopen(fname, "rb", "gk_i64readfilebin");
-  
+
   if (fread(array, sizeof(int64_t), nelmnts, fpin) != nelmnts) {
     gk_errexit(SIGERR, "Failed to read the number of words requested. %zd\n", nelmnts);
     gk_free((void **)&array, LTERM);
@@ -511,7 +515,7 @@ ssize_t *gk_zreadfilebin(char *fname, size_t *r_nelmnts)
   array = gk_zmalloc(nelmnts, "gk_zreadfilebin: array");
 
   fpin = gk_fopen(fname, "rb", "gk_zreadfilebin");
-  
+
   if (fread(array, sizeof(ssize_t), nelmnts, fpin) != nelmnts) {
     gk_errexit(SIGERR, "Failed to read the number of words requested. %zd\n", nelmnts);
     gk_free((void **)&array, LTERM);
@@ -578,7 +582,7 @@ float *gk_freadfilebin(char *fname, size_t *r_nelmnts)
   array = gk_fmalloc(nelmnts, "gk_freadfilebin: array");
 
   fpin = gk_fopen(fname, "rb", "gk_freadfilebin");
-  
+
   if (fread(array, sizeof(float), nelmnts, fpin) != nelmnts) {
     gk_errexit(SIGERR, "Failed to read the number of words requested. %zd\n", nelmnts);
     gk_free((void **)&array, LTERM);
@@ -645,7 +649,7 @@ double *gk_dreadfilebin(char *fname, size_t *r_nelmnts)
   array = gk_dmalloc(nelmnts, "gk_dreadfilebin: array");
 
   fpin = gk_fopen(fname, "rb", "gk_dreadfilebin");
-  
+
   if (fread(array, sizeof(double), nelmnts, fpin) != nelmnts) {
     gk_errexit(SIGERR, "Failed to read the number of words requested. %zd\n", nelmnts);
     gk_free((void **)&array, LTERM);
@@ -678,4 +682,3 @@ size_t gk_dwritefilebin(char *fname, size_t n, double *a)
 
   return fsize;
 }
-
