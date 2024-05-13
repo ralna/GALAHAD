@@ -64,7 +64,7 @@ ssize_t gk_read(int fd, void *vbuf, size_t count)
   ssize_t rsize, tsize=count;
 
   do {
-    if ((rsize = read(fd, buf, tsize)) == -1)
+    if ((rsize = _read(fd, buf, tsize)) == -1)
       return -1;
     buf   += rsize;
     tsize -= rsize;
@@ -85,7 +85,7 @@ ssize_t gk_write(int fd, void *vbuf, size_t count)
   ssize_t size, tsize=count;
 
   do {
-    if ((size = write(fd, buf, tsize)) == -1)
+    if ((size = _write(fd, buf, tsize)) == -1)
       return -1;
     buf   += size;
     tsize -= size;
