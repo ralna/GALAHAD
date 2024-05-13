@@ -18,10 +18,6 @@ This file contains various functions that perform I/O.
 
 #include <GKlib.h>
 
-#ifdef __MSC__
-#include <windows.h>
-#endif
-
 /*************************************************************************
 * This function opens a file
 **************************************************************************/
@@ -58,6 +54,7 @@ void gk_fclose(FILE *fp)
     reached.
 */
 /*************************************************************************/
+/* not needed
 ssize_t gk_read(int fd, void *vbuf, size_t count)
 {
   char *buf = (char *)vbuf;
@@ -72,13 +69,14 @@ ssize_t gk_read(int fd, void *vbuf, size_t count)
 
   return count-tsize;
 }
-
+*/
 
 /*************************************************************************/
 /*! This function is a wrapper around the write() function that ensures
     that all data is been written, by issueing multiple write requests.
 */
 /*************************************************************************/
+/* not needed
 ssize_t gk_write(int fd, void *vbuf, size_t count)
 {
   char *buf = (char *)vbuf;
@@ -93,7 +91,7 @@ ssize_t gk_write(int fd, void *vbuf, size_t count)
 
   return count;
 }
-
+*/
 
 /*************************************************************************/
 /*! This function is the GKlib implementation of glibc's getline()
