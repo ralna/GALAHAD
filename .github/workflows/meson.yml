@@ -35,19 +35,19 @@ jobs:
             int: '64'
           - os: windows-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '32'
           - os: windows-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '64'
           - os: ubuntu-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '32'
           - os: ubuntu-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '64'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
@@ -145,7 +145,7 @@ jobs:
       - name: Update Intel compilers
         if: matrix.compiler == 'intel'
         shell: bash
-        run: echo "FC=ifx" >> $GITHUB_ENV
+        run: echo "FC=ifort" >> $GITHUB_ENV
 
       # Uncomment this section to obtain ssh access to VM
       # - name: Setup tmate session
