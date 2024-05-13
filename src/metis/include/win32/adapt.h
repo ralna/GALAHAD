@@ -1,4 +1,4 @@
-/*
+ /*
 \file  win32/adapt.h
 \brief Declaration of Win32 adaptation of POSIX functions and types
 */
