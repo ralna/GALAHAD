@@ -56,6 +56,7 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_single_64
 #define GALAHAD_DQP_precision GALAHAD_DQP_single_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_single_64
+#define GALAHAD_EPF_precision GALAHAD_EPF_single_64
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_single_64
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_single_64
 #define GALAHAD_FASTR_precision GALAHAD_FASTR_single_64
@@ -177,6 +178,7 @@
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single_64
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_single_64
+#define GALAHAD_USEEPF_precision GALAHAD_USEEPF_single_64
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_single_64
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_single_64
 #define GALAHAD_USEFILTRANE_precision GALAHAD_USEFILTRANE_single_64
@@ -360,6 +362,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single_64
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single_64
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single_64
+#define RUNEPF_SIF_precision RUNEPF_SIF_single_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_single_64
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_single_64
 #define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_single_64
@@ -424,6 +427,7 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_single
 #define GALAHAD_DQP_precision GALAHAD_DQP_single
 #define GALAHAD_EQP_precision GALAHAD_EQP_single
+#define GALAHAD_EPF_precision GALAHAD_EPF_single
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_single
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_single
 #define GALAHAD_FASTR_precision GALAHAD_FASTR_single
@@ -544,6 +548,7 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_single
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_single
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_single
+#define GALAHAD_USEEPF_precision GALAHAD_USEEPF_single
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_single
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_single
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_single
@@ -728,6 +733,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_single
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_single
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_single
+#define RUNEPF_SIF_precision RUNEPF_SIF_single
 #define RUNERMO_SIF_precision RUNERMO_SIF_single
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_single
 #define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_single
@@ -797,6 +803,7 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_double_64
 #define GALAHAD_DQP_precision GALAHAD_DQP_double_64
 #define GALAHAD_EQP_precision GALAHAD_EQP_double_64
+#define GALAHAD_EPF_precision GALAHAD_EPF_double_64
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_double_64
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_double_64
 #define GALAHAD_FASTR_precision GALAHAD_FASTR_double_64
@@ -917,6 +924,7 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_double_64
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_double_64
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_double_64
+#define GALAHAD_USEEPF_precision GALAHAD_USEEPF_double_64
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_double_64
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_double_64
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_double_64
@@ -1101,6 +1109,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_double_64
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_double_64
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_double_64
+#define RUNEPF_SIF_precision RUNEPF_SIF_double_64
 #define RUNERMO_SIF_precision RUNERMO_SIF_double_64
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_double_64
 #define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_double_64
@@ -1163,6 +1172,7 @@
 #define GALAHAD_DPS_precision GALAHAD_DPS_double
 #define GALAHAD_DQP_precision GALAHAD_DQP_double
 #define GALAHAD_EQP_precision GALAHAD_EQP_double
+#define GALAHAD_EPF_precision GALAHAD_EPF_double
 #define GALAHAD_ERMO_precision GALAHAD_ERMO_double
 #define GALAHAD_EXTEND_precision GALAHAD_EXTEND_double
 #define GALAHAD_FASTR_precision GALAHAD_FASTR_double
@@ -1283,6 +1293,7 @@
 #define GALAHAD_USEDPS_precision GALAHAD_USEDPS_double
 #define GALAHAD_USEDQP_precision GALAHAD_USEDQP_double
 #define GALAHAD_USEEQP_precision GALAHAD_USEEQP_double
+#define GALAHAD_USEEPF_precision GALAHAD_USEEPF_double
 #define GALAHAD_USEERMO_precision GALAHAD_USEERMO_double
 #define GALAHAD_USEFASTR_precision GALAHAD_USEFASTR_double
 #define GALAHAD_USEFDH_precision GALAHAD_USEFDH_double
@@ -1467,6 +1478,7 @@
 #define RUNTRACE_SIF_precision RUNTRACE_SIF_double
 #define RUNTRAL_SIF_precision RUNTRAL_SIF_double
 #define RUNCQPS_SIF_precision RUNCQPS_SIF_double
+#define RUNEPF_SIF_precision RUNEPF_SIF_double
 #define RUNERMO_SIF_precision RUNERMO_SIF_double
 #define RUNFASTR_SIF_precision RUNFASTR_SIF_double
 #define RUNFUNNELEQ_SIF_precision RUNFUNNELEQ_SIF_double
@@ -2068,6 +2080,99 @@
 #define hsl_mc78_integer hsl_mc78_integer_64
 #define hsl_of01_integer hsl_of01_integer_64
 #define hsl_zb01_integer hsl_zb01_integer_64
+
+
+#define FA14A FA14A_64
+#define FA14I FA14I_64
+#define FA14AD FA14AD_64
+#define FA14ID FA14ID_64
+#define FD15S FD15S_64
+#define FD15D FD15D_64
+#define KB07AI KB07AI_64
+#define LA04A LA04A_64
+#define LA04AD LA04AD_64
+#define LA15A LA15A_64
+#define LA15B LA15B_64
+#define LA15C LA15C_64
+#define LA15I LA15I_64
+#define LA15AD LA15AD_64
+#define LA15BD LA15BD_64
+#define LA15CD LA15CD_64
+#define LA15ID LA15ID_64
+#define MA27A MA27A_64
+#define MA27B MA27B_64
+#define MA27C MA27C_64
+#define MA27I MA27I_64
+#define MA27Q MA27Q_64
+#define MA27AD MA27AD_64
+#define MA27BD MA27BD_64
+#define MA27CD MA27CD_64
+#define MA27ID MA27ID_64
+#define MA27QD MA27QD_64
+#define MA33A MA33A_64
+#define MA33C MA33C_64
+#define MA33I MA33I_64
+#define MA33AD MA33AD_64
+#define MA33CD MA33CD_64
+#define MA33ID MA33ID_64
+#define MA48S MA48S_64
+#define MA48D MA48D_64
+#define MA50S MA50S_64
+#define MA50D MA50D_64
+#define MA51S MA51S_64
+#define MA51D MA51D_64
+#define MA57S MA57S_64
+#define MA57D MA57D_64
+#define MA61D MA61D_64
+#define MA61I MA61I_64
+#define MA61DD MA61DD_64
+#define MA61ID MA61ID_64
+#define MC13D MC13D_64
+#define MC13E MC13E_64
+#define MC13DD MC13DD_64
+#define MC13ED MC13ED_64
+#define MC20A MC20A_64
+#define MC20AD MC20AD_64
+#define MC21A MC21A_64
+#define MC21B MC21B_64
+#define MC21AD MC21AD_64
+#define MC21BD MC21BD_64
+#define MC22A MC22A_64
+#define MC22AD MC22AD_64
+#define MC23A MC23A_64
+#define MC23AD MC23AD_64
+#define MC29A MC29A_64
+#define MC29AD MC29AD_64
+#define MC30S MC30S_64
+#define MC30D MC30D_64
+#define MC34S MC34S_64
+#define MC34D MC34D_64
+#define MC47S MC47S_64
+#define MC47D MC47D_64
+#define MC59S MC59S_64
+#define MC59D MC59D_64
+#define MC60S MC60S_64
+#define MC60D MC60D_64
+#define MC61A MC61A_64
+#define MC61I MC61I_64
+#define MC61AD MC61AD_64
+#define MC61ID MC61ID_64
+#define MC64S MC64S_64
+#define MC64D MC64D_64
+#define MC71S MC71S_64
+#define MC71D MC71D_64
+#define MC77A MC77A_64
+#define MC77B MC77B_64
+#define MC77C MC77C_64
+#define MC77I MC77I_64
+#define MC77AD MC77AD_64
+#define MC77BD MC77BD_64
+#define MC77CD MC77CD_64
+#define MC77ID MC77ID_64
+#define ZB01S ZB01S_64
+#define ZB01D ZB01D_64
+
+
 #endif
 #ifdef SINGLE
 #ifdef INTEGER_64

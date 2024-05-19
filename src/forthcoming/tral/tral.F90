@@ -23,23 +23,23 @@
 !    |   Aim: find a (local) minimizer of the objective f(x)             |
 !    |        subject to x_l <= x <= x_u and c_l <= c(x) <= c_u          |
 !    |                                                                   |
-!    |        by minimizing                                              |
+!    |   by minimizing                                                   |
 !    |                                                                   |
-!    |        phi(x,c) = f(x) + y^T(c(x)-c) + 0.5 rho ||c(x)-c)||_2^2    |
-!    |        subject to x_l <= x <= x_u and c_l <= c(x) <= c_u          |
+!    |     phi(x,c) = f(x) + y^T(c(x)-c) + 0.5 rho ||c(x)-c)||_2^2       |
+!    |     subject to x_l <= x <= x_u and c_l <= c(x) <= c_u             |
 !    |                                                                   |
-!    |  for a suitable sequence of y and rho. Note                       |
+!    |   for a suitable sequence of y and rho. Note                      |
 !    |                                                                   |
-!    |    grad phi = ( g(x) +J^T(x) y(x,rho) )                           |
-!    |               (       - y(x,rho)      )                           |
+!    |     grad phi = ( g(x) +J^T(x) y(x,rho) )                          |
+!    |                (       - y(x,rho)      )                          |
 !    |                                                                   |
-!    |    Hess phi = ( H(x,y(x,rho)) + rho J^T(x) J(x)  - rho J^T(x) )   |
-!    |               (    - rho J(x)                      rho I      )   |
+!    |     Hess phi = ( H(x,y(x,rho)) + rho J^T(x) J(x)  - rho J^T(x) )  |
+!    |                (    - rho J(x)                      rho I      )  |
 !    |                                                                   |
 !    |   and                                                             |
 !    |                                                                   |
-!    |    Hess phi (p) = ( H(x,y(x,rho) p + J^T(x) r )                   |
-!    |             (q)   (          - r              )                   |
+!    |     Hess phi (p) = ( H(x,y(x,rho) p + J^T(x) q )                  |
+!    |              (q)   (          - r              )                  |
 !    |                                                                   |
 !    |   where y(x,rho) = y + rho (c(x)-c), H(x,y) = Hess Lagrangian     |
 !    |   and r = rho [ J(x) p - q )                                      |
@@ -1321,7 +1321,7 @@
 !
 !  userdata is a scalar variable of type GALAHAD_userdata_type which may be
 !   used to pass user data to and from the eval_* subroutines (see below)
-!   Available coomponents which may be allocated as required are:
+!   Available components which may be allocated as required are:
 !
 !    integer is a rank-one allocatable array of type default integer.
 !    real is a rank-one allocatable array of type default real
@@ -1385,7 +1385,7 @@
 !   variable set to 0. If C is present, the values of the constraint functions
 !   c(x) evaluated at x=X must be returned in C, and the status variable set
 !   to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_FC is not present, FASTR_solve will
+!   be set to a nonzero value. If eval_FC is not present, TRAL_solve will
 !   return to the user with inform%status = 2 each time an evaluation is
 !   required.
 !
@@ -1396,7 +1396,7 @@
 !   nabla_x c(x) evaluated at x=X must be returned in J_val in the same
 !   order as presented in nlp%J, and the status variable set to 0.
 !   If the evaluation is impossible at x=X, status should be set to a
-!   nonzero value. If eval_GJ is not present, FASTR_solve will return to the
+!   nonzero value. If eval_GJ is not present, TRAL_solve will return to the
 !   user with inform%status = 3 or 5 each time an evaluation is required.
 !
 !  eval_HL is an optional subroutine which if present must have the arguments
@@ -1405,7 +1405,7 @@
 !   at x=X and y=Y must be returned in H_val in the same order as presented in
 !   nlp%H, and the status variable set to 0. If the evaluation is impossible
 !   at X, status should be set to a nonzero value. If eval_HL is not present,
-!   FASTR_solve will return to the user with inform%status = 4 or 5 each time
+!   TRAL_solve will return to the user with inform%status = 4 or 5 each time
 !   an evaluation is required.
 !
 !  eval_HLPROD is an optional subroutine which if present must have
@@ -1415,7 +1415,7 @@
 !   at x=X and y=Y with the vector v=V and the vector u=U must be returned in U,
 !   and the status variable set to 0. If the evaluation is impossible at X,
 !   status should be set to a nonzero value. If eval_HPROD is not present,
-!   FASTR_solve will return to the user with inform%status = 6 each time an
+!   TRAL_solve will return to the user with inform%status = 6 each time an
 !   evaluation is required.
 !
 !  eval_PREC is an optional subroutine which if present must have the arguments
@@ -1423,7 +1423,7 @@
 !   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result
 !   u must be retured in U, and the status variable set to 0. If the evaluation
 !   is impossible at X, status should be set to a nonzero value. If eval_PREC
-!   is not present, TRU_solve will return to the user with inform%status = 7
+!   is not present, TRAL_solve will return to the user with inform%status = 7
 !   each time an evaluation is required.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

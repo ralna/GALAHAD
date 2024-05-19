@@ -73,10 +73,15 @@ DRB$(PACKAGE)64 = $(RB_TESTS) $(TESTDEPS) $(OBJD64)/run$(package)_rb_double.o
 
 #  libraries used when linking for tests
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+ifeq "$(HSL_64)" "_64"
+  LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+            $(METIS64) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+else
+  LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) \
+             $(METIS)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
+endif
 PLIBS = $(LIBS) -lgalahad_problem
-CLIBS = -lgalahad_c -lgalahad_hsl_c $(LIBS)
+CLIBS = -lgalahad_c -lhsl_c $(LIBS)
 
 #  compilation and run agenda
 

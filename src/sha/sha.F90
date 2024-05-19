@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-10-11 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-05-19 AT 15:00 GMT.
 
 #include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S H A   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
-!  Principal author: Nick Gould
+!  Principal authors: Jaroslav Fowkes & Nick Gould
 
 !  History -
 !   originally released GALAHAD Version 2.5. April 8th 2013
@@ -23,6 +23,7 @@
 !    ------------------------------------------------
 
      USE GALAHAD_KINDS_precision
+!$   USE omp_lib
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_precision
      USE GALAHAD_SPACE_precision
@@ -75,16 +76,20 @@
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
-!    for each iteration, >= 3 gives increasingly verbose (debu
+!    for each iteration, >= 3 gives increasingly verbose (debug)
 
        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  which approximation algorithm should be used?
-!    1 : unsymmetric (alg 2.1 in paper)
+!  (5-8 are retained for archival purposes, and not recommended)
+!    1 : unsymmetric, parallel (alg 2.1 in paper)
 !    2 : symmetric (alg 2.2 in paper)
-!    3 : composite (alg 2.3 in paper)
-!    4 : composite 2 (alg 2.4 in paper)
-!    5 : cautious (alg 2.5 in paper)
+!    3 : composite, parallel (alg 2.3 in paper)
+!    4 : composite, block parallel (alg 2.4 in paper)
+!    5 : original unsymmetric (alg 2.1 in old paper)
+!    6 : original composite (alg 2.3 in old paper)
+!    7 : original composite 2 (alg 2.4 in old paper)
+!    8 : original cautious (alg 2.5 in old paper)
 
        INTEGER ( KIND = ip_ ) :: approximation_algorithm = 4
 
@@ -96,13 +101,23 @@
 
        INTEGER ( KIND = ip_ ) :: dense_linear_solver = 3
 
-!  the maximum sparse degree if the combined version is used
-
-       INTEGER ( KIND = ip_ ) :: max_sparse_degree = 100
-
 !  if available use an addition extra_differences differences
 
-       INTEGER ( KIND = ip_ ) :: extra_differences = 0
+       INTEGER ( KIND = ip_ ) :: extra_differences = 1
+
+!  rows with no more that sparse_row entries are considered sparse
+
+       INTEGER ( KIND = ip_ ) :: sparse_row = 100
+
+!  if a recursive algorithm is used (Alg 2.4), limit on the maximum number 
+!    of levels of recursion
+
+       INTEGER ( KIND = ip_ ) :: recursion_max = 25
+
+!  if a recursive algorithm is used (Alg 2.4), recursion can only occur for a 
+!   (reduced) row if it has at least %recursion_allowed entries
+
+       INTEGER ( KIND = ip_ ) :: recursion_entries_required = 10
 
 !  if space is critical, ensure allocated arrays are no bigger than needed
 
@@ -182,7 +197,7 @@
 
 !  local variables
 
-       INTEGER ( KIND = ip_ ) :: n, nz, nb, unsym_rows
+       INTEGER ( KIND = ip_ ) :: n, nz, nb, unsym_rows, nnz_unsym
        INTEGER ( KIND = ip_ ) :: approximation_algorithm_used
        INTEGER ( KIND = ip_ ) :: dense_linear_solver = - 1
        INTEGER ( KIND = ip_ ) :: differences_needed = - 1
@@ -214,8 +229,16 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COUNT
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM_inv
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROWS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COL_unsym
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR_unsym
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP_lower
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INFO
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SPARSE_INDS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DENSE_INDS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: TMP_INDS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NSOLVED
+       REAL ( KIND = rp_), ALLOCATABLE, DIMENSION( : ) :: VAL_unsym
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B
@@ -324,8 +347,10 @@
 !  print-level                                     0
 !  approximation-algorithm                         4
 !  dense-linear-solver                             3
-!  maximum-degree-considered-sparse                50
-!  extra-differences                               0
+!  extra-differences                               1
+!  maximum-degree-considered-sparse                100
+!  maximum-recursion-levels                        25
+!  recursion-entries-required                      10
 !  space-critical                                  F
 !  deallocate-error-fatal                          F
 !  output-line-prefix                              ""
@@ -352,12 +377,15 @@
                                             = print_level + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: dense_linear_solver                  &
                                             = approximation_algorithm + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: max_sparse_degree                    &
-                                            = dense_linear_solver + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: extra_differences                    &
-                                            = max_sparse_degree + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = dense_linear_solver + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sparse_row                           &
                                             = extra_differences + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: recursion_max = sparse_row + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: recursion_entries_required           &
+                                            = recursion_max + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = recursion_entries_required + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
@@ -376,8 +404,10 @@
      spec( print_level )%keyword = 'print-level'
      spec( approximation_algorithm )%keyword = 'approximation-algorithm'
      spec( dense_linear_solver )%keyword = 'dense-linear-solver'
-     spec( max_sparse_degree )%keyword = 'maximum-degree-considered-sparse'
      spec( extra_differences )%keyword = 'extra-differences'
+     spec( sparse_row )%keyword = 'maximum-degree-considered-sparse'
+     spec( recursion_max )%keyword = 'maximum-recursion-levels'
+     spec( recursion_entries_required )%keyword = 'recursion-entries-required'
 
 !  Logical key-words
 
@@ -415,11 +445,17 @@
      CALL SPECFILE_assign_value( spec( dense_linear_solver ),                  &
                                  control%dense_linear_solver,                  &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( max_sparse_degree ),                    &
-                                 control%max_sparse_degree,                    &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( extra_differences ),                    &
                                  control%extra_differences,                    &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( sparse_row ),                           &
+                                 control%sparse_row,                           &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( recursion_max ),                        &
+                                 control%recursion_max,                        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec(recursion_entries_required ),            &
+                                 control%recursion_entries_required,           &
                                  control%error )
 
 !  Set logical values
@@ -513,286 +549,436 @@
       inform%status = GALAHAD_ok
       printi = control%out > 0 .AND. control%print_level > 0
 
+!  make sure that the approximation algorithm requested is possible
+
+      IF ( control%approximation_algorithm < 1 .OR.                            &
+           control%approximation_algorithm > 8 ) THEN
+        inform%approximation_algorithm_used = 4
+      ELSE
+        inform%approximation_algorithm_used = control%approximation_algorithm
+      END IF
+      IF ( printi ) WRITE( control%out, "( ' Algorithm ', I0 )" )              &
+          inform%approximation_algorithm_used
+
+!  branch depending on the algorithm specified
+
+      SELECT CASE ( inform%approximation_algorithm_used )
+
+!  ------------------------------------------------
+!  algorithms 1, 3 and 4 (aka paper 2.1, 2.3 & 2.4)
+!  ------------------------------------------------
+
+      CASE ( 1, 3, 4 )
+
+!  make space for pointers to the start of each row in the complete
+!  (i.e., both triangles together) matrix
+
+        array_name = 'SHA: data%PTR_unsym'
+        CALL SPACE_resize_array( n + 1, data%PTR_unsym,                        &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  count the number of nonzeros in each row of the complete matrix
+
+        data%PTR_unsym( 2 : n + 1 ) = 0
+        DO l = 1, nz
+          i = ROW( l ) + 1 ; j = COL( l ) + 1
+          data%PTR_unsym( i ) = data%PTR_unsym( i ) + 1
+          IF ( i /= j ) THEN
+            data%PTR_unsym( j ) = data%PTR_unsym( j ) + 1
+          END IF
+        END DO
+
+!  compute the starting position for each row of the complete matrix
+
+        data%PTR_unsym( 1 ) = 1
+        DO i = 1, n
+          data%PTR_unsym( i + 1 )                                              &
+            = data%PTR_unsym( i ) + data%PTR_unsym( i + 1 )
+        END DO
+
+!  allocate space for the column indices and values of the complete matrix,
+!  as well as a map from the lower triangle to the complete matrix
+
+        data%nnz_unsym = data%PTR_unsym( n + 1 ) - 1
+        array_name = 'SHA: data%COL_unsym'
+        CALL SPACE_resize_array( data%nnz_unsym, data%COL_unsym,               &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'SHA: data%VAL_unsym'
+        CALL SPACE_resize_array( data%nnz_unsym, data%VAL_unsym,               &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'SHA: data%MAP'
+        CALL SPACE_resize_array( nz, data%MAP,                                 &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  now fill the column indices into each row of the complete matrix
+
+        DO l = 1, nz
+          i = ROW( l ) ; j = COL( l )
+          data%MAP( l ) = data%PTR_unsym( i )
+          data%COL_unsym( data%PTR_unsym( i ) ) = j
+          data%PTR_unsym( i ) = data%PTR_unsym( i ) + 1
+          IF ( i /= j ) THEN
+            data%COL_unsym( data%PTR_unsym( j ) ) = i
+            data%PTR_unsym( j ) = data%PTR_unsym( j ) + 1
+          END IF
+        END DO
+
+!  restore the row starting positions
+
+        DO i = n, 1, - 1
+          data%PTR_unsym( i + 1 ) = data%PTR_unsym( i )
+        END DO
+        data%PTR_unsym( 1 ) = 1
+
+
+!  set up workspace
+
+        CALL SPACE_resize_array( n, data%INFO,                                 &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        IF ( inform%approximation_algorithm_used >= 3 ) THEN
+          CALL SPACE_resize_array( n, data%SPARSE_INDS,                        &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          CALL SPACE_resize_array( n, data%DENSE_INDS,                         &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
+
+        IF ( inform%approximation_algorithm_used == 4 ) THEN
+          CALL SPACE_resize_array( n, data%TMP_INDS,                           &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          CALL SPACE_resize_array( n, data%NSOLVED,                            &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
+
+        SELECT CASE ( inform%approximation_algorithm_used )
+        CASE ( 1 )
+          inform%differences_needed                                            &
+            = SHA_differences_needed_2_1( n, data%PTR_unsym )
+        CASE ( 3 : 4 )
+          inform%differences_needed                                            &
+            = SHA_differences_needed_2_3( n, data%nnz_unsym,                   &
+                                          data%PTR_unsym, data%COL_unsym,      &
+                                          data%SPARSE_INDS, data%DENSE_INDS,   &
+                                          control%sparse_row )
+!       CASE ( 4 )
+        END SELECT
+
+
+!  ---------------------------------------------------------
+!  algorithm 2, 5-8 (aka paper 2.2, old paper 2.1 & 2.3-2.5)
+!  ---------------------------------------------------------
+
+      CASE ( 2, 5 : 8 )
+
 !  allocate space for row starting addresses STR and unsymmetric row counts
 !  COUNT
 
-      array_name = 'SHA: data%STR'
-      CALL SPACE_resize_array( n + 1, data%STR,                                &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%STR'
+        CALL SPACE_resize_array( n + 1, data%STR,                              &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%COUNT'
-      CALL SPACE_resize_array( n, data%COUNT,                                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%COUNT'
+        CALL SPACE_resize_array( n, data%COUNT,                                &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  record the number of nonzeros in each row of the whole matrix (both upper
 !  and lower parts) in COUNT
 
-      data%COUNT = 0
-      DO l = 1, nz
-        i = ROW( l ) ; j = COL( l )
-        data%COUNT( i ) = data%COUNT( i ) + 1
-        IF ( i /= j ) data%COUNT( j ) = data%COUNT( j ) + 1
-      END DO
+        data%COUNT = 0
+        DO l = 1, nz
+          i = ROW( l ) ; j = COL( l )
+          data%COUNT( i ) = data%COUNT( i ) + 1
+          IF ( i /= j ) data%COUNT( j ) = data%COUNT( j ) + 1
+        END DO
 
 !  now set the starting addresses for each row of the whole matrix in STR
 
-      data%STR( 1 ) = 1
-      DO i = 1, n
-        data%STR( i + 1 ) = data%STR( i ) + data%COUNT( i )
-      END DO
+        data%STR( 1 ) = 1
+        DO i = 1, n
+          data%STR( i + 1 ) = data%STR( i ) + data%COUNT( i )
+        END DO
 
 !  compute the maximum degree (row length)
 
-      max_row = MAXVAL( data%COUNT( 1 : n ) )
-      inform%max_degree = max_row
+        max_row = MAXVAL( data%COUNT( 1 : n ) )
+        inform%max_degree = max_row
 
 !  allocate space for the list of rows ordered by increasing degree (LIST),
 !  as well the first and last positions for those of a given degree (FIRST
 !  and LAST) and pointers from the the list of degrees to the rows (ROWS)
 
-      array_name = 'SHA: data%LIST'
-      CALL SPACE_resize_array( n, data%LIST,                                   &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%LIST'
+        CALL SPACE_resize_array( n, data%LIST,                                 &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%FIRST'
-      CALL SPACE_resize_array( 0_ip_, max_row, data%FIRST,                     &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%FIRST'
+        CALL SPACE_resize_array( 0_ip_, max_row, data%FIRST,                   &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%LAST'
-      CALL SPACE_resize_array( 0_ip_, MAX( max_row, control%max_sparse_degree),&
-             data%LAST,                                                        &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%LAST'
+        CALL SPACE_resize_array( 0_ip_,                                        &
+               MAX( max_row, control%sparse_row), data%LAST,            &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%ROWS'
-      CALL SPACE_resize_array( n, data%ROWS,                                   &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%ROWS'
+        CALL SPACE_resize_array( n, data%ROWS,                                 &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  initialize the number of rows with each degree in LAST
 
-      data%LAST( 0 : max_row ) = 0
-      DO i = 1, n
-        data%LAST( data%COUNT( i ) ) = data%LAST( data%COUNT( i ) ) + 1
-      END DO
+        data%LAST( 0 : max_row ) = 0
+        DO i = 1, n
+          data%LAST( data%COUNT( i ) ) = data%LAST( data%COUNT( i ) ) + 1
+        END DO
 
-!  make sure that the approximation algorithm requested is possible
-
-      IF ( control%approximation_algorithm < 1 .OR.                            &
-           control%approximation_algorithm > 5 ) THEN
-        inform%approximation_algorithm_used = 4
-      ELSE
-        inform%approximation_algorithm_used = control%approximation_algorithm
-      END IF
-
-      IF ( printi ) THEN
-        WRITE( control%out, "( ' Algorithm ', I0 )" )                          &
-          inform%approximation_algorithm_used
-        WRITE( control%out, "( A, ' (row size, # with this size):' )" ) prefix
-        CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
-      END IF
+        IF ( printi ) THEN
+          WRITE( control%out, "( A, ' (row size, # with this size):' )" ) prefix
+          CALL SHA_write_nonzero_list( control%out, max_row, data%LAST )
+        END IF
 
 !  set the start (FIRST) and finish (LAST) positions for each degree in the
 !  list LIST
 
-      data%FIRST( 0 ) = 1
-      DO i = 0, max_row - 1
-        data%FIRST( i + 1 ) = data%FIRST( i ) + data%LAST( i )
-        data%LAST( i ) = data%FIRST( i + 1 ) - 1
-      END DO
-      data%LAST( max_row ) = data%FIRST( max_row ) + data%LAST( max_row ) - 1
+        data%FIRST( 0 ) = 1
+        DO i = 0, max_row - 1
+          data%FIRST( i + 1 ) = data%FIRST( i ) + data%LAST( i )
+          data%LAST( i ) = data%FIRST( i + 1 ) - 1
+        END DO
+        data%LAST( max_row ) = data%FIRST( max_row ) + data%LAST( max_row ) - 1
 
 !  now sort the rows by increasing degree (LIST) (and record their inverses)
 !  (ROWS) ...
 
-      DO i = 1, n
-        deg = data%COUNT( i )
-        data%LIST( data%FIRST( deg ) ) = i
-        data%ROWS( i ) = data%FIRST( deg )
-        data%FIRST( deg ) = data%FIRST( deg ) + 1
-      END DO
+        DO i = 1, n
+          deg = data%COUNT( i )
+          data%LIST( data%FIRST( deg ) ) = i
+          data%ROWS( i ) = data%FIRST( deg )
+          data%FIRST( deg ) = data%FIRST( deg ) + 1
+        END DO
 
 !  .. and reset the starting positions (FIRST)
 
-      DO i = max_row - 1, 0, - 1
-        data%FIRST( i + 1 ) = data%FIRST( i )
-      END DO
-      data%FIRST( 0 ) = 1
+        DO i = max_row - 1, 0, - 1
+          data%FIRST( i + 1 ) = data%FIRST( i )
+        END DO
+        data%FIRST( 0 ) = 1
 
 !  compute the minimum degree (row length)
 
-      DO j = 0, max_row + 1
-        IF ( data%FIRST( j ) <= data%LAST( j ) ) THEN
-          min_degree = j
-          EXIT
-        END IF
-      END DO
+        DO j = 0, max_row + 1
+          IF ( data%FIRST( j ) <= data%LAST( j ) ) THEN
+            min_degree = j
+            EXIT
+          END IF
+        END DO
 
 !  print row statistics if required
 
-      IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
-        DO i = 0, max_row
-          WRITE( control%out, "( ' degree ', I0, ' involves rows:' )" ) i
-          IF ( data%FIRST( i ) <= data%LAST( i ) )                             &
-            WRITE( control%out, "( 10( :, 1X, I0 ) )" )                        &
-             ( data%LIST( l ), l = data%FIRST( i ), data%LAST( i ) )
-        END DO
-        WRITE( control%out, "( ' ROWS:', /, 10( 1X, I0 ) )" )                  &
-          data%ROWS( 1 : n )
-      END IF
+        IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
+          DO i = 0, max_row
+            WRITE( control%out, "( ' degree ', I0, ' involves rows:' )" ) i
+            IF ( data%FIRST( i ) <= data%LAST( i ) )                           &
+              WRITE( control%out, "( 10( :, 1X, I0 ) )" )                      &
+               ( data%LIST( l ), l = data%FIRST( i ), data%LAST( i ) )
+          END DO
+          WRITE( control%out, "( ' ROWS:', /, 10( 1X, I0 ) )" )                &
+            data%ROWS( 1 : n )
+        END IF
 
 !  allocate space for MAP to hold mappings from the rows back to the
 !  coordinate storage, and its "shadow" MAP_lower set so that entries k and
 !  MAP_lower(k) of MAP correspond to the "upper" and "lower" triangular entries
 !  (i,j) and (j,i), i <= j
 
-      array_name = 'SHA: data%MAP'
-      CALL SPACE_resize_array( data%STR( n + 1 ) - 1, data%MAP,                &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%MAP'
+        CALL SPACE_resize_array( data%STR( n + 1 ) - 1, data%MAP,              &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%MAP_lower'
-      CALL SPACE_resize_array( data%STR( n + 1 ) - 1, data%MAP_lower,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%MAP_lower'
+        CALL SPACE_resize_array( data%STR( n + 1 ) - 1, data%MAP_lower,        &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  now set the MAP and MAP_lower maps ...
 
-      DO l = 1, nz
-        i = ROW( l ) ; j = COL( l )
-        data%MAP( data%STR( i ) ) = l
-        IF ( i /= j ) THEN
-          data%MAP( data%STR( j ) ) = l
-          data%MAP_lower( data%STR( j ) ) = data%STR( i )
-          data%MAP_lower( data%STR( i ) ) = data%STR( j )
-          data%STR( j ) = data%STR( j ) + 1
-        ELSE
-          data%MAP_lower( data%STR( i ) ) = data%STR( i )
-        END IF
-        data%STR( i ) = data%STR( i ) + 1
-      END DO
+        DO l = 1, nz
+          i = ROW( l ) ; j = COL( l )
+          data%MAP( data%STR( i ) ) = l
+          IF ( i /= j ) THEN
+            data%MAP( data%STR( j ) ) = l
+            data%MAP_lower( data%STR( j ) ) = data%STR( i )
+            data%MAP_lower( data%STR( i ) ) = data%STR( j )
+            data%STR( j ) = data%STR( j ) + 1
+          ELSE
+            data%MAP_lower( data%STR( i ) ) = data%STR( i )
+          END IF
+          data%STR( i ) = data%STR( i ) + 1
+        END DO
 
 !  ... and reset the row starting addresses
 
-      DO i = n - 1, 1, - 1
-        data%STR( i + 1 ) = data%STR( i )
-      END DO
-      data%STR( 1 ) = 1
+        DO i = n - 1, 1, - 1
+          data%STR( i + 1 ) = data%STR( i )
+        END DO
+        data%STR( 1 ) = 1
 
 !  print more row statistics if required
 
-      IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
-        DO i = 1, n
-          WRITE( control%out, "( ' row ', I0, ' has entries' )" ) i
-          WRITE( control%out, "( 1X, 6( '(', I0, ',', I0, ')', : ) )" )        &
-            ( ROW( data%MAP( l ) ), COL( data%MAP( l ) ), l = data%STR( i ),   &
-              data%STR( i + 1 ) - 1 )
-        END DO
-      END IF
+        IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
+          DO i = 1, n
+            WRITE( control%out, "( ' row ', I0, ' has entries' )" ) i
+            WRITE( control%out, "( 1X, 6( '(', I0, ',', I0, ')', : ) )" )      &
+              ( ROW( data%MAP( l ) ), COL( data%MAP( l ) ), l = data%STR( i ), &
+                data%STR( i + 1 ) - 1 )
+          END DO
+        END IF
 
-      IF ( control%out > 0 .AND. control%print_level > 2 ) THEN
-        WRITE( control%out, "( ' matrix:' )" )
-        DO l = 1, data%STR( n + 1 ) - 1
-          WRITE( control%out, "( 1X, I0, 2( ' (', I0, ',', I0, ')' ) )" ) l,   &
-            ROW( data%MAP( l ) ), COL( data%MAP( l ) ),                        &
-            COL( data%MAP( data%MAP_lower( l ) ) ),                            &
-            ROW( data%MAP( data%MAP_lower( l ) ) )
-        END DO
-      END IF
+        IF ( control%out > 0 .AND. control%print_level > 2 ) THEN
+          WRITE( control%out, "( ' matrix:' )" )
+          DO l = 1, data%STR( n + 1 ) - 1
+            WRITE( control%out, "( 1X, I0, 2( ' (', I0, ',', I0, ')' ) )" ) l, &
+              ROW( data%MAP( l ) ), COL( data%MAP( l ) ),                      &
+              COL( data%MAP( data%MAP_lower( l ) ) ),                          &
+              ROW( data%MAP( data%MAP_lower( l ) ) )
+          END DO
+        END IF
 
 !  allocate further workspace to record row (inverse) permutations (PERM_inv)
 !  and the starting addresses for undetermined entries in each row (STU)
 
-      array_name = 'SHA: data%PERM_inv'
-      CALL SPACE_resize_array( n, data%PERM_inv,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%PERM_inv'
+        CALL SPACE_resize_array( n, data%PERM_inv,                             &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'SHA: data%STU'
-      CALL SPACE_resize_array( n, data%STU,                                    &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        array_name = 'SHA: data%STU'
+        CALL SPACE_resize_array( n, data%STU,                                  &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  initialize undetermined row entry pointers
 
-      data%STU( 1 : n ) = data%STR( 1 : n )
+        data%STU( 1 : n ) = data%STR( 1 : n )
 
-      SELECT CASE ( inform%approximation_algorithm_used )
+        SELECT CASE ( inform%approximation_algorithm_used )
 
-!  ----------------------------------
-!  algorithms 1-3 (aka paper 2.1-2.3)
-!  ----------------------------------
+!  --------------------------------------------------------------
+!  algorithms 2, 5 and 6 (aka paper 2.2 and old paper 2.1 &  2.3)
+!  --------------------------------------------------------------
 
-      CASE ( 1 : 3 )
+        CASE ( 2, 5 : 6 )
 
 !  find a row with the lowest count
 
-        DO l = 1, n
-          i = data%LIST( MAX( data%FIRST( min_degree ), l ) )
-          data%FIRST( min_degree ) = MAX( data%FIRST( min_degree ), l ) + 1
-          IF ( min_degree > 0 ) THEN
-            data%LAST( min_degree - 1 ) = data%FIRST( min_degree ) - 1
-            data%FIRST( min_degree - 1 ) = data%FIRST( min_degree )
-          END IF
+          DO l = 1, n
+            i = data%LIST( MAX( data%FIRST( min_degree ), l ) )
+            data%FIRST( min_degree ) = MAX( data%FIRST( min_degree ), l ) + 1
+            IF ( min_degree > 0 ) THEN
+              data%LAST( min_degree - 1 ) = data%FIRST( min_degree ) - 1
+              data%FIRST( min_degree - 1 ) = data%FIRST( min_degree )
+            END IF
 
 !  update the minumum degree
 
-          IF ( l < n ) THEN
-            DO j = min_degree, max_row
-              IF ( data%FIRST( j ) <= data%LAST( j ) ) THEN
-                min_degree = j
-                EXIT
-              END IF
-            END DO
+            IF ( l < n ) THEN
+              DO j = min_degree, max_row
+                IF ( data%FIRST( j ) <= data%LAST( j ) ) THEN
+                  min_degree = j
+                  EXIT
+                END IF
+              END DO
 
 !  reduce the row counts for each other row j that has an entry in column i
 
-            DO k = data%STU( i ), data%STR( i + 1 ) - 1
-              kk = data%MAP( k )
-              r = ROW( kk ) ; c = COL( kk )
-              IF ( r == c ) CYCLE
+              DO k = data%STU( i ), data%STR( i + 1 ) - 1
+                kk = data%MAP( k )
+                r = ROW( kk ) ; c = COL( kk )
+                IF ( r == c ) CYCLE
 
 !  determine which of row(kk) or col(kk) gives the row number j
 
-              IF ( c == i ) THEN
-                j = r
-              ELSE
-                j = c
-              END IF
+                IF ( c == i ) THEN
+                  j = r
+                ELSE
+                  j = c
+                END IF
 
 !  upgrade DEGREE and its pointers
 
@@ -816,84 +1002,166 @@
 !  interchange entries jj = PU(j) and kk = data%MAP_lower(k) of MAP
 !  and their shadows
 
-              jj = data%STU( j )
-              kk = data%MAP_lower( k )
-              IF ( jj /= kk ) THEN
-                k1 = data%MAP_lower( kk )
-                j1 = data%MAP_lower( jj )
-                data%MAP_lower( jj ) = k1
-                data%MAP_lower( k1 ) = jj
-                data%MAP_lower( kk ) = j1
-                data%MAP_lower( j1 ) = kk
-                ll = data%MAP( jj )
-                data%MAP( jj ) = data%MAP( kk )
-                data%MAP( kk ) = ll
-              END IF
-              data%STU( j ) = data%STU( j ) + 1
-            END DO
-          END IF
-          data%COUNT( i ) = n + 1
-          data%PERM_inv( l ) = i
-        END DO
-
-        IF ( inform%approximation_algorithm_used == 2 ) THEN
-          data%differences_needed                                              &
-            = MAXVAL( data%STR( 2 : n + 1 ) -  data%STU( 1 : n ) )
-        ELSE IF ( inform%approximation_algorithm_used == 3 ) THEN
-          data%differences_needed = 0
-          DO i = 1, n
-            IF ( data%STR( i + 1 ) - data%STR( i ) <=                          &
-                 control%max_sparse_degree ) THEN
-              data%differences_needed = MAX( data%differences_needed,          &
-                                             data%STR( i + 1 ) - data%STR( i ) )
-            ELSE
-              data%differences_needed = MAX( data%differences_needed,          &
-                                             data%STR( i + 1 ) - data%STU( i ) )
+                jj = data%STU( j )
+                kk = data%MAP_lower( k )
+                IF ( jj /= kk ) THEN
+                  k1 = data%MAP_lower( kk )
+                  j1 = data%MAP_lower( jj )
+                  data%MAP_lower( jj ) = k1
+                  data%MAP_lower( k1 ) = jj
+                  data%MAP_lower( kk ) = j1
+                  data%MAP_lower( j1 ) = kk
+                  ll = data%MAP( jj )
+                  data%MAP( jj ) = data%MAP( kk )
+                  data%MAP( kk ) = ll
+                END IF
+                data%STU( j ) = data%STU( j ) + 1
+              END DO
             END IF
+            data%COUNT( i ) = n + 1
+            data%PERM_inv( l ) = i
           END DO
-        ELSE
-          data%differences_needed                                              &
-            = MAXVAL( data%STR( 2 : n + 1 ) -  data%STR( 1 : n ) )
-        END IF
+
+          IF ( inform%approximation_algorithm_used == 2 ) THEN
+            data%differences_needed                                            &
+              = MAXVAL( data%STR( 2 : n + 1 ) -  data%STU( 1 : n ) )
+          ELSE IF ( inform%approximation_algorithm_used == 6 ) THEN
+            data%differences_needed = 0
+            DO i = 1, n
+              IF ( data%STR( i + 1 ) - data%STR( i ) <=                        &
+                   control%sparse_row ) THEN
+                data%differences_needed = MAX( data%differences_needed,        &
+                                             data%STR( i + 1 ) - data%STR( i ) )
+              ELSE
+                data%differences_needed = MAX( data%differences_needed,        &
+                                             data%STR( i + 1 ) - data%STU( i ) )
+              END IF
+            END DO
+          ELSE
+            data%differences_needed                                            &
+              = MAXVAL( data%STR( 2 : n + 1 ) -  data%STR( 1 : n ) )
+          END IF
 
 !  report the numbers of each block size
 
-        data%LAST( 0 : data%differences_needed ) = 0
-        DO i = 1, n
-          l = data%STR( i + 1 ) - data%STU( i )
-          data%LAST( l ) = data%LAST( l ) + 1
-        END DO
-        IF ( printi ) THEN
-          WRITE( control%out, "( A, ' (block size, # with this size):' )" )    &
-            prefix
-          CALL SHA_write_nonzero_list( control%out, data%differences_needed,   &
-                                       data%LAST )
-        END IF
+          data%LAST( 0 : data%differences_needed ) = 0
+          DO i = 1, n
+            l = data%STR( i + 1 ) - data%STU( i )
+            data%LAST( l ) = data%LAST( l ) + 1
+          END DO
+          IF ( printi ) THEN
+            WRITE( control%out, "( A, ' (block size, # with this size):' )" )  &
+              prefix
+            CALL SHA_write_nonzero_list( control%out, data%differences_needed, &
+                                         data%LAST )
+          END IF
 
-!  ---------------------------
-!  algorithm 4 (aka paper 2.4)
-!  ---------------------------
+!  -------------------------------
+!  algorithm 7 (aka old paper 2.4)
+!  -------------------------------
 
-      CASE ( 4 )
-        data%unsym_rows = 0
-        DO i = 1, n
+        CASE ( 7 )
+          data%unsym_rows = 0
+          DO i = 1, n
 
-!  skip rows that have more than max_sparse_degree entries
+!  skip rows that have more than sparse_row entries
 
-          IF ( data%STR( i + 1 ) - data%STR( i ) >                             &
-               control%max_sparse_degree ) CYCLE
-          data%unsym_rows = data%unsym_rows + 1
-          data%PERM_inv( data%unsym_rows ) = i
+            IF ( data%STR( i + 1 ) - data%STR( i ) >                           &
+                 control%sparse_row ) CYCLE
+            data%unsym_rows = data%unsym_rows + 1
+            data%PERM_inv( data%unsym_rows ) = i
 
 !  reduce the row counts for all other rows that have an entry in column i
 
-          IF ( data%unsym_rows < n ) THEN
+            IF ( data%unsym_rows < n ) THEN
+              DO k = data%STU( i ), data%STR( i + 1 ) - 1
+                kk = data%MAP( k )
+                r = ROW( kk ) ; c = COL( kk )
+                IF ( r == c ) CYCLE
+
+!  determine which of row(kk) or col(kk) gives the column number j
+
+                IF ( c == i ) THEN
+                  j = r
+                ELSE
+                  j = c
+                END IF
+
+!  interchange entries jj = PU(j) and kk = data%MAP_lower( k ) of MAP
+!  and their shadows
+
+                jj = data%STU( j )
+                kk = data%MAP_lower( k )
+                IF ( jj /= kk ) THEN
+                  k1 = data%MAP_lower( kk )
+                  j1 = data%MAP_lower( jj )
+                  data%MAP_lower( jj ) = k1
+                  data%MAP_lower( k1 ) = jj
+                  data%MAP_lower( kk ) = j1
+                  data%MAP_lower( j1 ) = kk
+                  ll = data%MAP( jj )
+                  data%MAP( jj ) = data%MAP( kk )
+                  data%MAP( kk ) = ll
+                END IF
+                data%STU( j ) = data%STU( j ) + 1
+              END DO
+            END IF
+            data%COUNT( i ) = n + 1
+          END DO
+
+          inform%max_reduced_degree = 0
+          data%differences_needed = 0
+          j = data%unsym_rows
+          DO i = 1, n
+            IF (  data%COUNT( i ) == n + 1 ) THEN
+              data%STU( i ) = data%STR( i )
+              data%differences_needed =                                        &
+                MAX( data%differences_needed, data%STR( i + 1 )-data%STU( i ) )
+            ELSE
+              inform%max_reduced_degree =                                      &
+               MAX( inform%max_reduced_degree, data%STR( i + 1 )-data%STU( i ) )
+              j = j + 1
+              data%PERM_inv( j ) = i
+            END IF
+          END DO
+
+          data%differences_needed                                              &
+            = MAX( data%differences_needed, inform%max_reduced_degree )
+
+          IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
+!           WRITE(  control%out, "( ' maximum degree in the connectivity',     &
+!        &   ' graph = ', I0, /, 1X, I0, ' symmetric differences required ',   &
+!        &   /, ' max reduced degree = ', I0 )" ) inform%max_degree,           &
+!           data%differences_needed, inform%max_reduced_degree
+          END IF
+
+!  -------------------------------
+!  algorithm 8 (aka old paper 2.5)
+!  -------------------------------
+
+        CASE ( 8 )
+
+          data%differences_needed = 0
+          data%l_sparse = data%LAST( MIN( max_row, control%sparse_row ) )
+          data%LAST( 0 : max_row ) = 0
+
+!  loop over the rows by increasing counts
+
+          DO l = 1, data%l_sparse
+            i = data%LIST( l )
+            data%PERM_inv( l ) = i
+            ll = data%STR( i + 1 ) - data%STR( i )
+            data%differences_needed = MAX( data%differences_needed, ll )
+            IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
+
+!  loop over the entries in the chosen row
+
             DO k = data%STU( i ), data%STR( i + 1 ) - 1
               kk = data%MAP( k )
               r = ROW( kk ) ; c = COL( kk )
               IF ( r == c ) CYCLE
 
-!  determine which of row(kk) or col(kk) gives the column number j
+!  determine which of row(kk) or col(kk) gives the row number j
 
               IF ( c == i ) THEN
                 j = r
@@ -901,7 +1169,7 @@
                 j = c
               END IF
 
-!  interchange entries jj = PU(j) and kk = data%MAP_lower( k ) of MAP
+!  interchange entries jj = PU(j) and kk = data%MAP_lower(k) of MAP
 !  and their shadows
 
               jj = data%STU( j )
@@ -917,110 +1185,29 @@
                 data%MAP( jj ) = data%MAP( kk )
                 data%MAP( kk ) = ll
               END IF
-              data%STU( j ) = data%STU( j ) + 1
+              data%STU( j ) = jj + 1
             END DO
-          END IF
-          data%COUNT( i ) = n + 1
-        END DO
-
-        inform%max_reduced_degree = 0
-        data%differences_needed = 0
-        j = data%unsym_rows
-        DO i = 1, n
-          IF (  data%COUNT( i ) == n + 1 ) THEN
-            data%STU( i ) = data%STR( i )
-            data%differences_needed =                                          &
-              MAX( data%differences_needed, data%STR( i + 1 ) - data%STU( i ) )
-          ELSE
-            inform%max_reduced_degree =                                        &
-             MAX( inform%max_reduced_degree, data%STR( i + 1 ) - data%STU( i ) )
-            j = j + 1
-            data%PERM_inv( j ) = i
-          END IF
-        END DO
-
-        data%differences_needed                                                &
-          = MAX( data%differences_needed, inform%max_reduced_degree )
-
-        IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
-!         WRITE(  control%out, "( ' maximum degree in the connectivity',       &
-!      &   ' graph = ', I0, /, 1X, I0, ' symmetric differences required ',     &
-!      &   /, ' max reduced degree = ', I0 )" )                                &
-!         inform%max_degree, data%differences_needed, inform%max_reduced_degree
-        END IF
-
-!  ---------------------------
-!  algorithm 5 (aka paper 2.5)
-!  ---------------------------
-
-      CASE ( 5 )
-
-        data%differences_needed = 0
-        data%l_sparse = data%LAST( MIN( max_row, control%max_sparse_degree ) )
-        data%LAST( 0 : max_row ) = 0
-
-!  loop over the rows by increasing counts
-
-        DO l = 1, data%l_sparse
-          i = data%LIST( l )
-          data%PERM_inv( l ) = i
-          ll = data%STR( i + 1 ) - data%STR( i )
-          data%differences_needed = MAX( data%differences_needed, ll )
-          IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
-
-!  loop over the entries in the chosen row
-
-          DO k = data%STU( i ), data%STR( i + 1 ) - 1
-            kk = data%MAP( k )
-            r = ROW( kk ) ; c = COL( kk )
-            IF ( r == c ) CYCLE
-
-!  determine which of row(kk) or col(kk) gives the row number j
-
-            IF ( c == i ) THEN
-              j = r
-            ELSE
-              j = c
-            END IF
-
-!  interchange entries jj = PU(j) and kk = data%MAP_lower(k) of MAP
-!  and their shadows
-
-            jj = data%STU( j )
-            kk = data%MAP_lower( k )
-            IF ( jj /= kk ) THEN
-              k1 = data%MAP_lower( kk )
-              j1 = data%MAP_lower( jj )
-              data%MAP_lower( jj ) = k1
-              data%MAP_lower( k1 ) = jj
-              data%MAP_lower( kk ) = j1
-              data%MAP_lower( j1 ) = kk
-              ll = data%MAP( jj )
-              data%MAP( jj ) = data%MAP( kk )
-              data%MAP( kk ) = ll
-            END IF
-            data%STU( j ) = jj + 1
           END DO
-        END DO
 
-        DO l = data%l_sparse + 1, n
-          i = data%LIST( l )
-          data%PERM_inv( l ) = i
-          ll = data%STR( i + 1 ) - data%STU( i )
-          data%differences_needed = MAX( data%differences_needed, ll )
-          IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
-        END DO
+          DO l = data%l_sparse + 1, n
+            i = data%LIST( l )
+            data%PERM_inv( l ) = i
+            ll = data%STR( i + 1 ) - data%STU( i )
+            data%differences_needed = MAX( data%differences_needed, ll )
+            IF ( printi ) data%LAST( ll ) = data%LAST( ll ) + 1
+          END DO
 
 !  report the numbers of each block size
 
-        IF ( printi ) THEN
-          WRITE( control%out, "( A, ' (block size, # with this size):' )" )    &
-            prefix
-          CALL SHA_write_nonzero_list( control%out, data%differences_needed,   &
-                                       data%LAST )
-        END IF
+          IF ( printi ) THEN
+            WRITE( control%out, "( A, ' (block size, # with this size):' )" )  &
+              prefix
+            CALL SHA_write_nonzero_list( control%out, data%differences_needed, &
+                                         data%LAST )
+          END IF
+        END SELECT
+        inform%differences_needed = data%differences_needed
       END SELECT
-      inform%differences_needed = data%differences_needed
 
 !  prepare to return
 
@@ -1181,7 +1368,7 @@
       INTEGER ( KIND = ip_ ) :: m_max, liwork, lwork, mu, nu, min_mn
       INTEGER ( KIND = ip_ ) :: m_needed, m_used, stri, strip1, stui, status
       INTEGER ( KIND = ip_ ) :: ii_start, ii_end, ii_stride, pass
-      INTEGER ( KIND = ip_ ) :: dense_linear_solver
+      INTEGER ( KIND = ip_ ) :: dense_linear_solver, warning
       LOGICAL :: sym, order_present
 !     LOGICAL :: debug_residuals = .TRUE.
       LOGICAL :: debug_residuals = .FALSE.
@@ -1202,103 +1389,160 @@
         data%solve_system_data%out = 0
       END IF
 
+!  branch depending on the algorithm specified
+
+      SELECT CASE ( inform%approximation_algorithm_used )
+
+!  ------------------------------------------------
+!  algorithms 1, 3 and 4 (aka paper 2.1, 2.3 & 2.4)
+!  ------------------------------------------------
+
+      CASE ( 1, 3, 4 )
+
+        SELECT CASE( inform%approximation_algorithm_used )
+
+!  ------------------------------------------------
+!  algorithms 1 (aka paper 2.1)
+!  ------------------------------------------------
+
+        CASE ( 1 )
+          CALL SHA_estimate_2_1( n, data%nnz_unsym, data%PTR_unsym,            &
+                                 data%COL_unsym, m_available,                  &
+                                 S, ls1, ls2, Y, ly1, ly2,                     &
+                                 data%VAL_unsym, control%extra_differences,    &
+                                 inform%status, data%INFO, ORDER )
+
+!  ------------------------------------------------
+!  algorithms 3 (aka paper 2.1)
+!  ------------------------------------------------
+
+        CASE ( 3 )
+          CALL SHA_estimate_2_3( n, data%nnz_unsym, data%PTR_unsym,            &
+                                 data%COL_unsym, m_available,                  &
+                                 S, ls1, ls2, Y, ly1, ly2,                     &
+                                 data%VAL_unsym, control%extra_differences,    &
+                                 control%sparse_row,                           &
+                                 inform%status, data%SPARSE_INDS,              &
+                                 data%DENSE_INDS, data%INFO, ORDER )
+
+!  ------------------------------------------------
+!  algorithms 4 (aka paper 2.1)
+!  ------------------------------------------------
+
+        CASE ( 4 )
+          CALL SHA_estimate_2_4( n, data%nnz_unsym, data%PTR_unsym,            &
+                                 data%COL_unsym, m_available,                  &
+                                 S, ls1, ls2, Y, ly1, ly2,                     &
+                                 data%VAL_unsym, control%extra_differences,    &
+                                 control%recursion_max,                        &
+                                 control%recursion_entries_required,           &
+                                 inform%status,                                &
+                                 data%SPARSE_INDS, data%DENSE_INDS,            &
+                                 data%TMP_INDS, data%NSOLVED,                  &
+                                 data%INFO, ORDER )
+
+        END SELECT
+        IF ( inform%status < GALAHAD_ok ) THEN
+          IF ( inform%status == GALAHAD_error_allocate .OR.                    &
+               inform%status == GALAHAD_error_deallocate ) THEN
+            inform%alloc_status = - 1
+            inform%bad_alloc = 'workspace array from SHA_estimate subroutine'
+          END IF
+          GO TO 900
+        END IF
+
+!  copy the entries from the complete matrix back to its lower triangle
+
+        DO i = 1, nz
+          VAL( i ) = data%VAL_unsym( data%MAP( i ) )
+        END DO
+
+!  ---------------------------------------------------------
+!  algorithm 2, 5-8 (aka paper 2.2, old paper 2.1 & 2.3-2.5)
+!  ---------------------------------------------------------
+
+      CASE ( 2, 5 : 8 )
+
 !  recall the number of differences needed to reproduce a fixed Hessian
 
-      m_needed = data%differences_needed
+        m_needed = data%differences_needed
+
+!  warn if there is insufficient data
+ 
+        IF ( m_needed > m_available ) THEN
+!         WRITE( *, * ) ( ' Warning: insufficient data pairs are available')
+          warning = GALAHAD_warning_data
+        ELSE
+          warning = GALAHAD_ok
+        END IF
 
 ! add %extra_differences to accommodate a singularity precaution if possible
 
-!     m_max = MIN( m_needed + control%extra_differences, m_available )
-      m_max = MIN( m_needed + MAX( control%extra_differences, 1 ), m_available )
-      n_max = m_needed
-      min_mn = MIN( m_max, n_max )
+!       m_max = MIN( m_needed + control%extra_differences, m_available )
+        m_max = MIN( m_needed + MAX( control%extra_differences, 1 ),           &
+                     m_available )
+        n_max = m_needed
+        min_mn = MIN( m_max, n_max )
 
-      data%singular_matrices = 0
-      order_present = PRESENT( order )
+        data%singular_matrices = 0
+        order_present = PRESENT( order )
 
 !  allocate workspace
 
 !  generic solver workspace
 
-      IF ( data%la1 < m_max .OR. data%la2 < n_max ) THEN
-        data%la1 = m_max ; data%la2 = n_max
+        IF ( data%la1 < m_max .OR. data%la2 < n_max ) THEN
+          data%la1 = m_max ; data%la2 = n_max
 !write(6,*) ' la1, la2 ', data%la1, data%la2
-        array_name = 'SHA: data%A'
-        CALL SPACE_resize_array( data%la1, data%la2, data%A,                   &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-      END IF
-
-      IF ( data%lb1 < m_max ) THEN
-        data%lb1 = MAX( m_max, n_max )
-!write(6,*) ' lb1 ', data%lb1
-        array_name = 'SHA: data%B'
-        CALL SPACE_resize_array( data%lb1, 1_ip_, data%B,                      &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 900
-      END IF
-
-!  solver-specific workspace
-
-      IF ( data%dense_linear_solver /= control%dense_linear_solver ) THEN
-        data%dense_linear_solver = control%dense_linear_solver
-        IF ( data%dense_linear_solver < 1 .OR.                                 &
-             data%dense_linear_solver > 4 ) data%dense_linear_solver = 3
-
-!  allocate space to hold a copy of A if needed
-
-        IF ( data%la_save1 < m_max .OR. data%la_save2 < n_max ) THEN
-          data%la_save1 = m_max ; data%la_save2 = n_max
-          array_name = 'SHA: data%A_save'
-          CALL SPACE_resize_array( data%la_save1, data%la_save2,               &
-             data%A_save, inform%status, inform%alloc_status,                  &
-             array_name = array_name,                                          &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-          IF ( inform%status /= GALAHAD_ok ) GO TO 900
-        END IF
-
-!  allocate space to hold a copy of b if needed
-
-        IF ( data%lb_save < m_needed ) THEN
-          data%lb_save = m_max
-          array_name = 'SHA: data%B_save'
-          CALL SPACE_resize_array( data%lb_save, 1_ip_,                        &
-                 data%B_save, inform%status, inform%alloc_status,              &
-                 array_name = array_name,                                      &
+          array_name = 'SHA: data%A'
+          CALL SPACE_resize_array( data%la1, data%la2, data%A,                 &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
                  exact_size = control%space_critical,                          &
                  bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
         END IF
 
-!  discover how much additional temporary real storage may be needed by LU / LQ
+        IF ( data%lb1 < m_max ) THEN
+          data%lb1 = MAX( m_max, n_max )
+!write(6,*) ' lb1 ', data%lb1
+          array_name = 'SHA: data%B'
+          CALL SPACE_resize_array( data%lb1, 1_ip_, data%B,                    &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
 
-        IF ( data%dense_linear_solver == 1 ) THEN
-          liwork = min_mn
-        ELSE IF ( data%dense_linear_solver == 2 ) THEN
-          m_used = m_needed
-          CALL GELSY( m_used, n, 1_ip_, data%A, data%la1, data%B, data%lb1,    &
-                      data%solve_system_data%IWORK, eps_singular, rank,        &
-                      data%WORK_1, -1_ip_, status )
-          lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
+!  solver-specific workspace
 
-!  allocate space to hold the singular values if needed
+        IF ( data%dense_linear_solver /= control%dense_linear_solver ) THEN
+          data%dense_linear_solver = control%dense_linear_solver
+          IF ( data%dense_linear_solver < 1 .OR.                               &
+               data%dense_linear_solver > 4 ) data%dense_linear_solver = 3
 
-        ELSE
-          IF ( data%ls < min_mn ) THEN
-!           data%ls = min_mn
-            data%ls = min_mn + 1
-            array_name = 'SHA: data%solve_syetem_data%S'
-            CALL SPACE_resize_array( data%ls, data%solve_system_data%S,        &
-                   inform%status, inform%alloc_status,                         &
+!  allocate space to hold a copy of A if needed
+
+          IF ( data%la_save1 < m_max .OR. data%la_save2 < n_max ) THEN
+            data%la_save1 = m_max ; data%la_save2 = n_max
+            array_name = 'SHA: data%A_save'
+            CALL SPACE_resize_array( data%la_save1, data%la_save2,             &
+               data%A_save, inform%status, inform%alloc_status,                &
+               array_name = array_name,                                        &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+          END IF
+
+!  allocate space to hold a copy of b if needed
+
+          IF ( data%lb_save < m_needed ) THEN
+            data%lb_save = m_max
+            array_name = 'SHA: data%B_save'
+            CALL SPACE_resize_array( data%lb_save, 1_ip_,                      &
+                   data%B_save, inform%status, inform%alloc_status,            &
                    array_name = array_name,                                    &
                    deallocate_error_fatal = control%deallocate_error_fatal,    &
                    exact_size = control%space_critical,                        &
@@ -1306,56 +1550,84 @@
             IF ( inform%status /= GALAHAD_ok ) GO TO 900
           END IF
 
+!  discover how much additional temporary real storage may be needed by LU / LQ
+
+          IF ( data%dense_linear_solver == 1 ) THEN
+            liwork = min_mn
+          ELSE IF ( data%dense_linear_solver == 2 ) THEN
+            m_used = m_needed
+            CALL GELSY( m_used, n, 1_ip_, data%A, data%la1, data%B, data%lb1,  &
+                        data%solve_system_data%IWORK, eps_singular, rank,      &
+                        data%WORK_1, -1_ip_, status )
+            lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
+
+!  allocate space to hold the singular values if needed
+
+          ELSE
+            IF ( data%ls < min_mn ) THEN
+!             data%ls = min_mn
+              data%ls = min_mn + 1
+              array_name = 'SHA: data%solve_syetem_data%S'
+              CALL SPACE_resize_array( data%ls, data%solve_system_data%S,      &
+                     inform%status, inform%alloc_status,                       &
+                     array_name = array_name,                                  &
+                     deallocate_error_fatal = control%deallocate_error_fatal,  &
+                     exact_size = control%space_critical,                      &
+                     bad_alloc = inform%bad_alloc, out = control%error )
+              IF ( inform%status /= GALAHAD_ok ) GO TO 900
+            END IF
+
 !  discover how much temporary integer and real storage may be needed by SVD
 
-!         m_used = m_needed
-          m_used = m_max
-          IF ( data%dense_linear_solver == 4 ) THEN
-            CALL GELSD( m_used, n_max, 1_ip_, data%A, data%la1, data%B,        &
-                        data%lb1, data%solve_system_data%S, eps_singular,      &
-                        rank, data%WORK_1, - 1_ip_, data%IWORK_1, status )
-            lwork = INT( data%WORK_1( 1 ) ) ; liwork = INT( data%IWORK_1( 1 ) )
-          ELSE
-            CALL GELSS( m_used, n_max, 1_ip_, data%A, data%la1, data%B,        &
-                        data%lb1, data%solve_system_data%S, eps_singular,      &
-                        rank, data%WORK_1, - 1_ip_, status )
-            lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
+!           m_used = m_needed
+            m_used = m_max
+            IF ( data%dense_linear_solver == 4 ) THEN
+              CALL GELSD( m_used, n_max, 1_ip_, data%A, data%la1, data%B,      &
+                          data%lb1, data%solve_system_data%S, eps_singular,    &
+                          rank, data%WORK_1, - 1_ip_, data%IWORK_1, status )
+              lwork = INT( data%WORK_1( 1 ) )
+              liwork = INT( data%IWORK_1( 1 ) )
+            ELSE
+              CALL GELSS( m_used, n_max, 1_ip_, data%A, data%la1, data%B,      &
+                          data%lb1, data%solve_system_data%S, eps_singular,    &
+                          rank, data%WORK_1, - 1_ip_, status )
+              lwork = INT( data%WORK_1( 1 ) ) ; liwork = n_max
+            END IF
           END IF
-        END IF
 
 !  allocate temporary integer storage
 
-        IF ( data%dense_linear_solver /= 3 ) THEN
-          IF ( data%solve_system_data%liwork < liwork ) THEN
-            data%solve_system_data%liwork = liwork
-            array_name = 'SHA: data%solve_system_data%IWORK'
-            CALL SPACE_resize_array( data%solve_system_data%liwork,            &
-                   data%solve_system_data%IWORK, inform%status,                &
-                   inform%alloc_status, array_name = array_name,               &
-                   deallocate_error_fatal = control%deallocate_error_fatal,    &
-                   exact_size = control%space_critical,                        &
-                   bad_alloc = inform%bad_alloc, out = control%error )
-            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+          IF ( data%dense_linear_solver /= 3 ) THEN
+            IF ( data%solve_system_data%liwork < liwork ) THEN
+              data%solve_system_data%liwork = liwork
+              array_name = 'SHA: data%solve_system_data%IWORK'
+              CALL SPACE_resize_array( data%solve_system_data%liwork,          &
+                     data%solve_system_data%IWORK, inform%status,              &
+                     inform%alloc_status, array_name = array_name,             &
+                     deallocate_error_fatal = control%deallocate_error_fatal,  &
+                     exact_size = control%space_critical,                      &
+                     bad_alloc = inform%bad_alloc, out = control%error )
+              IF ( inform%status /= GALAHAD_ok ) GO TO 900
+            END IF
           END IF
-        END IF
 
 !  allocate temporary real storage
 
-        IF ( data%dense_linear_solver /= 1 ) THEN
-          IF ( data%solve_system_data%lwork < lwork ) THEN
-            data%solve_system_data%lwork = lwork
-            array_name = 'SHA: data%solve_system_data%WORK'
-            CALL SPACE_resize_array( data%solve_system_data%lwork,             &
-                   data%solve_system_data%WORK, inform%status,                 &
-                   inform%alloc_status, array_name = array_name,               &
-                   deallocate_error_fatal = control%deallocate_error_fatal,    &
-                   exact_size = control%space_critical,                        &
-                   bad_alloc = inform%bad_alloc, out = control%error )
-            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+          IF ( data%dense_linear_solver /= 1 ) THEN
+            IF ( data%solve_system_data%lwork < lwork ) THEN
+              data%solve_system_data%lwork = lwork
+              array_name = 'SHA: data%solve_system_data%WORK'
+              CALL SPACE_resize_array( data%solve_system_data%lwork,           &
+                     data%solve_system_data%WORK, inform%status,               &
+                     inform%alloc_status, array_name = array_name,             &
+                     deallocate_error_fatal = control%deallocate_error_fatal,  &
+                     exact_size = control%space_critical,                      &
+                     bad_alloc = inform%bad_alloc, out = control%error )
+              IF ( inform%status /= GALAHAD_ok ) GO TO 900
+            END IF
           END IF
         END IF
-      END IF
-      inform%status = GALAHAD_ok
+        inform%status = GALAHAD_ok
 
 !  for permuted row i:
 
@@ -1372,60 +1644,60 @@
 !  backwards over separate segments (the second pass is skipped for the
 !  other algorithms)
 
-      DO pass = 1, 2
+        DO pass = 1, 2
 
 !  run through the rows finding the unknown entries (backwards when
 !  not exploiting symmetry)
 
-        IF ( pass == 1 ) THEN
-          IF ( inform%approximation_algorithm_used == 1 ) THEN
-            ii_start = n ; ii_end = 1 ; ii_stride = - 1
-          ELSE IF ( inform%approximation_algorithm_used == 5 ) THEN
-            ii_start = data%l_sparse ; ii_end = 1 ; ii_stride = - 1
+          IF ( pass == 1 ) THEN
+            IF ( inform%approximation_algorithm_used == 5 ) THEN
+              ii_start = n ; ii_end = 1 ; ii_stride = - 1
+            ELSE IF ( inform%approximation_algorithm_used == 8 ) THEN
+              ii_start = data%l_sparse ; ii_end = 1 ; ii_stride = - 1
+            ELSE
+              ii_start = 1 ; ii_end = n ; ii_stride = 1
+            END IF
           ELSE
-            ii_start = 1 ; ii_end = n ; ii_stride = 1
+            IF ( inform%approximation_algorithm_used < 8 ) EXIT
+            ii_start = n ; ii_end = data%l_sparse + 1 ; ii_stride = - 1
           END IF
-        ELSE
-          IF ( inform%approximation_algorithm_used < 5 ) EXIT
-          ii_start = n ; ii_end = data%l_sparse + 1 ; ii_stride = - 1
-        END IF
-        DO ii = ii_start, ii_end, ii_stride
-          i = data%PERM_inv( ii )
-          stri = data%STR( i ) ; strip1 = data%STR( i + 1 )
+          DO ii = ii_start, ii_end, ii_stride
+            i = data%PERM_inv( ii )
+            stri = data%STR( i ) ; strip1 = data%STR( i + 1 )
 
 !  there are nu unknowns for this pass
 
-          nu = strip1 - stri
-          IF ( nu == 0 ) CYCLE
+            nu = strip1 - stri
+            IF ( nu == 0 ) CYCLE
 
 !  decide whether to exploit symmetry or not
 
-          sym = inform%approximation_algorithm_used == 2 .OR.                  &
-              ( inform%approximation_algorithm_used == 3 .AND.                 &
-                nu > control%max_sparse_degree ) .OR.                          &
-                inform%approximation_algorithm_used == 4 .OR.                  &
-              ( inform%approximation_algorithm_used == 5 .AND. pass == 2 )
-!               mu > m_needed ) .OR.                          &
-!               nu > m_available ) .OR.                          &
+            sym = inform%approximation_algorithm_used == 2 .OR.                &
+                ( inform%approximation_algorithm_used == 6 .AND.               &
+                  nu > control%sparse_row ) .OR.                               &
+                  inform%approximation_algorithm_used == 7 .OR.                &
+                ( inform%approximation_algorithm_used == 8 .AND. pass == 2 )
+!                 mu > m_needed ) .OR.                                         &
+!                 nu > m_available ) .OR.                                      &
 
 !  -----------------------------
 !  methods that exploit symmetry
 !  -----------------------------
 
-          IF ( sym ) THEN
-            stui = data%STU( i )
+            IF ( sym ) THEN
+              stui = data%STU( i )
 
 !  find nu new components of B given mu (s,y) data pairs
 
-            nu = strip1 - stui
-            IF ( nu == 0 ) CYCLE
+              nu = strip1 - stui
+              IF ( nu == 0 ) CYCLE
 
 !  acknowledge that there may not be sufficient data to find all nu components,
 !  and reset nu to the largest possible (an overdetermined least-squares
 !  problem will be solved instead)
 
-!           mu = MIN( nu + control%extra_differences, m_available )
-            mu = MIN( nu, m_available )
+!             mu = MIN( nu + control%extra_differences, m_available )
+              mu = MIN( nu, m_available )
 !if ( mu > data%la1 ) write(6,*) mu, data%la1
 
 !  compute the unknown entries B_{ij}, j in I_i^-, to satisfy
@@ -1437,98 +1709,15 @@
 !  compute the right-hand side y_{il} - sum_{j in I_i^+} B_{ij} s_{jl},
 !  initialize b to Y(i,l)
 
-            IF ( order_present ) THEN
-              data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
-            ELSE
-              data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
-            END IF
-
-!  loop over the known entries
-
-            jj = 0
-            DO k = stri, stui - 1
-              kk = data%MAP( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
-              jj = jj + 1 ; data%COUNT( jj ) = j
-
-!  subtract B_{ij} s_{jl} from b
-
               IF ( order_present ) THEN
-                data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                      &
-                  - VAL( kk ) * S( j, ORDER( 1 : mu ) )
+                data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
               ELSE
-                data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                      &
-                  - VAL( kk ) * S( j, 1 : mu )
-              END IF
-            END DO
-            IF ( control%out > 0 .AND. control%print_level > 1 )               &
-              WRITE( control%out, "( ' known', 9( 1X, I0 ), /,                 &
-             &  ( 1X, 10I6 ) )" ) data%COUNT( : jj )
-
-!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
-!  B_{ij} is the jjth unknown
-
-            jj = 0
-            DO k = stui, strip1 - 1
-              kk = data%MAP( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
-              jj = jj + 1 ; data%COUNT( jj ) = j
-
-!  set the entries of A
-
-              IF ( order_present ) THEN
-                data%A( 1 : mu, jj ) = S( j, ORDER( 1 : mu ) )
-              ELSE
-                data%A( 1 : mu, jj ) = S( j, 1 : mu )
-              END IF
-            END DO
-
-! make a copy of A and b as a precaution for possible use later
-
-            IF ( mu + 1 <= m_max ) THEN
-              data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
-              data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
-            END IF
-            IF ( control%out > 0 .AND. control%print_level > 1 )               &
-              WRITE( control%out, "( ' unknown', 9( 1X, I0 ), /,               &
-             &    ( 1X, 10I6 ) )" ) data%COUNT( : jj )
-
-!  solve A x = b
-
-            IF ( mu == nu ) THEN
-              dense_linear_solver = data%dense_linear_solver
-            ELSE
-              dense_linear_solver = MAX( data%dense_linear_solver, 3 )
-            END IF
-            CALL SHA_solve_system( dense_linear_solver, mu, nu,                &
-                                   data%A, data%la1, data%B, data%lb1,         &
-                                   data%solve_system_data, i,                  &
-                                   control%out, control%print_level, info )
-
-!  if A appears to be singular, add an extra row if there is one, and
-!  solve the system as a least-squares problem
-
-            IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
-              data%singular_matrices = data%singular_matrices + 1
-
-!  initialize b to Y(i,l)
-
-              IF ( order_present ) THEN
-                data%B( mu + 1, 1 ) = Y( i, ORDER( mu + 1 ) )
-              ELSE
-                data%B( mu + 1, 1 ) = Y( i, mu + 1 )
+                data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
               END IF
 
 !  loop over the known entries
 
+              jj = 0
               DO k = stri, stui - 1
                 kk = data%MAP( k )
 
@@ -1536,17 +1725,21 @@
 
                 j = COL( kk )
                 IF ( j == i ) j = ROW( kk )
+                jj = jj + 1 ; data%COUNT( jj ) = j
 
 !  subtract B_{ij} s_{jl} from b
 
                 IF ( order_present ) THEN
-                  data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                    &
-                    - VAL( kk ) * S( j, ORDER( mu + 1 ) )
+                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
+                    - VAL( kk ) * S( j, ORDER( 1 : mu ) )
                 ELSE
-                  data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                    &
-                    - VAL( kk ) * S( j, mu + 1 )
+                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
+                    - VAL( kk ) * S( j, 1 : mu )
                 END IF
               END DO
+              IF ( control%out > 0 .AND. control%print_level > 1 )             &
+                WRITE( control%out, "( ' known', 9( 1X, I0 ), /,               &
+               &  ( 1X, 10I6 ) )" ) data%COUNT( : jj )
 
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
 !  B_{ij} is the jjth unknown
@@ -1559,77 +1752,156 @@
 
                 j = COL( kk )
                 IF ( j == i ) j = ROW( kk )
+                jj = jj + 1 ; data%COUNT( jj ) = j
 
 !  set the entries of A
 
-                jj = jj + 1
                 IF ( order_present ) THEN
-                  data%A( mu + 1, jj ) = S( j, ORDER( mu + 1 ) )
+                  data%A( 1 : mu, jj ) = S( j, ORDER( 1 : mu ) )
                 ELSE
-                  data%A( mu + 1, jj ) = S( j, mu + 1 )
+                  data%A( 1 : mu, jj ) = S( j, 1 : mu )
                 END IF
               END DO
 
+! make a copy of A and b as a precaution for possible use later
+
+              IF ( mu + 1 <= m_max ) THEN
+                data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+                data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+              END IF
+              IF ( control%out > 0 .AND. control%print_level > 1 )             &
+                WRITE( control%out, "( ' unknown', 9( 1X, I0 ), /,             &
+               &    ( 1X, 10I6 ) )" ) data%COUNT( : jj )
+
 !  solve A x = b
 
-              IF ( mu + 1 == nu ) THEN
+              IF ( mu == nu ) THEN
                 dense_linear_solver = data%dense_linear_solver
               ELSE
                 dense_linear_solver = MAX( data%dense_linear_solver, 3 )
               END IF
-              CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,          &
+              CALL SHA_solve_system( dense_linear_solver, mu, nu,              &
                                      data%A, data%la1, data%B, data%lb1,       &
                                      data%solve_system_data, i,                &
                                      control%out, control%print_level, info )
 
-!  check for errors
+!  if A appears to be singular, add an extra row if there is one, and
+!  solve the system as a least-squares problem
 
-            ELSE IF ( info /= 0 ) THEN
-              inform%status = GALAHAD_error_factorization
-              inform%bad_row = i ; GO TO 900
-            END IF
-
-!  finally, set the unknown B_{ij}
-
-            jj = 1
-            DO k = stui, strip1 - 1
-              VAL( data%MAP( k ) ) = data%B( jj, 1 )
-              jj = jj + 1
-            END DO
-
-!  if required, compute and print the residuals
-
-            IF ( debug_residuals ) THEN
+              IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
+                data%singular_matrices = data%singular_matrices + 1
 
 !  initialize b to Y(i,l)
 
-              IF ( order_present ) THEN
-                data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
-              ELSE
-                data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
-              END IF
+                IF ( order_present ) THEN
+                  data%B( mu + 1, 1 ) = Y( i, ORDER( mu + 1 ) )
+                ELSE
+                  data%B( mu + 1, 1 ) = Y( i, mu + 1 )
+                END IF
 
 !  loop over the known entries
 
-              DO k = stri, strip1 - 1
-                kk = data%MAP( k )
+                DO k = stri, stui - 1
+                  kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
-                j = COL( kk )
-                IF ( j == i ) j = ROW( kk )
+                  j = COL( kk )
+                  IF ( j == i ) j = ROW( kk )
 
 !  subtract B_{ij} s_{jl} from b
 
-                IF ( order_present ) THEN
-                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
-                    - VAL( kk ) * S( j, ORDER( 1 : mu ) )
+                  IF ( order_present ) THEN
+                    data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                  &
+                      - VAL( kk ) * S( j, ORDER( mu + 1 ) )
+                  ELSE
+                    data%B( mu + 1, 1 ) = data%B( mu + 1, 1 )                  &
+                      - VAL( kk ) * S( j, mu + 1 )
+                  END IF
+                END DO
+
+!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
+!  B_{ij} is the jjth unknown
+
+                jj = 0
+                DO k = stui, strip1 - 1
+                  kk = data%MAP( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+                  j = COL( kk )
+                  IF ( j == i ) j = ROW( kk )
+
+!  set the entries of A
+
+                  jj = jj + 1
+                  IF ( order_present ) THEN
+                    data%A( mu + 1, jj ) = S( j, ORDER( mu + 1 ) )
+                  ELSE
+                    data%A( mu + 1, jj ) = S( j, mu + 1 )
+                  END IF
+                END DO
+
+!  solve A x = b
+
+                IF ( mu + 1 == nu ) THEN
+                  dense_linear_solver = data%dense_linear_solver
                 ELSE
-                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
-                    - VAL( kk ) * S( j, 1 : mu )
+                  dense_linear_solver = MAX( data%dense_linear_solver, 3 )
                 END IF
+                CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,        &
+                                       data%A, data%la1, data%B, data%lb1,     &
+                                       data%solve_system_data, i,              &
+                                       control%out, control%print_level, info )
+
+!  check for errors
+
+              ELSE IF ( info /= 0 ) THEN
+                inform%status = GALAHAD_error_factorization
+                inform%bad_row = i ; GO TO 900
+              END IF
+
+!  finally, set the unknown B_{ij}
+
+              jj = 1
+              DO k = stui, strip1 - 1
+                VAL( data%MAP( k ) ) = data%B( jj, 1 )
+                jj = jj + 1
               END DO
-              write(6, "( ' max error is ', ES12.4, ' in row ', I0, 1X, I0 )" )&
+
+!  if required, compute and print the residuals
+
+              IF ( debug_residuals ) THEN
+
+!  initialize b to Y(i,l)
+
+                IF ( order_present ) THEN
+                  data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
+                ELSE
+                  data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
+                END IF
+
+!  loop over the known entries
+
+                DO k = stri, strip1 - 1
+                  kk = data%MAP( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+                  j = COL( kk )
+                  IF ( j == i ) j = ROW( kk )
+
+!  subtract B_{ij} s_{jl} from b
+
+                  IF ( order_present ) THEN
+                    data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                  &
+                      - VAL( kk ) * S( j, ORDER( 1 : mu ) )
+                  ELSE
+                    data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                  &
+                      - VAL( kk ) * S( j, 1 : mu )
+                  END IF
+                END DO
+              WRITE( 6, "( ' max error is ', ES12.4, ' in row ', I0, 1X, I0 )")&
                 MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i, ii
             END IF
 
@@ -1637,9 +1909,9 @@
 !  methods that don't exploit symmetry
 !  -----------------------------------
 
-          ELSE
-!           mu = MIN( nu + control%extra_differences, m_available )
-            mu = MIN( nu, m_available )
+            ELSE
+!             mu = MIN( nu + control%extra_differences, m_available )
+              mu = MIN( nu, m_available )
 
 !  compute the unknown entries B_{ij}, j in I_i, to satisfy
 !    sum_{j in I_i} B_{ij} s_{jl}  = y_{il}
@@ -1647,69 +1919,10 @@
 
 !  store the right-hand side y_{il}, initialize b to Y(i,l)
 
-            IF ( order_present ) THEN
-              data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
-            ELSE
-              data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
-            END IF
-
-!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
-!  B_{ij} is the jjth unknown
-
-            jj = 0
-            DO k = stri, strip1 - 1
-              kk = data%MAP( k )
-
-!  determine which of row( kk ) or col( kk ) gives the column number j
-
-              j = COL( kk )
-              IF ( j == i ) j = ROW( kk )
-
-!  set the entries of A
-
-              jj = jj + 1
               IF ( order_present ) THEN
-                data%A( 1 : mu, jj ) = S( j, ORDER( 1 : mu ) )
+                data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
               ELSE
-                data%A( 1 : mu, jj ) = S( j, 1 : mu )
-              END IF
-            END DO
-
-! make a copy of A and b as a precaution for possible use later
-
-            IF ( mu + 1 <= m_max ) THEN
-              data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
-              data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
-            END IF
-
-!  solve A x = b
-
-            IF ( control%out > 0 .AND. control%print_level > 1 )               &
-              WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )           &
-                COL( data%MAP( stri : strip1 - 1 ) )
-            IF ( mu == nu ) THEN
-              dense_linear_solver = data%dense_linear_solver
-            ELSE
-              dense_linear_solver = MAX( data%dense_linear_solver, 3 )
-            END IF
-            CALL SHA_solve_system( dense_linear_solver, mu, nu, data%A,        &
-                                   data%la1, data%B, data%lb1,                 &
-                                   data%solve_system_data, i,                  &
-                                   control%out, control%print_level, info )
-
-!  if A appears to be singular, add an extra row if there is one, and
-!  solve the system as a least-squares problem
-
-            IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
-              data%singular_matrices = data%singular_matrices + 1
-!write(6,"(' singular pass, ii, i ', 5(1X, I0))" ) pass, ii, i, stri, strip1
-!  store the right-hand side y_{il}, initialize b to Y(i,l)
-
-!write(6,*)  mu + 1, m_max, ORDER( mu + 1 )
-              IF ( order_present ) THEN
-                data%B( mu + 1, 1 ) = Y( i, ORDER( mu + 1 ) )
-              ELSE
-                data%B( mu + 1, 1 ) = Y( i, mu + 1 )
+                data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
               END IF
 
 !  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
@@ -1728,83 +1941,144 @@
 
                 jj = jj + 1
                 IF ( order_present ) THEN
-                  data%A( mu + 1, jj ) = S( j, ORDER( mu + 1 ) )
+                  data%A( 1 : mu, jj ) = S( j, ORDER( 1 : mu ) )
                 ELSE
-                  data%A( mu + 1, jj ) = S( j, mu + 1 )
+                  data%A( 1 : mu, jj ) = S( j, 1 : mu )
                 END IF
               END DO
 
+! make a copy of A and b as a precaution for possible use later
+
+              IF ( mu + 1 <= m_max ) THEN
+                data%A_save( 1 : mu, 1 : nu ) = data%A( 1 : mu, 1 : nu )
+                data%B_save( 1 : mu, 1 ) = data%B( 1 : mu, 1 )
+              END IF
+
 !  solve A x = b
 
-              IF ( mu + 1 == nu ) THEN
+              IF ( control%out > 0 .AND. control%print_level > 1 )             &
+                WRITE( control%out, "( ' vars ', 9I6, /, ( 10I6 ) )" )         &
+                  COL( data%MAP( stri : strip1 - 1 ) )
+              IF ( mu == nu ) THEN
                 dense_linear_solver = data%dense_linear_solver
               ELSE
                 dense_linear_solver = MAX( data%dense_linear_solver, 3 )
               END IF
-              CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,          &
-                                     data%A, data%la1, data%B, data%lb1,       &
+              CALL SHA_solve_system( dense_linear_solver, mu, nu, data%A,      &
+                                     data%la1, data%B, data%lb1,               &
                                      data%solve_system_data, i,                &
                                      control%out, control%print_level, info )
 
-!  check for errors
+!  if A appears to be singular, add an extra row if there is one, and
+!  solve the system as a least-squares problem
 
-            ELSE IF ( info /= 0 ) THEN
-              inform%status = GALAHAD_error_factorization
-              inform%bad_row = i ; GO TO 900
-            END IF
+              IF ( info == MAX( nu, mu ) + 1 .AND. mu + 1 <= m_max ) THEN
+                data%singular_matrices = data%singular_matrices + 1
+!write(6,"(' singular pass, ii, i ', 5(1X, I0))" ) pass, ii, i, stri, strip1
+!  store the right-hand side y_{il}, initialize b to Y(i,l)
 
-!  finally, set the unknown B_{ij}
+!write(6,*)  mu + 1, m_max, ORDER( mu + 1 )
+                IF ( order_present ) THEN
+                  data%B( mu + 1, 1 ) = Y( i, ORDER( mu + 1 ) )
+                ELSE
+                  data%B( mu + 1, 1 ) = Y( i, mu + 1 )
+                END IF
 
-            jj = 0
-            DO k = stri, strip1 - 1
-              jj = jj + 1
-              VAL( data%MAP( k ) ) = data%B( jj, 1 )
-            END DO
+!  now form the matrix A whose l,jjth entry is s_{jl}, j in I_i^-, where
+!  B_{ij} is the jjth unknown
 
-!  if required, compute and print the residuals
-
-            IF ( debug_residuals ) THEN
-
-!  initialize b to Y(i,l)
-
-              IF ( order_present ) THEN
-                data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
-              ELSE
-                data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
-              END IF
-
-!  loop over the known entries
-
-              DO k = stri, strip1 - 1
-                kk = data%MAP( k )
+                jj = 0
+                DO k = stri, strip1 - 1
+                  kk = data%MAP( k )
 
 !  determine which of row( kk ) or col( kk ) gives the column number j
 
-                j = COL( kk )
-                IF ( j == i ) j = ROW( kk )
+                  j = COL( kk )
+                  IF ( j == i ) j = ROW( kk )
+
+!  set the entries of A
+
+                  jj = jj + 1
+                  IF ( order_present ) THEN
+                    data%A( mu + 1, jj ) = S( j, ORDER( mu + 1 ) )
+                  ELSE
+                    data%A( mu + 1, jj ) = S( j, mu + 1 )
+                  END IF
+                END DO
+
+!  solve A x = b
+
+                IF ( mu + 1 == nu ) THEN
+                  dense_linear_solver = data%dense_linear_solver
+                ELSE
+                  dense_linear_solver = MAX( data%dense_linear_solver, 3 )
+                END IF
+                CALL SHA_solve_system( dense_linear_solver, mu + 1, nu,        &
+                                       data%A, data%la1, data%B, data%lb1,     &
+                                       data%solve_system_data, i,              &
+                                       control%out, control%print_level, info )
+
+!  check for errors
+
+              ELSE IF ( info /= 0 ) THEN
+                inform%status = GALAHAD_error_factorization
+                inform%bad_row = i ; GO TO 900
+              END IF
+
+!  finally, set the unknown B_{ij}
+
+              jj = 0
+              DO k = stri, strip1 - 1
+                jj = jj + 1
+                VAL( data%MAP( k ) ) = data%B( jj, 1 )
+              END DO
+
+!  if required, compute and print the residuals
+
+              IF ( debug_residuals ) THEN
+
+!  initialize b to Y(i,l)
+
+                IF ( order_present ) THEN
+                  data%B( 1 : mu, 1 ) = Y( i, ORDER( 1 : mu ) )
+                ELSE
+                  data%B( 1 : mu, 1 ) = Y( i, 1 : mu )
+                END IF
+
+!  loop over the known entries
+
+                DO k = stri, strip1 - 1
+                  kk = data%MAP( k )
+
+!  determine which of row( kk ) or col( kk ) gives the column number j
+
+                  j = COL( kk )
+                  IF ( j == i ) j = ROW( kk )
 
 !  subtract B_{ij} s_{jl} from b
 
-                IF ( order_present ) THEN
-                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
-                    - VAL( kk ) * S( j, ORDER( 1 : mu ) )
-                ELSE
-                  data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                    &
-                    - VAL( kk ) * S( j, 1 : mu )
-                END IF
-              END DO
-              write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )    &
-                MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
+                  IF ( order_present ) THEN
+                    data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                  &
+                      - VAL( kk ) * S( j, ORDER( 1 : mu ) )
+                  ELSE
+                    data%B( 1 : mu, 1 ) = data%B( 1 : mu, 1 )                  &
+                      - VAL( kk ) * S( j, 1 : mu )
+                  END IF
+                END DO
+                write(6, "( ' max error row is ', ES12.4, ' in row ', I0 )" )  &
+                  MAXVAL( ABS( data%B( 1 : mu, 1 ) ) ), i
+              END IF
             END IF
-          END IF
+          END DO
         END DO
-      END DO
 
 !  report how many block matrices were singular
 
-      IF ( control%out > 0 .AND. control%print_level > 0 .AND.                 &
+        IF ( control%out > 0 .AND. control%print_level > 0 .AND.               &
            data%singular_matrices > 0 ) WRITE( control%out, "( A, ' *** ', I0, &
-     & ' block matrices were singular')" ) prefix, data%singular_matrices
+       & ' block matrices were singular')" ) prefix, data%singular_matrices
+        IF ( inform%status == GALAHAD_ok ) inform%status = warning
+      END SELECT
 
 !  prepare to return
 
@@ -1966,6 +2240,1210 @@
 
       END SUBROUTINE SHA_count
 
+!-*-  G A L A H A D -  S H A _ differences _ needed _ 2 _ 1  F U C T I O N  -*-
+
+    FUNCTION SHA_differences_needed_2_1( n, PTR )
+    INTEGER ( KIND = ip_ ) :: SHA_differences_needed_2_1
+
+!****************************************************************************
+!
+!  Algorithm 2.1: Find the number of differences needed for the Sparse Hessian
+!    approximation (parallel unsymmetric variant)
+!
+!  Arguments:
+!  n - number of variables
+!  PTR - row pointer indices of the COMPLETE sparse Hessian (CSR format)
+!
+!****************************************************************************
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: PTR
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: i, differences_needed 
+
+    differences_needed = 0
+    DO i = 1, n
+      differences_needed = MAX( differences_needed, PTR( i + 1 ) - PTR( i ) )
+    END DO
+    SHA_differences_needed_2_1 = differences_needed
+    RETURN
+
+!  end of FUNCTION SHA_differences_needed_2_1
+
+    END FUNCTION SHA_differences_needed_2_1
+
+!-*-  G A L A H A D -  S H A _ e s t i m a t e _ 2 _ 1  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_estimate_2_1( n, ne, PTR, COL, m_available,                 &
+                                 S, ls1, ls2, Y, ly1, ly2, VAL,                &
+                                 extra_differences, status, INFO, ORDER )
+
+!****************************************************************************
+!
+!  Algorithm 2.1: Sparse Hessian approximation (parallel unsymmetric variant)
+!
+!  Arguments:
+!  n - number of variables
+!  ne - number of nonzero elements in the COMPLETE sparse Hessian matrix
+!  PTR - row pointer indices of the COMPLETE sparse Hessian (CSR format)
+!  COL - column indices of the COMPLETE sparse Hessian (CSR format)
+!  m_available - number of data pairs k available for Hessian estimation
+!  S - n x m_available array of optimization steps
+!  Y - n x m_available array of optimization gradient differences
+!  VAL - resulting estimated entries of the COMPLETE sparse Hessian (CSR format)
+!  extra_differences - # extra data values allowed when solving linear systems
+!  status - return status, = 0 for success, < 0 failure
+!  INFO - workspace array of length n
+!  ORDER (optional) - ORDER(i), i=1:m_available gives the index of the
+!    column of S and Y of the i-th most recent steps/differences.
+!    If absent, the index  will be i, i=1:m_available
+!
+!  Written by: Jaroslav Fowkes
+!
+!****************************************************************************
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne, m_available
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: PTR
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: COL
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ne ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: INFO
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                            &
+                            DIMENSION( m_available ) :: ORDER
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: i, idx
+
+!  solve for each (sparse) row, determine unknowns and solve linear system
+
+!$omp parallel do private(i)
+    DO idx = 1, n
+      i = idx
+      CALL SHA_solve_unknown_2_1( i, PTR, COL, m_available,                    &
+                                  S, ls1, ls2, Y, ly1, ly2, VAL,               &
+                                  extra_differences, INFO( i ), ORDER )
+    END DO
+!$omp end parallel do
+
+    status = MINVAL( INFO )
+    IF ( status == 0 ) status = MAXVAL( INFO )
+    RETURN
+
+!  end of SUBROUTINE SHA_estimate_2_1
+
+    END SUBROUTINE SHA_estimate_2_1
+
+!-*-  G A L A H A D -  S H A _ s o l v e _ unknown_2_1  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_solve_unknown_2_1( i, PTR, COL, m_available,                &
+                                      S, ls1, ls2, Y, ly1, ly2, VAL,           &
+                                      extra_differences, info, ORDER )
+
+!  "solve" the system whose j-th equation is
+!     sum_{unknown i} s_ji val_i = y_j
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: i, m_available, ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: PTR, COL
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                            &
+                            DIMENSION( m_available ) :: ORDER
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: k, kk, l, nei, m, rank, ptrs, lwork, warning
+    INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK1
+    REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK1
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: IWORK
+    REAL ( KIND = rp_ ), DIMENSION( : ), ALLOCATABLE :: SV, WORK
+    REAL ( KIND = rp_ ), DIMENSION( :, : ), ALLOCATABLE :: C, A
+
+!  nonzeros in row
+
+    nei = PTR( i + 1 ) - PTR( i )
+
+!  handle case of null row
+
+    IF ( nei == 0 ) THEN
+      info = GALAHAD_ok ; RETURN
+    END IF
+
+!  number of data pairs
+
+    m = nei + extra_differences
+
+!  check sufficient data pairs are available
+
+    IF ( m > m_available ) THEN
+!     WRITE( *, * ) ( ' Warning: insufficient data pairs are available')
+      m = m_available ; warning = GALAHAD_warning_data
+    ELSE
+      warning = GALAHAD_ok
+    END IF
+
+!  allocate storage for RHS and Matrix
+
+    ALLOCATE( C( MAX( m, nei ), 1 ), A( m, nei ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  populate RHS and Matrix
+
+    ptrs = PTR( i ) - 1
+    IF ( PRESENT( ORDER ) ) THEN
+      DO k = 1, m
+        kk = ORDER( k )
+        C( k, 1 ) = Y( i, kk )
+        DO l = 1, nei
+          A( k, l ) = S( COL( ptrs + l ), kk )
+        END DO
+      END DO
+    ELSE
+      DO k = 1, m
+        C( k, 1 ) = Y( i, k )
+        DO l = 1, nei
+          A( k, l ) = S( COL( ptrs + l ), k )
+        END DO
+      END DO
+    END IF
+
+!  find space required to "solve" the linear system using LAPACK gelsd
+
+    ALLOCATE( SV( MIN( m, nei ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( m, nei, 1_ip_, A, m, C, MAX( m, nei ), SV, - one,              &
+                rank, WORK1, - 1_ip_, IWORK1, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  "solve" the linear system using gelsd (SVD divide and conquer)
+
+    lwork = INT( WORK1( 1 ) )
+    ALLOCATE( WORK( lwork ), IWORK( IWORK1( 1 ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( m, nei, 1_ip_, A, m, C, MAX( m, nei ), SV, - one,              &
+                rank, WORK, lwork, IWORK, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  populate val with solution
+
+    DO l = 1, nei
+      VAL( ptrs + l ) = C( l, 1 )
+    END DO
+
+!  deallocate workspace
+
+    DEALLOCATE( C, A, SV, WORK, IWORK, STAT = info )
+    IF ( info /= 0 ) info = GALAHAD_error_deallocate
+    IF ( info == 0 ) info = warning
+    RETURN
+
+!  end of SUBROUTINE SHA_solve_unknown_2_1
+
+    END SUBROUTINE SHA_solve_unknown_2_1
+
+!-*-  G A L A H A D -  S H A _ differences _ needed _ 2 _ 3  F U C T I O N  -*-
+
+    FUNCTION SHA_differences_needed_2_3( n, ne, PTR, COL, SPARSE_INDS,         &
+                                         DENSE_INDS, sparse_row )
+
+    INTEGER ( KIND = ip_ ) :: SHA_differences_needed_2_3
+
+!****************************************************************************
+!
+!  Algorithm 2.3: Find the number of differences needed for the Sparse-dense
+!    Hessian approximation (block parallel variant)
+!
+!  Arguments:
+!  n - number of variables
+!  PTR - row pointer indices of the COMPLETE sparse Hessian (CSR format)
+!
+!****************************************************************************
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne, sparse_row
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: PTR
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: COL
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: SPARSE_INDS
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: DENSE_INDS
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: i, idx, j, l, differences_needed, m, ns, nd
+
+!  determine if each row is sparse or dense
+
+    ns = 0 ; nd = 0
+    DO i = 1, n
+      IF ( PTR( i + 1 ) - PTR( i ) <= sparse_row ) THEN ! sparse row
+        ns = ns + 1
+        SPARSE_INDS( ns ) = i
+      ELSE ! dense row
+        nd = nd + 1
+        DENSE_INDS( nd ) = i
+      END IF
+    END DO
+
+!  find the maximum size for the sparse rows
+
+    differences_needed = 0
+    DO idx = 1, ns
+      i = SPARSE_INDS( idx )
+      differences_needed = MAX( differences_needed, PTR( i + 1 ) - PTR( i ) )
+    END DO
+
+!  find the maximum row size for the dense rows
+
+    DO idx = 1, nd
+      i = DENSE_INDS( idx ) ; m = 0
+      DO l = PTR( i ), PTR( i + 1 ) - 1
+        j = COL( l )
+        IF ( j == i .OR. PTR( j + 1 ) - PTR( j ) > sparse_row ) m = m + 1
+      END DO
+      differences_needed = MAX( differences_needed, m )
+    END DO
+    SHA_differences_needed_2_3 = differences_needed
+    RETURN
+
+!  end of FUNCTION SHA_differences_needed_2_3
+
+    END FUNCTION SHA_differences_needed_2_3
+
+!-*-  G A L A H A D -  S H A _ e s t i m a t e _ 2 _ 3  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_estimate_2_3( n, ne, PTR, COL, m_available,                 &
+                                 S, ls1, ls2, Y, ly1, ly2, VAL,                &
+                                 extra_differences, sparse_row, status,        &
+                                 SPARSE_INDS, DENSE_INDS, INFO, ORDER )
+
+!****************************************************************************
+!
+!  Algorithm 2.3: Sparse-Dense Hessian approximation (block parallel)
+!
+!  Arguments:
+!  n - number of variables
+!  ne - number of nonzero elements in the COMPLETE sparse Hessian matrix
+!  PTR - row pointer indices of the COMPLETE sparse Hessian (CSR format)
+!  COL - column indices of the COMPLETE sparse Hessian (CSR format)
+!  m_available - number of data pairs k available for Hessian estimation
+!  S - n x m_available array of optimization steps
+!  Y - n x m_available array of optimization gradient differences
+!  VAL - resulting estimated entries of the COMPLETE sparse Hessian (CSR format)
+!  extra_differences - # extra data values allowed when solving linear systems
+!  sparse_row - rows with no more that sparse_row entries are considered sparse
+!  status - return status, = 0 for success, < 0 failure
+!  SPARSE_INDS, DENSE_INDS, INFO - workspace arrays of length n
+!  ORDER (optional) - ORDER(i), i=1:m_available gives the index of the
+!    column of S and Y of the i-th most recent steps/differences.
+!    If absent, the index  will be i, i=1:m_available
+!
+!  Written by: Jaroslav Fowkes
+!
+!****************************************************************************
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne, sparse_row, m_available
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: PTR
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: COL
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ne ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: SPARSE_INDS
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: DENSE_INDS
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: INFO
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                           &
+                            DIMENSION( m_available ) :: ORDER
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: i, idx, ns, nd
+
+!  determine if each row is sparse or dense
+
+    ns = 0 ; nd = 0
+    DO i = 1, n
+      IF ( PTR( i + 1 ) - PTR( i ) <= sparse_row ) THEN ! sparse row
+        ns = ns + 1
+        SPARSE_INDS( ns ) = i
+      ELSE ! dense row
+        nd = nd + 1
+        DENSE_INDS( nd ) = i
+      END IF
+    END DO
+
+!  Firstly solve for each sparse row
+
+!$omp parallel do private( i )
+    DO idx = 1, ns
+      i = SPARSE_INDS( idx )
+
+!  determine unknowns and solve linear system
+
+      CALL SHA_solve_unknown_2_3( i, PTR, COL, m_available,                    &
+                                  S, ls1, ls2, Y, ly1, ly2, VAL,               &
+                                  extra_differences , INFO( i ), ORDER )
+    END DO
+!$omp end parallel do
+
+!  check for errors
+
+    status = MINVAL( INFO( SPARSE_INDS( 1 : ns ) ) )
+    IF ( status /= GALAHAD_ok ) RETURN
+
+!  then solve for each dense row
+
+!$omp parallel do private( i )
+    DO idx = 1, nd
+      i = DENSE_INDS( idx )
+
+! determine sparse knowns and unknowns and solve linear system
+
+      CALL SHA_solve_known_unknown_2_3( i, PTR, COL, m_available,              &
+                                        S, ls1, ls2, Y, ly1, ly2, VAL,         &
+                                        sparse_row, extra_differences,         &
+                                        INFO( i ), ORDER )
+    END DO
+!$omp end parallel do
+
+!  check for errors
+
+    status = MINVAL( INFO( DENSE_INDS( 1 : nd ) ) )
+    RETURN
+
+!  end of SUBROUTINE SHA_estimate_2_3
+
+    END SUBROUTINE SHA_estimate_2_3
+
+!-*-  G A L A H A D -  S H A _ s o l v e _ unknown_2_3  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_solve_unknown_2_3( i, PTR, COL, m_available,                &
+                                      S, ls1, ls2, Y, ly1, ly2, VAL,           &
+                                      extra_differences, info, ORDER )
+
+!  "solve" the system whose j-th equation is
+!     sum_{unknown i} s_ji val_i = y_j
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: i, m_available, ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: PTR, COL
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                          &
+                            DIMENSION( m_available ) :: ORDER
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: k, kk, l, nei, m, ptrs, rank, lwork, warning
+    INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK1
+    REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK1
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: IWORK
+    REAL ( KIND = rp_ ), DIMENSION( : ), ALLOCATABLE :: SV, WORK
+    REAL ( KIND = rp_ ), DIMENSION( : , : ), ALLOCATABLE :: C, A
+
+!  nonzeros in row
+
+    nei = PTR( i + 1 ) - PTR( i )
+
+!  handle case of null row
+
+    IF ( nei == 0 ) THEN
+      info = GALAHAD_ok ; RETURN
+    END IF
+
+!  number of data pairs
+
+    m = nei + extra_differences
+
+!  check sufficient data pairs are available
+
+    IF ( m > m_available ) THEN
+!     WRITE( *, * ) ( 'Warning: insufficient data pairs are available' )
+      m = m_available ; warning = GALAHAD_warning_data
+    ELSE
+      warning = GALAHAD_ok
+    END IF
+
+!  allocate storage for RHS and Matrix
+
+    ALLOCATE( C( MAX( m, nei ), 1 ), A( m, nei ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  populate RHS and Matrix
+
+    ptrs = PTR( i ) - 1
+    IF ( PRESENT( ORDER ) ) THEN
+      DO k = 1, m
+        kk = ORDER( k )
+        C( k, 1 ) = Y( i, kk )
+        DO l = 1, nei
+          A( k, l ) = S( COL( ptrs + l ), kk )
+        END DO
+      END DO
+    ELSE
+      DO k = 1, m
+        C( k, 1 ) = Y( i, k )
+        DO l = 1, nei
+          A( k, l ) = S( COL( ptrs + l ), k )
+        END DO
+      END DO
+    END IF
+
+!  find space required to "solve" the linear system using LAPACK gelsd
+
+    ALLOCATE( SV( MIN( m, nei ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( m, nei, 1_ip_, A, m, c, MAX( m, nei ), SV, - 1.0_rp_,          &
+                rank, WORK1, - 1_ip_, IWORK1, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  "solve" the linear system using gelsd (SVD divide and conquer)
+
+    lwork = INT( WORK1( 1 ) )
+    ALLOCATE( WORK( lwork ), IWORK( IWORK1( 1 ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( m, nei, 1_ip_, A, m, c, MAX( m, nei ), SV, - 1.0_rp_,          &
+                rank, WORK, lwork, IWORK, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  populate val with solution
+
+    DO l = 1, nei
+      VAL( ptrs + l ) = C( l, 1 )
+    END DO
+
+!  deallocate workpace arrays
+
+    DEALLOCATE( C, A, SV, WORK, IWORK, STAT = info )
+    IF ( info /= 0 ) info = GALAHAD_error_deallocate
+    IF ( info == 0 ) info = warning
+    RETURN
+
+!  end of SUBROUTINE SHA_solve_unknown_2_3
+
+    END SUBROUTINE SHA_solve_unknown_2_3
+
+!-*-  G A L A H A D -  S H A _ solve_known_unknown_2_3  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_solve_known_unknown_2_3( i, PTR, COL, m_available,          &
+                                            S, ls1, ls2, Y, ly1, ly2,          &
+                                            VAL, sparse_row,                   &
+                                            extra_differences, info, ORDER )
+
+!  "solve" the system whose j-th equation is
+!     sum_{unknown i} s_ji val_i = y_j - sum_{known i} s_ji val_i
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: i, sparse_row, m_available
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: PTR, COL
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                            &
+                            DIMENSION( m_available ) :: ORDER
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: j, k, kk, l, ip, nei, kn_nei, un_nei, un_m
+    INTEGER ( KIND = ip_ ) :: rank, lwork, warning
+    INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK1
+    REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK1
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: KN_COL, UN_COL
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: UN_PTR, IWORK
+    REAL ( KIND = rp_ ), DIMENSION( : ), ALLOCATABLE :: KN_VAL, SV, WORK
+    REAL ( KIND = rp_ ), DIMENSION( : , : ), ALLOCATABLE :: C, A
+
+!  nonzeros in row
+
+    nei = PTR( i + 1 ) - PTR( i )
+
+!  handle case of null row
+
+    IF ( nei == 0 ) THEN
+      info = GALAHAD_ok ; RETURN
+    END IF
+
+!  allocate storage for known (kn_) and unknown (un_) indices and values
+
+    kn_nei = 0 ; un_nei = 0 ! known and unknown nonzeros
+    ALLOCATE( KN_COL( nei ), KN_VAL( nei ), UN_COL( nei ), UN_PTR( nei ),      &
+              STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  find already known symmetric entries
+
+    DO l = PTR( i ), PTR( i + 1 ) - 1 ! for each dense row entry
+      j = COL( l ) ! its column index
+      ! only an off-diagonal entry can already exist
+      IF ( j /= i .AND. PTR( j + 1 ) - PTR( j ) <= sparse_row ) THEN 
+        ! row j is sparse so entry exists
+        DO ip = PTR( j ), PTR( j + 1 ) - 1 ! for each sparse row entry
+          IF ( COL( ip ) == i ) THEN ! dense row index matches sparse
+                                     ! column index
+            kn_nei = kn_nei + 1
+            KN_COL( kn_nei ) = j ! need to know where it is
+            KN_VAL( kn_nei ) = VAL( ip ) ! need to know its value
+            VAL( l ) = VAL( ip ) ! populate val with symmetric entry
+            EXIT
+          END IF
+        END DO
+      ELSE ! row j is dense so entry doesn't already exist,
+           ! need to solve for it
+        un_nei = un_nei + 1
+        UN_COL( un_nei ) = j ! need to know where it is
+        UN_PTR( un_nei ) = l ! need to know where to put it
+      END IF
+    END DO
+
+!  number of data pairs
+
+    un_m = un_nei + extra_differences
+
+!  check sufficient data pairs are available
+
+    IF ( un_m > m_available ) THEN
+!     WRITE( *, * ) ( ' Warning: insufficient data pairs are available' )
+      un_m = m_available ; warning = GALAHAD_warning_data
+    ELSE
+      warning = GALAHAD_ok
+    END IF
+
+!  allocate storage for RHS and Matrix
+
+    ALLOCATE( C( MAX( un_m, un_nei ), 1 ), A( un_m, un_nei ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  populate RHS and Matrix
+
+    IF ( PRESENT( ORDER ) ) THEN
+      DO k = 1, un_m
+        kk = ORDER( k )
+        C( k, 1 ) = Y( i, kk )
+        DO l = 1, kn_nei ! known entries in RHS
+          C( k, 1 ) = C( k, 1 ) - S( KN_COL( l ), kk ) * KN_VAL( l )
+        END DO
+        DO l = 1, un_nei
+          A( k, l ) = S( UN_COL( l ), kk )
+        END DO
+      END DO
+    ELSE
+      DO k = 1, un_m
+        C( k, 1 ) = Y( i, k )
+        DO l = 1, kn_nei ! known entries in RHS
+          C( k, 1 ) = C( k, 1 ) - S( KN_COL( l ), k ) * KN_VAL( l )
+        END DO
+        DO l = 1, un_nei
+          A( k, l ) = S( UN_COL( l ), k )
+        END DO
+      END DO
+    END IF
+
+!  find space required to "solve" the linear system using LAPACK gelsd
+
+    ALLOCATE( SV( MIN( un_m,un_nei ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( un_m, un_nei, 1_ip_, A, un_m, C, MAX( un_m,un_nei), SV,        &
+                - one, rank, WORK1, -1_ip_, IWORK1, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  "solve" the linear system using gelsd (SVD divide and conquer)
+
+    lwork = INT( WORK1( 1 ) )
+    ALLOCATE( WORK( lwork ), IWORK( iwork1( 1 ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( un_m, un_nei, 1_ip_, A, un_m, C, MAX( un_m,un_nei), SV,        &
+                - one, rank, WORK, lwork, IWORK, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  populate val with solution
+
+    DO l = 1, un_nei
+      VAL( UN_PTR( l ) ) = C( l, 1 )
+    END DO
+
+!  Deallocate workspace arrays
+
+    DEALLOCATE( C, A, SV, WORK, IWORK, KN_COL, KN_VAL, UN_COL, UN_PTR,         &
+                STAT = info )
+    IF ( info /= 0 ) info = GALAHAD_error_deallocate
+    IF ( info == 0 ) info = warning
+    RETURN
+
+!  end of SUBROUTINE SHA_solve_known_unknown_2_3
+
+    END SUBROUTINE SHA_solve_known_unknown_2_3
+
+!-*-  G A L A H A D -  S H A _ e s t i m a t e _ 2 _ 4  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_estimate_2_4( n, ne, PTR, COL, m_available,                 &
+                                 S, ls1, ls2, Y, ly1, ly2, VAL,                &
+                                 extra_differences, recursion_max,             &
+                                 recursion_entries_required, status,           &
+                                 SPARSE_INDS, DENSE_INDS, TMP_INDS, NSOLVED,   &
+                                 INFO, ORDER )
+
+!****************************************************************************
+!
+!  Algorithm 2.4: Sparse-Dense Hessian approximation (recursive block parallel)
+!
+!  Arguments:
+!  n - number of variables
+!  ne - number of nonzero elements in the COMPLETE sparse Hessian matrix
+!  PTR - row pointer indices of the COMPLETE sparse Hessian (CSR format)
+!  COL - column indices of the COMPLETE sparse Hessian (CSR format)
+!  m_available - number of data pairs k available for Hessian estimation
+!  S - n x m_available array of optimization steps
+!  Y - n x m_available array of optimization gradient differences
+!  VAL - resulting estimated entries of the COMPLETE sparse Hessian (CSR format)
+!  extra_differences - # extra data values allowed when solving linear systems
+!  recursion_max - maximum number of levels of recursion
+! recursion_entries_required - recursion can only occur for a (reduced) row if 
+!     it has at least recursion_entries_required entries
+!  status - return status, = 0 for success, < 0 failure
+!  SPARSE_INDS, DENSE_INDS, TMP_INDS, NSOLVED, INFO - wkspace arrays of length n
+!  ORDER (optional) - ORDER(i), i=1:m_available gives the index of the
+!    column of S and Y of the i-th most recent steps/differences.
+!    If absent, the index  will be i, i=1:m_available
+!
+!  Written by: Jaroslav Fowkes
+!
+!****************************************************************************
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne, m_available
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2, recursion_max
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: recursion_entries_required
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: PTR
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: COL
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( ne ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: SPARSE_INDS
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: DENSE_INDS
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: TMP_INDS
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: NSOLVED
+    INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: INFO
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                            &
+                            DIMENSION( m_available ) :: ORDER
+
+!  Local variables
+
+    INTEGER ( KIND = ip_ ) :: net, nei, i, recursion, idx, ns, nd, td
+
+!  initialize solved symmetric entry counter
+
+    NSOLVED( : n ) = 0
+
+!  Set sparse/dense row threshold
+
+    net = m_available - extra_differences
+
+!  determine if each row is truly sparse or dense
+
+    ns = 0 ; nd = 0
+    DO i = 1, n
+      IF ( PTR( i + 1 ) - PTR( i ) <= net ) THEN ! truly sparse row
+        ns = ns + 1
+        SPARSE_INDS( ns ) = i
+      ELSE ! truly dense row
+        nd = nd + 1
+        DENSE_INDS( nd ) = i
+      END IF
+    END DO
+
+!  firstly solve for each truly sparse row
+
+!$omp parallel do private( i )
+    DO idx = 1, ns
+      i = SPARSE_INDS( idx )
+
+!  determine unknowns and solve linear system
+
+      CALL SHA_solve_unknown_2_4( i, PTR, COL, m_available,                    &
+                                  S, ls1, ls2, Y, ly1, ly2, VAL,               &
+                                  NSOLVED, extra_differences, INFO( i ), ORDER )
+    END DO
+!$omp end parallel do
+
+!  check for errors
+
+    IF ( ns > 0 ) THEN
+      status = MINVAL( INFO( SPARSE_INDS( 1 : ns ) ) )
+    ELSE
+      status = GALAHAD_ok
+    END IF
+    IF ( status /= GALAHAD_ok ) RETURN
+
+!  initialise recursion depth counter
+
+    recursion = 1
+
+!  now recurse
+
+    DO WHILE( recursion <= recursion_max )
+
+! determine which remaining rows are sparse excluding solved symmetric entries
+
+      ns = 0 ; td = 0
+      DO idx = 1, nd
+        i = DENSE_INDS( idx )
+        nei = PTR( i + 1 ) - PTR( i ) - NSOLVED( i )
+        IF ( nei <= net .AND.                                                  &
+             nei >= recursion_entries_required ) THEN ! newly sparse row
+          ns = ns + 1
+          SPARSE_inds( ns ) = i
+        ELSE ! newly dense row
+          td = td + 1
+          TMP_INDS( td ) = i
+        END IF
+      END DO
+      nd = td
+      DENSE_INDS( : nd ) = TMP_INDS( : nd )
+
+      IF ( ns == 0 ) EXIT ! no more newly sparse rows
+
+!  solve for each newly sparse row
+
+!$omp parallel do private( i )
+      DO idx = 1, ns
+        i = SPARSE_INDS( idx )
+
+!  determine sparse knowns and unknowns and solve linear system
+
+        CALL SHA_solve_known_unknown_2_4( i, PTR, COL, m_available,            &
+                                          S, ls1, ls2, Y, ly1, ly2,            &
+                                          VAL, NSOLVED, extra_differences,     &
+                                          INFO( i ), ORDER )
+      END DO
+!$omp end parallel do
+
+!  check for errors
+
+    IF ( ns > 0 ) status = MINVAL( INFO( SPARSE_INDS( 1 : ns ) ) )
+    IF ( status /= GALAHAD_ok ) RETURN
+
+!  increment recursion depth counter
+
+      recursion = recursion + 1
+    END DO
+
+!  finally solve for each truly dense row
+
+!$omp parallel do private( i )
+    DO idx = 1, nd
+      i = DENSE_INDS( idx )
+
+!  determine sparse knowns and unknowns and solve linear system
+
+      CALL SHA_solve_known_unknown_2_4( i, PTR, COL, m_available,              &
+                                        S, ls1, ls2, Y, ly1, ly2,              &
+                                        VAL, NSOLVED, extra_differences,       &
+                                        INFO( i ), ORDER )
+    END DO
+!$omp end parallel do
+
+!  check for errors
+
+    IF ( nd > 0 ) status = MINVAL( INFO( DENSE_INDS( 1 : nd ) ) )
+    RETURN
+
+!  end of SUBROUTINE SHA_estimate_2_4
+
+    END SUBROUTINE SHA_estimate_2_4
+
+!-*-  G A L A H A D -  S H A _ s o l v e _ unknown_2_4  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_solve_unknown_2_4( i, PTR, COL, m_available,                &
+                                      S, ls1, ls2, Y, ly1, ly2, VAL,           &
+                                      NSOLVED, extra_differences, info, ORDER )
+
+!  "solve" the system whose j-th equation is
+!     sum_{unknown i} s_ji val_i = y_j
+
+!  Dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: i, m_available, ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: PTR, COL
+    INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: NSOLVED
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                            &
+                            DIMENSION( m_available ) :: ORDER
+
+!  Local variables
+
+    INTEGER ( KIND = ip_ ) :: k, kk, l, nei, m, ptrs, rank, lwork, warning
+    INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK1
+    REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK1
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: IWORK
+    REAL ( KIND = rp_ ), DIMENSION( : ), ALLOCATABLE :: SV, WORK
+    REAL ( KIND = rp_ ), DIMENSION( : , : ), ALLOCATABLE :: C, A
+
+!  Nonzeros in row
+
+    nei = PTR( i + 1 ) - PTR( i )
+
+!  Handle case of null row
+
+    IF ( nei == 0 ) THEN
+      info = GALAHAD_ok ; RETURN
+    END IF
+
+!  Number of data pairs
+
+    m = nei + extra_differences
+
+!  check sufficient data pairs are available
+
+    IF ( m > m_available ) then
+!     WRITE( *, * ) ( ' Warning: insufficient data pairs are available ')
+      m = m_available ; warning = GALAHAD_warning_data
+    ELSE
+      warning = GALAHAD_ok
+    END IF
+
+!  allocate storage for RHS and Matrix
+
+    ALLOCATE( C( MAX( m, nei ), 1 ), A( m, nei ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  populate RHS and Matrix
+
+    ptrs = PTR( i ) - 1
+    IF ( PRESENT( ORDER ) ) THEN
+      DO k = 1, m
+        kk = ORDER( k )
+        C( k, 1 ) = Y( i, kk )
+        DO l = 1, nei
+          A( k, l ) = S( COL( ptrs + l ), kk )
+        END DO
+      END DO
+    ELSE
+      DO k = 1, m
+        C( k, 1 ) = Y( i, k )
+        DO l = 1, nei
+          A( k, l ) = S( COL( ptrs + l ), k )
+        END DO
+      END DO
+    END IF
+
+!  find space required to "solve" the linear system using LAPACK gelsd
+
+    ALLOCATE( SV( MIN( m, nei ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( m, nei, 1_ip_, A, m, C, MAX( m, nei ), SV, - one,              &
+                rank, WORK1, -1_ip_, IWORK1, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  "solve" the linear system using gelsd (SVD divide and conquer)
+
+    lwork = INT( WORK1( 1 ) )
+    ALLOCATE( WORK( lwork ), IWORK( IWORK1( 1 ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( m, nei, 1_ip_, A, m, C, MAX( m, nei ), SV, - one,              &
+                rank, WORK, lwork, IWORK, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  populate val with solution and record number of solved symmetric entries
+
+    DO l = 1, nei
+      k = ptrs + l
+      VAL( k ) = C( l, 1 )
+      NSOLVED( COL( k ) ) = NSOLVED( COL( k ) ) + 1
+    END DO
+
+!  deallocate workspace arrays
+
+    DEALLOCATE( C, A, SV, WORK, IWORK, STAT = info )
+    IF ( info /= 0 ) info = GALAHAD_error_deallocate
+    IF ( info == 0 ) info = warning
+    RETURN
+
+!  end of SUBROUTINE SHA_solve_unknown_2_4
+
+    END SUBROUTINE SHA_solve_unknown_2_4
+
+!-*-  G A L A H A D -  S H A _ solve_known_unknown_2_4  S U B R O U T I N E  -*-
+
+    SUBROUTINE SHA_solve_known_unknown_2_4( i, PTR, COL, m_available,          &
+                                            S, ls1, ls2, Y, ly1, ly2,          &
+                                            VAL, NSOLVED, extra_differences,   &
+                                            info, ORDER )
+
+!  "solve" the system whose j-th equation is
+!     sum_{unknown i} s_ji val_i = y_j - sum_{known i} s_ji val_i
+
+!  dummy arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: i, m_available, ls1, ls2, ly1, ly2
+    INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: PTR, COL
+    INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: NSOLVED
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1, ls2 ) :: S
+    REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1, ly2 ) :: Y
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: VAL
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra_differences
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+
+!  optional arguments
+
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                            &
+                            DIMENSION( m_available ) :: ORDER
+
+!  local variables
+
+    INTEGER ( KIND = ip_ ) :: net, j, k, kk, l, ip, nei, kn_nei, un_nei, un_m
+    INTEGER ( KIND = ip_ ) :: rank, lwork, warning
+    INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK1
+    REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK1
+
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: KN_COL, UN_COL
+    INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: UN_PTR, IWORK
+    REAL ( KIND = rp_ ), DIMENSION( : ), ALLOCATABLE :: KN_VAL, SV, WORK
+    REAL ( KIND = rp_ ), DIMENSION( : , : ), ALLOCATABLE :: C, A
+
+!  set sparse/dense row threshold
+
+    net = m_available - extra_differences
+
+!  nonzeros in row
+
+    nei = PTR( i + 1 ) - PTR( i )
+
+!  handle case of null row
+
+    IF ( nei == 0 ) THEN
+      info = GALAHAD_ok ; RETURN
+    END IF
+
+!  allocate storage for known (kn_) and unknown (un_) indices and values
+
+    kn_nei = 0 ; un_nei = 0 ! known and unknown nonzeros
+    ALLOCATE( KN_COL( nei ), KN_VAL( nei ), UN_COL( nei ), UN_PTR( nei ),      &
+              STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  find already known symmetric entries
+
+    DO l = PTR( i ), PTR( i + 1 ) - 1 ! for each dense row entry
+      j = COL( l ) ! its column index
+      ! only an off-diagonal entry can already exist
+      IF ( j /= i .AND. PTR( j + 1 ) - PTR( j ) <= net ) THEN ! row j is sparse
+                                                              ! so entry exists
+        DO ip = PTR( j ), PTR( j + 1 ) - 1 ! for each sparse row entry
+          IF ( COL( ip ) == i ) THEN ! dense row index matches
+                                     ! sparse column index
+            kn_nei = kn_nei + 1
+            KN_COL( kn_nei ) = j ! need to know where it is
+            KN_VAL( kn_nei ) = VAL( ip ) ! need to know its value
+            VAL( l ) = VAL( ip ) ! populate val with symmetric entry
+            EXIT
+          END IF
+        END DO
+      ELSE ! row j is dense so entry doesn't already exist,
+           ! need to solve for it
+        un_nei = un_nei + 1
+        UN_COL( un_nei ) = j ! need to know where it is
+        UN_PTR( un_nei ) = l ! need to know where to put it
+      END IF
+    END DO
+
+!  number of data pairs
+
+    un_m = un_nei + extra_differences
+
+!  check sufficient data pairs are available
+
+    IF ( un_m > m_available ) THEN
+!     WRITE( *, * ) ( ' Warning: insufficient data pairs are available' )
+      un_m = m_available ; warning = GALAHAD_warning_data
+    ELSE
+      warning = GALAHAD_ok
+    END IF
+
+!  allocate storage for RHS and Matrix
+
+    ALLOCATE( C( MAX( un_m,un_nei ), 1 ), A( un_m, un_nei ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+!  populate RHS and Matrix
+
+    IF ( PRESENT( ORDER ) ) THEN
+      DO k = 1, un_m
+        kk = ORDER( k )
+        C( k, 1 ) = Y( i, kk )
+        DO l = 1, kn_nei ! known entries in RHS
+          C( k, 1 ) = C(k, 1 ) - S( KN_COL( l ), kk ) * KN_VAL( l )
+        END DO
+        DO l = 1, un_nei
+          A( k, l ) =  S( UN_COL( l ), kk )
+        END DO
+      END DO
+    ELSE
+      DO k = 1, un_m
+        C( k, 1 ) = Y( i, k )
+        DO l = 1, kn_nei ! known entries in RHS
+          C( k, 1 ) = C(k, 1 ) - S( KN_COL( l ), k ) * KN_VAL( l )
+        END DO
+        DO l = 1, un_nei
+          A( k, l ) =  S( UN_COL( l ), k )
+        END DO
+      END DO
+    END IF
+
+!  find space required to "solve" the linear system using LAPACK gelsd
+
+    ALLOCATE( SV( MIN( un_m, un_nei ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( un_m, un_nei, 1_ip_, A, un_m, C, MAX( un_m, un_nei ), SV,      &
+                - one, rank, WORK1, - 1_ip_, IWORK1, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  "solve" the linear system using gelsd (SVD divide and conquer)
+
+    lwork = INT( WORK1( 1 ) )
+    ALLOCATE( WORK( lwork ), IWORK( IWORK1( 1 ) ), STAT = info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_allocate ; RETURN
+    END IF
+
+    CALL GELSD( un_m, un_nei, 1_ip_, A, un_m, C, MAX( un_m, un_nei ), SV,      &
+                - one, rank, WORK, lwork, IWORK, info )
+    IF ( info /= 0 ) THEN
+      info = GALAHAD_error_lapack ; RETURN
+    END IF
+
+!  populate val with solution and record number of solved symmetric entries
+
+    DO l = 1, un_nei
+      k =  UN_PTR( l )
+      VAL( k ) = C( l, 1 )
+      NSOLVED( COL( k ) ) = NSOLVED( COL( k ) ) + 1
+    END DO
+
+!  deallocate workspace arrays
+
+    DEALLOCATE( C, A, SV, WORK, IWORK, KN_COL, KN_VAL, UN_COL, UN_PTR,         &
+                STAT = info )
+    IF ( info /= 0 ) info = GALAHAD_error_deallocate
+    IF ( info == 0 ) info = warning
+    RETURN
+
+!  end of SUBROUTINE SHA_solve_known_unknown_2_4
+
+    END SUBROUTINE SHA_solve_known_unknown_2_4
+
 !-*-*-  G A L A H A D -  S H A _ t e r m i n a t e  S U B R O U T I N E  -*-*-
 
       SUBROUTINE SHA_terminate( data, control, inform )
@@ -2060,6 +3538,54 @@
 
       array_name = 'SHA: data%solve_system_data%B_save'
       CALL SPACE_dealloc_array( data%B_save,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%PTR_unsym'
+      CALL SPACE_dealloc_array( data%PTR_unsym,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%COL_unsym'
+      CALL SPACE_dealloc_array( data%COL_unsym,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%VAL_unsym'
+      CALL SPACE_dealloc_array( data%VAL_unsym,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%SPARSE_INDS'
+      CALL SPACE_dealloc_array( data%SPARSE_INDS,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%DENSE_INDS'
+      CALL SPACE_dealloc_array( data%DENSE_INDS,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%TMP_INDS'
+      CALL SPACE_dealloc_array( data%TMP_INDS,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%NSOLVED'
+      CALL SPACE_dealloc_array( data%NSOLVED,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'SHA: data%INFO'
+      CALL SPACE_dealloc_array( data%INFO,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

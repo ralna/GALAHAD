@@ -204,12 +204,22 @@ struct sha_control_type {
     ipc_ dense_linear_solver;
 
     /// \brief
-    /// the maximum sparse degree if the combined version is used
-    ipc_ max_sparse_degree;
+    /// rows with no more that sparse_row entries are considered sparse
+    ipc_ sparse_row;
 
     /// \brief
     /// if available use an addition extra_differences differences
     ipc_ extra_differences;
+
+    /// \brief
+    /// if a recursive algorithm is used (Alg 2.4), limit on the maximum number 
+    /// of levels of recursion
+    ipc_ recursion_max;
+
+    /// \brief
+    /// if a recursive algorithm is used (Alg 2.4), recursion can only 
+    /// occur for a (reduced) row if it has at least .recursion_allowed entries
+    ipc_ recursion_entries_required;
 
     /// \brief
     /// if space is critical, ensure allocated arrays are no bigger than needed
@@ -244,16 +254,16 @@ struct sha_inform_type {
     ipc_ max_degree;
 
     /// \brief
-    /// which approximation algorithm has been used
-    ipc_ approximation_algorithm_used;
-
-    /// \brief
     /// the number of differences that will be needed.
     ipc_ differences_needed;
 
     /// \brief
     /// the maximum reduced degree in the adgacency graph.
     ipc_ max_reduced_degree;
+
+    /// \brief
+    /// which approximation algorithm has been used
+    ipc_ approximation_algorithm_used;
 
     /// \brief
     /// a failure occured when forming the bad_row-th row (0 = no failure).
