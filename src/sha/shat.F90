@@ -23,9 +23,10 @@
    ROW = (/ 1, 1, 1, 1, 1, 2, 3, 4, 5 /)
    COL = (/ 1, 2, 3, 4, 5, 2, 3, 4, 5 /)
    VAL = (/ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 /)
-   DO algorithm = 1, 5
+   DO algorithm = 1, 8
      CALL SHA_initialize( data, control, inform )              ! initialize
      control%approximation_algorithm = algorithm
+     control%sparse_row = 3
      WRITE( 6, "( /, ' Approximation algorithm ', I0 )" ) algorithm
      CALL SHA_analyse( n, nz, ROW, COL, data, control, inform )!analyse sparsity
      IF ( inform%status /= 0 ) THEN             ! Failure
@@ -56,12 +57,14 @@
        WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&
          inform%status
      ELSE
-       WRITE( 6, "( /, ' Successful run with ', I0,                            &
-      &             ' differences, estimated matrix:' )" ) m
-       DO l = 1, nz
-         WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" ) &
-          ROW( l ), COL( l ), VAL_est( l )
-       END DO
+!      WRITE( 6, "( /, ' Successful run with ', I0,                            &
+!     &             ' differences, estimated matrix:' )" ) m
+!      DO l = 1, nz
+!        WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" ) &
+!         ROW( l ), COL( l ), VAL_est( l )
+!      END DO
+       WRITE( 6, "( ' Successful run with ', I0, ' differences, error = ',     &
+      &   ES7.1 )" ) m, MAXVAL( ABS( VAL_est - VAL ) )
      END IF
      CALL SHA_estimate( n, nz, ROW, COL, m, S, n, m, Y, n, m, VAL_est,         &
                         data, control, inform, ORDER = ORDER )
@@ -69,12 +72,34 @@
        WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&
          inform%status
      ELSE
-       WRITE( 6, "( /, ' Successful run with ', I0,                            &
-      &             ' differences, estimated matrix:' )" ) m
-       DO l = 1, nz
-         WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" ) &
-          ROW( l ), COL( l ), VAL_est( l )
-       END DO
+!      WRITE( 6, "( /, ' Successful run with ', I0,                            &
+!     &             ' differences, estimated matrix:' )" ) m
+!      DO l = 1, nz
+!        WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" ) &
+!         ROW( l ), COL( l ), VAL_est( l )
+!      END DO
+       WRITE( 6, "( ' Successful run with ', I0, ' differences, error = ',     &
+      &   ES7.1 )" ) m, MAXVAL( ABS( VAL_est - VAL ) )
+     END IF
+     WRITE( 6, "( ' Test with insufficient data ...' )" )
+     control%extra_differences = 1
+     CALL SHA_estimate( n, nz, ROW, COL, 1, S, n, m, Y, n, m, VAL_est,         &
+                        data, control, inform )
+     IF ( inform%status < 0 ) THEN ! Failure
+       WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&
+         inform%status
+     ELSE IF ( inform%status > 0 ) THEN ! Warning
+       WRITE( 6, "( ' Warning = ', I0, ' run with ', I0, ' differences,',      &
+      & ' error = ', ES7.1 )" ) inform%status, 1, MAXVAL( ABS( VAL_est - VAL ) )
+     ELSE
+!      WRITE( 6, "( /, ' Successful run with ', I0,                            &
+!     &             ' differences, estimated matrix:' )" ) m
+!      DO l = 1, nz
+!        WRITE( 6, "( ' (row,col,val) = (', I0, ',', I0, ',', ES12.4, ')' )" ) &
+!         ROW( l ), COL( l ), VAL_est( l )
+!      END DO
+       WRITE( 6, "( ' Successful run with ', I0, ' differences, error = ',     &
+      &   ES7.1 )" ) 1, MAXVAL( ABS( VAL_est - VAL ) )
      END IF
      CALL SHA_terminate( data, control, inform ) ! Delete internal workspace
      DEALLOCATE( S, Y, ORDER )

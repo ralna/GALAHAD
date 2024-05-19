@@ -42,8 +42,10 @@
       INTEGER ( KIND = ipc_ ) :: print_level
       INTEGER ( KIND = ipc_ ) :: approximation_algorithm
       INTEGER ( KIND = ipc_ ) :: dense_linear_solver
-      INTEGER ( KIND = ipc_ ) :: max_sparse_degree
       INTEGER ( KIND = ipc_ ) :: extra_differences
+      INTEGER ( KIND = ipc_ ) :: sparse_row
+      INTEGER ( KIND = ipc_ ) :: recursion_max
+      INTEGER ( KIND = ipc_ ) :: recursion_entries_required
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
@@ -53,9 +55,9 @@
       INTEGER ( KIND = ipc_ ) :: status
       INTEGER ( KIND = ipc_ ) :: alloc_status
       INTEGER ( KIND = ipc_ ) :: max_degree
-      INTEGER ( KIND = ipc_ ) :: approximation_algorithm_used
       INTEGER ( KIND = ipc_ ) :: differences_needed
       INTEGER ( KIND = ipc_ ) :: max_reduced_degree
+      INTEGER ( KIND = ipc_ ) :: approximation_algorithm_used
       INTEGER ( KIND = ipc_ ) :: bad_row
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE sha_inform_type
@@ -83,8 +85,10 @@
     fcontrol%print_level = ccontrol%print_level
     fcontrol%approximation_algorithm = ccontrol%approximation_algorithm
     fcontrol%dense_linear_solver = ccontrol%dense_linear_solver
-    fcontrol%max_sparse_degree = ccontrol%max_sparse_degree
     fcontrol%extra_differences = ccontrol%extra_differences
+    fcontrol%sparse_row = ccontrol%sparse_row
+    fcontrol%recursion_max = ccontrol%recursion_max
+    fcontrol%recursion_entries_required = ccontrol%recursion_entries_required
 
     ! Logicals
     fcontrol%space_critical = ccontrol%space_critical
@@ -116,8 +120,10 @@
     ccontrol%print_level = fcontrol%print_level
     ccontrol%approximation_algorithm = fcontrol%approximation_algorithm
     ccontrol%dense_linear_solver = fcontrol%dense_linear_solver
-    ccontrol%max_sparse_degree = fcontrol%max_sparse_degree
     ccontrol%extra_differences = fcontrol%extra_differences
+    ccontrol%sparse_row = fcontrol%sparse_row
+    ccontrol%recursion_max = fcontrol%recursion_max
+    ccontrol%recursion_entries_required = fcontrol%recursion_entries_required
 
     ! Logicals
     ccontrol%space_critical = fcontrol%space_critical

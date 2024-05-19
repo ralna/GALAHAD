@@ -242,6 +242,8 @@
                               GALAHAD_error_mpi = - 97
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_budget_exhausted = - 99
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_warning_data = 1
 
 !     General integers
 

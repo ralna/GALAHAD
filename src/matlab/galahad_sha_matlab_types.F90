@@ -47,6 +47,7 @@
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc
         mwPointer :: max_degree, differences_needed, max_reduced_degree
+        mwPointer :: approximation_algorithm_used, bad_row
       END TYPE
 
     CONTAINS
@@ -97,9 +98,18 @@
         CASE( 'dense_linear_solver' )
           CALL MATLAB_get_value( ps, 'dense_linear_solver',                    &
                                  pc, SHA_control%dense_linear_solver )
-        CASE( 'max_sparse_degree' )
-          CALL MATLAB_get_value( ps, 'max_sparse_degree',                      &
-                                 pc, SHA_control%max_sparse_degree )
+        CASE( 'extra_differences' )
+          CALL MATLAB_get_value( ps, 'extra_differences',                      &
+                                 pc, SHA_control%extra_differences )
+        CASE( 'sparse_row' )
+          CALL MATLAB_get_value( ps, 'sparse_row',                             &
+                                 pc, SHA_control%sparse_row )
+        CASE( 'recursion_max' )
+          CALL MATLAB_get_value( ps, 'recursion_max',                          &
+                                 pc, SHA_control%recursion_max )
+        CASE( 'recursion_entries_required' )
+          CALL MATLAB_get_value( ps, 'recursion_entries_required',             &
+                                 pc, SHA_control%recursion_entries_required )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, SHA_control%space_critical )
@@ -143,13 +153,14 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 9
+      INTEGER * 4, PARAMETER :: ninform = 12
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'approximation_algorithm        ', &
-         'dense_linear_solver            ', 'max_sparse_degree              ', &
-         'space_critical                 ', 'deallocate_error_fatal         ', &
-         'prefix                         '                      /)
+         'dense_linear_solver            ', 'extra_differences              ', &
+         'sparse_row                     ', 'recursion_max                  ', &
+         'recursion_entries_required     ', 'space_critical                 ', &
+         'deallocate_error_fatal         ', 'prefix                         ' /)
 
 !  create the structure
 
@@ -173,8 +184,14 @@
                                   SHA_control%approximation_algorithm )
       CALL MATLAB_fill_component( pointer, 'dense_linear_solver',              &
                                   SHA_control%dense_linear_solver )
-      CALL MATLAB_fill_component( pointer, 'max_sparse_degree',                &
-                                  SHA_control%max_sparse_degree )
+      CALL MATLAB_fill_component( pointer, 'extra_differences',                &
+                                  SHA_control%extra_differences )
+      CALL MATLAB_fill_component( pointer, 'sparse_row',                       &
+                                  SHA_control%sparse_row )
+      CALL MATLAB_fill_component( pointer, 'recursion_max',                    &
+                                  SHA_control%recursion_max )
+      CALL MATLAB_fill_component( pointer, 'recursion_entries_required',       &
+                                  SHA_control%recursion_entries_required )
       CALL MATLAB_fill_component( pointer, 'space_critical',                   &
                                   SHA_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &
@@ -213,11 +230,16 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 6
-      CHARACTER ( LEN = 21 ), PARAMETER :: finform( ninform ) = (/             &
-           'status               ', 'alloc_status         ',                   &
-           'max_degree           ', 'differences_needed   ',                   &
-           'max_reduced_degree   ', 'bad_alloc            '      /)
+      INTEGER * 4, PARAMETER :: ninform = 8
+      CHARACTER ( LEN = 28 ), PARAMETER :: finform( ninform ) = (/             &
+           'status                      ',                                     &
+           'alloc_status                ',                                     &
+           'max_degree                  ',                                     &
+           'differences_needed          ',                                     &
+           'max_reduced_degree          ',                                     &
+           'approximation_algorithm_used',                                     &
+           'bad_row                     ',                                     &
+           'bad_alloc                   '                         /)
 
 !  create the structure
 
@@ -240,6 +262,11 @@
          'differences_needed', SHA_pointer%differences_needed )
       CALL MATLAB_create_integer_component( SHA_pointer%pointer,               &
          'max_reduced_degree', SHA_pointer%max_reduced_degree )
+      CALL MATLAB_create_char_component( SHA_pointer%pointer,                  &
+        'approximation_algorithm_used',                                        &
+        SHA_pointer%approximation_algorithm_used )
+      CALL MATLAB_create_char_component( SHA_pointer%pointer,                  &
+        'bad_row', SHA_pointer%bad_row )
       CALL MATLAB_create_char_component( SHA_pointer%pointer,                  &
         'bad_alloc', SHA_pointer%bad_alloc )
 
@@ -281,6 +308,11 @@
                                mxGetPr( SHA_pointer%differences_needed ) )
       CALL MATLAB_copy_to_ptr( SHA_inform%max_reduced_degree,                  &
                                mxGetPr( SHA_pointer%max_reduced_degree ) )
+      CALL MATLAB_copy_to_ptr( SHA_inform%approximation_algorithm_used,        &
+                               mxGetPr(                                        &
+                                 SHA_pointer%approximation_algorithm_used ) )
+      CALL MATLAB_copy_to_ptr( SHA_inform%bad_row,                             &
+                               mxGetPr( SHA_pointer%bad_row ) )
       CALL MATLAB_copy_to_ptr( SHA_pointer%pointer,                            &
                                'bad_alloc', SHA_inform%bad_alloc )
 
