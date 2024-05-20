@@ -7,8 +7,10 @@ struct sha_control_type
   print_level::Cint
   approximation_algorithm::Cint
   dense_linear_solver::Cint
-  max_sparse_degree::Cint
   extra_differences::Cint
+  sparse_row::Cint
+  recursion_max::Cint
+  recursion_entries_required::Cint
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
