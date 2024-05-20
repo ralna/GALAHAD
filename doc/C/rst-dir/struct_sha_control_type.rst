@@ -11,18 +11,20 @@ sha_control_type structure
 	:class: doxyrest-overview-code-block
 
 	#include <galahad_sha.h>
-	
+
 	struct sha_control_type {
 		// fields
-	
+
 		bool :ref:`f_indexing<doxid-structsha__control__type_1a6e8421b34d6b85dcb33c1dd0179efbb3>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`error<doxid-structsha__control__type_1a11614f44ef4d939bdd984953346a7572>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`out<doxid-structsha__control__type_1aa8000eda101cade7c6c4b913fce0cc9c>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`print_level<doxid-structsha__control__type_1a12dae630bd8f5d2d00f6a86d652f5c81>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`approximation_algorithm<doxid-structsha__control__type_1af04b00dd3ef8468bec194d10ee43f8b7>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`dense_linear_solver<doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1>`;
-		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_sparse_degree<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`extra_differences<doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sparse_row<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`recursion_max<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f1>`;
+		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`recursion_entries_required<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f2>`;
 		bool :ref:`space_critical<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structsha__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
@@ -87,15 +89,13 @@ the level of output required. <= 0 gives no output, = 1 gives a one-line summary
 
 which approximation algorithm should be used?
 
-* 1 : unsymmetric (alg 2.1 in paper)
+* 1 : unsymmetric, parallel (Alg 2.1 in paper)
 
-* 2 : symmetric (alg 2.2 in paper)
+* 2 : symmetric (Alg 2.2 in pape)
 
-* 3 : composite (alg 2.3 in paper)
+* 3 : composite, parallel (Alg 2.3 in paper)
 
-* 4 : composite 2 (alg 2.4 in paper)
-
-* 5 : cautious (alg 2.5 in paper)
+* 4 : composite, block parallel (Alg 2.4 in paper)
 
 .. index:: pair: variable; dense_linear_solver
 .. _doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1:
@@ -115,16 +115,6 @@ which dense linear equation solver should be used?
 
 * 4 : singular-value decomposition with divide-and-conquer
 
-.. index:: pair: variable; max_sparse_degree
-.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`ipc_<doxid-galahad__ipc_8h_>` max_sparse_degree
-
-the maximum sparse degree if the combined version is used
-
 .. index:: pair: variable; extra_differences
 .. _doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe:
 
@@ -134,6 +124,37 @@ the maximum sparse degree if the combined version is used
 	:ref:`ipc_<doxid-galahad__ipc_8h_>` extra_differences
 
 if available use an addition extra_differences differences
+
+.. index:: pair: variable; sparse_row
+.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`ipc_<doxid-galahad__ipc_8h_>` sparse_row
+
+a row is considered sparse if it has no more than .sparse_row entries
+
+.. index:: pair: variable; recursion_max
+.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f1:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+        :ref:`ipc_<doxid-galahad__ipc_8h_>` recursion_max
+
+limit on the maximum number of levels of recursion (Alg. 2.4)
+
+.. index:: pair: variable; recursion_entries_required
+.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f2:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+        :ref:`ipc_<doxid-galahad__ipc_8h_>` recursion_entries_required
+
+the minimum number of entries in a reduced row that are required
+if a further level of recuresion is allowed (Alg. 2.4)
 
 .. index:: pair: variable; space_critical
 .. _doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
@@ -164,4 +185,3 @@ exit if any deallocation fails
 	char prefix[31]
 
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
-

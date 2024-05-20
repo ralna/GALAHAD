@@ -13,7 +13,7 @@ overview of functions provided
 .. ref-code-block:: cpp
 	:class: doxyrest-overview-code-block
 
-	
+
 	// typedefs
 
 	typedef float :ref:`spc_<doxid-galahad__spc_8h_>`;
@@ -101,7 +101,7 @@ defining the  preprocessor variable ``SINGLE``.
 
 	typedef int ipc_
 
-``ipc_`` is the default integer word length used, but may be changed to 
+``ipc_`` is the default integer word length used, but may be changed to
 ``int64_t`` by defining the  preprocessor variable ``INTEGER_64``.
 
 function calls
@@ -137,11 +137,11 @@ Set default control values and initialize private data
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are
 		  (currently):
-		  
+
 		  * **0**
                     The initialization was successful.
 
@@ -156,12 +156,12 @@ Set default control values and initialize private data
 
 Read the content of a specification file, and assign values
 associated with given keywords to the corresponding control
-parameters. An in-depth discussion of specification files is 
-:ref:`available<details-spec_file>`, and a detailed list 
-of keywords with associated default values is provided in 
-\$GALAHAD/src/xxx/XXX.template. 
-See also Table 2.1 in the Fortran documentation provided in 
-\$GALAHAD/doc/xxx.pdf for a list of how these keywords 
+parameters. An in-depth discussion of specification files is
+:ref:`available<details-spec_file>`, and a detailed list
+of keywords with associated default values is provided in
+\$GALAHAD/src/xxx/XXX.template.
+See also Table 2.1 in the Fortran documentation provided in
+\$GALAHAD/doc/xxx.pdf for a list of how these keywords
 relate to the components of the control structure.
 
 .. rubric:: Parameters:
@@ -200,7 +200,7 @@ relate to the components of the control structure.
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` *m
 	)
 
-Analsyse the sparsity structure of $H$ to generate information that will be 
+Analsyse the sparsity structure of $H$ to generate information that will be
 used when estimating its values.
 
 .. rubric:: Parameters:
@@ -227,10 +227,10 @@ used when estimating its values.
 		-
 		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are:
-		  
+
 		  * **0**
                     The import was successful
-		  
+
 		  * **-1**
                     An allocation error occurred. A message indicating
                     the offending array is written on unit
@@ -238,7 +238,7 @@ used when estimating its values.
                     and a string containing the name of the offending
                     array are held in inform.alloc_status and
                     inform.bad_alloc respectively.
-		  
+
 		  * **-2**
                     A deallocation error occurred. A message indicating
                     the offending array is written on unit control.error
@@ -246,9 +246,9 @@ used when estimating its values.
                     containing the name of the offending array are held
                     in inform.alloc_status and inform.bad_alloc
                     respectively.
-		  
+
 		  * **-3**
-                    A restriction n > 0, ne $\geq$ 0 or 0 $\leq$ row[i] $\leq$ 
+                    A restriction n > 0, ne $\geq$ 0 or 0 $\leq$ row[i] $\leq$
                     col[i] $\leq$ n has been violated.
 
 	*
@@ -311,7 +311,7 @@ used when estimating its values.
 	)
 
 
-Estimate the nonzero entries of the Hessian $H$ by component-wise secant 
+Estimate the nonzero entries of the Hessian $H$ by component-wise secant
 approximation.
 
 .. rubric:: Parameters:
@@ -330,10 +330,15 @@ approximation.
 		-
 		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are:
-		  
+
 		  * **0**
                     The recovery was successful
-		  
+
+		  * **1**
+                    Insufficient data pairs $(s_i,y_i)$ have been provided,
+                    as m is too small. The returned $B$ is likely not fully
+                    accurate.
+
 		  * **-1**
                     An allocation error occurred. A message indicating
                     the offending array is written on unit
@@ -341,7 +346,7 @@ approximation.
                     and a string containing the name of the offending
                     array are held in inform.alloc_status and
                     inform.bad_alloc respectively.
-		  
+
 		  * **-2**
                     A deallocation error occurred. A message indicating
                     the offending array is written on unit control.error
@@ -349,22 +354,22 @@ approximation.
                     containing the name of the offending array are held
                     in inform.alloc_status and inform.bad_alloc
                     respectively.
-		  
+
 		  * **-31**
-                    sha_recover_matrix has been called before 
+                    sha_recover_matrix has been called before
                     sha_analyse_matrix.
 
 	*
 		- ne
 
-		- 
-                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number 
+		-
+                  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the number
                   of entries in the upper triangular part of $H$.
 
 	*
 		- m_available
 
-		- 
+		-
                   is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   number of differences provided. Ideally this will be
                   as large as m as reported by sha_analyse_matrix, but
@@ -375,21 +380,21 @@ approximation.
 	*
 		- ls1
 
-		- 
+		-
                   is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   leading (first) dimension of the array strans.
 
 	*
 		- ls2
 
-		- 
+		-
                   is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   trailing (second) dimension of the array strans.
 
 	*
 		- strans
 
-		- 
+		-
                   is a two-dimensional array of size [ls1][ls2] and type
                   :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the vectors $\{s^{(k) T}\}$.
                   Component [$k$][$i$] should hold $s_i^{(k)}$.
@@ -397,21 +402,21 @@ approximation.
 	*
 		- ly1
 
-		- 
+		-
                   is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   leading (first) dimension of the array ytrans.
 
 	*
 		- ly2
 
-		- 
+		-
                   is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that holds the
                   trailing (second) dimension of the array ytrans.
 
 	*
 		- ytrans
 
-		- 
+		-
                   is a two-dimensional array of size [ly1][ly2] and type
                   :ref:`rpc_<doxid-galahad__rpc_8h_>`, that holds the values of the vectors $\{y^{(k) T}\}$.
                   Component [$k$][$i$] should hold $y_i^{(k)}$.
@@ -419,7 +424,7 @@ approximation.
 	*
 		- val
 
-		- 
+		-
                   is a one-dimensional array of size ne and type :ref:`rpc_<doxid-galahad__rpc_8h_>`,
                   that holds the values of the entries of the upper
                   triangular part of the symmetric matrix $H$ in the
@@ -428,7 +433,7 @@ approximation.
 	*
 		- order
 
-		- 
+		-
                   is a one-dimensional array of size m and type :ref:`ipc_<doxid-galahad__ipc_8h_>`,
                   that holds the preferred order of access for the pairs
                   $\{(s^{(k)},y^{(k)})\}$. The $k$-th component of
@@ -468,12 +473,12 @@ Provides output information
 	*
 		- status
 
-		- 
+		-
 		  is a scalar variable of type :ref:`ipc_<doxid-galahad__ipc_8h_>`, that gives the exit
 		  status from the package. Possible values are
 		  (currently):
-		  
-		  * **0** 
+
+		  * **0**
                     The values were recorded successfully
 
 .. index:: pair: function; sha_terminate
@@ -512,8 +517,6 @@ Deallocate all internal private storage
 	*
 		- inform
 
-		- 
+		-
 		  is a struct containing output information (see
 		  :ref:`sha_inform_type <doxid-structsha__inform__type>`)
-
-

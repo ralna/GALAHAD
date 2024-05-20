@@ -14,12 +14,12 @@
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galsummary
-This package 
+This package
 {\bf computes a component-wise secant approximation to the Hessian matrix}
-$\bmH(\bmx)$, for which  
+$\bmH(\bmx)$, for which
 $(\bmH(\bmx))_{i,j} = \partial f^2 (\bmx) / \partial x_i \partial x_j$,
-$1 \leq i, j \leq n$,  
-using values of the gradient $\bmg(\bmx) = \nabla_x f(\bmx)$ 
+$1 \leq i, j \leq n$,
+using values of the gradient $\bmg(\bmx) = \nabla_x f(\bmx)$
 of the function $f(\bmx)$ of $n$ unknowns $\bmx = (x_1, \ldots, x_n)^T$
 at a sequence of given distinct $\{\bmx^{(k)}\}$, $k \geq 0$.
 More specifically, given {\bf differences}
@@ -33,29 +33,29 @@ The methods provided take advantage of the entries in the Hessian that
 are known to be zero.
 
 The package is particularly intended to allow gradient-based
-optimization methods, that generate iterates 
+optimization methods, that generate iterates
 $\bmx^{(k+1)} = \bmx^{(k)} + \bms^{(k)}$ based upon the values $\bmg( \bmx^{(k)})$
-for $k \geq 0$, to build a suitable approximation to the Hessian 
-$\bmH(\bmx^{(k+1)})$. This then gives the method an opportunity to 
+for $k \geq 0$, to build a suitable approximation to the Hessian
+$\bmH(\bmx^{(k+1)})$. This then gives the method an opportunity to
 accelerate the iteration using the Hessian approximation.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galattributes
 \galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
-\galuses 
-{\tt GALAHAD\_SY\-M\-BOLS}, 
+\galuses
+{\tt GALAHAD\_SY\-M\-BOLS},
 {\tt GALAHAD\_SP\-ECFILE} and
 {\tt GALAHAD\_SPACE}.
 \galdate August 2023.
-\galorigin N. I. M. Gould, STFC-Rutherford Appleton Laboratory,
-\gallanguage Fortran~2003. 
+\galorigin J. Fowkes and N. I. M. Gould, STFC-Rutherford Appleton Laboratory,
+\gallanguage Fortran~2003.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galhowto
 
-The package is available using both single and double precision reals, 
+The package is available using both single and double precision reals,
 and either 32-bit or 64-bit integers. Access to the 32-bit integer,
 single precision version requires the {\tt USE} statement
 \medskip
@@ -65,25 +65,25 @@ single precision version requires the {\tt USE} statement
 \medskip
 \noindent
 with the obvious substitution {\tt \fullpackagename\_double},
-{\tt \fullpackagename\_single\_64} and 
+{\tt \fullpackagename\_single\_64} and
 {\tt \fullpackagename\_double\_64} for the other variants.
 
 \noindent
-If it is required to use more than one of the modules at the same time, 
+If it is required to use more than one of the modules at the same time,
 the derived types
-{\tt \packagename\_control\_type}, 
+{\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type}
 and
 {\tt NLPT\_userdata\_type},
 (Section~\ref{galtypes})
 and the subroutines
-{\tt \packagename\_initialize}, 
+{\tt \packagename\_initialize},
 {\tt \packagename\_\-analyse},
 {\tt \packagename\_\-estimate},
 {\tt \packagename\_terminate},
 (Section~\ref{galarguments})
-and 
+and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
@@ -92,6 +92,10 @@ must be renamed on one of the {\tt USE} statements.
 
 \input{kinds}
 
+%%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{parallel}
+
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galtypes
@@ -99,57 +103,56 @@ Four derived data types are accessible from the package.
 
 %%%%%%%%%%% control type %%%%%%%%%%%
 
-\subsubsection{The derived data type for holding control 
+\subsubsection{The derived data type for holding control
  parameters}\label{typecontrol}
-The derived data type 
-{\tt \packagename\_control\_type} 
-is used to hold controlling data. Default values may be obtained by calling 
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
 {\tt \packagename\_initialize}
 (see Section~\ref{subinit}),
-while components may also be changed by calling 
+while components may also be changed by calling
 {\tt \fullpackagename\_read\-\_spec}
-(see Section~\ref{readspec}). 
-The components of 
-{\tt \packagename\_control\_type} 
+(see Section~\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
 are:
 
 
 \begin{description}
 
 \itt{error} is a scalar variable of type \integer, that holds the
-stream number for error messages. Printing of error messages in 
+stream number for error messages. Printing of error messages in
 {\tt \packagename\_analyse},
-{\tt \packagename\_estimate} 
-and {\tt \packagename\_terminate} 
+{\tt \packagename\_estimate}
+and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
 \ittf{out} is a scalar variable of type \integer, that holds the
-stream number for informational messages. Printing of informational messages in 
-{\tt \packagename\_analyse} and {\tt \packagename\_estimate} 
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_analyse} and {\tt \packagename\_estimate}
 is suppressed if {\tt out} $< 0$.
 The default is {\tt out = 6}.
 
 \itt{print\_level} is a scalar variable of type \integer, that is used
-to control the amount of informational output which is required. No 
-informational output will occur if {\tt print\_level} $\leq 0$. If 
-{\tt print\_level} $> 01$, details of any data errors encountered 
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $> 01$, details of any data errors encountered
 will be reported.
 The default is {\tt print\_level = 0}.
 
-\itt{approximation\_algorithm} is a scalar variable of type \integer, 
+\itt{approximation\_algorithm} is a scalar variable of type \integer,
 that is used to select which approximation algorithm employed. This may be
 \begin{enumerate}
-\item 1. unsymmetric (Algorithm 2.1 in paper)
+\item 1. unsymmetric, parallel (Algorithm 2.1 in paper)
 \item 2. symmetric (Algorithm 2.2 in paper)
-\item 3. composite (Algorithm 2.3 in paper)
-\item 4. composite 2 (Algorithm 2.4 in paper)
-\item 5. cautious (Algorithm 2.5 in paper)
+\item 3. composite, parallel (Algorithm 2.3 in paper)
+\item 4. composite, block parallel (Algorithm 2.4 in paper)
 \end{enumerate}
 Any value outside this range will be reset to the default;
 the default is {\tt approximation\_algorithm = 4}.
 
-\itt{dense\_linear\_solver} is a scalar variable of type \integer, 
+\itt{dense\_linear\_solver} is a scalar variable of type \integer,
 that specifies which (LAPACK) dense linear equation solver to use when finding
 the values of entries in each row of $\bmB$. This may be
 \begin{enumerate}
@@ -161,32 +164,44 @@ the values of entries in each row of $\bmB$. This may be
 Any value outside this range will be reset to the default;
 the default is {\tt dense\_linear\_solver = 3}.
 
-\itt{max\_sparse\_degree} is a scalar variable of type \integer, 
-that is used to specify the maximum sparse degree if a composite algorithm
-({\tt \%approximation\_algorithm = 3, 4, 5} is employed.
-The default is {\tt max\_sparse\_degree = 100}.
-
-\itt{extra\_differences} is a scalar variable of type \integer, 
+\itt{extra\_differences} is a scalar variable of type \integer,
 that is used to specify how may additional gradients (in addition to the number
 output in {\tt inform\%differences\_needed} from {\tt \packagename\_\-analyse})
 are available when calling {\tt \packagename\_\-estimate}.
-The default is {\tt extra\_differences = 0}.
+The default is {\tt extra\_differences = 1}.
 
-\itt{space\_critical} is a scalar variable of type default \logical, 
+\itt{sparse\_row} is a scalar variable of type \integer,
+that is used to specify the maximum sparse degree if a composite
+parallel algorithm ({\tt \%approximation\_algorithm = 3} is employed.
+The default is {\tt sparse\_row = 100}.
+
+\itt{recursion\_max} is a scalar variable of type \integer, that puts a limit
+on the number of levels of recursion that will be allowed if the
+composite block-parallel algorithm ({\tt \%approximation\_algorithm = 4} is
+used.
+The default is {\tt recursion\_max  = 25}.
+
+\itt{recursion\_entries\_required} is a scalar variable of type \integer,
+that imposes the minimum number of entries in a reduced row that are required
+if a further level of recuresion is allowed in the composite block-parallel
+algorithm ({\tt \%approximation\_algorithm = 4}.
+The default is {\tt  = recursion\_entries\_required = 10}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
-and  \false\ otherwise. The package may run faster if 
+and  \false\ otherwise. The package may run faster if
 {\tt space\_critical} is \false\ but at the possible expense of a larger
 storage requirement. The default is {\tt space\_critical = .FALSE.}.
 
-\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
 that must be set \true\ if the user wishes to terminate execution if
 a deallocation  fails, and \false\ if an attempt to continue
 will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
 
 \itt{prefix} is a scalar variable of type default \character\
-and length 30, that may be used to provide a user-selected 
-character string to preface every line of printed output. 
-Specifically, each line of output will be prefaced by the string 
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
 {\tt prefix(2:LEN(TRIM( prefix ))-1)},
 thus ignoreing the first and last non-null components of the
 supplied string. If the user does not want to preface lines by such
@@ -198,16 +213,16 @@ a string, they may use the default {\tt prefix = ""}.
 
 \subsubsection{The derived data type for holding informational
  parameters}\label{typeinform}
-The derived data type 
-{\tt \packagename\_inform\_type} 
-is used to hold parameters that give information about the progress and needs 
-of the algorithm. The components of 
-{\tt \packagename\_inform\_type} 
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
 are:
 
 \begin{description}
 \itt{status} is a scalar variable of type \integer, that gives the
-exit status of the algorithm. 
+exit status of the algorithm.
 See Section~\ref{galerrors} for details.
 
 \itt{alloc\_status} is a scalar variable of type \integer, that gives
@@ -215,26 +230,26 @@ the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
 \itt{bad\_alloc} is a scalar variable of type default \character\
-and length 80, that  gives the name of the last internal array 
+and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
-This will be the null string if {\tt status = 0}. 
+This will be the null string if {\tt status = 0}.
 
-\itt{max\_degree} is a scalar variable of type \integer, 
+\itt{max\_degree} is a scalar variable of type \integer,
 that holds the maximum degree in the adjacency graph.
 
-\itt{differences\_needed} is a scalar variable of type \integer, 
+\itt{differences\_needed} is a scalar variable of type \integer,
 that holds the number of differences that will be needed (more may be helpful)
 by {\tt \packagename\_\-estimate}. This value is computed by
 {\tt \packagename\_\-analyse}.
 
-\itt{max\_reduced\_degree} is a scalar variable of type \integer, 
+\itt{max\_reduced\_degree} is a scalar variable of type \integer,
 that holds the maximum reduced degree in the adjacency graph.
 
-\itt{approximation\_algorithm\_used}  is a scalar variable of type 
+\itt{approximation\_algorithm\_used}  is a scalar variable of type
 \integer, that specifies the actual approximation algorithm used
 (see {\tt control\%approximation\_algorithm}).
 
-\itt{bad\_row} is a scalar variable of type \integer, that holds the 
+\itt{bad\_row} is a scalar variable of type \integer, that holds the
 index of the first row for which a failure occurred when forming its Hessian
 values (or 0 if the data if no failures occurred).
 
@@ -243,12 +258,12 @@ values (or 0 if the data if no failures occurred).
 %%%%%%%%%%% data type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding problem data}\label{typedata}
-The derived data type 
-{\tt \packagename\_data\_type} 
+The derived data type
+{\tt \packagename\_data\_type}
 is used to hold all the data for a particular problem,
-or sequences of problems with the same structure, between calls of 
-{\tt \packagename} procedures. 
-This data should be preserved, untouched from the initial call to 
+or sequences of problems with the same structure, between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched from the initial call to
 {\tt \packagename\_initialize}
 to the final call to
 {\tt \packagename\_terminate}.
@@ -257,33 +272,33 @@ to the final call to
 
 \galarguments
 There are four procedures for user calls
-(see Section~\ref{galfeatures} for further features): 
+(see Section~\ref{galfeatures} for further features):
 
 \begin{enumerate}
-\item The subroutine 
-      {\tt \packagename\_initialize} 
-      is used to set default values, and initialize private data, 
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data,
       before solving one or more problems with the
       same sparsity and bound structure.
-\item The subroutine 
-      {\tt \packagename\_analyse} 
+\item The subroutine
+      {\tt \packagename\_analyse}
       is called to analyze the sparsity pattern of the Hessian
-      and to generate information that will be used when estimating 
+      and to generate information that will be used when estimating
       its values.
-\item The subroutine 
-      {\tt \packagename\_estimate} 
-      is called to estimate the Hessian by component-wise secant 
-      approximation. This must be preceded by a call to 
+\item The subroutine
+      {\tt \packagename\_estimate}
+      is called to estimate the Hessian by component-wise secant
+      approximation. This must be preceded by a call to
       {\tt \packagename\_analyse}.
-\item The subroutine 
-      {\tt \packagename\_terminate} 
-      is provided to allow the user to automatically deallocate array 
-       components of the private data, allocated by 
-       {\tt \packagename\_solve}, 
-       at the end of the solution process. 
-       It is important to do this if the data object is re-used for another 
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_solve},
+       at the end of the solution process.
+       It is important to do this if the data object is re-used for another
        problem {\bf with a different structure}
-       since {\tt \packagename\_initialize} cannot test for this situation, 
+       since {\tt \packagename\_initialize} cannot test for this situation,
        and any existing associated targets will subsequently become unreachable.
 \end{enumerate}
 We use square brackets {\tt [ ]} to indicate \optional\ arguments.
@@ -300,24 +315,24 @@ We use square brackets {\tt [ ]} to indicate \optional\ arguments.
 \vspace*{-3mm}
 \begin{description}
 
-\itt{data} is a scalar \intentinout\ argument of type 
+\itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
-(see Section~\ref{typedata}). It is used to hold data about the problem being 
-solved. 
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved.
 
-\itt{control} is a scalar \intentout\ argument of type 
+\itt{control} is a scalar \intentout\ argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). 
+(see Section~\ref{typecontrol}).
 On exit, {\tt control} contains default values for the components as
 described in Section~\ref{typecontrol}.
-These values should only be changed after calling 
+These values should only be changed after calling
 {\tt \packagename\_initialize}.
 
-\itt{inform} is a scalar \intentout\ argument of type 
+\itt{inform} is a scalar \intentout\ argument of type
 {\tt \packagename\_inform\_type}
 (see Section~\ref{typeinform}). A successful call to
 {\tt \packagename\_initialize}
-is indicated when the  component {\tt status} has the value 0. 
+is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \end{description}
@@ -326,7 +341,7 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \subsubsection{The analysis subroutine}
 The analysis phase, in which the given sparsity pattern of the Hessian
-is used to generate information that will be used when estimating 
+is used to generate information that will be used when estimating
 its values, is called as follows:
 
 \vspace*{1mm}
@@ -336,48 +351,48 @@ its values, is called as follows:
 
 \vspace*{-2mm}
 \begin{description}
-\ittf{n} 
-is a scalar \intentin\ scalar argument of type \integer, that must be 
+\ittf{n}
+is a scalar \intentin\ scalar argument of type \integer, that must be
 set to $n$ the dimension of the Hessian matrix, i.e. the number of
-variables in the function $f$. 
+variables in the function $f$.
 \restrictions {\tt n} $>$ {\tt 0}.
 
-\ittf{nz} 
+\ittf{nz}
 is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the number of nonzero entries on and above the diagonal of the Hessian
 matrix.
 \restrictions {\tt nz} $\ge$ {\tt 0}.
 
-\ittf{ROW} and {\tt COL} are a scalar \intentin\ rank-one array arguments 
-of type  \integer\ and dimension {\tt nz}, that are used to describe 
-the sparsity structure of the Hessian matrix, $\bmH(\bmx)$. 
+\ittf{ROW} and {\tt COL} are a scalar \intentin\ rank-one array arguments
+of type  \integer\ and dimension {\tt nz}, that are used to describe
+the sparsity structure of the Hessian matrix, $\bmH(\bmx)$.
 They must be set so that
 {\tt ROW(}$i${\tt)} and {\tt COL(}$i${\tt)}, $i = 1, \ldots,$ {\tt nz},
-contains the row and column indices of the nonzero elements of the 
+contains the row and column indices of the nonzero elements of the
 {\bf upper triangular part, including the diagonal,} of the Hessian matrix.
 The entries may appear in any order.
-\restrictions 
-$1 \leq$ {\tt ROW(}$j${\tt) $\leq$ COL(}$j${\tt)} $\leq n$, 
+\restrictions
+$1 \leq$ {\tt ROW(}$j${\tt) $\leq$ COL(}$j${\tt)} $\leq n$,
 $j = 1, \ldots,$ {\tt nz}.
 
-\itt{data} is a scalar \intentinout\ argument of type 
+\itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
-(see Section~\ref{typedata}). It is used to hold data about the problem being 
-solved. It must not have been altered {\bf by the user} since the last call to 
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. It must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentin\ argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). Default values may be assigned by calling 
-{\tt \packagename\_initialize} prior to the first call to 
-{\tt \packagename\_analyse}. 
+(see Section~\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_analyse}.
 
-\itt{inform} is a scalar \intentinout\ argument of type 
+\itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
-(see Section~\ref{typeinform}). 
+(see Section~\ref{typeinform}).
 A successful call to
 {\tt \packagename\_analyse}
-is indicated when the  component {\tt status} has the value 0. 
+is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \end{description}
@@ -398,81 +413,81 @@ are found by component-wise secant approximation, is called as follows:
 
 \vspace*{-2mm}
 \begin{description}
-\itt{n,} {\tt nz}, {\tt ROW} and {\tt COL} are  \intentin\ arguments 
+\itt{n,} {\tt nz}, {\tt ROW} and {\tt COL} are  \intentin\ arguments
 exactly as described and input to {\tt \packagename\_analyse},
 and must not have been changed in the interim.
 
-\itt{m\_available} 
-is a scalar \intentin\ scalar argument of type \integer, that should 
+\itt{m\_available}
+is a scalar \intentin\ scalar argument of type \integer, that should
 be set to the number of differences provided; ideally this will
 be as large as {\tt inform\%differences\_needed} as reported by
-{\tt \packagename\_\-analyse}, but better still there should be a 
+{\tt \packagename\_\-analyse}, but better still there should be a
 further {\tt control\%extra\_differences} to allow for unlikely singularities.
 
-\ittf{S} is a scalar \intentin\ rank-two array argument of type 
+\ittf{S} is a scalar \intentin\ rank-two array argument of type
 \realdp, and dimension ({\tt ls1, ls2}), that should be set on input
 so that the $i$-th entry of the $k$-th difference $s_i^{(k)}$ lies in
-{\tt S(}$i, k${\tt )}.  
+{\tt S(}$i, k${\tt )}.
 
-\ittf{ls1} 
+\ittf{ls1}
 is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the leading dimension of {\tt S}, and must be at least
-{\tt n}. 
+{\tt n}.
 
-\ittf{ls2} 
+\ittf{ls2}
 is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the trailing dimension of {\tt S}, and must be at least
-{\tt m\_available}. 
+{\tt m\_available}.
 
-\ittf{Y} is a scalar \intentin\ rank-two array argument of type 
+\ittf{Y} is a scalar \intentin\ rank-two array argument of type
 \realdp, and dimension ({\tt ly1, ly2}), that should be set on input
 so that the $i$-th entry of the $k$-th difference $y_i^{(k)}$ lies in
-{\tt Y(}$i, k${\tt )}.  
+{\tt Y(}$i, k${\tt )}.
 
-\ittf{ly1} 
+\ittf{ly1}
 is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the leading dimension of {\tt Y}, and must be at least
-{\tt n}. 
+{\tt n}.
 
-\ittf{ly2} 
+\ittf{ly2}
 is a scalar \intentin\ scalar argument of type \integer, that must be
 set to the length of the trailing dimension of {\tt Y}, and must be at least
-{\tt m\_available}. 
+{\tt m\_available}.
 
-\ittf{VAL} is a scalar \intentout\ rank-one array argument of type 
+\ittf{VAL} is a scalar \intentout\ rank-one array argument of type
 \realdp, and dimension {\tt nz}, that will be set on output
 to the non-zeros of the Hessian approximation $\bmB$ in the
 order defined by the list stored in {\tt ROW} and {\tt COL}.
 
-\itt{data} is a scalar \intentinout\ argument of type 
+\itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
-(see Section~\ref{typedata}). It is used to hold data about the problem being 
-solved. It must not have been altered {\bf by the user} since the last call to 
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. It must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_analyse}.
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentin\ argument of type
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol})
 exactly as for
-{\tt \packagename\_analyse}. 
+{\tt \packagename\_analyse}.
 
-\itt{inform} is a scalar \intentinout\ argument of type 
+\itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
 (see Section~\ref{typeinform})
 exactly as for
-{\tt \packagename\_analyse}. 
+{\tt \packagename\_analyse}.
 A successful call to
 {\tt \packagename\_estimate}
-is indicated when the  component {\tt status} has the value 0. 
+is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
-\itt{ORDER} is an \optional\ scalar \intentin\ rank-one array argument 
+\itt{ORDER} is an \optional\ scalar \intentin\ rank-one array argument
 of type default integer and dimension {\tt m\_available}, that can be set
-to the preferred order of access of the differences stored 
-in {\tt S} and {\tt Y}. The calculation of each row of the 
+to the preferred order of access of the differences stored
+in {\tt S} and {\tt Y}. The calculation of each row of the
 Hessian approximation $\bmB$ depends on the number of nonzeros in the row,
 and {\tt ORDER} allows the user to specify the order in which the columns
-of  {\tt S} and {\tt Y} are accessed to determine these row values. 
+of  {\tt S} and {\tt Y} are accessed to determine these row values.
 If {\tt ORDER} is \present\, the $i$-th accessed column will be
 {\tt ORDER(}$i${\tt )}. Otherwise the columns will be accessed
 in their natural order $i, i = 1, \ldots ,$ {\tt m\_available}.
@@ -491,15 +506,15 @@ All previously allocated arrays are deallocated as follows:
 \vspace*{-1mm}
 \begin{description}
 
-\itt{data} is a scalar \intentinout\ argument of type 
-{\tt \packagename\_data\_type} 
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
 exactly as for
 {\tt \packagename\_solve},
-which must not have been altered {\bf by the user} since the last call to 
+which must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 On exit, array components will have been deallocated.
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentin\ argument of type
 {\tt \packagename\_control\_type}
 exactly as for
 {\tt \packagename\_analyse}.
@@ -508,10 +523,10 @@ exactly as for
 {\tt \packagename\_inform\_type}
 exactly as for
 {\tt \packagename\_analyse}.
-Only the component {\tt status} will be set on exit, and a 
-successful call to 
+Only the component {\tt status} will be set on exit, and a
+successful call to
 {\tt \packagename\_terminate}
-is indicated when this  component {\tt status} has the value 0. 
+is indicated when this  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \end{description}
@@ -519,76 +534,85 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 %%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galerrors
-A negative value of {\tt inform\%status} on exit from 
+A positive value of {\tt inform\%status} on exit from
+{\tt \packagename\_estimate}
+provides a warning. Possible values are:
+
+\begin{description}
+\itt{1.} Insufficient data pairs $(\bms_i,\bmy_i)$ have been provided, as
+{\tt m} is too small. The returned $\bmB$ is likely not fully accurate.
+\end{description}
+
+A negative value of {\tt inform\%status} on exit from
 {\tt \packagename\_analyse},
 {\tt \packagename\_estimate}
-or 
+or
 {\tt \packagename\_terminate}
 indicates that an error has occurred. No further calls should be made
 until the error has been corrected. Possible values are:
 
 \begin{description}
 
-\itt{\galerrallocate.} An allocation error occurred. 
+\itt{\galerrallocate.} An allocation error occurred.
 A message indicating the offending
-array is written on unit {\tt control\%error}, and the returned allocation 
+array is written on unit {\tt control\%error}, and the returned allocation
 status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
-\itt{\galerrdeallocate.} A deallocation error occurred. 
-A message indicating the offending 
-array is written on unit {\tt control\%error} and the returned allocation 
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
 status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
-\itt{\galerrrestrictions.} 
+\itt{\galerrrestrictions.}
 One or more of the restrictions
-{\tt n} $>$ {\tt 0},  {\tt nz} $\ge$ {\tt 0}, 
-{\tt 1} $\le$ {\tt ROW(}$j${\tt )} $\le$ {\tt COL(}$j${\tt )} $\le$ {\tt n}, 
+{\tt n} $>$ {\tt 0},  {\tt nz} $\ge$ {\tt 0},
+{\tt 1} $\le$ {\tt ROW(}$j${\tt )} $\le$ {\tt COL(}$j${\tt )} $\le$ {\tt n},
 $j = 1, \ldots,$ {\tt nz},
 has been violated.
 
-\itt{\galerrfactorization.} 
+\itt{\galerrfactorization.}
 The LAPACK dense linear equation solver used to find the values of
 the rows of $\bmB$ has failed.
 
 \itt{\galerrcallorder.}  {\tt \packagename\_estimate} has been called
-before {\tt \packagename\_analyse}. 
+before {\tt \packagename\_analyse}.
 
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galfeatures
-\noindent In this section, we describe an alternative means of setting 
+\noindent In this section, we describe an alternative means of setting
 control parameters, that is components of the variable {\tt control} of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}), 
+(see Section~\ref{typecontrol}),
 by reading an appropriate data specification file using the
 subroutine {\tt \packagename\_read\_specfile}. This facility
-is useful as it allows a user to change  {\tt \packagename} control parameters 
+is useful as it allows a user to change  {\tt \packagename} control parameters
 without editing and recompiling programs that call {\tt \packagename}.
 
-A specification file, or specfile, is a data file containing a number of 
-"specification commands". Each command occurs on a separate line, 
-and comprises a "keyword", 
-which is a string (in a close-to-natural language) used to identify a 
-control parameter, and 
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
 an (optional) "value", which defines the value to be assigned to the given
-control parameter. All keywords and values are case insensitive, 
+control parameter. All keywords and values are case insensitive,
 keywords may be preceded by one or more blanks but
 values must not contain blanks, and
 each value must be separated from its keyword by at least one blank.
-Values must not contain more than 30 characters, and 
+Values must not contain more than 30 characters, and
 each line of the specfile is limited to 80 characters,
 including the blanks separating keyword and value.
 
-The portion of the specification file used by 
+The portion of the specification file used by
 {\tt \packagename\_read\_specfile}
 must start
-with a "{\tt BEGIN \packagename}" command and end with an 
+with a "{\tt BEGIN \packagename}" command and end with an
 "{\tt END}" command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
   ( .. lines ignored by SHA_read_specfile .. )
@@ -596,12 +620,12 @@ with a "{\tt BEGIN \packagename}" command and end with an
        keyword    value
        .......    .....
        keyword    value
-    END 
+    END
   ( .. lines ignored by SHA_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
-The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
-may contain additional (trailing) strings so long as such strings are 
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
     BEGIN SHA SPECIFICATION
@@ -610,34 +634,34 @@ and
 \begin{verbatim}
     END SHA SPECIFICATION
 \end{verbatim}
-are acceptable. Furthermore, 
+are acceptable. Furthermore,
 between the
 ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
 specification commands may occur in any order.  Blank lines and
-lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
-The content 
-of a line after a {\tt !} or {\tt *} character is also 
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
 ignored (as is the {\tt !} or {\tt *}
-character itself). This provides an easy manner to "comment out" some 
-specification commands, or to comment specific values 
-of certain control parameters.  
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
 
 The value of a control parameters may be of three different types, namely
 integer, logical or real.
 Integer and real values may be expressed in any relevant Fortran integer and
 floating-point formats (respectively). Permitted values for logical
-parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
 "{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
-"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
-Empty values are also allowed for 
-logical control parameters, and are interpreted as "{\tt TRUE}".  
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
 
-The specification file must be open for 
+The specification file must be open for
 input when {\tt \packagename\_read\_specfile}
-is called, and the associated device number 
-passed to the routine in device (see below). 
-Note that the corresponding 
-file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
 for more than one program/routine.  For the same reason, the file is not
 closed by {\tt \packagename\_read\_specfile}.
 
@@ -645,7 +669,7 @@ closed by {\tt \packagename\_read\_specfile}.
 \label{readspec}
 
 Control parameters may be read from a file as follows:
-\hskip0.5in 
+\hskip0.5in
 \def\baselinestretch{0.8} {\tt \begin{verbatim}
      CALL SHA_read_specfile( control, device )
 \end{verbatim}
@@ -653,19 +677,19 @@ Control parameters may be read from a file as follows:
 \def\baselinestretch{1.0}
 
 \begin{description}
-\itt{control} is a scalar \intentinout argument of type 
+\itt{control} is a scalar \intentinout argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). 
-Default values should have already been set, perhaps by calling 
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
 {\tt \packagename\_initialize}.
 On exit, individual components of {\tt control} may have been changed
-according to the commands found in the specfile. Specfile commands and 
-the component (see Section~\ref{typecontrol}) of {\tt control} 
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
 that each affects are given in Table~\ref{specfile}.
 
-\bctable{|l|l|l|} 
+\bctable{|l|l|l|}
 \hline
-  command & component of {\tt control} & value type \\ 
+  command & component of {\tt control} & value type \\
 \hline
   {\tt error-printout-device} & {\tt \%error} & integer \\
   {\tt printout-device} & {\tt \%out} & integer \\
@@ -679,7 +703,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt output-line-prefix} & {\tt \%prefix} & character \\
 \hline
 
-\ectable{\label{specfile}Specfile commands and associated 
+\ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
 \itt{device} is a scalar \intentin argument of type \integer,
@@ -693,7 +717,7 @@ will be printed on unit {\tt control\%error}.
 %%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galinfo
-If {\tt control\%print\_level} is positive, information about 
+If {\tt control\%print\_level} is positive, information about
 errors encountered will be printed on unit {\tt control\-\%out}.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
@@ -702,18 +726,18 @@ errors encountered will be printed on unit {\tt control\-\%out}.
 
 \galcommon None.
 \galworkspace Provided automatically by the module.
-\galroutines None. 
+\galroutines None.
 \galmodules {\tt \packagename\_solve} calls the \galahad\ packages
-{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SY\-M\-BOLS},
 {\tt GALAHAD\_SPECFILE} and
 {\tt GALAHAD\_NLPT}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
-\galrestrictions 
+\galrestrictions
 $0 <$ {\tt n},  $0 \le$ {\tt nz},
-{\tt 1} $\le$ {\tt ROW(}$j${\tt )} $\le$ {\tt COL(}$j${\tt )} $\le$ {\tt n}, 
+{\tt 1} $\le$ {\tt ROW(}$j${\tt )} $\le$ {\tt COL(}$j${\tt )} $\le$ {\tt n},
 $j = 1, \ldots,$ {\tt nz}.
-\galportability Fortran~2003. 
+\galportability Fortran~2003.
 The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
@@ -721,21 +745,22 @@ The package is thread-safe.
 \galmethod
 The package computes the entries in the each row of $\bmB$ one at a time.
 The entries $b_{ij}$ in row $i$ may be chosen to
-\eqn{ss}{\minin{b_{i,j}} \;\; \sum_{k \in {\cal I}_i} 
+\eqn{ss}{\minin{b_{i,j}} \;\; \sum_{k \in {\cal I}_i}
  \left[ \sum_{{\scriptscriptstyle \mbox{nonzeros}}\; j} b_{i,j} s_j^{(k)} - y_i^{(k)} \right]^2,}
 where ${\cal I}_i$ is ideally chosen to be sufficiently large so that \req{ss}
 has a unique minimizer. Since this requires that there are at least
 as many $(\bms^{(k)}, \bmy^{(k)})$ pairs as the maximum number of nonzeros
-in any row, this may be prohibitive in some cases. We might then be content 
-with a minimum-norm (under-determined) least-squares solution. Or, we may
+in any row, this may be prohibitive in some cases. We might then be content
+with a minimum-norm (under-determined) least-squares solution; each row
+may then be processed in parallel. Or, we may
 take advantage of the symmetry of the Hessian, and note that if we
 have already found the values in row $j$, then the value $b_{i,j} = b_{j,i}$
-in \req{ss} is known before we process row $i$. Thus by ordering the rows 
-and exploiting symmetry we may reduce the numbers of unknowns in 
+in \req{ss} is known before we process row $i$. Thus by ordering the rows
+and exploiting symmetry we may reduce the numbers of unknowns in
 future unprocessed rows.
 
 In the analysis phase, we order the rows by constructing the connectivity
-graph---a graph comprising nodes $1$ to $n$ and edges connecting 
+graph---a graph comprising nodes $1$ to $n$ and edges connecting
 nodes $i$ and $j$ if $h_{i,j}$ is everywhere nonzero---of $\bmH(\bmx)$.
 The nodes are ordered by increasing degree (that is, the number of edges
 emanating from the node) using a bucket sort. The row chosen to be
@@ -752,9 +777,14 @@ is in block form
 \disp{\bmB = \mat{cc}{ \bmB_{11} & \bmB_{12} \\ \bmB^T_{12} & \bmB_{22}},}
 the $( \bmB_{11} \;\; \bmB_{12})$ rows are processed without regard
 for symmetry but give the $2,1$ block $\bmB^T_{12}$, and finally
-the $2,2$ block $\bmB_{22}$ is processed either with the option of exploiting
-symmetry. More details of the precise algorithms (Algorithms 2.1--2.5)
-are given in the reference below. The linear least-squares problems \req{ss} 
+the $2,2$ block $\bmB_{22}$ is processed knowing $\bmB^T_{12}$
+again without respecting symmetry. The rows in blocks
+$( \bmB_{11} \;\; \bmB_{12})$ and $\bmB_{22}$ may be computed in parallel.
+It is also possible to generalise this so that $\bmB$ is decomposed into
+$r$ blocks, and the blocks processed one at a time recursively using the
+symmetry from previos rows.
+More details of the precise algorithms (Algorithms 2.1--2.4)
+are given in the reference below. The linear least-squares problems \req{ss}
 themselves are solved by a choice of LAPACK packages.
 
 \vspace*{1mm}
@@ -770,7 +800,7 @@ The method is described in detail in
 
 J.\ M.\ Fowkes, N.\ I.\ M.\ Gould and J.\ A.\ Scott,
 Approximating large-scale Hessians using secant equations.
-Technical Report TR-2023, Rutherford Appleton Laboratory.
+Preprint P-2024-001, Rutherford Appleton Laboratory.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -797,4 +827,3 @@ The code produces the following output:
 \noindent
 
 \end{document}
-

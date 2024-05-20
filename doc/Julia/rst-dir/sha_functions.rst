@@ -70,7 +70,7 @@ keywords relate to the components of the control structure.
 	*
 		- specfile
 
-		- 
+		-
 		  is a one-dimensional array of type Vararg{Cchar} that
 		  must give the name of the specification file
 
@@ -84,7 +84,7 @@ keywords relate to the components of the control structure.
 
         function sha_analyse_matrix(control, data, status, n, ne, row, col, m)
 
-Analsyse the sparsity structure of $H$ to generate information that will be 
+Analsyse the sparsity structure of $H$ to generate information that will be
 used when estimating its values.
 
 .. rubric:: Parameters:
@@ -95,7 +95,7 @@ used when estimating its values.
 	*
 		- control
 
-		- 
+		-
 		  is a structure whose members provide control paramters
 		  for the remaining prcedures (see
 		  :ref:`sha_control_type <doxid-structsha__control__type>`)
@@ -116,6 +116,11 @@ used when estimating its values.
 		  * **0**
                     The import and analysis were conducted successfully.
 
+		  * **1**
+                    Insufficient data pairs $(s_i,y_i)$ have been provided,
+                    as m is too small. The returned $B$ is likely not fully
+                    accurate.
+
 		  * **-1**
                     An allocation error occurred. A message indicating
                     the offending array is written on unit
@@ -133,7 +138,7 @@ used when estimating its values.
                     respectively.
 
 		  * **-3**
-                    A restriction n > 0, ne $\geq$ 0 or 0 $\leq$ row[i] $\leq$ 
+                    A restriction n > 0, ne $\geq$ 0 or 0 $\leq$ row[i] $\leq$
                     col[i] $\leq$ n has been violated.
 
 	*
@@ -180,10 +185,10 @@ used when estimating its values.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_recover_matrix(data, status, ne, m, ls1, ls2, strans, 
+        function sha_recover_matrix(data, status, ne, m, ls1, ls2, strans,
                                     ly1, ly2, ytrans, val, order)
 
-Estimate the nonzero entries of the Hessian $H$ by component-wise secant 
+Estimate the nonzero entries of the Hessian $H$ by component-wise secant
 approximation.
 
 .. rubric:: Parameters:
@@ -224,7 +229,7 @@ approximation.
                     respectively.
 
 		  * **-31**
-                    sha.recover_matrix has been called before 
+                    sha.recover_matrix has been called before
                     sha.analyse_matrix.
 
 	*
@@ -241,14 +246,14 @@ approximation.
 	*
 		- ne
 
-		- 
-                  is a scalar variable of type Int32, that holds the number 
+		-
+                  is a scalar variable of type Int32, that holds the number
                   of entries in the upper triangular part of $H$.
 
 	*
 		- m_available
 
-		- 
+		-
                   is a scalar variable of type Int32, that holds the
                   number of differences provided. Ideally this will be
                   as large as m as reported by sha_analyse_matrix, but
@@ -259,21 +264,21 @@ approximation.
 	*
 		- ls1
 
-		- 
+		-
                   is a scalar variable of type Int32, that holds the
                   leading (first) dimension of the array strans.
 
 	*
 		- ls2
 
-		- 
+		-
                   is a scalar variable of type Int32, that holds the
                   trailing (second) dimension of the array strans.
 
 	*
 		- strans
 
-		- 
+		-
                   is a two-dimensional array of size [ls1][ls2] and type
                   T, that holds the values of the vectors $\{s^{(k) T}\}$.
                   Component [$k$][$i$] should hold $s_i^{(k)}$.
@@ -281,21 +286,21 @@ approximation.
 	*
 		- ly1
 
-		- 
+		-
                   is a scalar variable of type Int32, that holds the
                   leading (first) dimension of the array ytrans.
 
 	*
 		- ly2
 
-		- 
+		-
                   is a scalar variable of type Int32, that holds the
                   trailing (second) dimension of the array ytrans.
 
 	*
 		- ytrans
 
-		- 
+		-
                   is a two-dimensional array of size [ly1][ly2] and type
                   T, that holds the values of the vectors $\{y^{(k) T}\}$.
                   Component [$k$][$i$] should hold $y_i^{(k)}$.
@@ -303,7 +308,7 @@ approximation.
 	*
 		- val
 
-		- 
+		-
                   is a one-dimensional array of size ne and type T,
                   that holds the values of the entries of the upper
                   triangular part of the symmetric matrix $H$ in the
@@ -312,7 +317,7 @@ approximation.
 	*
 		- order
 
-		- 
+		-
                   is a one-dimensional array of size m and type Int32,
                   that holds the preferred order of access for the pairs
                   $\{(s^{(k)},y^{(k)})\}$. The $k$-th component of
@@ -390,6 +395,6 @@ Deallocate all internal private storage
 	*
 		- inform
 
-		- 
+		-
 		  is a structure containing output information (see
 		  :ref:`sha_inform_type <doxid-structsha__inform__type>`)

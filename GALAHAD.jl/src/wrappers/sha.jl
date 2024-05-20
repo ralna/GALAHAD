@@ -22,9 +22,9 @@ struct sha_inform_type
   status::Cint
   alloc_status::Cint
   max_degree::Cint
-  approximation_algorithm_used::Cint
   differences_needed::Cint
   max_reduced_degree::Cint
+  approximation_algorithm_used::Cint
   bad_row::Cint
   bad_alloc::NTuple{81,Cchar}
 end

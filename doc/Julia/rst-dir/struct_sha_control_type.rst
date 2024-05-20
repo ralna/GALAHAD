@@ -17,8 +17,10 @@ sha_control_type structure
           print_level::Int32
           approximation_algorithm::Int32
           dense_linear_solver::Int32
-          max_sparse_degree::Int32
           extra_differences::Int32
+          sparse_row::Int32
+          recursion_max::Int32
+          recursion_entries_required::Int32
           space_critical::Bool
           deallocate_error_fatal::Bool
           prefix::NTuple{31,Cchar}
@@ -83,13 +85,13 @@ the level of output required. <= 0 gives no output, = 1 gives a one-line summary
 
 which approximation algorithm should be used?
 
-* 0 : unsymmetric (alg 2.1 in paper)
+* 1 : unsymmetric, parallel (Alg 2.1 in paper)
 
-* 1 : symmetric (alg 2.2 in paper)
+* 2 : symmetric (Alg 2.2 in pape)
 
-* 2 : composite (alg 2.3 in paper)
+* 3 : composite, parallel (Alg 2.3 in paper)
 
-* 3 : composite 2 (alg 2.2/3 in paper)
+* 4 : composite, block parallel (Alg 2.4 in paper)
 
 .. index:: pair: variable; dense_linear_solver
 .. _doxid-structsha__control__type_1a59b9cb51e0d19a10a7714b4582a883b1:
@@ -109,16 +111,6 @@ which dense linear equation solver should be used?
 
 * 4 : singular-value decomposition with divide-and-conquer
 
-.. index:: pair: variable; max_sparse_degree
-.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	Int32 max_sparse_degree
-
-the maximum sparse degree if the combined version is used
-
 .. index:: pair: variable; extra_differences
 .. _doxid-structsha__control__type_1a16e4be90c05808f00af594b1feabadbe:
 
@@ -128,6 +120,37 @@ the maximum sparse degree if the combined version is used
 	Int32 extra_differences
 
 if available use an addition extra_differences differences
+
+.. index:: pair: variable; sparse_row
+.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	Int32 sparse_row
+
+a row is considered sparse if it has no more than .sparse_row entries
+
+.. index:: pair: variable; recursion_max
+.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f1:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+        :ref:`ipc_<doxid-galahad__ipc_8h_>` recursion_max
+
+limit on the maximum number of levels of recursion (Alg. 2.4)
+
+.. index:: pair: variable; recursion_entries_required
+.. _doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f2:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+        :ref:`ipc_<doxid-galahad__ipc_8h_>` recursion_entries_required
+
+the minimum number of entries in a reduced row that are required
+if a further level of recuresion is allowed (Alg. 2.4)
 
 .. index:: pair: variable; space_critical
 .. _doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:
@@ -158,4 +181,3 @@ exit if any deallocation fails
 	NTuple{31,Cchar} prefix
 
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string'
-

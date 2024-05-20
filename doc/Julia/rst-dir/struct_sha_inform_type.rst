@@ -16,6 +16,7 @@ sha_inform_type structure
           max_degree::Int32
           differences_needed::Int32
           max_reduced_degree::Int32
+          approximation_algorith_used::Int32
           bad_row::Int32
           bad_alloc::NTuple{81,Cchar}
 
@@ -59,16 +60,6 @@ the status of the last attempted allocation/deallocation.
 
 the maximum degree in the adgacency graph.
 
-.. index:: pair: variable; approximation_algorithm_used
-.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	Int32 approximation_algorithm_used
-
-the approximation algorithm actually used
-
 .. index:: pair: variable; differences_needed
 .. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a6:
 
@@ -89,6 +80,16 @@ the number of differences that will be needed.
 
 the maximum reduced degree in the adgacency graph.
 
+.. index:: pair: variable; approximation_algorithm_used
+.. _doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	Int32 approximation_algorithm_used
+
+the approximation algorithm actually used
+
 .. index:: pair: variable; bad_row
 .. _doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972b:
 
@@ -108,4 +109,3 @@ a failure occured when forming the bad_row-th row (0 = no failure).
 	NTuple{81,Cchar} bad_alloc
 
 the name of the array for which an allocation/deallocation error occurred.
-
