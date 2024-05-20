@@ -77,15 +77,27 @@ bool sha_update_control(struct sha_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "max_sparse_degree") == 0){
-            if(!parse_int_option(value, "max_sparse_degree",
-                                  &control->max_sparse_degree))
-                return false;
-            continue;
-        }
         if(strcmp(key_name, "extra_differences") == 0){
             if(!parse_int_option(value, "extra_differences",
                                   &control->extra_differences))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "sparse_row") == 0){
+            if(!parse_int_option(value, "sparse_row",
+                                  &control->sparse_row))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "recursion_max") == 0){
+            if(!parse_int_option(value, "recursion_max",
+                                  &control->recursion_max))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "recursion_entries_required") == 0){
+            if(!parse_int_option(value, "recursion_entries_required",
+                                  &control->recursion_entries_required))
                 return false;
             continue;
         }
@@ -134,10 +146,14 @@ PyObject* sha_make_options_dict(const struct sha_control_type *control){
                          PyLong_FromLong(control->approximation_algorithm));
     PyDict_SetItemString(py_options, "dense_linear_solver",
                          PyLong_FromLong(control->dense_linear_solver));
-    PyDict_SetItemString(py_options, "max_sparse_degree",
-                         PyLong_FromLong(control->max_sparse_degree));
     PyDict_SetItemString(py_options, "extra_differences",
                          PyLong_FromLong(control->extra_differences));
+    PyDict_SetItemString(py_options, "sparse_row",
+                         PyLong_FromLong(control->sparse_row));
+    PyDict_SetItemString(py_options, "recursion_max",
+                         PyLong_FromLong(control->recursion_max));
+    PyDict_SetItemString(py_options, "recursion_entries_required",
+                         PyLong_FromLong(control->recursion_entries_required));
     PyDict_SetItemString(py_options, "space_critical",
                          PyBool_FromLong(control->space_critical));
     PyDict_SetItemString(py_options, "deallocate_error_fatal",
