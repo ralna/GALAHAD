@@ -94,7 +94,7 @@ must be renamed on one of the {\tt USE} statements.
 
 %%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{parallel}
+\input{omp}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -696,8 +696,10 @@ that each affects are given in Table~\ref{specfile}.
   {\tt print-level} & {\tt \%print\_level} & integer \\
   {\tt approximation-algorithm} & {\tt \%approximation\_algorithm} & integer \\
   {\tt dense-linear-solver} & {\tt \%dense\_linear\_solver} & integer \\
-  {\tt maximum-degree-considered-sparse} & {\tt \%max\_sparse\_degree} & integer \\
   {\tt extra-differences} & {\tt \%extra\_differences} & integer \\
+  {\tt maximum-degree-considered-sparse} & {\tt \%sparse\_row} & integer \\
+  {\tt maximum-recursion-levels} & {\tt \%recursion\_max} & integer \\
+  {\tt recursion-entries-required} & {\tt \%recursion\_entries\_required} & integer \\
   {\tt space-critical}   & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt output-line-prefix} & {\tt \%prefix} & character \\
