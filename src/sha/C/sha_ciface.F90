@@ -150,9 +150,9 @@
     finform%status = cinform%status
     finform%alloc_status = cinform%alloc_status
     finform%max_degree = cinform%max_degree
-    finform%approximation_algorithm_used = cinform%approximation_algorithm_used
     finform%differences_needed = cinform%differences_needed
     finform%max_reduced_degree = cinform%max_reduced_degree
+    finform%approximation_algorithm_used = cinform%approximation_algorithm_used
     finform%bad_row = cinform%bad_row
 
     ! Strings
@@ -175,9 +175,9 @@
     cinform%status = finform%status
     cinform%alloc_status = finform%alloc_status
     cinform%max_degree = finform%max_degree
-    cinform%approximation_algorithm_used = finform%approximation_algorithm_used
     cinform%differences_needed = finform%differences_needed
     cinform%max_reduced_degree = finform%max_reduced_degree
+    cinform%approximation_algorithm_used = finform%approximation_algorithm_used
     cinform%bad_row = finform%bad_row
 
     ! Strings

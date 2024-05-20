@@ -83,7 +83,7 @@
      END IF
      WRITE( 6, "( ' Test with insufficient data ...' )" )
      control%extra_differences = 1
-     CALL SHA_estimate( n, nz, ROW, COL, 1, S, n, m, Y, n, m, VAL_est,         &
+     CALL SHA_estimate( n, nz, ROW, COL, 1_ip_, S, n, m, Y, n, m, VAL_est,     &
                         data, control, inform )
      IF ( inform%status < 0 ) THEN ! Failure
        WRITE( 6, "( ' return with nonzero status ',I0,' from SHA_estimate' )" )&

@@ -176,14 +176,14 @@ PyObject* sha_make_inform_dict(const struct sha_inform_type *inform){
                          PyLong_FromLong(inform->alloc_status));
     PyDict_SetItemString(py_inform, "max_degree",
                          PyLong_FromLong(inform->max_degree));
-    PyDict_SetItemString(py_inform, "approximation_algorithm_used",
-                         PyLong_FromLong(inform->approximation_algorithm_used));
     PyDict_SetItemString(py_inform, "differences_needed",
                          PyLong_FromLong(inform->differences_needed));
     PyDict_SetItemString(py_inform, "max_reduced_degree",
                          PyLong_FromLong(inform->max_reduced_degree));
     PyDict_SetItemString(py_inform, "bad_row",
                          PyLong_FromLong(inform->bad_row));
+    PyDict_SetItemString(py_inform, "approximation_algorithm_used",
+                         PyLong_FromLong(inform->approximation_algorithm_used));
     PyDict_SetItemString(py_inform, "bad_alloc",
                          PyUnicode_FromString(inform->bad_alloc));
     return py_inform;
