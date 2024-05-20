@@ -1,0 +1,13 @@
+%%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Parallel usage}
+OpenMP may be used by the {\tt \fullpackagename} package to provide
+parallelism for some solvers in shared memory environments.
+To run in parallel, OpenMP
+must be enabled at compilation time by using the correct compiler flag
+(usually some variant of {\tt -openmp}).
+The number of threads may be controlled at runtime
+by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+\noindent
+The code may be compiled and run in serial mode.
