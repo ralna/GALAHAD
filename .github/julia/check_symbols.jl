@@ -14,15 +14,15 @@ end
 
 symbols_single_int32 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_single.so.p", "libgalahad_single.so.symbols"))
 symbols_double_int32 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_double.so.p", "libgalahad_double.so.symbols"))
-symbols_single_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single.so.p", "libgalahad_single.so.symbols"))
-symbols_double_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double.so.p", "libgalahad_double.so.symbols"))
+symbols_single_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single.so.p", "libgalahad_single_64.so.symbols"))
+symbols_double_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double.so.p", "libgalahad_double_64.so.symbols"))
 
-symbols_combinations = [(symbols_single_int32, symbols_double_int32, 32, 32, "libgalahad_single.so (Int32) and libgalahad_double.so (Int32)"),
-                        (symbols_single_int32, symbols_single_int64, 32, 64, "libgalahad_single.so (Int32) and libgalahad_single.so (Int64)"),
-                        (symbols_single_int32, symbols_double_int64, 32, 64, "libgalahad_single.so (Int32) and libgalahad_double.so (Int64)"),
-                        (symbols_double_int32, symbols_single_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_single.so (Int64)"),
-                        (symbols_double_int32, symbols_double_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_double.so (Int64)"),
-                        (symbols_single_int64, symbols_double_int64, 64, 64, "libgalahad_single.so (Int64) and libgalahad_double.so (Int64)")]
+symbols_combinations = [(symbols_single_int32, symbols_double_int32, 32, 32, "libgalahad_single.so and libgalahad_double.so"),
+                        (symbols_single_int32, symbols_single_int64, 32, 64, "libgalahad_single.so and libgalahad_single_64.so"),
+                        (symbols_single_int32, symbols_double_int64, 32, 64, "libgalahad_single.so and libgalahad_double_64.so"),
+                        (symbols_double_int32, symbols_single_int64, 32, 64, "libgalahad_double.so and libgalahad_single_64.so"),
+                        (symbols_double_int32, symbols_double_int64, 32, 64, "libgalahad_double.so and libgalahad_double_64.so"),
+                        (symbols_single_int64, symbols_double_int64, 64, 64, "libgalahad_single_64.so and libgalahad_double_64.so")]
 
 single_double_modules = ["hash_MOD", "string_MOD", "clock_MOD", "copyright_MOD", "symbols_MOD", "tools_MOD",
                          "common_ciface_MOD", "hash_ciface_MOD", "hsl_kb22_long_integer_MOD", "hsl_mc68_integer_ciface_MOD",
