@@ -466,7 +466,12 @@ if build_single
 
   sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
 
-  libgalahad_single = library('galahad_single',
+  libgalahad_single_name = 'galahad_single'
+  if galahad_int64
+    libgalahad_single_name += '_64'
+  endif
+
+  libgalahad_single = library(libgalahad_single_name,
                               sources : sources_single,
                               dependencies : libgalahad_single_deps + libgalahad_deps,
                               fortran_args : extra_args_single,
@@ -510,7 +515,12 @@ if build_double
 
   sources_double = [pp_sources_double, pp_sources_f_double, libgalahad_cpp_src, libgalahad_cc_src]
 
-  libgalahad_double = library('galahad_double',
+  libgalahad_double_name = 'galahad_double'
+  if galahad_int64
+    libgalahad_double_name += '_64'
+  endif
+
+  libgalahad_double = library(libgalahad_double_name,
                               sources : sources_double,
                               dependencies : libgalahad_double_deps + libgalahad_deps,
                               fortran_args : extra_args_double,
