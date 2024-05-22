@@ -57,7 +57,7 @@
    #undefs RE_DUP_MAX and sets it to the right value.  */
 #include <limits.h>
 
-#include <regex.h>
+#include "regex.h"
 #include "regex_internal.h"
 
 #include "regex_internal.c"
