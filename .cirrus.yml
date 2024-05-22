@@ -37,8 +37,7 @@ task:
   test_script: |
     meson test -C builddir
   julia_install_script: |
-    # URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
-    URL="https://raw.githubusercontent.com/amontoison/CirrusCI.jl/package_subfolder/bin/install.sh"
+    URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
     set -x
     if [ "$(uname -s)" = "Linux" ] && command -v apt; then
         apt update
