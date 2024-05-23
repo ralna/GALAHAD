@@ -7,9 +7,9 @@ PROGRAM test_pastix
   USE GALAHAD_KINDS_precision
   USE iso_c_binding
   USE spmf_enums
-  USE spmf_interfaces
+  USE spmf_interfaces_precision
   USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
-  USE pastixf_interfaces
+  USE pastixf_interfaces_precision
 ! USE spmf
 ! USE pastixf
   IMPLICIT NONE
