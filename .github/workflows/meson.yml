@@ -247,7 +247,7 @@ jobs:
 
       - name: Install Julia
         if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v2
 
       - name: Test GALAHAD.jl
         if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
