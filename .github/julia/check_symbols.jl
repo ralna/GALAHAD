@@ -14,8 +14,8 @@ end
 
 symbols_single_int32 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_single.so.p", "libgalahad_single.so.symbols"))
 symbols_double_int32 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_double.so.p", "libgalahad_double.so.symbols"))
-symbols_single_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single.so.p", "libgalahad_single_64.so.symbols"))
-symbols_double_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double.so.p", "libgalahad_double_64.so.symbols"))
+symbols_single_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single_64.so.p", "libgalahad_single_64.so.symbols"))
+symbols_double_int64 = exported_symbols(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double_64.so.p", "libgalahad_double_64.so.symbols"))
 
 symbols_combinations = [(symbols_single_int32, symbols_double_int32, 32, 32, "libgalahad_single.so and libgalahad_double.so"),
                         (symbols_single_int32, symbols_single_int64, 32, 64, "libgalahad_single.so and libgalahad_single_64.so"),
