@@ -87,8 +87,9 @@
 !    DO mode = 3, 4
 !    DO mode = 4, 4
 !    DO mode = 5, 6
-     DO mode = 1, 2
-!    DO mode = 1, 6
+!    DO mode = 1, 2
+!    DO mode = 3, 3
+     DO mode = 1, 6
        CALL BLLS_initialize( data, control, inform )
        CALL WHICH_sls( control )
        control%infinity = infinity                   ! Set infinity

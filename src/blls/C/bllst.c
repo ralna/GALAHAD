@@ -149,6 +149,8 @@ int main(void) {
 
         // Initialize BLLS
         blls_initialize( &data, &control, &status );
+        strcpy(control.sbls_control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.sbls_control.definite_linear_solver, "potr ") ;
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
