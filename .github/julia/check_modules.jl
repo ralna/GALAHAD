@@ -15,15 +15,15 @@ end
 
 modules_single_int32 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_single.so.p"))
 modules_double_int32 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int32", "libgalahad_double.so.p"))
-modules_single_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single.so.p"))
-modules_double_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double.so.p"))
+modules_single_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_single_64.so.p"))
+modules_double_int64 = exported_modules(joinpath(@__DIR__, "..", "..", "builddir_int64", "libgalahad_double_64.so.p"))
 
-modules_combinations = [(modules_single_int32, modules_double_int32, 32, 32, "libgalahad_single.so (Int32) and libgalahad_double.so (Int32)"),
-                        (modules_single_int32, modules_single_int64, 32, 64, "libgalahad_single.so (Int32) and libgalahad_single.so (Int64)"),
-                        (modules_single_int32, modules_double_int64, 32, 64, "libgalahad_single.so (Int32) and libgalahad_double.so (Int64)"),
-                        (modules_double_int32, modules_single_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_single.so (Int64)"),
-                        (modules_double_int32, modules_double_int64, 32, 64, "libgalahad_double.so (Int32) and libgalahad_double.so (Int64)"),
-                        (modules_single_int64, modules_double_int64, 64, 64, "libgalahad_single.so (Int64) and libgalahad_double.so (Int64)")]
+modules_combinations = [(modules_single_int32, modules_double_int32, 32, 32, "libgalahad_single.so and libgalahad_double.so"),
+                        (modules_single_int32, modules_single_int64, 32, 64, "libgalahad_single.so and libgalahad_single_64.so"),
+                        (modules_single_int32, modules_double_int64, 32, 64, "libgalahad_single.so and libgalahad_double_64.so"),
+                        (modules_double_int32, modules_single_int64, 32, 64, "libgalahad_double.so and libgalahad_single_64.so"),
+                        (modules_double_int32, modules_double_int64, 32, 64, "libgalahad_double.so and libgalahad_double_64.so"),
+                        (modules_single_int64, modules_double_int64, 64, 64, "libgalahad_single_64.so and libgalahad_double_64.so")]
 
 single_double_modules = ["galahad_blas_interface",
                          "galahad_lapack_interface",
