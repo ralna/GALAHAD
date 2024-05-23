@@ -1,5 +1,3 @@
-subdir('regex')
-
 libgalahad_src += files('metis.f90')
 
 libgalahad_cc_src += files('adapter.c',

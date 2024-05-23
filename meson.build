@@ -131,6 +131,11 @@ libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false
 lm = cc.find_library('m', required : false)
 libmpi = dependency('mpi', language : 'fortran', required : false)
 
+# METIS
+if host_machine.system() == 'windows'
+  add_global_arguments('-DUSE_GKREGEX', language : 'c')
+endif
+
 # OpenMP
 if fc.get_id() == 'nvidia_hpc'
   add_global_arguments('-mp', language : 'fortran')
