@@ -69,9 +69,9 @@
      USE SPRAL_SSIDS_precision
      USE GALAHAD_MUMPS_TYPES_precision, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD
      USE spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
-     USE spmf_interfaces
+     USE spmf_interfaces_precsion
      USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
-     USE pastixf_interfaces
+     USE pastixf_interfaces_precision
 
      IMPLICIT NONE
 
