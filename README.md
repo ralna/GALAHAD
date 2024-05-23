@@ -81,8 +81,19 @@ Please see [GALAHAD.jl](https://github.com/ralna/GALAHAD/tree/master/GALAHAD.jl)
 ### MATLAB Interface
 Please see [README.matlab](https://github.com/ralna/GALAHAD/blob/master/doc/README.matlab) and the instructions provided there.
 
+## Integrated installation via make
 
+GALAHAD can also be installed via the "make" command as part of the Optrove 
+optimization eco-system that also includes 
+[CUTEst](https://github.com/ralna/CUTEst), 
+[SIFDecode](https://github.com/ralna/SIFDecode) and
+[ARCHDefs](https://github.com/ralna/ARCHDefs). 
+This has the advantage of providing scripts to run CUTEst examples
+directly from GALAHAD and allowing calls from Matlab, but suffers from 
+considerably longer build times.
 
+To use this variant, follow the instructions in the GALAHAD
+[wiki](https://github.com/ralna/GALAHAD/wiki).
 
 [license-shield]: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg 
 [license]: https://opensource.org/licenses/BSD-3-Clause
