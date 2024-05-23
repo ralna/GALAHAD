@@ -114,7 +114,10 @@
    DO data_storage_type = 1, 5
      CALL BLLS_initialize( data, control, inform )
 !    control%print_level = 1
+!    control%SBLS_control%print_level = 1
 !    control%print_level = 10
+     control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver
+     control%SBLS_control%definite_linear_solver = 'potr' ! non-default solver
      X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -168,7 +171,7 @@
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    MASK = 0
    st = ' RC'
-!  control%print_level = 1
+!  control%print_level = 3
 !  control%print_level = 10
 !  control%maxit = 5
    CALL BLLS_import_without_a( control, data, status, n, o )

@@ -1829,7 +1829,7 @@
              END DO
              prob%G( j ) = g_j
            END DO
-         ELSE 
+         ELSE
            data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
            DO j = 1, prob%n
              g_j = zero
@@ -6054,7 +6054,7 @@
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
       END IF
-      IF ( data%w_eq_identity ) THEN
+      IF ( .NOT. data%w_eq_identity ) THEN
         array_name = 'blls_cgls: data%W'
         CALL SPACE_resize_array( o, data%W, status, alloc_status,              &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
