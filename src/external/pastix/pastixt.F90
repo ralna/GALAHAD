@@ -187,7 +187,7 @@ PROGRAM test_pastix
     write(6, *) ' order ', permtab( 1 : n ) + 1
 
 ! Solve the problem
-    CALL pastix_task_solve( pastix_data, nrhs, X, spm%nexp, info )
+    CALL pastix_task_solve( pastix_data, n, nrhs, X, spm%nexp, info )
 
 ! Refine the solution
     CALL pastix_task_refine( pastix_data, spm%nexp, nrhs, B, spm%nexp, X,      &
