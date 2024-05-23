@@ -40,7 +40,7 @@ By default GALAHAD will build the [SSIDS linear solver](https://github.com/ralna
 
 * [HSL](https://licences.stfc.ac.uk/product/libhsl)
 * [UMFPACK](https://people.engr.tamu.edu/davis/suitesparse.html)
-* [PARDISO](http://www.pardiso-project.org/)
+* [PARDISO](https://panua.ch/pardiso/)
 * [PaStiX](https://solverstack.gitlabpages.inria.fr/pastix/)
 * [MUMPS](https://mumps-solver.org/index.php)
 
@@ -69,7 +69,7 @@ meson test -C builddir --suite=C
 ### Python Interface
 To install the Python interface using the [Meson build system](https://mesonbuild.com):
 ```
-meson setup builddir -Dpythoniface=true
+meson setup builddir -Dpythoniface=true -Dpython.install_env=auto
 meson compile -C builddir
 meson install -C builddir
 meson test -C builddir --suite=Python
