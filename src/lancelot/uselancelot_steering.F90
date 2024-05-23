@@ -26,7 +26,7 @@
      USE LANCELOT_DRCHE_precision
      USE LANCELOT_DRCHG_precision
      USE LANCELOT_SCALN_precision
-     USE LANCELOT_steering_precision
+     USE LANCELOTST_precision
      IMPLICIT NONE
 
      PRIVATE
