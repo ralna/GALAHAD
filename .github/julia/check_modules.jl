@@ -75,8 +75,8 @@ for (modules1, modules2, int1, int2, name) in modules_combinations
   println("---------------------------------------------------------------------------------------------------------------------------")
   println("The following modules are generated for both libraries $name:")
   for mod in intersect_modules
-    flag1 = mapreduce(x -> (x * ".mod") == mod, |, single_double_modules) && (int1 == int2 == 32)
-    flag2 = mapreduce(x -> (x * "_64.mod") == mod, |, single_double_modules) && (int1 == int2 == 64)
+    flag1 = mapreduce(x -> (x * ".mod") == mod, |, single_double_modules)
+    flag2 = mapreduce(x -> (x * "_64.mod") == mod, |, single_double_modules)
     if !flag1 && !flag2
       println(mod)
       global n = n+1
