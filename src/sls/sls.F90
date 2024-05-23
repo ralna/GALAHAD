@@ -6565,7 +6565,7 @@
        data%X2( : data%n, 1 ) = X( : data%n )
        data%B2( : data%n, 1 ) = X( : data%n )
 
-       CALL pastix_task_solve( data%pastix_data, 1_ip_, data%X2,               &
+       CALL pastix_task_solve( data%pastix_data, data%n, 1_ip_, data%X2,       &
                                data%spm%nexp, pastix_info )
 
        inform%pastix_info = INT( pastix_info )
@@ -6972,7 +6972,7 @@
            data%X2( : data%n, 1 ) = X( : data%n, i )
            data%B2( : data%n, 1 ) = X( : data%n, i )
 
-           CALL pastix_task_solve( data%pastix_data, 1_ip_, data%X2,           &
+           CALL pastix_task_solve( data%pastix_data, data%n, 1_ip_, data%X2,   &
                                    data%spm%nexp, pastix_info )
 
            inform%pastix_info = INT( pastix_info )
@@ -7008,7 +7008,7 @@
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          data%B2( : data%n, : nrhs ) = X( : data%n, : nrhs )
 
-         CALL pastix_task_solve( data%pastix_data, nrhs, X,                    &
+         CALL pastix_task_solve( data%pastix_data, data%n, nrhs, X,            &
                                  data%spm%nexp, pastix_info )
 
          inform%pastix_info = INT( pastix_info )
