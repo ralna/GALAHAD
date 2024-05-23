@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 10:25 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-05-22 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -6,8 +6,7 @@
 
 MODULE spmf_enums
 
-  USE iso_c_binding, ONLY : c_float, c_double, c_ptr,                          &
-                            c_int, c_int32_t, c_int64_t
+  USE iso_c_binding, ONLY : c_ptr, c_int, c_int32_t, c_int64_t
 
 #ifdef INTEGER_64
   INTEGER, PARAMETER :: spm_int_t = c_int64_t

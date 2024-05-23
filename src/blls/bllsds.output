@@ -1,11 +1,78 @@
+Input Error: Incorrect nseps.
+Input Error: Incorrect nseps.
+
+ diagonal preconditioner, min, max = 1.0000E+00 2.0000E+00
 
          S=steepest descent, F=factorization used
 
   #its   #cg            f           proj gr     step    #free change   time
      0     -  4.50000000000000E+00 7.276E-01      -         -      -    0.0
+
+ steepest descent search direction
+
+ ** inexact arc search entered (m = 4, n = 3) ** 
+
+ 3 variables free from their bounds and 0 variables remain fixed,
+
+   step  fixed         length        objective              target
+      0       0  0.00000000E+00  0.00000000000000E+00
+  gamma_a, alpha, gamma_f   -8.0000000000000000        1.0000000000000000       -2.8284271247461898     
+  f_s, eta, gamma    4.5000000000000000        1.0000000000000000E-002  -10.828427124746190     
+      1       2  1.00000000E+00  1.58578643762690E+00  4.39171572875254E+00
+
+ Function value at the arc minimizer  1.58578643762690E+00
+
+  #its   #cg            f           proj gr     step    #free change   time
      1     S  1.58578643762690E+00 8.605E-01 2.000E+00      1      -    0.0
+
+ steepest descent search direction
+
+ ** inexact arc search entered (m = 4, n = 3) ** 
+
+ 3 variables free from their bounds and 0 variables remain fixed,
+
+   step  fixed         length        objective              target
+      0       0  0.00000000E+00  4.50000000000000E+00
+  gamma_a, alpha, gamma_f    0.0000000000000000        1.0000000000000000       -3.2426406871192843     
+  f_s, eta, gamma    1.5857864376269046        1.0000000000000000E-002  -3.2426406871192843     
+      1       0  1.00000000E+00  1.13603896932107E+00  1.55336003075571E+00
+
+ Function value at the arc minimizer  1.13603896932107E+00
+
+  #its   #cg            f           proj gr     step    #free change   time
      2     S  1.13603896932107E+00 6.533E-01 1.293E+00      3      2    0.0
+ stg, sts =  -1.7721E+00  2.0576E+00
+
+ ** inexact arc search entered (m = 4, n = 3) ** 
+
+ 3 variables free from their bounds and 0 variables remain fixed,
+
+   step  fixed         length        objective              target
+      0       0  0.00000000E+00  1.58578643762690E+00
+  gamma_a, alpha, gamma_f  -0.53553390593273742        1.0000000000000000        5.6349186102013116E-002
+  f_s, eta, gamma    1.1360389693210722        1.0000000000000000E-002 -0.47918471983072430     
+      1       1  1.00000000E+00  7.49999999998000E-01  1.13124712212276E+00
+      2F      1  2.00000000E+00  9.28932188128933E-01  1.13181061398379E+00
+
+ Function value at the arc minimizer  9.28932188128933E-01
+
+  #its   #cg            f           proj gr     step    #free change   time
      3     F  9.28932188128933E-01 7.207E-01 4.142E-01      2      1    0.0
+ stg, sts =  -8.5786E-01  4.2893E-01
+
+ ** inexact arc search entered (m = 4, n = 3) ** 
+
+ 2 variables free from their bounds and 1 variable remains fixed,
+
+   step  fixed         length        objective              target
+      0       1  0.00000000E+00  1.13603896932107E+00
+  gamma_a, alpha, gamma_f    0.0000000000000000        1.0000000000000000      -0.85786437625786560     
+  f_s, eta, gamma   0.92893218812893286        1.0000000000000000E-002 -0.85786437625786560     
+      1       0  1.00000000E+00  5.00000000000000E-01  9.20353544366354E-01
+
+ Function value at the arc minimizer  5.00000000000000E-01
+
+  #its   #cg            f           proj gr     step    #free change   time
      4     F  5.00000000000000E-01 1.500E-12 6.213E-01      2      0    0.0
 
  BLLS: 4 iterations  

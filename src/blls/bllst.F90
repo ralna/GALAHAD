@@ -14,11 +14,11 @@
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
    INTEGER ( KIND = ip_ ) :: i, j, k, l, nf, weight, mode, exact_arc_search, s
-   INTEGER ( KIND = ip_ ) :: status
+   INTEGER ( KIND = ip_ ) :: weights, status
    REAL ( KIND = rp_ ) :: val
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_row, Ao_col, Ao_ptr
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_ptr_row, FLAG
-   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val, DIAG
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ao_val, DIAG, W
    INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, o = 4, ao_ne = 5
 ! partition userdata%integer so that it holds
 !   o n nflag  flag          ao_ptr          ao_row
@@ -35,7 +35,7 @@
    EXTERNAL :: APROD, ASPROD, AFPROD, PREC
    EXTERNAL :: APROD_broken, ASPROD_broken, AFPROD_broken
 ! set up problem data
-   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
+   ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ), W( o ) )
    p%n = n ; p%o = o                              ! dimensions
    p%B = (/ 0.0_rp_, 2.0_rp_, 1.0_rp_, 2.0_rp_ /) ! right-hand side
    p%X_l = (/ - 1.0_rp_, - infinity, 0.0_rp_ /)   ! variable lower bound
@@ -48,6 +48,7 @@
    Ao_col = (/ 1, 1, 2, 3, 3 /)                     ! column indices
    Ao_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
    Ao_ptr_row = (/ 1, 2, 4, 5, 6 /)                 ! pointers to row starts
+   W = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)     ! weights
 
 ! problem data complete
 
@@ -70,7 +71,9 @@
 
    WRITE( 6, "( /, ' run tests (weight = ', I0, ')', / )" ) weight
 
-! search used (0 = inexat, 1 = exact)
+   DO weights = 1, 2 ! W = I, 2*I
+
+! search used (0 = inexact, 1 = exact)
 
 !  DO exact_arc_search = 0, -1 ! inexact, exact
 !  DO exact_arc_search = 0, 0
@@ -84,7 +87,8 @@
 !    DO mode = 3, 4
 !    DO mode = 4, 4
 !    DO mode = 5, 6
-     DO mode = 1, 6
+     DO mode = 1, 2
+!    DO mode = 1, 6
        CALL BLLS_initialize( data, control, inform )
        CALL WHICH_sls( control )
        control%infinity = infinity                   ! Set infinity
@@ -103,10 +107,14 @@
          p%Ao%ptr( : n + 1 ) = Ao_ptr( : n + 1 )
          control%direct_subproblem_solve = mode == 2
          inform%status = 1
-         CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
-         WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
-        &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
-            mode, exact_arc_search, inform%status, inform%obj
+         IF ( weights == 1 ) THEN
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
+         ELSE
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata, W = W )
+         END IF
+         WRITE( 6, "( ' BLLS_solve argument w = ', I1, ', mode = ', I0,        &
+        &  ', search = ', I0, ', status = ', I0,', objective = ', F6.4 ) " )   &
+            weights, mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( p%Ao%val, p%Ao%row, p%Ao%ptr, p%Ao%type )
        CASE ( 3 ) ! A available by external subroutines
          ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
@@ -118,21 +126,31 @@
          userdata%integer( nflag ) = 0
          userdata%integer( st_flag + 1 : st_flag + on ) = 0
          inform%status = 1
-         CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
-                          eval_APROD = APROD, eval_ASPROD = ASPROD,            &
-                          eval_AFPROD = AFPROD )
-
-         WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
-        &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
-            mode, exact_arc_search, inform%status, inform%obj
+         IF ( weights == 1 ) THEN
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
+                            eval_APROD = APROD, eval_ASPROD = ASPROD,          &
+                            eval_AFPROD = AFPROD )
+         ELSE
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
+                            eval_APROD = APROD, eval_ASPROD = ASPROD,          &
+                            eval_AFPROD = AFPROD, W = W )
+         END IF
+         WRITE( 6, "( ' BLLS_solve argument w = ', I1, ', mode = ', I0,        &
+        &  ', search = ', I0, ', status = ', I0,', objective = ', F6.4 ) " )   &
+            weights, mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( userdata%integer, userdata%real )
        CASE ( 4 ) ! A available by reverse matrix-vector products
          ALLOCATE( FLAG( MAX( o, n ) ) )
          nf = 0 ; FLAG = 0
          inform%status = 1
          DO ! Solve problem - reverse commmunication loop
-           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
-                            reverse = reverse )
+           IF ( weights == 1 ) THEN
+             CALL BLLS_solve( p, X_stat, data, control, inform, userdata,      &
+                              reverse = reverse )
+           ELSE
+             CALL BLLS_solve( p, X_stat, data, control, inform, userdata,      &
+                              reverse = reverse, W = W )
+           END IF
            SELECT CASE ( inform%status )
            CASE ( : 0 ) !  termination return
              WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',   &
@@ -212,8 +230,13 @@
          control%preconditioner = 2
          control%direct_subproblem_solve = .FALSE.
          inform%status = 1
-         CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
-                          eval_PREC = PREC )
+         IF ( weights == 1 ) THEN
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
+                            eval_PREC = PREC )
+         ELSE
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
+                            eval_PREC = PREC, W = W )
+         END IF
          WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
         &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
             mode, exact_arc_search, inform%status, inform%obj
@@ -226,8 +249,13 @@
          control%direct_subproblem_solve = .FALSE.
          inform%status = 1
          DO ! Solve problem - reverse commmunication loop
-           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
-                            reverse = reverse )
+           IF ( weights == 1 ) THEN
+             CALL BLLS_solve( p, X_stat, data, control, inform, userdata,      &
+                              reverse = reverse )
+           ELSE
+             CALL BLLS_solve( p, X_stat, data, control, inform, userdata,      &
+                              reverse = reverse, W = W )
+           END IF
            SELECT CASE ( inform%status )
            CASE ( : 0 ) !  termination return
              WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',   &
@@ -242,8 +270,9 @@
          DEALLOCATE( FLAG )
        END SELECT
        CALL BLLS_terminate( data, control, inform, reverse = reverse )
-     END DO
-   END DO
+     END DO ! mode
+   END DO ! exact_arc_search
+   END DO ! weights
 !stop
 ! generic runs to test each storage mode
 
@@ -430,7 +459,7 @@
    WRITE( 6, "( ' BLLS_solve exit status = ', I0 ) " ) inform%status
    DEALLOCATE( userdata%integer, userdata%real )
    CALL BLLS_terminate( data, control, inform )  !  delete workspace
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%R, p%G, X_stat )
+   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%R, p%G, X_stat, W )
    DEALLOCATE( Ao_val, Ao_row, Ao_col, Ao_ptr, Ao_ptr_row, DIAG )
    WRITE( 6, "( /, ' tests completed' )" )
 

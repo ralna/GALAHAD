@@ -29,9 +29,11 @@
 ! problem data complete
    CALL BLLS_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                   ! Set infinity
-   control%print_level = 1                       ! print one line/iteration
+   control%print_level = 3                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
 !  control%CONVERT_control%print_level = 3
+   control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver
+   control%SBLS_control%definite_linear_solver = 'potr' ! non-default solver
    inform%status = 1
    CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
    IF ( inform%status == 0 ) THEN             !  Successful return
