@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-05-21 AT 16:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -371,7 +371,7 @@
        LOGICAL :: printp, printw, printd, printdd, debug
        LOGICAL :: present_a, present_asprod, reverse_asprod, present_afprod
        LOGICAL :: reverse_afprod, reverse_prec, present_prec, present_dprec
-       LOGICAL :: recompute, regularization, preconditioned
+       LOGICAL :: recompute, regularization, preconditioned, w_eq_identity
        CHARACTER ( LEN = 1 ) :: direction
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE, P_used
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_d, NZ_out
@@ -549,11 +549,11 @@
 !  identical-bounds-tolerance                        1.0D-15
 !  cg-relative-accuracy-required                     0.01
 !  cg-absolute-accuracy-required                     1.0D-8
-!  maximum-arcsearch-stepsize                       1.0D+20
-!  initial-arcsearch-stepsize                       1.0
-!  arcsearch-reduction-factor                       5.0D-1
-!  arcsearch-acceptance-tolerance                   1.0D-2
-!  stabilisation-weight                             0.0
+!  maximum-arcsearch-stepsize                        1.0D+20
+!  initial-arcsearch-stepsize                        1.0
+!  arcsearch-reduction-factor                        5.0D-1
+!  arcsearch-acceptance-tolerance                    1.0D-2
+!  stabilisation-weight                              0.0
 !  maximum-cpu-time-limit                            -1.0
 !  direct-subproblem-solve                           F
 !  exact-arc-search-used                             T
@@ -1008,7 +1008,7 @@
 !       be formed, in which case a nonzero value should be returned.
 !
 !     7 The product P^-1 * v involving the preconditioner P with a specified
-!       vector v is required from the user. Here P should be a symmtric,
+!       vector v is required from the user. Here P should be a symmetric,
 !       postive-definite approximation of A^T A. The vector v will be provided
 !       in reverse%V and the required product must be returned in reverse%P.
 !       BLLS_solve must then be re-entered with reverse%eval_status set to 0,
@@ -1615,16 +1615,16 @@
 
 !  weight by W if required
 
-       IF ( .NOT. data%w_eq_identity ) THEN
-         DO j = 1, prob%n
-           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
-             data%Ao%val( k ) = data%Ao%val( k ) * SQRT( W( data%Ao%row( k ) ) )
-           END DO
-         END DO
-         DO i = 1, prob%o
-           prob%B( i ) = prob%B( i ) * SQRT( W( i ) )
-         END DO
-       END IF
+!      IF ( .NOT. data%w_eq_identity ) THEN
+!        DO j = 1, prob%n
+!          DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+!            data%Ao%val( k ) = data%Ao%val( k ) * SQRT( W( data%Ao%row( k ) ) )
+!          END DO
+!        END DO
+!        DO i = 1, prob%o
+!          prob%B( i ) = prob%B( i ) * SQRT( W( i ) )
+!        END DO
+!      END IF
      END IF
 
 !  compute the diagonal preconditioner if required
@@ -1656,10 +1656,27 @@
 
 !  the 1,1 block
 
-       CALL SMT_put( data%H_sbls%type, 'IDENTITY', inform%alloc_status )
-       IF ( inform%alloc_status /= 0 ) THEN
-         inform%status = GALAHAD_error_allocate
-         GO TO 910
+       IF ( data%w_eq_identity ) THEN
+         CALL SMT_put( data%H_sbls%type, 'IDENTITY', inform%alloc_status )
+         IF ( inform%alloc_status /= 0 ) THEN
+           inform%status = GALAHAD_error_allocate
+           GO TO 910
+         END IF
+       ELSE
+         CALL SMT_put( data%H_sbls%type, 'DIAGONAL', inform%alloc_status )
+         IF ( inform%alloc_status /= 0 ) THEN
+           inform%status = GALAHAD_error_allocate
+           GO TO 910
+         END IF
+
+         array_name = 'blls: data%H_sbls%val'
+         CALL SPACE_resize_array( prob%o, data%H_sbls%val, inform%status,      &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= GALAHAD_ok ) GO TO 910
+         data%H_sbls%val( : prob%o ) = one / W( : prob%o )
        END IF
        data%H_sbls%m = prob%o ; data%H_sbls%n = prob%o
 
@@ -1678,7 +1695,7 @@
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
-         IF ( inform%status /= GALAHAD_ok ) GO TO 910
+       IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'blls: data%AT_sbls%col'
        CALL SPACE_resize_array( data%Ao%ne, data%AT_sbls%col, inform%status,   &
@@ -1686,7 +1703,7 @@
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
-         IF ( inform%status /= GALAHAD_ok ) GO TO 910
+       IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'blls: data%AT_sbls%ptr'
        CALL SPACE_resize_array( prob%n + 1, data%AT_sbls%ptr, inform%status,   &
@@ -1694,7 +1711,7 @@
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
-         IF ( inform%status /= GALAHAD_ok ) GO TO 910
+       IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  the 2,2 block
 
@@ -1804,23 +1821,43 @@
 
        IF ( data%explicit_a ) THEN
          prob%G( : prob%n ) = zero
-         DO j = 1, prob%n
-           g_j = zero
-           DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
-             g_j = g_j + data%Ao%val( k ) * prob%R( data%Ao%row( k ) )
+         IF ( data%w_eq_identity ) THEN
+           DO j = 1, prob%n
+             g_j = zero
+             DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+               g_j = g_j + data%Ao%val( k ) * prob%R( data%Ao%row( k ) )
+             END DO
+             prob%G( j ) = g_j
            END DO
-           prob%G( j ) = g_j
-         END DO
+         ELSE 
+           data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
+           DO j = 1, prob%n
+             g_j = zero
+             DO k = data%Ao%ptr( j ), data%Ao%ptr( j + 1 ) - 1
+               g_j = g_j + data%Ao%val( k ) * data%R( data%Ao%row( k ) )
+             END DO
+             prob%G( j ) = g_j
+           END DO
+         END IF
        ELSE IF ( data%use_aprod ) THEN
          prob%G( : prob%n ) = zero
-         CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%R, prob%G )
+         IF ( data%w_eq_identity ) THEN
+           CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%R, prob%G )
+         ELSE
+           data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
+           CALL eval_APROD( data%eval_status, userdata, .TRUE., data%R, prob%G )
+         END IF
          IF ( data%eval_status /= GALAHAD_ok ) THEN
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
          prob%R( : prob%o ) = reverse%P( : prob%o ) - prob%B( : prob%o )
-!        reverse%P( : prob%n ) = zero
-         reverse%V( : prob%o ) = prob%R( : prob%o )
+         IF ( data%w_eq_identity ) THEN
+           reverse%V( : prob%o ) = prob%R( : prob%o )
+         ELSE
+           data%R( : prob%o ) = W( : prob%o ) * prob%R( : prob%o )
+           reverse%V( : prob%o ) = data%R( : prob%o )
+         END IF
          reverse%transpose = .TRUE.
          data%branch = 220 ; inform%status = 3 ; RETURN
        END IF
@@ -1832,7 +1869,13 @@
 
 !  compute the objective function
 
-       inform%obj = half * DOT_PRODUCT( prob%R( : prob%o ), prob%R( : prob%o ) )
+       IF ( data%w_eq_identity ) THEN
+         inform%obj                                                            &
+           = half * DOT_PRODUCT( prob%R( : prob%o ), prob%R( : prob%o ) )
+       ELSE
+         inform%obj                                                            &
+           = half * DOT_PRODUCT( prob%R( : prob%o ), data%R( : prob%o ) )
+       END IF
 
 !  adjust the value and gradient to account for any regularization term
 
@@ -1942,7 +1985,7 @@
 !  compute the search direction by minimizing the objective over
 !  the free subspace by solving the related augmented system
 
-!    (    I        A_F   ) (  y  ) = (   b - A x  )
+!    (  W^-1       A_F   ) (  y  ) = (   b - A x  )
 !    ( A_F^T  - weight I ) ( s_F )   ( weight x_F )
 
        IF ( data%direct_subproblem_solve ) THEN
@@ -2067,7 +2110,8 @@
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
-                             Ao_row = data%Ao%row, Ao_val = data%Ao%val )
+                             Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
+                             W = W )
            ELSE IF ( data%preconditioner == 1 ) THEN
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
                              data%f_new, data%X_new, data%R,                   &
@@ -2080,7 +2124,7 @@
                              inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
                              Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
                              preconditioned = .TRUE.,                          &
-                             DPREC = data%DIAG )
+                             W = W, DPREC = data%DIAG )
            ELSE
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
                              data%f_new, data%X_new, data%R,                   &
@@ -2093,7 +2137,7 @@
                              inform%bad_alloc, Ao_ptr = data%Ao%ptr,           &
                              Ao_row = data%Ao%row, Ao_val = data%Ao%val,       &
                              reverse = reverse, preconditioned = .TRUE.,       &
-                             eval_PREC = eval_PREC )
+                             W = W, eval_PREC = eval_PREC )
            END IF
 
 !  ... or products via the user's subroutine or reverse communication ...
@@ -2109,7 +2153,7 @@
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
-                             reverse = reverse )
+                             W = W, reverse = reverse )
            ELSE IF ( data%preconditioner == 1 ) THEN
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
                              data%f_new, data%X_new, data%R,                   &
@@ -2121,7 +2165,7 @@
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse, preconditioned = .TRUE.,       &
-                             DPREC = data%DIAG )
+                             W = W, DPREC = data%DIAG )
            ELSE
              CALL BLLS_cgls( prob%o, prob%n, data%weight,                      &
                              data%f_new, data%X_new, data%R,                   &
@@ -2133,7 +2177,7 @@
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse, preconditioned = .TRUE.,       &
-                             eval_PREC = eval_PREC )
+                             W = W, eval_PREC = eval_PREC )
            END IF
          END IF
 
@@ -2220,7 +2264,7 @@
                                          inform%bad_alloc,                     &
                                          Ao_ptr = data%Ao%ptr,                 &
                                          Ao_row = data%Ao%row,                 &
-                                         Ao_val = data%Ao%val )
+                                         Ao_val = data%Ao%val, W = W )
 
 !  ... or products via the user's subroutine or reverse communication ...
 
@@ -2241,7 +2285,7 @@
                                          inform%alloc_status,                  &
                                          inform%bad_alloc,                     &
                                          eval_ASPROD = eval_ASPROD,            &
-                                         reverse = reverse )
+                                         W = W, reverse = reverse )
            END IF
 
 !   ... or inexact arc_search ...
@@ -2273,7 +2317,7 @@
                                            Ao_ptr = data%Ao%ptr,               &
                                            Ao_row = data%Ao%row,               &
                                            Ao_val = data%Ao%val,               &
-                                           B = prob%B )
+                                           W = W, B = prob%B )
 
 !  ... or products via the user's subroutine or reverse communication
 
@@ -2298,7 +2342,7 @@
                                            inform%alloc_status,                &
                                            inform%bad_alloc,                   &
                                            eval_ASPROD = eval_ASPROD,          &
-                                           reverse = reverse,                  &
+                                           W = W, reverse = reverse,           &
                                            B = prob%B )
            END IF
          END IF
@@ -2601,6 +2645,13 @@
 
      array_name = 'blls: data%H_sbls%type'
      CALL SPACE_dealloc_array( data%H_sbls%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'blls: data%H_sbls%val'
+     CALL SPACE_dealloc_array( data%H_sbls%val,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -3016,7 +3067,7 @@
                                        segment, data, userdata, status,        &
                                        alloc_status, bad_alloc,                &
                                        Ao_ptr, Ao_row, Ao_val, eval_ASPROD,    &
-                                       reverse )
+                                       W, reverse )
 
 !  Find the arc minimizer in the direction d_s from x_s of the regularized
 !  least-squares objective function
@@ -3147,6 +3198,7 @@
 !          the last entry in A
 !  eval_ASPROD subroutine that performs products with A, see the argument
 !           list for BLLS_solve
+!  W       (REAL array of length o) positive diagonal weights (absent = I)
 !  reverse (structure of type BLLS_reverse_type) used to communicate
 !           reverse communication data to and from the subroutine.
 !
@@ -3174,6 +3226,7 @@
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_ASPROD
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
       TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !  interface blocks
@@ -3254,6 +3307,7 @@
 !  check if regularization is necessary
 
       data%regularization = weight > zero
+      data%w_eq_identity = .NOT. PRESENT( W )
 
 !  set printing controls
 
@@ -3305,10 +3359,15 @@
 !       END DO
 !     END IF
 
-!  allocate workspace array NZ_d
+!  allocate workspace array NZ_d and u
 
       array_name = 'blls_exact_arc_search: data%NZ_d'
       CALL SPACE_resize_array( n, data%NZ_d, status, alloc_status,             &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'blls_exact_arc_search: data%U'
+      CALL SPACE_resize_array( o, data%U, status, alloc_status,                &
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -3389,7 +3448,12 @@
 
 !  record the values of f(x) and rho(x) at the starting point
 
-      f_alpha = half * DOT_PRODUCT( R_s( : o ), R_s( : o ) )
+      IF ( data%w_eq_identity ) THEN
+        f_alpha = half * DOT_PRODUCT( R_s( : o ), R_s( : o ) )
+      ELSE
+        data%U( : o ) = W( : o ) * R_s( : o )
+        f_alpha = half * DOT_PRODUCT( R_s( : o ), data%U( : o ) )
+      END IF
       IF ( data%regularization ) THEN
         data%rho_alpha = half * DOT_PRODUCT( X_s( : n ), X_s( : n ) )
         phi_alpha = f_alpha + weight * data%rho_alpha
@@ -3423,11 +3487,6 @@
 
       array_name = 'blls_exact_arc_search: data%P'
       CALL SPACE_resize_array( o, data%P, status, alloc_status,                &
-             array_name = array_name, bad_alloc = bad_alloc, out = out )
-      IF ( status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'blls_exact_arc_search: data%U'
-      CALL SPACE_resize_array( o, data%U, status, alloc_status,                &
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -3557,8 +3616,14 @@
 !  (f_alpha_dashdash) of the univariate piecewise quadratic function at
 !  the start of the piecewise linear arc
 
-      data%f_alpha_dash = DOT_PRODUCT( R_s( : o ), data%P( : o ) )
-      data%f_alpha_dashdash = DOT_PRODUCT( data%P( : o ), data%P( : o ) )
+      IF ( data%w_eq_identity ) THEN
+        data%f_alpha_dash = DOT_PRODUCT( R_s( : o ), data%P( : o ) )
+        data%f_alpha_dashdash = DOT_PRODUCT( data%P( : o ), data%P( : o ) )
+      ELSE
+        data%U( : o ) = W( : o ) * data%P( : o ) ! u is y in paper
+        data%f_alpha_dash = DOT_PRODUCT( R_s( : o ), data%U( : o ) )
+        data%f_alpha_dashdash = DOT_PRODUCT( data%P( : o ), data%U( : o ) )
+      END IF
       IF ( data%f_alpha_dashdash < h_zero ) data%f_alpha_dashdash = zero
 
 !  calculate the first derivative (rho_alpha_dash) and second derivative
@@ -3857,22 +3922,31 @@
           END DO
         END IF
 
-!  update the first and second derivatives of f(x(alpha))
+!  update the first and second derivatives of f(x(alpha)), and s
 
         phi_alpha_dash_old = data%phi_alpha_dash
         data%f_alpha_dash = data%f_alpha_dash                                  &
           + data%delta_alpha * data%f_alpha_dashdash
-        DO j = 1, data%nz_out_end
-          i = data%NZ_out( j )
-          data%f_alpha_dash = data%f_alpha_dash - data%P( i )                  &
-            * ( R_s( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
-          data%f_alpha_dashdash = data%f_alpha_dashdash                        &
-            + data%P( i ) * ( data%P( i ) - two * data%S( i ) )
 
-!  update s
-
-          data%S( i ) = data%S( i ) - data%P( i )
-        END DO
+        IF ( data%w_eq_identity ) THEN
+          DO j = 1, data%nz_out_end
+            i = data%NZ_out( j )
+            data%f_alpha_dash = data%f_alpha_dash - data%P( i )                &
+              * ( R_s( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
+            data%f_alpha_dashdash = data%f_alpha_dashdash                      &
+              + data%P( i ) * ( data%P( i ) - two * data%S( i ) )
+            data%S( i ) = data%S( i ) - data%P( i )
+          END DO
+        ELSE
+          DO j = 1, data%nz_out_end
+            i = data%NZ_out( j )
+            data%f_alpha_dash = data%f_alpha_dash - W( i ) * data%P( i )       &
+              * ( R_s( i ) + data%U( i ) + data%alpha_next * data%S( i ) )
+            data%f_alpha_dashdash = data%f_alpha_dashdash                      &
+              + W( i ) * data%P( i ) * ( data%P( i ) - two * data%S( i ) )
+            data%S( i ) = data%S( i ) - data%P( i )
+          END DO
+        END IF
 
 !  update the first and second derivatives of rho(x(alpha))
 
@@ -4139,13 +4213,13 @@
                                           steps, data, userdata, status,       &
                                           alloc_status, bad_alloc,             &
                                           Ao_ptr, Ao_row, Ao_val, eval_ASPROD, &
-                                          reverse, B )
+                                          W, reverse, B )
 
 !  Find an approximation to the arc minimizer in the direction d_s from x_s
 !  of the regularized least-squares objective function
 
 !    phi(x) = f(x) + weight * rho(x), where
-!      f(x) = 1/2 || A x - b ||_2^2 and
+!      f(x) = 1/2 || A x - b ||_W^2 and
 !      rho(x) = 1/2 || x ||^2,
 
 !  within the feasible "box" x_l <= x <= x_u
@@ -4293,6 +4367,7 @@
 !  weight  (REAL) the positive regularization weight (absent = zero)
 !  eval_ASPROD subroutine that performs products with A
 !           and its transpose, see the argument list for BLLS_solve
+!  W       (REAL array of length o) positive diagonal weights (absent = I)
 !  reverse (structure of type BLLS_reverse_type) used to communicate
 !           reverse communication data to and from the subroutine.
 !
@@ -4321,6 +4396,7 @@
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_ASPROD
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
       TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
 
@@ -4356,8 +4432,8 @@
 !  local variables
 
       INTEGER ( KIND = ip_ ) :: i, j, jj, k, l, inform_sort, base_fixed
-      REAL ( KIND = rp_ ) :: pi, qi, rai, rfi, rsi, s, alpha_b, ds, xb, xs
-      REAL ( KIND = rp_ ) :: xaj, dfj, rho_alpha
+      REAL ( KIND = rp_ ) :: pi, qi, wi, yi, zi, rai, rfi, rsi, s
+      REAL ( KIND = rp_ ) :: alpha_b, ds, xb, xs, xaj, dfj, rho_alpha
       LOGICAL :: printi, xlower, xupper
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -4408,6 +4484,7 @@
 !  check if regularization is necessary
 
       data%regularization = weight > zero
+      data%w_eq_identity = .NOT. PRESENT( W )
 
 !  check for other optional arguments
 
@@ -4463,25 +4540,16 @@
         END DO
       END IF
 
-!  compute the initial objective value from the input residual r_s = A x_s - b
-
-!    f(x_s) = 1/2 || r_s||^2,
-
-      data%f_s = half * DOT_PRODUCT( R_s, R_s )
-
-!    phi(x_s) = 1/2 || r_s||^2 + 1/2 weight || x_s||^2,
-
-      IF ( data%regularization ) THEN
-        data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X_s, X_s )
-      ELSE
-        data%phi_s = data%f_s
-      END IF
-
 !  allocate workspace array NZ_d that holds the components of the base-free
-!  and -fixed components of d_s
+!  and -fixed components of d_s, as well as W
 
       array_name = 'blls_exact_arc_search: data%NZ_d'
       CALL SPACE_resize_array( n, data%NZ_d, status, alloc_status,             &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'blls_inexact_arc_search: data%W'
+      CALL SPACE_resize_array( o, data%W, status, alloc_status,                &
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
@@ -4563,6 +4631,25 @@
         WRITE( out, 2000 ) prefix
         WRITE( out, "( A, I7, 1X, I7, ES16.8, ES22.14 )" )                     &
           prefix, 0, n - base_fixed + 1, zero, data%phi_s
+      END IF
+
+!  compute the initial objective value from the input residual r_s = A x_s - b
+
+!    f(x_s) = 1/2 || r_s||_W^2,
+
+      IF ( data%w_eq_identity ) THEN
+        data%f_s = half * DOT_PRODUCT( R_s, R_s )
+      ELSE
+        data%W( : o ) = W( : o ) * R_s( : o ) ! use as temporary store
+        data%f_s = half * DOT_PRODUCT( R_s, data%W )
+      END IF
+
+!    phi(x_s) = 1/2 || r_s||^2 + 1/2 weight || x_s||^2,
+
+      IF ( data%regularization ) THEN
+        data%phi_s = data%f_s + half * weight * DOT_PRODUCT( X_s, X_s )
+      ELSE
+        data%phi_s = data%f_s
       END IF
 
 !  if all of the variables are fixed, exit
@@ -4887,16 +4974,26 @@
 
 !    fc_0 = ||rA_0||^2, fl_0 = <rA_0,rF_0> and fq_0 = ||rF_0||^2
 
-      data%f_c = DOT_PRODUCT( data%R_a( : o ), data%R_a( : o ) )
-      data%f_l = DOT_PRODUCT( data%R_a( : o ), data%R_f( : o ) )
-      data%f_q = DOT_PRODUCT( data%R_f( : o ), data%R_f( : o ) )
-
 !  as well as
 
 !    gamma_a_0 = <p_0,r_s> and  gamma_f_0 = <q_0,r_s>
 
-      data%gamma_a = DOT_PRODUCT( data%P( : o ), R_s( : o ) )
-      data%gamma_f = DOT_PRODUCT( data%Q( : o ), R_s( : o ) )
+      IF ( data%w_eq_identity ) THEN
+        data%f_c = DOT_PRODUCT( data%R_a( : o ), data%R_a( : o ) )
+        data%f_l = DOT_PRODUCT( data%R_a( : o ), data%R_f( : o ) )
+        data%f_q = DOT_PRODUCT( data%R_f( : o ), data%R_f( : o ) )
+        data%gamma_a = DOT_PRODUCT( data%P( : o ), R_s( : o ) )
+        data%gamma_f = DOT_PRODUCT( data%Q( : o ), R_s( : o ) )
+      ELSE
+        data%W( : o ) = W( : o ) * data%R_a( : o ) ! use as temporary store
+        data%f_c = DOT_PRODUCT( data%R_a( : o ), data%W( : o ) )
+        data%W( : o ) = W( : o ) * data%R_f( : o ) ! reuse as temporary store
+        data%f_l = DOT_PRODUCT( data%R_a( : o ), data%W( : o ) )
+        data%f_q = DOT_PRODUCT( data%R_f( : o ), data%W( : o ) )
+        data%W( : o ) = W( : o ) * R_s( : o ) ! reuse as temporary store
+        data%gamma_a = DOT_PRODUCT( data%P( : o ), data%W( : o ) )
+        data%gamma_f = DOT_PRODUCT( data%Q( : o ), data%W( : o ) )
+      END IF
 
 !  set i = 0 (record i in step)
 
@@ -5169,13 +5266,13 @@
           END DO
         END IF
 
-!  loop over the nonzero components of p (and q)
+!  for W = I, loop over the nonzero components of p (and q)
 
-        DO j = 1, data%nz_out_end
-          i = data%NZ_out( j )
-          pi = data%P( i ) ; qi = data%Q( i )
-!write(6,"('P, Q', 2ES12.4 )" ) pi, qi
-          rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+        IF ( data%w_eq_identity ) THEN
+          DO j = 1, data%nz_out_end
+            i = data%NZ_out( j )
+            pi = data%P( i ) ; qi = data%Q( i )
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
 
 !  update
 
@@ -5183,20 +5280,51 @@
 !    fl_{i+1} = fl_i + <q_{i+1},rA_i> - <p_{i+1},rF_i> - <q_{i+1},p_{i+1>},
 !    and fq_{i+1} = fq_i + 2 <q_{i+1},rF_i> + ||q_{i+1}||^2
 
-          data%f_c = data%f_c - two * pi * rai + pi ** 2
-          data%f_l = data%f_l + qi * rai - pi * rfi - qi * pi
-          data%f_q = data%f_q + two * qi * rfi + qi ** 2
+            data%f_c = data%f_c - two * pi * rai + pi ** 2
+            data%f_l = data%f_l + qi * rai - pi * rfi - qi * pi
+            data%f_q = data%f_q + two * qi * rfi + qi ** 2
 
 !    gamma_a_{i+1} = gamma_a_i - <p_{i+1},r_s> and
 !    gamma_f_{i+1} = gamma_f_i + <q_{i+1},r_s>
 
-          data%gamma_a = data%gamma_a - pi * rsi
-          data%gamma_f = data%gamma_f + qi * rsi
+            data%gamma_a = data%gamma_a - pi * rsi
+            data%gamma_f = data%gamma_f + qi * rsi
 
 !    rA_{i+1} = rA_i - p_{i+1} and rF_{i+1} = rF_i + q_{i+1}
 
-          data%R_a( i ) = rai - pi ; data%R_f( i ) = rfi + qi
-        END DO
+            data%R_a( i ) = rai - pi ; data%R_f( i ) = rfi + qi
+          END DO
+
+!  the same when W /= I, but additionally with y = W p and z = W q
+
+        ELSE
+          DO j = 1, data%nz_out_end
+            i = data%NZ_out( j )
+            pi = data%P( i ) ; qi = data%Q( i )
+            wi = W( i ) ; yi = wi * pi ; zi = wi * qi
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+
+!  update
+
+!    fc_{i+1} = fc_i - 2 <y_{i+1},rA_i>_W + ||p_{i+1}||_W^2,
+!    fl_{i+1} = fl_i + <z_{i+1},rA_i> - <y_{i+1},rF_i> - <z_{i+1},p_{i+1>},
+!    and fq_{i+1} = fq_i + 2 <z_{i+1},rF_i> + ||q_{i+1}||_W^2
+
+            data%f_c = data%f_c - two * yi * rai + yi * pi
+            data%f_l = data%f_l + zi * rai - yi * rfi - zi * pi
+            data%f_q = data%f_q + two * zi * rfi + zi * qi
+
+!    gamma_a_{i+1} = gamma_a_i - <y_{i+1},r_s> and
+!    gamma_f_{i+1} = gamma_f_i + <z_{i+1},r_s>
+
+            data%gamma_a = data%gamma_a - yi * rsi
+            data%gamma_f = data%gamma_f + zi * rsi
+
+!    rA_{i+1} = rA_i - p_{i+1} and rF_{i+1} = rF_i + q_{i+1}
+
+            data%R_a( i ) = rai - pi ; data%R_f( i ) = rfi + qi
+          END DO
+        END IF
 
 !  now deal with the regularization term, if any
 
@@ -5360,12 +5488,13 @@
           END DO
         END IF
 
-!  loop over the nonzero components of p (and q)
+!  for W = I, loop over the nonzero components of p (and q)
 
-        DO j = 1, data%nz_out_end
-          i = data%NZ_out( j )
-          pi = data%P( i ) ; qi = data%Q( i )
-          rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+        IF ( data%w_eq_identity ) THEN
+          DO j = 1, data%nz_out_end
+            i = data%NZ_out( j )
+            pi = data%P( i ) ; qi = data%Q( i )
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
 
 !  update
 
@@ -5374,21 +5503,54 @@
 !                     + <p_{i+1},rF_i> - <q_{i+1},p_{i+1>}, and
 !    fq_{i+1} = fq_i - 2 <q_{i+1},rF_i> + ||q_{i+1}||^2
 
-          data%f_c = data%f_c + two * pi * rai + pi ** 2
-          data%f_l = data%f_l - qi * rai + pi * rfi - qi * pi
-          data%f_q = data%f_q - two * qi * rfi + qi ** 2
+             data%f_c = data%f_c + two * pi * rai + pi ** 2
+             data%f_l = data%f_l - qi * rai + pi * rfi - qi * pi
+             data%f_q = data%f_q - two * qi * rfi + qi ** 2
 
 !    gamma_a_{i+1} = gamma_a_i + <p_{i+1},r_s> and
 !    gamma_f_{i+1} = gamma_f_i - <q_{i+1},r_s>
 
-          data%gamma_a = data%gamma_a + pi * rsi
-          data%gamma_f = data%gamma_f - qi * rsi
+             data%gamma_a = data%gamma_a + pi * rsi
+             data%gamma_f = data%gamma_f - qi * rsi
 
 !    rA_{i+1} = rA_i + p_{i+1}
 !    rF_{i+1} = rF_i - q_{i+1}
 
-          data%R_a( i ) = rai + pi ; data%R_f( i ) = rfi - qi
-        END DO
+            data%R_a( i ) = rai + pi ; data%R_f( i ) = rfi - qi
+          END DO
+
+!  the same when W /= I, but additionally with y = W p and z = W q
+
+        ELSE
+          DO j = 1, data%nz_out_end
+            i = data%NZ_out( j )
+            pi = data%P( i ) ; qi = data%Q( i )
+            wi = W( i ) ; yi = wi * pi ; zi = wi * qi
+            rai = data%R_a( i ) ; rfi = data%R_f( i ) ; rsi = R_s( i )
+
+!  update
+
+!    fc_{i+1} = fc_i + 2 <y_{i+1},rA_i> + ||p_{i+1}||_W^2,
+!    fl_{i+1} = fl_i  - <z_{i+1},rA_i>
+!                     + <y_{i+1},rF_i> - <z_{i+1},p_{i+1>}, and
+!    fq_{i+1} = fq_i - 2 <z_{i+1},rF_i> + ||q_{i+1}||_W^2
+
+             data%f_c = data%f_c + two * yi * rai + yi * pi
+             data%f_l = data%f_l - zi * rai + yi * rfi - zi * pi
+             data%f_q = data%f_q - two * zi * rfi + zi * qi
+
+!    gamma_a_{i+1} = gamma_a_i + <y_{i+1},r_s> and
+!    gamma_f_{i+1} = gamma_f_i - <z_{i+1},r_s>
+
+             data%gamma_a = data%gamma_a + yi * rsi
+             data%gamma_f = data%gamma_f - zi * rsi
+
+!    rA_{i+1} = rA_i + p_{i+1}
+!    rF_{i+1} = rF_i - q_{i+1}
+
+            data%R_a( i ) = rai + pi ; data%R_f( i ) = rfi - qi
+          END DO
+        END IF
 
 !  now deal with the regularization term, if any
 
@@ -5616,12 +5778,12 @@
                             iter, maxit, out, print_level, prefix,             &
                             data, userdata, status, alloc_status, bad_alloc,   &
                             Ao_ptr, Ao_row, Ao_val, eval_AFPROD, eval_PREC,    &
-                            DPREC, reverse, preconditioned, B )
+                            DPREC, W, reverse, preconditioned, B )
 
 !  Find the minimizer of the constrained (regularized) least-squares
 !  objective function
 
-!    f(x) =  1/2 || A_o x - b ||_2^2 + 1/2 weight * ||x||_2^2
+!    f(x) =  1/2 || A_o x - b ||_W^2 + 1/2 weight * ||x||_2^2
 
 !  for which certain components of x are fixed at their input values
 
@@ -5665,7 +5827,7 @@
 !  X       (REAL array of length at least n) the minimizer. On input, X should
 !           be set to an estimate of the minimizer, on output it will
 !           contain an improved estimate
-!  R       (REAL array of length at least m) the residual A x - b. On input,
+!  R       (REAL array of length at least o) the residual A x - b. On input,
 !           R should be set to the residual at the input X, on output it will
 !           contain the residual at the improved estimate X
 !  status  (INTEGER) that should be set to 1 on initial input, and
@@ -5715,11 +5877,13 @@
 !           list for BLLS_solve
 !  eval_PREC subroutine that performs the preconditioning operation p = P v
 !            see the argument list for BLLS_solve
+!  W       (REAL array of length o) positive diagonal weights (absent = I)
 !  DPREC   (REAL array of length n) the values of a diagonal preconditioner
-!           that aims to approximate A^T A
-!  preconditioned (LOGICAL) prsent and set true is there a preconditioner
+!           that aims to approximate A^T W A
+!  preconditioned (LOGICAL) present and set true is there a preconditioner
 !  reverse (structure of type BLLS_reverse_type) used to communicate
 !           reverse communication data to and from the subroutine
+!  B       (REAL array of length o) rhs vector b only for debugging
 
 !  ------------------ end of dummy arguments --------------------------
 
@@ -5744,6 +5908,7 @@
       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_row
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: Ao_val
       OPTIONAL :: eval_AFPROD, eval_PREC
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: W
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
       REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( o ) :: B
       LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
@@ -5847,6 +6012,7 @@
 !  check if regularization is necessary
 
       data%regularization = weight > zero
+      data%w_eq_identity = .NOT. PRESENT( W )
 
 !  set printing controls
 
@@ -5888,6 +6054,12 @@
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
       END IF
+      IF ( data%w_eq_identity ) THEN
+        array_name = 'blls_cgls: data%W'
+        CALL SPACE_resize_array( o, data%W, status, alloc_status,              &
+               array_name = array_name, bad_alloc = bad_alloc, out = out )
+        IF ( status /= GALAHAD_ok ) GO TO 900
+      END IF
 
 !  record the free variables
 
@@ -5902,10 +6074,15 @@
       IF ( data%printp ) WRITE( out, "( /, A, ' ** cgls entered',              &
      &    ' (n = ', I0, ', free = ', I0, ') ** ' )" ) prefix, n, data%n_free
 
-!  compute the initial function value f = 1/2 ||r||^2
+!  compute the initial function value f = 1/2 ||r||_w^2
 
-      norm_r = TWO_NORM( R )
-      f = half * norm_r ** 2
+      IF ( data%w_eq_identity ) THEN
+        norm_r = TWO_NORM( R )
+        f = half * norm_r ** 2
+      ELSE
+        data%W( : o ) = W( : o ) * R( : o )
+        f = half * MAX( DOT_PRODUCT( R, data%W ), zero )
+      END IF
 
 !  exit if there are no free variables
 
@@ -5914,25 +6091,43 @@
         GO TO 800
       END IF
 
-!  compute the gradient g = A^T r at the initial point, and its norm
+!  compute the gradient g = A^T W r at the initial point, and its norm
 
 !  a) evaluation directly via A
 
       IF ( data%present_a ) THEN
-        DO k = 1, data%n_free
-          j = data%FREE( k )
-          data%G( j ) = zero
-          DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
-            i = Ao_row( l )
-            data%G( j ) = data%G( j ) + Ao_val( l ) * R( i )
+        IF ( data%w_eq_identity ) THEN
+          DO k = 1, data%n_free
+            j = data%FREE( k )
+            data%G( j ) = zero
+            DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+              i = Ao_row( l )
+              data%G( j ) = data%G( j ) + Ao_val( l ) * R( i )
+            END DO
           END DO
-        END DO
+        ELSE
+          data%W( : o ) = W( : o ) * R( : o )
+          DO k = 1, data%n_free
+            j = data%FREE( k )
+            data%G( j ) = zero
+            DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+              i = Ao_row( l )
+              data%G( j ) = data%G( j ) + Ao_val( l ) * data%W( i )
+            END DO
+          END DO
+        END IF
 
 !  b) evaluation via matrix-vector product call
 
       ELSE IF ( data%present_afprod ) THEN
-        CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,         &
-                          P = data%G, FREE = data%FREE, n_free = data%n_free )
+        IF ( data%w_eq_identity ) THEN
+          CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,       &
+                            P = data%G, FREE = data%FREE, n_free = data%n_free )
+        ELSE
+          data%W( : o ) = W( : o ) * R( : o )
+          CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = data%W,  &
+                            P = data%G, FREE = data%FREE, n_free = data%n_free )
+        END IF
         IF ( status /= GALAHAD_ok ) THEN
           status = GALAHAD_error_evaluation ; GO TO 900
         END IF
@@ -5940,7 +6135,11 @@
 !  c) evaluation via reverse communication
 
       ELSE
-        reverse%V = R
+        IF ( data%w_eq_identity ) THEN
+          reverse%V( : o ) = R( : o )
+        ELSE
+          reverse%V( : o ) = W( : o ) * R( : o )
+        END IF
         data%branch = 20 ; status = 3
         RETURN
       END IF
@@ -6127,7 +6326,12 @@
 
 !  compute the step length to the minimizer along the line x + alpha p
 
-        curv = TWO_NORM( data%Q( : o ) ) ** 2
+        IF ( data%w_eq_identity ) THEN
+          curv = TWO_NORM( data%Q( : o ) ) ** 2
+        ELSE
+          data%W( : o ) = W( : o ) * data%Q( : o )
+          curv = DOT_PRODUCT( data%Q( : o ), data%W( : o ) )
+        END IF
         IF ( data%regularization ) THEN
           IF ( data%n_free < n ) THEN
             curv = curv + weight *                                             &
@@ -6153,27 +6357,47 @@
 !  update the value of the objective function
 
         f = f - half * alpha * alpha * curv
-        norm_r = SQRT( two * f )
+!       norm_r = SQRT( two * f )
 
-!  compute the gradient g = A^T r at x and its norm
+!  compute the gradient g = A^T W r at x and its norm
 
 !  a) evaluation directly via A
 
         IF ( data%present_a ) THEN
-          DO k = 1, data%n_free
-            j = data%FREE( k )
-            data%G( j ) = zero
-            DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
-              i = Ao_row( l )
-              data%G( j ) = data%G( j ) + Ao_val( l ) * R( i )
+          IF ( data%w_eq_identity ) THEN
+            DO k = 1, data%n_free
+              j = data%FREE( k )
+              data%G( j ) = zero
+              DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+                i = Ao_row( l )
+                data%G( j ) = data%G( j ) + Ao_val( l ) * R( i )
+              END DO
             END DO
-          END DO
+          ELSE
+            data%W( : o ) = W( : o ) * R( : o )
+            DO k = 1, data%n_free
+              j = data%FREE( k )
+              data%G( j ) = zero
+              DO l = Ao_ptr( j ) , Ao_ptr( j + 1 ) - 1
+                i = Ao_row( l )
+                data%G( j ) = data%G( j ) + Ao_val( l ) * data%W( i )
+              END DO
+            END DO
+          END IF
 
 !  b) evaluation via matrix-vector product call
 
         ELSE IF ( data%present_afprod ) THEN
-          CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,       &
-                            P = data%G, FREE = data%FREE, n_free = data%n_free )
+          IF ( data%w_eq_identity ) THEN
+            CALL eval_AFPROD( status, userdata, transpose = .TRUE.,            &
+                              V = R, P = data%G,                               &
+                              FREE = data%FREE, n_free = data%n_free )
+          ELSE
+            data%W( : o ) = W( : o ) * R( : o )
+            CALL eval_AFPROD( status, userdata, transpose = .TRUE.,            &
+                              V = data%W, P = data%G,                          &
+                              FREE = data%FREE, n_free = data%n_free )
+          END IF
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -6181,7 +6405,11 @@
 !  c) evaluation via reverse communication
 
         ELSE
-          reverse%V( : o ) = R
+          IF ( data%w_eq_identity ) THEN
+            reverse%V( : o ) = R( : o )
+          ELSE
+            reverse%V( : o ) = W( : o ) * R( : o )
+          END IF
           data%branch = 120 ; status = 3
           RETURN
         END IF

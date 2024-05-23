@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-06 AT 10:25 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-05-22 AT 09:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -7,7 +7,7 @@
  MODULE pastixf_enums
 
    USE spmf_enums
-   USE iso_c_binding, ONLY : c_double, c_int, c_ptr, c_int32_t, c_int64_t
+   USE iso_c_binding, ONLY : c_int, c_ptr, c_int32_t, c_int64_t
 
 #ifdef INTEGER_64
   INTEGER, PARAMETER :: pastix_int_t = c_int64_t

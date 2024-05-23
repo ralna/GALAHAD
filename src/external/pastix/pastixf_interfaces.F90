@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-05-22 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -12,50 +12,57 @@
 !> @copyright 2017-2022 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
 !>                      Univ. Bordeaux. All rights reserved.
 !>
-!> @version 6.2.0
+!> @version 6.3.2
 !> @author Mathieu Faverge
 !> @author Tony Delarue
 !> @author Selmane Lebdaoui
-!> @date 2022-01-13
+!> @date 2023-07-21
 
- MODULE pastixf_interfaces
+#ifdef INTEGER_64
+#define pastixf_enums pastixf_enums_64
+#define spmf_enums spmf_enums_64
+#endif
+
+#ifdef SINGLE
+#ifdef INTEGER_64
+#define pastixf_interfaces_precision pastixf_interfaces_single_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64
+#else
+#define pastixf_interfaces_precision pastixf_interfaces_single
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
+#endif
+#else
+#ifdef INTEGER_64
+#define pastixf_interfaces_precision pastixf_interfaces_double_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double_64
+#else
+#define pastixf_interfaces_precision pastixf_interfaces_double
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
+#endif
+#endif
+
+ MODULE pastixf_interfaces_precision
 
    INTERFACE pastixInitParam
      SUBROUTINE pastixInitParam_f08( iparm, dparm )
-#ifdef SINGLE
-       USE GALAHAD_KINDS, ONLY : spc_
-#else
-       USE GALAHAD_KINDS, ONLY : dpc_
-#endif
+       USE GALAHAD_KINDS_precision, ONLY : rpc_
        USE pastixf_enums, ONLY : pastix_int_t
        IMPLICIT NONE
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target :: iparm( : )
-#ifdef SINGLE
-       REAL ( KIND = spc_ ), INTENT( INOUT ), target :: dparm( : )
-#else
-       REAL ( KIND = dpc_ ), INTENT( INOUT ), target :: dparm( : )
-#endif
+       REAL ( KIND = rpc_ ), INTENT( INOUT ), target :: dparm( : )
      END SUBROUTINE pastixInitParam_f08
    END INTERFACE pastixInitParam
 
    INTERFACE pastixInit
      SUBROUTINE pastixInit_f08( pastix_data, pastix_comm, iparm, dparm )
-#ifdef SINGLE
-       USE GALAHAD_KINDS, ONLY : spc_
-#else
-       USE GALAHAD_KINDS, ONLY : dpc_
-#endif
+       USE GALAHAD_KINDS_precision, ONLY : rpc_
        USE spmf_enums, ONLY : MPI_Comm
        USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), pointer :: pastix_data
        TYPE ( MPI_Comm ), INTENT( IN ) :: pastix_comm
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target  :: iparm( : )
-#ifdef SINGLE
-       REAL ( KIND = spc_ ), INTENT( INOUT ), target :: dparm( : )
-#else
-       REAL ( KIND = dpc_ ), INTENT( INOUT ), target :: dparm( : )
-#endif
+       REAL ( KIND = rpc_ ), INTENT( INOUT ), target :: dparm( : )
      END SUBROUTINE pastixInit_f08
    END INTERFACE pastixInit
 
@@ -84,11 +91,12 @@
    END INTERFACE pastix_task_numfact
 
    INTERFACE pastix_task_solve
-     SUBROUTINE pastix_task_solve_f08( pastix_data, nrhs, B, ldb, info )
+     SUBROUTINE pastix_task_solve_f08( pastix_data, m, nrhs, B, ldb, info )
        USE GALAHAD_KINDS, ONLY : ipc_
        USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET :: pastix_data
+       INTEGER ( KIND = pastix_int_t ), INTENT (IN ) :: m
        INTEGER ( KIND = pastix_int_t ), INTENT( IN ) :: nrhs
        CLASS ( * ), DIMENSION( :, : ), INTENT( INOUT ), target :: B
        INTEGER ( KIND = pastix_int_t ), INTENT( IN ) :: ldb
@@ -149,7 +157,7 @@
      END SUBROUTINE pastixFinalize_f08
    END INTERFACE pastixFinalize
 
- END MODULE pastixf_interfaces
+ END MODULE pastixf_interfaces_precision
 
 
 

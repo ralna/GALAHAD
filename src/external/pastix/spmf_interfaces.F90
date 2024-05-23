@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-05-22 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -9,15 +9,37 @@
 !>
 !> SPM Fortran 90 wrapper
 !>
-!> @copyright 2017-2022 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
+!> @copyright 2017-2023 Bordeaux INP, CNRS (LaBRI UMR 5800), Inria,
 !>                      Univ. Bordeaux. All rights reserved.
 !>
-!> @version 1.2.0
+!> @version 1.2.2
 !> @author Mathieu Faverge
 !> @author Tony Delarue
-!> @date 2022-02-22
+!> @date 2023-12-06
 
- MODULE spmf_interfaces
+#ifdef INTEGER_64
+#define spmf_enums spmf_enums_64
+#endif
+
+#ifdef SINGLE
+#ifdef INTEGER_64
+#define spmf_interfaces_precision spmf_interfaces_single_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64
+#else
+#define spmf_interfaces_precision spmf_interfaces_single
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_single
+#endif
+#else
+#ifdef INTEGER_64
+#define spmf_interfaces_precision spmf_interfaces_double_64
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double_64
+#else
+#define spmf_interfaces_precision spmf_interfaces_double
+#define GALAHAD_KINDS_precision GALAHAD_KINDS_double
+#endif
+#endif
+
+ MODULE spmf_interfaces_precision
 
    USE iso_c_binding, ONLY : c_float, c_double, c_ptr,                         &
                              c_int, c_int32_t, c_int64_t
@@ -88,18 +110,10 @@
    INTERFACE spmCheckAxb
      SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,  &
                                  ldx, info )
-#ifdef SINGLE
-       USE GALAHAD_KINDS, ONLY : ipc_, spc_
-#else
-       USE GALAHAD_KINDS, ONLY : ipc_, dpc_
-#endif
+       USE GALAHAD_KINDS_precision, ONLY : ipc_, rpc_
        USE spmf_enums, ONLY : spmatrix_t, spm_int_t
        IMPLICIT NONE
-#ifdef SINGLE
-       REAL ( KIND = spc_ ), INTENT( IN ) :: eps
-#else
-       REAL ( KIND = dpc_ ), INTENT( IN ) :: eps
-#endif
+       REAL ( KIND = rpc_ ), INTENT( IN ) :: eps
        INTEGER ( KIND = spm_int_t ),INTENT( IN ) :: nrhs
        TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
        CLASS( * ), INTENT( INOUT ), TARGET, DIMENSION( :, : ),                 &
@@ -121,4 +135,4 @@
      END SUBROUTINE spmExit_f08
    END INTERFACE spmExit
 
- END MODULE spmf_interfaces
+ END MODULE spmf_interfaces_precision

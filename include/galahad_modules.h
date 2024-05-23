@@ -16,11 +16,11 @@
 #define LANCELOT_HSL_routines LANCELOT_HSL_routines_64
 #define MKL_PARDISO_PRIVATE MKL_PARDISO_PRIVATE_64
 #define MKL_PARDISO MKL_PARDISO_64
+#define galahad_metis galahad_metis_64
 #define spmf_interfaces spmf_interfaces_64
 #define spmf_enums spmf_enums_64
 #define pastixf_interfaces pastixf_interfaces_64
 #define pastixf_enums pastixf_enums_64
-#define galahad_metis galahad_metis_64
 #endif
 
 #ifdef SINGLE
@@ -394,6 +394,8 @@
 #define INQPB_precision INQPB_single_64
 #define INQPC_precision INQPC_single_64
 #define INQP_precision INQP_single_64
+#define pastixf_interfaces_precision pastixf_interfaces_single_64
+#define spmf_interfaces_precision spmf_interfaces_single_64
 
 #else
 
@@ -765,7 +767,8 @@
 #define INQPB_precision INQPB_single
 #define INQPC_precision INQPC_single
 #define INQP_precision INQP_single
-
+#define pastixf_interfaces_precision pastixf_interfaces_single
+#define spmf_interfaces_precision spmf_interfaces_single
 #endif
 #define c_precision c_float
 
@@ -1141,7 +1144,11 @@
 #define INQPB_precision INQPB_double_64
 #define INQPC_precision INQPC_double_64
 #define INQP_precision INQP_double_64
+#define pastixf_interfaces_precision pastixf_interfaces_double_64
+#define spmf_interfaces_precision spmf_interfaces_double_64
+
 #else
+
 #define CUTEst_interface_precision CUTEST_interface_double
 #define CUTEST_interface_precision CUTEST_interface_double
 #define CUTEST_INTERFACE_precision CUTEST_interface_double
@@ -1510,6 +1517,8 @@
 #define INQPB_precision INQPB_double
 #define INQPC_precision INQPC_double
 #define INQP_precision INQP_double
+#define pastixf_interfaces_precision pastixf_interfaces_double
+#define spmf_interfaces_precision spmf_interfaces_double
 #endif
 #define c_precision c_double
 #endif
