@@ -1075,7 +1075,6 @@
 !  W is an optional rank-one array of type default real that if present
 !   must be of length prob%o and filled with the weights w_i > 0. If W is
 !   absent, weights of one will be used.
-!   N.B. currently only available when A_o is provided explicitly.
 !
 !  reverse is an OPTIONAL structure of type BLLS_reverse_type which is used to
 !   pass intermediate data to and from BLLS_solve. This will only be necessary
