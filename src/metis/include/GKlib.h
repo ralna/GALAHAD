@@ -42,6 +42,12 @@
 #include <assert.h>
 #include <sys/stat.h>
 
+#if defined(USE_GKREGEX)
+#include "gkregex.h"
+#else
+#include <regex.h>
+#endif
+
 #include "gkregex.h"
 
 #if defined(__OPENMP__) 
