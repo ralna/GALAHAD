@@ -42,6 +42,8 @@ function rewrite!(path::String, name::String, optimized::Bool)
     end
 
     for type in ("control", "solve_control", "info", "ainfo", "finfo", "sinfo")
+      text = replace(text, "$(type)_d" => "$(type)")
+      text = replace(text, "$(type)_i" => "$(type)")
       for hsl in ("ma48", "ma57", "ma77", "ma86", "ma87", "ma97", "mc64", "mc68", "mi20", "mi28")
         if "$(hsl)_$(type)" ∉ nonparametric_structures
           text = replace(text, "::$(hsl)_$(type)" => "::$(hsl)_$(type){T}")
