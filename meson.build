@@ -110,10 +110,8 @@ libampl_path = get_option('libampl_path')
 libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
 libhwloc_path = get_option('libhwloc_path')
-
 libmetis_version = get_option('libmetis_version')
-
-libhwloc_include = get_option('libhwloc_include')
+libhwloc_include = include_directories(get_option('libhwloc_include'))
 libcutest_single_modules = get_option('libcutest_single_modules')
 libcutest_double_modules = get_option('libcutest_double_modules')
 libhsl_modules = get_option('libhsl_modules')
@@ -215,7 +213,9 @@ galahad_python_tests = []
 # Folders that contain headers and Fortran modules
 libgalahad_include = [include_directories('include'),
                       include_directories('src/dum/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libhwloc_include
+                      include_directories('src/ampl')]
+libgalahad_include += libhwloc_include
+libgalahad_include += libhsl_modules
 
 libgalahad_single_include = libgalahad_include + libcutest_single_modules
 libgalahad_double_include = libgalahad_include + libcutest_double_modules
@@ -626,6 +626,7 @@ if build_tests
                         install : true,
                         install_dir : fortran_tests_folder),
              suite : [package, precision, 'fortran'],
+             timeout : 60,
              is_parallel : false)
       endif
     endforeach
@@ -657,6 +658,7 @@ if build_tests and build_ciface
            executable(name, file, c_args : args_precision, link_with : libgalahad_precision, dependencies : lm, link_language : 'c',
                                   include_directories : include_tests, install : true, install_dir : c_tests_folder),
            suite : [package, precision, 'C'],
+           timeout : 60,
            is_parallel : false)
     endforeach
   endforeach
@@ -674,6 +676,7 @@ if build_tests and build_pythoniface and build_ciface and build_double and (not 
          args : file,
          suite : [package, 'Python'],
          env : ['PYTHONPATH=' + py.get_install_dir()],
+         timeout : 60,
          is_parallel : false)
   endforeach
 endif
