@@ -48,8 +48,6 @@
 #include <regex.h>
 #endif
 
-#include "gkregex.h"
-
 #if defined(__OPENMP__) 
 #include <omp.h>
 #endif
