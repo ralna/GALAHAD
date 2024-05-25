@@ -1,24 +1,24 @@
 task:
   matrix:
-    - name: FreeBSD/gcc-12/Int32
+    - name: Meson / freebsd/gcc-12/Int32
       freebsd_instance:
         image: freebsd-13-3-release-amd64
       env:
         - JULIA_VERSION: 1
         - INT64: "false"
-    - name: FreeBSD/gcc-12/Int64
+    - name: Meson / freebsd/gcc-12/Int64
       freebsd_instance:
         image: freebsd-13-3-release-amd64
       env:
         - JULIA_VERSION: 1
         - INT64: "true"
-    - name: macos-silicon/gcc-13/Int32
+    - name: Meson / macos-silicon/gcc-13/Int32
       macos_instance:
         image: ghcr.io/cirruslabs/macos-ventura-base:latest
       env:
         - JULIA_VERSION: 1
         - INT64: "false"
-    - name: macos-silicon/gcc-13/Int64
+    - name: Meson / macos-silicon/gcc-13/Int64
       macos_instance:
         image: ghcr.io/cirruslabs/macos-ventura-base:latest
       env:
@@ -41,12 +41,16 @@ task:
   configure_script: |
     if [ "$(uname -s)" = "FreeBSD" ]; then
       FC=gfortran12 CC=gcc12 CXX=g++12 meson setup builddir --buildtype=debug \
+                                                            -Dlibblas= \
+                                                            -Dliblapack= \
                                                             -Dexamples=true \
                                                             -Dtests=true \
                                                             -Dpythoniface=true \
                                                             -Dgalahad_int64=${INT64}
     else
       FC=gfortran-13 CC=gcc-13 CXX=g++-13 meson setup builddir --buildtype=debug \
+                                                               -Dlibblas= \
+                                                               -Dliblapack= \
                                                                -Dexamples=true \
                                                                -Dtests=true \
                                                                -Dpythoniface=true \
