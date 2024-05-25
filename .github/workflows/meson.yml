@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/libHSL=${{ matrix.libhsl }}
     strategy:
       fail-fast: false
       matrix:
@@ -15,48 +15,59 @@ jobs:
         arch: ['x64']
         version: ['11']
         int: ['32', '64']
+        libhsl: ['false']
         include:
           - compiler: gcc
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
             int: '32'
+            libhsl: 'true'
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
             int: '64'
+            libhsl: 'false'
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
             int: '32'
+            libhsl: 'true'
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
             int: '64'
+            libhsl: 'false'
           - os: windows-latest
             compiler: intel
             version: '2023.2'
             int: '32'
+            libhsl: 'true'
           - os: windows-latest
             compiler: intel
             version: '2023.2'
             int: '64'
+            libhsl: 'false'
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
             int: '32'
+            libhsl: 'true'
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
             int: '64'
+            libhsl: 'false'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
           #   int: '32'
+          #   libhsl: 'true'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
           #   int: '64'
+          #   libhsl: 'false'
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -136,6 +147,10 @@ jobs:
           echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
           echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
 
+      - name: Install Julia
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
+        uses: julia-actions/setup-julia@v2
+
       - name: Install compilers
         uses: fortran-lang/setup-fortran@main
         with:
@@ -152,6 +167,46 @@ jobs:
       #   if: matrix.os == 'macos-13'
       #   uses: mxschmitt/action-tmate@v3
 
+      - name: Download libHSL
+        if: matrix.libhsl == 'true'
+        env:
+          LIBHSL: ${{ secrets.LIBHSL }}
+        shell: bash
+        run: |
+          julia --color=yes .github/julia/libhsl.jl
+          unzip libhsl.zip
+
+      - name: Setup libHSL
+        if: matrix.libhsl == 'true'
+        shell: bash
+        run: |
+          BLAS="blas"
+          LAPACK="lapack"
+          BLAS_PATH=""
+          LAPACK_PATH=""
+          SHARED_STATIC="shared"
+          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
+            SHARED_STATIC="static"
+          fi
+          cd libHSL-*
+          meson setup builddir -Ddefault_library=${SHARED_STATIC} \
+                               --buildtype=debug \
+                               --prefix=$GITHUB_WORKSPACE/libhsl \
+                               -Dlibblas_path=${BLAS_PATH} \
+                               -Dliblapack_path=${LAPACK_PATH} \
+                               -Dlibblas=$BLAS \
+                               -Dliblapack=$LAPACK
+
+      - name: Compile libHSL
+        if: matrix.libhsl == 'true'
+        shell: bash
+        run: meson compile -C builddir
+
+      - name: Install libHSL
+        if: matrix.libhsl == 'true'
+        shell: bash
+        run: meson install -C builddir
+
       - name: Setup GALAHAD
         shell: bash
         run: |
@@ -163,6 +218,8 @@ jobs:
           LAPACK="openblas"
           BLAS_PATH=""
           LAPACK_PATH=""
+          HSL_PATH=""
+          HSL_MODULES=""
           PYTHON_INTERFACE="true"
           SHARED_STATIC="shared"
           LD_CLASSIC=""
@@ -183,6 +240,10 @@ jobs:
             LAPACK="openblas64_"
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
+          fi
+          if [[ "${{matrix.libhsl}}" == "true" ]]; then
+            HSL_PATH="$GITHUB_WORKSPACE/libhsl/lib"
+            HSL_MODULES="$GITHUB_WORKSPACE/libhsl/modules"
           fi
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
@@ -206,6 +267,8 @@ jobs:
                                -Dgalahad_int64=$INT64 \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
+                               -Dlibhsl_path=${HSL_PATH} \
+                               -Dlibhsl_modules=${HSL_MODULES} \
                                -Dlibblas=$BLAS \
                                -Dliblapack=$LAPACK \
                                -Dfortran_link_args=${LD_CLASSIC} \
@@ -240,10 +303,6 @@ jobs:
         with:
           name: ${{ matrix.os }}_${{ matrix.compiler }}-v${{ matrix.version }}_Int${{ matrix.int }}_testlog.txt
           path: builddir/meson-logs/testlog.txt
-
-      - name: Install Julia
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
-        uses: julia-actions/setup-julia@v1
 
       - name: Test GALAHAD.jl
         if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
