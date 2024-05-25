@@ -33,14 +33,6 @@ jobs:
             compiler: intel-classic
             version: '2021.10'
             int: '64'
-          # - os: macos-13
-          #   compiler: intel-classic
-          #   version: '2021.10'
-          #   int: '32'
-          # - os: macos-13
-          #   compiler: intel-classic
-          #   version: '2021.10'
-          #   int: '64'
           - os: windows-latest
             compiler: intel
             version: '2023.2'
@@ -240,7 +232,6 @@ jobs:
           path: builddir/meson-logs/install-log.txt
 
       - name: Test GALAHAD
-        if: (matrix.int != '64' || matrix.os != 'macos-13')
         shell: bash
         run: |
           meson test -C builddir
