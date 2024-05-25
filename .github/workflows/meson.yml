@@ -120,15 +120,15 @@ jobs:
               tar -xzvf Hwloc.v2.10.0.$PLATFORM.tar.gz -C deps
               wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v5.1.2%2B0/METIS.v5.1.2.$PLATFORM.tar.gz
               tar -xzvf METIS.v5.1.2.$PLATFORM.tar.gz -C deps
-              wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v1.1.0%2B0/CompilerSupportLibraries.v1.1.0.$PLATFORM-libgfortran5.tar.gz
-              tar -xzvf CompilerSupportLibraries.v1.1.0.$PLATFORM-libgfortran5.tar.gz -C deps
+              wget https://github.com/JuliaBinaryWrappers/CompilerSupportLibraries_jll.jl/releases/download/CompilerSupportLibraries-v1.1.1%2B0/CompilerSupportLibraries.v1.1.1.$PLATFORM-libgfortran5.tar.gz
+              tar -xzvf CompilerSupportLibraries.v1.1.1.$PLATFORM-libgfortran5.tar.gz -C deps
               # wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v7.0.4%2B0/SCOTCH.v7.0.4.$PLATFORM.tar.gz
               # tar -xzvf SCOTCH.v7.0.4.$PLATFORM.tar.gz -C deps
               # wget https://github.com/JuliaBinaryWrappers/PaStiX_jll.jl/releases/download/PaStiX-v6.3.0%2B0/PaStiX.v6.3.0.$PLATFORM-libgfortran5.tar.gz
               # tar -xzvf PaStiX.v6.3.0.$PLATFORM-libgfortran5.tar.gz -C deps
             fi
           fi
-          if [[ "${{matrix.compiler}}" == "intel-classic" || "${{matrix.compiler}}" == "intel" ]]; then*
+          if [[ "${{matrix.compiler}}" == "intel-classic" || "${{matrix.compiler}}" == "intel" ]]; then
             wget https://github.com/JuliaBinaryWrappers/MKL_jll.jl/releases/download/MKL-v2024.1.0%2B0/MKL.v2024.1.0.$PLATFORM.tar.gz
             tar -xzvf MKL.v2024.1.0.$PLATFORM.tar.gz -C deps
           fi
@@ -243,7 +243,7 @@ jobs:
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
                                -Dfortran_link_args=${LD_CLASSIC} \
-                               -Dc_link_args=${LD_CLASSIC}
+                               -Dc_link_args=${LD_CLASSIC} \
                                -Dlibmetis_path=${METIS_PATH} \
                                -Dlibmumps_path=${MUMPS_PATH} \
                                -Dlibhwloc_path=${HWLOC_PATH} \
