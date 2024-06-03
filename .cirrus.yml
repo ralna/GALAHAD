@@ -12,13 +12,13 @@ task:
       env:
         - JULIA_VERSION: 1
         - INT64: "true"
-    - name: Meson / macos-silicon/gcc-13/Int32
+    - name: Meson / macos-silicon/gcc-14/Int32
       macos_instance:
         image: ghcr.io/cirruslabs/macos-ventura-base:latest
       env:
         - JULIA_VERSION: 1
         - INT64: "false"
-    - name: Meson / macos-silicon/gcc-13/Int64
+    - name: Meson / macos-silicon/gcc-14/Int64
       macos_instance:
         image: ghcr.io/cirruslabs/macos-ventura-base:latest
       env:
@@ -34,11 +34,11 @@ task:
       echo "CC=gcc12" >> $CIRRUS_ENV
       echo "CXX=g++12" >> $CIRRUS_ENV
     else
-      brew install python meson gcc openblas numpy
+      brew install python meson gcc@14 openblas numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/opt/homebrew/lib" >> $CIRRUS_ENV
-      echo "FC=gfortran-13" >> $CIRRUS_ENV
-      echo "CC=gcc-13" >> $CIRRUS_ENV
-      echo "CXX=g++-13" >> $CIRRUS_ENV
+      echo "FC=gfortran-14" >> $CIRRUS_ENV
+      echo "CC=gcc-14" >> $CIRRUS_ENV
+      echo "CXX=g++-14" >> $CIRRUS_ENV
     fi
     echo "JULIA_PROJECT_SUBDIR=GALAHAD.jl" >> $CIRRUS_ENV
     echo "GALAHAD=$CIRRUS_WORKING_DIR" >> $CIRRUS_ENV
