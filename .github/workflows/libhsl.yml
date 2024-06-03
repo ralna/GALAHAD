@@ -1,4 +1,4 @@
-name: Meson
+name: libHSL
 on:
   push:
     branches:
@@ -14,49 +14,29 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-13]
         arch: ['x64']
         version: ['11']
-        int: ['32', '64']
+        int: ['32']
         include:
           - compiler: gcc
           - os: windows-latest
             compiler: intel-classic
             version: '2021.10'
             int: '32'
-          - os: windows-latest
-            compiler: intel-classic
-            version: '2021.10'
-            int: '64'
           - os: ubuntu-latest
             compiler: intel-classic
             version: '2021.10'
             int: '32'
-          - os: ubuntu-latest
-            compiler: intel-classic
-            version: '2021.10'
-            int: '64'
           - os: windows-latest
             compiler: intel
             version: '2023.2'
             int: '32'
-          - os: windows-latest
-            compiler: intel
-            version: '2023.2'
-            int: '64'
           - os: ubuntu-latest
             compiler: intel
             version: '2023.2'
             int: '32'
-          - os: ubuntu-latest
-            compiler: intel
-            version: '2023.2'
-            int: '64'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
           #   version: '23.11'
           #   int: '32'
-          # - os: ubuntu-latest
-          #   compiler: nvidia-hpc
-          #   version: '23.11'
-          #   int: '64'
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
@@ -101,15 +81,13 @@ jobs:
             PLATFORM="x86_64-apple-darwin"
           fi
           if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            PLATFORM="x86_64-w64-mingw32"
-            choco install wget
-          fi
-          # if [[ "${{matrix.int}}" == "64" ]]; then
-          #   wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
+            PLATFORM="x86_64-w64-mingw32"/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
           #   tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
           # fi
           # wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v0.3.26%2B0/OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz
           # tar -xzvf OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
+            choco install wget
+          fi
 
       - name: Set the environment variables LIBRARY_PATH, LD_LIBRARY_PATH and DYLD_LIBRARY_PATH
         if: matrix.os != 'windows-latest'
@@ -125,9 +103,6 @@ jobs:
             echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
             echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib" >> $GITHUB_ENV
           fi
-          # if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-          #   echo "PATH=$PATH:/d/a/GALAHAD/GALAHAD/../deps/bin" >> $GITHUB_ENV
-          # fi
 
       - name: Set environment variables for OpenMP
         if: matrix.os != 'windows-latest'
@@ -156,6 +131,46 @@ jobs:
       #   if: matrix.os == 'macos-13'
       #   uses: mxschmitt/action-tmate@v3
 
+      - name: Download libHSL
+        if: matrix.libhsl == 'true'
+        env:
+          LIBHSL: ${{ secrets.LIBHSL }}
+        shell: bash
+        run: |
+          curl -O ${LIBHSL}
+          unzip libhsl.zip
+
+      - name: Setup libHSL
+        if: matrix.libhsl == 'true'
+        shell: bash
+        run: |
+          BLAS="blas"
+          LAPACK="lapack"
+          BLAS_PATH=""
+          LAPACK_PATH=""
+          SHARED_STATIC="shared"
+          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
+            SHARED_STATIC="static"
+          fi
+          cd libHSL-*
+          meson setup builddir -Ddefault_library=${SHARED_STATIC} \
+                               --buildtype=debug \
+                               --prefix=$GITHUB_WORKSPACE/libhsl \
+                               -Dlibblas_path=${BLAS_PATH} \
+                               -Dliblapack_path=${LAPACK_PATH} \
+                               -Dlibblas=$BLAS \
+                               -Dliblapack=$LAPACK
+
+      - name: Compile libHSL
+        if: matrix.libhsl == 'true'
+        shell: bash
+        run: meson compile -C builddir
+
+      - name: Install libHSL
+        if: matrix.libhsl == 'true'
+        shell: bash
+        run: meson install -C builddir
+
       - name: Setup GALAHAD
         shell: bash
         run: |
@@ -167,6 +182,8 @@ jobs:
           LAPACK="openblas"
           BLAS_PATH=""
           LAPACK_PATH=""
+          HSL_PATH=""
+          HSL_MODULES=""
           PYTHON_INTERFACE="true"
           SHARED_STATIC="shared"
           LD_CLASSIC=""
@@ -187,6 +204,10 @@ jobs:
             LAPACK="openblas64_"
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
+          fi
+          if [[ "${{matrix.libhsl}}" == "true" ]]; then
+            HSL_PATH="$GITHUB_WORKSPACE/libhsl/lib"
+            HSL_MODULES="$GITHUB_WORKSPACE/libhsl/modules"
           fi
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
@@ -210,6 +231,8 @@ jobs:
                                -Dgalahad_int64=$INT64 \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
+                               -Dlibhsl_path=${HSL_PATH} \
+                               -Dlibhsl_modules=${HSL_MODULES} \
                                -Dlibblas=$BLAS \
                                -Dliblapack=$LAPACK \
                                -Dfortran_link_args=${LD_CLASSIC} \
