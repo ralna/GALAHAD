@@ -77,8 +77,8 @@
 #  subset is available, set HSLSUBSET to its directory; if not, set
 #  HSLSUBSET to $(GALAHAD)/src/external/hsl which contains dummy versions
 
-HSLSUBSET = $(GALAHAD)/src/external/hsl
-#HSLSUBSET = $(GALAHAD)/../hsl_subset/src
+#HSLSUBSET = $(GALAHAD)/src/external/hsl
+HSLSUBSET = $(GALAHAD)/../hsl_subset/src
 
 #  HSLSUBSET is the source directory for the HSL Archive SUBSET packages.
 #  If the actual HSL SUBSET files have been downloaded, these will

@@ -83,7 +83,7 @@ struct mc68_info {
    ipc_ duplicate;       /* holds number of duplicate entries */
    ipc_ n_compressions;  /* holds number of compressions in order */
    ipc_ n_zero_eigs;     /* holds the number of zero eigs from ma47 */
-   long l_workspace;     /* holds length of workspace iw used in order */
+   int64_t l_workspace;     /* holds length of workspace iw used in order */
    ipc_ zb01_info;       /* holds flag from zb01_expand1 call */
    ipc_ n_dense_rows;    /* holds number of dense rows from amdd */
 };

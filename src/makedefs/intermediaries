@@ -336,6 +336,11 @@ make_lstr:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
 
+make_map:
+	( cd $(GALAHAD)/src/map ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) map.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/map )
+
 make_miqr:
 	( cd $(GALAHAD)/src/miqr ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) miqr.o \
@@ -992,6 +997,11 @@ make_all_lstr:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
 
+make_all_map:
+	( cd $(GALAHAD)/src/map ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) map_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/map )
+
 make_all_miqr:
 	( cd $(GALAHAD)/src/miqr ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) miqr_silent \
@@ -1596,6 +1606,11 @@ make_ciface_lstr:
 	( cd $(GALAHAD)/src/lstr ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_ciface_map:
+	( cd $(GALAHAD)/src/map ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) map_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/map )
 
 make_ciface_miqr:
 	( cd $(GALAHAD)/src/miqr ; \
@@ -2253,6 +2268,11 @@ make_pyiface_lstr:
 	( cd $(GALAHAD)/src/lstr ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_pyiface_map:
+	( cd $(GALAHAD)/src/map ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) map_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/map )
 
 make_pyiface_miqr:
 	( cd $(GALAHAD)/src/miqr ; \
