@@ -187,7 +187,7 @@
 !   removal of the file alive_file from unit alive_unit terminates execution
 
        INTEGER ( KIND = ip_ ) :: alive_unit = 40
-       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
+       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   is the Jacobian matrix of first derivatives available (>= 2), is access
 !    only via matrix-vector products (=1) or is it not available (<=0) ?
