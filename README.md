@@ -6,7 +6,7 @@ More information on the packages in GALAHAD can be found at https://www.galahad.
 
 All major GALAHAD packages are documented in Fortran, C, Python and Julia:
 
-* [Fortran Documentation (PDF)](https://www.galahad.rl.ac.uk/specs.html)
+* [Fortran Documentation (PDF)](https://ralna.github.io/galahad_docs/pdf/Fortran)
 * [C Documentation (HTML)](https://ralna.github.io/galahad_docs/html/C)
 * [Python Documentation (HTML)](https://ralna.github.io/galahad_docs/html/Python)
 * [Julia Documentation (HTML)](https://ralna.github.io/galahad_docs/html/Julia)
