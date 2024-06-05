@@ -3388,7 +3388,8 @@
 
 !  copy control to data
 
-     WRITE( data%llsr_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
+     IF ( data%llsr_control%out > 0 ) WRITE( data%llsr_control%out,            &
+            "( '' )", ADVANCE = 'no') !prevents ifort bug
      error = data%llsr_control%error
      space_critical = data%llsr_control%space_critical
      deallocate_error_fatal = data%llsr_control%space_critical

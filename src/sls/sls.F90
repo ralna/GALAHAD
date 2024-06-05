@@ -980,6 +980,7 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 2, 1 /)
+     INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROWL = (/ 1, 2 /)
      INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
      INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
      TYPE ( mc68_control ) :: control_mc68
@@ -996,7 +997,7 @@
 !  check to see if HSL ordering packages are available
 
      control_mc68%lp = - 1
-     CALL MC68_order( 1_ip_, n_dummy, PTR, ROW, PERM, control_mc68, info_mc68 )
+     CALL MC68_order( 1_ip_, n_dummy, PTR, ROWL, PERM, control_mc68, info_mc68 )
      hsl_available = info_mc68%flag >= 0
 
 !  check to see if the MeTiS ordering packages is available

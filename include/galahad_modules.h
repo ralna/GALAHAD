@@ -97,6 +97,7 @@
 #define GALAHAD_LSQP_precision GALAHAD_LSQP_single_64
 #define GALAHAD_LSRT_precision GALAHAD_LSRT_single_64
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_single_64
+#define GALAHAD_MAP_precision GALAHAD_MAP_single_64
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_single_64
 #define GALAHAD_MOP_precision GALAHAD_MOP_single_64
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_single_64
@@ -470,6 +471,7 @@
 #define GALAHAD_LSQP_precision GALAHAD_LSQP_single
 #define GALAHAD_LSRT_precision GALAHAD_LSRT_single
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_single
+#define GALAHAD_MAP_precision GALAHAD_MAP_single
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_single
 #define GALAHAD_MOP_precision GALAHAD_MOP_single
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_single
@@ -847,6 +849,7 @@
 #define GALAHAD_LSQP_precision GALAHAD_LSQP_double_64
 #define GALAHAD_LSRT_precision GALAHAD_LSRT_double_64
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_double_64
+#define GALAHAD_MAP_precision GALAHAD_MAP_double_64
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_double_64
 #define GALAHAD_MOP_precision GALAHAD_MOP_double_64
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_double_64
@@ -1220,6 +1223,7 @@
 #define GALAHAD_LSQP_precision GALAHAD_LSQP_double
 #define GALAHAD_LSRT_precision GALAHAD_LSRT_double
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_double
+#define GALAHAD_MAP_precision GALAHAD_MAP_double
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_double
 #define GALAHAD_MOP_precision GALAHAD_MOP_double
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_double

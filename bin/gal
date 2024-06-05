@@ -868,6 +868,15 @@ elif [[ $2 == 'colt' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec colt update
   [[ ! -L RUNCOLT.SPC ]] && ln -s ~/.galahad/specs/RUNCOLT.SPC RUNCOLT.SPC
 
+# epf
+
+elif [[ $2 == 'epf' ]]; then
+  RUNMAIN=$GALOBJ/runepf_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNEPF.SPC ]] && $GALOBJ/buildspec epf
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec epf update
+  [[ ! -L RUNEPF.SPC ]] && ln -s ~/.galahad/specs/RUNEPF.SPC RUNEPF.SPC
+
 # funnel
 
 elif [[ $2 == 'funnel' ]]; then

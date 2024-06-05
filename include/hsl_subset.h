@@ -1,7 +1,9 @@
 #ifdef INTEGER_64
 #define hsl_metis galahad_metis_64
+#define HSL_METIS galahad_metis_64
 #else
 #define hsl_metis galahad_metis
+#define HSL_METIS galahad_metis
 #endif
 
 #ifdef INTEGER_64
