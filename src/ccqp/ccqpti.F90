@@ -58,6 +58,7 @@
 
    DO data_storage_type = 1, 7
      CALL CCQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -129,6 +130,7 @@
 
    DO data_storage_type = 1, 1
      CALL CCQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
@@ -153,5 +155,20 @@
    DEALLOCATE( X, C, G, Y, Z, W, X_0, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( CCQP_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     control%SBLS_pounce_control%symmetric_linear_solver                       &
+       = symmetric_linear_solver
+     control%SBLS_pounce_control%definite_linear_solver                        &
+       = definite_linear_solver
+!    control%SBLS_pounce_control%print_level = 5
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_CCQP_interface_test
