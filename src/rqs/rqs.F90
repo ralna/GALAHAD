@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-30 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 15:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -3601,8 +3601,10 @@
                   IF ( u_norm < zero ) GO TO 930
                   u_norm = SQRT( u_norm )
                 END IF
-                data%U( : n ) = data%U( : n ) / u_norm
-                lambda_s_l = MAX( lambda_s_l, lambda - one / u_norm )
+                IF (  u_norm /= zero ) THEN
+                  data%U( : n ) = data%U( : n ) / u_norm
+                  lambda_s_l = MAX( lambda_s_l, lambda - one / u_norm )
+                END IF
               END DO
 
 !  compute the Rayleigh quotient
@@ -3750,7 +3752,7 @@
                 IF ( u_norm < zero ) GO TO 930
                 u_norm = SQRT( u_norm )
               END IF
-              data%U( : n ) = data%U( : n ) / u_norm
+              IF (  u_norm /= zero ) data%U( : n ) = data%U( : n ) / u_norm
 
 ! perturb the current u by a small, random amount
 
@@ -3810,8 +3812,10 @@
                 IF ( u_norm < zero ) GO TO 930
                 u_norm = SQRT( u_norm )
               END IF
-              data%U( : n ) = data%U( : n ) / u_norm
-              lambda_s_l = MAX( lambda_s_l, lambda - one / u_norm )
+              IF (  u_norm /= zero ) THEN
+                data%U( : n ) = data%U( : n ) / u_norm
+                lambda_s_l = MAX( lambda_s_l, lambda - one / u_norm )
+              END IF
             END DO
 
 !  compute the step alpha so that the p-2nd power of the norm of X + alpha U

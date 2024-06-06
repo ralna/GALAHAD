@@ -18,7 +18,7 @@
    INTEGER ( KIND = ip_ ), PARAMETER :: m_dense_ne = h_dense_ne
    REAL ( KIND = rp_ ) :: f = 0.96_rp_, power = 3_rp_, weight = 1.0_rp_
    REAL ( KIND = rp_ ), DIMENSION( n ) :: X
-   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: empty
    REAL ( KIND = rp_ ), DIMENSION( n ) :: C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
    INTEGER ( KIND = ip_ ), DIMENSION( h_ne ) :: H_row = (/ 1, 2, 3, 3 /)
    INTEGER ( KIND = ip_ ), DIMENSION( h_ne ) :: H_col = (/ 1, 2, 3, 1 /)
@@ -70,11 +70,11 @@
          CASE ( 1 ) ! sparse co-ordinate storage
            st = 'C'
            CALL RQS_import( control, data, status, n, 'COORDINATE',            &
-                            H_ne, H_row, H_col, null )
+                            H_ne, H_row, H_col, empty )
            IF ( use_m ) CALL RQS_import_M( data, status, 'COORDINATE',         &
-                                           M_ne, M_row, M_col, null )
+                                           M_ne, M_row, M_col, empty )
            IF ( use_a ) CALL RQS_import_A( data, status, m, 'COORDINATE',      &
-                                           A_ne, A_row, A_col, null )
+                                           A_ne, A_row, A_col, empty )
            IF ( use_a .AND. use_m ) THEN
              CALL RQS_solve_problem( data, status, power, weight, f, C,        &
                                      H_val, X, M_val = M_val, A_val = A_val )
@@ -91,11 +91,11 @@
          CASE ( 2 ) ! sparse row-wise storage
            st = 'R'
            CALL RQS_import( control, data, status, n, 'SPARSE_BY_ROWS',        &
-                            H_ne, null, H_col, H_ptr )
+                            H_ne, empty, H_col, H_ptr )
            IF ( use_m ) CALL RQS_import_M( data, status, 'SPARSE_BY_ROWS',     &
-                                           M_ne, null, M_col, M_ptr )
+                                           M_ne, empty, M_col, M_ptr )
            IF ( use_a ) CALL RQS_import_A( data, status, m, 'SPARSE_BY_ROWS',  &
-                                           A_ne, null, A_col, A_ptr )
+                                           A_ne, empty, A_col, A_ptr )
            IF ( use_a .AND. use_m ) THEN
              CALL RQS_solve_problem( data, status, power, weight, f, C,        &
                                      H_val, X, M_val = M_val, A_val = A_val )
@@ -112,11 +112,11 @@
          CASE ( 3 ) ! dense storage
            st = 'D'
            CALL RQS_import( control, data, status, n, 'DENSE',                 &
-                            H_ne, null, null, null )
+                            H_ne, empty, empty, empty )
            IF ( use_m ) CALL RQS_import_M( data, status, 'DENSE',              &
-                                           M_ne, null, null, null )
+                                           M_ne, empty, empty, empty )
            IF ( use_a ) CALL RQS_import_A( data, status, m, 'DENSE',           &
-                                           A_ne, null, null, null )
+                                           A_ne, empty, empty, empty )
            IF ( use_a .AND. use_m ) THEN
              CALL RQS_solve_problem( data, status, power, weight, f, C,        &
                                      H_dense_val, X,                           &
@@ -134,11 +134,11 @@
          CASE ( 4 ) ! diagonal H, M, dense A
            st = 'I'
            CALL RQS_import( control, data, status, n, 'DIAGONAL',              &
-                            H_ne, null, null, null )
+                            H_ne, empty, empty, empty )
            IF ( use_m ) CALL RQS_import_M( data, status, 'DIAGONAL',           &
-                                           M_ne, null, null, null )
+                                           M_ne, empty, empty, empty )
            IF ( use_a ) CALL RQS_import_A( data, status, m, 'DIAGONAL',        &
-                                           A_ne, null, null, null )
+                                           A_ne, empty, empty, empty )
            IF ( use_a .AND. use_m ) THEN
              CALL RQS_solve_problem( data, status, power, weight, f, C,        &
                                      H_diag_val, X,                            &
@@ -162,6 +162,7 @@
      END DO
      CALL RQS_terminate( data, control, inform ) !  delete internal workspace
    END DO
+   WRITE( 6, "( /, ' tests completed' )" )
 
    STOP
 
