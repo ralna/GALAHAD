@@ -166,7 +166,6 @@
      TYPE ( QPA_control_type ) :: control
 #include "galahad_sls_defaults.h"
      control%symmetric_linear_solver = symmetric_linear_solver
-     control%definite_linear_solver = definite_linear_solver
      END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_QPA_interface_test
