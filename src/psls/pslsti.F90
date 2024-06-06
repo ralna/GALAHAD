@@ -1,5 +1,6 @@
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
-   PROGRAM GALAHAD_PSLS_interface_test !  GALAHAD 4.1 - 2022-12-14 AT 12:55 GMT.
+   PROGRAM GALAHAD_PSLS_interface_test
    USE GALAHAD_KINDS_precision
    USE GALAHAD_PSLS_precision
    IMPLICIT NONE
@@ -28,10 +29,11 @@
 !  loop over storage types; select the preconditioner
    DO storage_type = 1, 3
      CALL PSLS_initialize( data, control, inform )
-      control%print_level = 10
-      control%preconditioner = 2  ! banded preconditioner
-      control%semi_bandwidth = 1  ! semi-bandwidth of one
-      control%definite_linear_solver = 'sils'
+     CALL WHICH_sls( control )
+     control%print_level = 10
+     control%preconditioner = 2  ! banded preconditioner
+     control%semi_bandwidth = 1  ! semi-bandwidth of one
+!    control%definite_linear_solver = 'sils'
 ! import the matrix structure
      SELECT CASE( storage_type )
      CASE ( 1 )
@@ -73,5 +75,13 @@
      CALL PSLS_terminate( data, control, inform )
    END DO
    STOP
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( PSLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM GALAHAD_PSLS_interface_test
 

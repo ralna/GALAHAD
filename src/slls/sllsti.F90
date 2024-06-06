@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-12-31 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -106,6 +106,7 @@
 
    DO data_storage_type = 1, 5
      CALL SLLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -157,6 +158,7 @@
    nm = MAX( n, o )
    ALLOCATE( nz_in( nm ), nz_out( o ), V( nm ), P( nm ), MASK( o ) )
    CALL SLLS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    MASK = 0
    st = ' RC'
@@ -223,4 +225,13 @@
    END IF
    CALL SLLS_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( B, X, Z, C, G, X_stat, NZ_in, NZ_out, V, P )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( SLLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM GALAHAD_SLLS_interface_test

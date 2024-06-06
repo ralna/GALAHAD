@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-06-05 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LLSR_interface_test
    USE GALAHAD_KINDS_precision
@@ -76,6 +76,7 @@
 !  DO data_storage_type = 3, 3
    DO data_storage_type = 1, 4
      CALL LLSR_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
 !    control%print_level = 1
 !    control%sls_control%print_level_solver = 3
@@ -130,5 +131,14 @@
    END DO
 
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( LLSR_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%definite_linear_solver = definite_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_LLSR_interface_test

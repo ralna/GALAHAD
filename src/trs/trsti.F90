@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_TRS_interface_test
    USE GALAHAD_KINDS_precision
@@ -65,6 +65,7 @@
        END IF
        DO storage_type = 1, 4 ! loop over a variety of storage types
          CALL TRS_initialize( data, control, inform )
+         CALL WHICH_sls( control )
          SELECT CASE ( storage_type )
          CASE ( 1 ) ! sparse co-ordinate storage
            st = 'C'
@@ -161,4 +162,13 @@
    END DO
 
    STOP
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( TRS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM GALAHAD_TRS_interface_test

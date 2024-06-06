@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:45 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_NLS_test_deck
    USE GALAHAD_USERDATA_precision
@@ -53,6 +53,7 @@
 
    DO i = 1, 18
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
+     CALL WHICH_sls( control )
 !    control%print_level = 4
 !    control%RQS_control%print_level = 4
 !    control%GLRT_control%print_level = 4
@@ -249,6 +250,7 @@
 
    DO i = 1, 17
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
+     CALL WHICH_sls( control )
      control%jacobian_available = 2               ! the Jacobian is available
      control%hessian_available = 2                ! the Hessian is available
 !    control%print_level = 1
@@ -584,6 +586,7 @@
          DO usew = 0, 1
 !        DO usew = 0, 0
          CALL NLS_initialize( data, control, inform )! Initialize controls
+         CALL WHICH_sls( control )
          control%model = model             ! set model
          control%norm = scaling            ! set scaling norm
          control%jacobian_available = 2    ! the Jacobian is available
@@ -692,6 +695,7 @@
    DO i = 1, 6
 !  DO i = 3, 3
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
+     CALL WHICH_sls( control )
 !    control%print_level = 1
 !    control%print_level = 4
 !    control%subproblem_control%print_level = 4
@@ -841,6 +845,7 @@
      DO i = 1, 2
 !    DO i = 2, 2
        CALL NLS_initialize( data, control, inform ) ! Initialize control params
+       CALL WHICH_sls( control )
        control%jacobian_available = 2               ! the Jacobian is available
        control%hessian_available = 2                ! the Hessian is available
        control%subproblem_direct = .TRUE. ! Use a direct method
@@ -852,7 +857,7 @@
 !      control%print_level = 4
 !      control%subproblem_control%print_level = 1
        inform%status = 1                            ! set for initial entry
-       nlp%X = 1.0_rp_                               ! start from one
+       nlp%X = 1.0_rp_                              ! start from one
 
        IF ( i == 1 ) THEN
          IF ( store == 3 ) THEN
@@ -935,6 +940,14 @@
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS
+
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( NLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%PSLS_control%definite_linear_solver = definite_linear_solver
+     control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%RQS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
      SUBROUTINE RES( status, X, userdata, C )
      USE GALAHAD_USERDATA_precision

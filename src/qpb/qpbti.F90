@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPB_interface_test
    USE GALAHAD_KINDS_precision
@@ -58,6 +58,7 @@
 
    DO data_storage_type = 1, 7
      CALL QPB_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -123,5 +124,22 @@
    DEALLOCATE( X, C, G, Y, Z, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( QPB_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%FDC_control%use_sls = use_sls
+     control%FDC_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     control%LSQP_control%FDC_control%use_sls = use_sls
+     control%LSQP_control%FDC_control%symmetric_linear_solver                  &
+       = symmetric_linear_solver
+     control%LSQP_control%SBLS_control%symmetric_linear_solver                 &
+       = symmetric_linear_solver
+     control%LSQP_control%SBLS_control%definite_linear_solver                  &
+       = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_QPB_interface_test

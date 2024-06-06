@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 12:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_ARC_interface_test
    USE GALAHAD_KINDS_precision
@@ -43,6 +43,7 @@
 
    DO data_storage_type = 1, 5
      CALL ARC_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
@@ -95,6 +96,7 @@
    ALLOCATE( U( n ), V( n ) ) ! reverse-communication input/output
    DO data_storage_type = 1, 5
      CALL ARC_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
@@ -245,6 +247,15 @@
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
 CONTAINS
+
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( ARC_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%RQS_control%definite_linear_solver = definite_linear_solver
+     control%PSLS_control%definite_linear_solver = definite_linear_solver
+     control%DPS_control%symmetric_linear_solver = symmetric_linear_solver
+     END SUBROUTINE WHICH_sls
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
    USE GALAHAD_USERDATA_precision

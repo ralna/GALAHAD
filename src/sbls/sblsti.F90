@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 14:15 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_interface_test
    USE GALAHAD_KINDS_precision, C_ptr_rename => C_ptr
@@ -32,6 +32,7 @@
    ALLOCATE( H_ptr( n + 1 ), A_ptr( m + 1 ), C_ptr( m + 1 ), SOL( n + m ) )
    DO data_storage_type = 1, 7
      CALL SBLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      control%preconditioner = 2 ; control%factorization = 2
      control%get_norm_residual = .TRUE.
@@ -157,6 +158,15 @@
    END DO
    DEALLOCATE( SOL, H_ptr, A_ptr, C_ptr )
    STOP
+
+  CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( SBLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM GALAHAD_SBLS_interface_test
 
 

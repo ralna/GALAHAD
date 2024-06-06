@@ -1,5 +1,6 @@
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
-   PROGRAM PSLS_TEST_PROGRAM  !  GALAHAD 4.1 - 2022-12-14 AT 13:00 GMT.
+   PROGRAM PSLS_TEST_PROGRAM
    USE GALAHAD_KINDS_precision
    USE GALAHAD_PSLS_precision
    IMPLICIT NONE
@@ -52,9 +53,10 @@
        IF ( prec == 3 .OR. prec == 6 ) CYCLE
 ! specify the solver used by SLS (in this case sils)
        CALL PSLS_initialize( data, control, inform )
+       CALL WHICH_sls( control )
        control%preconditioner = prec
        control%semi_bandwidth = 1  ! semi-bandwidth of one
-       control%definite_linear_solver = 'sils'
+!      control%definite_linear_solver = 'sils'
 ! problem setup complete. form and factorize the preconditioner, P
        CALL PSLS_form_and_factorize( matrix, data, control, inform )
        stat_faf = inform%status
@@ -124,9 +126,10 @@
        IF ( prec == 3 .OR. prec == 6 ) CYCLE
 ! specify the solver used by SLS (in this case sils)
        CALL PSLS_initialize( data, control, inform )
+       CALL WHICH_sls( control )
        control%preconditioner = prec
        control%semi_bandwidth = 1  ! semi-bandwidth of one
-       control%definite_linear_solver = 'sils'
+!      control%definite_linear_solver = 'sils'
 ! problem setup complete. form and factorize the preconditioner, P
        CALL PSLS_form_and_factorize( matrix, data, control, inform, SUB = SUB )
        stat_faf = inform%status
@@ -171,9 +174,10 @@
    DO i = 1, 4
 ! specify the solver used by SLS (in this case sils)
      CALL PSLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%preconditioner = 2  ! band preconditioner
      control%semi_bandwidth = 1  ! semi-bandwidth of one
-     control%definite_linear_solver = 'sils'
+!    control%definite_linear_solver = 'sils'
 ! provoke error condition
      SELECT CASE ( i )
      CASE( 1 )
@@ -186,7 +190,7 @@
        control%preconditioner = 5
        control%definite_linear_solver = 'bad'
      CASE( 4 )
-       control%definite_linear_solver = 'sils'
+!      control%definite_linear_solver = 'sils'
        control%preconditioner = 10
      CASE( 5 )
        control%preconditioner = 7
@@ -204,4 +208,12 @@
 !9 CONTINUE
    DEALLOCATE( matrix%type, matrix%val, matrix%row, matrix%col )
    STOP
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( PSLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
+
    END PROGRAM PSLS_TEST_PROGRAM

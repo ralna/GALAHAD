@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 12:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_FDC_test    !! to be expanded
    USE GALAHAD_KINDS_precision
@@ -18,6 +18,8 @@
    A_ptr = (/ 1, 5, 9, 11 /)
    B = (/ 5.0_rp_, 10.0_rp_, 0.0_rp_ /)
    CALL FDC_initialize( data, control, inform )  ! Initialize control parameters
+   control%use_sls = .TRUE.
+   control%symmetric_linear_solver = 'sytr'
    CALL FDC_find_dependent_rows( control, data, inform, status, m, n,          &
                                  A_col, A_ptr, A_val, B, n_depen, DEPEN )
 

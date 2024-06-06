@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 12:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_CCQP_interface_test
    USE GALAHAD_KINDS_precision

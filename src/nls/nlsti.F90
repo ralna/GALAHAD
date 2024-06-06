@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_NLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -54,6 +54,7 @@
 
    DO data_storage_type = 1, 5
      CALL NLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%jacobian_available = 2 ; control%hessian_available = 2
 !    control%print_level = 1
      control%model = 6
@@ -129,6 +130,7 @@
    ALLOCATE( U( MAX( m, n ) ), V( MAX( m, n ) ) ) ! reverse-communication i/o
    DO data_storage_type = 1, 5
      CALL NLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      control%model = 6
      control%jacobian_available = 2 ; control%hessian_available = 2
@@ -304,6 +306,7 @@
 
    DO model = 3, 8
      CALL NLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      control%model = model
@@ -377,6 +380,7 @@
    DO model = 3, 8
 !  DO model = 1, 5
      CALL NLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      control%model = model
@@ -459,6 +463,7 @@
 
    DO model = 3, 8
      CALL NLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      control%model = model
@@ -650,6 +655,7 @@
 
    DO model = 3, 8
      CALL NLS_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      control%model = model
@@ -843,6 +849,14 @@
 !  DEALLOCATE( P_val, P_row, P_col, P_ptr, P_dense )
 
 CONTAINS
+
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( NLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%PSLS_control%definite_linear_solver = definite_linear_solver
+     control%RQS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%RQS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
      SUBROUTINE RES( status, X, userdata, C )
      USE GALAHAD_USERDATA_precision

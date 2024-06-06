@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-14 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 12:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BLLS_interface_test
    USE GALAHAD_KINDS_precision
@@ -118,6 +118,7 @@
 !    control%print_level = 10
      control%SBLS_control%symmetric_linear_solver = 'sytr' ! non-default solver
      control%SBLS_control%definite_linear_solver = 'potr' ! non-default solver
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -168,6 +169,7 @@
    on = MAX( n, o )
    ALLOCATE( nz_in( on ), nz_out( o ), V( on ), P( on ), MASK( o ) )
    CALL BLLS_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    MASK = 0
    st = ' RC'
@@ -237,4 +239,12 @@
    CALL BLLS_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( B, X, Z, X_l, X_u, R, G, X_stat, NZ_in, NZ_out, V, P, W, MASK )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( BLLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%SBLS_control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
    END PROGRAM GALAHAD_BLLS_interface_test

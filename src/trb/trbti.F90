@@ -1,5 +1,5 @@
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 13:00 GMT.
 #include "galahad_modules.h"
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:30 GMT.
    PROGRAM GALAHAD_TRB_interface_test
    USE GALAHAD_USERDATA_precision
    USE GALAHAD_TRB_precision                       ! double precision version
@@ -44,6 +44,7 @@
 
    DO data_storage_type = 1, 5
      CALL TRB_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
@@ -97,6 +98,7 @@
    ALLOCATE( INDEX_nz_v( n ), INDEX_nz_u( n ) )
    DO data_storage_type = 1, 5
      CALL TRB_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
@@ -251,6 +253,14 @@
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
 CONTAINS
+
+   SUBROUTINE WHICH_sls( control )
+   TYPE ( TRB_control_type ) :: control
+#include "galahad_sls_defaults.h"
+   control%TRS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%TRS_control%definite_linear_solver = definite_linear_solver
+   control%PSLS_control%definite_linear_solver = definite_linear_solver
+   END SUBROUTINE WHICH_sls
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
    USE GALAHAD_USERDATA_precision
