@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 15:45 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPA_interface_test
    USE GALAHAD_KINDS_precision
@@ -58,6 +58,7 @@
 
    DO data_storage_type = 1, 7
      CALL QPA_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -127,6 +128,7 @@
    WRITE( 6, "( /, ' basic tests of l_1 qp storage formats', / )" )
 
    CALL QPA_initialize( data, control, inform )
+   CALL WHICH_sls( control )
    X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    rho_g = 0.1_rp_ ; rho_b = 0.1_rp_ ! penalty parameters
    CALL QPA_import( control, data, status, n, m,                               &
@@ -158,5 +160,13 @@
    DEALLOCATE( X, C, G, Y, Z, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( QPA_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_QPA_interface_test

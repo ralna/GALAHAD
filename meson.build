@@ -163,15 +163,15 @@ elif cxx.get_id() == 'intel-cl' or cxx.get_id() == 'intel-llvm-cl'
   add_global_arguments('/Qopenmp', language : 'cpp')
 endif
 
-# if cc.get_id() == 'nvidia_hpc'
-#   add_global_arguments('-mp', language : 'c')
-# elif cc.get_id() == 'gcc' or cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
-#   add_global_arguments('-fopenmp', language : 'c')
-# elif cc.get_id() == 'intel' or cc.get_id() == 'intel-llvm'
-#   add_global_arguments('-qopenmp', language : 'c')
-# elif cc.get_id() == 'intel-cl' or cc.get_id() == 'intel-llvm-cl'
-#   add_global_arguments('/Qopenmp', language : 'c')
-# endif
+ if cc.get_id() == 'nvidia_hpc'
+   add_global_arguments('-mp', language : 'c')
+ elif cc.get_id() == 'gcc' or cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
+   add_global_arguments('-fopenmp', language : 'c')
+ elif cc.get_id() == 'intel' or cc.get_id() == 'intel-llvm'
+   add_global_arguments('-qopenmp', language : 'c')
+ elif cc.get_id() == 'intel-cl' or cc.get_id() == 'intel-llvm-cl'
+   add_global_arguments('/Qopenmp', language : 'c')
+ endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]

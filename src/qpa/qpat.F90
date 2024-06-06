@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 15:45 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPA_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -13,8 +13,6 @@
    INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, smt_stat, i
    INTEGER ( KIND = ip_ ) :: data_storage_type, tests, status, scratch_out = 56
    CHARACTER ( LEN = 1 ) :: st
-   CHARACTER ( LEN = 5 ) :: symmetric_linear_solver = 'sytr '
-!  CHARACTER ( LEN = 5 ) :: symmetric_linear_solver = 'ssids'
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
@@ -60,7 +58,7 @@
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
      CALL QPA_initialize( data, control, info )
-     control%symmetric_linear_solver = symmetric_linear_solver
+     CALL WHICH_sls( control )
      control%infinity = infty
      control%restore_problem = 1
 
@@ -149,7 +147,7 @@
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    control%solve_qp = .TRUE.
@@ -195,7 +193,7 @@
    DO data_storage_type = 0, -3, -1
      p%rho_g = 10.0_rp_ ; p%rho_b = 10.0_rp_
      CALL QPA_initialize( data, control, info )
-     control%symmetric_linear_solver = symmetric_linear_solver
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      control%infinity = infty
      control%restore_problem = 2
@@ -312,7 +310,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    control%solve_qp = .TRUE.
@@ -414,7 +412,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    control%solve_qp = .TRUE.
@@ -451,7 +449,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 2
    DO i = tests + 2, tests + 2
@@ -535,7 +533,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
@@ -617,7 +615,7 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -689,7 +687,7 @@
               1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
 
    CALL QPA_initialize( data, control, info )
-   control%symmetric_linear_solver = symmetric_linear_solver
+   CALL WHICH_sls( control )
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -720,5 +718,13 @@
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
 
    WRITE( 6, "( /, ' tests completed' )" )
+
+   CONTAINS
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( QPA_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_QPA_EXAMPLE
