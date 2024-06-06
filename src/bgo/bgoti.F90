@@ -1,21 +1,19 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-08-10 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 16:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_BGO_interface_test
    USE GALAHAD_USERDATA_precision
    USE GALAHAD_BGO_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   TYPE ( NLPT_problem_type ):: nlp
    TYPE ( BGO_control_type ) :: control
    TYPE ( BGO_inform_type ) :: inform
    TYPE ( BGO_full_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
 !  EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
    INTEGER ( KIND = ip_ ) :: n, ne, nnz_v, nnz_u
-   INTEGER ( KIND = ip_ ) :: i, s, status, data_storage_type, eval_status
-   LOGICAL :: alive
+   INTEGER ( KIND = ip_ ) :: status, data_storage_type, eval_status
    REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
-   REAL ( KIND = rp_ ) :: dum, f
+   REAL ( KIND = rp_ ) :: f
    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, G, X_l, X_u, U, V
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INDEX_nz_v, INDEX_nz_u
@@ -48,6 +46,7 @@
 !  DO data_storage_type = 1, 1
    DO data_storage_type = 1, 5
      CALL BGO_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      control%attempts_max = 10000
      control%max_evals = 20000
@@ -112,6 +111,7 @@
 !  DO data_storage_type = 5, 5
    DO data_storage_type = 1, 5
      CALL BGO_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      control%attempts_max = 10000
      control%max_evals = 20000
 !    control%print_level = 1
@@ -326,6 +326,17 @@
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
 CONTAINS
+
+   SUBROUTINE WHICH_sls( control )
+   TYPE ( BGO_control_type ) :: control
+#include "galahad_sls_defaults.h"
+   control%TRB_control%TRS_control%symmetric_linear_solver                     &
+     = symmetric_linear_solver
+   control%TRB_control%TRS_control%definite_linear_solver                      &
+     = definite_linear_solver
+   control%TRB_control%PSLS_control%definite_linear_solver                     &
+     = definite_linear_solver
+   END SUBROUTINE WHICH_sls
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
    USE GALAHAD_USERDATA_precision, ONLY: GALAHAD_userdata_type
@@ -545,50 +556,50 @@ CONTAINS
    RETURN
    END SUBROUTINE HESSPROD_diag
 
-   SUBROUTINE SHESSPROD_diag( status, X, userdata, nnz_v, INDEX_nz_v, V,       &
-                              nnz_u, INDEX_nz_u, U, got_h ) ! sprse Hes-vec prod
-   USE GALAHAD_USERDATA_precision
-   INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
-   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-   INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
-   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-   INTEGER ( KIND = ip_ ) :: i, j
-   REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P
-   LOGICAL, DIMENSION( 3 ) :: USED
-   REAL, PARAMETER :: freq = 10.0_rp_
-   REAL, PARAMETER :: mag = 1000.0_rp_
-   P = 0.0_rp_
-   USED = .FALSE.
-   DO i = 1, nnz_v
-     j = INDEX_nz_v( i )
-     SELECT CASE( j )
-     CASE( 1 )
-       P( 1 ) = P( 1 ) - mag * freq * freq * COS( freq * X( 1 ) ) * V( 1 )
-       USED( 1 ) = .TRUE.
-     CASE( 2 )
-       P( 2 ) = P( 2 ) + 2.0_rp_ * V( 2 )
-       USED( 2 ) = .TRUE.
-     CASE( 3 )
-       P( 3 ) = P( 3 ) + 2.0_rp_ * V( 3 )
-       USED( 3 ) = .TRUE.
-     END SELECT
-   END DO
-   nnz_u = 0
-   DO j = 1, 3
-     IF ( USED( j ) ) THEN
-       U( j ) = P( j )
-       nnz_u = nnz_u + 1
-       INDEX_nz_u( nnz_u ) = j
-     END IF
-   END DO
-   status = 0
-   RETURN
-   END SUBROUTINE SHESSPROD_diag
+!!$   SUBROUTINE SHESSPROD_diag( status, X, userdata, nnz_v, INDEX_nz_v, V,       &
+!!$                              nnz_u, INDEX_nz_u, U, got_h ) ! sprse Hes-vec prod
+!!$   USE GALAHAD_USERDATA_precision
+!!$   INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+!!$   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+!!$   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+!!$   INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+!!$   INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+!!$   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+!!$   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+!!$   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+!!$   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!!$   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+!!$   INTEGER ( KIND = ip_ ) :: i, j
+!!$   REAL ( KIND = rp_ ), DIMENSION( 3 ) :: P
+!!$   LOGICAL, DIMENSION( 3 ) :: USED
+!!$   REAL, PARAMETER :: freq = 10.0_rp_
+!!$   REAL, PARAMETER :: mag = 1000.0_rp_
+!!$   P = 0.0_rp_
+!!$   USED = .FALSE.
+!!$   DO i = 1, nnz_v
+!!$     j = INDEX_nz_v( i )
+!!$     SELECT CASE( j )
+!!$     CASE( 1 )
+!!$       P( 1 ) = P( 1 ) - mag * freq * freq * COS( freq * X( 1 ) ) * V( 1 )
+!!$       USED( 1 ) = .TRUE.
+!!$     CASE( 2 )
+!!$       P( 2 ) = P( 2 ) + 2.0_rp_ * V( 2 )
+!!$       USED( 2 ) = .TRUE.
+!!$     CASE( 3 )
+!!$       P( 3 ) = P( 3 ) + 2.0_rp_ * V( 3 )
+!!$       USED( 3 ) = .TRUE.
+!!$     END SELECT
+!!$   END DO
+!!$   nnz_u = 0
+!!$   DO j = 1, 3
+!!$     IF ( USED( j ) ) THEN
+!!$       U( j ) = P( j )
+!!$       nnz_u = nnz_u + 1
+!!$       INDEX_nz_u( nnz_u ) = j
+!!$     END IF
+!!$   END DO
+!!$   status = 0
+!!$   RETURN
+!!$   END SUBROUTINE SHESSPROD_diag
 
    END PROGRAM GALAHAD_BGO_interface_test

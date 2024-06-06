@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 16:50 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DGO_TEST  !! far from complete
    USE GALAHAD_USERDATA_precision
@@ -31,6 +31,7 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
 ! problem data complete
    CALL DGO_initialize( data, control, inform ) ! Initialize control parameters
+   CALL WHICH_sls( control )
    OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
    control%out = scratch_out ; control%error = scratch_out
    control%print_level = 101
@@ -56,6 +57,19 @@
    DEALLOCATE( nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type, userdata%real )
    CLOSE( UNIT = scratch_out )
    WRITE( 6, "( /, ' tests completed' )" )
+
+CONTAINS
+
+   SUBROUTINE WHICH_sls( control )
+   TYPE ( DGO_control_type ) :: control
+#include "galahad_sls_defaults.h"
+   control%TRB_control%TRS_control%symmetric_linear_solver                     &
+     = symmetric_linear_solver
+   control%TRB_control%TRS_control%definite_linear_solver                      &
+     = definite_linear_solver
+   control%TRB_control%PSLS_control%definite_linear_solver                     &
+     = definite_linear_solver
+   END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_DGO_TEST
 
