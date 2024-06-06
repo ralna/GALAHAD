@@ -44,7 +44,7 @@
    IF ( inform%status == GALAHAD_ok .OR.                                       &
         inform%status == GALAHAD_error_max_iterations .OR.                     &
         inform%status == GALAHAD_error_max_evaluations ) THEN  ! Success
-     WRITE( 6, "( ' DGO: ', I0, ' iterations, ', I0, ' evaluations -'          &
+     WRITE( 6, "( ' DGO: ', I0, ' iterations, ', I0, ' evaluations -',         &
     &     ' best objective value =',                                           &
     &       ES12.4, /, ' Best solution = ', ( 5ES12.4 ) )" )                   &
      inform%iter, inform%f_eval, inform%obj, nlp%X
