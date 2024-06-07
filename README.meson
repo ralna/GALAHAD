@@ -1,5 +1,5 @@
 # Building GALAHAD with [meson](https://mesonbuild.com)
-# This version: GALAHAD 4.3 - 2024-01-31 AT 08:50 GMT.
+# This version: GALAHAD 5.0 - 2024-06-07 AT 08:50 GMT.
 # Alexis Montoison, for GALAHAD productions
 
 All commands below are to be run from the top of the GALAHAD source tree.
@@ -39,15 +39,16 @@ meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=false (default)
 meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true
 ```
 
-Note that all dependencies (BLAS, LAPACK, METIS, etc...) must also be compiled with 64-bit integers.
+Note that all dependencies (BLAS, LAPACK, etc...) must also be compiled with 64-bit integers.
 To force Meson to not use a dependency compiled with 32-bit integers, you can use the option `-Dlibdep=`
 where `libdep` is an option described below to provide the name of the library.
+GALAHAD will not link with the dependency or compile its own 64-bit version (only for BLAS and LAPACK).
 
 ```shell
 meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true -Dlibblas= -Dliblapack=
 ```
 
-For instance, GALAHAD is compiled without METIS and our own version of BLAS and LAPACK.
+For instance, GALAHAD is compiled with our own version of BLAS and LAPACK.
 
 # Details
 
