@@ -17,21 +17,13 @@ jobs:
         int: ['32', '64']
         include:
           - compiler: gcc
-          - os: windows-latest
-            compiler: intel-classic
-            version: '2021.12'
-            int: '32'
-          - os: windows-latest
-            compiler: intel-classic
-            version: '2021.12'
-            int: '64'
           - os: ubuntu-latest
             compiler: intel-classic
-            version: '2021.11'
+            version: '2021.10'
             int: '32'
           - os: ubuntu-latest
             compiler: intel-classic
-            version: '2021.12'
+            version: '2021.10'
             int: '64'
           - os: windows-latest
             compiler: intel
@@ -51,11 +43,11 @@ jobs:
             int: '64'
           - os: ubuntu-latest
             compiler: nvidia-hpc
-            version: '24.3'
+            version: '24.5'
             int: '32'
           - os: ubuntu-latest
             compiler: nvidia-hpc
-            version: '24.3'
+            version: '24.5'
             int: '64'
     runs-on: ${{ matrix.os }}
     steps:
