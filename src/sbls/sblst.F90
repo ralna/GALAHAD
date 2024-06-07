@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-07 AT 12:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -40,6 +40,7 @@
    WRITE( 6, "( /, ' test   status' )" )
 
    CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%print_level = 0
    control%sls_control%warning = - 1
    control%sls_control%out = - 1
@@ -174,6 +175,7 @@
 !    DO factorization = 2, 2
        DO data_storage_type = - 5, 0
          CALL SBLS_initialize( data, control, info )
+         CALL WHICH_sls( control )
 !        control%print_level = 1
          control%preconditioner = preconditioner
          control%factorization = factorization
@@ -424,6 +426,7 @@
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
    DO solvers = 1, 14
      CALL SBLS_initialize( data, control, info )
+     CALL WHICH_sls( control )
      control%error = - 1
      control%sls_control%error = - 1
 !    control%print_level = 1
@@ -539,6 +542,7 @@
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
    DO solvers = 1, 3
      CALL SBLS_initialize( data, control, info )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      control%preconditioner = - 1
      control%factorization = 2
@@ -631,6 +635,7 @@
    A%col = (/ 1, 2 /)
    A%ptr = (/ 1, 3 /)
    CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%get_norm_residual = .TRUE.
 
 !  test with new and existing data
@@ -753,6 +758,7 @@
               8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
 
    CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%get_norm_residual = .TRUE.
    control%itref_max = 3
    control%print_level = 101
@@ -810,6 +816,7 @@
    A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                  &
               8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
    CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%get_norm_residual = .TRUE.
 !  control%print_level = 1
 !  control%print_level = 1 ; control%out = 6 ; control%error = 6
@@ -878,6 +885,7 @@
 !    IF ( i /= j ) SOL( j ) = SOL( j ) + val
 !  END DO
    CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%get_norm_residual = .TRUE.
 !  control%print_level = 2 ; control%out = 6 ; control%error = 6
    control%preconditioner = 2 ; control%factorization = 1
@@ -933,6 +941,7 @@
    H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    CALL SBLS_initialize( data, control, info )
+   CALL WHICH_sls( control )
    control%get_norm_residual = .TRUE.
 !  control%print_level = 2 ; control%out = 6 ; control%error = 6
    control%preconditioner = 2 ; control%factorization = 3
@@ -986,6 +995,13 @@
      END IF
      RETURN
      END FUNCTION type_residual
+
+     SUBROUTINE WHICH_sls( control )
+     TYPE ( SBLS_control_type ) :: control
+#include "galahad_sls_defaults.h"
+     control%symmetric_linear_solver = symmetric_linear_solver
+     control%definite_linear_solver = definite_linear_solver
+     END SUBROUTINE WHICH_sls
 
    END PROGRAM GALAHAD_SBLS_EXAMPLE
 

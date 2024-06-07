@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-07 AT 12:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_DQP_interface_test
    USE GALAHAD_KINDS_precision
@@ -58,6 +58,7 @@
 
    DO data_storage_type = 1, 6
      CALL DQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -122,6 +123,7 @@
 
    DO data_storage_type = 1, 1
      CALL DQP_initialize( data, control, inform )
+     CALL WHICH_sls( control )
 !    control%print_level = 1
      X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
