@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_bgo.h"
@@ -72,6 +73,9 @@ int main(void) {
 
         // Initialize BGO
         bgo_initialize( &data, &control, &status );
+        strcpy(control.trb_control.trs_control.symmetric_linear_solver,"sytr ");
+        strcpy(control.trb_control.trs_control.definite_linear_solver,"potr ");
+        strcpy(control.trb_control.psls_control.definite_linear_solver,"potr ");
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
@@ -156,6 +160,9 @@ int main(void) {
 
         // Initialize BGO
         bgo_initialize( &data, &control, &status );
+        strcpy(control.trb_control.trs_control.symmetric_linear_solver,"sytr ");
+        strcpy(control.trb_control.trs_control.definite_linear_solver,"potr ");
+        strcpy(control.trb_control.psls_control.definite_linear_solver,"potr ");
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
