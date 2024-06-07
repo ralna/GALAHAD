@@ -272,6 +272,7 @@ struct dgo_control_type {
     /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
     ipc_ alive_unit;
+
     /// see alive_unit
     char alive_file[31];
 
