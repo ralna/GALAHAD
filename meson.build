@@ -46,14 +46,6 @@ if fc.get_id() == 'nagfor'
 endif
 
 # Preprocessing
- if cc.get_id() == 'nvidia_hpc' or cc.get_id() == 'gcc' or cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
-   add_global_arguments('-cpp', language : 'c')
- elif cc.get_id() == 'intel' or cc.get_id() == 'intel-llvm'
-   add_global_arguments('-fpp', language : 'c')
- elif cc.get_id() == 'intel-cl' or cc.get_id() == 'intel-llvm-cl'
-   add_global_arguments('/fpp', language : 'c')
- endif
-
 if fc.get_id() == 'intel-cl' or fc.get_id() == 'intel-llvm-cl'
   output_generator = '/Fi:@OUTPUT@'
 else
