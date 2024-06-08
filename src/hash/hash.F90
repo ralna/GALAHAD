@@ -413,6 +413,8 @@
       INTEGER ( KIND = ip_ ) :: i
 
       IF ( control%out > 0 .AND. control%print_level > 1 )                     &
+          !Debug
+        WRITE(*, *) "Value of control%out : ", control%out
         WRITE( control%out, "( ' entering HASH_insert' )" )
 
 !  find a starting position, position, for the insertion
