@@ -293,7 +293,15 @@
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_single_ciface_64
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_single_ciface_64
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_single_ciface_64
+#ifdef IS_LANCELOT_MODULE
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision_ciface HSL_MA57_single_ciface_64
+#else
 #define GALAHAD_SILS_precision_ciface GALAHAD_SILS_single_ciface_64
+#endif
+#else
+#define GALAHAD_SILS_precision_ciface GALAHAD_SILS_single_ciface_64
+#endif
 #define GALAHAD_SLLS_precision_ciface GALAHAD_SLLS_single_ciface_64
 #define GALAHAD_SLS_precision_ciface GALAHAD_SLS_single_ciface_64
 #define GALAHAD_TRB_precision_ciface GALAHAD_TRB_single_ciface_64
@@ -667,7 +675,15 @@
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_single_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_single_ciface
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_single_ciface
+#ifdef IS_LANCELOT_MODULE
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision_ciface HSL_MA57_single_ciface
+#else
 #define GALAHAD_SILS_precision_ciface GALAHAD_SILS_single_ciface
+#endif
+#else
+#define GALAHAD_SILS_precision_ciface GALAHAD_SILS_single_ciface
+#endif
 #define GALAHAD_SLLS_precision_ciface GALAHAD_SLLS_single_ciface
 #define GALAHAD_SLS_precision_ciface GALAHAD_SLS_single_ciface
 #define GALAHAD_TRB_precision_ciface GALAHAD_TRB_single_ciface
@@ -1045,7 +1061,15 @@
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_double_ciface_64
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_double_ciface_64
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_double_ciface_64
+#ifdef IS_LANCELOT_MODULE
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision_ciface HSL_MA57_double_ciface_64
+#else
 #define GALAHAD_SILS_precision_ciface GALAHAD_SILS_double_ciface_64
+#endif
+#else
+#define GALAHAD_SILS_precision_ciface GALAHAD_SILS_double_ciface_64
+#endif
 #define GALAHAD_SLLS_precision_ciface GALAHAD_SLLS_double_ciface_64
 #define GALAHAD_SLS_precision_ciface GALAHAD_SLS_double_ciface_64
 #define GALAHAD_TRB_precision_ciface GALAHAD_TRB_double_ciface_64
@@ -1419,7 +1443,15 @@
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_double_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_double_ciface
 #define GALAHAD_SHA_precision_ciface GALAHAD_SHA_double_ciface
+#ifdef IS_LANCELOT_MODULE
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision_ciface HSL_MA57_double_ciface
+#else
 #define GALAHAD_SILS_precision_ciface GALAHAD_SILS_double_ciface
+#endif
+#else
+#define GALAHAD_SILS_precision_ciface GALAHAD_SILS_double_ciface
+#endif
 #define GALAHAD_SLLS_precision_ciface GALAHAD_SLLS_double_ciface
 #define GALAHAD_SLS_precision_ciface GALAHAD_SLS_double_ciface
 #define GALAHAD_TRB_precision_ciface GALAHAD_TRB_double_ciface

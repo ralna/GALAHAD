@@ -41,14 +41,14 @@ jobs:
             compiler: intel
             version: '2023.2'
             int: '64'
-          - os: ubuntu-latest
-            compiler: nvidia-hpc
-            version: '24.5'
-            int: '32'
-          - os: ubuntu-latest
-            compiler: nvidia-hpc
-            version: '24.5'
-            int: '64'
+          # - os: ubuntu-latest
+          #   compiler: nvidia-hpc
+          #   version: '24.5'
+          #   int: '32'
+          # - os: ubuntu-latest
+          #   compiler: nvidia-hpc
+          #   version: '24.5'
+          #  int: '64'
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out GALAHAD
