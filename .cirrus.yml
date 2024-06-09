@@ -59,26 +59,25 @@ task:
   test_script: |
     meson test -C builddir
   julia_install:
-    only_if: $INT64 == 'false'
+    only_if_script: '[ "$INT64" = "false" ]'
     script: |
-    URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
-    set -x
-    if [ "$(uname -s)" = "Linux" ] && command -v apt; then
-        apt update
-        apt install -y curl
-    fi
-    if command -v curl; then
-        sh -c "$(curl ${URL})"
-    elif command -v wget; then
-        sh -c "$(wget ${URL} -q -O-)"
-    elif command -v fetch; then
-        sh -c "$(fetch ${URL} -o -)"
-    fi
+      URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
+      set -x
+      if [ "$(uname -s)" = "Linux" ] && command -v apt; then
+          apt update
+          apt install -y curl
+      fi
+      if command -v curl; then
+          sh -c "$(curl ${URL})"
+      elif command -v wget; then
+          sh -c "$(wget ${URL} -q -O-)"
+      elif command -v fetch; then
+          sh -c "$(fetch ${URL} -o -)"
   julia_build:
-    only_if: $INT64 == 'false'
+    only_if_script: '[ "$INT64" = "false" ]'
     script: cirrusjl build
   julia_test:
-    only_if: $INT64 == 'false'
+    only_if_script: '[ "$INT64" = "false" ]'
     script: cirrusjl test
   on_failure:
     log_artifacts:
