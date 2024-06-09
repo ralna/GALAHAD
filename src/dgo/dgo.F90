@@ -498,6 +498,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
+     TYPE ( HASH_control_type ) :: hash_control
+
      inform%status = GALAHAD_ok
 
 !  initalize TRB components
@@ -511,6 +513,10 @@
      CALL UGO_initialize( data%UGO_data, control%UGO_control,                  &
                            inform%UGO_inform )
      control%UGO_control%prefix = '" - UGO:"                     '
+
+!  initialize HASH components
+
+     control%HASH_control = hash_control
 
 !  initial private data. Set branch for initial entry
 
@@ -1611,6 +1617,7 @@
 !  initialiize the hash table
 
      data%length = data%control%dictionary_size
+write(6,*) 'HASH_control%out = ',  data%control%HASH_control%out
      CALL HASH_initialize( data%nchar, data%length, data%HASH_data,            &
                            data%control%HASH_control, inform%HASH_inform )
      IF ( inform%HASH_inform%status /= GALAHAD_ok ) THEN

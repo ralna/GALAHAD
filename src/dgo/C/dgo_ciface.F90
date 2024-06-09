@@ -316,7 +316,7 @@
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
     ! Derived types
-!   CALL copy_hash_control_out( fcontrol%hash_control, ccontrol%hash_control )
+    CALL copy_hash_control_out( fcontrol%hash_control, ccontrol%hash_control )
     CALL copy_ugo_control_out( fcontrol%ugo_control, ccontrol%ugo_control )
     CALL copy_trb_control_out( fcontrol%trb_control, ccontrol%trb_control )
 
