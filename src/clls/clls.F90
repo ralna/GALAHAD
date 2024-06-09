@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-09 AT 10:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -9470,10 +9470,26 @@
      X( : n ) = data%prob%X( : n )
      Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
-     C( : m ) = data%prob%C( : m )
-     R( : o ) = data%prob%R( : o )
-     C_stat( : m ) = data%prob%C_status( : m )
-     X_stat( : n ) = data%prob%X_status( : n )
+     IF ( ALLOCATED( data%prob%C ) ) THEN
+       C( : m ) = data%prob%C( : m )
+     ELSE
+       C( : m ) = infinity
+     END IF
+     IF ( ALLOCATED( data%prob%R ) ) THEN
+       R( : o ) = data%prob%R( : o )
+     ELSE
+       R( : o ) = infinity
+     END IF
+     IF ( ALLOCATED( data%prob%C_status ) ) THEN
+       C_stat( : m ) = data%prob%C_status( : m )
+     ELSE
+       C_stat( : m ) = 0
+     END IF
+     IF ( ALLOCATED( data%prob%X_status ) ) THEN
+       X_stat( : n ) = data%prob%X_status( : n )
+     ELSE
+       X_stat( : n ) = 0
+     END IF
 
      status = data%clls_inform%status
      RETURN
