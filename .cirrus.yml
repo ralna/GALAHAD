@@ -58,7 +58,7 @@ task:
     meson install -C builddir
   test_script: |
     meson test -C builddir
-  julia_install:
+  julia_install_script:
     only_if_script: '[ "$INT64" = "false" ]'
     script: |
       URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
@@ -73,10 +73,10 @@ task:
           sh -c "$(wget ${URL} -q -O-)"
       elif command -v fetch; then
           sh -c "$(fetch ${URL} -o -)"
-  julia_build:
+  julia_build_script:
     only_if_script: '[ "$INT64" = "false" ]'
     script: cirrusjl build
-  julia_test:
+  julia_test_script:
     only_if_script: '[ "$INT64" = "false" ]'
     script: cirrusjl test
   on_failure:
