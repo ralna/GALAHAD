@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-09 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-09 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -532,6 +532,8 @@
       out = control%out
       printi = control%print_level >= 1 .AND. out >= 0
 
+      new_a = control%new_a
+
 !  Check for faulty dimensions
 
       IF ( m <= 0 .OR. .NOT. QPT_keyword_A( A%type ) ) THEN
@@ -547,44 +549,47 @@
 !  exit with space set if m = 0
 
       IF ( n == 0 ) THEN
-        S%m = m ; S%n = m ; S%ne = 0
-        CALL SMT_put( S%type, 'COORDINATE', inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = GALAHAD_error_allocate ; GO TO 980
-        END IF
+        IF ( new_a >= 2 ) THEN
+          S%m = m ; S%n = m ; S%ne = 0
+          CALL SMT_put( S%type, 'COORDINATE', inform%alloc_status )
+          IF ( inform%alloc_status /= 0 ) THEN
+            inform%status = GALAHAD_error_allocate ; GO TO 980
+          END IF
 
-        array_name = 'bsc: S%row'
-        CALL SPACE_resize_array( S%ne + control%extra_space_s, S%row,          &
-           inform%status, inform%alloc_status, array_name = array_name,        &
-           deallocate_error_fatal = control%deallocate_error_fatal,            &
-           exact_size = control%space_critical,                                &
-           bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 980
-
-        array_name = 'bsc: S%col'
-        CALL SPACE_resize_array( S%ne + control%extra_space_s, S%col,          &
-           inform%status, inform%alloc_status, array_name = array_name,        &
-           deallocate_error_fatal = control%deallocate_error_fatal,            &
-           exact_size = control%space_critical,                                &
-           bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 980
-
-        array_name = 'bsc: S%val'
-        CALL SPACE_resize_array( S%ne + control%extra_space_s, S%val,          &
-           inform%status, inform%alloc_status, array_name = array_name,        &
-           deallocate_error_fatal = control%deallocate_error_fatal,            &
-           exact_size = control%space_critical,                                &
-           bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) GO TO 980
-
-        IF ( control%s_also_by_column ) THEN
-          array_name = 'bsc: S%ptr'
-          CALL SPACE_resize_array( S%n + 1, S%ptr,                             &
+          array_name = 'bsc: S%row'
+          CALL SPACE_resize_array( S%ne + control%extra_space_s, S%row,        &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+          array_name = 'bsc: S%col'
+          CALL SPACE_resize_array( S%ne + control%extra_space_s, S%col,        &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+          array_name = 'bsc: S%val'
+          CALL SPACE_resize_array( S%ne + control%extra_space_s, S%val,        &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+          IF ( control%s_also_by_column ) THEN
+            array_name = 'bsc: S%ptr'
+            CALL SPACE_resize_array( S%n + 1, S%ptr,                           &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( inform%status /= GALAHAD_ok ) GO TO 980
+            S%ptr( : S%n + 1 ) = 1
+          END IF
         END IF
 
         inform%status = GALAHAD_ok
@@ -601,7 +606,6 @@
 
       max_col = control%max_col
       IF ( max_col < 0 ) max_col = m
-      new_a = control%new_a
       got_d = PRESENT( d )
 
 !   ======================
@@ -629,6 +633,10 @@
           bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 980
       END IF
+
+!  -------------------
+!  New structure for S
+!  -------------------
 
       IF ( new_a >= 2 ) THEN
         SELECT CASE ( SMT_get( A%type ) )
@@ -914,10 +922,6 @@
           IF ( inform%status /= GALAHAD_ok ) GO TO 980
         END IF
 !     END IF
-
-!  -------------------
-!  New structure for S
-!  -------------------
 
 !     IF ( new_a >= 2 ) THEN
 
