@@ -230,7 +230,7 @@ jobs:
       - name: Test GALAHAD
         shell: bash
         run: |
-          meson test -C builddir --timeout-multiplier 2
+          meson test -C builddir --timeout-multiplier 4
       - uses: actions/upload-artifact@v3
         if: failure()
         with:

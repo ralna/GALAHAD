@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-09 AT 11:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -534,7 +534,7 @@
 
 !  Check for faulty dimensions
 
-      IF ( n <= 0 .OR. m < 0 .OR. .NOT. QPT_keyword_A( A%type ) ) THEN
+      IF ( m <= 0 .OR. .NOT. QPT_keyword_A( A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
         GO TO 990
       END IF
@@ -542,6 +542,53 @@
       IF ( control%out >= 0 .AND. control%print_level >= 1 ) THEN
         WRITE( control%out,                                                    &
           "( /, A, ' n = ', I0, ', m = ', I0 )" ) prefix, n, m
+      END IF
+
+!  exit with space set if m = 0
+
+      IF ( n == 0 ) THEN
+        S%m = m ; S%n = m ; S%ne = 0
+        CALL SMT_put( S%type, 'COORDINATE', inform%alloc_status )
+        IF ( inform%alloc_status /= 0 ) THEN
+          inform%status = GALAHAD_error_allocate ; GO TO 980
+        END IF
+
+        array_name = 'bsc: S%row'
+        CALL SPACE_resize_array( S%ne + control%extra_space_s, S%row,          &
+           inform%status, inform%alloc_status, array_name = array_name,        &
+           deallocate_error_fatal = control%deallocate_error_fatal,            &
+           exact_size = control%space_critical,                                &
+           bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+        array_name = 'bsc: S%col'
+        CALL SPACE_resize_array( S%ne + control%extra_space_s, S%col,          &
+           inform%status, inform%alloc_status, array_name = array_name,        &
+           deallocate_error_fatal = control%deallocate_error_fatal,            &
+           exact_size = control%space_critical,                                &
+           bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+        array_name = 'bsc: S%val'
+        CALL SPACE_resize_array( S%ne + control%extra_space_s, S%val,          &
+           inform%status, inform%alloc_status, array_name = array_name,        &
+           deallocate_error_fatal = control%deallocate_error_fatal,            &
+           exact_size = control%space_critical,                                &
+           bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 980
+
+        IF ( control%s_also_by_column ) THEN
+          array_name = 'bsc: S%ptr'
+          CALL SPACE_resize_array( S%n + 1, S%ptr,                             &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 980
+        END IF
+
+        inform%status = GALAHAD_ok
+        GO TO 990
       END IF
 
       IF ( SMT_get( A%type ) == 'DENSE' ) THEN
