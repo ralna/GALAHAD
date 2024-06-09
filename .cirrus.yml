@@ -58,7 +58,9 @@ task:
     meson install -C builddir
   test_script: |
     meson test -C builddir
-  julia_install_script: |
+  julia_install:
+    only_if: $INT64 == 'false'
+    script: |
     URL="https://raw.githubusercontent.com/ararslan/CirrusCI.jl/master/bin/install.sh"
     set -x
     if [ "$(uname -s)" = "Linux" ] && command -v apt; then
@@ -72,10 +74,12 @@ task:
     elif command -v fetch; then
         sh -c "$(fetch ${URL} -o -)"
     fi
-  julia_build_script: |
-    cirrusjl build
-  julia_test_script: |
-    cirrusjl test
+  julia_build:
+    only_if: $INT64 == 'false'
+    script: cirrusjl build
+  julia_test:
+    only_if: $INT64 == 'false'
+    script: cirrusjl test
   on_failure:
     log_artifacts:
       path: builddir/meson-logs/*log.txt
