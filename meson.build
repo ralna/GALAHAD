@@ -465,7 +465,11 @@ if build_single
   pp_sources_single = gen_single.process(to_process_single)
 
   to_process_f_single = [libgalahad_f_src]
-  pp_sources_f_single = gen_f_single.process(to_process_f_single)
+  if to_process_f_single == [[]]
+    pp_sources_f_single = []
+  else
+    pp_sources_f_single = gen_f_single.process(to_process_f_single)
+  endif
 
   sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
 
@@ -514,7 +518,11 @@ if build_double
   pp_sources_double = gen_double.process(to_process_double)
 
   to_process_f_double = [libgalahad_f_src]
-  pp_sources_f_double = gen_f_double.process(to_process_f_double)
+  if to_process_f_double == [[]]
+    pp_sources_f_double = []
+  else
+    pp_sources_f_double = gen_f_double.process(to_process_f_double)
+  endif
 
   sources_double = [pp_sources_double, pp_sources_f_double, libgalahad_cpp_src, libgalahad_cc_src]
 
