@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 11:30 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:00 GMT
  */
 #pragma once
 
@@ -33,7 +33,7 @@
 
 //#include "ssids_cpu_kernels_verify.hxx" // FIXME: remove debug
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define cholesky_factor cholesky_factor_sgl
 #define ldlt_app_factor ldlt_app_factor_sgl
 #define ldlt_tpp_factor ldlt_tpp_factor_sgl

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -141,7 +141,7 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-#ifdef SINGLE
+#ifdef REAL_32
         REAL ( KIND = rp_ ) :: stop_abs_p = ten ** ( - 3 )
 #else
         REAL ( KIND = rp_ ) :: stop_abs_p = ten ** ( - 5 )
@@ -150,7 +150,7 @@
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-#ifdef SINGLE
+#ifdef REAL_32
         REAL ( KIND = rp_ ) :: stop_abs_d = ten ** ( - 3 )
 #else
         REAL ( KIND = rp_ ) :: stop_abs_d = ten ** ( - 5 )
@@ -159,7 +159,7 @@
 
 !   the required absolute and relative accuracies for the complementarity
 
-#ifdef SINGLE
+#ifdef REAL_32
         REAL ( KIND = rp_ ) :: stop_abs_c = ten ** ( - 3 )
 #else
         REAL ( KIND = rp_ ) :: stop_abs_c = ten ** ( - 5 )

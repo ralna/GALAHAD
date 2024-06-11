@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:45 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:45 GMT
  */
 
 #include "ssids_cpu_NumericSubtree.hxx"
@@ -15,7 +15,7 @@
 #include "ssids_cpu_AppendAlloc.hxx"
 #include "ssids_rip.hxx"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define spral_ssids_cpu_create_num_subtree \
         spral_ssids_cpu_create_num_subtree_sgl
 #define spral_ssids_cpu_destroy_num_subtree \
@@ -65,7 +65,7 @@ using namespace spral::ssids::cpu;
 // anonymous namespace
 namespace {
 
-#ifdef SINGLE
+#ifdef REAL_32
 typedef float T;
 #else
 typedef double T;

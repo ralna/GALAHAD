@@ -1,4 +1,4 @@
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma48_control_r ma48_control_s_64
 #define ma48_ainfo_r ma48_ainfo_s_64
@@ -60,7 +60,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma57_default_control_r      ma57_default_control_s_64
 #define ma57_init_factors_r         ma57_init_factors_s_64
@@ -154,7 +154,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma77_control_r ma77_control_s_64
 #define ma77_info_r ma77_info_s_64
@@ -244,7 +244,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma86_control_r ma86_control_s_64
 #define ma86_info_r ma86_info_s_64
@@ -286,7 +286,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma87_control_r ma87_control_s_64
 #define ma87_info_r ma87_info_s_64
@@ -332,7 +332,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma97_control_r ma97_control_s_64
 #define ma97_info_r ma97_info_s_64
@@ -410,7 +410,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define mc64_control_r mc64_control_s_64
 #define mc64_info_r mc64_info_s_64
@@ -443,7 +443,7 @@
 #define mc68_order_i mc68_order_i_64
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define mi20_default_control_r mi20_default_control_s_64
 #define mi20_control_r mi20_control_s_64
@@ -501,7 +501,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define mi28_control_r mi28_control_s_64
 #define mi28_info_r mi28_info_s_64

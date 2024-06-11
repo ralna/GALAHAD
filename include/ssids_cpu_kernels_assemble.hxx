@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-03 AT 10:50 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-11 AT 08:50 GMT
  */
 #pragma once
 
@@ -17,7 +17,7 @@
 #include "ssids_cpu_SymbolicNode.hxx"
 #include "ssids_cpu_Workspace.hxx"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define spral_ssids_contrib_get_data spral_ssids_contrib_get_data_single
 #define spral_ssids_contrib_free spral_ssids_contrib_free_sgl
 #define FAPrecisionTraits FASingleTraits

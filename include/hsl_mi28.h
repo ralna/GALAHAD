@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-17 AT 15:40 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 08:40 GMT
  * COPYRIGHT (c) 2023 Science and Technology Facilities Council (STFC)
  * Original date 27 March 2023
  * All rights reserved
@@ -52,7 +52,7 @@ extern "C" {
 #include "hsl_precision.h"
 
 #ifndef mi28_control
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define mi28_control mi28_control_s_64
 #define mi28_info mi28_info_s_64

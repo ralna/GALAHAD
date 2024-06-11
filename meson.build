@@ -265,7 +265,7 @@ if host_machine.system() != 'linux'
   endif
 endif
 
-extra_args_single = ['-DSINGLE']
+extra_args_single = ['-DREAL_32']
 extra_args_double = []
 
 if not libblas.found()

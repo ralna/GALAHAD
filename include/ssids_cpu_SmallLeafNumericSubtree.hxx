@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-18 AT 09:00 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-11 AT 09:00 GMT
  */
 
 #pragma once
@@ -16,7 +16,7 @@
 #include "ssids_cpu_SmallLeafSymbolicSubtree.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define FAPrecisionTraits FASingleTraits
 #define factor_alloc_precision factor_alloc_single
 #define ldlt_tpp_factor ldlt_tpp_factor_sgl

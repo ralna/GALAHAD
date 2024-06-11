@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-09 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -114,7 +114,7 @@
       REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
       REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
       REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
-#ifdef SINGLE
+#ifdef REAL_32
       REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 7 )
 #else
       REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( - 15 )

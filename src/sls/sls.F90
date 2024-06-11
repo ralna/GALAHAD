@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.3 - 2024-06-09 AT 08:30 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -3983,7 +3983,7 @@
          data%spm%dof = 1
          CALL spmUpdateComputedFields( data%spm )
          CALL spmAlloc( data%spm )
-#ifdef SINGLE
+#ifdef REAL_32
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, svalues = data%VAL )
 #else

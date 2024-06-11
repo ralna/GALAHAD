@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:40 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-11 AT 08:40 GMT
  */
 
 #pragma once
@@ -25,7 +25,7 @@ namespace spral { namespace ssids { namespace cpu {
  *  Support is only added as required, so don't expect all intrinsics to be
  *  wrapped yet! */
 
-#ifdef SINGLE /* float version */
+#ifdef REAL_32 /* float version */
 
 template <typename T>
 class SimdVec;

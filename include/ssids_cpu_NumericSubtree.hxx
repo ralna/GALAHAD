@@ -2,7 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
- *  \version   GALAHAD 4.3 - 2024-02-18 AT 08:40 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-11 AT 08:40 GMT
  */
 
 #pragma once
@@ -17,7 +17,7 @@
 #include "ssids_cpu_SmallLeafNumericSubtree.hxx"
 #include "ssids_cpu_ThreadStats.hxx"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define cholesky_solve_fwd cholesky_solve_fwd_sgl
 #define cholesky_solve_bwd cholesky_solve_bwd_sgl
 #define ldlt_app_solve_fwd ldlt_app_solve_fwd_sgl

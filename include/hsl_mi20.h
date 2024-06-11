@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 09:50 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 09:50 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 28th November 2011
  * All rights reserved
@@ -45,7 +45,7 @@
 #include "hsl_precision.h"
 
 #ifndef mi20_control
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define mi20_default_control mi20_default_control_s_64
 #define mi20_control mi20_control_s_64

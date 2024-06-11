@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LSQP_test_deck
    USE GALAHAD_KINDS_precision
@@ -143,7 +143,7 @@
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
-#ifdef SINGLE
+#ifdef REAL_32
    control%stop_c = 10.0_rp_ ** ( - 37 )
 #else
    control%stop_c = 10.0_rp_ ** ( - 80 )

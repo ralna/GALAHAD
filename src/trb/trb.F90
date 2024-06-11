@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -264,7 +264,7 @@
 !      MAX( %stop_pg_absolute, %stop_pg_relative * norm of the initial gradient)
 !     or if the step is less than %stop_s
 
-#ifdef SINGLE
+#ifdef REAL_32
        REAL ( KIND = rp_ ) :: stop_pg_absolute = ten ** ( - 3 )
        REAL ( KIND = rp_ ) :: stop_pg_relative = ten ** ( - 4 )
 #else

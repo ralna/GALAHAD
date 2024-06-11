@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-14 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:00 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QPC_EXAMPLE
    USE GALAHAD_KINDS_precision
    USE GALAHAD_QPC_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-#ifdef SINGLE
+#ifdef REAL_32
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 10
 #else
    REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20

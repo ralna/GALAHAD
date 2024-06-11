@@ -1,16 +1,16 @@
 #  Main body of the LANCELOT B installation makefile under GALAHAD
 
 #  N. Gould and Ph. L. Toint.
-#  This version: 2024-02-28
+#  This version: 2024-06-11
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DSINGLE -DINTEGER_64
+  DPREC = -DREAL_32 -DINTEGER_64
 else ifeq "$(PRECIS)" "double_64"
   DPREC = -DINTEGER_64
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DSINGLE
+  DPREC = -DREAL_32
 else
   DPREC =
 endif

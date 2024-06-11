@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2023-01-30 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 15:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_LMS_test
    USE GALAHAD_KINDS_precision
@@ -13,7 +13,7 @@
    INTEGER ( KIND = ip_ ) :: iter, fail, method, mem
    REAL ( KIND = rp_ ) :: delta, lambda
    TYPE ( RAND_seed ) :: seed
-#ifdef SINGLE
+#ifdef REAL_32
    REAL ( KIND = sp_ ) :: error_tol = 1.0_sp_
 #else
    REAL ( KIND = dp_ ) :: error_tol = 0.00001_dp_

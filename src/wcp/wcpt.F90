@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-02-11 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:10 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_WCP_test_program
    USE GALAHAD_KINDS_precision
@@ -102,7 +102,7 @@
    control%restore_problem = 1
    control%maxit = 1
 !  control%print_level = 1
-#ifdef SINGLE
+#ifdef REAL_32
    control%stop_c = 10.0_rp_ ** ( - 37 )
 #else
    control%stop_c = 10.0_rp_ ** ( - 80 )

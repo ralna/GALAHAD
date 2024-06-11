@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-05-22 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -23,7 +23,7 @@
 #define spmf_enums spmf_enums_64
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define pastixf_interfaces_precision pastixf_interfaces_single_64
 #define GALAHAD_KINDS_precision GALAHAD_KINDS_single_64

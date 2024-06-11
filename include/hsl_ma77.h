@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 10:05 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 09:15 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 18 May 2011
  * All rights reserved
@@ -45,7 +45,7 @@
 #include "hsl_precision.h"
 
 #ifndef ma77_default_control
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma77_control ma77_control_s_64
 #define ma77_info ma77_info_s_64

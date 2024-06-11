@@ -1,14 +1,14 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2024-03-24
+#  This version: 2024-06-11
 
 #  makefile shell
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single_64"
-  DPREC = -DSINGLE -DINTEGER_64
+  DPREC = -DREAL_32 -DINTEGER_64
   HSL_64 = _64
   HSL_PRECIS = s_64
   HSL_IPRECIS = i_64
@@ -20,7 +20,7 @@ else ifeq "$(PRECIS)" "double_64"
   HSL_IPRECIS = i_64
   HSL_LPRECIS = l_64
 else ifeq "$(PRECIS)" "single"
-  DPREC = -DSINGLE
+  DPREC = -DREAL_32
   HSL_64 =
   HSL_PRECIS = s
   HSL_IPRECIS = i

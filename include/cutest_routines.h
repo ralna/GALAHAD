@@ -6,12 +6,12 @@
  *
  * Nick Gould for CUTEst
  * initial version, 2023-11-11
- * this version 2024-04-05
+ * this version 2024-06-11
  */
 
-#ifdef SINGLE
+#ifdef REAL_32
 #include "cutest_routines_single.h"
-#elif QUAD
+#elif REAL_128
 #include "cutest_routines_quadruple.h"
 #else
 #include "cutest_routines_double.h"

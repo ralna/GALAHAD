@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT.
 
 #include "spral_procedures.h"
 
@@ -73,7 +73,7 @@ module spral_ssids_cpu_subtree_precision
      end subroutine c_destroy_symbolic_subtree
   end interface
 
-#ifdef SINGLE
+#ifdef REAL_32
   interface
      type(C_PTR) function c_create_numeric_subtree(posdef, symbolic_subtree, &
           aval, scaling, child_contrib, options, stats) &

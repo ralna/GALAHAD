@@ -2,7 +2,7 @@
  * Copyright (c) 2013 NVIDIA
  * Authors: Evgueni Ovtchinnikov (STFC)
  *          Jeremy Appleyard (NVIDIA)
- * This version: GALAHAD 4.3 - 2024-02-18 AT 08:40 GMT
+ * This version: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT
  */
 
 #ifdef __cplusplus
@@ -19,7 +19,7 @@
 #include "spral_cuda_cuda_check.h"
 #include "ssids_gpu_kernels_datatypes.h"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define load_nodes_type load_nodes_type_single
 #define assemble_cp_type assemble_cp_type_single
 #define assemble_blk_type assemble_blk_type_single

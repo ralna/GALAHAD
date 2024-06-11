@@ -1,5 +1,5 @@
 ! Fortran 90 PaStiX example using a 5 by 5 symmetric matrix in different formats
-! Example by Mathieu Faverge, modified by Nick Gould, 2022-10-18
+! Example by Mathieu Faverge, modified by Nick Gould, this version 2024-06-11
 
 #include "galahad_modules.h"
 
@@ -64,7 +64,7 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
-#ifdef SINGLE
+#ifdef REAL_32
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, svalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, dvalues = VAL )
@@ -98,7 +98,7 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
-#ifdef SINGLE
+#ifdef REAL_32
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )
@@ -134,7 +134,7 @@ PROGRAM test_pastix
       spm%dof = 1
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
-#ifdef SINGLE
+#ifdef REAL_32
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, svalues = VAL )
 #else
       CALL spmGetArray( spm, colptr = PTR, rowptr = ROW, dvalues = VAL )

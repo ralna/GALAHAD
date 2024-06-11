@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-07 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:30 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -972,7 +972,7 @@
      CHARACTER ( len = 8 ) FUNCTION type_residual( residual )
      REAL ( KIND = rp_ ) :: residual
      REAL, PARAMETER :: ten = 10.0_rp_
-#ifdef SINGLE
+#ifdef REAL_32
      REAL, PARAMETER :: tiny = ten ** ( - 6 )
      REAL, PARAMETER :: small = ten ** ( - 3 )
      REAL, PARAMETER :: medium = ten ** ( - 2 )

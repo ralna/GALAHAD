@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
 #include "galahad_modules.h"
    PROGRAM GALAHAD_QP_EXAMPLE
    USE GALAHAD_KINDS_precision
@@ -50,7 +50,7 @@
      IF ( status == - GALAHAD_error_ill_conditioned ) CYCLE
      IF ( status == - GALAHAD_error_tiny_step ) CYCLE
 !    IF ( status == - GALAHAD_error_max_iterations ) CYCLE
-#ifdef SINGLE
+#ifdef REAL_32
      IF ( status == - GALAHAD_error_cpu_limit ) CYCLE
 #else
 !    IF ( status == - GALAHAD_error_cpu_limit ) CYCLE

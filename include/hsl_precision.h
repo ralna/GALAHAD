@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL SUBSET 1.0 - 2024-03-16 AT 13:25 GMT
+ * THIS VERSION: HSL SUBSET 1.0 - 2024-06-11 AT 08:25 GMT
  *
  *-*-*-*-*-*-*-*-*-  HSL SUBSET C INTERFACE PRECISION  *-*-*-*-*-*-*-*-*-*-
  *
@@ -13,7 +13,7 @@
 
 // real precision
 
-#ifdef SINGLE
+#ifdef REAL_32
 typedef float rpc_;
 #define f_rpc_ "f" 
 #else

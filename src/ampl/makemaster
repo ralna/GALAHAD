@@ -1,14 +1,14 @@
 #  Main body of the AMPL/GALAHAD interface installation makefile
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 26 VII 2005
+#  This version: 2024-06-11
 
 SHELL = /bin/$(BINSHELL)
 
 ifeq "$(PRECIS)" "single"
- DPREC = -DSINGLE
+ DPREC = -DREAL_32
 else
- DPREC = -DDOUBLE
+ DPREC =
 endif
 
 #  Archive manipulation strings

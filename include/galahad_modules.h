@@ -23,7 +23,7 @@
 #define pastixf_enums pastixf_enums_64
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 
 #define CUTEst_interface_precision CUTEST_interface_single_64
@@ -1559,7 +1559,7 @@
 #define c_precision c_double
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define mumps_struc smumps_struc
 #define MUMPS_STRUC SMUMPS_STRUC
 #ifdef INTEGER_64
@@ -1980,7 +1980,7 @@
 #define ZB01S GAL_ZB01S
 #define ZB01D GAL_ZB01D
 #endif
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64 
 #define hsl_ma48_precision_ciface gal_hsl_ma48_single_64_ciface
 #define hsl_ma57_precision_ciface gal_hsl_ma57_single_64_ciface
@@ -2219,7 +2219,7 @@
 
 
 #endif
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define hsl_ma48_precision_ciface hsl_ma48_single_64_ciface
 #define hsl_ma57_precision_ciface hsl_ma57_single_64_ciface

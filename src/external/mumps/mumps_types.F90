@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-30 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -19,7 +19,7 @@
 
 !  include the current mumps derived types
 
-#ifdef SINGLE
+#ifdef REAL_32
      INCLUDE 'smumps_struc.h'
 #else
      INCLUDE 'dmumps_struc.h'

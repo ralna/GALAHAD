@@ -65,7 +65,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #ifdef NO_UNDERSCORE_INTEGER_64
 #define rdot sdot64
@@ -295,7 +295,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #ifdef DUMMY_HSL
 #define HSL_KINDS_real gal_hsl_kinds_single_64
@@ -668,7 +668,7 @@
 #endif
 #endif
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #ifdef DUMMY_HSL
 #define FA01AR GAL_FA01A_64

@@ -6,10 +6,10 @@
  *
  * Nick Gould for GALAHAD
  * initial version, 2023-11-15
- * this version 2024-02-18
+ * this version 2024-06-11
  */
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define ELFUN_r ELFUN_s
 #define ELFUN_flexible_r ELFUN_flexible_s
 #define GROUP_r GROUP_s

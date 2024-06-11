@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 10:25 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 09:25 GMT
  * COPYRIGHT (c) 2012 Science and Technology Facilities Council
  * Original date 12 June 2012
  * All rights reserved
@@ -49,7 +49,7 @@
 #include "hsl_precision.h"
 
 #ifndef mc64_default_control
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define mc64_control mc64_control_s_64
 #define mc64_info mc64_info_s_64

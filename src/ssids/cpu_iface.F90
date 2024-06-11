@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT.
 
 #include "galahad_lapack.h"
 #include "spral_procedures.h"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define spral_c_gemv  spral_c_sgemv_64
 #define spral_c_trsv  spral_c_strsv_64

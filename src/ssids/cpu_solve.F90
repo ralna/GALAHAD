@@ -1,10 +1,10 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-18 AT 08:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:40 GMT.
 
 #include "galahad_lapack.h"
 #include "spral_procedures.h"
 
 #ifdef GALAHAD_BLAS
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define trsm galahad_strsm_64
 #define trsv galahad_strsv_64
@@ -30,7 +30,7 @@
 #endif
 #endif
 #else
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define trsm strsm_64
 #define trsv strsv_64

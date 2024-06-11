@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-27 AT 16:50 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -254,7 +254,7 @@
 !      ||g||_2 <= MAX( %stop_g_absolute, %stop_g_relative * ||g_initial||_2,
 !     or if the step is less than %stop_s
 
-#ifdef SINGLE
+#ifdef REAL_32
        REAL ( KIND = rp_ ) :: stop_c_absolute = ten ** ( - 3 )
        REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 3 )
 #else

@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 09:50 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 09:00 GMT
  * COPYRIGHT (c) 2012 Science and Technology Facilities Council (STFC)
  * Original date 4 January 2012
  * All rights reserved
@@ -44,7 +44,7 @@
 #include "hsl_precision.h"
 
 #ifndef ma48_control
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma48_control ma48_control_s_64
 #define ma48_ainfo ma48_ainfo_s_64

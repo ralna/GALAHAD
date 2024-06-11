@@ -1,6 +1,6 @@
 /* Copyright (c) 2013 Science and Technology Facilities Council (STFC)
  * Authors: Evgueni Ovtchinnikov and Jonathan Hogg
- * This version: GALAHAD 4.3 - 2024-02-18 AT 08:50 GMT
+ * This version: GALAHAD 5.0 - 2024-06-11 AT 09:50 GMT
  *
  * This file contains CUDA kernels for partial LL^T and LDL^T factorization
  * of dense submatrices.
@@ -20,7 +20,7 @@
 #include "ssids_gpu_kernels_datatypes.h"
 #include "spral_cuda_cuda_check.h"
 
-#ifdef SINGLE
+#ifdef REAL_32
 #define multinode_chol_type multinode_chol_type_single
 #define multiblock_fact_type multiblock_fact_type_single
 #define cstat_data_type cstat_data_type_single

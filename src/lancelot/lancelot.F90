@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-12-13 AT 10:50 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 09:30 GMT.
 
 #ifdef LANCELOT_USE_MA57
 #define SILS_initialize MA57_initialize
@@ -17,7 +17,7 @@
 !!$ #define GALAHAD_SILS_single HSL_MA57_single
 !!$ #endif
 
-!!$ #ifdef SINGLE
+!!$ #ifdef REAL_32
 !!$ #ifdef LANCELOT_USE_MA57
 !!$ #define GALAHAD_SILS_precision HSL_MA57_single
 !!$ #else

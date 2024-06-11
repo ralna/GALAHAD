@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 10:00 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 10:00 GMT
  * COPYRIGHT (c) 2021 Science and Technology Facilities Council (STFC)
  * Original date 30 March 2021
  * All rights reserved
@@ -47,7 +47,7 @@
 #include "hsl_precision.h"
 
 #ifndef ma57_default_control
-#ifdef SINGLE
+#ifdef REAL_32
 #ifdef INTEGER_64
 #define ma57_default_control      ma57_default_control_s_64
 #define ma57_init_factors         ma57_init_factors_s_64
