@@ -200,7 +200,8 @@ jobs:
                                -Dlibblas=$BLAS \
                                -Dliblapack=$LAPACK \
                                -Dfortran_link_args=${LD_CLASSIC} \
-                               -Dc_link_args=${LD_CLASSIC}
+                               -Dc_link_args=${LD_CLASSIC} \
+                               -Db_sanitize=address 
 
       - name: Build GALAHAD
         shell: bash
