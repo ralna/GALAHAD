@@ -27,19 +27,19 @@ jobs:
             int: '64'
           - os: windows-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '32'
           - os: windows-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '64'
           - os: ubuntu-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '32'
           - os: ubuntu-latest
             compiler: intel
-            version: '2024.1'
+            version: '2023.2'
             int: '64'
           # - os: ubuntu-latest
           #   compiler: nvidia-hpc
