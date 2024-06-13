@@ -2785,7 +2785,7 @@
           = inform%time%clock_factorize + clock_now - clock_record
         IF ( printt ) WRITE( out, 2010 ) prefix, time_now - time_record
 
-        IF ( inform%mi28_info%stat < 0 ) THEN
+        IF ( inform%mi28_info%flag < 0 ) THEN
           SELECT CASE( inform%mi28_info%stat )
           CASE ( - 1 )
             inform%status = GALAHAD_error_allocate

@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 5.0 - 2024-06-13 AT 13:50 GMT.
 #include "galahad_modules.h"
-   PROGRAM GALAHAD_NLS_test_deck
+   PROGRAM GALAHAD_NLS_test_deck2
    USE GALAHAD_USERDATA_precision
    USE GALAHAD_NLS_precision
    USE GALAHAD_SYMBOLS
@@ -14,19 +14,12 @@
    REAL ( KIND = rp_ ), PARAMETER :: p = 1.0_rp_
    REAL ( KIND = rp_ ), PARAMETER :: mult = 1.0_rp_
 !  EXTERNAL :: RES, JAC, HESS, JACPROD, HESSPROD, RHESSPRODS, SCALE
-   INTEGER ( KIND = ip_ ) :: i, j, store, s, model, scaling, rev, usew
-   INTEGER ( KIND = ip_ ) :: scratch_out
-   CHARACTER ( len = 1 ) :: storage
-   LOGICAL :: alive
-   REAL ( KIND = rp_ ) :: dum
-
+   INTEGER ( KIND = ip_ ) :: s, model, scaling, rev, usew
 
 !  ============================================
 !  test of scaling, model and weighting options
 !  ============================================
 
-20 CONTINUE
-!  IF ( .TRUE. ) GO TO 30
 ! start problem data
    nlp%n = 2 ;  nlp%m = 3 ; nlp%J%ne = 5 ; nlp%H%ne = 2 ; nlp%P%ne = 2
    ALLOCATE( nlp%X( nlp%n ), nlp%C( nlp%m ), nlp%G( nlp%n ), W( nlp%m ) )
@@ -147,13 +140,11 @@ if(usew /=0) cycle
        END DO
      END DO
    END DO
-30 CONTINUE
    DEALLOCATE( nlp%X, nlp%C, nlp%G, W, userdata%real )
    DEALLOCATE( nlp%J%val, nlp%J%row, nlp%J%col, nlp%J%type )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, nlp%H%type )
    DEALLOCATE( nlp%P%val, nlp%P%row, nlp%P%ptr )
    IF ( ALLOCATED( nlp%P%type ) ) DEALLOCATE( nlp%P%type )
-   DEALLOCATE( nlp%X, nlp%C, nlp%G, userdata%real )
    WRITE( 6, "( /, ' test completed' )" )
 
    CONTAINS
@@ -262,48 +253,4 @@ if(usew /=0) cycle
      status = 0
      END SUBROUTINE SCALE
 
-     SUBROUTINE JAC_dense( status, X, userdata, J_val )
-     USE GALAHAD_USERDATA_precision
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     J_val( 1 ) = 2.0_rp_ * X( 1 )
-     J_val( 2 ) = 0.0_rp_
-     J_val( 3 ) = 1.0_rp_
-     J_val( 4 ) = 2.0_rp_ * X( 2 )
-     J_val( 5 ) = 1.0_rp_
-     J_val( 6 ) = - 1.0_rp_
-     status = 0
-     END SUBROUTINE JAC_dense
-
-     SUBROUTINE HESS_dense( status, X, Y, userdata, H_val )
-     USE GALAHAD_USERDATA_precision
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     H_val( 1 ) = 2.0_rp_ * Y( 1 )
-     H_val( 2 ) = 0.0_rp_
-     H_val( 3 ) = 2.0_rp_ * Y( 2 )
-     status = 0
-     END SUBROUTINE HESS_dense
-
-     SUBROUTINE RHESSPRODS_dense( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_USERDATA_precision
-     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-     P_val( 1 ) = 2.0_rp_ * V( 1 )
-     P_val( 2 ) = 0.0_rp_
-     P_val( 3 ) = 0.0_rp_
-     P_val( 4 ) = 2.0_rp_ * V( 2 )
-     P_val( 5 ) = 0.0_rp_
-     P_val( 6 ) = 0.0_rp_
-     status = 0
-     END SUBROUTINE RHESSPRODS_dense
-
-   END PROGRAM GALAHAD_NLS_test_deck
+   END PROGRAM GALAHAD_NLS_test_deck2

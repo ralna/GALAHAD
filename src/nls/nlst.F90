@@ -223,7 +223,7 @@
 !  test of available options
 !  =========================
 
-10 CONTINUE
+!10 CONTINUE
 
 !  IF ( .TRUE. ) GO TO 20
 ! start problem data
@@ -547,7 +547,7 @@
 !  test of scaling, model and weighting options
 !  ============================================
 
-20 CONTINUE
+!20 CONTINUE
 !  IF ( .TRUE. ) GO TO 30
 ! start problem data
    nlp%n = 2 ;  nlp%m = 3 ; nlp%J%ne = 5 ; nlp%H%ne = 2 ; nlp%P%ne = 2
@@ -666,7 +666,7 @@
        END DO
      END DO
    END DO
-30 CONTINUE
+!30 CONTINUE
    DEALLOCATE( nlp%X, nlp%C, nlp%G, W, userdata%real )
    DEALLOCATE( nlp%J%val, nlp%J%row, nlp%J%col, nlp%J%type )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, nlp%H%type )
@@ -785,7 +785,7 @@
 !  test of storage options
 !  =======================
 
-40 CONTINUE
+!40 CONTINUE
    WRITE( 6, "( /, ' test of storage options', / )" )
 
 ! start problem data
