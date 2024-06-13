@@ -250,8 +250,8 @@
 
    DO i = 1, 17
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
-     control%print_level = 1
-     control%subproblem_control%print_level = 1
+!    control%print_level = 1
+!    control%subproblem_control%print_level = 1
      CALL WHICH_sls( control )
      control%jacobian_available = 2               ! the Jacobian is available
      control%hessian_available = 2                ! the Hessian is available
@@ -578,18 +578,24 @@
        nlp%P%row = (/ 1, 2 /)  ! Hessian products
        nlp%P%ptr = (/ 1, 2, 3, 3 /)
      END IF
+!if(model /= 3) cycle
      DO scaling = - 1, 8
+!if(scaling /= 8) cycle
 !    DO scaling = 1, 1
 !    DO scaling = - 1, - 1
        IF ( scaling == 8 .AND. model == 4 ) CYCLE
 !      IF ( scaling == 0 .OR. scaling == 6 ) CYCLE
        DO rev = 0, 1
 !      DO rev = 0, 0
+!if(rev /=0) cycle
          DO usew = 0, 1
 !        DO usew = 0, 0
+!if(usew /=0) cycle
          CALL NLS_initialize( data, control, inform )! Initialize controls
-         control%print_level = 1
-         control%subproblem_control%print_level = 1
+!        control%print_level = 1
+!        control%subproblem_control%print_level = 1
+!        control%glrt_control%print_level = 1
+!        control%subproblem_control%glrt_control%print_level = 1
          CALL WHICH_sls( control )
          control%model = model             ! set model
          control%norm = scaling            ! set scaling norm
@@ -647,7 +653,6 @@
            END DO
          END IF
 
-
          IF ( inform%status == 0 ) THEN
            WRITE( 6, "( I1, ',', I2, 2( ',', I1 ), ':', I6, ' iterations.',    &
           &  ' Optimal objective value = ', F6.1, ' status = ', I6 )" )        &
@@ -698,8 +703,8 @@
    DO i = 1, 6
 !  DO i = 3, 3
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
-     control%print_level = 1
-     control%subproblem_control%print_level = 1
+!    control%print_level = 1
+!    control%subproblem_control%print_level = 1
      CALL WHICH_sls( control )
 !    control%print_level = 1
 !    control%print_level = 4
@@ -850,8 +855,8 @@
      DO i = 1, 2
 !    DO i = 2, 2
        CALL NLS_initialize( data, control, inform ) ! Initialize control params
-       control%print_level = 1
-       control%subproblem_control%print_level = 1
+!      control%print_level = 1
+!      control%subproblem_control%print_level = 1
        CALL WHICH_sls( control )
        control%jacobian_available = 2               ! the Jacobian is available
        control%hessian_available = 2                ! the Hessian is available

@@ -2802,7 +2802,7 @@
 !         CASE ( - 9  )
 !            inform%status = GALAHAD_error_inertia
 !          CASE ( - 10  )
-             inform%status = GALAHAD_error_scale
+!            inform%status = GALAHAD_error_scale
 !         CASE ( - 11 )
 !           inform%status = GALAHAD_error_permutation
 !         CASE ( - 12  )
