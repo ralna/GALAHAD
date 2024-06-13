@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-11 AT 08:55 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 07:55 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 25 Feburary 2011
  * All rights reserved
@@ -139,8 +139,8 @@ struct ma86_info {
    ipc_ matrix_rank;     /* Rank of matrix */
    ipc_ maxdepth;        /* Maximum depth of the tree. */
    ipc_ num_delay;       /* Number of delayed pivots */
-   int64_t num_factor;   /* Number of entries in the factor. */
-   int64_t num_flops;    /* Number of flops for factor. */
+   longc_ num_factor;    /* Number of entries in the factor. */
+   longc_ num_flops;     /* Number of flops for factor. */
    ipc_ num_neg;         /* Number of negative pivots */
    ipc_ num_nodes;       /* Number of nodes */
    ipc_ num_nothresh;    /* Number of pivots not satisfying u */

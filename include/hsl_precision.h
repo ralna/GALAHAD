@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL SUBSET 1.0 - 2024-06-11 AT 08:25 GMT
+ * THIS VERSION: HSL SUBSET 1.0 - 2024-06-12 AT 07:55 GMT
  *
  *-*-*-*-*-*-*-*-*-  HSL SUBSET C INTERFACE PRECISION  *-*-*-*-*-*-*-*-*-*-
  *
@@ -31,6 +31,14 @@ typedef int64_t ipc_;  // integer precision
 typedef int ipc_;  // integer precision
 #define d_ipc_ "d"
 #define i_ipc_ "i"
+#endif
+
+// C long integer 
+
+#ifdef HSL_LEGACY
+typedef long longc_;
+#else
+typedef int64_t longc_;
 #endif
 
 // end include guard

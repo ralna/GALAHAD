@@ -78,7 +78,7 @@ Currently supported options with their default value:
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;
 * `-Dlibhsl=hsl`: HSL library against which to link;
-* `-Dlibcutest=cutest`: HSL library against which to link;
+* `-Dlibcutest=cutest`: CUTEst library against which to link;
 * `-Dlibwsmp=wsmp`: WSMP library against which to link;
 * `-Dlibumfpack=umfpack`: UMFPACK library against which to link;
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;

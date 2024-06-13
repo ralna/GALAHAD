@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-02-25 AT 09:40 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:10 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 2 March 2011
  * All rights reserved
@@ -83,7 +83,7 @@ struct mc68_info {
    ipc_ duplicate;       /* holds number of duplicate entries */
    ipc_ n_compressions;  /* holds number of compressions in order */
    ipc_ n_zero_eigs;     /* holds the number of zero eigs from ma47 */
-   int64_t l_workspace;     /* holds length of workspace iw used in order */
+   longc_ l_workspace;   /* holds length of workspace iw used in order */
    ipc_ zb01_info;       /* holds flag from zb01_expand1 call */
    ipc_ n_dense_rows;    /* holds number of dense rows from amdd */
 };

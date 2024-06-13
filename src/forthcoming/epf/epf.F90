@@ -441,7 +441,7 @@
 !  absolute-complementary-slackness-accuracy       1.0D-5
 !  relative-complementary-slackness-accuracy       1.0D-5
 !  minimum-step-allowed                            2.0D-16
-!  initial-penalty-parameter                       1.0D+1
+!  initial-penalty-parameter                       1.0D-1
 !  minimum-objective-before-unbounded              -1.0D+32
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
@@ -525,7 +525,7 @@
      spec( stop_abs_c )%keyword = 'absolute-complementary-slackness-accuracy'
      spec( stop_rel_c )%keyword = 'relative-complementary-slackness-accuracy'
      spec( stop_s )%keyword = 'minimum-steplength-allowed'
-     spec( initial_mu )%keyword = 'initial-penalty parameter'
+     spec( initial_mu )%keyword = 'initial-penalty-parameter'
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
@@ -1049,7 +1049,7 @@
      END DO
 
      IF ( data%constrained ) THEN
-       DO i = 1, nlp%n
+       DO i = 1, nlp%m
          IF ( nlp%C_l( i ) > nlp%C_u( i ) ) THEN
            inform%status = GALAHAD_error_bad_bounds
            GO TO 990
@@ -1494,6 +1494,9 @@
                      EPF_infeasibility( nlp%m, nlp%C,                          &
                                         nlp%C_l, nlp%C_u, control%infinity ) )
      END IF
+write(6,*) ' f, ||c|| = ', inform%obj, c_norm
+
+data%mu = c_norm
 
 !  compute the individual and combined dual-variable 
 
@@ -1583,7 +1586,7 @@
          data%branch = 120 ; inform%status = 3 ; RETURN
        ELSE
          CALL eval_GJ( data%eval_status, nlp%X( : nlp%n ),                     &
-                       userdata, nlp%G( : nlp%n ), nlp%J%val( : nlp%J_ne ) )
+                       userdata, nlp%G( : nlp%n ), nlp%J%val( 1 : nlp%J%ne ) )
        END IF
      END IF
 
@@ -1677,12 +1680,12 @@
 !      IF ( data%printd ) THEN
        IF ( data%printi ) THEN
          WRITE( data%out, "( A, ' penalty Hessian =' )" ) prefix
-         WRITE( data%out, "( SS, ( A, : , 2( 2I7, ES20.12 ) ) )" ) ( prefix,   &
-            ( data%epf%H%row( l + j ), data%epf%H%col( l + j ),                &
-              data%epf%H%val( l + j ), j = 0, 1 ), l = 1, data%epf%H%ne, 2 )
+         WRITE( data%out, "( SS, ( A, : , 2( 2I7, ES20.12, : ) ) )" )          &
+           ( prefix, ( data%epf%H%row( l + j ), data%epf%H%col( l + j ),       &
+              data%epf%H%val( l + j ), j = 0,                                  &
+                MIN( 1, data%epf%H%ne - l ) ), l = 1, data%epf%H%ne, 2 )
        END IF
      END IF
-
 write(6,*) ' stopping'
 stop
 
