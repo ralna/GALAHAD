@@ -250,6 +250,8 @@
 
    DO i = 1, 17
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
+     control%print_level = 1
+     control%subproblem_control%print_level = 1
      CALL WHICH_sls( control )
      control%jacobian_available = 2               ! the Jacobian is available
      control%hessian_available = 2                ! the Hessian is available
@@ -586,6 +588,8 @@
          DO usew = 0, 1
 !        DO usew = 0, 0
          CALL NLS_initialize( data, control, inform )! Initialize controls
+         control%print_level = 1
+         control%subproblem_control%print_level = 1
          CALL WHICH_sls( control )
          control%model = model             ! set model
          control%norm = scaling            ! set scaling norm
@@ -595,7 +599,6 @@
 !        control%subproblem_control%print_level = 4
 !        control%print_level = 4
 !        control%maxit = 1
-!        control%subproblem_control%print_level = 1
 !        control%subproblem_control%magic_step = .TRUE.
 !        control%subproblem_control%glrt_control%print_level = 3
          nlp%X = 1.0_rp_                               ! start from one
@@ -695,6 +698,8 @@
    DO i = 1, 6
 !  DO i = 3, 3
      CALL NLS_initialize( data, control, inform ) ! Initialize control params
+     control%print_level = 1
+     control%subproblem_control%print_level = 1
      CALL WHICH_sls( control )
 !    control%print_level = 1
 !    control%print_level = 4
@@ -845,6 +850,8 @@
      DO i = 1, 2
 !    DO i = 2, 2
        CALL NLS_initialize( data, control, inform ) ! Initialize control params
+       control%print_level = 1
+       control%subproblem_control%print_level = 1
        CALL WHICH_sls( control )
        control%jacobian_available = 2               ! the Jacobian is available
        control%hessian_available = 2                ! the Hessian is available
