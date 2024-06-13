@@ -218,8 +218,8 @@ jobs:
                                -Dc_link_args=${LD_CLASSIC} \
                                -Dlibcutest_single_path=$CUTEST/lib \
                                -Dlibcutest_double_path=$CUTEST/lib \
-                               -Dlibcutest_single_modules=$CUTEST/modules \
-                               -Dlibcutest_double_modules=$CUTEST/modules
+                               -Dlibcutest_single_modules=../CUTEst/modules \
+                               -Dlibcutest_double_modules=../CUTEst/modules
                                # -Db_sanitize=address,undefined
 
       - name: Build GALAHAD
