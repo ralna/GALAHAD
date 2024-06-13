@@ -53,7 +53,8 @@ task:
     meson setup builddir --buildtype=debug \
                          --prefix=$CUTEST \
                          -Ddefault_library=shared \
-                         -Dquadruple=true
+                         -Dquadruple=true \
+                         -Dcutest_int64=${INT64}
     meson compile -C builddir
     meson install -C builddir
 
