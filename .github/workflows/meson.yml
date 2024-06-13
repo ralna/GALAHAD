@@ -62,7 +62,7 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja numpy
 
-      - name: Set the environment variables GALAHAD, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
+      - name: Set the environment variables GALAHAD, CUTEST, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -79,6 +79,9 @@ jobs:
             echo "LIBDIR=bin" >> $GITHUB_ENV
             echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/bin" >> $GITHUB_ENV
           fi
+          # echo "ARCHDEFS=$GITHUB_WORKSPACE/../ARCHDefs" >> $GITHUB_ENV
+          # echo "SIFDECODE=$GITHUB_WORKSPACE/../SIFDecode" >> $GITHUB_ENV
+          echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
 
       - name: Install dependencies
         shell: bash
@@ -108,17 +111,17 @@ jobs:
         shell: bash
         run: |
           if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
-            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
+            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           fi
           if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib" >> $GITHUB_ENV
+            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           fi
           # if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-          #   echo "PATH=$PATH:/d/a/GALAHAD/GALAHAD/../deps/bin" >> $GITHUB_ENV
+          #   echo "PATH=$PATH:/d/a/GALAHAD/GALAHAD/../deps/bin:/d/a/GALAHAD/GALAHAD/../CUTEst/lib" >> $GITHUB_ENV
           # fi
 
       - name: Set environment variables for OpenMP
@@ -139,9 +142,36 @@ jobs:
         shell: bash
         run: echo "FC=ifort" >> $GITHUB_ENV
 
+
+      - name: Install CUTEst
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          INT64="false"
+          if [[ "${{matrix.int}}" == "64" ]]; then
+            INT64="true"
+          fi
+          cd ..
+          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+            wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.zip
+            unzip v2.1.0.zip
+          else
+            wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
+            tar -xzvf v2.1.0.tar.gz
+          fi
+          cd CUTEst-2.1.0
+          meson setup builddir --buildtype=debug \
+                               --prefix=$CUTEST \
+                               -Ddefault_library=shared \
+                               -Dquadruple=true \
+                               -Dcutest_int64=${INT64}
+          meson compile -C builddir
+          meson install -C builddir
+
       - name: Setup GALAHAD
         shell: bash
         run: |
+          mkdir -p ../CUTEst/modules
           CSTD="c99"
           CPPSTD="c++11"
           INT64="false"
@@ -152,6 +182,8 @@ jobs:
           LAPACK_PATH=""
           PYTHON_INTERFACE="true"
           SHARED_STATIC="shared"
+          CUTEST_SINGLE="cutest_single"
+          CUTEST_DOUBLE="cutest_double"
           LD_CLASSIC=""
           if [[ "${{matrix.os}}" == "macos-13" ]]; then
             LD_CLASSIC="-Wl,-ld_classic"
@@ -170,9 +202,8 @@ jobs:
             LAPACK="openblas64_"
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
-          fi
-          if [[ ( "${{matrix.os}}" == "windows-latest" && "${{matrix.compiler}}" == "gcc" ) ]]; then
-            FLDFLAGS="-lregex"
+            CUTEST_SINGLE="cutest_single_64"
+            CUTEST_DOUBLE="cutest_double_64"
           fi
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
@@ -189,7 +220,6 @@ jobs:
                                --prefix=$GITHUB_WORKSPACE/galahad \
                                -Dc_std=$CSTD \
                                -Dcpp_std=$CPPSTD \
-                               -Dfortran_link_args=$FLDFLAGS \
                                -Dexamples=true \
                                -Dtests=true \
                                -Dssids=$SSIDS \
@@ -201,7 +231,13 @@ jobs:
                                -Dliblapack=$LAPACK \
                                -Dfortran_link_args=${LD_CLASSIC} \
                                -Dc_link_args=${LD_CLASSIC} \
-                               -Db_sanitize=address,undefined
+                               -Dlibcutest_single=$CUTEST_SINGLE \
+                               -Dlibcutest_double=$CUTEST_DOUBLE \
+                               -Dlibcutest_single_path=$CUTEST/lib \
+                               -Dlibcutest_double_path=$CUTEST/lib \
+                               -Dlibcutest_single_modules=../CUTEst/modules \
+                               -Dlibcutest_double_modules=../CUTEst/modules
+                               # -Db_sanitize=address,undefined
 
       - name: Build GALAHAD
         shell: bash

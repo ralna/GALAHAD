@@ -109,10 +109,10 @@ libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
 libhwloc_path = get_option('libhwloc_path')
 
-libhwloc_include = get_option('libhwloc_include')
-libcutest_single_modules = get_option('libcutest_single_modules')
-libcutest_double_modules = get_option('libcutest_double_modules')
-libhsl_modules = get_option('libhsl_modules')
+libhwloc_include = include_directories(get_option('libhwloc_include'))
+libcutest_single_modules = include_directories(get_option('libcutest_single_modules'))
+libcutest_double_modules = include_directories(get_option('libcutest_double_modules'))
+libhsl_modules = include_directories(get_option('libhsl_modules'))
 
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
