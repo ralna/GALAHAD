@@ -152,7 +152,7 @@ jobs:
           fi
           cd ..
           wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
-          tar -xzvf v2.1.0.tar.gz
+          tar --no-same-owner --no-same-permissions -xzvf v2.1.0.tar.gz
           cd CUTEst-2.1.0
           meson setup builddir --buildtype=debug \
                                --prefix=$CUTEST \
