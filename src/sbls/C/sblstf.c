@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_sbls.h"
@@ -57,6 +58,8 @@ int main(void) {
         control.preconditioner = 2;
         control.factorization = 2;
         control.get_norm_residual = true;
+        strcpy(control.symmetric_linear_solver, "sytr ") ;
+        strcpy(control.definite_linear_solver, "sytr ") ;
 
         // Set user-defined control options
         control.f_indexing = true; // fortran sparse matrix indexing
@@ -166,4 +169,3 @@ int main(void) {
         sbls_terminate( &data, &control, &inform );
     }
 }
-
