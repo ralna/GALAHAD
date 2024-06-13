@@ -59,7 +59,6 @@ task:
     tar -xzvf v2.1.0.tar.gz
     cd CUTEst-2.1.0
     meson setup builddir --buildtype=debug \
-                         --prefix=$CUTEST \
                          -Ddefault_library=shared \
                          -Dquadruple=true \
                          -Dcutest_int64=${INT64}
@@ -75,11 +74,7 @@ task:
                          -Dpythoniface=true \
                          -Dgalahad_int64=${INT64} \
                          -Dlibcutest_single=$CUTEST_SINGLE \
-                         -Dlibcutest_double=$CUTEST_DOUBLE \
-                         -Dlibcutest_single_path=$CUTEST/lib \
-                         -Dlibcutest_double_path=$CUTEST/lib \
-                         -Dlibcutest_single_modules=../CUTEst/modules \
-                         -Dlibcutest_double_modules=../CUTEst/modules
+                         -Dlibcutest_double=$CUTEST_DOUBLE
                          # -Db_sanitize=address,undefined
   build_script: |
     meson compile -C builddir
