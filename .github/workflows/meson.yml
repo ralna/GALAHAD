@@ -62,7 +62,7 @@ jobs:
       - name: Install Meson and Ninja
         run: pip install meson ninja numpy
 
-      - name: Set the environment variables GALAHAD, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
+      - name: Set the environment variables GALAHAD, CUTEST, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
         shell: bash
         run: |
           echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -79,6 +79,9 @@ jobs:
             echo "LIBDIR=bin" >> $GITHUB_ENV
             echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/bin" >> $GITHUB_ENV
           fi
+          # echo "ARCHDEFS=$GITHUB_WORKSPACE/../ARCHDefs" >> $GITHUB_ENV
+          # echo "SIFDECODE=$GITHUB_WORKSPACE/../SIFDecode" >> $GITHUB_ENV
+          echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
 
       - name: Install dependencies
         shell: bash
@@ -138,6 +141,18 @@ jobs:
         if: matrix.compiler == 'intel'
         shell: bash
         run: echo "FC=ifort" >> $GITHUB_ENV
+
+
+      - name: Install CUTEst
+        shell: bash
+        run: |
+          cd ..
+          wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
+          tar -xzvf v2.1.0.tar.gz
+          cd CUTEst-2.1.0
+          meson setup builddir -Dquadruple=true --prefix=$CUTEST
+          meson compile -C builddir
+          meson install -C builddir
 
       - name: Setup GALAHAD
         shell: bash
@@ -201,7 +216,11 @@ jobs:
                                -Dliblapack=$LAPACK \
                                -Dfortran_link_args=${LD_CLASSIC} \
                                -Dc_link_args=${LD_CLASSIC} \
-                               -Db_sanitize=address,undefined
+                               -Dlibcutest_single_path=$CUTEST/lib \
+                               -Dlibcutest_double_path=$CUTEST/lib \
+                               -Dlibcutest_single_modules=$CUTEST/modules \
+                               -Dlibcutest_double_modules=$CUTEST/modules
+                               # -Db_sanitize=address,undefined
 
       - name: Build GALAHAD
         shell: bash
