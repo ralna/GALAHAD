@@ -171,6 +171,7 @@ jobs:
       - name: Setup GALAHAD
         shell: bash
         run: |
+          mkdir -p ../CUTEst/modules
           CSTD="c99"
           CPPSTD="c++11"
           INT64="false"
