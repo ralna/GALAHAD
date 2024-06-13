@@ -27,14 +27,14 @@ task:
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
-      pkg install -y py39-pip meson cmake bash gcc12 openblas
+      pkg install -y py39-pip meson cmake bash gcc12 openblas wget
       pip install numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/usr/local/lib" >> $CIRRUS_ENV
       echo "FC=gfortran12" >> $CIRRUS_ENV
       echo "CC=gcc12" >> $CIRRUS_ENV
       echo "CXX=g++12" >> $CIRRUS_ENV
     else
-      brew install python meson gcc@14 openblas numpy
+      brew install python meson gcc@14 openblas numpy wget
       echo "JULIA_GALAHAD_LIBRARY_PATH=/opt/homebrew/lib" >> $CIRRUS_ENV
       echo "FC=gfortran-14" >> $CIRRUS_ENV
       echo "CC=gcc-14" >> $CIRRUS_ENV
@@ -48,7 +48,7 @@ task:
   cutest_script: |
     cd ..
     wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
-    tar -xzvf v2.1.0.tar.gz
+    tar -xzvf v2.1.0.tar.gz -C CUTEst-2.1.0
     cd CUTEst-2.1.0
     meson setup builddir --buildtype=debug \
                          --prefix=$CUTEST \

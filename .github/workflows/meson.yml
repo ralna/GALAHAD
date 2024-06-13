@@ -111,17 +111,17 @@ jobs:
         shell: bash
         run: |
           if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
-            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
+            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           fi
           if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib" >> $GITHUB_ENV
-            echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib" >> $GITHUB_ENV
+            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
+            echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           fi
           # if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-          #   echo "PATH=$PATH:/d/a/GALAHAD/GALAHAD/../deps/bin" >> $GITHUB_ENV
+          #   echo "PATH=$PATH:/d/a/GALAHAD/GALAHAD/../deps/bin:/d/a/GALAHAD/GALAHAD/../CUTEst/lib" >> $GITHUB_ENV
           # fi
 
       - name: Set environment variables for OpenMP
@@ -152,7 +152,7 @@ jobs:
           fi
           cd ..
           wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
-          tar -xzvf v2.1.0.tar.gz
+          tar -xzvf v2.1.0.tar.gz -C CUTEst-2.1.0
           cd CUTEst-2.1.0
           meson setup builddir --buildtype=debug \
                                --prefix=$CUTEST \
