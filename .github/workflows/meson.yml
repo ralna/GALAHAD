@@ -144,6 +144,7 @@ jobs:
 
 
       - name: Install CUTEst
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           INT64="false"
