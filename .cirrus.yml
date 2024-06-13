@@ -51,7 +51,8 @@ task:
                          -Dexamples=true \
                          -Dtests=true \
                          -Dpythoniface=true \
-                         -Dgalahad_int64=${INT64}
+                         -Dgalahad_int64=${INT64} \
+                         -Db_sanitize=address,undefined
   build_script: |
     meson compile -C builddir
   install_script: |
