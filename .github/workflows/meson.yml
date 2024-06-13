@@ -151,8 +151,13 @@ jobs:
             INT64="true"
           fi
           cd ..
-          wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
-          tar --no-same-owner --no-same-permissions -xzvf v2.1.0.tar.gz
+          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+            wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.zip
+            tar -xvf v2.1.0.zip
+          else
+            wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
+            tar -xzvf v2.1.0.tar.gz
+          fi
           cd CUTEst-2.1.0
           meson setup builddir --buildtype=debug \
                                --prefix=$CUTEST \
@@ -194,9 +199,6 @@ jobs:
             BLAS_PATH="$DEPS/deps/$LIBDIR"
             LAPACK_PATH="$DEPS/deps/$LIBDIR"
           fi
-          if [[ ( "${{matrix.os}}" == "windows-latest" && "${{matrix.compiler}}" == "gcc" ) ]]; then
-            FLDFLAGS="-lregex"
-          fi
           if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
           fi
@@ -212,7 +214,6 @@ jobs:
                                --prefix=$GITHUB_WORKSPACE/galahad \
                                -Dc_std=$CSTD \
                                -Dcpp_std=$CPPSTD \
-                               -Dfortran_link_args=$FLDFLAGS \
                                -Dexamples=true \
                                -Dtests=true \
                                -Dssids=$SSIDS \
