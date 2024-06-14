@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-14 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -498,7 +498,8 @@ CONTAINS
                         problem%n, problem%m, problem%x,                       &
                         problem%x_l, problem%x_u,                              &
                         problem%y, problem%c_l, problem%c_u,                   &
-                        problem%equation, problem%linear, 0, 0, 0 )
+                        problem%equation, problem%linear,                      &
+                        0_ip_, 0_ip_, 0_ip_ )
   IF ( cutest_status /= 0 ) GO TO 910
 
   CALL CUTEST_cnames_r( cutest_status, problem%n, problem%m,                   &

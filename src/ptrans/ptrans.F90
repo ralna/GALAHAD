@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-14 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"

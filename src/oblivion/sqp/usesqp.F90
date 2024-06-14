@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-02 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2025-06-14 AT 08:50 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -133,7 +133,8 @@
      i = n
      CALL CUTEST_csetup_r( cutest_status, input, error, io_buffer, n, m,       &
                            nlp%X, nlp%X_l, nlp%X_u, nlp%Y, nlp%C_l, nlp%C_u,   &
-                           nlp%EQUATION, nlp%LINEAR, 0, 0, 0 )
+                           nlp%EQUATION, nlp%LINEAR,                           &
+                           0_ip_, 0_ip_, 0_ip_ )
      IF ( cutest_status /= 0 ) GO TO 910
      inequality = .FALSE.
      DO i = 1, n

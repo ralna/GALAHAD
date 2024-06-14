@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-15 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-14 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -307,7 +307,8 @@
 
       CALL CUTEST_csetup_r( cutest_status, input, out, io_buffer,              &
                             n, m, prob%X, prob%X_l, prob%X_u, prob%Y,          &
-                            prob%C_l, prob%C_u, EQUATN, LINEAR, 0, 0, 0 )
+                            prob%C_l, prob%C_u, EQUATN, LINEAR,                &
+                            0_ip_, 0_ip_, 0_ip_ )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( LINEAR )
 

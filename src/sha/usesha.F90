@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-01 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-14 AT 08:40 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -207,7 +207,8 @@
 
      IF ( m > 0 ) THEN
        CALL CUTEST_csetup_r( status, input, out, io_buffer, n, m, X, X_l, X_u, &
-                             LAMBDA, C_l, C_u, EQUATN, LINEAR, 0, 0, 0 )
+                             LAMBDA, C_l, C_u, EQUATN, LINEAR,                 &
+                             0_ip_, 0_ip_, 0_ip_ )
        ptype = 'C'
      ELSE
        CALL CUTEST_usetup_r( status, input, out, io_buffer, n, X, X_l, X_u )
