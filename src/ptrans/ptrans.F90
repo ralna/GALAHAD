@@ -122,7 +122,7 @@
 
 !  Transform f
 
-     CALL PTRANS_trans( n, 0, trans, 0.0_rp_, f = f )
+     CALL PTRANS_trans( n, 0_ip_, trans, 0.0_rp_, f = f )
 
      inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
      RETURN
@@ -205,7 +205,7 @@
 
 !  Transform f
 
-     CALL PTRANS_trans( n, 0, trans, 0.0_rp_, f = f )
+     CALL PTRANS_trans( n, 0_ip_, trans, 0.0_rp_, f = f )
 
 !  Possibly transform the gradient
 
@@ -853,7 +853,7 @@
 
 !  Transform f
 
-     CALL PTRANS_trans( n, 0, trans, 0.0_rp_, f = f )
+     CALL PTRANS_trans( n, 0_ip_, trans, 0.0_rp_, f = f )
 
 !  Possibly transform the gradients
 
