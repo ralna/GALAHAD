@@ -19,7 +19,7 @@ PACKAGE = PRESOLVE
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_lmt make_qpt
+               make_smt make_lmt make_qpt make_space
 
 #  other packages that depend on package
 

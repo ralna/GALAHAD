@@ -862,7 +862,7 @@
                         prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
                         prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
                         prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+                        prob%ISTEPA( prob%nel + 1 ) - 1, 1_ip_, i )
          j = 2
          IF ( second ) j = 3
          CALL ELFUN_r ( FUVALS, XT, prob%EPVALU, inform%ncalcf, prob%ITYPEE,   &
@@ -879,7 +879,7 @@
                         prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
                         prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
                         prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+                        prob%ISTEPA( prob%nel + 1 ) - 1, 1_ip_, i )
        IF ( inform%status == - 3 )                                             &
          CALL ELFUN_r ( FUVALS, X_temp, prob%EPVALU,                           &
                         inform%ncalcf, prob%ITYPEE,                            &
@@ -887,7 +887,7 @@
                         prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,           &
                         prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,         &
                         prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,  &
-                        prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
+                        prob%ISTEPA( prob%nel + 1 ) - 1, 2_ip_, i )
        IF ( inform%status < 0 ) GO TO 100
 
        DEALLOCATE( ITEST, IELVAR_temp, X_temp )
@@ -1071,13 +1071,13 @@
                prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,       &
                prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                  &
                prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,           &
-               prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+               prob%ISTEPA( prob%nel + 1 ) - 1, 1_ip_, i )
            IF ( .NOT. fdgrad ) CALL ELFUN_r ( FUVALS, XT, prob%EPVALU,         &
                inform%ncalcf, prob%ITYPEE, prob%ISTAEV, prob%IELVAR,           &
                prob%INTVAR, prob%ISTADH, prob%ISTEPA, ICALCF, prob%nel,        &
                prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,    &
                prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,           &
-               prob%ISTEPA( prob%nel + 1 ) - 1, 2, i )
+               prob%ISTEPA( prob%nel + 1 ) - 1, 2_ip_, i )
          END IF
          IF ( inform%status == - 2 ) THEN
 
@@ -1293,7 +1293,7 @@
              prob%ISTEPA, ICALCF, prob%nel, prob%nel + 1,                      &
              prob%ISTAEV( prob%nel + 1 ) - 1, prob%nel + 1,                    &
              prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n,             &
-             prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+             prob%ISTEPA( prob%nel + 1 ) - 1, 1_ip_, i )
          IF ( i /= 0 ) THEN
            IF ( inform%status == - 1 ) THEN
              inform%status = 13
