@@ -119,9 +119,9 @@ jobs:
             echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
             echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           fi
-          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            echo "PATH=$PATH;$GITHUB_WORKSPACE\\deps\\bin;$GITHUB_WORKSPACE\\CUTEst\\bin" >> $GITHUB_ENV
-          fi
+          # if [[ "${{matrix.os}}" == "windows-latest" ]]; then
+          #   echo "PATH=$PATH;$GITHUB_WORKSPACE\\deps\\bin;$GITHUB_WORKSPACE\\CUTEst\\bin" >> $GITHUB_ENV
+          # fi
 
       - name: Set environment variables for OpenMP
         if: matrix.os != 'windows-latest'
@@ -275,10 +275,10 @@ jobs:
           path: builddir/meson-logs/testlog.txt
 
       - name: Install Julia
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && matrix.compiler == 'intel')
         uses: julia-actions/setup-julia@v2
 
       - name: Test GALAHAD.jl
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && matrix.compiler == 'intel')
         shell: bash
         run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
