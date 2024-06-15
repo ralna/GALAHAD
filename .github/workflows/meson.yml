@@ -144,22 +144,23 @@ jobs:
 
 
       - name: Install CUTEst
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-latest' || matrix.compiler != 'intel'
         shell: bash
         run: |
+          VERSION_CUTEST="2.1.1"
           INT64="false"
           if [[ "${{matrix.int}}" == "64" ]]; then
             INT64="true"
           fi
           cd ..
           if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.zip
-            unzip v2.1.0.zip
+            wget https://github.com/ralna/CUTEst/archive/refs/tags/v${VERSION_CUTEST}.zip
+            unzip v${VERSION_CUTEST}.zip
           else
-            wget https://github.com/ralna/CUTEst/archive/refs/tags/v2.1.0.tar.gz
-            tar -xzvf v2.1.0.tar.gz
+            wget https://github.com/ralna/CUTEst/archive/refs/tags/v${VERSION_CUTEST}.tar.gz
+            tar -xzvf v${VERSION_CUTEST}.tar.gz
           fi
-          cd CUTEst-2.1.0
+          cd CUTEst-${VERSION_CUTEST}
           meson setup builddir --buildtype=debug \
                                --prefix=$CUTEST \
                                -Ddefault_library=shared \
