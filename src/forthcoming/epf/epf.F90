@@ -347,6 +347,10 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_u
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU_u
 
 !  local copy of control parameters
 
@@ -1088,6 +1092,22 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
+     array_name = 'EPF: data%NU_l'
+     CALL SPACE_resize_array( nlp%n, data%NU_l, inform%status,                 &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'EPF: data%NU_u'
+     CALL SPACE_resize_array( nlp%n, data%NU_u, inform%status,                 &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
      array_name = 'EPF: data%V_l'
      CALL SPACE_resize_array( nlp%n, data%V_l, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
@@ -1132,6 +1152,22 @@
 
      array_name = 'EPF: data%Y_u'
      CALL SPACE_resize_array( nlp%m, data%Y_u, inform%status,                  &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'EPF: data%MU_l'
+     CALL SPACE_resize_array( nlp%m, data%MU_l, inform%status,                 &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'EPF: data%MU_u'
+     CALL SPACE_resize_array( nlp%m, data%MU_u, inform%status,                 &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1496,46 +1532,76 @@
      END IF
 write(6,*) ' f, ||c|| = ', inform%obj, c_norm
 
-data%mu = c_norm
+!  initialize the penalty parameters
+
+!  for the simple boun constraints
+
+     DO j = 1, nlp%n
+       IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+         data%NU_l( j ) = MAX( one, ( nlp%X_l( j ) - nlp%X( j ) ) )
+       ELSE
+         data%NU_l( j ) = zero
+       END IF
+       IF ( nlp%X_u( j ) <= control%infinity ) THEN
+         data%NU_u( j ) = MAX( one, ( nlp%X_u( j ) - nlp%X( j ) ) )
+       ELSE
+         data%NU_u( j ) = zero
+       END IF
+     END DO
+
+!  for the general constraints
+
+     DO i = 1, nlp%m
+       IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+         data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
+       ELSE
+         data%MU_l( i ) = zero
+       END IF
+       IF ( nlp%C_u( i ) <= control%infinity ) THEN
+         data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
+       ELSE
+         data%MU_u( i ) = zero
+       END IF
+     END DO
 
 !  compute the individual and combined dual-variable 
 
-!    z_j^l(x,mu) = v_j^l e^((x_j^l-x_j)/mu)
-!    z_j^u(x,mu) = v_j^u e^((x_j-x_j^u)/mu)
-!    z_j(x,mu) = - z_j^l(x,mu) + z_j^u(x,mu)
-!    Dz_jj(x,mu) = [z_j^l(x,mu) + z_j^u(x,mu)]/mu
+!    z_j^l(x,nu) = v_j^l e^((x_j^l-x_j)/nu^l_j)
+!    z_j^u(x,uu) = v_j^u e^((x_j-x_j^u)/nu^u_j)
+!    z_j(x,nu) = - z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)
+!    Dz_jj(x,nu) = z_j^l(x,nu^l_j)/nu^l_j + z_j^u(x,nu^u_j)/nu^u_j
 
 !  & Lagrange-multiplier estimates, 
 
-!    y_i^l(x,mu) = w_i^l e^((c_i^l-c_i(x))/mu)
-!    y_i^u(x,mu) = w_i^u e^((c_i(x)-c_i^u)/mu)
-!    y_i(x,mu) = - y_i^l(x,mu) + y_i^u(x,mu)
-!    Dy_ii(x,mu) = [y_i^l(x,mu) + y_i^u(x,mu)]/mu
+!    y_i^l(x,mu) = w_i^l e^((c_i^l-c_i(x))/mu^l_i)
+!    y_i^u(x,mu) = w_i^u e^((c_i(x)-c_i^u)/mu^u_i)
+!    y_i(x,mu) = - y_i^l(x,mu^l_i) + y_i^u(x,mu^u_i)
+!    Dy_ii(x,mu) = y_i^l(x,mu^l_i)/mu^l_i + y_i^u(x,mu^u_i)/mu^u_i
 
 !  and the total penalty term
 
-!    sum_j=1^n [z_j^l(x,mu) + z_j^u(x,mu)] + 
-!    sum_i=1^m [y_i^l(x,mu) + y_i^u(x,mu)]
+!    sum_j=1^n [z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)] + 
+!    sum_i=1^m [y_i^l(x,mu^l_i) + y_i^u(x,mu^u_i)]
 
 !  for the dual variables:
 
      penalty_term = zero
      DO j = 1, nlp%n
        IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-         data%Z_l( j )                                                         &
-           = data%V_l( j ) * EXP( ( nlp%X_l( j ) - nlp%X( j ) ) / data%mu )
+         data%Z_l( j ) = data%V_l( j ) *                                       &
+           EXP( ( nlp%X_l( j ) - nlp%X( j ) ) / data%NU_l( j ) )
          nlp%Z( j ) = - data%Z_l( j )
-         data%Dz( j ) = data%Z_l( j ) / data%mu
+         data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
          penalty_term = penalty_term + data%Z_l( j )
        ELSE
          nlp%Z( j ) = zero
          data%Dz( j ) = zero
        END IF
        IF ( nlp%X_u( j ) <= control%infinity ) THEN
-         data%Z_u( j )                                                         &
-           = data%V_u( j ) * EXP( ( nlp%X( j ) - nlp%X_u( j ) ) / data%mu )
+         data%Z_u( j ) = data%V_u( j ) *                                       &
+           EXP( ( nlp%X( j ) - nlp%X_u( j ) ) / data%NU_u( j ) )
          nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
-         data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%mu
+         data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
          penalty_term = penalty_term + data%Z_u( j )
        END IF
      END DO
@@ -1544,28 +1610,28 @@ data%mu = c_norm
 
      DO i = 1, nlp%m
        IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-         data%Y_l( i )                                                         &
-           = data%W_l( i ) * EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%mu )
+         data%Y_l( i ) = data%W_l( i ) *                                       &
+           EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i ) )
          nlp%Y( i ) = - data%Y_l( i )
-         data%Dy( i ) = data%Y_l( i ) / data%mu
+         data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
          penalty_term = penalty_term + data%Y_l( i )
        ELSE
          nlp%Y( i ) = zero
          data%Dy( i ) = zero
        END IF
        IF ( nlp%C_u( i ) <= control%infinity ) THEN
-         data%Y_u( i )                                                         &
-           = data%W_u( i ) * EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%mu )
+         data%Y_u( i ) = data%W_u( i ) *                                       &
+           EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i ) )
          nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
-         data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%mu
+         data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
          penalty_term = penalty_term + data%Y_u( i )
        END IF
      END DO
 
 !  compute the value of the penalty function
 
-!    phi(x,mu) = f(x) + mu sum_j=1^n [ z_j^l(x,mu) + z_j^u(x,mu) ] +
-!                     + mu sum_i=1^m [ w_i^l(x,mu) + w_i^u(x,mu) ]
+!    phi(x,mu) = f(x) + sum_j=1^n [ nu^y_i z_j^l(x,mu) + nu^u_i z_j^u(x,mu) ] +
+!                     + sum_i=1^m [ mu^l_i w_i^l(x,mu) + mu^u_i w_i^u(x,mu) ]
 
      data%epf%f = nlp%f + data%mu * penalty_term
      IF ( data%printi ) WRITE( data%out, "( ' penalty value =', ES22.14 )" )   &
@@ -1689,9 +1755,32 @@ data%mu = c_norm
 write(6,*) ' stopping'
 stop
 
+
+  CALL TRU_initialize( data%tru_data, control%tru_control, inform%tru_inform ) ! Initialize control parameters
+!  control%print_level = 1
+   control%hessian_available = .FALSE.          ! Hessian products will be used
+!  control%psls_control%preconditioner = - 3    ! Apply uesr's preconditioner
+   inform%tru_inform%status = 1                            ! Set for initial entry
+   DO                                           ! Loop to solve problem
+     CALL TRU_solve( data%epf, control%tru_control, inform%tru_inform,   &
+                     data%tru_data, userdata )
+     SELECT CASE ( inform%tru_inform%status )   ! reverse communication
+     CASE ( 2 )                      ! Obtain the objective and constraint functions
+       data%eval_status = 0          ! record successful evaluation
+     CASE ( 3 )                      ! Obtain the gradient and Jacoboan
+       data%eval_status = 0          ! record successful evaluation
+     CASE ( 4 )                      ! Obtain the Hessian
+       data%eval_status = 0          ! record successful evaluation
+     CASE DEFAULT                    ! Terminal exit from loop
+       EXIT
+     END SELECT
+   END DO
+
+
+
 !  compute the norm of the projected gradient
 
-     data%W( : nlp%n ) = EPF_projection( nlp%n,                                &
+     data%W( : data%epf%n ) = EPF_projection( nlp%n,                                &
         nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
      inform%dual_infeasibility                                                 &
        = TWO_NORM(  data%epf%G( : nlp%n ) - data%W( : nlp%n ) )
@@ -2199,6 +2288,30 @@ stop
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'EPF: data%MU_l'
+     CALL SPACE_dealloc_array( data%MU_l,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%MU_u'
+     CALL SPACE_dealloc_array( data%MU_u,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%NU_l'
+     CALL SPACE_dealloc_array( data%NU_l,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%NU_u'
+     CALL SPACE_dealloc_array( data%NU_u,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'EPF: data%JT%row'
      CALL SPACE_dealloc_array( data%JT%row,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2540,7 +2653,7 @@ stop
           SMT_get( A%type ) == 'COORDINATE' ) THEN
        DO j = 1, A%n
 
-!  flag all entries in the j-th column by setting the component of IW > 0
+!  flag all entries in the j-th column of A by setting the component of IW > 0
 
          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
            IW( A%row( l ) ) = l
@@ -2559,7 +2672,7 @@ stop
              MAP_B( ORDER( l ) ) = IW( i )
              IF ( diagonal .AND. i == j ) THEN
                diagonal = .FALSE.
-               MAP_D( j ) = l
+               MAP_D( j ) = IW( i )
              END IF
            ELSE
              IF ( diagonal .AND. i == j ) diagonal = .FALSE.
@@ -2577,6 +2690,7 @@ stop
      ELSE ! dense A
        ll = 0
        DO j = 1, A%n
+         MAP_D( j ) = ll + 1
          DO i = 1, A%m
            ll = ll + 1
            IW( i ) = ll
