@@ -35,10 +35,14 @@ typedef int ipc_;  // integer precision
 
 // C long integer 
 
+#ifdef INTEGER_64
+typedef int64_t longc_;
+#else
 #ifdef HSL_LEGACY
 typedef long longc_;
 #else
 typedef int64_t longc_;
+#endif
 #endif
 
 // end include guard
