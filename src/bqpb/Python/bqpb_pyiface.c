@@ -781,7 +781,7 @@ static PyObject* py_bqpb_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_SOLVE_QP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
+static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val;
     PyArrayObject *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_z;
@@ -794,9 +794,10 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idOiOOOOO", &n, &f, &py_g,
-                         &H_ne, &py_H_val, &py_x_l, &py_x_u,
-                         &py_x, &py_z))
+    static char *kwlist[] = {"n","f","g","H_ne","H_val","x_l","x_u","x","z",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idOiOOOOO", kwlist, &n, &f, &py_g,
+                                    &H_ne, &py_H_val, &py_x_l, &py_x_u,
+                                    &py_x, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -853,7 +854,7 @@ static PyObject* py_bqpb_solve_qp(PyObject *self, PyObject *args){
 }
 //  *-*-*-*-*-*-*-*-*-*-   BQPB_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
+static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_w, *py_x0;
     PyArrayObject *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_z;
@@ -866,9 +867,10 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idOOOOOOO", &n, &f, &py_g,
-                         &py_w, &py_x0, &py_x_l, &py_x_u,
-                         &py_x, &py_z))
+    static char *kwlist[] = {"n","f","g","w","x0","x_l","x_u","x","z",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idOOOOOOO", kwlist, &n, &f, &py_g,
+                                    &py_w, &py_x0, &py_x_l, &py_x_u,
+                                    &py_x, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -961,10 +963,10 @@ static PyObject* py_bqpb_terminate(PyObject *self){
 
 /* bqpb python module method table */
 static PyMethodDef bqpb_module_methods[] = {
-    {"initialize", (PyCFunction) py_bqpb_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_bqpb_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_bqpb_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_qp", (PyCFunction) py_bqpb_solve_qp, METH_VARARGS, NULL},
-    {"solve_sldqp", (PyCFunction) py_bqpb_solve_sldqp, METH_VARARGS, NULL},
+    {"solve_qp", (PyCFunction) py_bqpb_solve_qp, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_sldqp", (PyCFunction) py_bqpb_solve_sldqp, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_bqpb_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_bqpb_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

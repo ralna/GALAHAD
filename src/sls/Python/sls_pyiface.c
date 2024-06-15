@@ -699,10 +699,11 @@ PyObject* sls_make_inform_dict(const struct sls_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_sls_initialize(PyObject *self, PyObject *args){
+static PyObject* py_sls_initialize(PyObject *self, PyObject *args, PyObject *keywds){
     const char *solver;
 
-    if(!PyArg_ParseTuple(args, "s", &solver))
+    static char *kwlist[] = {"solver", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "s", kwlist, &solver))
         return NULL;
 
     // Call sls_initialize
@@ -832,7 +833,7 @@ static PyObject* py_sls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_SOLVE_SYSTEM  -*-*-*-*-*-*-*-*
 
-static PyObject* py_sls_solve_system(PyObject *self, PyObject *args){
+static PyObject* py_sls_solve_system(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_sol;
     double *sol;
     int n;
@@ -842,7 +843,8 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iO", &n, &py_sol))
+    static char *kwlist[] = {"n", "b", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iO", kwlist, &n, &py_sol))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -873,7 +875,7 @@ static PyObject* py_sls_solve_system(PyObject *self, PyObject *args){
 
 //  *-*-*-*-*-*-*-*-*-*-   SLS_PARTIAL_SOLVE_SYSTEM  -*-*-*-*-*-*-*-*
 
-static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args){
+static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_b;
     const char part;
     double *sol;
@@ -884,7 +886,8 @@ static PyObject* py_sls_partial_solve_system(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "siO", &part, &n, &py_b))
+    static char *kwlist[] = {"part", "n", "b", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "siO", kwlist, &part, &n, &py_b))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -957,13 +960,13 @@ static PyObject* py_sls_terminate(PyObject *self){
 
 /* sls python module method table */
 static PyMethodDef sls_module_methods[] = {
-    {"initialize", (PyCFunction) py_sls_initialize, METH_VARARGS,NULL},
-    {"analyse_matrix", (PyCFunction) py_sls_analyse_matrix, METH_VARARGS, NULL},
+    {"initialize", (PyCFunction) py_sls_initialize, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"analyse_matrix", (PyCFunction) py_sls_analyse_matrix, METH_VARARGS | METH_KEYWORDS, NULL},
     {"factorize_matrix", (PyCFunction) py_sls_factorize_matrix,
-      METH_VARARGS, NULL},
-    {"solve_system", (PyCFunction) py_sls_solve_system, METH_VARARGS, NULL},
+      METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_system", (PyCFunction) py_sls_solve_system, METH_VARARGS | METH_KEYWORDS, NULL},
     {"partial_solve_system", (PyCFunction) py_sls_partial_solve_system,
-      METH_VARARGS, NULL},
+      METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_sls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_sls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

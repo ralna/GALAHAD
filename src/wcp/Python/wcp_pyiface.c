@@ -659,7 +659,7 @@ static PyObject* py_wcp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   WCP_FIND_WCP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args){
+static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y_l, *py_y_u, *py_z_l, *py_z_u, *py_g;
@@ -672,9 +672,11 @@ static PyObject* py_wcp_find_wcp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiiOOOOOOOOOO|O", &n, &m,
-                         &A_ne, &py_A_val, &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y_l, &py_y_u, &py_z_l, &py_z_u, &py_g))
+    static char *kwlist[] = {"n", "m", "A_ne", "A_val", "c_l", "c_u", "x_l", "x_u",
+                             "x", "y_l", "y_u", "z_l", "z_u", "g", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOOOOOOOOO|O", kwlist, &n, &m,
+                                    &A_ne, &py_A_val, &py_c_l, &py_c_u, &py_x_l, &py_x_u,
+                                    &py_x, &py_y_l, &py_y_u, &py_z_l, &py_z_u, &py_g))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -797,9 +799,9 @@ static PyObject* py_wcp_terminate(PyObject *self){
 
 /* wcp python module method table */
 static PyMethodDef wcp_module_methods[] = {
-    {"initialize", (PyCFunction) py_wcp_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_wcp_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_wcp_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"find_wcp", (PyCFunction) py_wcp_find_wcp, METH_VARARGS, NULL},
+    {"find_wcp", (PyCFunction) py_wcp_find_wcp, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_wcp_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_wcp_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

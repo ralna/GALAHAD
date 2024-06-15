@@ -769,7 +769,7 @@ static PyObject* py_bllsb_load(PyObject *self, PyObject *args, PyObject *keywds)
 
 //  *-*-*-*-*-*-*-*-*-*-   BLLSB_SOLVE_BLLS   -*-*-*-*-*-*-*-*
 
-static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args){
+static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_Ao_val, *py_b, *py_x_l, *py_x_u, *py_w;
     PyArrayObject *py_x, *py_z;
     double *Ao_val, *b, *x_l, *x_u, *w, *x, *z;
@@ -781,9 +781,10 @@ static PyObject* py_bllsb_solve_blls(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiiOOdOOOOO", &n, &o,
-                         &Ao_ne, &py_Ao_val, &py_b, &sigma,
-                         &py_x_l, &py_x_u, &py_x, &py_z, &py_w))
+    static char *kwlist[] = {"n","o","Ao_ne","Ao_val","b","sigma","x_l","x_u","x","z","w",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOdOOOOO", kwlist, &n, &o,
+                                    &Ao_ne, &py_Ao_val, &py_b, &sigma,
+                                    &py_x_l, &py_x_u, &py_x, &py_z, &py_w))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -886,7 +887,7 @@ static PyObject* py_bllsb_terminate(PyObject *self){
 static PyMethodDef bllsb_module_methods[] = {
     {"initialize", (PyCFunction) py_bllsb_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_bllsb_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_bllsb", (PyCFunction) py_bllsb_solve_blls, METH_VARARGS, NULL},
+    {"solve_bllsb", (PyCFunction) py_bllsb_solve_blls, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_bllsb_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_bllsb_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

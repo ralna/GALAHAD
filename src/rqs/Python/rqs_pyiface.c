@@ -800,7 +800,7 @@ static PyMethodDef rqs_module_methods[] = {
     {"load", (PyCFunction) py_rqs_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"load_m", (PyCFunction) py_rqs_load_m, METH_VARARGS | METH_KEYWORDS, NULL},
     {"load_a", (PyCFunction) py_rqs_load_a, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_rqs_solve_problem, METH_VARARGS, NULL},
+    {"solve_problem", (PyCFunction) py_rqs_solve_problem, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_rqs_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_rqs_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

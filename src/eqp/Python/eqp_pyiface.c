@@ -571,7 +571,7 @@ static PyObject* py_eqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   EQP_SOLVE_QP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
+static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val, *py_A_val;
     PyArrayObject *py_c, *py_x, *py_y;
     double *g, *H_val, *A_val, *c, *x, *y;
@@ -583,9 +583,11 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOO", &n, &m, &f, &py_g,
-                         &H_ne, &py_H_val, &A_ne, &py_A_val,
-                         &py_c, &py_x, &py_y))
+    static char *kwlist[] = {"n", "m", "f", "g", "H_ne", "H_val", "A_ne", "A_val",
+                             "c", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOiOiOOOO", kwlist, &n, &m, &f, &py_g,
+                                    &H_ne, &py_H_val, &A_ne, &py_A_val,
+                                    &py_c, &py_x, &py_y))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -634,7 +636,7 @@ static PyObject* py_eqp_solve_qp(PyObject *self, PyObject *args){
 }
 //  *-*-*-*-*-*-*-*-*-*-   EQP_SOLVE_SLDQP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
+static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
     PyArrayObject *py_c, *py_x, *py_y;
     double *g, *w, *x0, *A_val, *c, *x, *y;
@@ -646,9 +648,11 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOO", &n, &m, &f, &py_g,
-                         &py_w, &py_x0, &A_ne, &py_A_val,
-                         &py_c, &py_x, &py_y))
+    static char *kwlist[] = {"n", "m", "f", "g", "w", "x0", "A_ne", "A_val",
+                             "c", "x", "y", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOO", &n, &m, &f, &py_g,
+                                    &py_w, &py_x0, &A_ne, &py_A_val,
+                                    &py_c, &py_x, &py_y))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -733,10 +737,10 @@ static PyObject* py_eqp_terminate(PyObject *self){
 
 /* eqp python module method table */
 static PyMethodDef eqp_module_methods[] = {
-    {"initialize", (PyCFunction) py_eqp_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_eqp_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_eqp_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_qp", (PyCFunction) py_eqp_solve_qp, METH_VARARGS, NULL},
-    {"solve_sldqp", (PyCFunction) py_eqp_solve_sldqp, METH_VARARGS, NULL},
+    {"solve_qp", (PyCFunction) py_eqp_solve_qp, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_sldqp", (PyCFunction) py_eqp_solve_sldqp, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_eqp_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_eqp_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

@@ -133,11 +133,12 @@ PyObject* hash_make_inform_dict(const struct hash_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   HASH_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
- static PyObject* py_hash_initialize(PyObject *self, PyObject *args){
+ static PyObject* py_hash_initialize(PyObject *self, PyObject *args, PyObject *keywds){
     int nchar, length;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "ii", &nchar, &length))
+    static char *kwlist[] = {"nchar", "length", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "ii", kwlist, &nchar, &length))
         return NULL;
 
     // Call hash_initialize
@@ -188,7 +189,7 @@ static PyObject* py_hash_terminate(PyObject *self){
 
 /* hash python module method table */
 static PyMethodDef hash_module_methods[] = {
-    {"initialize", (PyCFunction) py_hash_initialize, METH_VARARGS, NULL},
+    {"initialize", (PyCFunction) py_hash_initialize, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_hash_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_hash_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

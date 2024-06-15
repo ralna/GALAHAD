@@ -503,10 +503,10 @@ static PyObject* py_slls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   SLLS_SOLVE_LS   -*-*-*-*-*-*-*-*
 
-static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args){
-    PyArrayObject *py_w, *py_Ao_val;
+static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_Ao_val;
     PyArrayObject *py_b, *py_x, *py_z;
-    double *w, *Ao_val, *b, *x, *z;
+    double *Ao_val, *b, *x, *z;
     int n, o, Ao_ne;
 
     // Check that package has been initialised
@@ -514,8 +514,9 @@ static PyObject* py_slls_solve_ls(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiiOOOO", &n, &o,
-                         &Ao_ne, &py_Ao_val, &py_b, &py_x, &py_z))
+    static char *kwlist[] = {"n", "o", "Ao_ne", "Ao_val", "b", "x", "z", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiOOOO", kwlist, &n, &o,
+                                    &Ao_ne, &py_Ao_val, &py_b, &py_x, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -607,9 +608,9 @@ static PyObject* py_slls_terminate(PyObject *self){
 
 /* slls python module method table */
 static PyMethodDef slls_module_methods[] = {
-    {"initialize", (PyCFunction) py_slls_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_slls_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_slls_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_ls", (PyCFunction) py_slls_solve_ls, METH_VARARGS, NULL},
+    {"solve_ls", (PyCFunction) py_slls_solve_ls, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_slls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_slls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

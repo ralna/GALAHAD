@@ -347,7 +347,7 @@ PyObject* psls_make_inform_dict(const struct psls_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   PSLS_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_psls_initialize(PyObject *self, PyObject *args){
+static PyObject* py_psls_initialize(PyObject *self){
 
     // Call psls_initialize
     psls_initialize(&data, &control, &status);
@@ -524,7 +524,7 @@ static PyObject* py_psls_form_subset_preconditioner(PyObject *self, PyObject *ar
 
 //  *-*-*-*-*-*-*-*-*-*-   PSLS_APPLY_PRECONDITIONER  -*-*-*-*-*-*-*-*
 
-static PyObject* py_psls_apply_preconditioner(PyObject *self, PyObject *args){
+static PyObject* py_psls_apply_preconditioner(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_sol;
     double *sol;
     int n;
@@ -534,7 +534,8 @@ static PyObject* py_psls_apply_preconditioner(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iO", &n, &py_sol))
+    static char *kwlist[] = {"n", "b", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iO", kwlist, &n, &py_sol))
 
     // Check that array inputs are of correct type, size, and shape
     if(!check_array_double("b", py_sol, n))
@@ -601,14 +602,14 @@ static PyObject* py_psls_terminate(PyObject *self){
 
 /* psls python module method table */
 static PyMethodDef psls_module_methods[] = {
-    {"initialize", (PyCFunction) py_psls_initialize, METH_NOARGS,NULL},
-    {"load", (PyCFunction) py_psls_load, METH_VARARGS, NULL},
+    {"initialize", (PyCFunction) py_psls_initialize, METH_NOARGS, NULL},
+    {"load", (PyCFunction) py_psls_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"form_preconditioner",
-      (PyCFunction) py_psls_form_preconditioner, METH_VARARGS, NULL},
+      (PyCFunction) py_psls_form_preconditioner, METH_VARARGS | METH_KEYWORDS, NULL},
     {"form_subset_preconditioner",
-      (PyCFunction) py_psls_form_subset_preconditioner, METH_VARARGS, NULL},
+      (PyCFunction) py_psls_form_subset_preconditioner, METH_VARARGS | METH_KEYWORDS, NULL},
     {"apply_preconditioner",
-      (PyCFunction) py_psls_apply_preconditioner, METH_VARARGS, NULL},
+      (PyCFunction) py_psls_apply_preconditioner, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_psls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_psls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

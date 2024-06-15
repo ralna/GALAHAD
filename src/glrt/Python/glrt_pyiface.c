@@ -317,7 +317,7 @@ static PyObject* py_glrt_load_options(PyObject *self, PyObject *args,
 
 //  *-*-*-*-*-*-*-*-*-*-   GLRT_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
-static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args){
+static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_r, *py_v;
     double *r, *v;
     int status, n;
@@ -328,8 +328,9 @@ static PyObject* py_glrt_solve_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiddOO", &status, &n, &power, &weight,
-                         &py_r, &py_v))
+    static char *kwlist[] = {"status", "n", "power", "weight", "r", "v", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiddOO", kwlist, &status, &n, &power, &weight,
+                                    &py_r, &py_v))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -406,10 +407,10 @@ static PyObject* py_glrt_terminate(PyObject *self){
 
 /* glrt python module method table */
 static PyMethodDef glrt_module_methods[] = {
-    {"initialize", (PyCFunction) py_glrt_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_glrt_initialize, METH_NOARGS, NULL},
     {"load_options", (PyCFunction) py_glrt_load_options,
      METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_glrt_solve_problem, METH_VARARGS, NULL},
+    {"solve_problem", (PyCFunction) py_glrt_solve_problem, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_glrt_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_glrt_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
