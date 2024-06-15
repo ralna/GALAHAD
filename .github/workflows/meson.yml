@@ -107,7 +107,6 @@ jobs:
           # tar -xzvf OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
 
       - name: Set the environment variables LIBRARY_PATH, LD_LIBRARY_PATH and DYLD_LIBRARY_PATH
-        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
@@ -121,7 +120,7 @@ jobs:
             echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           fi
           # if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-          #   echo "PATH=$PATH:/d/a/GALAHAD/GALAHAD/../deps/bin:/d/a/GALAHAD/GALAHAD/../CUTEst/lib" >> $GITHUB_ENV
+          #   echo "PATH=$PATH;$GITHUB_WORKSPACE\\deps\\bin;$GITHUB_WORKSPACE\\CUTEst\\bin" >> $GITHUB_ENV
           # fi
 
       - name: Set environment variables for OpenMP
@@ -206,13 +205,13 @@ jobs:
             CUTEST_SINGLE="cutest_single_64"
             CUTEST_DOUBLE="cutest_double_64"
           fi
-          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
+          if [[ ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SHARED_STATIC="static"
           fi
-          if [[ ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) || ( "${{matrix.compiler}}" == "intel-classic" && "${{matrix.os}}" == "macos-13" ) ]]; then
+          if [[ ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             PYTHON_INTERFACE="false"
           fi
-          if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
+          if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" ]]; then
             SSIDS="false"
           fi
 
@@ -234,8 +233,8 @@ jobs:
                                -Dc_link_args=${LD_CLASSIC} \
                                -Dlibcutest_single=$CUTEST_SINGLE \
                                -Dlibcutest_double=$CUTEST_DOUBLE \
-                               -Dlibcutest_single_path=$CUTEST/lib \
-                               -Dlibcutest_double_path=$CUTEST/lib \
+                               -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
+                               -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
                                -Dlibcutest_single_modules=../CUTEst/modules \
                                -Dlibcutest_double_modules=../CUTEst/modules
                                # -Db_sanitize=address,undefined
@@ -276,10 +275,10 @@ jobs:
           path: builddir/meson-logs/testlog.txt
 
       - name: Install Julia
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && matrix.compiler == 'intel')
         uses: julia-actions/setup-julia@v2
 
       - name: Test GALAHAD.jl
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && (matrix.compiler == 'intel' || matrix.compiler == 'intel-classic'))
+        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && matrix.compiler == 'intel')
         shell: bash
         run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
