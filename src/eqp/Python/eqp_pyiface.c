@@ -650,7 +650,7 @@ static PyObject* py_eqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
     // Parse positional arguments
     static char *kwlist[] = {"n", "m", "f", "g", "w", "x0", "A_ne", "A_val",
                              "c", "x", "y", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOO", &n, &m, &f, &py_g,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOO", kwlist, &n, &m, &f, &py_g,
                                     &py_w, &py_x0, &A_ne, &py_A_val,
                                     &py_c, &py_x, &py_y))
         return NULL;
