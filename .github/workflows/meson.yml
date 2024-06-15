@@ -211,7 +211,7 @@ jobs:
           if [[ ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             PYTHON_INTERFACE="false"
           fi
-          if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" ]]; then
+          if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
             SSIDS="false"
           fi
 
