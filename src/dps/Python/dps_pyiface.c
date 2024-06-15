@@ -388,7 +388,7 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_TR_PROBLEM   -*-*-*-*-*-*-*-*
 
-static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args){
+static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val, *py_M_val, *py_A_val;
     double *g, *H_val, *M_val, *A_val;
     int n, m, H_ne, M_ne, A_ne;
@@ -399,8 +399,9 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iddOiO", &n, &radius, &f, &py_g,
-                         &H_ne, &py_H_val))
+    static char *kwlist[] = {"n","radius","f","g","H_ne","H_val",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iddOiO", kwlist, &n, &radius, &f, &py_g,
+                                    &H_ne, &py_H_val))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -442,7 +443,7 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args){
 
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_RQ_PROBLEM   -*-*-*-*-*-*-*-*
 
-static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args){
+static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val, *py_M_val, *py_A_val;
     double *g, *H_val, *M_val, *A_val;
     int n, m, H_ne, M_ne, A_ne;
@@ -453,8 +454,9 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "idddOiO", &n, &power, &weight, &f, &py_g,
-                         &H_ne, &py_H_val))
+    static char *kwlist[] = {"n","power","weight","f","g","H_ne","H_val",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n, &power, &weight, &f, &py_g,
+                                    &H_ne, &py_H_val))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -535,12 +537,12 @@ static PyObject* py_dps_terminate(PyObject *self){
 
 /* dps python module method table */
 static PyMethodDef dps_module_methods[] = {
-    {"initialize", (PyCFunction) py_dps_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_dps_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_dps_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_tr_problem", (PyCFunction) py_dps_solve_tr_problem,
-     METH_VARARGS, NULL},
+     METH_VARARGS | METH_KEYWORDS, NULL},
     {"solve_rq_problem", (PyCFunction) py_dps_solve_rq_problem,
-     METH_VARARGS, NULL},
+     METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_dps_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_dps_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

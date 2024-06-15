@@ -846,7 +846,7 @@ static PyObject* py_qpb_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   QPB_SOLVE_QP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args){
+static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_H_val, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
@@ -859,10 +859,12 @@ static PyObject* py_qpb_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOiOiOOOOOOOO", &n, &m, &f, &py_g,
-                         &H_ne, &py_H_val, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
+    static char *kwlist[] = {"n", "m", "f", "g", "H_ne", "H_val", "A_ne", "A_val",
+                      "c_l", "c_u", "x_l", "x_u", "x", "y", "z", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOiOiOOOOOOOO", kwlist, &n, &m, &f, &py_g,
+                                    &H_ne, &py_H_val, &A_ne, &py_A_val,
+                                    &py_c_l, &py_c_u, &py_x_l, &py_x_u,
+                                    &py_x, &py_y, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -976,9 +978,9 @@ static PyObject* py_qpb_terminate(PyObject *self){
 
 /* qpb python module method table */
 static PyMethodDef qpb_module_methods[] = {
-    {"initialize", (PyCFunction) py_qpb_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_qpb_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_qpb_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_qp", (PyCFunction) py_qpb_solve_qp, METH_VARARGS, NULL},
+    {"solve_qp", (PyCFunction) py_qpb_solve_qp, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_qpb_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_qpb_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

@@ -697,7 +697,7 @@ static PyObject* py_lsqp_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   LSQP_SOLVE_QP   -*-*-*-*-*-*-*-*
 
-static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args){
+static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_g, *py_w, *py_x0, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
@@ -710,10 +710,12 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iidOOOiOOOOOOOO", &n, &m, &f, &py_g,
-                         &py_w, &py_x0, &A_ne, &py_A_val,
-                         &py_c_l, &py_c_u, &py_x_l, &py_x_u,
-                         &py_x, &py_y, &py_z))
+    static char *kwlist[] = {"n", "m", "f", "g", "w", "x0", "A_ne", "A_val",
+                             "c_l", "c_u", "x_l", "x_u", "x", "y", "z", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOOOOOO", kwlist, &n, &m, &f, &py_g,
+                                    &py_w, &py_x0, &A_ne, &py_A_val,
+                                    &py_c_l, &py_c_u, &py_x_l, &py_x_u,
+                                    &py_x, &py_y, &py_z))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -828,9 +830,9 @@ static PyObject* py_lsqp_terminate(PyObject *self){
 
 /* lsqp python module method table */
 static PyMethodDef lsqp_module_methods[] = {
-    {"initialize", (PyCFunction) py_lsqp_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_lsqp_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_lsqp_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_qp", (PyCFunction) py_lsqp_solve_qp, METH_VARARGS, NULL},
+    {"solve_qp", (PyCFunction) py_lsqp_solve_qp, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_lsqp_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_lsqp_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

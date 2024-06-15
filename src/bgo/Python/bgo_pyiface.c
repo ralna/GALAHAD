@@ -536,7 +536,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   BGO_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
+static PyObject* py_bgo_solve(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_x;
     PyObject *temp_f, *temp_g, *temp_h;
     double *x;
@@ -547,8 +547,9 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiOOOO", &n, &H_ne, &py_x,
-                         &temp_f, &temp_g, &temp_h ))
+    static char *kwlist[] = {"n","H_ne","x","eval_f","eval_g","eval_h",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOOO", kwlist, &n, &H_ne, &py_x,
+                                    &temp_f, &temp_g, &temp_h ))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -644,7 +645,7 @@ static PyObject* py_bgo_terminate(PyObject *self){
 static PyMethodDef bgo_module_methods[] = {
     {"initialize", (PyCFunction) py_bgo_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_bgo_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve", (PyCFunction) py_bgo_solve, METH_VARARGS, NULL},
+    {"solve", (PyCFunction) py_bgo_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_bgo_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_bgo_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

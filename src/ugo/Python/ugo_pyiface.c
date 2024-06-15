@@ -438,7 +438,7 @@ static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   UGO_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_ugo_solve(PyObject *self, PyObject *args){
+static PyObject* py_ugo_solve(PyObject *self, PyObject *args, PyObject *keywds){
     PyObject *temp;
     double x, f, g, h;
 
@@ -447,7 +447,8 @@ static PyObject* py_ugo_solve(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional function argument
-    if(!PyArg_ParseTuple(args, "O:eval_fgh", &temp))
+    static char *kwlist[] = {"eval_fgh", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "O:eval_fgh", kwlist, &temp))
         return NULL;
     if(!check_callable(temp)) // Check that function is callable
         return NULL;
@@ -511,7 +512,7 @@ static PyObject* py_ugo_terminate(PyObject *self){
 static PyMethodDef ugo_module_methods[] = {
     {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS, NULL},
+    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_ugo_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

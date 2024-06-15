@@ -615,10 +615,10 @@ static PyObject* py_llsr_terminate(PyObject *self){
 
 /* llsr python module method table */
 static PyMethodDef llsr_module_methods[] = {
-    {"initialize", (PyCFunction) py_llsr_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_llsr_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_llsr_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"load_scaling", (PyCFunction) py_llsr_load_scaling, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_llsr_solve_problem, METH_VARARGS, NULL},
+    {"solve_problem", (PyCFunction) py_llsr_solve_problem, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_llsr_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_llsr_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

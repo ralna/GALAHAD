@@ -623,10 +623,10 @@ static PyObject* py_llst_terminate(PyObject *self){
 
 /* llst python module method table */
 static PyMethodDef llst_module_methods[] = {
-    {"initialize", (PyCFunction) py_llst_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_llst_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_llst_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"load_scaling", (PyCFunction) py_llst_load_scaling, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_llst_solve_problem, METH_VARARGS, NULL},
+    {"solve_problem", (PyCFunction) py_llst_solve_problem, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_llst_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_llst_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

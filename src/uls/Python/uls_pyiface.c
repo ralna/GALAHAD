@@ -346,10 +346,11 @@ PyObject* uls_make_inform_dict(const struct uls_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   ULS_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_uls_initialize(PyObject *self, PyObject *args){
+static PyObject* py_uls_initialize(PyObject *self, PyObject *args, PyObject *keywds){
     const char *solver;
 
-    if(!PyArg_ParseTuple(args, "s", &solver))
+    static char *kwlist[] = {"solver", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "s", kwlist, &solver))
         return NULL;
 
     // Call uls_initialize
@@ -447,7 +448,7 @@ static PyObject* py_uls_factorize_matrix(PyObject *self, PyObject *args, PyObjec
 
 //  *-*-*-*-*-*-*-*-*-*-   ULS_SOLVE_SYSTEM  -*-*-*-*-*-*-*-*
 
-static PyObject* py_uls_solve_system(PyObject *self, PyObject *args){
+static PyObject* py_uls_solve_system(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_sol;
     double *sol;
     int m, n;
@@ -458,7 +459,8 @@ static PyObject* py_uls_solve_system(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiOb", &m, &n, &py_sol, &trans))
+    static char *kwlist[] = {"m", "n", "b", "trans", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOb", kwlist, &m, &n, &py_sol, &trans))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -526,10 +528,10 @@ static PyObject* py_uls_terminate(PyObject *self){
 
 /* uls python module method table */
 static PyMethodDef uls_module_methods[] = {
-    {"initialize", (PyCFunction) py_uls_initialize, METH_VARARGS,NULL},
+    {"initialize", (PyCFunction) py_uls_initialize, METH_VARARGS | METH_KEYWORDS, NULL},
     {"factorize_matrix", (PyCFunction) py_uls_factorize_matrix,
-      METH_VARARGS, NULL},
-    {"solve_system", (PyCFunction) py_uls_solve_system, METH_VARARGS, NULL},
+      METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_system", (PyCFunction) py_uls_solve_system, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_uls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_uls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

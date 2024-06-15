@@ -1421,7 +1421,7 @@ static PyObject* py_nls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   NLS_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_nls_solve(PyObject *self, PyObject *args){
+static PyObject* py_nls_solve(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_x;
     PyObject *temp_c, *temp_j, *temp_h, *temp_hprods;
     double *x;
@@ -1432,9 +1432,11 @@ static PyObject* py_nls_solve(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiOOiO|iOiO", &n, &m,
-                         &py_x, &temp_c, &J_ne, &temp_j,
-                         &H_ne, &temp_h, &P_ne, &temp_hprods))
+    static char *kwlist[] = {"n", "m", "x", "eval_c", "J_ne", "eval_j",
+                             "H_ne", "eval_h", "P_ne", "eval_hprod", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiOOiO|iOiO", kwlist, &n, &m,
+                                    &py_x, &temp_c, &J_ne, &temp_j,
+                                    &H_ne, &temp_h, &P_ne, &temp_hprods))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -1532,9 +1534,9 @@ static PyObject* py_nls_terminate(PyObject *self){
 
 /* nls python module method table */
 static PyMethodDef nls_module_methods[] = {
-    {"initialize", (PyCFunction) py_nls_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_nls_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_nls_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve", (PyCFunction) py_nls_solve, METH_VARARGS, NULL},
+    {"solve", (PyCFunction) py_nls_solve, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_nls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_nls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

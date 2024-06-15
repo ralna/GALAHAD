@@ -398,9 +398,9 @@ static PyObject* py_fdc_terminate(PyObject *self){
 
 /* fdc python module method table */
 static PyMethodDef fdc_module_methods[] = {
-    {"initialize", (PyCFunction) py_fdc_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_fdc_initialize, METH_NOARGS, NULL},
     {"find_dependent_rows", (PyCFunction) py_fdc_find_dependent_rows,
-      METH_VARARGS, NULL},
+     METH_VARARGS | METH_KEYWORDS, NULL},
     {"terminate", (PyCFunction) py_fdc_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };

@@ -684,7 +684,7 @@ static PyObject* py_sbls_factorize_matrix(PyObject *self, PyObject *args, PyObje
 
 //  *-*-*-*-*-*-*-*-*-*-   SBLS_SOLVE_SYSTEM  -*-*-*-*-*-*-*-*
 
-static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args){
+static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_sol;
     double *sol;
     int n, m;
@@ -694,7 +694,8 @@ static PyObject* py_sbls_solve_system(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiO", &n, &m, &py_sol))
+    static char *kwlist[] = {"n", "m", "rhs", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiO", kwlist, &n, &m, &py_sol))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -762,11 +763,11 @@ static PyObject* py_sbls_terminate(PyObject *self){
 
 /* sbls python module method table */
 static PyMethodDef sbls_module_methods[] = {
-    {"initialize", (PyCFunction) py_sbls_initialize, METH_NOARGS,NULL},
-    {"load", (PyCFunction) py_sbls_load, METH_VARARGS, NULL},
+    {"initialize", (PyCFunction) py_sbls_initialize, METH_NOARGS, NULL},
+    {"load", (PyCFunction) py_sbls_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"factorize_matrix", (PyCFunction) py_sbls_factorize_matrix,
-      METH_VARARGS, NULL},
-    {"solve_system", (PyCFunction) py_sbls_solve_system, METH_VARARGS, NULL},
+      METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve_system", (PyCFunction) py_sbls_solve_system, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_sbls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_sbls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

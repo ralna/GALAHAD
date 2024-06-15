@@ -818,11 +818,11 @@ static PyObject* py_trs_terminate(PyObject *self){
 
 /* trs python module method table */
 static PyMethodDef trs_module_methods[] = {
-    {"initialize", (PyCFunction) py_trs_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_trs_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_trs_load, METH_VARARGS | METH_KEYWORDS, NULL},
     {"load_m", (PyCFunction) py_trs_load_m, METH_VARARGS | METH_KEYWORDS, NULL},
     {"load_a", (PyCFunction) py_trs_load_a, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_trs_solve_problem, METH_VARARGS, NULL},
+    {"solve_problem", (PyCFunction) py_trs_solve_problem, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_trs_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_trs_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */

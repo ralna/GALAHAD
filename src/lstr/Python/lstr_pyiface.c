@@ -304,7 +304,7 @@ static PyObject* py_lstr_load_options(PyObject *self, PyObject *args, PyObject *
 
 //  *-*-*-*-*-*-*-*-*-*-   LSTR_SOLVE_PROBLEM   -*-*-*-*-*-*-*-*
 
-static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args){
+static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_u, *py_v;
     double *u, *v;
     int status, m, n;
@@ -315,8 +315,9 @@ static PyObject* py_lstr_solve_problem(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iiidOO", &status, &m, &n, &radius,
-                         &py_u, &py_v))
+    static char *kwlist[] = {"status", "m", "n", "radius", "u", "v", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiidOO", kwlist, &status, &m, &n, &radius,
+                                    &py_u, &py_v))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
@@ -392,10 +393,10 @@ static PyObject* py_lstr_terminate(PyObject *self){
 
 /* lstr python module method table */
 static PyMethodDef lstr_module_methods[] = {
-    {"initialize", (PyCFunction) py_lstr_initialize, METH_NOARGS,NULL},
+    {"initialize", (PyCFunction) py_lstr_initialize, METH_NOARGS, NULL},
     {"load_options", (PyCFunction) py_lstr_load_options,
      METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_problem", (PyCFunction) py_lstr_solve_problem, METH_VARARGS, NULL},
+    {"solve_problem", (PyCFunction) py_lstr_solve_problem, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_lstr_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_lstr_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
