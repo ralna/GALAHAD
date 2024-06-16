@@ -191,7 +191,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``slls.initialize``).
 
-   .. function:: slls.solve_ls(n, o, w, ao_ne, Ao_val, b, x, z)
+   .. function:: slls.solve_ls(n, o, Ao_ne, Ao_val, b, x, z)
 
       Find a solution to the simplex-constraind regularized linear least-squares
       problem involving the least-squares objective function $q(x)$.
@@ -202,11 +202,9 @@ functions
           holds the number of variables.
       o : int
           holds the number of residuals.
-      w : ndarray(o)
-          holds the weights $w$ in the objective function.
-      ao_ne : int
+      Ao_ne : int
           holds the number of entries in the constraint Jacobian $A_o$.
-      Ao_val : ndarray(ao_ne)
+      Ao_val : ndarray(Ao_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A_o$ in the same order as specified in the sparsity pattern in 
           ``slls.load``.

@@ -272,7 +272,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``trs.initialize``).
 
-   .. function:: trs.solve_problem(n, radius, f, g, h_ne, H_val, m_ne, M_val, m, A_ne, A_val)
+   .. function:: trs.solve_problem(n, radius, f, g, H_ne, H_val, M_ne, M_val, m, A_ne, A_val)
 
       Find the global minimizer of the quadratic objective function $q(x)$
       within the intersection of the trust-region and affine constraints.
@@ -287,28 +287,28 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``trs.load``.
-      m_ne : int
+      M_ne : int
           holds the number of entries in the lower triangular part of 
           the scaling matrix $M$ if it is not the identity matrix. 
           Otherwise it should be None.
-      M_val : ndarray(m_ne)
+      M_val : ndarray(M_ne)
           holds the values of the nonzeros in the lower triangle of the scaling
           matrix $M$ in the same order as specified in the sparsity pattern in 
           ``trs.load_m`` if needed. Otherwise it should be None.
       m : int
           holds the number of constraints.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the lower triangular part of 
           the constraint matrix $A$ if $m > 0$.
           Otherwise it should be None.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the lower triangle of the 
           constraint matrix $A$ in the same order as specified in the 
           sparsity pattern in ``trs.load_a`` if needed. 

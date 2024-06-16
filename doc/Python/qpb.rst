@@ -366,7 +366,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``qpb.initialize``).
 
-   .. function:: qpb.solve_qp(n, m, f, g, h_ne, H_val, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
+   .. function:: qpb.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the non-convex quadratic program involving the
       quadratic objective function $q(x)$.
@@ -381,16 +381,16 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``qpb.load``.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``qpb.load``.

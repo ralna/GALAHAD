@@ -199,18 +199,18 @@ functions
           holds the number of variables, $n$.
       radius : float
           holds the strictly positive trust-region radius, $\Delta$.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the model matrix $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in $A$ in the same order as 
           specified in the sparsity pattern in ``llst.load``.
       b : ndarray(m)
           holds the values of the observations $b$.
-      s_ne : int, optional
+      S_ne : int, optional
           holds the number of entries in the lower triangular part of 
           the scaling matrix $S$ if it is not the identity matrix. 
           Otherwise it should be None.
-      S_val : ndarray(s_ne), optional
+      S_val : ndarray(S_ne), optional
           holds the values of the nonzeros in the lower triangle of $S$ in 
           the same order as specified in the sparsity pattern in 
           ``llst.load_scaling`` if needed. Otherwise it should be None.

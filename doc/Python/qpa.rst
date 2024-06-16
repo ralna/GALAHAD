@@ -309,7 +309,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``qpa.initialize``).
 
-   .. function:: qpa.solve_qp(n, m, f, g, h_ne, H_val, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
+   .. function:: qpa.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the standard non-convex quadratic program 
       involving the quadratic objective function $q(x)$.
@@ -324,16 +324,16 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``qpa.load``.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``qpa.load``.
@@ -392,7 +392,7 @@ functions
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
 
-   .. function:: qpa.solve_l1qp(n, m, f, g, h_ne, H_val, rho_g, rho_b, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
+   .. function:: qpa.solve_l1qp(n, m, f, g, H_ne, H_val, rho_g, rho_b, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the non-convex quadratic program involving the
       $\mathbf{\ell_1}$ quadratic objective function $f(x;\rho_g,\rho_b)$
@@ -408,10 +408,10 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``qpa.load``.
@@ -421,9 +421,9 @@ functions
       rho_b : float
           holds the weight $\rho_b$ associated with the simple bound
           infeasibilities
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``qpa.load``.
@@ -482,7 +482,7 @@ functions
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
 
-   .. function:: qpa.solve_bcl1qp(n, m, f, g, h_ne, H_val, rho_g, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
+   .. function:: qpa.solve_bcl1qp(n, m, f, g, H_ne, H_val, rho_g, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a local solution of the non-convex quadratic program involving the
       bound-constrained $\mathbf{\ell_1}$ quadratic objective function 
@@ -498,19 +498,19 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``qpa.load``.
       rho_g : float
           holds the weight $\rho_g$ associated with the general 
           infeasibilities
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``qpa.load``.

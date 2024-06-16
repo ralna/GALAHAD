@@ -1,7 +1,7 @@
 //* \file nls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 16:30 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -55,8 +55,8 @@ static PyObject *py_eval_j = NULL;
 static PyObject *py_eval_h = NULL;
 static PyObject *py_eval_hprods = NULL;
 static PyObject *nls_solve_return = NULL;
-static PyObject *py_c = NULL;
-static PyObject *py_g = NULL;
+//static PyObject *py_c = NULL;
+//static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_c(int n, int m, const double x[], double c[],

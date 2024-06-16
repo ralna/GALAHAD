@@ -144,7 +144,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``bgo.initialize``).
 
-   .. function:: bgo.solve(n, H_ne, x, g, eval_f, eval_g, eval_h)
+   .. function:: bgo.solve(n, H_ne, x, eval_f, eval_g, eval_h)
 
       Find an approximation to the global minimizer of a given function
       subject to simple bounds on the variables using a multistart

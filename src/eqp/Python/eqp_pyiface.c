@@ -1,7 +1,7 @@
 //* \file eqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:20 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_EQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -456,12 +456,12 @@ static PyObject* py_eqp_initialize(PyObject *self){
 static PyObject* py_eqp_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
     PyArrayObject *py_A_row, *py_A_col, *py_A_ptr;
-    PyArrayObject *py_w;
+//    PyArrayObject *py_w;
     PyObject *py_options = NULL;
     int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     int *A_row = NULL, *A_col = NULL, *A_ptr = NULL;
     const char *A_type, *H_type;
-    double *w;
+//    double *w;
     int n, m, A_ne, H_ne;
 
     // Check that package has been initialised

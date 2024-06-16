@@ -291,7 +291,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``lpb.initialize``).
 
-   .. function:: lpb.solve_lp(n, m, f, g, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: lpb.solve_lp(n, m, f, g, A_ne, A_val, c_l, c_u, x_l, x_u)
 
       Find a solution to the convex quadratic program involving the
       quadratic objective function $q(x)$.
@@ -306,9 +306,9 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``lpb.load``.

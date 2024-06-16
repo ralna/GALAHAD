@@ -1,7 +1,7 @@
 //* \file rqs_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 10:50 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_RQS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *

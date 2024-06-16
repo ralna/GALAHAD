@@ -1,7 +1,7 @@
 //* \file trb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 16:50 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TRB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -54,7 +54,7 @@ static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
 static PyObject *trb_solve_return = NULL;
-static PyObject *py_g = NULL;
+//static PyObject *py_g = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){

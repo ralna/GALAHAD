@@ -648,7 +648,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``nls.initialize``).
 
-   .. function:: nls.solve(n, m, x, eval_c, j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprod)
+   .. function:: nls.solve(n, m, x, eval_c, J_ne, eval_j, H_ne, eval_h, P_ne, eval_hprod)
 
       Find an approximate local unconstrained minimizer of a given 
       least-squares function using a regularization method.
@@ -668,7 +668,7 @@ functions
 
           The components of the residual $c(x)$ evaluated at $x$ must be
           assigned to ``c``.
-      j_ne : int
+      J_ne : int
           holds the number of entries in the Jacobian $J = J(x)$.
       eval_j : callable
           a user-defined function that must have the signature:
@@ -679,7 +679,7 @@ functions
           $J(x)$ of the objective function evaluated at
           $x$ must be assigned to ``j`` in the same order as specified
           in the sparsity pattern in ``nls.load``.
-      h_ne : int, optional
+      H_ne : int, optional
           holds the number of entries in the lower triangular part of 
           the Hessian $H = H(x,y$.
           This and the following eval_h argument are only required if
@@ -693,7 +693,7 @@ functions
           The components of the nonzeros in the lower triangle of the Hessian
           $H(x,y)$ evaluated at $x$ and $y$ must be assigned to ``h`` in the 
           same order as specified in the sparsity pattern in ``nls.load``.
-      p_ne : int, optional
+      P_ne : int, optional
           holds the number of entries in the residual
           Hessian-product matrix $P = P(x,v)$.
           This and the following eval_hprod argument are only required if

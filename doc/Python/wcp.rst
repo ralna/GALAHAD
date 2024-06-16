@@ -297,7 +297,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``wcp.initialize``).
 
-   .. function:: wcp.find_wcp(n, m, g, a_ne, A_val, c_l, c_u, x_l, x_u)
+   .. function:: wcp.find_wcp(n, m, a_ne, A_val, c_l, c_u, x_l, x_u, x, y_l, y_u, z_l, z_u, g)
 
       Find a well-centered point for a given polyhedral set of linear 
       inequalities.
@@ -365,7 +365,7 @@ functions
       **Returns:**
 
       x : ndarray(n)
-          holds the values of the approximate minimizer $x$ after
+          holds the values of the well-centred point $x$ after
           a successful call.
       c : ndarray(m)
           holds the values of the residuals $c(x) = Ax$.

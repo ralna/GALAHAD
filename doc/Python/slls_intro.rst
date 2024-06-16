@@ -4,14 +4,13 @@ purpose
 The ``slls`` package uses a **preconditioned project-gradient method** to solve
 a given **simplex-constrained linear least-squares problem**.
 The aim is to minimize the (regularized) least-squares objective function
-$$q(x) = \frac{1}{2} \| A_o x - b\|_W^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
+$$q(x) = \frac{1}{2} \| A_o x - b\|^2 +  \frac{1}{2}\sigma \|x\|^2$$ 
 where the variables $x$ are required to lie within the
 **regular simplex**
 $$e^T x = 1 \;\;\mbox{and}\;\; x \geq 0,$$
-the norms $\|r\|_W = \sqrt{\sum_{i=1}^o w_i r_i^2}$
-and $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
+the norm $\|x\| = \sqrt{\sum_{i=1}^n x_i^2}$,
 $A_o$ is a given  $o$ by $n$ matrix,
-$b$, and $w$ are vectors, $\sigma \geq 0$ is a scalar, 
+$b$ is a vector, $\sigma \geq 0$ is a scalar, 
 $e$ is a vector of ones, and any of the components 
 of the vectors $x_l$ or $x_u$ may be infinite.
 The method offers the choice of direct and iterative solution of the key
@@ -27,7 +26,7 @@ Any required solution $x$ necessarily satisfies
 the **primal optimality conditions**
 $$e^T x = 1 \;\;\mbox{and}\;\; x \geq 0,$$
 the **dual optimality conditions**
-$$A_o^T W( A_o x - b) + \sigma x = \lambda e + z, \;\;\mbox{and}\;\; z \geq 0,$$
+$$A_o^T ( A_o x - b) + \sigma x = \lambda e + z, \;\;\mbox{and}\;\; z \geq 0,$$
 and the **complementary slackness conditions**
 $$x^T z = 0,$$
 for some scalar Lagrange multiplier $\lambda$, where the 
@@ -39,7 +38,7 @@ method
 
 Projected-gradient methods iterate towards a point that satisfies 
 these optimality conditions by ultimately aiming to satisfy
-$A_o^T W ( A_o x - b) + \sigma x = \lambda e + z$, while ensuring 
+$A_o^T ( A_o x - b) + \sigma x = \lambda e + z$, while ensuring 
 that the remaining conditions are satisfied at each stage.
 Appropriate norms of the amounts by which the optimality conditions
 fail to be satisfied are known as the primal and dual infeasibility, 
@@ -70,7 +69,7 @@ reference
 
 Full details are provided in
 
-  N. I. M. Gould (2022).
-  ``A projection method for bound-constrained linear least-squares''.
+  N. I. M. Gould (2023).
+  ``Linear least-squares over the unit simplex''.
   STFC-Rutherford Appleton Laboratory Computational Mathematics Group
-  Internal Report 2023-1 (2023).
+  Internal Report 2023-2.

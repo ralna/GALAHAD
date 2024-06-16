@@ -1,7 +1,7 @@
 //* \file lsqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LSQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -702,7 +702,7 @@ static PyObject* py_lsqp_solve_qp(PyObject *self, PyObject *args, PyObject *keyw
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
     double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
+    int n, m, A_ne;
     double f;
 
     // Check that package has been initialised

@@ -321,7 +321,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``arc.initialize``).
 
-   .. function:: arc.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
+   .. function:: arc.solve(n, H_ne, x, eval_f, eval_g, eval_h))
 
       Find an approximate local unconstrained minimizer of a given function
       using a regularization method.

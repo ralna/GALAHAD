@@ -280,7 +280,7 @@ static PyObject* py_sha_recover_matrix(PyObject *self, PyObject *args, PyObject 
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"ne","m","ls1","ls2","s","ly1","ly2","y",
+    static char *kwlist[] = {"ne","m","ls1","ls2","strans","ly1","ly2","ytrans",
                              "order",NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iiiiOiiO|O",

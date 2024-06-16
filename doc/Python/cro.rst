@@ -77,7 +77,7 @@ functions
           ir_options : dict
              default control options for IR (see ``ir.initialize``).
 
-   .. function:: cro.crossover_solution(n, m, m_equal, g, H_ne, H_val, H_col, H_ptr, A_ne, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u, x, y, z, c_stat, x_stat, options=None)
+   .. function:: cro.crossover_solution(n, m, m_equal, g, H_ne, H_val, H_col, H_ptr, A_ne, A_val, A_col, A_ptr, c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat, options=None)
 
       Crossover a primal-dual interior-point solution to a basic one.
 
@@ -132,22 +132,24 @@ functions
           above should be set no smaller than ``options.infinity``.
       x : ndarray(n)
           holds the values of the approximate minimizer $x$.
+      c : ndarray(m)
+          holds the values of the residuals $c(x) = Ax$.
       y : ndarray(m)
           holds the values of the Lagrange multipliers associated with the 
           general linear constraints.
       z : ndarray(n)
           holds the values of the dual variables associated with the 
           simple bound constraints.
-      c_stat : ndarray(m)
-          holds the input status for each constraint. The i-th component will 
-          be negative if the value of the $i$-th constraint $(Ax)_i$) lies on 
-          its lower bound, positive if it lies on its upper bound, and 
-          zero if it lies between bounds.
       x_stat : ndarray(n)
           holds the input status for each variable. The i-th component will be
           negative if the $i$-th variable lies on its lower bound, 
           positive if it lies on its upper bound, and zero if it lies
           between bounds.
+      c_stat : ndarray(m)
+          holds the input status for each constraint. The i-th component will 
+          be negative if the value of the $i$-th constraint $(Ax)_i$) lies on 
+          its lower bound, positive if it lies on its upper bound, and 
+          zero if it lies between bounds.
       options : dict, optional
           dictionary of control options (see ``cro.initialize``).
 
@@ -156,8 +158,6 @@ functions
       x : ndarray(n)
           holds the values of the approximate minimizer $x$ after
           a successful call.
-      c : ndarray(m)
-          holds the values of the residuals $c(x) = Ax$.
       y : ndarray(m)
           holds the values of the Lagrange multipliers associated with the 
           general linear constraints.

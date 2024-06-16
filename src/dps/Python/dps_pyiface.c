@@ -1,7 +1,7 @@
 //* \file dps_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-20 AT 10:20 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-16 AT 10:40 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_DPS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -389,9 +389,9 @@ static PyObject* py_dps_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_TR_PROBLEM   -*-*-*-*-*-*-*-*
 
 static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_g, *py_H_val, *py_M_val, *py_A_val;
-    double *g, *H_val, *M_val, *A_val;
-    int n, m, H_ne, M_ne, A_ne;
+    PyArrayObject *py_g, *py_H_val;
+    double *g, *H_val;
+    int n, H_ne;
     double radius, f;
 
     // Check that package has been initialised
@@ -444,9 +444,9 @@ static PyObject* py_dps_solve_tr_problem(PyObject *self, PyObject *args, PyObjec
 //  *-*-*-*-*-*-*-*-*-*-   DPS_SOLVE_RQ_PROBLEM   -*-*-*-*-*-*-*-*
 
 static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_g, *py_H_val, *py_M_val, *py_A_val;
-    double *g, *H_val, *M_val, *A_val;
-    int n, m, H_ne, M_ne, A_ne;
+    PyArrayObject *py_g, *py_H_val;
+    double *g, *H_val;
+    int n, H_ne;
     double power, weight, f;
 
     // Check that package has been initialised
@@ -454,8 +454,9 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
         return NULL;
 
     // Parse positional arguments
-    static char *kwlist[] = {"n","power","weight","f","g","H_ne","H_val",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n, &power, &weight, &f, &py_g,
+    static char *kwlist[] = {"n","weight","power","f","g","H_ne","H_val",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "idddOiO", kwlist, &n, 
+                                    &weight, &power, &f, &py_g,
                                     &H_ne, &py_H_val))
         return NULL;
 
@@ -477,7 +478,7 @@ static PyObject* py_dps_solve_rq_problem(PyObject *self, PyObject *args, PyObjec
 
     // Call dps_solve_problem
     dps_solve_rq_problem(&data, &status, n, H_ne, H_val, g, f,
-                         power, weight, x);
+                         weight, power, x);
     // for( int i = 0; i < n; i++) printf("x %f\n", x[i]);
 
     // Propagate any errors with the callback function

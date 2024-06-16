@@ -132,7 +132,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``dps.initialize``).
 
-   .. function:: dps.solve_tr_problem(n, radius, f, g, h_ne, H_val)
+   .. function:: dps.solve_tr_problem(n, radius, f, g, H_ne, H_val)
 
       Find the global moinimizer of the quadratic objective function $q(x)$
       within the trust-region.
@@ -147,10 +147,10 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``dps.load``.
@@ -161,7 +161,7 @@ functions
           holds the values of the approximate minimizer $x$ after
           a successful call.
 
-   .. function:: rqs.solve_rq_problem(n, weight, power, f, g, h_ne, H_val)
+   .. function:: rqs.solve_rq_problem(n, weight, power, f, g, H_ne, H_val)
 
       Find the global moinimizer of the regularized quadratic objective 
       function $r(x)$
@@ -178,10 +178,10 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``rqs.load``.

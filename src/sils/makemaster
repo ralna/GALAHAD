@@ -118,7 +118,7 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	$(MKDIR) -p  $(PYSITEPACKDIR)/galahad
 	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
-          -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lgalahad_hsl_c \
+          -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lhsl_c \
           -lgalahad -lgalahad_cutest_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
           $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(METIS) \
           $(LAPACK) $(BLAS) -lgfortran \

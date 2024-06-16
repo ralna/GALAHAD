@@ -291,19 +291,19 @@ functions
       options : dict, optional
           dictionary of control options (see ``sls.initialize``).
 
-   .. function:: sls.factorize_matrix(a_ne, A_val)
+   .. function:: sls.factorize_matrix(A_ne, A_val)
 
       Factorize the matrix $A$ prior to solution.
 
       **Parameters:**
 
-      a_ne : int
+      A_ne : int
           holds the number of entries in the lower triangular part of 
           the matrix $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $A$ in the same order as specified in the sparsity pattern in 
-          ``sls.load``.
+          ``sls.analayse_matrix``.
 
    .. function:: sls.solve_system(n, b)
 

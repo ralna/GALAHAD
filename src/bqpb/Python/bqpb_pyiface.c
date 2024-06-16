@@ -1,7 +1,7 @@
 //* \file bqpb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-12-21 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_BQPB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -859,7 +859,7 @@ static PyObject* py_bqpb_solve_sldqp(PyObject *self, PyObject *args, PyObject *k
     PyArrayObject *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_z;
     double *g, *w, *x0, *x_l, *x_u, *x, *z;
-    int n, H_ne;
+    int n;
     double f;
 
     // Check that package has been initialised

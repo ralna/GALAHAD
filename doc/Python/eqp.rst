@@ -246,7 +246,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``eqp.initialize``).
 
-   .. function:: eqp.solve_qp(n, m, f, g, h_ne, H_val, a_ne, A_val, c, x, y)
+   .. function:: eqp.solve_qp(n, m, f, g, H_ne, H_val, A_ne, A_val, c, x, y)
 
       Find a solution to the convex quadratic program involving the
       quadratic objective function $q(x)$.
@@ -261,16 +261,16 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``eqp.load``.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``eqp.load``.
@@ -295,7 +295,7 @@ functions
           holds the values of the Lagrange multipliers associated with the 
           linear constraints.
 
-   .. function:: eqp.solve_sldqp(n, m, f, g, w, x0, a_ne, A_val, c, x, y)
+   .. function:: eqp.solve_sldqp(n, m, f, g, w, x0, A_ne, A_val, c, x, y)
 
       Find a solution to the quadratic program involving the
       shifted least-distance objective function $s(x)$.
@@ -314,9 +314,9 @@ functions
           holds the values of the weights $w$ in the objective function.
       x0 : ndarray(n)
           holds the values of the shifts $x^0$ in the objective function.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``eqp.load``.

@@ -22,8 +22,8 @@ ls1 = m_max
 ls2 = n
 ly1 = m_max
 ly2 = n
-s = np.empty([ls1,ls2])
-y = np.empty([ly1,ly2])
+strans = np.empty([ls1,ls2])
+ytrans = np.empty([ly1,ly2])
 
 #  for reference, the Hessian H we shall try to recover
 val_h = np.array([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
@@ -57,25 +57,25 @@ for algorithm in range(1,6):
     # compute s and initialize y as 0
     for i in range(n):
       rr = random.random()
-      s[k,i] = -1.0 + 2.0 * rr
-      y[k,i] = 0.0
+      strans[k,i] = -1.0 + 2.0 * rr
+      ytrans[k,i] = 0.0
 
     # construct y = H s
     for l in range(ne):
       i = row[l]
       j = col[l]
       v = val_h[l]
-      y[k,i] = y[k,i] + v * s[k,j]
-      if i != j: y[k,j] = y[k,j] + v * s[k,i]
+      ytrans[k,i] = ytrans[k,i] + v * strans[k,j]
+      if i != j: ytrans[k,j] = ytrans[k,j] + v * strans[k,i]
 
   # recover the values of the Hessian
-  val = sha.recover_matrix(ne, m, ls1, ls2, s, ly1, ly2, y, order)
+  val = sha.recover_matrix(ne, m, ls1, ls2, strans, ly1, ly2, ytrans, order)
 
   print(" H from", m, "differences:", val)
 
   # recover the values of the Hessian
   print(" now use default order")
-  val = sha.recover_matrix(ne, m, ls1, ls2, s, ly1, ly2, y )
+  val = sha.recover_matrix(ne, m, ls1, ls2, strans, ly1, ly2, ytrans )
 
   print(" H from", m, "differences:", val)
 

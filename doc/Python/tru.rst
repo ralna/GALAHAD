@@ -297,7 +297,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``tru.initialize``).
 
-   .. function:: tru.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
+   .. function:: tru.solve(n, H_ne, x, eval_f, eval_g, eval_h))
 
       Find an approximate local unconstrained minimizer of a given function
       using a trust-region method.

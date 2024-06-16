@@ -8,10 +8,19 @@ HASH
 functions
 ---------
 
-   .. function:: hash.initialize()
+   .. function:: hash.initialize(nchar, length)
 
       Set default option values and initialize private data.
 
+      **Parameters:**
+
+      nchar : int
+        an upper bound on the number of characters in each word that 
+        may be inserted into the dictionary
+
+      length : int
+        the number of words that can be held in the dictionary
+     
       **Returns:**
 
       options : dict

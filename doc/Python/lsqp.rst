@@ -296,7 +296,7 @@ functions
           dictionary of control options (see ``lsqp.initialize``).
 
 
-   .. function:: lsqp.solve_qp(n, m, f, g, w, x0, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
+   .. function:: lsqp.solve_qp(n, m, f, g, w, x0, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z)
 
       Find a solution to the quadratic program involving the
       separable quadratic objective function $s(x)$.
@@ -315,9 +315,9 @@ functions
           holds the values of the weights $w$ in the objective function.
       x0 : ndarray(n)
           holds the values of the shifts $x^0$ in the objective function.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``lsqp.load``.

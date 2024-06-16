@@ -307,7 +307,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``bllsb.initialize``).
 
-   .. function:: bllsb.solve_blls(n, o, ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w)
+   .. function:: bllsb.solve_blls(n, o, Ao_ne, Ao_val, b, sigma, x_l, x_u, x, z, w)
 
       Find a solution to the bound-constrained (regularized) linear 
       least-squares problem.
@@ -318,9 +318,9 @@ functions
           holds the number of variables.
       o : int
           holds the number of residuals.
-      ao_ne : int
+      Ao_ne : int
           holds the number of entries in the objective design matrix $A_o$.
-      Ao_val : ndarray(ao_ne)
+      Ao_val : ndarray(Ao_ne)
           holds the values of the nonzeros in $A_o$ in the same order as 
           specified in the sparsity pattern in ``bllsb.load``.
       b : ndarray(m)

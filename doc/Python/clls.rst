@@ -338,7 +338,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``clls.initialize``).
 
-   .. function:: clls.solve_clls(n, o, m, ao_ne, Ao_val, b, sigma, a_ne, A_val, c_l, c_u, x_l, x_u, x, y, z, w)
+   .. function:: clls.solve_clls(n, o, m, Ao_ne, Ao_val, b, sigma, A_ne, A_val, c_l, c_u, x_l, x_u, x, y, z, w)
 
       Find a solution to the constrained (regularized) linear least-squares 
       problem.
@@ -351,18 +351,18 @@ functions
           holds the number of residuals.
       m : int
           holds the number of general linear constraints.
-      ao_ne : int
+      Ao_ne : int
           holds the number of entries in the objective design matrix $A_o$.
-      Ao_val : ndarray(ao_ne)
+      Ao_val : ndarray(Ao_ne)
           holds the values of the nonzeros in $A_o$ in the same order as 
           specified in the sparsity pattern in ``clls.load``.
       b : ndarray(m)
           holds the values of the linear term $g$ in the objective function.
       sigma : float
           holds the regularization weight $\sigma \geq 0$.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the constraint Jacobian $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the constraint Jacobian
           $A$ in the same order as specified in the sparsity pattern in 
           ``clls.load``.

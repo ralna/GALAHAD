@@ -1,7 +1,7 @@
 //* \file cqp_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.2 - 2023-12-21 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -834,7 +834,9 @@ static PyObject* py_cqp_solve_qp(PyObject *self, PyObject *args, PyObject *keywd
     // Parse positional arguments
     static char *kwlist[] = {"n", "m", "f", "g", "H_ne", "H_val", "A_ne", "A_val",
                              "c_l", "c_u", "x_l", "x_u", "x", "y", "z", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOiOiOOOOOOOO", kwlist, &n, &m, &f, &py_g,
+
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOiOiOOOOOOOO", kwlist, 
+                                    &n, &m, &f, &py_g,
                                     &H_ne, &py_H_val, &A_ne, &py_A_val,
                                     &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                                     &py_x, &py_y, &py_z))
@@ -921,7 +923,7 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u;
     PyArrayObject *py_x, *py_y, *py_z;
     double *g, *w, *x0, *A_val, *c_l, *c_u, *x_l, *x_u, *x, *y, *z;
-    int n, m, H_ne, A_ne;
+    int n, m, A_ne;
     double f;
 
     // Check that package has been initialised
@@ -931,7 +933,8 @@ static PyObject* py_cqp_solve_sldqp(PyObject *self, PyObject *args, PyObject *ke
     // Parse positional arguments
     static char *kwlist[] = {"n", "m", "f", "g", "w", "x0", "A_ne", "A_val",
                              "c_l", "c_u", "x_l", "x_u", "x", "y", "z", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOOOOOO", kwlist, &n, &m, &f, &py_g,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iidOOOiOOOOOOOO", kwlist, 
+                                    &n, &m, &f, &py_g,
                                     &py_w, &py_x0, &A_ne, &py_A_val,
                                     &py_c_l, &py_c_u, &py_x_l, &py_x_u,
                                     &py_x, &py_y, &py_z))

@@ -301,7 +301,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``bqpb.initialize``).
 
-   .. function:: bqpb.solve_qp(n, f, g, h_ne, H_val, x_l, x_u, x, z)
+   .. function:: bqpb.solve_qp(n, f, g, H_ne, H_val, x_l, x_u, x, z)
 
       Find a solution to the bound-constrained convex quadratic program 
       involving the quadratic objective function $q(x)$.
@@ -314,10 +314,10 @@ functions
           holds the constant term $f$ in the objective function.
       g : ndarray(n)
           holds the values of the linear term $g$ in the objective function.
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the Hessian $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the Hessian
           $H$ in the same order as specified in the sparsity pattern in 
           ``bqpb.load``.

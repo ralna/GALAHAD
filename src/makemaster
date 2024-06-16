@@ -2914,7 +2914,7 @@ build_julia_shared:
 	cd $(OBJ); $(FORTRAN) $(OPTIMIZATION) $(SHARED) \
           -o shared/libgalahad_julia.$(DLEXT) \
           $(LOADALL) libgalahad_c.a $(LOADNONE) -L$(OBJ) \
-          -lgalahad -lgalahad_hsl_c $(HSL) $(SPRAL) \
+          -lgalahad -l_hsl_c $(HSL) $(SPRAL) \
           $(MKL_PARDISO) $(PARDISO) $(WSMP)  $(METIS) $(PASTIX) \
           $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS) $(MOMP) \
           $(NOUNDEFINED)

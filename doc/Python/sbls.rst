@@ -327,7 +327,7 @@ functions
       options : dict, optional
           dictionary of control options (see ``sbls.initialize``).
 
-   .. function:: sbls.factorize_matrix(n, m, h_ne, H_val, a_ne, A_val, c_ne, C_val,D)
+   .. function:: sbls.factorize_matrix(n, m, H_ne, H_val, A_ne, A_val, C_ne, C_val,D)
 
       Form and factorize the block matrix
       $$K_{G} = \begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}$$
@@ -341,23 +341,23 @@ functions
       m : int
           holds the dimension of $C$
           (equivalently, the number of rows of $A$).
-      h_ne : int
+      H_ne : int
           holds the number of entries in the lower triangular part of 
           the matrix $H$.
-      H_val : ndarray(h_ne)
+      H_val : ndarray(H_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $H$ in the same order as specified in the sparsity pattern in 
           ``sbls.load``.
-      a_ne : int
+      A_ne : int
           holds the number of entries in the matrix $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the matrix
           $A$ in the same order as specified in the sparsity pattern in 
           ``sbls.load``.
-      c_ne : int
+      C_ne : int
           holds the number of entries in the lower triangular part of 
           the matrix $C$.
-      C_val : ndarray(c_ne)
+      C_val : ndarray(C_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $C$ in the same order as specified in the sparsity pattern in 
           ``sbls.load``.

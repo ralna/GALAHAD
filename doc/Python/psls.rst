@@ -210,16 +210,16 @@ functions
       options : dict, optional
           dictionary of control options (see ``psls.initialize``).
 
-   .. function:: psls.form_preconditioner(a_ne, A_val)
+   .. function:: psls.form_preconditioner(A_ne, A_val)
 
       Form and factorize the preconditioner $P$ from the matrix $A$.
 
       **Parameters:**
 
-      a_ne : int
+      A_ne : int
           holds the number of entries in the lower triangular part of 
           the matrix $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $A$ in the same order as specified in the sparsity pattern in 
           ``psls.load``.
@@ -231,10 +231,10 @@ functions
 
       **Parameters:**
 
-      a_ne : int
+      A_ne : int
           holds the number of entries in the lower triangular part of 
           the matrix $A$.
-      A_val : ndarray(a_ne)
+      A_val : ndarray(A_ne)
           holds the values of the nonzeros in the lower triangle of the matrix
           $A$ in the same order as specified in the sparsity pattern in 
       n_sub : int
