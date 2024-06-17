@@ -187,3 +187,8 @@ option('galahad_int64',
        type : 'boolean',
        value : false,
        description : 'Compile GALAHAD with 64-bit integer')
+
+option('hsl_legacy',
+       type : 'boolean',
+       value : false,
+       description : 'Compile GALAHAD with support for legacy HSL packages')

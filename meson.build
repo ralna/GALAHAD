@@ -74,6 +74,7 @@ endif
 # Options
 install_modules = get_option('modules')
 galahad_int64 = get_option('galahad_int64')
+hsl_legacy = get_option('hsl_legacy')
 build_ciface = get_option('ciface')
 build_pythoniface = get_option('pythoniface')
 build_single = get_option('single')
@@ -315,6 +316,10 @@ endif
 if galahad_int64
   extra_args_single += '-DINTEGER_64'
   extra_args_double += '-DINTEGER_64'
+endif
+if hsl_legacy
+  extra_args_single += '-DHSL_LEGACY'
+  extra_args_double += '-DHSL_LEGACY'
 endif
 
 # Sources

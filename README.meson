@@ -98,10 +98,11 @@ Currently supported options with their default value:
 * `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
-* `-Dlibhwloc_path=[]`: Additional directories to search for the HWLOC library;
-* `-Dlibhwloc_include=[]`: Additional directories to search for the HWLOC header files;
+* `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
+* `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
-* `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer.
+* `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer;
+* `-Dhsl_legacy=false`: compile GALAHAD with support for legacy HSL packages.
 
 Note that the Intel MKL Pardiso linear solver is only available when GALAHAD
 is compiled with Intel MKL.
