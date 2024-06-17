@@ -806,7 +806,7 @@ static PyObject* py_clls_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   CLLS_SOLVE_CLLS   -*-*-*-*-*-*-*-*
 
-static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args){
+static PyObject* py_clls_solve_clls(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_Ao_val, *py_b, *py_A_val;
     PyArrayObject *py_c_l, *py_c_u, *py_x_l, *py_x_u, *py_w;
     PyArrayObject *py_x, *py_y, *py_z;
@@ -952,7 +952,7 @@ static PyObject* py_clls_terminate(PyObject *self){
 static PyMethodDef clls_module_methods[] = {
     {"initialize", (PyCFunction) py_clls_initialize, METH_NOARGS, NULL},
     {"load", (PyCFunction) py_clls_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve_clls", (PyCFunction) py_clls_solve_clls, METH_VARARGS, NULL},
+    {"solve_clls", (PyCFunction) py_clls_solve_clls, METH_VARARGS | METH_KEYWORDS, NULL},
     {"information", (PyCFunction) py_clls_information, METH_NOARGS, NULL},
     {"terminate", (PyCFunction) py_clls_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
