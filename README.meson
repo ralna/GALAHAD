@@ -35,8 +35,8 @@ meson setup builddir/pc64.lnx.gfo -Ddefault_library=both
 ## 32-bit or 64-bit integers?
 
 ```shell
-meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=false (default)
-meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true
+meson setup builddir/pc64.lnx.gfo -Dint64=false (default)
+meson setup builddir/pc64.lnx.gfo -Dint64=true
 ```
 
 Note that all dependencies (BLAS, LAPACK, etc...) must also be compiled with 64-bit integers.
@@ -45,7 +45,7 @@ where `libdep` is an option described below to provide the name of the library.
 GALAHAD will not link with the dependency or compile its own 64-bit version, except for BLAS and LAPACK.
 
 ```shell
-meson setup builddir/pc64.lnx.gfo -Dgalahad_int64=true -Dlibblas= -Dliblapack=
+meson setup builddir/pc64.lnx.gfo -Dint64=true -Dlibblas= -Dliblapack=
 ```
 
 For instance, GALAHAD is compiled with our own version of BLAS and LAPACK.
@@ -101,7 +101,7 @@ Currently supported options with their default value:
 * `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
-* `-Dgalahad_int64=false`: compile GALAHAD with 64-bit integer;
+* `-Dint64=false`: compile GALAHAD with 64-bit integer;
 * `-Dhsl_legacy=false`: compile GALAHAD with support for legacy HSL packages.
 
 Note that the Intel MKL Pardiso linear solver is only available when GALAHAD

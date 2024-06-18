@@ -226,7 +226,7 @@ jobs:
                                -Dtests=true \
                                -Dssids=$SSIDS \
                                -Dpythoniface=${PYTHON_INTERFACE} \
-                               -Dgalahad_int64=$INT64 \
+                               -Dint64=$INT64 \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
                                -Dlibblas=$BLAS \

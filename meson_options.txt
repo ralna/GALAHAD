@@ -183,7 +183,7 @@ option('libcutest_double_modules',
        value : [],
        description : 'Additional directories to search for the CUTEST modules in double precision')
 
-option('galahad_int64',
+option('int64',
        type : 'boolean',
        value : false,
        description : 'Compile GALAHAD with 64-bit integer')
