@@ -81,7 +81,7 @@ task:
                          -Dexamples=true \
                          -Dtests=true \
                          -Dpythoniface=true \
-                         -Dgalahad_int64=${INT64} \
+                         -Dint64=${INT64} \
                          -Dlibcutest_single=${CUTEST_SINGLE} \
                          -Dlibcutest_double=${CUTEST_DOUBLE} \
                          -Dlibcutest_single_path=${CUTEST_SINGLE_PATH} \

@@ -73,7 +73,7 @@ endif
 
 # Options
 install_modules = get_option('modules')
-galahad_int64 = get_option('galahad_int64')
+int64 = get_option('int64')
 hsl_legacy = get_option('hsl_legacy')
 build_ciface = get_option('ciface')
 build_pythoniface = get_option('pythoniface')
@@ -313,7 +313,7 @@ if not libhsl.found()
 endif
 
 # Compile GALAHAD with 64-bit integer
-if galahad_int64
+if int64
   extra_args_single += '-DINTEGER_64'
   extra_args_double += '-DINTEGER_64'
 endif
@@ -479,7 +479,7 @@ if build_single
   sources_single = [pp_sources_single, pp_sources_f_single, libgalahad_cpp_src, libgalahad_cc_src]
 
   libgalahad_single_name = 'galahad_single'
-  if galahad_int64
+  if int64
     libgalahad_single_name += '_64'
   endif
 
@@ -532,7 +532,7 @@ if build_double
   sources_double = [pp_sources_double, pp_sources_f_double, libgalahad_cpp_src, libgalahad_cc_src]
 
   libgalahad_double_name = 'galahad_double'
-  if galahad_int64
+  if int64
     libgalahad_double_name += '_64'
   endif
 
@@ -700,7 +700,7 @@ if build_tests and build_ciface
 endif
 
 # Python tests
-if build_tests and build_pythoniface and build_ciface and build_double and (not galahad_int64) and (host_system != 'windows')
+if build_tests and build_pythoniface and build_ciface and build_double and (not int64) and (host_system != 'windows')
 
   foreach test: galahad_python_tests
     package = test[0]
@@ -716,7 +716,7 @@ if build_tests and build_pythoniface and build_ciface and build_double and (not 
 endif
 
 # Fortran examples
-if build_examples and build_double and (not galahad_int64)
+if build_examples and build_double and (not int64)
 
   fortran_examples_folder = 'examples/Fortran'
 
