@@ -1,6 +1,6 @@
 task:
   matrix:
-    - name: Meson / freebsd/gcc-12/Int32
+    - name: Meson / freebsd/gcc-13/Int32
       freebsd_instance:
         image: freebsd-13-3-release-amd64
       env:
@@ -8,7 +8,7 @@ task:
         - INT64: "false"
         - CUTEST_SINGLE: "cutest_single"
         - CUTEST_DOUBLE: "cutest_double"
-    - name: Meson / freebsd/gcc-12/Int64
+    - name: Meson / freebsd/gcc-13/Int64
       freebsd_instance:
         image: freebsd-13-3-release-amd64
       env:
@@ -35,16 +35,16 @@ task:
   dependencies_script: |
     echo $(uname)
     if [ "$(uname)" = "FreeBSD" ]; then
-      pkg install -y py39-pip meson cmake bash gcc12 openblas wget
+      pkg install -y py39-pip meson cmake bash gcc13 openblas wget
       pip install numpy
       echo "JULIA_GALAHAD_LIBRARY_PATH=/usr/local/lib" >> $CIRRUS_ENV
       echo "CUTEST_SINGLE_PATH=/usr/local/lib" >> $CIRRUS_ENV
       echo "CUTEST_DOUBLE_PATH=/usr/local/lib" >> $CIRRUS_ENV
       echo "CUTEST_SINGLE_MODULES=/usr/local/modules" >> $CIRRUS_ENV
       echo "CUTEST_DOUBLE_MODULES=/usr/local/modules" >> $CIRRUS_ENV
-      echo "FC=gfortran12" >> $CIRRUS_ENV
-      echo "CC=gcc12" >> $CIRRUS_ENV
-      echo "CXX=g++12" >> $CIRRUS_ENV
+      echo "FC=gfortran13" >> $CIRRUS_ENV
+      echo "CC=gcc13" >> $CIRRUS_ENV
+      echo "CXX=g++13" >> $CIRRUS_ENV
     else
       brew install python meson gcc@14 openblas numpy wget
       echo "JULIA_GALAHAD_LIBRARY_PATH=/opt/homebrew/lib" >> $CIRRUS_ENV
