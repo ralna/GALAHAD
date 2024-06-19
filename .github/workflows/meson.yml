@@ -227,6 +227,7 @@ jobs:
                                -Dssids=$SSIDS \
                                -Dpythoniface=${PYTHON_INTERFACE} \
                                -Dint64=$INT64 \
+                               -Dhsl_legacy=true \
                                -Dlibblas_path=${BLAS_PATH} \
                                -Dliblapack_path=${LAPACK_PATH} \
                                -Dlibblas=$BLAS \
