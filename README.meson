@@ -107,10 +107,6 @@ Currently supported options with their default value:
 * `-Dint64=false`: compile GALAHAD with 64-bit integer;
 * `-Dhsl_legacy=false`: compile GALAHAD with support for legacy HSL packages.
 
-Note that the Intel MKL Pardiso linear solver is only available when GALAHAD
-is compiled with Intel MKL.
-This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
-
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
 ```shell
@@ -120,6 +116,37 @@ CC=nvc CXX=nvc++ FC=nvfortran meson setup builddir -Dc_std=none -Dcpp_std=none [
 ```
 See https://mesonbuild.com/Reference-tables.html for supported compilers
 and linkers.
+
+## Dependencies
+
+### MKL Pardiso
+
+Note that the Intel MKL Pardiso linear solver is only available when GALAHAD
+is compiled with Intel MKL.
+This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
+
+
+### HSL
+
+GALAHAD can be compiled with [libHSL](https://licences.stfc.ac.uk/product/libhsl) or the HSL subset.
+To compile GALAHAD with libHSL, use the following command:
+```shell
+meson setup builddir -Dlibhsl=hsl -Dhsl_legacy=true -Dlibhsl_path=... -Dlibhsl_modules=...
+meson compile -C builddir
+```
+Please ensure that you compile libHSL and GALAHAD with the same version of METIS.
+You can use the same Meson options `-Dlibmetis`, `-Dlibmetis_path` and `Dlibmetis_include` for libHSL and GALAHAD.
+
+The HSL subset supports both 32-bit and 64-bit integers and provides only the HSL packages needed by GALAHAD.
+For compatibility reasons, we highly recommend forcing GALAHAD to compile its own version of METIS.
+It is the same one that is used internally by the HSL subset.
+```shell
+meson setup builddir_int32 -Dlibmetis= -Dlibhsl=hsl_subset -Dlibhsl_path=... -Dlibhsl_modules=...
+meson compile -C builddir_int32
+
+meson setup builddir_int64 -Dint64=true -Dlibmetis= -Dlibhsl=hsl_subset_64 -Dlibhsl_path=... -Dlibhsl_modules=...
+meson compile -C builddir_int64
+```
 
 ## Build
 
