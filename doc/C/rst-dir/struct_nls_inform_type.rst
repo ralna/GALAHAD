@@ -36,12 +36,12 @@ nls_inform_type structure
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`norm_g<doxid-structnls__inform__type_1ae1bc0a751c6ede62421bbc49fbe7d9fe>`;
 		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`weight<doxid-structnls__inform__type_1adcd20aeaf7042e972ddab56f3867ce70>`;
 		struct :ref:`nls_time_type<doxid-structnls__time__type>` :ref:`time<doxid-structnls__inform__type_1a44dc03b1a33bf900f668c713cbac9498>`;
-		struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` :ref:`subproblem_inform<doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a>`;
 		struct :ref:`rqs_inform_type<doxid-structrqs__inform__type>` :ref:`rqs_inform<doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60>`;
 		struct :ref:`glrt_inform_type<doxid-structglrt__inform__type>` :ref:`glrt_inform<doxid-structnls__inform__type_1aa5a47a840c1f9680ac8b9e4db3eb9e88>`;
 		struct :ref:`psls_inform_type<doxid-structpsls__inform__type>` :ref:`psls_inform<doxid-structnls__inform__type_1a57ca5ed37882eb917736f845d3cdb8ee>`;
 		struct :ref:`bsc_inform_type<doxid-structbsc__inform__type>` :ref:`bsc_inform<doxid-structnls__inform__type_1ab95c5e6786b9d93eb147f64fbf14da17>`;
 		struct :ref:`roots_inform_type<doxid-structroots__inform__type>` :ref:`roots_inform<doxid-structnls__inform__type_1a68574d04a336f7be88a151fa8b975885>`;
+		struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` :ref:`subproblem_inform<doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a>`;
 	};
 .. _details-structnls__inform__type:
 
@@ -253,16 +253,6 @@ the final regularization weight used
 
 timings (see above)
 
-.. index:: pair: variable; subproblem_inform
-.. _doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` subproblem_inform
-
-inform parameters for subproblem
-
 .. index:: pair: variable; rqs_inform
 .. _doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60:
 
@@ -312,4 +302,14 @@ inform parameters for BSC
 	struct :ref:`roots_inform_type<doxid-structroots__inform__type>` roots_inform
 
 inform parameters for ROOTS
+
+.. index:: pair: variable; subproblem_inform
+.. _doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` subproblem_inform
+
+inform parameters for subproblem
 

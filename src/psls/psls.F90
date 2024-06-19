@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-18 AT 17:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -353,11 +353,11 @@
 
 !  ratio of fill in to original nonzeros
 
-       REAL ( KIND = rp_ ) :: fill_in_ratio
+       REAL ( KIND = rp_ ) :: fill_in_ratio = - one
 
 !  the norm of the solution residual
 
-       REAL ( KIND = rp_ ) :: norm_residual
+       REAL ( KIND = rp_ ) :: norm_residual = infinity
 
 !  name of array which provoked an allocate failure
 

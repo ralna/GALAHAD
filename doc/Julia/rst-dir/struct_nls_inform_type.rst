@@ -32,12 +32,12 @@ nls_inform_type structure
           norm_g::T
           weight::T
           time::nls_time_type{T}
-          subproblem_inform::nls_subproblem_inform_type{T}
           rqs_inform::rqs_inform_type{T}
           glrt_inform::glrt_inform_type{T}
           psls_inform::psls_inform_type{T}
           bsc_inform::bsc_inform_type{T}
           roots_inform::roots_inform_type
+          subproblem_inform::nls_subproblem_inform_type{T}
 
 .. _details-structnls__inform__type:
 
@@ -249,16 +249,6 @@ the final regularization weight used
 
 timings (see above)
 
-.. index:: pair: variable; subproblem_inform
-.. _doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a:
-
-.. ref-code-block:: julia
-	:class: doxyrest-title-code-block
-
-	struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` subproblem_inform
-
-inform parameters for subproblem
-
 .. index:: pair: variable; rqs_inform
 .. _doxid-structnls__inform__type_1a68497e7bbd1695ac9b830fc8fe594d60:
 
@@ -308,4 +298,15 @@ inform parameters for BSC
 	struct :ref:`roots_inform_type<doxid-structroots__inform__type>` roots_inform
 
 inform parameters for ROOTS
+
+.. index:: pair: variable; subproblem_inform
+.. _doxid-structnls__inform__type_1afe321f4b9cfc27d8927047e53e2f288a:
+
+.. ref-code-block:: julia
+	:class: doxyrest-title-code-block
+
+	struct :ref:`nls_subproblem_inform_type<doxid-structnls__subproblem__inform__type>` subproblem_inform
+
+inform parameters for subproblem
+
 

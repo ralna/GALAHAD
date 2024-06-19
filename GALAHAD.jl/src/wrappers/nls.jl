@@ -176,12 +176,12 @@ struct nls_inform_type{T}
   norm_g::T
   weight::T
   time::nls_time_type{T}
-  subproblem_inform::nls_subproblem_inform_type{T}
   rqs_inform::rqs_inform_type{T}
   glrt_inform::glrt_inform_type{T}
   psls_inform::psls_inform_type{T}
   bsc_inform::bsc_inform_type{T}
   roots_inform::roots_inform_type
+  subproblem_inform::nls_subproblem_inform_type{T}
 end
 
 export nls_initialize_s

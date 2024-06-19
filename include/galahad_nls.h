@@ -1,7 +1,7 @@
 /** \file galahad_nls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.3 - 2024-02-10 AT 14:45 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-19 AT 10:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -1184,10 +1184,6 @@ struct nls_inform_type {
     struct nls_time_type time;
 
     /// \brief
-    /// inform parameters for subproblem
-    struct nls_subproblem_inform_type subproblem_inform;
-
-    /// \brief
     /// inform parameters for RQS
     struct rqs_inform_type rqs_inform;
 
@@ -1206,6 +1202,10 @@ struct nls_inform_type {
     /// \brief
     /// inform parameters for ROOTS
     struct roots_inform_type roots_inform;
+
+    /// \brief
+    /// inform parameters for subproblem
+    struct nls_subproblem_inform_type subproblem_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    N L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

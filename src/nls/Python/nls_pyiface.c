@@ -1,7 +1,7 @@
 //* \file nls_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 5.0 - 2024-06-15 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 5.0 - 2024-06-19 AT 10:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_NLS PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -1226,9 +1226,6 @@ static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
                          PyFloat_FromDouble(inform->weight));
     PyDict_SetItemString(py_inform, "time",
                          nls_make_time_dict(&inform->time));
-    PyDict_SetItemString(py_inform, "subproblem_inform",
-                         nls_make_subproblem_inform_dict(
-                         &inform->subproblem_inform));
     PyDict_SetItemString(py_inform, "rqs_inform",
                          rqs_make_inform_dict(&inform->rqs_inform));
     PyDict_SetItemString(py_inform, "glrt_inform",
@@ -1239,6 +1236,9 @@ static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
                          bsc_make_inform_dict(&inform->bsc_inform));
     PyDict_SetItemString(py_inform, "roots_inform",
                          roots_make_inform_dict(&inform->roots_inform));
+    PyDict_SetItemString(py_inform, "subproblem_inform",
+                         nls_make_subproblem_inform_dict(
+                         &inform->subproblem_inform));
 
     return py_inform;
 }

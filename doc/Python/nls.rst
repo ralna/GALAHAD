@@ -642,7 +642,7 @@ functions
           total number of entries, in the sparse column-wise storage 
           scheme. It need not be set when the other schemes are used, and in 
           this case can be None.
-      w : ndarray(n), optional
+      w : ndarray(m), optional
           holds the vector of weights $w$. If w is not provided, weights of
           one will be presumed.
       options : dict, optional
@@ -873,6 +873,16 @@ functions
                   the clock time spent factorizing the required matrices.
                clock_solve : float
                   the clock time spent computing the search direction.
+          rqs_inform : dict
+             inform parameters for RQS (see ``rqs.information``).
+          glrt_inform : dict
+             inform parameters for GLTR (see ``glrt.information``).
+          psls_inform : dict
+             inform parameters for PSLS (see ``psls.information``).
+          bsc_inform : dict
+             inform parameters for BSC (see ``bsc.information``).
+          roots_inform : dict
+             inform parameters for ROOTS (see ``roots.information``).
           subproblem_inform : dict
            inform parameters for subproblem:
             status : int
@@ -1030,18 +1040,6 @@ functions
                inform parameters for BSC (see ``bsc.information``).
             roots_inform : dict
                inform parameters for ROOTS (see ``roots.information``).
-
-          rqs_inform : dict
-             inform parameters for RQS (see ``rqs.information``).
-          glrt_inform : dict
-             inform parameters for GLTR (see ``glrt.information``).
-          psls_inform : dict
-             inform parameters for PSLS (see ``psls.information``).
-          bsc_inform : dict
-             inform parameters for BSC (see ``bsc.information``).
-          roots_inform : dict
-             inform parameters for ROOTS (see ``roots.information``).
-
 
    .. function:: nls.terminate()
 
