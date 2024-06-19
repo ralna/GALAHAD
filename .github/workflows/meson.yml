@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-13]
         arch: ['x64']
-        version: ['13']
+        version: ['12']
         int: ['32', '64']
         include:
           - compiler: gcc
@@ -148,7 +148,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         shell: bash
         run: |
-          VERSION_CUTEST="2.1.1"
+          VERSION_CUTEST="2.2.0"
           INT64="false"
           if [[ "${{matrix.int}}" == "64" ]]; then
             INT64="true"
@@ -166,7 +166,7 @@ jobs:
                                --prefix=$CUTEST \
                                -Ddefault_library=shared \
                                -Dquadruple=true \
-                               -Dcutest_int64=${INT64}
+                               -Dint64=${INT64}
           meson compile -C builddir
           meson install -C builddir
 

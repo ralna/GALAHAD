@@ -85,6 +85,7 @@ build_ssids = get_option('ssids')
 
 libblas_name = get_option('libblas')
 liblapack_name = get_option('liblapack')
+libmetis_name = get_option('libmetis')
 libhsl_name = get_option('libhsl')
 libwsmp_name = get_option('libwsmp')
 libpardiso_name = get_option('libpardiso')
@@ -99,6 +100,7 @@ libhwloc_name = get_option('libhwloc')
 
 libmumps_path = get_option('libmumps_path')
 libblas_path = get_option('libblas_path')
+libmetis_path = get_option('libmetis_path')
 liblapack_path = get_option('liblapack_path')
 libhsl_path = get_option('libhsl_path')
 libwsmp_path = get_option('libwsmp_path')
@@ -110,6 +112,7 @@ libcutest_single_path = get_option('libcutest_single_path')
 libcutest_double_path = get_option('libcutest_double_path')
 libhwloc_path = get_option('libhwloc_path')
 
+libmetis_include = include_directories(get_option('libmetis_include'))
 libhwloc_include = include_directories(get_option('libhwloc_include'))
 libcutest_single_modules = include_directories(get_option('libcutest_single_modules'))
 libcutest_double_modules = include_directories(get_option('libcutest_double_modules'))
@@ -118,6 +121,7 @@ libhsl_modules = include_directories(get_option('libhsl_modules'))
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
 liblapack = fc.find_library(liblapack_name, dirs : liblapack_path, required : false)
+libmetis = fc.find_library(libmetis_name, dirs : libmetis_path, required : false)
 libhsl = fc.find_library(libhsl_name, dirs : libhsl_path, required : false)
 libcutest_single = fc.find_library(libcutest_single_name, dirs : libcutest_single_path, required : false)
 libcutest_double = fc.find_library(libcutest_double_name, dirs : libcutest_double_path, required : false)
@@ -131,6 +135,8 @@ libampl = fc.find_library(libampl_name, dirs : libampl_path, required : false)
 libhwloc = fc.find_library(libhwloc_name, dirs : libhwloc_path, required : false)
 lm = cc.find_library('m', required : false)
 libmpi = dependency('mpi', language : 'fortran', required : false)
+has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
+has_metish = cc.has_header('metis.h', include_directories : libmetis_include)
 
 # METIS
 if host_machine.system() == 'windows'
@@ -179,9 +185,8 @@ endif
 
 libgalahad_single_deps = [libsmumps, libcutest_single]
 libgalahad_double_deps = [libdmumps, libcutest_double]
-libgalahad_deps = [libblas, liblapack, libhsl, libwsmp,
-                   libpardiso, libspmf, libpastixf,
-                   libampl, libmpi, libhwloc]
+libgalahad_deps = [libblas, liblapack, libmetis, libhsl, libwsmp, libpardiso,
+                   libspmf, libpastixf, libampl, libmpi, libhwloc]
 
 # Fortran files *.F90 or *.f90
 libgalahad_src = []
@@ -240,7 +245,6 @@ else
 endif
 
 # HWLOC
-has_hwloch = cc.has_header('hwloc.h', include_directories : libhwloc_include)
 if libhwloc.found() and has_hwloch
   add_global_arguments('-DSPRAL_HAVE_HWLOC', language : 'cpp')
 else
@@ -276,6 +280,10 @@ endif
 if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
+endif
+if not (libmetis.found() and has_metish)
+  extra_args_single += '-DGALAHAD_METIS'
+  extra_args_double += '-DGALAHAD_METIS'
 endif
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'

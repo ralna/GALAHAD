@@ -62,7 +62,7 @@ task:
     echo "OMP_CANCELLATION=TRUE" >> $CIRRUS_ENV
     echo "OMP_PROC_BIND=TRUE" >> $CIRRUS_ENV
   cutest_script: |
-    VERSION_CUTEST="2.1.1"
+    VERSION_CUTEST="2.2.0"
     cd ..
     wget https://github.com/ralna/CUTEst/archive/refs/tags/v${VERSION_CUTEST}.tar.gz
     tar -xzvf v${VERSION_CUTEST}.tar.gz
@@ -70,7 +70,7 @@ task:
     meson setup builddir --buildtype=debug \
                          -Ddefault_library=shared \
                          -Dquadruple=true \
-                         -Dcutest_int64=${INT64}
+                         -Dint64=${INT64}
     meson compile -C builddir
     meson install -C builddir
 

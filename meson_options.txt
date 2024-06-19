@@ -48,6 +48,11 @@ option('liblapack',
        value : 'openblas',
        description : 'LAPACK library against which to link')
 
+option('libmetis',
+       type : 'string',
+       value : 'metis',
+       description : 'METIS library against which to link')
+
 option('libhsl',
        type : 'string',
        value : 'hsl',
@@ -113,6 +118,11 @@ option('liblapack_path',
        value : [],
        description : 'Additional directories to search for the LAPACK library')
 
+option('libmetis_path',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the METIS library')
+
 option('libhsl_path',
        type : 'array',
        value : [],
@@ -162,6 +172,11 @@ option('libhwloc_path',
        type : 'array',
        value : [],
        description : 'Additional directory to search for the HWLOC library')
+
+option('libmetis_include',
+       type : 'array',
+       value : [],
+       description : 'Additional directories to search for the METIS header files')
 
 option('libhwloc_include',
        type : 'array',
