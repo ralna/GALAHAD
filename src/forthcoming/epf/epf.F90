@@ -48,7 +48,8 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_BSC_precision
      USE GALAHAD_MOP_precision, ONLY: MOP_Ax
-     USE GALAHAD_PSLS_precision
+     USE GALAHAD_TRU_precision
+!    USE GALAHAD_PSLS_precision
 
      IMPLICIT NONE
 
@@ -142,6 +143,10 @@
 
        REAL ( KIND = rp_ ) :: initial_mu = point1
 
+!   the amount by which the penalty parameter is decreased
+
+       REAL ( KIND = rp_ ) :: mu_reduce = half
+
 !   the smallest value the objective function may take before the problem
 !    is marked as unbounded
 
@@ -184,6 +189,10 @@
 !  control parameters for BSC
 
        TYPE ( BSC_control_type ) :: BSC_control
+
+!  control parameters for TRU
+
+       TYPE ( TRU_control_type ) :: TRU_control
 
      END TYPE EPF_control_type
 
@@ -305,6 +314,10 @@
 
        TYPE ( BSC_inform_type ) :: BSC_inform
 
+!  inform parameters for TRU
+
+       TYPE ( TRU_inform_type ) :: TRU_inform
+
      END TYPE EPF_inform_type
 
 !  - - - - - - - - - -
@@ -327,7 +340,7 @@
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl
        LOGICAL :: reverse_hprod, reverse_prec
        LOGICAL :: constrained, map_h_to_jtj, no_bounds
-       LOGICAL :: eval_fc, eval_gj, eval_hl
+       LOGICAL :: eval_fc, eval_gj, eval_hl, initialize_munu, update_munu
 
        CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard
 
@@ -367,6 +380,10 @@
 !  data for BSC
 
        TYPE ( BSC_data_type ) :: BSC_data
+
+!  data for TRU
+
+       TYPE ( TRU_data_type ) :: TRU_data
 
      END TYPE EPF_data_type
 
@@ -408,6 +425,12 @@
                           inform%BSC_inform )
      control%BSC_control%prefix = '" - BSC:"                     '
 
+!  initalize TRU components
+
+     CALL TRU_initialize( data%TRU_data, control%TRU_control,                  &
+                          inform%TRU_inform )
+     control%TRU_control%prefix = '" - TRU:"                     '
+
 !  initial private data. Set branch for initial entry
 
      data%branch = 1
@@ -446,6 +469,7 @@
 !  relative-complementary-slackness-accuracy       1.0D-5
 !  minimum-step-allowed                            2.0D-16
 !  initial-penalty-parameter                       1.0D-1
+!  penalty-parameter-reduction-factor              0.5
 !  minimum-objective-before-unbounded              -1.0D+32
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
@@ -487,7 +511,8 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_c = stop_abs_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_s = stop_rel_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: initial_mu = stop_s + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = initial_mu + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: mu_reduce = initial_mu + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = mu_reduce + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = obj_unbounded + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
@@ -530,6 +555,7 @@
      spec( stop_rel_c )%keyword = 'relative-complementary-slackness-accuracy'
      spec( stop_s )%keyword = 'minimum-steplength-allowed'
      spec( initial_mu )%keyword = 'initial-penalty-parameter'
+     spec( mu_reduce )%keyword = 'penalty-parameter-reduction-factor'
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
@@ -612,6 +638,9 @@
      CALL SPECFILE_assign_value( spec( initial_mu ),                           &
                                  control%initial_mu,                           &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( mu_reduce ),                            &
+                                 control%mu_reduce,                            &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
                                  control%obj_unbounded,                        &
                                  control%error )
@@ -651,8 +680,11 @@
      IF ( PRESENT( alt_specname ) ) THEN
        CALL BSC_read_specfile( control%BSC_control, device,                    &
               alt_specname = TRIM( alt_specname ) // '-BSC' )
+       CALL TRU_read_specfile( control%TRU_control, device,                    &
+              alt_specname = TRIM( alt_specname ) // '-TRU' )
      ELSE
        CALL BSC_read_specfile( control%BSC_control, device )
+       CALL TRU_read_specfile( control%TRU_control, device )
      END IF
 
      RETURN
@@ -988,17 +1020,10 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l, n_active
-!    INTEGER ( KIND = ip_ ) :: k, facts_this_solve, missing_diagonals
-!    INTEGER ( KIND = ip_ ) :: duplicates, out_of_range, upper, i_fixed
-!    REAL ( KIND = rp_ ) :: val, beta, ared, prered, rounding, delta_norm
-!    REAL ( KIND = rp_ ) :: tau, tau_1, tau_2, tau_min, tau_max, distan, c_diff
+     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l
      REAL ( KIND = rp_ ) :: c_norm, penalty_term
      LOGICAL :: alive
-!    CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_sit2
-!    CHARACTER ( LEN = 6 ) :: char_active
      CHARACTER ( LEN = 80 ) :: array_name
-!    REAL ( KIND = rp_ ), DIMENSION( nlp%n ) :: V
 
 !  prefix for all output
 
@@ -1017,12 +1042,8 @@
      SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10
-     CASE ( 110 )  ! objective and constraint evaluation
-       GO TO 110
-     CASE ( 120 )  ! objective gradient and constraint Jacobian evaluation
-       GO TO 120
-     CASE ( 130 )  ! Lagrangian Hessian evaluation
-       GO TO 130
+     CASE ( 210 )  ! function and derivative evaluation
+       GO TO 210
      END SELECT
 
 !  =================
@@ -1073,6 +1094,8 @@
                      COUNT( nlp%C_u <= control%infinity ) == 0
 
 !  allocate workspace for the problem:
+
+     data%epf%n = nlp%n
 
 !  dual variable estimates for the simple-bound constraints
 
@@ -1208,6 +1231,14 @@
 
      array_name = 'EPF: data%W'
      CALL SPACE_resize_array( nlp%n, data%W, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'EPF: data%epf%X'
+     CALL SPACE_resize_array( nlp%n, data%epf%X, inform%status,                &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1498,71 +1529,218 @@
        IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = one
      END DO
 
+!  ensure that the function values and derivatives are evaluated initially
+
      data%eval_fc = .TRUE. ; data%eval_gj = .TRUE. ; data%eval_hl = .TRUE.
 
-!  -----------------------------------------------
+!  initialize control parameters
+
+    data%control%tru_control%hessian_available = .TRUE.
+    data%initialize_munu = .TRUE.
+
+    data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
+    inform%iter = 0
+
+!  compute stopping tolerances
+
+!   data%stop_p = MAX( control%stop_abs_p,                                     &
+!                      control%stop_rel_p * inform%primal_infeasibility )
+!   data%stop_d = MAX( control%stop_abs_d,                                     &
+!                      control%stop_rel_d * inform%dual_infeasibility )
+!   data%stop_c = MAX( control%stop_abs_c,                                     &
+!                      control%stop_rel_c * inform%complementary_slackness )
+
+    data%stop_p = control%stop_abs_p
+    data%stop_d = control%stop_abs_d
+    data%stop_c = control%stop_abs_c
+
+!  ---------------------------------------------------------
+!  1. outer iteration (set and adjust penalty function) loop
+!  ---------------------------------------------------------
+
+ 100 CONTINUE
+
+!  control%print_level = 1
+
+!  check to see if we are still "alive"
+
+       IF ( data%control%alive_unit > 0 ) THEN
+         INQUIRE( FILE = data%control%alive_file, EXIST = alive )
+         IF ( .NOT. alive ) THEN
+           inform%status = GALAHAD_error_alive ; GO TO 800
+         END IF
+       END IF
+
+!  check to see if the iteration limit has been exceeded
+
+       inform%iter = inform%iter + 1
+       IF ( inform%iter > data%control%maxit ) THEN
+         inform%status = GALAHAD_error_max_iterations ; GO TO 800
+       END IF
+
+!  control printing
+
+       IF ( inform%iter >= data%start_print .AND.                              &
+            inform%iter < data%stop_print .AND.                                &
+            MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
+           THEN
+         data%printi = data%set_printi ; data%printt = data%set_printt
+         data%printm = data%set_printm ; data%printw = data%set_printw
+         data%printd = data%set_printd
+         data%print_level = data%control%print_level
+!         data%control%GLTR_control%print_level = data%print_level_gltr
+!         data%control%TRS_control%print_level = data%print_level_trs
+       ELSE
+         data%printi = .FALSE. ; data%printt = .FALSE.
+         data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
+         data%print_level = 0
+!         data%control%GLTR_control%print_level = 0
+!         data%control%TRS_control%print_level = 0
+       END IF
+       data%print_iteration_header = data%print_level > 1
+
+!  -----------------------------------------------------------------
+!  2. start the inner-iteration (minimize the penalty function) loop 
+!  -----------------------------------------------------------------
+
+       inform%tru_inform%status = 1
+ 200   CONTINUE
+
+!  solve the problem using a trust-region method
+
+         CALL TRU_solve( data%epf, data%control%tru_control,                   &
+                         inform%tru_inform, data%tru_data, userdata )
+
+!  reverse communication request for more information
+
+         SELECT CASE ( inform%tru_inform%status )
+
 !  evaluate the objective and constraint functions
 !  -----------------------------------------------
 
-     IF ( data%eval_fc ) THEN
-       IF ( data%reverse_fc ) THEN
-         data%branch = 110 ; inform%status = 2 ; RETURN
-       ELSE
-         CALL eval_FC( data%eval_status, nlp%X( : nlp%n ), userdata,           &
-                       nlp%f, nlp%C( : nlp%m ) )
-       END IF
-     END IF
+         CASE ( 2 )
+           IF ( data%eval_fc ) THEN
+             IF ( data%reverse_fc ) THEN
+               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               data%branch = 210 ; inform%status = 2 ; RETURN
+             ELSE
+               CALL eval_FC( data%eval_status, data%epf%X( : nlp%n ),          &
+                             userdata, nlp%f, nlp%C( : nlp%m ) )
+             END IF
+           END IF
 
-!  return from reverse communication to obtain the objective/constraint values
+!  evaluate the gradient and Jacobian values
+!  .........................................
 
- 110 CONTINUE
+         CASE ( 3 )
+           IF ( data%eval_gj ) THEN
+             IF ( data%reverse_gj ) THEN
+               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               data%branch = 210 ; inform%status = 3 ; RETURN
+             ELSE
+               CALL eval_GJ( data%eval_status, data%epf%X( : nlp%n ),          &
+                             userdata, nlp%G( : nlp%n ),                       &
+                             nlp%J%val( 1 : nlp%J%ne ) )
+             END IF
+           END IF
+
+!  obtain the values of Hessian of the Lagrangian
+!  ..............................................
+
+         CASE ( 4 ) 
+           IF ( data%eval_hl .AND. data%control%subproblem_direct ) THEN
+             IF ( data%reverse_hl ) THEN
+               nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+               data%branch = 210 ; inform%status = 4 ; RETURN
+             ELSE
+               CALL eval_HL( data%eval_status, data%epf%X( : nlp%n ),          &
+                             nlp%Y( : nlp%m ), userdata,                       &
+                             nlp%H%val( : nlp%H%ne ) )
+             END IF
+           END IF
+
+!  error exit from inner-iteration loop
+!  ....................................
+
+         CASE ( : - 1 ) 
+           nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+           GO TO 300
+
+!  terminal exit from inner-iteration loop
+!  .......................................
+
+         CASE DEFAULT
+           nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
+
+!  note that the function and first derivatives have been recorded at
+!  the terminating point
+
+           data%eval_fc = .FALSE. ; data%eval_gj = .FALSE.
+           GO TO 300
+         END SELECT
+
+!  return from reverse communication with the function or derivative information
+
+ 210     CONTINUE
+         SELECT CASE ( inform%tru_inform%status )
+
+!  obtain the value of the penalty function
+!  ........................................
+
+         CASE ( 2 )
 
 !  record the objective value
 
-     IF ( data%eval_fc ) THEN
-       inform%obj = nlp%f
-       inform%f_eval = inform%f_eval + 1
+           IF ( data%eval_fc ) THEN
+             inform%obj = nlp%f
+             inform%f_eval = inform%f_eval + 1
 
 !  compute the (infinity-) norm of the infeasibility
 
-       c_norm = MAX( EPF_infeasibility( nlp%n, nlp%X,                          &
-                                        nlp%X_l, nlp%X_u, control%infinity ),  &
-                     EPF_infeasibility( nlp%m, nlp%C,                          &
-                                        nlp%C_l, nlp%C_u, control%infinity ) )
-     END IF
-write(6,*) ' f, ||c|| = ', inform%obj, c_norm
+             c_norm = MAX( EPF_infeasibility( nlp%n, nlp%X, nlp%X_l, nlp%X_u,  &
+                                              control%infinity ),              &
+                           EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,  &
+                                              control%infinity ) )
+           ELSE
+             data%eval_fc = .TRUE.
+           END IF
+!          WRITE( 6, * ) ' f, ||c|| = ', inform%obj, c_norm
 
-!  initialize the penalty parameters
+!  initialize the penalty parameters at the start of the first major iteration
 
-!  for the simple boun constraints
+           IF ( data%initialize_munu ) THEN
+             data%initialize_munu = .FALSE.
 
-     DO j = 1, nlp%n
-       IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-         data%NU_l( j ) = MAX( one, ( nlp%X_l( j ) - nlp%X( j ) ) )
-       ELSE
-         data%NU_l( j ) = zero
-       END IF
-       IF ( nlp%X_u( j ) <= control%infinity ) THEN
-         data%NU_u( j ) = MAX( one, ( nlp%X_u( j ) - nlp%X( j ) ) )
-       ELSE
-         data%NU_u( j ) = zero
-       END IF
-     END DO
+!  for the simple bound constraints
+
+             DO j = 1, nlp%n
+               IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+                 data%NU_l( j ) = MAX( one, ( nlp%X_l( j ) - data%epf%X( j ) ) )
+               ELSE
+                 data%NU_l( j ) = zero
+               END IF
+               IF ( nlp%X_u( j ) <= control%infinity ) THEN
+                 data%NU_u( j ) = MAX( one, ( nlp%X_u( j ) - data%epf%X( j ) ) )
+               ELSE
+                 data%NU_u( j ) = zero
+               END IF
+             END DO
 
 !  for the general constraints
 
-     DO i = 1, nlp%m
-       IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-         data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
-       ELSE
-         data%MU_l( i ) = zero
-       END IF
-       IF ( nlp%C_u( i ) <= control%infinity ) THEN
-         data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
-       ELSE
-         data%MU_u( i ) = zero
-       END IF
-     END DO
+             DO i = 1, nlp%m
+               IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+                 data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
+               ELSE
+                 data%MU_l( i ) = zero
+               END IF
+               IF ( nlp%C_u( i ) <= control%infinity ) THEN
+                 data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
+               ELSE
+                 data%MU_u( i ) = zero
+               END IF
+             END DO
+           END IF
 
 !  compute the individual and combined dual-variable 
 
@@ -1585,407 +1763,280 @@ write(6,*) ' f, ||c|| = ', inform%obj, c_norm
 
 !  for the dual variables:
 
-     penalty_term = zero
-     DO j = 1, nlp%n
-       IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-         data%Z_l( j ) = data%V_l( j ) *                                       &
-           EXP( ( nlp%X_l( j ) - nlp%X( j ) ) / data%NU_l( j ) )
-         nlp%Z( j ) = - data%Z_l( j )
-         data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
-         penalty_term = penalty_term + data%Z_l( j )
-       ELSE
-         nlp%Z( j ) = zero
-         data%Dz( j ) = zero
-       END IF
-       IF ( nlp%X_u( j ) <= control%infinity ) THEN
-         data%Z_u( j ) = data%V_u( j ) *                                       &
-           EXP( ( nlp%X( j ) - nlp%X_u( j ) ) / data%NU_u( j ) )
-         nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
-         data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
-         penalty_term = penalty_term + data%Z_u( j )
-       END IF
-     END DO
+           penalty_term = zero
+           DO j = 1, nlp%n
+             IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+               data%Z_l( j ) = data%V_l( j ) *                                 &
+                 EXP( ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j ) )
+               nlp%Z( j ) = - data%Z_l( j )
+               data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
+               penalty_term = penalty_term + data%Z_l( j )
+             ELSE
+               nlp%Z( j ) = zero
+               data%Dz( j ) = zero
+             END IF
+             IF ( nlp%X_u( j ) <= control%infinity ) THEN
+               data%Z_u( j ) = data%V_u( j ) *                                 &
+                 EXP( ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j ) )
+               nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
+               data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
+               penalty_term = penalty_term + data%Z_u( j )
+             END IF
+           END DO
 
 !  for the Lagrange multipliers:
 
-     DO i = 1, nlp%m
-       IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-         data%Y_l( i ) = data%W_l( i ) *                                       &
-           EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i ) )
-         nlp%Y( i ) = - data%Y_l( i )
-         data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
-         penalty_term = penalty_term + data%Y_l( i )
-       ELSE
-         nlp%Y( i ) = zero
-         data%Dy( i ) = zero
-       END IF
-       IF ( nlp%C_u( i ) <= control%infinity ) THEN
-         data%Y_u( i ) = data%W_u( i ) *                                       &
-           EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i ) )
-         nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
-         data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
-         penalty_term = penalty_term + data%Y_u( i )
-       END IF
-     END DO
+           DO i = 1, nlp%m
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%Y_l( i ) = data%W_l( i ) *                                 &
+                 EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i ) )
+               nlp%Y( i ) = - data%Y_l( i )
+               data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
+               penalty_term = penalty_term + data%Y_l( i )
+             ELSE
+               nlp%Y( i ) = zero
+               data%Dy( i ) = zero
+             END IF
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%Y_u( i ) = data%W_u( i ) *                                 &
+                 EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i ) )
+               nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
+               data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
+               penalty_term = penalty_term + data%Y_u( i )
+             END IF
+           END DO
 
 !  compute the value of the penalty function
 
-!    phi(x,mu) = f(x) + sum_j=1^n [ nu^y_i z_j^l(x,mu) + nu^u_i z_j^u(x,mu) ] +
+!    phi(x,mu) = f(x) + sum_j=1^n [ nu^y_i z_j^l(x,nu) + nu^u_i z_j^u(x,nu) ] +
 !                     + sum_i=1^m [ mu^l_i w_i^l(x,mu) + mu^u_i w_i^u(x,mu) ]
 
-     data%epf%f = nlp%f + data%mu * penalty_term
-     IF ( data%printi ) WRITE( data%out, "( ' penalty value =', ES22.14 )" )   &
-       data%epf%f
+           data%epf%f = nlp%f + data%mu * penalty_term
+           IF ( data%printd )                                                  &
+             WRITE( data%out, "( ' penalty value =', ES22.14 )" ) data%epf%f
 
 !  test to see if the penalty function appears to be unbounded from below
 
-     IF ( data%epf%f < control%obj_unbounded ) THEN
-       inform%status = GALAHAD_error_unbounded ; GO TO 990
-     END IF
+           IF ( data%epf%f < control%obj_unbounded ) THEN
+             inform%status = GALAHAD_error_unbounded ; GO TO 990
+           END IF
 
-!  -------------------------------------------------------
-!  evaluate the objective gradient and constraint Jacobian
-!  -------------------------------------------------------
+!  obtain the value of the gradient of the penalty function
+!  ........................................................
 
-     IF ( data%eval_gj ) THEN
-       IF ( data%reverse_gj ) THEN
-         data%branch = 120 ; inform%status = 3 ; RETURN
-       ELSE
-         CALL eval_GJ( data%eval_status, nlp%X( : nlp%n ),                     &
-                       userdata, nlp%G( : nlp%n ), nlp%J%val( 1 : nlp%J%ne ) )
-       END IF
-     END IF
-
-!  return from reverse communication to obtain the gradient/Jacobian
-
- 120 CONTINUE
-     IF ( data%eval_gj ) THEN
-       inform%g_eval = inform%g_eval + 1
-     END IF
+         CASE ( 3 )
+           IF ( data%eval_gj ) THEN
+             inform%g_eval = inform%g_eval + 1
+           ELSE
+             data%eval_gj = .TRUE.
+           END IF
 
 !  compute the gradient of the penalty function:
 
-!    nabla phi(x,mu) = g(x) + z(x,mu) + J^T(x) y(x,mu)
+!    nabla phi(x,mu,nu) = g(x) + z(x,nu) + J^T(x) y(x,mu)
 
-     data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
-     CALL MOP_Ax( one, nlp%J, nlp%Y( : nlp%m ), one, data%epf%G( : nlp%n ),    &
-                  transpose = .TRUE., m_matrix = nlp%m, n_matrix = nlp%n )
-     IF ( data%printi ) WRITE( data%out,                                       &
-       "( ' penalty gradient = ', /, ( 4ES20.12 ) )" ) data%epf%G( : nlp%n )
+           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
+           CALL MOP_Ax( one, nlp%J, nlp%Y( : nlp%m ), one,                     &
+                        data%epf%G( : nlp%n ), transpose = .TRUE.,             &
+                        m_matrix = nlp%m, n_matrix = nlp%n )
+           IF ( data%printd ) WRITE( data%out,                                 &
+             "( ' penalty gradient =', /, ( 4ES20.12 ) )" ) data%epf%G( : nlp%n)
 
 !  if required, print details of the current point
 
-!    IF ( data%printd ) THEN
-!      WRITE ( data%out, 2210 ) prefix
-!      DO i = 1, nlp%n
-!        WRITE( data%out, 2230 ) prefix, i,                                    &
-!          nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), nlp%G( i )
-!      END DO
-!    END IF
+!          IF ( data%printd ) THEN
+!            WRITE ( data%out, 2210 ) prefix
+!            DO i = 1, nlp%n
+!              WRITE( data%out, 2230 ) prefix, i,                              &
+!                nlp%X_l( i ), data%epf%X( i ), nlp%X_u( i ), nlp%G( i )
+!            END DO
+!          END IF
 
-!  --------------------------------------
-!  evaluate the Hessian of the Lagrangian
-!  --------------------------------------
+!  obtain the value of the Hessian of the penalty function
+!  .......................................................
 
-     IF ( data%eval_hl .AND. data%control%subproblem_direct ) THEN
-       IF ( data%reverse_hl ) THEN
-         data%branch = 130 ; inform%status = 4 ; RETURN
-       ELSE
-         CALL eval_HL( data%eval_status, nlp%X( : nlp%n ),                     &
-                       nlp%Y( : nlp%m ), userdata,                             &
-                       nlp%H%val( : nlp%H%ne ) )
-       END IF
-     END IF
+         CASE ( 4 )
 
-!  return from reverse communication to obtain the Hessian
-
- 130 CONTINUE
-
-!  if required, form the Hessian
+!  if required, form the Hessian of the penalty function
 !
-!    Hess phi = H(x,y(x,mu)) + J^T(x) Dy(x,mu) J(x) + Dx(x,mu)
+!    Hess phi = H(x,y(x,mu,nu)) + J^T(x) Dy(x,mu) J(x) + Dx(x,nu)
 !
 !  where H(x,y) is the Hessian of the Lagrangian
 
-     IF ( data%control%subproblem_direct ) THEN
-       IF ( data%eval_hl ) THEN
-         inform%h_eval = inform%h_eval + 1
-       END IF
+           IF ( data%control%subproblem_direct ) THEN
+             IF ( data%eval_hl ) THEN
+               inform%h_eval = inform%h_eval + 1
+             ELSE 
+               data%eval_hl = .TRUE.
+             END IF
 
 !  start by recording the transpose of the Jacobian, J^T(x)
 
-       data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
+             data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
 
 !  insert the values of J(x)^T D(x,mu) J(x) into Hess_phi
 
-       CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,        &
-                      data%control%BSC_control, inform%BSC_inform,             &
-                      D = data%Dy( : nlp%m ) )
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,  &
+                            data%control%BSC_control, inform%BSC_inform,       &
+                            D = data%Dy( : nlp%m ) )
 
-       data%epf%H%val( data%jtdzj_ne + 1 : data%epf%H%ne ) = zero
+             data%epf%H%val( data%jtdzj_ne + 1 : data%epf%H%ne ) = zero
 
 !  append the values of H(x,y(x,mu)) if they are required
 
-       DO l = 1, nlp%H%ne
-         j = data%H_map( l )
-         data%epf%H%val( j ) = data%epf%H%val( j ) + nlp%H%val( l )
-       END DO
+             DO l = 1, nlp%H%ne
+               j = data%H_map( l )
+               data%epf%H%val( j ) = data%epf%H%val( j ) + nlp%H%val( l )
+             END DO
 
 !  and those from Dz(x,mu)
 
-       DO j = 1, nlp%n
-         IF ( nlp%X_l( j ) >= - control%infinity .OR.                          &
-              nlp%X_u( j ) <= control%infinity ) THEN
-           i = data%Dz_map( j )
-           data%epf%H%val( i ) = data%epf%H%val( i ) + data%Dz( j )
-         END IF
-       END DO
+             DO j = 1, nlp%n
+               IF ( nlp%X_l( j ) >= - control%infinity .OR.                    &
+                    nlp%X_u( j ) <= control%infinity ) THEN
+                 i = data%Dz_map( j )
+                 data%epf%H%val( i ) = data%epf%H%val( i ) + data%Dz( j )
+               END IF
+             END DO
 
 !  debug printing for H
 
-!      IF ( data%printd ) THEN
-       IF ( data%printi ) THEN
-         WRITE( data%out, "( A, ' penalty Hessian =' )" ) prefix
-         WRITE( data%out, "( SS, ( A, : , 2( 2I7, ES20.12, : ) ) )" )          &
-           ( prefix, ( data%epf%H%row( l + j ), data%epf%H%col( l + j ),       &
-              data%epf%H%val( l + j ), j = 0,                                  &
-                MIN( 1, data%epf%H%ne - l ) ), l = 1, data%epf%H%ne, 2 )
-       END IF
-     END IF
-write(6,*) ' stopping'
-stop
-
-
-  CALL TRU_initialize( data%tru_data, control%tru_control, inform%tru_inform ) ! Initialize control parameters
-!  control%print_level = 1
-   control%hessian_available = .FALSE.          ! Hessian products will be used
-!  control%psls_control%preconditioner = - 3    ! Apply uesr's preconditioner
-   inform%tru_inform%status = 1                            ! Set for initial entry
-   DO                                           ! Loop to solve problem
-     CALL TRU_solve( data%epf, control%tru_control, inform%tru_inform,   &
-                     data%tru_data, userdata )
-     SELECT CASE ( inform%tru_inform%status )   ! reverse communication
-     CASE ( 2 )                      ! Obtain the objective and constraint functions
-       data%eval_status = 0          ! record successful evaluation
-     CASE ( 3 )                      ! Obtain the gradient and Jacoboan
-       data%eval_status = 0          ! record successful evaluation
-     CASE ( 4 )                      ! Obtain the Hessian
-       data%eval_status = 0          ! record successful evaluation
-     CASE DEFAULT                    ! Terminal exit from loop
-       EXIT
-     END SELECT
-   END DO
-
-
-
-!  compute the norm of the projected gradient
-
-     data%W( : data%epf%n ) = EPF_projection( nlp%n,                                &
-        nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
-     inform%dual_infeasibility                                                 &
-       = TWO_NORM(  data%epf%G( : nlp%n ) - data%W( : nlp%n ) )
-
-     IF ( data%printi ) WRITE( data%out, "( A, '  Problem: ', A,               &
-    &   ' (n = ', I0, '): EPF stopping tolerance =', ES11.4, / )" )            &
-       prefix, TRIM( nlp%pname ), nlp%n, data%stop_d
-
-!  compute stopping tolerances
-
-     data%stop_p = MAX( control%stop_abs_p,                                    &
-                        control%stop_rel_p * inform%primal_infeasibility )
-     data%stop_d = MAX( control%stop_abs_d,                                    &
-                        control%stop_rel_d * inform%dual_infeasibility )
-     data%stop_c = MAX( control%stop_abs_c,                                    &
-                        control%stop_rel_c * inform%complementary_slackness )
-
-!  =======================
-!  Start of main iteration
-!  =======================
-
- 100 CONTINUE
-       n_active = EPF_active( nlp%n, nlp%X, nlp%X_l, nlp%X_u )
-
-!  control printing
-
-       IF ( inform%iter >= data%start_print .AND.                              &
-            inform%iter < data%stop_print .AND.                                &
-            MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
-           THEN
-         data%printi = data%set_printi ; data%printt = data%set_printt
-         data%printm = data%set_printm ; data%printw = data%set_printw
-         data%printd = data%set_printd
-         data%print_level = data%control%print_level
-!         data%control%GLTR_control%print_level = data%print_level_gltr
-!         data%control%TRS_control%print_level = data%print_level_trs
-       ELSE
-         data%printi = .FALSE. ; data%printt = .FALSE.
-         data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
-         data%print_level = 0
-!         data%control%GLTR_control%print_level = 0
-!         data%control%TRS_control%print_level = 0
-       END IF
-       data%print_iteration_header = data%print_level > 1
-!      data%print_iteration_header = data%print_level > 1 .OR.                 &
-!        ( data%control%GLTR_control%print_level > 0 .AND. .NOT.               &
-!          data%control%subproblem_direct ) .OR.                               &
-!        ( data%control%TRS_control%print_level > 0 .AND.                      &
-!          data%control%subproblem_direct )
-
-!  print one-line summary
-
-       IF ( data%printi ) THEN
-         IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
-           IF ( data%no_bounds ) THEN
-             IF ( data%control%subproblem_direct ) THEN
-               WRITE( data%out, 2010 ) prefix
-             ELSE
-               WRITE( data%out, 2020 ) prefix
-             END IF
-           ELSE
-             IF ( data%control%subproblem_direct ) THEN
-               WRITE( data%out, 2030 ) prefix
-             ELSE
-               WRITE( data%out, 2040 ) prefix
+             IF ( data%printd ) THEN
+!            IF ( data%printi ) THEN
+               WRITE( data%out, "( A, ' penalty Hessian =' )" ) prefix
+               WRITE( data%out, "( SS, ( A, : , 2( 2I7, ES20.12, : ) ) )" )    &
+                 ( prefix, ( data%epf%H%row( l + j ), data%epf%H%col( l + j ), &
+                    data%epf%H%val( l + j ), j = 0,                            &
+                      MIN( 1, data%epf%H%ne - l ) ), l = 1, data%epf%H%ne, 2 )
              END IF
            END IF
-         END IF
-!!$         data%print_1st_header = .FALSE.
-!!$         char_iter = STRING_integer_6( inform%iter )
-!!$         IF ( data%no_bounds ) THEN
-!!$           IF ( inform%iter > 0 ) THEN
-!!$             IF ( data%control%subproblem_direct ) THEN
-!!$               char_facts = STRING_integer_6( inform%TRS_inform%factorizations )
-!!$               WRITE( data%out, 2050 ) prefix, char_iter, data%hard,           &
-!!$                  data%negcur, data%bndry, inform%obj,                         &
-!!$                  inform%dual_infeasibility,         &
-!!$                  data%ratio, inform%radius, inform%TRS_inform%multiplier,     &
-!!$                  char_facts, data%clock_now
-!!$             ELSE
-!!$               char_sit = STRING_integer_6( inform%GLTR_inform%iter )
-!!$               char_sit2 = STRING_integer_6( inform%GLTR_inform%iter_pass2 )
-!!$               WRITE( data%out, 2060 ) prefix, char_iter, data%negcur,         &
-!!$                  data%bndry, data%perturb, inform%obj,                        &
-!!$                  inform%dual_infeasibility,                                   &
-!!$                  data%ratio, inform%radius, char_sit, char_sit2,              &
-!!$                  data%clock_now
-!!$             END IF
-!!$           ELSE
-!!$             WRITE( data%out, 2070 ) prefix, char_iter, inform%obj,            &
-!!$                inform%dual_infeasibility, inform%radius
-!!$           END IF
-!!$         ELSE
-!!$           char_active = STRING_integer_6( n_active )
-!!$           IF ( inform%iter > 0 ) THEN
-!!$             IF ( data%control%subproblem_direct ) THEN
-!!$               char_facts = STRING_integer_6( inform%TRS_inform%factorizations )
-!!$               WRITE( data%out, 2080 ) prefix, char_iter, data%hard,           &
-!!$                  data%negcur, data%bndry, inform%obj, &
-!!$                  inform%dual_infeasibility,         &
-!!$                  data%ratio, inform%radius, char_active, char_facts,          &
-!!$                  data%clock_now
-!!$             ELSE
-!!$               char_sit = STRING_integer_6( data%itercg )
-!!$               WRITE( data%out, 2080 ) prefix, char_iter, data%negcur,         &
-!!$                  data%bndry, data%perturb, inform%obj,                        &
-!!$                  inform%dual_infeasibility,                                   &
-!!$                  data%ratio, inform%radius, char_active, char_sit,            &
-!!$                  data%clock_now
-!!$             END IF
-!!$           ELSE
-!!$             WRITE( data%out, 2090 ) prefix,                                   &
-!!$                  char_iter, inform%obj, inform%dual_infeasibility, 
-!!$                  inform%radius, char_active
-!!$           END IF
-!!$         END IF
-       END IF
+         END SELECT
 
-!  =======================
-!  1. Test for convergence
-!  =======================
+!  record successful evaluation
 
-!  stop if the gradient is small enough
+         data%tru_data%eval_status = 0
+         GO TO 200 
+
+!  ---------------------------
+!  end of inner-iteration loop
+!  ---------------------------
+
+ 300   CONTINUE
+
+!  compute the 
+       data%W( : data%epf%n ) = EPF_projection( nlp%n,                         &
+          nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
+       inform%dual_infeasibility                                               &
+         = TWO_NORM( nlp%X( : nlp%n ) - data%W( : nlp%n ) )
+
+        IF ( data%printi ) WRITE ( data%out,                                   &
+              "( A, ' Current objective value = ', ES22.14,                    &
+       &      /, A, ' Current gradient norm   = ', ES12.4, / )" )              &
+          prefix, inform%obj, prefix, inform%dual_infeasibility
+
+!  update the Lagrange multipliers and dual variables
+
+!  for the dual variables:
+
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) data%V_l( j ) = data%Z_l( j )
+         IF ( nlp%X_u( j ) <= control%infinity ) data%V_u( j ) = data%Z_u( j )
+       END DO
+
+!  for the Lagrange multipliers:
+
+       DO i = 1, nlp%m
+         IF ( nlp%C_l( i ) >= - control%infinity ) data%W_l( i ) = data%Y_l( i )
+         IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = data%Y_u( i )
+       END DO
 
        IF ( inform%dual_infeasibility <= data%stop_d ) THEN
-         inform%status = GALAHAD_ok ; GO TO 900
+         GO TO 800
        END IF
 
-!  stop if the gradient is swamped by the Hessian
+!  update the penalty parameters
 
-       IF ( data%control%hessian_available .AND. inform%iter > 0 ) THEN
-         IF ( inform%dual_infeasibility <= MIN( one,                           &
-                MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) ) ) * epsmch ) ) THEN
-           inform%status = GALAHAD_error_ill_conditioned ; GO TO 900
-         END IF
-       END IF
+!  for the simple-bound constraints:
 
-!  check to see if we are still "alive"
+       data%update_munu = .TRUE.
+       IF ( data%update_munu ) THEN
+         DO j = 1, nlp%n
+           IF ( nlp%X_l( j ) >= - control%infinity )                           &
+             data%NU_l( j ) = control%mu_reduce * data%NU_l( j )
+           IF ( nlp%X_u( j ) <= control%infinity )                             &
+             data%NU_u( j ) = control%mu_reduce * data%NU_u( j )
+         END DO
 
-       IF ( data%control%alive_unit > 0 ) THEN
-         INQUIRE( FILE = data%control%alive_file, EXIST = alive )
-         IF ( .NOT. alive ) THEN
-           inform%status = - 40
-           RETURN
-         END IF
-       END IF
+!  for the general constraints:
 
-!  check to see if the iteration limit has been exceeded
-
-       inform%iter = inform%iter + 1
-       IF ( inform%iter > data%control%maxit ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900
-       END IF
-
-!  debug printing for X and G
-
-       IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
-         WRITE ( data%out, 2000 ) prefix, TRIM( nlp%pname ), nlp%n
-         WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,&
-           prefix, inform%h_eval, prefix, inform%iter, prefix,                 &
-           prefix, inform%obj, prefix, inform%dual_infeasibility
-         WRITE ( data%out, 2210 ) prefix
-!        l = nlp%n
-         l = 2
-         DO j = 1, 2
-            IF ( j == 1 ) THEN
-               ir = 1 ; ic = MIN( l, nlp%n )
-            ELSE
-               IF ( ic < nlp%n - l ) WRITE( data%out, 2240 ) prefix
-               ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-            END IF
-            IF ( ALLOCATED( nlp%vnames ) ) THEN
-              DO i = ir, ic
-                 WRITE( data%out, 2220 ) prefix, nlp%vnames( i ),              &
-                   nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), nlp%G( i )
-              END DO
-            ELSE
-              DO i = ir, ic
-                 WRITE( data%out, 2230 ) prefix, i,                            &
-                   nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), nlp%G( i )
-              END DO
-            END IF
+         DO i = 1, nlp%m
+           IF ( nlp%C_l( i ) >= - control%infinity )                           &
+             data%MU_l( i ) = control%mu_reduce * data%MU_l( i ) 
+           IF ( nlp%C_u( i ) <= control%infinity )                             &
+             data%MU_u( i ) = control%mu_reduce * data%MU_u( i )
          END DO
        END IF
 
-!  recompute the Hessian if it has changed
+!  ---------------------------
+!  end of outer-iteration loop
+!  ---------------------------
 
-       data%perturb = ' '
-       GO TO 900 ! temporary exit
+       GO TO 100
+
+ 800 CONTINUE
+
+!  compute the norm of the projected gradient
+
+     data%W( : data%epf%n ) = EPF_projection( nlp%n,                           &
+        nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
+     inform%dual_infeasibility                                                 &
+       = TWO_NORM( nlp%X( : nlp%n ) - data%W( : nlp%n ) )
+
+!  debug printing for X and G
+
+     IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
+       WRITE ( data%out, 2000 ) prefix, TRIM( nlp%pname ), nlp%n
+       WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,  &
+         prefix, inform%h_eval, prefix, inform%iter, prefix,                   &
+         prefix, inform%obj, prefix, inform%dual_infeasibility
+       WRITE ( data%out, 2210 ) prefix
+!      l = nlp%n
+       l = 2
+       DO j = 1, 2
+          IF ( j == 1 ) THEN
+             ir = 1 ; ic = MIN( l, nlp%n )
+          ELSE
+             IF ( ic < nlp%n - l ) WRITE( data%out, 2240 ) prefix
+             ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
+          END IF
+          IF ( ALLOCATED( nlp%vnames ) ) THEN
+            DO i = ir, ic
+               WRITE( data%out, 2220 ) prefix, nlp%vnames( i ),                &
+                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+            END DO
+          ELSE
+            DO i = ir, ic
+               WRITE( data%out, 2230 ) prefix, i,                              &
+                 nlp%X_l( i ), nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
+            END DO
+          END IF
+       END DO
+     END IF
 
 !  record the clock time
 
-       CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-       data%time_now = data%time_now - data%time_start
-       data%clock_now = data%clock_now - data%clock_start
-       IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,     &
-      &    F12.2,  ' seconds' )" ) prefix, data%clock_now
-       IF ( ( data%control%cpu_time_limit >= zero .AND.                        &
-              data%time_now > data%control%cpu_time_limit ) .OR.               &
-            ( data%control%clock_time_limit >= zero .AND.                      &
-              data%clock_now > data%control%clock_time_limit ) ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
-       END IF
+     CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+     data%time_now = data%time_now - data%time_start
+     data%clock_now = data%clock_now - data%clock_start
+     IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,       &
+    &    F12.2,  ' seconds' )" ) prefix, data%clock_now
+     IF ( ( data%control%cpu_time_limit >= zero .AND.                          &
+            data%time_now > data%control%cpu_time_limit ) .OR.                 &
+          ( data%control%clock_time_limit >= zero .AND.                        &
+            data%clock_now > data%control%clock_time_limit ) ) THEN
+       inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+     END IF
 
-     GO TO 100
 
 !  =========================
 !  End of the main iteration
@@ -2001,8 +2052,10 @@ stop
 
      IF ( data%printi ) THEN
 !      WRITE ( data%out, 2000 ) nlp%pname, nlp%n
-       WRITE ( data%out, 2200 ) inform%f_eval, inform%g_eval, inform%h_eval,   &
-          inform%iter, inform%obj, inform%dual_infeasibility
+       WRITE ( data%out, 2200 ) prefix, inform%f_eval, prefix, inform%g_eval,  &
+                                prefix, inform%h_eval, prefix, inform%iter,    &
+                                prefix, inform%obj, prefix,                    &
+                                inform%dual_infeasibility
 !      WRITE ( data%out, 2210 )
 !      IF ( data%print_level > 3 ) THEN
 !         l = nlp%n
@@ -2018,7 +2071,7 @@ stop
 !         END IF
 !         DO i = ir, ic
 !            WRITE ( data%out, 2220 ) nlp%vnames( i ), nlp%X_l( i ),
-!              nlp%X( i ), nlp%X_u( i ), nlp%G( i )
+!              nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
 !         END DO
 !      END DO
        WRITE( data%out, "( /, A, '  Problem: ', A,                             &
@@ -2149,19 +2202,6 @@ stop
 !  Non-executable statements
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
- 2010 FORMAT( A, '    It         f        pgrad     ',                         &
-             ' ratio   radius  multplr # fact        time ' )
- 2020 FORMAT( A, '    It         f        pgrad     ',                         &
-             ' ratio   radius  pass 1 pass 2        time ' )
- 2030 FORMAT( A, '    It         f        pgrad     ',                         &
-             ' ratio   radius # active # fact        time ' )
- 2040 FORMAT( A, '    It         f        pgrad     ',                         &
-             ' ratio   radius # active cg its        time ' )
-! 2050 FORMAT( A, A6, 3A1, 2ES12.4, 3ES9.1, A7, F12.2 )
-! 2060 FORMAT( A, A6, 3A1, 2ES12.4, 2ES9.1, 2A7, F12.2 )
-! 2070 FORMAT( A, A6, 1X, 2ES12.4, 9X, ES9.1 )
-! 2080 FORMAT( A, A6, 3A1, 2ES12.4, 2ES9.1, 2X, A7, A7, F12.2 )
-! 2090 FORMAT( A, A6, 2X, 2ES12.4, 9X, ES9.1, 2X, A7 )
  2200 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
               /, A, ' # gradient evaluations  = ', I10,                        &
               /, A, ' # Hessian evaluations   = ', I10,                        &

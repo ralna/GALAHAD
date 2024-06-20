@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD EPF package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2024-05-28
+#  This version: 2024-06-19
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -19,11 +19,12 @@ PACKAGE = EPF
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
-               make_lmt make_qpt make_rand make_gltr \
-               make_tools make_map make_scu make_mi28 make_mop \
-               make_ir make_trs make_userdata make_nlpt \
-               make_icfs make_lancelot_psls make_psls \
-               make_cauchy make_cg make_bsc
+               make_lmt make_qpt make_lms make_rand \
+               make_gltr make_tools make_scu make_mi28 \
+               make_mop make_ir make_trs make_rqs \
+               make_userdata make_nlpt make_dps make_icfs \
+               make_lancelot_psls make_psls make_sec make_sha \
+               make_tru
 
 #  other packages that depend on package
 
