@@ -195,8 +195,9 @@ In order to get GALAHAD working, here is what you need to do.
 
    Once you have downloaded this file, it should be uncompressed in a
    convenient location, and we recommend that you choose the directory ./
-   The file ./galahad/src/makedefs/packages.default ** MUST BE EDITED **
-   to activate the HSL packages.
+
+   ** N.B. The file ./galahad/src/makedefs/packages.default
+   ** MUST BE EDITED ** to activate the HSL packages.
 
    Once GALAHAD has been installed, any further changes to optional
    software should be recorded in the file ./galahad/src/makedefs/packages,
@@ -234,9 +235,9 @@ In order to get GALAHAD working, here is what you need to do.
 
    for Macs under OSX.
 
-   You will also need to set environment variables  OMP_CANCELLATION, 
-   OMP_NESTED and OMP_PROC_BIND to TRUE, and OMP_MAX_ACTIVE_LEVEL to 
-   the maximum number of parallel threads you wish to use. 
+   You will also need to set environment variables  OMP_CANCELLATION,
+   OMP_NESTED and OMP_PROC_BIND to TRUE, and OMP_MAX_ACTIVE_LEVEL to
+   the maximum number of parallel threads you wish to use.
    Under the sh/bash shell, put
 
      export OMP_CANCELLATION=true
