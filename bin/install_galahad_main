@@ -481,7 +481,7 @@ fi
 
 if [[ ! -e $MODDIR ]]; then
     $MKDIR $MODDIR
-    $MKDIR $MODDIR/double $MODDIR/single $OBJDIR/double_64 $OBJDIR/single_64
+    $MKDIR $MODDIR/double $MODDIR/single $MODDIR/double_64 $MODDIR/single_64
 else
     if [[ ! -e $MODDIR/double ]]; then
     $MKDIR -p $MODDIR/double
@@ -489,11 +489,11 @@ else
     if [[ ! -e $MODDIR/single ]]; then
     $MKDIR -p $MODDIR/single
     fi
-    if [[ ! -e $OBJDIR/double_64 ]]; then
-    $MKDIR -p $OBJDIR/double_64
+    if [[ ! -e $MODDIR/double_64 ]]; then
+    $MKDIR -p $MODDIR/double_64
     fi
-    if [[ ! -e $OBJDIR/single_64 ]]; then
-    $MKDIR -p $OBJDIR/single_64
+    if [[ ! -e $MODDIR/single_64 ]]; then
+    $MKDIR -p $MODDIR/single_64
     fi
 fi
 
@@ -808,6 +808,14 @@ if [[ $? != 0 ]]; then
     fi
   fi
 
+  if [[ $GALAHAD_REQINT == "" ]] ; then
+    echo -e '\n It may also be compiled for 32-bit (I)ntegers or 64-bit (L)ong ones.'
+    read -p ' Which integer type do you require for the installed subset (I/l) ? ' -r -n 1 GALAHAD_REQINT;
+    if [[ $GALAHAD_REQINT == "" ]] ; then
+      GALAHAD_REQINT="I"
+    fi
+  fi
+
 #  optionally build shared libraries
 
   yesno_default_no ' Would you like to build additional shared libraries'
@@ -818,9 +826,17 @@ if [[ $? != 0 ]]; then
   fi
 
   if [[ $GALAHAD_REQPREC == [Ss] ]] ; then
-    PREC='single'
+    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
+      PREC='single_64'
+    else
+      PREC='single'
+    fi
   else
-    PREC='double'
+    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
+      PREC='double_64'
+    else
+      PREC='double'
+    fi
   fi
   galahad_compile
 
@@ -839,7 +855,11 @@ if [[ $? != 0 ]]; then
 #  optionally compile the selected packages in the other precision
 
   if [[ $GALAHAD_REQPREC == [Bb] ]] ; then
-    PREC='single'
+    if [[ $GALAHAD_REQINT == [Ll] ]] ; then
+      PREC='single_64'
+    else
+      PREC='single'
+    fi
     galahad_compile
 
     if [[ $shared == "1" ]]; then
