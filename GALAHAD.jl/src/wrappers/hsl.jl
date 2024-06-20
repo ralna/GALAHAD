@@ -30,20 +30,20 @@ struct ma48_ainfo{T}
   ops::T
   flag::Cint
   more::Cint
-  lena_analyse::Int64
-  lenj_analyse::Int64
-  lena_factorize::Int64
-  leni_factorize::Int64
+  lena_analyse::Clong
+  lenj_analyse::Clong
+  lena_factorize::Clong
+  leni_factorize::Clong
   ncmpa::Cint
   rank::Cint
-  drop::Int64
+  drop::Clong
   struc_rank::Cint
-  oor::Int64
-  dup::Int64
+  oor::Clong
+  dup::Clong
   stat::Cint
   lblock::Cint
   sblock::Cint
-  tblock::Int64
+  tblock::Clong
 end
 
 export ma48_finfo
@@ -52,10 +52,10 @@ struct ma48_finfo{T}
   ops::T
   flag::Cint
   more::Cint
-  size_factor::Int64
-  lena_factorize::Int64
-  leni_factorize::Int64
-  drop::Int64
+  size_factor::Clong
+  lena_factorize::Clong
+  leni_factorize::Clong
+  drop::Clong
   rank::Cint
   stat::Cint
 end
@@ -183,9 +183,9 @@ struct ma77_control{T}
   bits::Cint
   buffer_lpage::NTuple{2,Cint}
   buffer_npage::NTuple{2,Cint}
-  file_size::Int64
-  maxstore::Int64
-  storage::NTuple{3,Int64}
+  file_size::Clong
+  maxstore::Clong
+  storage::NTuple{3,Clong}
   nemin::Cint
   maxit::Cint
   infnorm::Cint
@@ -197,12 +197,12 @@ struct ma77_control{T}
   nbi::Cint
   small::T
   static_::T
-  storage_indef::Int64
+  storage_indef::Clong
   u::T
   umin::T
   consist_tol::T
   ispare::NTuple{5,Cint}
-  lspare::NTuple{5,Int64}
+  lspare::NTuple{5,Clong}
   rspare::NTuple{5,T}
 end
 
@@ -218,10 +218,10 @@ struct ma77_info{T}
   matrix_outrange::Cint
   maxdepth::Cint
   maxfront::Cint
-  minstore::Int64
+  minstore::Clong
   ndelay::Cint
-  nfactor::Int64
-  nflops::Int64
+  nfactor::Clong
+  nflops::Clong
   niter::Cint
   nsup::Cint
   num_neg::Cint
@@ -230,18 +230,18 @@ struct ma77_info{T}
   ntwo::Cint
   stat::Cint
   index::NTuple{4,Cint}
-  nio_read::NTuple{2,Int64}
-  nio_write::NTuple{2,Int64}
-  nwd_read::NTuple{2,Int64}
-  nwd_write::NTuple{2,Int64}
+  nio_read::NTuple{2,Clong}
+  nio_write::NTuple{2,Clong}
+  nwd_read::NTuple{2,Clong}
+  nwd_write::NTuple{2,Clong}
   num_file::NTuple{4,Cint}
-  storage::NTuple{4,Int64}
+  storage::NTuple{4,Clong}
   tree_nodes::Cint
   unit_restart::Cint
   unused::Cint
   usmall::T
   ispare::NTuple{5,Cint}
-  lspare::NTuple{5,Int64}
+  lspare::NTuple{5,Clong}
   rspare::NTuple{5,T}
 end
 
@@ -274,8 +274,8 @@ struct ma86_info{T}
   matrix_rank::Cint
   maxdepth::Cint
   num_delay::Cint
-  num_factor::Int64
-  num_flops::Int64
+  num_factor::Clong
+  num_flops::Clong
   num_neg::Cint
   num_nodes::Cint
   num_nothresh::Cint
@@ -308,8 +308,8 @@ struct ma87_info{T}
   detlog::T
   flag::Cint
   maxdepth::Cint
-  num_factor::Int64
-  num_flops::Int64
+  num_factor::Clong
+  num_flops::Clong
   num_nodes::Cint
   pool_size::Cint
   stat::Cint
@@ -332,9 +332,9 @@ struct ma97_control{T}
   unit_diagnostics::Cint
   unit_error::Cint
   unit_warning::Cint
-  factor_min::Int64
+  factor_min::Clong
   solve_blas3::Cint
-  solve_min::Int64
+  solve_min::Clong
   solve_mf::Cint
   consist_tol::T
   ispare::NTuple{5,Cint}
@@ -354,8 +354,8 @@ struct ma97_info{T}
   maxdepth::Cint
   maxfront::Cint
   num_delay::Cint
-  num_factor::Int64
-  num_flops::Int64
+  num_factor::Clong
+  num_flops::Clong
   num_neg::Cint
   num_sup::Cint
   num_two::Cint
@@ -411,7 +411,7 @@ struct mc68_info
   duplicate::Cint
   n_compressions::Cint
   n_zero_eigs::Cint
-  l_workspace::Int64
+  l_workspace::Clong
   zb01_info::Cint
   n_dense_rows::Cint
 end
@@ -506,7 +506,7 @@ struct mi28_info{T}
   oor::Cint
   profile_before::T
   profile_after::T
-  size_r::Int64
+  size_r::Clong
   stat::Cint
   alpha::T
 end

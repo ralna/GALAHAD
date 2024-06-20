@@ -22,7 +22,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
   text = read(path, String)
   if optimized
     text = replace(text, "ipc_" => "Cint")
-    text = replace(text, "longc_" => "Int64")
+    text = replace(text, "longc_" => "Clong")
     text = replace(text, "real_sp_" => "Float32")
     text = replace(text, "\n    " => "\n  ")
 

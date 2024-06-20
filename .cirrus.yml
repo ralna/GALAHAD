@@ -82,6 +82,7 @@ task:
                          -Dtests=true \
                          -Dpythoniface=true \
                          -Dint64=${INT64} \
+                         -Dhsl_legacy=true \
                          -Dlibcutest_single=${CUTEST_SINGLE} \
                          -Dlibcutest_double=${CUTEST_DOUBLE} \
                          -Dlibcutest_single_path=${CUTEST_SINGLE_PATH} \
