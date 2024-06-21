@@ -240,6 +240,7 @@
            WRITE( 6, "( '  fail in analyse, status = ', i0 )",                 &
                   advance = 'no' ) inform%status
            WRITE( 6, "( '' )" )
+!stop ! *********
            CYCLE
          END IF
 ! Factorize

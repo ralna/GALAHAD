@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-06-09 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-21 AT 15:30 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -55,7 +55,7 @@
      USE GALAHAD_SMT_precision
      USE GALAHAD_SILS_precision
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
-     USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF,       &
+     USE GALAHAD_LAPACK_interface, ONLY : LAENV, POTRF, POTRS, SYTRF,          &
                                           SYTRS, PBTRF, PBTRS ! , SYEV
      USE hsl_zd11_precision
      USE hsl_ma57_precision
@@ -1411,7 +1411,7 @@
 
        IF ( data%no_mumps ) THEN
          data%mumps_par%MYID = 1
-         IF ( check_available ) THEN ! if mumps is unavailble, use ma57 instead
+         IF ( check_available ) THEN ! if mumps is unavailable, use ma57 instead
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 4
            data%solver( 1 : data%len_solver ) = 'ma57'
@@ -2733,7 +2733,7 @@
      CASE ( 'sils', 'ma27' )
        IF ( data%no_sils ) THEN
          inform%status = GALAHAD_error_unknown_solver
-         GO TO 800
+         GO TO 900
        END IF
 
 !  = MA57 =
@@ -2741,7 +2741,7 @@
      CASE ( 'ma57' )
        IF ( data%no_ma57 ) THEN
          inform%status = GALAHAD_error_unknown_solver
-         GO TO 800
+         GO TO 900
        END IF
 
 !  = SSIDS =
@@ -2749,7 +2749,7 @@
      CASE ( 'ssids' )
        IF ( data%no_ssids ) THEN
          inform%status = GALAHAD_error_unknown_solver
-         GO TO 800
+         GO TO 900
        END IF
 
 !  = PaStiX =
@@ -2757,7 +2757,7 @@
      CASE ( 'pastix' )
        IF ( data%no_pastix ) THEN
          inform%status = GALAHAD_error_unknown_solver
-         GO TO 800
+         GO TO 900
        END IF
 
 !  = MUMPS =
@@ -2765,7 +2765,7 @@
      CASE ( 'mumps' )
        IF ( data%no_mumps ) THEN
          inform%status = GALAHAD_error_unknown_solver
-         GO TO 800
+         GO TO 900
        END IF
      END SELECT
 
@@ -3974,6 +3974,7 @@
 !  = PaStiX =
 
        CASE ( 'pastix' )
+         CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          data%spm%baseval = 1
          data%spm%mtxtype = SpmSymmetric
          data%spm%flttype = SpmDouble
@@ -4075,6 +4076,7 @@
          END IF
        END IF
 
+       CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL SLS_copy_control_to_mumps( control, data%mumps_par%ICNTL,          &
                                        data%mumps_par%CNTL )
 
@@ -5501,7 +5503,7 @@
      CASE ( 'pbtr' )
 
        data%matrix_dense( : inform%semi_bandwidth + 1, : matrix%n ) = 0.0_rp_
-       data%matrix%type =  matrix%type
+       data%matrix%type = matrix%type
 
        SELECT CASE ( SMT_get( matrix%type ) )
        CASE ( 'COORDINATE' )
@@ -6303,31 +6305,33 @@
 
 !  trivial cases
 
-     SELECT CASE ( SMT_get( matrix%type ) )
-     CASE ( 'DIAGONAL' )
-       IF ( inform%rank == matrix%n ) THEN
-         X( : matrix%n ) = X( : matrix%n ) / matrix%val( : matrix%n )
+     IF ( data%solver( 1 : data%len_solver ) /= 'mumps' ) THEN
+       SELECT CASE ( SMT_get( matrix%type ) )
+       CASE ( 'DIAGONAL' )
+         IF ( inform%rank == matrix%n ) THEN
+           X( : matrix%n ) = X( : matrix%n ) / matrix%val( : matrix%n )
+           inform%status = GALAHAD_ok
+         ELSE
+           inform%status = GALAHAD_error_solve
+         END IF
+         GO TO 900
+       CASE ( 'SCALED_IDENTITY' )
+         IF ( inform%rank == matrix%n ) THEN
+           X( : matrix%n ) = X( : matrix%n ) / matrix%val( 1 )
+           inform%status = GALAHAD_ok
+         ELSE
+           inform%status = GALAHAD_error_solve
+         END IF
+         GO TO 900
+       CASE ( 'IDENTITY' )
          inform%status = GALAHAD_ok
-       ELSE
+  !      X( : matrix%n ) = X( : matrix%n )
+         GO TO 900
+       CASE ( 'ZERO', 'NONE' )
          inform%status = GALAHAD_error_solve
-       END IF
-       GO TO 900
-     CASE ( 'SCALED_IDENTITY' )
-       IF ( inform%rank == matrix%n ) THEN
-         X( : matrix%n ) = X( : matrix%n ) / matrix%val( 1 )
-         inform%status = GALAHAD_ok
-       ELSE
-         inform%status = GALAHAD_error_solve
-       END IF
-       GO TO 900
-     CASE ( 'IDENTITY' )
-       inform%status = GALAHAD_ok
-!      X( : matrix%n ) = X( : matrix%n )
-       GO TO 900
-     CASE ( 'ZERO', 'NONE' )
-       inform%status = GALAHAD_error_solve
-       GO TO 900
-     END SELECT
+         GO TO 900
+       END SELECT
+     END IF
 
 !  solver-dependent solution
 
@@ -6718,34 +6722,36 @@
 
 !  trivial cases
 
-     nrhs = SIZE( X, 2 )
-     SELECT CASE ( SMT_get( matrix%type ) )
-     CASE ( 'DIAGONAL' )
-       IF ( inform%rank == matrix%n ) THEN
-         DO i = 1, nrhs
-           X( : matrix%n, i ) = X( : matrix%n, i ) / matrix%val( : matrix%n )
-         END DO
+     IF ( data%solver( 1 : data%len_solver ) /= 'mumps' ) THEN
+       nrhs = SIZE( X, 2 )
+       SELECT CASE ( SMT_get( matrix%type ) )
+       CASE ( 'DIAGONAL' )
+         IF ( inform%rank == matrix%n ) THEN
+           DO i = 1, nrhs
+             X( : matrix%n, i ) = X( : matrix%n, i ) / matrix%val( : matrix%n )
+           END DO
+           inform%status = GALAHAD_ok
+         ELSE
+           inform%status = GALAHAD_error_solve
+         END IF
+         GO TO 900
+       CASE ( 'SCALED_IDENTITY' )
+         IF ( inform%rank == matrix%n ) THEN
+           X( : matrix%n, : nrhs ) = X( : matrix%n, : nrhs ) / matrix%val( 1 )
+           inform%status = GALAHAD_ok
+         ELSE
+           inform%status = GALAHAD_error_solve
+         END IF
+         GO TO 900
+       CASE ( 'IDENTITY' )
          inform%status = GALAHAD_ok
-       ELSE
+!        X( : matrix%n, : nhs ) = X( : matrix%n, : nhs )
+         GO TO 900
+       CASE ( 'ZERO', 'NONE' )
          inform%status = GALAHAD_error_solve
-       END IF
-       GO TO 900
-     CASE ( 'SCALED_IDENTITY' )
-       IF ( inform%rank == matrix%n ) THEN
-         X( : matrix%n, : nrhs ) = X( : matrix%n, : nrhs ) / matrix%val( 1 )
-         inform%status = GALAHAD_ok
-       ELSE
-         inform%status = GALAHAD_error_solve
-       END IF
-       GO TO 900
-     CASE ( 'IDENTITY' )
-       inform%status = GALAHAD_ok
-!      X( : matrix%n, : nhs ) = X( : matrix%n, : nhs )
-       GO TO 900
-     CASE ( 'ZERO', 'NONE' )
-       inform%status = GALAHAD_error_solve
-       GO TO 900
-     END SELECT
+         GO TO 900
+       END SELECT
+     END IF
 
 !  solver-dependent solution
 

@@ -267,19 +267,21 @@ MUMPS
 
  To use this in GALAHAD, replace the variables MUMPS and MUMPSINCLUDE by
 
-  MUMPSINCLUDE = [mumps include directory]
-  MUMPS = -I /usr/lib/x86_64-linux-gnu/openmpi/include \
-   -I /usr/lib/x86_64-linux-gnu/openmpi/lib \
-   -I $(MUMPSINCLUDE) -ldmumps -lmumps_common -L /usr/lib -lmetis \
-   -L /usr/lib -lesmumps -lscotch -lscotcherr \
-   -lscalapack-openmpi -llapack -lblas -lpthread \
-   -L /usr/lib/x86_64-linux-gnu/openmpi/lib
+  MUMPSDIR = [mumps distribution directory]
+  MUMPSINCLUDE = $(MUMPSDIR)/include
+  MUMPS = -L$(MUMPSDIR)/lib -ldmumps -lmumps_common \
+          -L$(MUMPSDIR)/PORD/lib/ -lpord -L$(MUMPSDIR)/libseq -lmpiseq \
+          -L/usr/lib/x86_64-linux-gnu -lesmumps -lscotch -lscotcherr \
+          -lmetis -lscotcherr -lpthread
 
-  where [mumps include directory] contains the mumps C header files,
-  typically /usr/include on Linux systems.
+ with an additional 
 
- N.B. MUMPS is only optionally required but may improve performance.
+           -lscalapack-openmpi
+           
+ if MPI is enabled when compiling MUMPS.
+
+  N.B. MUMPS is only optionally required but may improve performance.
 
 Nick Gould
 For GALAHAD productions
-2023-05-18
+2024-06-21

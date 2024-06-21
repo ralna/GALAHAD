@@ -35,7 +35,8 @@ typedef unsigned int uipc_;
 typedef int64_t longc_;
 #else
 #ifdef HSL_LEGACY
-typedef long longc_;
+typedef int64_t longc_;
+/* typedef long longc_; */
 #else
 typedef int64_t longc_;
 #endif
