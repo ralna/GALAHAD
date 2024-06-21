@@ -82,6 +82,7 @@ build_double = get_option('double')
 build_tests = get_option('tests')
 build_examples = get_option('examples')
 build_ssids = get_option('ssids')
+build_metis = get_option('metis')
 
 libblas_name = get_option('libblas')
 liblapack_name = get_option('liblapack')
@@ -281,7 +282,7 @@ if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
 endif
-if not (libmetis.found() and has_metish)
+if build_metis or (not libmetis.found()) or (not has_metish)
   extra_args_single += '-DGALAHAD_METIS'
   extra_args_double += '-DGALAHAD_METIS'
 endif
