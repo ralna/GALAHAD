@@ -5,283 +5,124 @@ on:
       - master
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
-  build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+  gcc11-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-13]
+        os: ['windows-latest']
         arch: ['x64']
+        compiler: ['gcc']
         version: ['11']
         int: ['32', '64']
-        include:
-          - compiler: gcc
-          - os: ubuntu-latest
-            compiler: intel-classic
-            version: '2021.10'
-            int: '32'
-          - os: ubuntu-latest
-            compiler: intel-classic
-            version: '2021.10'
-            int: '64'
-          - os: windows-latest
-            compiler: intel
-            version: '2023.2'
-            int: '32'
-          - os: windows-latest
-            compiler: intel
-            version: '2023.2'
-            int: '64'
-          - os: ubuntu-latest
-            compiler: intel
-            version: '2023.2'
-            int: '32'
-          - os: ubuntu-latest
-            compiler: intel
-            version: '2023.2'
-            int: '64'
-          # - os: ubuntu-latest
-          #   compiler: nvidia-hpc
-          #   version: '24.5'
-          #   int: '32'
-          # - os: ubuntu-latest
-          #   compiler: nvidia-hpc
-          #   version: '24.5'
-          #  int: '64'
-    runs-on: ${{ matrix.os }}
+        hsl_legacy: ['false', 'true']
     steps:
-      - name: Check out GALAHAD
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Run common setup
+        uses: ./.github/meson
         with:
-          python-version: '3.12'
-
-      - name: Install Meson and Ninja
-        run: pip install meson ninja numpy
-
-      - name: Set the environment variables GALAHAD, CUTEST, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
-        shell: bash
-        run: |
-          echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-          echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
-          if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
-            echo "LIBDIR=lib" >> $GITHUB_ENV
-            echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
-          fi
-          if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            echo "LIBDIR=lib" >> $GITHUB_ENV
-            echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
-          fi
-          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            echo "LIBDIR=bin" >> $GITHUB_ENV
-            echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/bin" >> $GITHUB_ENV
-          fi
-          # echo "ARCHDEFS=$GITHUB_WORKSPACE/../ARCHDefs" >> $GITHUB_ENV
-          # echo "SIFDECODE=$GITHUB_WORKSPACE/../SIFDecode" >> $GITHUB_ENV
-          echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        shell: bash
-        run: |
-          cd $DEPS
-          mkdir deps
-          PLATFORM=""
-          if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
-            PLATFORM="x86_64-linux-gnu"
-          fi
-          if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            PLATFORM="x86_64-apple-darwin"
-          fi
-          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            PLATFORM="x86_64-w64-mingw32"
-            choco install wget
-          fi
-          # if [[ "${{matrix.int}}" == "64" ]]; then
-          #   wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v0.3.26%2B0/OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz
-          #   tar -xzvf OpenBLAS.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
-          # fi
-          # wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v0.3.26%2B0/OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz
-          # tar -xzvf OpenBLAS32.v0.3.26.$PLATFORM-libgfortran5.tar.gz -C deps
-
-      - name: Set the environment variables LIBRARY_PATH, LD_LIBRARY_PATH and DYLD_LIBRARY_PATH
-        shell: bash
-        run: |
-          if [[ "${{matrix.os}}" == "ubuntu-latest" ]]; then
-            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-          fi
-          if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-            echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-            echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-            echo "DYLD_FALLBACK_LIBRARY_PATH=$DYLD_FALLBACK_LIBRARY_PATH:/opt/intel/oneapi/compiler/2023.2.0/mac/compiler/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
-          fi
-          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            echo "$GITHUB_WORKSPACE/../deps/bin" >> $GITHUB_PATH
-            echo "$GITHUB_WORKSPACE../CUTEst/bin" >> $GITHUB_PATH
-            echo "$GITHUB_WORKSPACE/galahad/bin" >> $GITHUB_PATH
-          fi
-
-      - name: Set environment variables for OpenMP
-        if: matrix.os != 'windows-latest'
-        shell: bash
-        run: |
-          echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
-          echo "OMP_PROC_BIND=TRUE" >> $GITHUB_ENV
-
-      - name: Install compilers
-        uses: fortran-lang/setup-fortran@main
-        with:
+          os: ${{ matrix.os }}
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
+          int: ${{ matrix.int }}
+          hsl_legacy: ${{ matrix.hsl_legacy }}
 
-      - name: Update Intel compilers
-        if: matrix.compiler == 'intel'
-        shell: bash
-        run: echo "FC=ifort" >> $GITHUB_ENV
-
-
-      - name: Install CUTEst
-        if: matrix.os != 'windows-latest'
-        shell: bash
-        run: |
-          VERSION_CUTEST="2.2.0"
-          INT64="false"
-          if [[ "${{matrix.int}}" == "64" ]]; then
-            INT64="true"
-          fi
-          cd ..
-          if [[ "${{matrix.os}}" == "windows-latest" ]]; then
-            wget https://github.com/ralna/CUTEst/archive/refs/tags/v${VERSION_CUTEST}.zip
-            unzip v${VERSION_CUTEST}.zip
-          else
-            wget https://github.com/ralna/CUTEst/archive/refs/tags/v${VERSION_CUTEST}.tar.gz
-            tar -xzvf v${VERSION_CUTEST}.tar.gz
-          fi
-          cd CUTEst-${VERSION_CUTEST}
-          meson setup builddir --buildtype=debug \
-                               --prefix=$CUTEST \
-                               -Ddefault_library=shared \
-                               -Dquadruple=true \
-                               -Dint64=${INT64}
-          meson compile -C builddir
-          meson install -C builddir
-
-      - name: Setup GALAHAD
-        shell: bash
-        run: |
-          mkdir -p ../CUTEst/modules
-          CSTD="c99"
-          CPPSTD="c++11"
-          INT64="false"
-          SSIDS="true"
-          BLAS="openblas"
-          LAPACK="openblas"
-          BLAS_PATH=""
-          LAPACK_PATH=""
-          PYTHON_INTERFACE="true"
-          SHARED_STATIC="shared"
-          CUTEST_SINGLE="cutest_single"
-          CUTEST_DOUBLE="cutest_double"
-          LD_CLASSIC=""
-          if [[ "${{matrix.os}}" == "macos-13" ]]; then
-            LD_CLASSIC="-Wl,-ld_classic"
-          fi
-          if [[ "${{matrix.compiler}}" == "nvidia-hpc" ]]; then
-            CSTD="none"
-            CPPSTD="none"
-            BLAS="blas_lp64"
-            LAPACK="lapack_lp64"
-            BLAS_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib"
-            LAPACK_PATH="/opt/nvidia/hpc_sdk/Linux_x86_64/23.11/compilers/lib"
-          fi
-          if [[ "${{matrix.int}}" == "64" ]]; then
-            INT64="true"
-            BLAS="openblas64_"
-            LAPACK="openblas64_"
-            BLAS_PATH="$DEPS/deps/$LIBDIR"
-            LAPACK_PATH="$DEPS/deps/$LIBDIR"
-            CUTEST_SINGLE="cutest_single_64"
-            CUTEST_DOUBLE="cutest_double_64"
-          fi
-          if [[ ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
-            SHARED_STATIC="static"
-          fi
-          if [[ ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
-            PYTHON_INTERFACE="false"
-          fi
-          if [[ "${{matrix.compiler}}" == "nvidia-hpc" || "${{matrix.compiler}}" == "intel-classic" || ( "${{matrix.compiler}}" == "intel" && "${{matrix.os}}" == "windows-latest" ) ]]; then
-            SSIDS="false"
-          fi
-
-          meson setup builddir -Ddefault_library=${SHARED_STATIC} \
-                               --buildtype=debug \
-                               --prefix=$GITHUB_WORKSPACE/galahad \
-                               -Dc_std=$CSTD \
-                               -Dcpp_std=$CPPSTD \
-                               -Dexamples=true \
-                               -Dtests=true \
-                               -Dssids=$SSIDS \
-                               -Dpythoniface=${PYTHON_INTERFACE} \
-                               -Dint64=$INT64 \
-                               -Dhsl_legacy=true \
-                               -Dlibblas_path=${BLAS_PATH} \
-                               -Dliblapack_path=${LAPACK_PATH} \
-                               -Dlibblas=$BLAS \
-                               -Dliblapack=$LAPACK \
-                               -Dfortran_link_args=${LD_CLASSIC} \
-                               -Dc_link_args=${LD_CLASSIC} \
-                               -Dlibcutest_single=$CUTEST_SINGLE \
-                               -Dlibcutest_double=$CUTEST_DOUBLE \
-                               -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
-                               -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
-                               -Dlibcutest_single_modules=../CUTEst/modules \
-                               -Dlibcutest_double_modules=../CUTEst/modules
-                               # -Db_sanitize=address,undefined
-
-      - name: Build GALAHAD
-        shell: bash
-        run: |
-          meson compile -C builddir
-      - uses: actions/upload-artifact@v4
-        if: failure()
+  gcc13-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'macos-13']
+        arch: ['x64']
+        compiler: ['gcc']
+        version: ['13']
+        int: ['32', '64']
+        hsl_legacy: ['false', 'true']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run common setup
+        uses: ./.github/meson
         with:
-          name: ${{ matrix.os }}_${{ matrix.compiler }}-v${{ matrix.version }}_Int${{ matrix.int }}_meson-log.txt
-          path: builddir/meson-logs/meson-log.txt
+          os: ${{ matrix.os }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
+          int: ${{ matrix.int }}
+          hsl_legacy: ${{ matrix.hsl_legacy }}
 
-      - name: Install GALAHAD
-        shell: bash
-        run: |
-          meson install -C builddir
-      - uses: actions/upload-artifact@v4
-        if: failure()
+  intel-classic-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest']
+        arch: ['x64']
+        compiler: ['intel-classic']
+        version: ['2021.10']
+        int: ['32', '64']
+        hsl_legacy: ['false', 'true']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run common setup
+        uses: ./.github/meson
         with:
-          name: ${{ matrix.os }}_${{ matrix.compiler }}-v${{ matrix.version }}_Int${{ matrix.int }}_install-log.txt
-          path: builddir/meson-logs/install-log.txt
+          os: ${{ matrix.os }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
+          int: ${{ matrix.int }}
+          hsl_legacy: ${{ matrix.hsl_legacy }}
 
-      # Uncomment this section to obtain ssh access to VM
-      # - name: Setup tmate session
-      #   if: matrix.os == 'macos-13'
-      #   uses: mxschmitt/action-tmate@v3
-
-      - name: Test GALAHAD
-        shell: bash
-        run: |
-          meson test -C builddir --timeout-multiplier 8
-      - uses: actions/upload-artifact@v4
-        if: failure()
+  intel-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        compiler: ['intel']
+        arch: ['x64']
+        version: ['2023.2']
+        int: ['32', '64']
+        hsl_legacy: ['false', 'true']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run common setup
+        uses: ./.github/meson
         with:
-          name: ${{ matrix.os }}_${{ matrix.compiler }}-v${{ matrix.version }}_Int${{ matrix.int }}_testlog.txt
-          path: builddir/meson-logs/testlog.txt
+          os: ${{ matrix.os }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
+          int: ${{ matrix.int }}
+          hsl_legacy: ${{ matrix.hsl_legacy }}
 
-      - name: Install Julia
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && matrix.compiler == 'intel')
-        uses: julia-actions/setup-julia@v2
-
-      - name: Test GALAHAD.jl
-        if: (matrix.int == '32') && !(matrix.os == 'windows-latest' && matrix.compiler == 'intel')
-        shell: bash
-        run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
+  # nvidia-build:
+  #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [windows-latest, ubuntu-latest]
+  #       arch: ['x64']
+  #       compiler: ['nvidia-hpc']
+  #       version: ['24.5']
+  #       int: ['32', '64']
+  #       hsl_legacy: ['false', 'true']
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #     - name: Run common setup
+  #       uses: ./.github/meson
+  #       with:
+  #         os: ${{ matrix.os }}
+  #         compiler: ${{ matrix.compiler }}
+  #         version: ${{ matrix.version }}
+  #         int: ${{ matrix.int }}
+  #         hsl_legacy: ${{ matrix.hsl_legacy }}
