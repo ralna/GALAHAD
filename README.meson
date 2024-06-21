@@ -75,6 +75,7 @@ Currently supported options with their default value:
 * `-Dsingle=true`: generate the single precision library, tests and examples;
 * `-Ddouble=true`: generate the double precision library, tests and examples;
 * `-Dssids=true`: build ssids;
+* `-Dmetis=true`: compile the version of METIS provided by GALAHAD;
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;
 * `-Dlibmetis=metis`: METIS library against which to link;

@@ -1,9 +1,7 @@
 libgalahad_src += files('metis.f90')
 libgalahad_cc_src += files('adapter.c')
 
-if not (libmetis.found() and has_metish)
-  warning('As the METIS library or metis.h is missing, we will compile our own METIS v5.2.1.')
-
+if build_metis or (not libmetis.found()) or (not has_metish)
   libgalahad_cc_src += files('auxapi.c',
                              'balance.c',
                              'bucketsort.c',
