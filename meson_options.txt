@@ -208,7 +208,7 @@ option('hsl_legacy',
        value : false,
        description : 'Compile GALAHAD with support for legacy HSL packages')
 
-option('build_metis',
+option('metis',
        type : 'boolean',
        value : true,
        description : 'Compile the version of METIS provided by GALAHAD')
