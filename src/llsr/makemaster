@@ -42,7 +42,7 @@ PYDEPENDENCIES = make_pyiface_sbls_deps make_pyiface_sbls \
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS = make_copyright
 
 #  tests to be performed (preprend with test_)
 

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "galahad_precision.h"
 #include "galahad_cfunctions.h"
 #include "galahad_qpa.h"
@@ -51,6 +52,7 @@ int main(void) {
 
         // Initialize QPA
         qpa_initialize( &data, &control, &status );
+        strcpy(control.symmetric_linear_solver, "sytr ") ;
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
@@ -156,6 +158,7 @@ int main(void) {
     printf("\n basic tests of l_1 qp storage formats\n\n");
 
     qpa_initialize( &data, &control, &status );
+    strcpy(control.symmetric_linear_solver, "sytr ") ;
 
     // Set user-defined control options
     control.f_indexing = true; // Fortran sparse matrix indexing

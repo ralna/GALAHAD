@@ -148,22 +148,22 @@ struct mi28_control {
 
 /* Communicates errors and information to the user. */
 struct mi28_info {
-  ipc_ band_after;          /* semibandwidth after MC61 */
-  ipc_ band_before;         /* semibandwidth before MC61 */
-  ipc_ dup;                 /* number of duplicated entries found in row */
-  ipc_ flag;                /* error flag */
-  ipc_ flag61;              /* error flag from mc61 */
-  ipc_ flag64;              /* error flag from hsl_mc64 */
-  ipc_ flag68;              /* error flag from hsl_mc68 */
-  ipc_ flag77;              /* error flag from mc77 */
-  ipc_ nrestart;            /* number of restarts (after reducing the shift) */
-  ipc_ nshift;              /* number of non-zero shifts used */
-  ipc_ oor;                 /* number of out-of-range entries found in row */
-  rpc_ profile_before;      /* semibandwidth before MC61 */
-  rpc_ profile_after;       /* semibandwidth after MC61 */
-  hsl_longc_ size_r;        /* size of arrays jr and ar that are used for r */
-  ipc_ stat;                /* Fortran stat parameter */
-  rpc_ alpha;    /* on successful exit, holds shift used */
+  ipc_ band_after;     /* semibandwidth after MC61 */
+  ipc_ band_before;    /* semibandwidth before MC61 */
+  ipc_ dup;            /* number of duplicated entries found in row */
+  ipc_ flag;           /* error flag */
+  ipc_ flag61;         /* error flag from mc61 */
+  ipc_ flag64;         /* error flag from hsl_mc64 */
+  ipc_ flag68;         /* error flag from hsl_mc68 */
+  ipc_ flag77;         /* error flag from mc77 */
+  ipc_ nrestart;       /* number of restarts (after reducing the shift) */
+  ipc_ nshift;         /* number of non-zero shifts used */
+  ipc_ oor;            /* number of out-of-range entries found in row */
+  rpc_ profile_before; /* semibandwidth before MC61 */
+  rpc_ profile_after;  /* semibandwidth after MC61 */
+  hsl_longc_ size_r;   /* size of arrays jr and ar that are used for r */
+  ipc_ stat;           /* Fortran stat parameter */
+  rpc_ alpha;          /* on successful exit, holds shift used */
 };
 
 /* Set default values of control */
