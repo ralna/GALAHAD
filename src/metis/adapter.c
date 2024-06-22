@@ -9,10 +9,10 @@
 #define METIS_SetDefaultOptions METIS_SetDefaultOptions_64
 #endif
 
-#ifdef GALAHAD_METIS
-#include "galahad_metis.h" /* from MeTiS 5.2 */
-#else
+#ifdef EXTERNAL_METIS
 #include "metis.h" /* provided by the user (MeTiS 5.x) */
+#else
+#include "galahad_metis.h" /* from MeTiS 5.2 */
 #endif
 
 #include "stdio.h"
