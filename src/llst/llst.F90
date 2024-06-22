@@ -2044,60 +2044,70 @@
 
 !  Deallocate all internal arrays
 
+write(6,*) ' in llst_terminate'
       array_name = 'llst: S_diag'
       CALL SPACE_dealloc_array( data%S_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' s'
       array_name = 'llst: S_offd'
       CALL SPACE_dealloc_array( data%S_offd,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' c'
       array_name = 'llst: C'
       CALL SPACE_dealloc_array( data%C,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' u'
       array_name = 'llst: U'
       CALL SPACE_dealloc_array( data%U,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' y'
       array_name = 'llst: Y'
       CALL SPACE_dealloc_array( data%Y,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' z'
       array_name = 'llst: Z'
       CALL SPACE_dealloc_array( data%Z,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' row'
       array_name = 'llst: H_sbls%row'
       CALL SPACE_dealloc_array( data%H_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' col'
       array_name = 'llst: H_sbls%col'
       CALL SPACE_dealloc_array( data%H_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' ptr'
       array_name = 'llst: H_sbls%ptr'
       CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+write(6,*) ' val'
       array_name = 'llst: H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -2106,6 +2116,7 @@
 
 !  Deallocate all arrays allocated within IR
 
+write(6,*) ' ir'
       CALL IR_terminate( data%IR_data, control%IR_control,                     &
                           inform%IR_inform )
       IF ( inform%IR_inform%status /= 0 ) THEN
@@ -2115,6 +2126,7 @@
 
 !  Deallocate all arrays allocated within SLS
 
+write(6,*) ' sls'
       CALL SLS_terminate( data%SLS_data, control%SLS_control,                  &
                           inform%SLS_inform )
       IF ( inform%SLS_inform%status /= 0 ) THEN
@@ -2124,12 +2136,15 @@
 
 !  Deallocate all arrays allocated within SBLS
 
+write(6,*) ' sbls'
       CALL SBLS_terminate( data%SBLS_data, control%SBLS_control,               &
                           inform%SBLS_inform )
       IF ( inform%SBLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%bad_alloc = 'llst: SBLS_data'
       END IF
+
+write(6,*) ' out llst_terminate'
 
       RETURN
 
