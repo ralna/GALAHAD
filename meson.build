@@ -282,9 +282,9 @@ if not liblapack.found()
   extra_args_single += '-DGALAHAD_LAPACK'
   extra_args_double += '-DGALAHAD_LAPACK'
 endif
-if build_metis or (not libmetis.found()) or (not has_metish)
-  extra_args_single += '-DGALAHAD_METIS'
-  extra_args_double += '-DGALAHAD_METIS'
+if (not build_metis) and libmetis.found() and has_metish
+  extra_args_single += '-DEXTERNAL_METIS'
+  extra_args_double += '-DEXTERNAL_METIS'
 endif
 if not libsmumps.found()
   extra_args_single += '-DDUMMY_SMUMPS'

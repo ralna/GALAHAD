@@ -11,11 +11,11 @@ struct spral_ssids_options{T}
   ignore_numa::Bool
   use_gpu::Bool
   gpu_only::Bool
-  min_gpu_work::Clong
+  min_gpu_work::Int64
   max_load_inbalance::Cfloat
   gpu_perf_coeff::Cfloat
   scaling::Cint
-  small_subtree_threshold::Clong
+  small_subtree_threshold::Int64
   cpu_block_size::Cint
   action::Bool
   pivot_method::Cint
@@ -39,8 +39,8 @@ struct spral_ssids_inform
   maxfront::Cint
   maxsupernode::Cint
   num_delay::Cint
-  num_factor::Clong
-  num_flops::Clong
+  num_factor::Int64
+  num_flops::Int64
   num_neg::Cint
   num_sup::Cint
   num_two::Cint
@@ -50,6 +50,6 @@ struct spral_ssids_inform
   not_first_pass::Cint
   not_second_pass::Cint
   nparts::Cint
-  cpu_flops::Clong
-  gpu_flops::Clong
+  cpu_flops::Int64
+  gpu_flops::Int64
 end
