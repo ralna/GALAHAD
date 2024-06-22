@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-06-02 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-22 AT 15:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -2335,6 +2335,7 @@ write(6,*) ' out llst_terminate'
      INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
+write(6,*) ' in llst_import ', A_type
 
      WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
      data%llst_control = control
@@ -2463,6 +2464,7 @@ write(6,*) ' out llst_terminate'
        data%llst_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
      END SELECT
+write(6,*) ' out llst_import'
 
      status = GALAHAD_ok
      RETURN
@@ -2549,6 +2551,7 @@ write(6,*) ' out llst_terminate'
 
 !  copy control to data
 
+write(6,*) ' in llst_import_scaling ', S_type
      WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
      error = data%llst_control%error
      space_critical = data%llst_control%space_critical
@@ -2689,6 +2692,7 @@ write(6,*) ' out llst_terminate'
        GO TO 900
      END SELECT
 
+write(6,*) ' out llst_import_scaling'
      data%use_s = .TRUE.
      status = GALAHAD_ok
      RETURN
@@ -2792,33 +2796,34 @@ write(6,*) ' out llst_terminate'
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: n, m
+write(6,*) ' in solve ',  PRESENT( S_val ) 
 
 !  recover the dimension
 
      n = data%A%n ; m = data%A%m
 
-!  save the Hessian entries
+!  save the Jacobian entries
 
      IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
 
 !  call the solver
 
-       IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
-       IF ( .NOT. data%use_s ) THEN
-         CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
-                          data%llst_control, data%llst_inform )
+     IF ( .NOT. data%use_s ) THEN
+       CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,            &
+                        data%llst_control, data%llst_inform )
 
-       ELSE
-         IF ( .NOT. PRESENT( S_val ) ) THEN
-           data%llst_inform%status = GALAHAD_error_optional
-           GO TO 900
-         END IF
-         IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
-         CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,          &
-                          data%llst_control, data%llst_inform, S = data%S )
+     ELSE
+       IF ( .NOT. PRESENT( S_val ) ) THEN
+         data%llst_inform%status = GALAHAD_error_optional
+         GO TO 900
        END IF
+       IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
+       CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,            &
+                        data%llst_control, data%llst_inform, S = data%S )
+     END IF
 
      status = data%llst_inform%status
+write(6,*) ' out solve'
      RETURN
 
 !  error returns
@@ -2848,11 +2853,13 @@ write(6,*) ' out llst_terminate'
 
 !  recover inform from internal data
 
+write(6,*) ' in info'
       inform = data%llst_inform
 
 !  flag a successful call
 
       status = GALAHAD_ok
+write(6,*) ' out info'
       RETURN
 
 !  end of subroutine LLST_information

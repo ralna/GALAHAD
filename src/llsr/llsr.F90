@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-06-05 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-06-22 AT 15:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -3641,26 +3641,25 @@
 
      n = data%A%n ; m = data%A%m
 
-!  save the Hessian entries
+!  save the Jacobian entries
 
      IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
 
 !  call the solver
 
-       IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
-       IF ( .NOT. data%use_s ) THEN
-         CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,   &
-                          data%llsr_control, data%llsr_inform )
+     IF ( .NOT. data%use_s ) THEN
+       CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,     &
+                        data%llsr_control, data%llsr_inform )
 
-       ELSE
-         IF ( .NOT. PRESENT( S_val ) ) THEN
-           data%llsr_inform%status = GALAHAD_error_optional
-           GO TO 900
-         END IF
-         IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
-         CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,   &
-                          data%llsr_control, data%llsr_inform, S = data%S )
+     ELSE
+       IF ( .NOT. PRESENT( S_val ) ) THEN
+         data%llsr_inform%status = GALAHAD_error_optional
+         GO TO 900
        END IF
+       IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
+       CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,     &
+                        data%llsr_control, data%llsr_inform, S = data%S )
+     END IF
 
      status = data%llsr_inform%status
      RETURN
