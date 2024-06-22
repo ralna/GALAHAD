@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:00 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:40 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 25 Feburary 2011
  * All rights reserved
@@ -133,15 +133,15 @@ struct ma87_control {
 
 /* data type for returning information to user.*/
 struct ma87_info {
-   rpc_ detlog;         /* Holds logarithm of abs det A (or 0) */
-   ipc_ flag;           /* Error return flag (0 on success) */
-   ipc_ maxdepth;       /* Maximum depth of the tree. */
-   longc_ num_factor;   /* Number of entries in the factor. */
-   longc_ num_flops;    /* Number of flops for factor. */
-   ipc_ num_nodes;      /* Number of nodes in factors */
-   ipc_ pool_size;      /* Maximum size of task pool used */
-   ipc_ stat;           /* STAT value on error return -1. */
-   ipc_ num_zero;       /* Number of zero pivots. */
+   rpc_ detlog;           /* Holds logarithm of abs det A (or 0) */
+   ipc_ flag;             /* Error return flag (0 on success) */
+   ipc_ maxdepth;         /* Maximum depth of the tree. */
+   hsl_longc_ num_factor; /* Number of entries in the factor. */
+   hsl_longc_ num_flops;  /* Number of flops for factor. */
+   ipc_ num_nodes;        /* Number of nodes in factors */
+   ipc_ pool_size;        /* Maximum size of task pool used */
+   ipc_ stat;             /* STAT value on error return -1. */
+   ipc_ num_zero;         /* Number of zero pivots. */
 
    char unused[40];
 };

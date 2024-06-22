@@ -2,7 +2,7 @@
  *  \copyright 2024 GALAHAD productions
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Nick Gould
- *  \version   GALAHAD 5.0 - 2024-06-20 AT 07:50 GMT
+ *  \version   GALAHAD 5.0 - 2024-06-22 AT 08:30 GMT
  */
 
 #include <stdint.h>
@@ -31,16 +31,7 @@ typedef unsigned int uipc_;
 
 /* C long integer */
 
-#ifdef INTEGER_64
 typedef int64_t longc_;
-#else
-#ifdef HSL_LEGACY
-typedef int64_t longc_;
-/* typedef long longc_; */
-#else
-typedef int64_t longc_;
-#endif
-#endif
 
 /* end include guard */
 #endif

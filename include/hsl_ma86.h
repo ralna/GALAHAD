@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 07:55 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:35 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 25 Feburary 2011
  * All rights reserved
@@ -133,22 +133,22 @@ struct ma86_control {
 
 /* data type for returning information to user.*/
 struct ma86_info {
-   rpc_ detlog;          /* Holds logarithm of abs det A (or 0) */
-   ipc_ detsign;         /* Holds sign of determinant (+/-1 or 0) */
-   ipc_ flag;            /* Error return flag (0 on success) */
-   ipc_ matrix_rank;     /* Rank of matrix */
-   ipc_ maxdepth;        /* Maximum depth of the tree. */
-   ipc_ num_delay;       /* Number of delayed pivots */
-   longc_ num_factor;    /* Number of entries in the factor. */
-   longc_ num_flops;     /* Number of flops for factor. */
-   ipc_ num_neg;         /* Number of negative pivots */
-   ipc_ num_nodes;       /* Number of nodes */
-   ipc_ num_nothresh;    /* Number of pivots not satisfying u */
-   ipc_ num_perturbed;   /* Number of perturbed pivots */
-   ipc_ num_two;         /* Number of 2x2 pivots */
-   ipc_ pool_size;       /* Maximum size of task pool used */
-   ipc_ stat;            /* STAT value on error return -1. */
-   rpc_ usmall;          /* smallest threshold parameter used */
+   rpc_ detlog;           /* Holds logarithm of abs det A (or 0) */
+   ipc_ detsign;          /* Holds sign of determinant (+/-1 or 0) */
+   ipc_ flag;             /* Error return flag (0 on success) */
+   ipc_ matrix_rank;      /* Rank of matrix */
+   ipc_ maxdepth;         /* Maximum depth of the tree. */
+   ipc_ num_delay;        /* Number of delayed pivots */
+   hsl_longc_ num_factor; /* Number of entries in the factor. */
+   hsl_longc_ num_flops;  /* Number of flops for factor. */
+   ipc_ num_neg;          /* Number of negative pivots */
+   ipc_ num_nodes;        /* Number of nodes */
+   ipc_ num_nothresh;     /* Number of pivots not satisfying u */
+   ipc_ num_perturbed;    /* Number of perturbed pivots */
+   ipc_ num_two;          /* Number of 2x2 pivots */
+   ipc_ pool_size;        /* Maximum size of task pool used */
+   ipc_ stat;             /* STAT value on error return -1. */
+   rpc_ usmall;           /* smallest threshold parameter used */
 };
 
 /* Initialise control with default values */

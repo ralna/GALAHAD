@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:00 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:40 GMT
  * COPYRIGHT (c) 2023 Science and Technology Facilities Council (STFC)
  * Original date 27 March 2023
  * All rights reserved
@@ -161,7 +161,7 @@ struct mi28_info {
   ipc_ oor;                 /* number of out-of-range entries found in row */
   rpc_ profile_before;      /* semibandwidth before MC61 */
   rpc_ profile_after;       /* semibandwidth after MC61 */
-  longc_ size_r;            /* size of arrays jr and ar that are used for r */
+  hsl_longc_ size_r;        /* size of arrays jr and ar that are used for r */
   ipc_ stat;                /* Fortran stat parameter */
   rpc_ alpha;    /* on successful exit, holds shift used */
 };

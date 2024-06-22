@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:00 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:30 GMT
  * COPYRIGHT (c) 2012 Science and Technology Facilities Council (STFC)
  * Original date 4 January 2012
  * All rights reserved
@@ -135,20 +135,20 @@ struct ma48_ainfo {
    rpc_ ops; /* Number of operations in elimination */
    ipc_ flag; /* Return code */
    ipc_ more; /* More information on failure */
-   longc_ lena_analyse; /* Size for analysis (main arrays) */
-   longc_ lenj_analyse; /* Size for analysis (integer aux array) */
-   longc_ lena_factorize; /* Size for factorize (real array) */
-   longc_ leni_factorize; /* Size for factorize (integer array) */
+   hsl_longc_ lena_analyse; /* Size for analysis (main arrays) */
+   hsl_longc_ lenj_analyse; /* Size for analysis (integer aux array) */
+   hsl_longc_ lena_factorize; /* Size for factorize (real array) */
+   hsl_longc_ leni_factorize; /* Size for factorize (integer array) */
    ipc_ ncmpa; /* Number of compresses in analyse */
    ipc_ rank; /* Estimated rank */
-   longc_ drop; /* Number of entries dropped */
+   hsl_longc_ drop; /* Number of entries dropped */
    ipc_ struc_rank; /* Structural rank of matrix */
-   longc_ oor; /* Number of indices out-of-range */
-   longc_ dup; /* Number of duplicates */
+   hsl_longc_ oor; /* Number of indices out-of-range */
+   hsl_longc_ dup; /* Number of duplicates */
    ipc_ stat; /* Fortran STAT value after allocate failure */
    ipc_ lblock; /* Size largest non-triangular block */
    ipc_ sblock; /* Sum of orders of non-triangular blocks */
-   longc_ tblock; /* Total entries in all non-triangular blocks */
+   hsl_longc_ tblock; /* Total entries in all non-triangular blocks */
 };
 
 
@@ -156,10 +156,10 @@ struct ma48_finfo {
    rpc_ ops; /* Number of operations in elimination */
    ipc_ flag; /* Return code */
    ipc_ more; /* More information on failure */
-   longc_ size_factor; /* Number of words to hold factors */
-   longc_ lena_factorize; /* Size for factorize (real array) */
-   longc_ leni_factorize; /* Size for factorize (integer array) */
-   longc_ drop; /* Number of entries dropped */
+   hsl_longc_ size_factor; /* Number of words to hold factors */
+   hsl_longc_ lena_factorize; /* Size for factorize (real array) */
+   hsl_longc_ leni_factorize; /* Size for factorize (integer array) */
+   hsl_longc_ drop; /* Number of entries dropped */
    ipc_ rank; /* Estimated rank */
    ipc_ stat; /* Fortran STAT value after allocate failure */
 };
@@ -175,7 +175,7 @@ void ma48_default_control(struct ma48_control *control);
 
 void ma48_initialize(void **factors);
 
-void ma48_analyse(ipc_ m, ipc_ n, longc_ ne, const ipc_ row[],
+void ma48_analyse(ipc_ m, ipc_ n, hsl_longc_ ne, const ipc_ row[],
       const ipc_ col[], const rpc_ val[], void *factors,
       const struct ma48_control *control, struct ma48_ainfo *ainfo,
       struct ma48_finfo *finfo, const ipc_ perm[], const ipc_ endcol[]);
@@ -183,12 +183,12 @@ void ma48_analyse(ipc_ m, ipc_ n, longc_ ne, const ipc_ row[],
 void ma48_get_perm(ipc_ m, ipc_ n, const void *factors, ipc_ perm[], 
                      const struct ma48_control *control);
 
-void ma48_factorize(ipc_ m, ipc_ n, longc_ ne, const ipc_ row[],
+void ma48_factorize(ipc_ m, ipc_ n, hsl_longc_ ne, const ipc_ row[],
       const ipc_ col[], const rpc_ val[], void *factors,
       const struct ma48_control *control, struct ma48_finfo *finfo,
       ipc_ fast, ipc_ partial);
 
-void ma48_solve(ipc_ m, ipc_ n, longc_ ne, const ipc_ row[],
+void ma48_solve(ipc_ m, ipc_ n, hsl_longc_ ne, const ipc_ row[],
       const ipc_ col[], const rpc_ val[], const void *factors,
       const rpc_ rhs[], rpc_ x[],
       const struct ma48_control *control, struct ma48_sinfo *sinfo,

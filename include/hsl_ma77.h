@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:00 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:30 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 18 May 2011
  * All rights reserved
@@ -157,9 +157,9 @@ struct ma77_control {
    ipc_ bits;
    ipc_ buffer_lpage[2];
    ipc_ buffer_npage[2];
-   longc_ file_size;
-   longc_ maxstore;
-   longc_ storage[3];
+   hsl_longc_ file_size;
+   hsl_longc_ maxstore;
+   hsl_longc_ storage[3];
 
    /* Controls used by MA77_analyse */
    ipc_ nemin;  /* Node amalgamation parameter. A child node is merged with its
@@ -181,7 +181,7 @@ struct ma77_control {
    ipc_ nbi;
    rpc_ small;
    rpc_ static_;
-   longc_ storage_indef;
+   hsl_longc_ storage_indef;
    rpc_ u;       /* Pivot tolerance*/
    rpc_ umin;    /* Minimum pivot tolerance*/
 
@@ -189,7 +189,7 @@ struct ma77_control {
    rpc_ consist_tol;   /* Tolerance for consistent singular system */
 
    /* Pad data structure to allow for future growth */
-   ipc_ ispare[5]; longc_ lspare[5]; rpc_ rspare[5];
+   ipc_ ispare[5]; hsl_longc_ lspare[5]; rpc_ rspare[5];
 };
 
 /***************************************************/
@@ -205,10 +205,10 @@ struct ma77_info {
    ipc_ matrix_outrange;
    ipc_ maxdepth;
    ipc_ maxfront;
-   longc_ minstore;
+   hsl_longc_ minstore;
    ipc_ ndelay;
-   longc_ nfactor;
-   longc_ nflops;
+   hsl_longc_ nfactor;
+   hsl_longc_ nflops;
    ipc_ niter;
    ipc_ nsup;
    ipc_ num_neg;
@@ -217,19 +217,19 @@ struct ma77_info {
    ipc_ ntwo;
    ipc_ stat;
    ipc_ index[4];
-   longc_ nio_read[2];
-   longc_ nio_write[2];
-   longc_ nwd_read[2];
-   longc_ nwd_write[2];
+   hsl_longc_ nio_read[2];
+   hsl_longc_ nio_write[2];
+   hsl_longc_ nwd_read[2];
+   hsl_longc_ nwd_write[2];
    ipc_ num_file[4];
-   longc_ storage[4];
+   hsl_longc_ storage[4];
    ipc_ tree_nodes;
    ipc_ unit_restart;
    ipc_ unused;
    rpc_ usmall;
 
    /* Pad data structure to allow for future growth */
-   ipc_ ispare[5]; longc_ lspare[5]; rpc_ rspare[5];
+   ipc_ ispare[5]; hsl_longc_ lspare[5]; rpc_ rspare[5];
 };
 
 /* Initialise control with default values */

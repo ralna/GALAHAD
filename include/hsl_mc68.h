@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:10 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:40 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 2 March 2011
  * All rights reserved
@@ -76,16 +76,16 @@ struct mc68_control {
 };
 
 struct mc68_info {
-   ipc_ flag;            /* error/warning flag */
-   ipc_ iostat;          /* holds Fortran iostat parameter */
-   ipc_ stat;            /* holds Fortran stat parameter */
-   ipc_ out_range;       /* holds number of out of range entries ignored */
-   ipc_ duplicate;       /* holds number of duplicate entries */
-   ipc_ n_compressions;  /* holds number of compressions in order */
-   ipc_ n_zero_eigs;     /* holds the number of zero eigs from ma47 */
-   longc_ l_workspace;   /* holds length of workspace iw used in order */
-   ipc_ zb01_info;       /* holds flag from zb01_expand1 call */
-   ipc_ n_dense_rows;    /* holds number of dense rows from amdd */
+   ipc_ flag;              /* error/warning flag */
+   ipc_ iostat;            /* holds Fortran iostat parameter */
+   ipc_ stat;              /* holds Fortran stat parameter */
+   ipc_ out_range;         /* holds number of out of range entries ignored */
+   ipc_ duplicate;         /* holds number of duplicate entries */
+   ipc_ n_compressions;    /* holds number of compressions in order */
+   ipc_ n_zero_eigs;       /* holds the number of zero eigs from ma47 */
+   hsl_longc_ l_workspace; /* holds length of workspace iw used in order */
+   ipc_ zb01_info;         /* holds flag from zb01_expand1 call */
+   ipc_ n_dense_rows;      /* holds number of dense rows from amdd */
 };
 
 /* Set default values for control struct */

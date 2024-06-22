@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: HSL Subset 1.0 - 2024-06-12 AT 08:05 GMT
+ * THIS VERSION: HSL Subset 1.0 - 2024-06-22 AT 08:45 GMT
  * COPYRIGHT (c) 2011 Science and Technology Facilities Council (STFC)
  * Original date 20 September 2011
  * All rights reserved
@@ -132,7 +132,7 @@ struct ma97_control {
                                  otherwise abort */
     ipc_ nemin;               /* Supernode amalgamation if parent and child
                                  have fewer than nemin eliminations */
-    rpc_ multiplier;/* Amount of extra memory to allow for delays */
+    rpc_ multiplier;          /* Amount of extra memory to allow for delays */
     ipc_ ordering;            /* Control scaling algorithm used:
                                  0 - user supplied order (order absent=identity)
                                  1 - AMD
@@ -147,11 +147,11 @@ struct ma97_control {
     ipc_ unit_diagnostics;    /* Fortran unit for diagnostics (<0 disables) */
     ipc_ unit_error;          /* Fortran unit for error msgs (<0 disables) */
     ipc_ unit_warning;        /* Fortran unit for warning msgs (<0 disables) */
-    longc_ factor_min;        /* Min number of flops for parallel execution */
+    hsl_longc_ factor_min;    /* Min number of flops for parallel execution */
     ipc_ solve_blas3;         /* Use BLAS3 in solve in true, else BLAS2 */
-    longc_ solve_min;         /* Min number of entries for parallel exection */
+    hsl_longc_ solve_min;     /* Min number of entries for parallel exection */
     ipc_ solve_mf;            /* If true use m/f solve, else use s/n */
-    rpc_ consist_tol; /* Consistent equation tolerance */
+    rpc_ consist_tol;         /* Consistent equation tolerance */
 
     /* Reserve space for future interface changes */
     ipc_ ispare[5]; rpc_ rspare[10];
@@ -168,8 +168,8 @@ struct ma97_info {
     ipc_ maxdepth;            /* height of assembly tree */
     ipc_ maxfront;            /* maximum no. rows in a supernode */
     ipc_ num_delay;           /* number of times a pivot was delayed */
-    longc_ num_factor;        /* number of entries in L */
-    longc_ num_flops;         /* number of floating point operations */
+    hsl_longc_ num_factor;    /* number of entries in L */
+    hsl_longc_ num_flops;     /* number of floating point operations */
     ipc_ num_neg;             /* number of negative pivots */
     ipc_ num_sup;             /* number of supernodes in assembly tree */
     ipc_ num_two;             /* number of 2x2 pivots */
