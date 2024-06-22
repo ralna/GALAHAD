@@ -2673,6 +2673,7 @@ write(6,*) ' in llst_import_scaling ', S_type
      CASE ( 'diagonal', 'DIAGONAL' )
        CALL SMT_put( data%S%type, 'DIAGONAL', data%llst_inform%alloc_status )
        data%S%n = n ; data%S%ne = n
+write(6,*) '  data%S%ne ',  data%S%ne 
 
        array_name = 'llst: data%S%val'
        CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
@@ -2817,6 +2818,8 @@ write(6,*) ' in solve ',  PRESENT( S_val )
          data%llst_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
+write(6,*) '  data%S%ne ',  data%S%ne 
+data%llst_control%print_level = 3
        IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
        CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,            &
                         data%llst_control, data%llst_inform, S = data%S )
