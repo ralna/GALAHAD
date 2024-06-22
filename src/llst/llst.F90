@@ -813,6 +813,8 @@ write(6,*) ' in lsst_solve'
 !  record desired output level
 
       print_level = control%print_level
+write(6,*) ' A 1'
+print_level = 3
       printi = out > 0 .AND. print_level > 0
       printt = out > 0 .AND. print_level > 1
       printd = out > 0 .AND. print_level > 2
