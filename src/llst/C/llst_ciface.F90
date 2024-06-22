@@ -642,7 +642,8 @@
 
 !  solve the trust-region problem
 
-  CALL f_llst_solve_problem( fdata, status, radius, aval, b, x, sval )
+write(6,*) ' before llst_solve_problem'
+  CALL f_llst_solve_problem( fdata, status, radius, aval, b, x, S_val = sval )
   RETURN
 
   END SUBROUTINE llst_solve_problem

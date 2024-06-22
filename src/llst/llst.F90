@@ -790,6 +790,7 @@
 !  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+write(6,*) ' in lsst_solve'
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
@@ -2821,6 +2822,7 @@ write(6,*) ' in solve ',  PRESENT( S_val )
 write(6,*) '  data%S%ne ',  data%S%ne 
 data%llst_control%print_level = 3
        IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
+write(6,*) ' before lsst_solve'
        CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,            &
                         data%llst_control, data%llst_inform, S = data%S )
      END IF
