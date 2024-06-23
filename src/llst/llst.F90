@@ -2365,7 +2365,7 @@ write(6,*) ' out llst_terminate'
      CHARACTER ( LEN = 80 ) :: array_name
 write(6,*) ' in llst_import ', A_type
 
-     IF ( data%llsr_control%out > 0 ) WRITE( data%llst_control%out,            &
+     IF ( data%llst_control%out > 0 ) WRITE( data%llst_control%out,            &
             "( '' )", ADVANCE = 'no') !prevents ifort bug
      data%llst_control = control
 
