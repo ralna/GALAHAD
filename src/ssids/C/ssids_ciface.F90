@@ -53,6 +53,7 @@
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: ssids_options
+       INTEGER ( KIND = ipc_ ) :: array_base
        INTEGER ( KIND = ipc_ ) :: print_level
        INTEGER ( KIND = ipc_ ) :: unit_diagnostics
        INTEGER ( KIND = ipc_ ) :: unit_error
