@@ -174,8 +174,12 @@ int main(void) {
                       llsr_solve_problem( &data, &status, m, n, power, weight,
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
+
+               printf("control.out = %1" i_ipc_ "\n", control.out);
+
                       llsr_import_scaling( &control, &data, &status, n,
                                            "diagonal", S_ne, NULL, NULL, NULL );
+               printf("control.out = %1" i_ipc_ "\n", control.out);
                       llsr_solve_problem( &data, &status, m, n, power, weight,
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
