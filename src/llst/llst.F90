@@ -822,6 +822,7 @@ print_level = 3
 
 !  check for obvious errors
 
+write(6,*) ' A 2'
       IF ( n <= 0 ) THEN
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error,                                                &
@@ -829,6 +830,7 @@ print_level = 3
         inform%status = GALAHAD_error_restrictions
         GO TO 910
       END IF
+write(6,*) ' A 3'
 
       IF ( radius <= zero ) THEN
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
@@ -837,6 +839,7 @@ print_level = 3
         inform%status = GALAHAD_error_restrictions
         GO TO 910
       END IF
+write(6,*) ' A 4'
 
 !  choose initial values for the control parameters for the factorization
 
@@ -879,6 +882,7 @@ print_level = 3
       ELSE
         data%s_ne = 1
       END IF
+write(6,*) ' A 5'
 
 !  ... and to hold A
 
@@ -900,6 +904,7 @@ print_level = 3
           GO TO 910
         END SELECT
       END IF
+write(6,*) ' A 6'
 
 !  make space for H = lambda * S
 
@@ -993,6 +998,7 @@ print_level = 3
         data%C_sbls%m = m ; data%C_sbls%n = m
         CALL SMT_put( data%C_sbls%type, 'IDENTITY', inform%alloc_status )
       END IF
+write(6,*) ' A 7'
 
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%assemble = inform%time%assemble + time_now - time_start
@@ -1038,10 +1044,12 @@ print_level = 3
           exact_size = control%space_critical,                                 &
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= 0 ) GO TO 910
+write(6,*) ' A 10'
 
 !  set c = A^T b
 
       CALL mop_AX( one, A, b, zero, data%C( : n ), transpose = .TRUE. )
+write(6,*) ' A 11'
 
 !  the real line is partitioned into disjoint sets
 !     N = { lambda: lambda <= max(0, -lambda_1(H))}
@@ -1354,6 +1362,7 @@ print_level = 3
         END IF
         lambda_u = c_norm_over_radius
       END IF
+write(6,*) ' A 12'
 
 !  assign the initial lambda
 
@@ -1397,6 +1406,7 @@ print_level = 3
         data%control%SBLS_control%factorization = 2
 
       it = 0 ; in_n = 0
+write(6,*) ' A 13'
       DO
         it = it + 1
 !if(it>10)stop
