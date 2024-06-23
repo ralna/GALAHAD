@@ -592,7 +592,7 @@
 
 !  copy control out
 
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+! CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
   END SUBROUTINE qpa_import
