@@ -456,7 +456,7 @@
 
 !  copy control out
 
-! CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
   END SUBROUTINE llsr_read_specfile

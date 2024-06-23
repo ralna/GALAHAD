@@ -790,7 +790,6 @@
 !  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-write(6,*) ' in lsst_solve'
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
@@ -809,26 +808,17 @@ write(6,*) ' in lsst_solve'
       inform%multiplier = zero
       data%control = control
       out = control%out
-write(6,*) ' control ', control
-write(6,*) ' out = ', out
+
 !  record desired output level
 
       print_level = control%print_level
-write(6,*) ' A 1'
-out = 6
-print_level = 3
-write(6,*) ' A 1a'
       printi = out > 0 .AND. print_level > 0
-write(6,*) ' A 1b'
       printt = out > 0 .AND. print_level > 1
-write(6,*) ' A 1c'
       printd = out > 0 .AND. print_level > 2
-write(6,*) ' A 1d'
       printh = printi
 
 !  check for obvious errors
 
-write(6,*) ' A 2'
       IF ( n <= 0 ) THEN
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error,                                                &
@@ -836,7 +826,6 @@ write(6,*) ' A 2'
         inform%status = GALAHAD_error_restrictions
         GO TO 910
       END IF
-write(6,*) ' A 3'
 
       IF ( radius <= zero ) THEN
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
@@ -845,7 +834,6 @@ write(6,*) ' A 3'
         inform%status = GALAHAD_error_restrictions
         GO TO 910
       END IF
-write(6,*) ' A 4'
 
 !  choose initial values for the control parameters for the factorization
 
@@ -888,7 +876,6 @@ write(6,*) ' A 4'
       ELSE
         data%s_ne = 1
       END IF
-write(6,*) ' A 5'
 
 !  ... and to hold A
 
@@ -910,7 +897,6 @@ write(6,*) ' A 5'
           GO TO 910
         END SELECT
       END IF
-write(6,*) ' A 6'
 
 !  make space for H = lambda * S
 
@@ -1004,7 +990,6 @@ write(6,*) ' A 6'
         data%C_sbls%m = m ; data%C_sbls%n = m
         CALL SMT_put( data%C_sbls%type, 'IDENTITY', inform%alloc_status )
       END IF
-write(6,*) ' A 7'
 
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%assemble = inform%time%assemble + time_now - time_start
@@ -1050,12 +1035,10 @@ write(6,*) ' A 7'
           exact_size = control%space_critical,                                 &
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= 0 ) GO TO 910
-write(6,*) ' A 10'
 
 !  set c = A^T b
 
       CALL mop_AX( one, A, b, zero, data%C( : n ), transpose = .TRUE. )
-write(6,*) ' A 11'
 
 !  the real line is partitioned into disjoint sets
 !     N = { lambda: lambda <= max(0, -lambda_1(H))}
@@ -1368,7 +1351,6 @@ write(6,*) ' A 11'
         END IF
         lambda_u = c_norm_over_radius
       END IF
-write(6,*) ' A 12'
 
 !  assign the initial lambda
 
@@ -1412,9 +1394,7 @@ write(6,*) ' A 12'
         data%control%SBLS_control%factorization = 2
 
       it = 0 ; in_n = 0
-write(6,*) ' A 13'
       DO
-write(6,*) ' A 14'
         it = it + 1
 !if(it>10)stop
 
@@ -1438,12 +1418,10 @@ write(6,*) ' A 14'
 !  attempt an L B L^T factorization of K(lambda)
 
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-write(6,*) ' A 15'
         CALL SBLS_form_and_factorize( n, m, data%H_sbls, A,                    &
                                       data%C_sbls, data%SBLS_data,             &
                                       data%control%SBLS_control,               &
                                       inform%SBLS_inform )
-write(6,*) ' A 16'
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%factorize = inform%time%factorize + time_now - time_record
         inform%time%clock_factorize =                                          &
@@ -1471,7 +1449,6 @@ write(6,*) ' A 16'
 !   ( lambda * S     A^T ) ( x ) = ( c )
 !   (      A         - I ) ( y )   ( 0 )
 
-write(6,*) ' A 17'
         IF ( psdef ) THEN
           CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
           data%U( : n ) = data%C( : n ) ; data%U( n + 1 : data%npm ) = zero
@@ -1645,7 +1622,6 @@ write(6,*) ' A 17'
               inform%status = GALAHAD_error_ill_conditioned
               EXIT
             END IF
-write(6,*) ' A 19'
 
 !  ----------------------------
 !  The current lambda lies in G
@@ -1773,7 +1749,6 @@ write(6,*) ' A 19'
 !  and the resulting Taylor series approximants
 
  200      CONTINUE
-write(6,*) ' A 18'
 
 !  ----------------------------
 !  The current lambda lies in L
@@ -1929,7 +1904,6 @@ write(6,*) ' A 18'
             END IF
             lambda_pert = lambda
           END IF
-write(6,*) ' A 20'
 
 !  ----------------------------
 !  The current lambda lies in N
@@ -1958,7 +1932,6 @@ write(6,*) ' A 20'
             END IF
           END IF
           lambda_pert = lambda
-write(6,*) ' A 21'
         END IF
 
         printh = printt .OR. printi .AND.                                     &
@@ -1975,7 +1948,6 @@ write(6,*) ' A 21'
 !  ----
 
  900  CONTINUE
-write(6,*) ' A 22'
       inform%multiplier = lambda
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
@@ -2072,70 +2044,60 @@ write(6,*) ' A 22'
 
 !  Deallocate all internal arrays
 
-write(6,*) ' in llst_terminate'
       array_name = 'llst: S_diag'
       CALL SPACE_dealloc_array( data%S_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' s'
       array_name = 'llst: S_offd'
       CALL SPACE_dealloc_array( data%S_offd,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' c'
       array_name = 'llst: C'
       CALL SPACE_dealloc_array( data%C,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' u'
       array_name = 'llst: U'
       CALL SPACE_dealloc_array( data%U,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' y'
       array_name = 'llst: Y'
       CALL SPACE_dealloc_array( data%Y,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' z'
       array_name = 'llst: Z'
       CALL SPACE_dealloc_array( data%Z,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' row'
       array_name = 'llst: H_sbls%row'
       CALL SPACE_dealloc_array( data%H_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' col'
       array_name = 'llst: H_sbls%col'
       CALL SPACE_dealloc_array( data%H_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' ptr'
       array_name = 'llst: H_sbls%ptr'
       CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-write(6,*) ' val'
       array_name = 'llst: H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -2144,7 +2106,6 @@ write(6,*) ' val'
 
 !  Deallocate all arrays allocated within IR
 
-write(6,*) ' ir'
       CALL IR_terminate( data%IR_data, control%IR_control,                     &
                           inform%IR_inform )
       IF ( inform%IR_inform%status /= 0 ) THEN
@@ -2154,7 +2115,6 @@ write(6,*) ' ir'
 
 !  Deallocate all arrays allocated within SLS
 
-write(6,*) ' sls'
       CALL SLS_terminate( data%SLS_data, control%SLS_control,                  &
                           inform%SLS_inform )
       IF ( inform%SLS_inform%status /= 0 ) THEN
@@ -2164,15 +2124,12 @@ write(6,*) ' sls'
 
 !  Deallocate all arrays allocated within SBLS
 
-write(6,*) ' sbls'
       CALL SBLS_terminate( data%SBLS_data, control%SBLS_control,               &
                           inform%SBLS_inform )
       IF ( inform%SBLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%bad_alloc = 'llst: SBLS_data'
       END IF
-
-write(6,*) ' out llst_terminate'
 
       RETURN
 
@@ -2363,7 +2320,6 @@ write(6,*) ' out llst_terminate'
      INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
-write(6,*) ' in llst_import ', A_type
 
      WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
      data%llst_control = control
@@ -2492,7 +2448,6 @@ write(6,*) ' in llst_import ', A_type
        data%llst_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
      END SELECT
-write(6,*) ' out llst_import'
 
      status = GALAHAD_ok
      RETURN
@@ -2579,7 +2534,6 @@ write(6,*) ' out llst_import'
 
 !  copy control to data
 
-write(6,*) ' in llst_import_scaling ', S_type
      IF ( data%llst_control%out > 0 ) WRITE( data%llst_control%out,            &
             "( '' )", ADVANCE = 'no') !prevents ifort bug
      error = data%llst_control%error
@@ -2702,7 +2656,6 @@ write(6,*) ' in llst_import_scaling ', S_type
      CASE ( 'diagonal', 'DIAGONAL' )
        CALL SMT_put( data%S%type, 'DIAGONAL', data%llst_inform%alloc_status )
        data%S%n = n ; data%S%ne = n
-write(6,*) '  data%S%ne ',  data%S%ne 
 
        array_name = 'llst: data%S%val'
        CALL SPACE_resize_array( data%S%ne, data%S%val,                         &
@@ -2722,7 +2675,6 @@ write(6,*) '  data%S%ne ',  data%S%ne
        GO TO 900
      END SELECT
 
-write(6,*) ' out llst_import_scaling'
      data%use_s = .TRUE.
      status = GALAHAD_ok
      RETURN
@@ -2826,7 +2778,6 @@ write(6,*) ' out llst_import_scaling'
 !  local variables
 
      INTEGER ( KIND = ip_ ) :: n, m
-write(6,*) ' in solve ',  PRESENT( S_val ) 
 
 !  recover the dimension
 
@@ -2847,19 +2798,12 @@ write(6,*) ' in solve ',  PRESENT( S_val )
          data%llst_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
-write(6,*) '  data%S%ne ',  data%S%ne 
-write(6,*) ' control ', data%llst_control
-
-
-data%llst_control%print_level = 3
        IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
-write(6,*) ' before lsst_solve'
        CALL LLST_solve( m, n, radius, data%A, B, X, data%llst_data,            &
                         data%llst_control, data%llst_inform, S = data%S )
      END IF
 
      status = data%llst_inform%status
-write(6,*) ' out solve'
      RETURN
 
 !  error returns
@@ -2889,13 +2833,11 @@ write(6,*) ' out solve'
 
 !  recover inform from internal data
 
-write(6,*) ' in info'
       inform = data%llst_inform
 
 !  flag a successful call
 
       status = GALAHAD_ok
-write(6,*) ' out info'
       RETURN
 
 !  end of subroutine LLST_information

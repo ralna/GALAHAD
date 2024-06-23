@@ -118,7 +118,7 @@ int main(void) {
 
         // use s or not (1 or 0)
         for( ipc_ use_s=0; use_s<=1; use_s++){
-          printf("control.out before import= %1" i_ipc_ "\n", control.out);
+           printf("control.out before import= %1" i_ipc_ "\n", control.out);
            switch(d){
                case 1: // sparse co-ordinate storage
                    st = 'C';
@@ -197,6 +197,7 @@ int main(void) {
                printf("storage type %c%1" i_ipc_ ": LLSR_solve exit status = %1" i_ipc_ "\n",
                       st, use_s, inform.status);
            }
+           printf("control.out end loop import= %1" i_ipc_ "\n", control.out);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
