@@ -815,9 +815,13 @@ write(6,*) ' in lsst_solve'
       print_level = control%print_level
 write(6,*) ' A 1'
 print_level = 3
+write(6,*) ' A 1a'
       printi = out > 0 .AND. print_level > 0
+write(6,*) ' A 1b'
       printt = out > 0 .AND. print_level > 1
+write(6,*) ' A 1c'
       printd = out > 0 .AND. print_level > 2
+write(6,*) ' A 1d'
       printh = printi
 
 !  check for obvious errors
@@ -1408,6 +1412,7 @@ write(6,*) ' A 12'
       it = 0 ; in_n = 0
 write(6,*) ' A 13'
       DO
+write(6,*) ' A 14'
         it = it + 1
 !if(it>10)stop
 
@@ -1431,10 +1436,12 @@ write(6,*) ' A 13'
 !  attempt an L B L^T factorization of K(lambda)
 
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+write(6,*) ' A 15'
         CALL SBLS_form_and_factorize( n, m, data%H_sbls, A,                    &
                                       data%C_sbls, data%SBLS_data,             &
                                       data%control%SBLS_control,               &
                                       inform%SBLS_inform )
+write(6,*) ' A 16'
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%factorize = inform%time%factorize + time_now - time_record
         inform%time%clock_factorize =                                          &
@@ -1462,6 +1469,7 @@ write(6,*) ' A 13'
 !   ( lambda * S     A^T ) ( x ) = ( c )
 !   (      A         - I ) ( y )   ( 0 )
 
+write(6,*) ' A 17'
         IF ( psdef ) THEN
           CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
           data%U( : n ) = data%C( : n ) ; data%U( n + 1 : data%npm ) = zero
@@ -1635,6 +1643,7 @@ write(6,*) ' A 13'
               inform%status = GALAHAD_error_ill_conditioned
               EXIT
             END IF
+write(6,*) ' A 19'
 
 !  ----------------------------
 !  The current lambda lies in G
@@ -1762,6 +1771,7 @@ write(6,*) ' A 13'
 !  and the resulting Taylor series approximants
 
  200      CONTINUE
+write(6,*) ' A 18'
 
 !  ----------------------------
 !  The current lambda lies in L
@@ -1917,6 +1927,7 @@ write(6,*) ' A 13'
             END IF
             lambda_pert = lambda
           END IF
+write(6,*) ' A 20'
 
 !  ----------------------------
 !  The current lambda lies in N
@@ -1945,6 +1956,7 @@ write(6,*) ' A 13'
             END IF
           END IF
           lambda_pert = lambda
+write(6,*) ' A 21'
         END IF
 
         printh = printt .OR. printi .AND.                                     &
@@ -1961,6 +1973,7 @@ write(6,*) ' A 13'
 !  ----
 
  900  CONTINUE
+write(6,*) ' A 22'
       inform%multiplier = lambda
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start

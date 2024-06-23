@@ -705,18 +705,22 @@ write(6,*) ' before llst_solve_problem'
 
 !  copy control in
 
+write(6,*) ' in  llst_terminate'
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
 
 !  copy inform in
 
+write(6,*) ' copy inform in '
   CALL copy_inform_in( cinform, finform )
 
 !  associate data pointer
 
+write(6,*) ' cdata'
   CALL C_F_POINTER( cdata, fdata )
 
 !  deallocate workspace
 
+write(6,*) ' entering  f_llst_terminate'
   CALL f_llst_terminate( fdata, fcontrol, finform )
 
 !  copy inform out
