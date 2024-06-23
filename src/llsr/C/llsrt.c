@@ -188,7 +188,9 @@ int main(void) {
                    }
                    break;
                }
+           printf("control.out before info= %1" i_ipc_ "\n", control.out);
            llsr_information( &data, &inform, &status );
+           printf("control.out after info= %1" i_ipc_ "\n", control.out);
 
            if(inform.status == 0){
                printf("storage type %c%1" i_ipc_ ":  status = %1" i_ipc_ ", ||r|| = %5.2f\n",
@@ -197,7 +199,7 @@ int main(void) {
                printf("storage type %c%1" i_ipc_ ": LLSR_solve exit status = %1" i_ipc_ "\n",
                       st, use_s, inform.status);
            }
-           printf("control.out end loop import= %1" i_ipc_ "\n", control.out);
+           printf("control.out end loop= %1" i_ipc_ "\n", control.out);
         }
         //printf("x: ");
         //for( ipc_ i = 0; i < n; i++) printf("%f ", x[i]);
