@@ -118,6 +118,7 @@ int main(void) {
 
         // use s or not (1 or 0)
         for( ipc_ use_s=0; use_s<=1; use_s++){
+          printf("control.out before import= %1" i_ipc_ "\n", control.out);
            switch(d){
                case 1: // sparse co-ordinate storage
                    st = 'C';
@@ -153,6 +154,7 @@ int main(void) {
                    st = 'D';
                    llsr_import( &control, &data, &status, m, n,
                                 "dense", A_dense_ne, NULL, NULL, NULL );
+               printf("control.out after import = %1" i_ipc_ "\n", control.out);
                    if(use_s == 0){
                       llsr_solve_problem( &data, &status, m, n, power, weight,
                                           A_dense_ne, A_dense_val, b, x,
@@ -161,6 +163,7 @@ int main(void) {
                       llsr_import_scaling( &control, &data, &status, n,
                                            "dense", S_dense_ne,
                                            NULL, NULL, NULL );
+               printf("control.out after scaling = %1" i_ipc_ "\n", control.out);
                       llsr_solve_problem( &data, &status, m, n, power, weight,
                                           A_dense_ne, A_dense_val, b, x,
                                           S_dense_ne, S_dense_val );
@@ -170,16 +173,16 @@ int main(void) {
                    st = 'I';
                    llsr_import( &control, &data, &status, m, n,
                                 "coordinate", A_ne, A_row, A_col, NULL );
+               printf("control.out after import = %1" i_ipc_ "\n", control.out);
                    if(use_s == 0){
                       llsr_solve_problem( &data, &status, m, n, power, weight,
                                           A_ne, A_val, b, x, 0, NULL );
                    }else{
 
-               printf("control.out = %1" i_ipc_ "\n", control.out);
 
                       llsr_import_scaling( &control, &data, &status, n,
                                            "diagonal", S_ne, NULL, NULL, NULL );
-               printf("control.out = %1" i_ipc_ "\n", control.out);
+               printf("control.out after scaling = %1" i_ipc_ "\n", control.out);
                       llsr_solve_problem( &data, &status, m, n, power, weight,
                                           A_ne, A_val, b, x, S_ne, S_val );
                    }
