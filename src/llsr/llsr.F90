@@ -3656,6 +3656,7 @@
          data%llsr_inform%status = GALAHAD_error_optional
          GO TO 900
        END IF
+write(6,*) ' control ', data%llsr_control
        IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
        CALL LLSR_solve( m, n, power, weight, data%A, B, X, data%llsr_data,     &
                         data%llsr_control, data%llsr_inform, S = data%S )

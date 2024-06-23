@@ -2365,8 +2365,7 @@ write(6,*) ' out llst_terminate'
      CHARACTER ( LEN = 80 ) :: array_name
 write(6,*) ' in llst_import ', A_type
 
-     IF ( data%llst_control%out > 0 ) WRITE( data%llst_control%out,            &
-            "( '' )", ADVANCE = 'no') !prevents ifort bug
+     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
      data%llst_control = control
 
      error = data%llst_control%error
@@ -2581,7 +2580,8 @@ write(6,*) ' out llst_import'
 !  copy control to data
 
 write(6,*) ' in llst_import_scaling ', S_type
-     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
+     IF ( data%llst_control%out > 0 ) WRITE( data%llst_control%out,            &
+            "( '' )", ADVANCE = 'no') !prevents ifort bug
      error = data%llst_control%error
      space_critical = data%llst_control%space_critical
      deallocate_error_fatal = data%llst_control%space_critical
@@ -2848,6 +2848,9 @@ write(6,*) ' in solve ',  PRESENT( S_val )
          GO TO 900
        END IF
 write(6,*) '  data%S%ne ',  data%S%ne 
+write(6,*) ' control ', data%llst_control
+
+
 data%llst_control%print_level = 3
        IF ( data%S%ne > 0 ) data%S%val( : data%S%ne ) = S_val( : data%S%ne )
 write(6,*) ' before lsst_solve'
