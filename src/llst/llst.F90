@@ -809,11 +809,13 @@ write(6,*) ' in lsst_solve'
       inform%multiplier = zero
       data%control = control
       out = control%out
-
+write(6,*) ' control ', control
+write(6,*) ' out = ', out
 !  record desired output level
 
       print_level = control%print_level
 write(6,*) ' A 1'
+out = 6
 print_level = 3
 write(6,*) ' A 1a'
       printi = out > 0 .AND. print_level > 0
@@ -2363,7 +2365,8 @@ write(6,*) ' out llst_terminate'
      CHARACTER ( LEN = 80 ) :: array_name
 write(6,*) ' in llst_import ', A_type
 
-     WRITE( data%llst_control%out, "( '' )", ADVANCE = 'no') !prevents ifort bug
+     IF ( data%llsr_control%out > 0 ) WRITE( data%llst_control%out,            &
+            "( '' )", ADVANCE = 'no') !prevents ifort bug
      data%llst_control = control
 
      error = data%llst_control%error
