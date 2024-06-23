@@ -456,7 +456,7 @@
 
 !  copy control out
 
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+! CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
   END SUBROUTINE llsr_read_specfile
@@ -511,7 +511,7 @@
 
 !  copy control out
 
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+! CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
   END SUBROUTINE llsr_import
@@ -567,7 +567,7 @@ write(6,*) ' out from data', fdata%LLSR_data%control%out
 
 !  copy control out
 
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+! CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
   END SUBROUTINE llsr_import_scaling
