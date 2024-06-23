@@ -332,7 +332,7 @@
 !  - - - - - - - - - -
 
       TYPE, PUBLIC :: LLSR_data_type
-        PRIVATE
+!       PRIVATE
         INTEGER ( KIND = ip_ ) :: m, npm, s_ne, a_ne, m_end
         TYPE ( RAND_seed ) :: seed
         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D

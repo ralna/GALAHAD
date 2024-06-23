@@ -546,10 +546,12 @@
 !  copy control and inform in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-
+write(6,*) ' out ', fcontrol%out
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
+write(6,*) ' out from data', fdata%llsr_control%out
+write(6,*) ' out from data', fdata%LLSR_data%control%out
 
 !  convert C string to Fortran string
 
@@ -636,6 +638,8 @@
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
+write(6,*) ' out from data solve ', fdata%llsr_control%out
+write(6,*) ' out from data solve ', fdata%llsr_data%control%out
 
 !  solve the trust-region problem
 
