@@ -3692,7 +3692,7 @@
 !  recover inform from internal data
 
       inform = data%llsr_inform
-
+write(6,*) inform
 !  flag a successful call
 
       status = GALAHAD_ok
