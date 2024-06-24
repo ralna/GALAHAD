@@ -12323,7 +12323,8 @@ main: DO
 
 !  copy control to data
 
-     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     IF ( control%out > 0 )                                                    &
+       WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
      data%qpa_control = control
 
      error = data%qpa_control%error
