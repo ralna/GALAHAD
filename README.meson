@@ -75,10 +75,8 @@ Currently supported options with their default value:
 * `-Dsingle=true`: generate the single precision library, tests and examples;
 * `-Ddouble=true`: generate the double precision library, tests and examples;
 * `-Dssids=true`: build ssids;
-* `-Dmetis=true`: compile the version of METIS provided by GALAHAD;
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;
-* `-Dlibmetis=metis`: METIS library against which to link;
 * `-Dlibhsl=hsl`: HSL library against which to link;
 * `-Dlibcutest=cutest`: CUTEst library against which to link;
 * `-Dlibwsmp=wsmp`: WSMP library against which to link;
@@ -92,7 +90,6 @@ Currently supported options with their default value:
 * `-Dlibhwloc=hwloc`: HWLOC library against which to link;
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
-* `-Dlibmetis_path=[]`: additional directories to search for the METIS library;
 * `-Dlibhsl_path=[]`: additional directories to search for the HSL library;
 * `-Dlibcutest_path=[]`: additional directories to search for the CUTEST library;
 * `-Dlibwsmp_path=[]`: additional directories to search for the WSMP library;
@@ -102,11 +99,9 @@ Currently supported options with their default value:
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
 * `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
-* `-Dlibmetis_include=[]`: additional directories to search for the METIS header files;
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
 * `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
-* `-Dint64=false`: compile GALAHAD with 64-bit integer;
-* `-Dhsl_legacy=false`: compile GALAHAD with support for legacy HSL packages.
+* `-Dint64=false`: compile GALAHAD with 64-bit integer.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and
 `FC` shell variables.  For instance,
@@ -129,18 +124,7 @@ This implies that `libblas` or `liblapack` should be set to `mkl_rt`.
 
 ### HSL
 
-GALAHAD can be compiled with [libHSL](https://licences.stfc.ac.uk/product/libhsl) or the HSL subset.
-To compile GALAHAD with libHSL, use the following command:
-```shell
-meson setup builddir -Dlibhsl=hsl -Dhsl_legacy=true -Dlibhsl_path=... -Dlibhsl_modules=...
-meson compile -C builddir
-```
-Please ensure that you compile libHSL and GALAHAD with the same version of METIS.
-You can use the same Meson options `-Dlibmetis`, `-Dlibmetis_path` and `Dlibmetis_include` for libHSL and GALAHAD.
-
-The HSL subset supports both 32-bit and 64-bit integers and provides only the HSL packages needed by GALAHAD.
-For compatibility reasons, we highly recommend forcing GALAHAD to compile its own version of METIS.
-It is the same one that is used internally by the HSL subset.
+To compile GALAHAD with the HSL subset, use the following commands:
 ```shell
 meson setup builddir_int32 -Dlibmetis= -Dlibhsl=hsl_subset -Dlibhsl_path=... -Dlibhsl_modules=...
 meson compile -C builddir_int32
