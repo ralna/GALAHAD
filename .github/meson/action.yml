@@ -149,6 +149,9 @@ runs:
         if [[ "${{ inputs.os }}" == "macos-13" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
         fi
+        if [[ "${{ inputs.os }}" == "macos-latest" ]]; then
+          LD_CLASSIC="-Wl,-ld_classic"
+        fi
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" ]]; then
           CSTD="none"
           CPPSTD="none"
