@@ -30,39 +30,35 @@ runs:
       shell: bash
       run: pip install meson ninja numpy
 
-    - name: Set the environment variables GALAHAD, CUTEST, JULIA_GALAHAD_LIBRARY_PATH, DEPS and LIBDIR
+    - name: Set the environment variables
       shell: bash
       run: |
         echo "GALAHAD=$GITHUB_WORKSPACE" >> $GITHUB_ENV
         echo "DEPS=$GITHUB_WORKSPACE/.." >> $GITHUB_ENV
+        echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
         if [[ "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
+          echo "DLEXT=so" >> $GITHUB_ENV
+          echo "PLATFORM=x86_64-linux-gnu" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{ inputs.os }}" == "macos-13" ]]; then
+        if [[ "${{matrix.os}}" == "macos-13" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
+          echo "DLEXT=dylib" >> $GITHUB_ENV
+          echo "PLATFORM=x86_64-apple-darwin" >> $GITHUB_ENV
+          echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
+        fi
+        if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+          echo "LIBDIR=lib" >> $GITHUB_ENV
+          echo "DLEXT=dylib" >> $GITHUB_ENV
+          echo "PLATFORM=aarch64-apple-darwin" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
         fi
         if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
           echo "LIBDIR=bin" >> $GITHUB_ENV
+          echo "DLEXT=dll" >> $GITHUB_ENV
+          echo "PLATFORM=x86_64-w64-mingw32" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/bin" >> $GITHUB_ENV
-        fi
-        echo "CUTEST=$GITHUB_WORKSPACE/../CUTEst" >> $GITHUB_ENV
-
-    - name: Install dependencies
-      shell: bash
-      run: |
-        cd $DEPS
-        mkdir deps
-        PLATFORM=""
-        if [[ "${{ inputs.os }}" == "ubuntu-latest" ]]; then
-          PLATFORM="x86_64-linux-gnu"
-        fi
-        if [[ "${{ inputs.os }}" == "macos-13" ]]; then
-          PLATFORM="x86_64-apple-darwin"
-        fi
-        if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
-          PLATFORM="x86_64-w64-mingw32"
           choco install wget
         fi
 
@@ -73,7 +69,7 @@ runs:
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{ inputs.os }}" == "macos-13" ]]; then
+        if [[ "${{ inputs.os }}" == "macos-13" || "${{matrix.os}}" == "macos-latest" ]]; then
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
@@ -132,6 +128,7 @@ runs:
     - name: Setup GALAHAD
       shell: bash
       run: |
+        # mkdir $GITHUB_WORKSPACE/../deps
         mkdir -p ../CUTEst/modules
         CSTD="c99"
         CPPSTD="c++11"
@@ -146,10 +143,7 @@ runs:
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
         LD_CLASSIC=""
-        if [[ "${{ inputs.os }}" == "macos-13" ]]; then
-          LD_CLASSIC="-Wl,-ld_classic"
-        fi
-        if [[ "${{ inputs.os }}" == "macos-latest" ]]; then
+        if [[ "${{matrix.os}}" == "macos-13" || "${{matrix.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
         fi
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" ]]; then
@@ -195,8 +189,8 @@ runs:
                              -Dliblapack=$LAPACK \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
-                             -Dlibcutest_single=$CUTEST_SINGLE \
-                             -Dlibcutest_double=$CUTEST_DOUBLE \
+                             -Dlibcutest_single=${CUTEST_SINGLE} \
+                             -Dlibcutest_double=${CUTEST_DOUBLE} \
                              -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_single_modules=../CUTEst/modules \
