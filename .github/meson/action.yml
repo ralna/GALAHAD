@@ -42,13 +42,13 @@ runs:
           echo "PLATFORM=x86_64-linux-gnu" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{matrix.os}}" == "macos-13" ]]; then
+        if [[ "${{input.os}}" == "macos-13" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
           echo "DLEXT=dylib" >> $GITHUB_ENV
           echo "PLATFORM=x86_64-apple-darwin" >> $GITHUB_ENV
           echo "JULIA_GALAHAD_LIBRARY_PATH=$GITHUB_WORKSPACE/galahad/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{matrix.os}}" == "macos-latest" ]]; then
+        if [[ "${{input.os}}" == "macos-latest" ]]; then
           echo "LIBDIR=lib" >> $GITHUB_ENV
           echo "DLEXT=dylib" >> $GITHUB_ENV
           echo "PLATFORM=aarch64-apple-darwin" >> $GITHUB_ENV
@@ -69,7 +69,7 @@ runs:
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
         fi
-        if [[ "${{ inputs.os }}" == "macos-13" || "${{matrix.os}}" == "macos-latest" ]]; then
+        if [[ "${{ inputs.os }}" == "macos-13" || "${{input.os}}" == "macos-latest" ]]; then
           echo "LIBRARY_PATH=$LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
           echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$GITHUB_WORKSPACE/galahad/lib:$GITHUB_WORKSPACE/../deps/lib:$GITHUB_WORKSPACE/../CUTEst/lib" >> $GITHUB_ENV
@@ -143,7 +143,7 @@ runs:
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
         LD_CLASSIC=""
-        if [[ "${{matrix.os}}" == "macos-13" || "${{matrix.os}}" == "macos-latest" ]]; then
+        if [[ "${{input.os}}" == "macos-13" || "${{input.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
         fi
         if [[ "${{ inputs.compiler }}" == "nvidia-hpc" ]]; then
