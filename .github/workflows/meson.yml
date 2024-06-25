@@ -7,8 +7,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  gcc11-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+  windows-gcc-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -18,7 +18,6 @@ jobs:
         compiler: ['gcc']
         version: ['11']
         int: ['32', '64']
-        hsl_legacy: ['false', 'true']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,10 +28,9 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
           int: ${{ matrix.int }}
-          hsl_legacy: ${{ matrix.hsl_legacy }}
 
-  gcc13-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+  mac-linux-gcc-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -42,7 +40,6 @@ jobs:
         compiler: ['gcc']
         version: ['13']
         int: ['32', '64']
-        hsl_legacy: ['false', 'true']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,10 +50,31 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
           int: ${{ matrix.int }}
-          hsl_legacy: ${{ matrix.hsl_legacy }}
+
+  silicon-gcc-build:
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['macos-latest']
+        arch: ['arm64']
+        compiler: ['gcc']
+        version: ['13']
+        int: ['32', '64']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run common setup
+        uses: ./.github/meson
+        with:
+          os: ${{ matrix.os }}
+          compiler: ${{ matrix.compiler }}
+          version: ${{ matrix.version }}
+          int: ${{ matrix.int }}
 
   intel-classic-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -66,7 +84,6 @@ jobs:
         compiler: ['intel-classic']
         version: ['2021.10']
         int: ['32', '64']
-        hsl_legacy: ['false', 'true']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -77,10 +94,9 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
           int: ${{ matrix.int }}
-          hsl_legacy: ${{ matrix.hsl_legacy }}
 
   intel-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -90,7 +106,6 @@ jobs:
         arch: ['x64']
         version: ['2023.2']
         int: ['32', '64']
-        hsl_legacy: ['false', 'true']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -101,10 +116,9 @@ jobs:
           compiler: ${{ matrix.compiler }}
           version: ${{ matrix.version }}
           int: ${{ matrix.int }}
-          hsl_legacy: ${{ matrix.hsl_legacy }}
 
   # nvidia-build:
-  #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}/Legacy-${{ matrix.hsl_legacy }}
+  #   name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
   #   runs-on: ${{ matrix.os }}
   #   strategy:
   #     fail-fast: false
@@ -114,7 +128,6 @@ jobs:
   #       compiler: ['nvidia-hpc']
   #       version: ['24.5']
   #       int: ['32', '64']
-  #       hsl_legacy: ['false', 'true']
   #   steps:
   #     - name: Checkout repository
   #       uses: actions/checkout@v4
@@ -125,4 +138,3 @@ jobs:
   #         compiler: ${{ matrix.compiler }}
   #         version: ${{ matrix.version }}
   #         int: ${{ matrix.int }}
-  #         hsl_legacy: ${{ matrix.hsl_legacy }}

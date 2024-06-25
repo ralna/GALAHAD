@@ -14,9 +14,6 @@ inputs:
   int:
     description: 'Integer type'
     required: true
-  hsl_legacy:
-    description: 'Legacy mode for HSL packages'
-    required: true
 
 runs:
   using: "composite"
@@ -148,10 +145,6 @@ runs:
         SHARED_STATIC="shared"
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
-        HSL_LEGACY="false"
-        if [[ "${{ inputs.hsl_legacy }}" == "true" ]]; then
-          HSL_LEGACY="true"
-        fi
         LD_CLASSIC=""
         if [[ "${{ inputs.os }}" == "macos-13" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
@@ -193,7 +186,6 @@ runs:
                              -Dssids=$SSIDS \
                              -Dpythoniface=${PYTHON_INTERFACE} \
                              -Dint64=$INT64 \
-                             -Dhsl_legacy=${HSL_LEGACY} \
                              -Dlibblas_path=${BLAS_PATH} \
                              -Dliblapack_path=${LAPACK_PATH} \
                              -Dlibblas=$BLAS \
@@ -251,6 +243,6 @@ runs:
       uses: julia-actions/setup-julia@v2
 
     - name: Test GALAHAD.jl
-      if: (inputs.int == '32') && !(inputs.os == 'windows-latest' && inputs.compiler == 'intel') && !(inputs.os == 'windows-latest' && inputs.hsl_legacy == 'false')
+      if: (inputs.int == '32') && !(inputs.os == 'windows-latest' && inputs.compiler == 'intel')
       shell: bash
       run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
