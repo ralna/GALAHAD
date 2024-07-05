@@ -51,6 +51,7 @@
 #define GALAHAD_CRO_precision GALAHAD_CRO_single_64
 #define GALAHAD_CUTEST_precision GALAHAD_CUTEST_single_64
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_single_64
+#define GALAHAD_DEP_precision GALAHAD_DEP_single_64
 #define GALAHAD_DGO_precision GALAHAD_DGO_single_64
 #define GALAHAD_DLP_precision GALAHAD_DLP_single_64
 #define GALAHAD_DPS_precision GALAHAD_DPS_single_64
@@ -260,6 +261,7 @@
 #define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_single_ciface_64
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_single_ciface_64
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_single_ciface_64
+#define GALAHAD_DEP_precision_ciface GALAHAD_DEP_single_ciface_64
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_single_ciface_64
 #define GALAHAD_DPS_precision_ciface GALAHAD_DPS_single_ciface_64
 #define GALAHAD_DQP_precision_ciface GALAHAD_DQP_single_ciface_64
@@ -313,6 +315,7 @@
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface_64
 #define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_single_64
+#define SPRAL_SCALING_precision SPRAL_SCALING_single_64
 #define RUNARC_SIF_precision RUNARC_SIF_single_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_single_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_single_64
@@ -433,6 +436,7 @@
 #define GALAHAD_CRO_precision GALAHAD_CRO_single
 #define GALAHAD_CUTEST_precision GALAHAD_CUTEST_single
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_single
+#define GALAHAD_DEP_precision GALAHAD_DEP_single
 #define GALAHAD_DGO_precision GALAHAD_DGO_single
 #define GALAHAD_DLP_precision GALAHAD_DLP_single
 #define GALAHAD_DPS_precision GALAHAD_DPS_single
@@ -642,6 +646,7 @@
 #define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_single_ciface
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_single_ciface
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_single_ciface
+#define GALAHAD_DEP_precision_ciface GALAHAD_DEP_single_ciface
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_single_ciface
 #define GALAHAD_DPS_precision_ciface GALAHAD_DPS_single_ciface
 #define GALAHAD_DQP_precision_ciface GALAHAD_DQP_single_ciface
@@ -695,6 +700,7 @@
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_single
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_single
+#define SPRAL_SCALING_precision SPRAL_SCALING_single
 #define RUNARC_SIF_precision RUNARC_SIF_single
 #define RUNBGO_SIF_precision RUNBGO_SIF_single
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_single
@@ -819,6 +825,7 @@
 #define GALAHAD_CRO_precision GALAHAD_CRO_double_64
 #define GALAHAD_CUTEST_precision GALAHAD_CUTEST_double_64
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_double_64
+#define GALAHAD_DEP_precision GALAHAD_DEP_double_64
 #define GALAHAD_DGO_precision GALAHAD_DGO_double_64
 #define GALAHAD_DLP_precision GALAHAD_DLP_double_64
 #define GALAHAD_DPS_precision GALAHAD_DPS_double_64
@@ -1028,6 +1035,7 @@
 #define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_double_ciface_64
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_double_ciface_64
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_double_ciface_64
+#define GALAHAD_DEP_precision_ciface GALAHAD_DEP_double_ciface_64
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_double_ciface_64
 #define GALAHAD_DPS_precision_ciface GALAHAD_DPS_double_ciface_64
 #define GALAHAD_DQP_precision_ciface GALAHAD_DQP_double_ciface_64
@@ -1081,6 +1089,7 @@
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double_64
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface_64
 #define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_double_64
+#define SPRAL_SCALING_precision SPRAL_SCALING_double_64
 #define RUNARC_SIF_precision RUNARC_SIF_double_64
 #define RUNBGO_SIF_precision RUNBGO_SIF_double_64
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_double_64
@@ -1201,6 +1210,7 @@
 #define GALAHAD_CRO_precision GALAHAD_CRO_double
 #define GALAHAD_CUTEST_precision GALAHAD_CUTEST_double
 #define GALAHAD_DEMO_precision GALAHAD_DEMO_double
+#define GALAHAD_DEP_precision GALAHAD_DEP_double
 #define GALAHAD_DGO_precision GALAHAD_DGO_double
 #define GALAHAD_DLP_precision GALAHAD_DLP_double
 #define GALAHAD_DPS_precision GALAHAD_DPS_double
@@ -1410,6 +1420,7 @@
 #define GALAHAD_CONVRT_precision_ciface GALAHAD_CONVRT_double_ciface
 #define GALAHAD_CQP_precision_ciface GALAHAD_CQP_double_ciface
 #define GALAHAD_CRO_precision_ciface GALAHAD_CRO_double_ciface
+#define GALAHAD_DEP_precision_ciface GALAHAD_DEP_double_ciface
 #define GALAHAD_DGO_precision_ciface GALAHAD_DGO_double_ciface
 #define GALAHAD_DPS_precision_ciface GALAHAD_DPS_double_ciface
 #define GALAHAD_DQP_precision_ciface GALAHAD_DQP_double_ciface
@@ -1463,6 +1474,7 @@
 #define SPRAL_SSIDS_precision SPRAL_SSIDS_double
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #define SPRAL_RAL_BOEING_precision SPRAL_RAL_BOEING_double
+#define SPRAL_SCALING_precision SPRAL_SCALING_double
 #define RUNARC_SIF_precision RUNARC_SIF_double
 #define RUNBGO_SIF_precision RUNBGO_SIF_double
 #define RUNBLLS_SIF_precision RUNBLLS_SIF_double
