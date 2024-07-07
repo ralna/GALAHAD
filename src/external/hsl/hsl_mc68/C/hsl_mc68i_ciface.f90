@@ -6,7 +6,7 @@
 !-*-*-  G A L A H A D  -  D U M M Y   M C 6 8 _ C I F A C E   M O D U L E  -*-*-
 
 module hsl_mc68_integer_ciface
-   use hsl_kinds, only: ipc_, lp_, longc_
+   use hsl_kinds, only: ipc_, lp_, ip_, longc_
    use hsl_mc68_integer, only:              &
       f_mc68_control       => mc68_control, &
       f_mc68_info          => mc68_info,    &
