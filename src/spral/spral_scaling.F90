@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-16 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-07-06 AT 14:00 GMT.
 
 #include "spral_procedures.h"
 
@@ -1180,25 +1180,25 @@ contains
    if (num .eq. min(m,n)) return
 
    ! Otherwise, matrix is structurally singular, complete iperm.
-   ! jperm, out are work arrays
-   jperm(1:n) = 0
-   k = 0
-   do i = 1, m
-      if (iperm(i) .eq. 0) then
-         k = k + 1
-         out(k) = i
-      else
-         j = iperm(i)
-         jperm(j) = i
-      end if
-   end do
-   k = 0
-   do j = 1, n
-      if (jperm(j) .ne. 0) cycle
-      k = k + 1
-      jdum = int(out(k))
-      iperm(jdum) = -j
-   end do
+   ! jperm, out are work arrays (now commented out)
+!!$   jperm(1:n) = 0
+!!$   k = 0
+!!$   do i = 1, m
+!!$      if (iperm(i) .eq. 0) then
+!!$         k = k + 1
+!!$         out(k) = i
+!!$      else
+!!$         j = iperm(i)
+!!$         jperm(j) = i
+!!$      end if
+!!$   end do
+!!$   k = 0
+!!$   do j = 1, n
+!!$      if (jperm(j) .ne. 0) cycle
+!!$      k = k + 1
+!!$      jdum = int(out(k))
+!!$      iperm(jdum) = -j
+!!$   end do
  end subroutine hungarian_match
 
 !**********************************************************************
