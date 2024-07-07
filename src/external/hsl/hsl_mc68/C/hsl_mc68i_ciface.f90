@@ -45,7 +45,7 @@ contains
       type(f_mc68_control), intent(out) :: fcontrol
       logical(lp_), intent(out) :: f_array_in
       logical(lp_), intent(out) :: f_array_out
-      integer(ipc_), intent(out) :: min_l_workspace
+      integer(ip_), intent(out) :: min_l_workspace
 
       f_array_in                 = (ccontrol%f_array_in .ne. 0)
       f_array_out                = (ccontrol%f_array_out .ne. 0)
