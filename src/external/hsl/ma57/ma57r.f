@@ -37,9 +37,9 @@ C  THIS VERSION: GALAHAD 5.0 - 2024-07-07 AT 09:00 GMT.
       INTEGER ( KIND = ip_ ) :: IW1(N), ICNTL(20), INFO(40)
       END SUBROUTINE MA57CR
 
-      SUBROUTINE MA57DR( JOB, N, NE, A, IRN, JCN, FACT, LFACT, IFACT,
-     *                   LIFACT, RHS, X, RESID, W, IW, ICNTL, CNTL,
-     *                   INFO, RINFO )
+      SUBROUTINE MA57DR( JOB, N, NE, A, IRN, JCN, FACT, 
+     *                   LFACT, IFACT, LIFACT, RHS, X, RESID, 
+     *                   W, IW, ICNTL, CNTL, INFO, RINFO )
       USE HSL_KINDS_real, ONLY: ip_, rp_
       INTEGER ( KIND = ip_ ) :: JOB, N, NE,LFACT, LIFACT
       REAL ( KIND = rp_ ) :: A(NE)
@@ -53,8 +53,8 @@ C  THIS VERSION: GALAHAD 5.0 - 2024-07-07 AT 09:00 GMT.
       REAL ( KIND = rp_ ) :: RINFO(20)
       END SUBROUTINE MA57DR
 
-      SUBROUTINE MA57ER( N, IC, KEEP, FACT, LFACT, NEWFAC, LNEW,
-     *                   IFACT, LIFACT, NEWIFC, LINEW, INFO )
+      SUBROUTINE MA57ER( N, IC, KEEP, FACT, LFACT, NEWFAC,
+     *                   LNEW, IFACT, LIFACT, NEWIFC, LINEW, INFO )
       USE HSL_KINDS_real, ONLY: ip_, rp_
       INTEGER ( KIND = ip_ ) :: N, IC, KEEP(*), LFACT, LNEW
       INTEGER ( KIND = ip_ ) :: LIFACT,LINEW, INFO(40)
