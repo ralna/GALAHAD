@@ -1,4 +1,4 @@
-C  THIS VERSION: GALAHAD 5.0 - 2024-07-07 AT 08:00 GMT.
+C  THIS VERSION: GALAHAD 5.0 - 2024-07-07 AT 09:00 GMT.
 
 #include "hsl_subset.h"
 
@@ -41,13 +41,13 @@ C  THIS VERSION: GALAHAD 5.0 - 2024-07-07 AT 08:00 GMT.
      *                   LIFACT, RHS, X, RESID, W, IW, ICNTL, CNTL,
      *                   INFO, RINFO )
       USE HSL_KINDS_real, ONLY: ip_, rp_
-      INTEGER ( KIND = ip_ ) :: JOB, N, NE
+      INTEGER ( KIND = ip_ ) :: JOB, N, NE,LFACT, LIFACT
       REAL ( KIND = rp_ ) :: A(NE)
-      INTEGER ( KIND = ip_ ) :: IRN(NE), JCN(NE),LFACT
+      INTEGER ( KIND = ip_ ) :: IRN(NE), JCN(NE)
       REAL ( KIND = rp_ ) :: FACT(LFACT)
-      INTEGER ( KIND = ip_ ) :: LIFACT, IFACT(LIFACT)
+      INTEGER ( KIND = ip_ ) :: IFACT(LIFACT)
       REAL ( KIND = rp_ ) :: RHS(N), X(N), RESID(N), W(N,*)
-      INTEGER ( KIND = ip_ ) :: IW(N),ICNTL(20)
+      INTEGER ( KIND = ip_ ) :: IW(N), ICNTL(20)
       REAL ( KIND = rp_ ) :: CNTL(5)
       INTEGER ( KIND = ip_ ) :: INFO(40)
       REAL ( KIND = rp_ ) :: RINFO(20)
