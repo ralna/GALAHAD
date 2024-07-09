@@ -1,0 +1,41 @@
+name: GALAHAD.jl
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allow_failure }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['1.9', '1']
+        os: [ubuntu-latest, windows-latest, macos-13]
+        arch: ['x64']
+        allow_failure: [false]
+        include:
+          - os: macos-latest
+            arch: 'arm64'
+            version: '1.9'
+            allow_failure: false
+          - os: macos-latest
+            arch: 'arm64'
+            version: '1'
+            allow_failure: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+
+      - name: Test GALAHAD.jl on push
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[GALAHAD.jl]')
+        shell: bash
+        run: |
+          julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
