@@ -162,6 +162,7 @@ runs:
         SHARED_STATIC="shared"
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
+        HSL="hsl_subset"
         LD_CLASSIC=""
         if [[ "${{inputs.os}}" == "macos-13" || "${{inputs.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
