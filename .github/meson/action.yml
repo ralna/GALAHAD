@@ -125,10 +125,30 @@ runs:
         meson compile -C builddir
         meson install -C builddir
 
+    - name: Install dummy libHSL
+      if: inputs.os != 'windows-latest'
+      shell: bash
+      run: |
+        VERSION_LIBHSL="3.0.0"
+        cd ..
+        if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
+          wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
+          unzip v${VERSION_LIBHSL}.zip
+        else
+          wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.tar.gz
+          tar -xzvf v${VERSION_LIBHSL}.tar.gz
+        fi
+        cd libHSL-${VERSION_LIBHSL}/hsl_subset
+        meson setup builddir --buildtype=debug \
+                             --prefix=$DEPS/deps \
+                             -Ddefault_library=shared
+        meson compile -C builddir
+        meson install -C builddir
+
     - name: Setup GALAHAD
       shell: bash
       run: |
-        # mkdir $GITHUB_WORKSPACE/../deps
+        mkdir -p ../deps/modules
         mkdir -p ../CUTEst/modules
         CSTD="c99"
         CPPSTD="c++11"
@@ -142,6 +162,8 @@ runs:
         SHARED_STATIC="shared"
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
+        HSL="hsl_subset"
+        HSL_PATH="$DEPS/deps/$LIBDIR"
         LD_CLASSIC=""
         if [[ "${{inputs.os}}" == "macos-13" || "${{inputs.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
@@ -162,6 +184,7 @@ runs:
           LAPACK_PATH="$DEPS/deps/$LIBDIR"
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
+          HSL="hsl_subset_64"
         fi
         if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SHARED_STATIC="static"
@@ -180,13 +203,13 @@ runs:
                              -Dcpp_std=$CPPSTD \
                              -Dexamples=true \
                              -Dtests=true \
-                             -Dssids=$SSIDS \
+                             -Dssids=${SSIDS} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
-                             -Dint64=$INT64 \
+                             -Dint64=${INT64} \
                              -Dlibblas_path=${BLAS_PATH} \
                              -Dliblapack_path=${LAPACK_PATH} \
-                             -Dlibblas=$BLAS \
-                             -Dliblapack=$LAPACK \
+                             -Dlibblas=${BLAS} \
+                             -Dliblapack=${LAPACK} \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
                              -Dlibcutest_single=${CUTEST_SINGLE} \
@@ -194,7 +217,10 @@ runs:
                              -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_single_modules=../CUTEst/modules \
-                             -Dlibcutest_double_modules=../CUTEst/modules
+                             -Dlibcutest_double_modules=../CUTEst/modules \
+                             -Dlibhsl=${HSL} \
+                             -Dlibhsl_path=${HSL_PATH} \
+                             -Dlibhsl_modules=../deps/modules
                              # -Db_sanitize=address,undefined
 
     - name: Build GALAHAD
