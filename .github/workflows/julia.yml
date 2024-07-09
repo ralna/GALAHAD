@@ -31,24 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check commit messages for [GALAHAD.jl] on push
-        if: github.event_name == 'push'
-        shell: bash
-        run: |
-          if [[ ! "${{ github.event.head_commit.message }}" == *"[GALAHAD.jl]"* ]]; then
-            echo "Commit message does not contain [GALAHAD.jl]"
-            exit 1
-          fi
-
-      - name: Check commit message for [GALAHAD.jl] on pull_request
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: |
-          if [[ ! "${{ github.event.pull_request.head.commit.message }}" == *"[GALAHAD.jl]"* ]]; then
-            echo "Commit message in pull request does not contain [GALAHAD.jl]"
-            exit 1
-          fi
-
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
@@ -56,4 +38,10 @@ jobs:
 
       - name: Test GALAHAD.jl
         shell: bash
-        run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' && "${{ github.event.pull_request.head.commit.message }}" == *"[GALAHAD.jl]*" ]]; then
+            julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
+          fi
+          if [[ ${{ github.event_name }} == 'push' && "${{ github.event.head_commit.message }}" == *"[GALAHAD.jl]*" ]]; then
+            julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
+          fi
