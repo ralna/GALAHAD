@@ -40,25 +40,12 @@ jobs:
             exit 1
           fi
 
-      - name: Debug commits on pull_request
+      - name: Check commit message for [GALAHAD.jl] on pull_request
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
-          echo "Fetching commits..."
-          commits=$(curl -s ${{ github.event.pull_request.commits_url }})
-          echo "Raw commits data: $commits"
-          echo $commits | jq '.'
-
-      - name: Check commit messages for [GALAHAD.jl] on pull_request
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: |
-          if [[ "${{ matrix.os }}" == "macos*" ]]; then
-            brew install curl jq
-          fi
-          commits=$(curl -s ${{ github.event.pull_request.commits_url }})
-          if [[ $(echo $commits | jq -r '.[].commit.message') != *"[GALAHAD.jl]"* ]]; then
-            echo "Commit message does not contain [GALAHAD.jl]"
+          if [[ ! "${{ github.event.pull_request.head.commit.message }}" == *"[GALAHAD.jl]"* ]]; then
+            echo "Commit message in pull request does not contain [GALAHAD.jl]"
             exit 1
           fi
 
