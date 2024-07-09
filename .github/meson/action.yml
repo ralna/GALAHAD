@@ -202,13 +202,13 @@ runs:
                              -Dcpp_std=$CPPSTD \
                              -Dexamples=true \
                              -Dtests=true \
-                             -Dssids=$SSIDS \
+                             -Dssids=${SSIDS} \
                              -Dpythoniface=${PYTHON_INTERFACE} \
-                             -Dint64=$INT64 \
+                             -Dint64=${INT64} \
                              -Dlibblas_path=${BLAS_PATH} \
                              -Dliblapack_path=${LAPACK_PATH} \
-                             -Dlibblas=$BLAS \
-                             -Dliblapack=$LAPACK \
+                             -Dlibblas=${BLAS} \
+                             -Dliblapack=${LAPACK} \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
                              -Dlibcutest_single=${CUTEST_SINGLE} \
@@ -217,7 +217,7 @@ runs:
                              -Dlibcutest_double_path=$CUTEST/${LIBDIR} \
                              -Dlibcutest_single_modules=../CUTEst/modules \
                              -Dlibcutest_double_modules=../CUTEst/modules \
-                             -Dlibhsl={HSL} \
+                             -Dlibhsl=${HSL} \
                              -Dlibhsl_path=${HSL_PATH} \
                              -Dlibhsl_modules=../deps/modules
                              # -Db_sanitize=address,undefined
