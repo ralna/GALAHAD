@@ -1,10 +1,8 @@
 name: GALAHAD.jl
-
 on:
   push:
     branches:
-      - main
-
+      - master
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
@@ -34,7 +32,7 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
 
-      - name: Test GALAHAD.jl on push
+      - name: Test GALAHAD.jl
         if: github.event_name == 'push' && contains(github.event.head_commit.message, '[GALAHAD.jl]')
         shell: bash
         run: |
