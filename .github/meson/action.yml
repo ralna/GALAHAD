@@ -163,6 +163,7 @@ runs:
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
         HSL="hsl_subset"
+        HSL_PATH="$DEPS/deps/$LIBDIR"
         LD_CLASSIC=""
         if [[ "${{inputs.os}}" == "macos-13" || "${{inputs.os}}" == "macos-latest" ]]; then
           LD_CLASSIC="-Wl,-ld_classic"
@@ -183,7 +184,6 @@ runs:
           LAPACK_PATH="$DEPS/deps/$LIBDIR"
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
-          HSL_PATH="$DEPS/deps/$LIBDIR"
           HSL="hsl_subset_64"
         fi
         if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
