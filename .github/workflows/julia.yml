@@ -1,0 +1,63 @@
+name: GALAHAD.jl
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allow_failure }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['1.9', '1']
+        os: [ubuntu-latest, windows-latest, macos-13]
+        arch: ['x64']
+        allow_failure: [false]
+        include:
+          - os: macos-latest
+            arch: 'arm64'
+            version: '1.9'
+            allow_failure: false
+          - os: macos-latest
+            arch: 'arm64'
+            version: '1'
+            allow_failure: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check commit messages for [GALAHAD.jl] on push
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          if [[ ! "${{ github.event.head_commit.message }}" == *"[GALAHAD.jl]"* ]]; then
+            echo "Commit message does not contain [GALAHAD.jl]"
+            exit 1
+          fi
+
+      - name: Check commit messages for [GALAHAD.jl] on pull_request
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          if [[ "${{ matrix.os }}" == "macos*" ]]; then
+            brew install curl jq
+          fi
+          commits=$(curl -s ${{ github.event.pull_request.commits_url }})
+          if [[ $(echo $commits | jq -r '.[].commit.message') != *"[GALAHAD.jl]"* ]]; then
+            echo "Commit message does not contain [GALAHAD.jl]"
+            exit 1
+          fi
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.version }}
+          arch: ${{ matrix.arch }}
+
+      - name: Test GALAHAD.jl
+        shell: bash
+        run: julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'

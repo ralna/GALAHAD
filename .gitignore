@@ -14,3 +14,5 @@ html/Julia/.doctrees
 html/Julia/.buildinfo
 html/Julia/_sources
 src/makedefs/packages
+GALAHAD.jl/Manifest.toml
+GALAHAD.jl/gen/Manifest.toml
