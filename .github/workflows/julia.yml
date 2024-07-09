@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   test:
@@ -36,17 +34,8 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
 
-      - name: Test GALAHAD.jl -- Pull Request
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: |
-          commits=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
-          if [[ "$commits" == *"[GALAHAD.jl]"* ]]; then
-            julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
-          fi
-
-      - name: Test GALAHAD.jl -- Push
-        if: github.event_name == 'push' && "${{ github.event.head_commit.message }}" == *"[GALAHAD.jl]"*
+      - name: Test GALAHAD.jl on push
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[GALAHAD.jl]')
         shell: bash
         run: |
           julia --color=yes -e 'using Pkg; Pkg.develop(path="GALAHAD.jl"); Pkg.test("GALAHAD")'
