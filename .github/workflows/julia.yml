@@ -40,6 +40,15 @@ jobs:
             exit 1
           fi
 
+      - name: Debug commits on pull_request
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          echo "Fetching commits..."
+          commits=$(curl -s ${{ github.event.pull_request.commits_url }})
+          echo "Raw commits data: $commits"
+          echo $commits | jq '.'
+
       - name: Check commit messages for [GALAHAD.jl] on pull_request
         if: github.event_name == 'pull_request'
         shell: bash
