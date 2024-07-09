@@ -138,7 +138,7 @@ runs:
           wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.tar.gz
           tar -xzvf v${VERSION_LIBHSL}.tar.gz
         fi
-        cd libHSL-${VERSION_CUTEST}/hsl_subset
+        cd libHSL-${VERSION_LIBHSL}/hsl_subset
         meson setup builddir --buildtype=debug \
                              --prefix=$DEPS/deps \
                              -Ddefault_library=shared \
