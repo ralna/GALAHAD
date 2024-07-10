@@ -145,6 +145,25 @@ runs:
         meson compile -C builddir
         meson install -C builddir
 
+    - name: Install MUMPS
+      if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_MUMPS="5.7.2"
+        VERSION_METIS="5.1.2"
+        VERSION_OPENBLAS32="0.3.27"
+        VERSION_OPENBLAS="0.3.27"
+        wget https://github.com/amontoison/MUMPS_seq_jll.jl/releases/download/MUMPS_seq-v${VERSION_MUMPS}%2B0/MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf MUMPS_seq.v${VERSION_MUMPS}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/OpenBLAS_jll.jl/releases/download/OpenBLAS-v${VERSION_OPENBLAS}%2B1/OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf OpenBLAS.v${VERSION_OPENBLAS}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/OpenBLAS32_jll.jl/releases/download/OpenBLAS32-v${VERSION_OPENBLAS32}%2B1/OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz
+        tar -xzvf OpenBLAS32.v${VERSION_OPENBLAS32}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v${VERSION_METIS}%2B0/METIS.v${VERSION_METIS}.$PLATFORM.tar.gz
+        tar -xzvf METIS.v${VERSION_METIS}.$PLATFORM.tar.gz -C deps
+
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
       shell: bash
@@ -166,14 +185,16 @@ runs:
         CPPSTD="c++11"
         INT64="false"
         SSIDS="true"
-        BLAS="openblas"
-        LAPACK="openblas"
-        BLAS_PATH=""
-        LAPACK_PATH=""
+        BLAS=""
+        LAPACK=""
+        BLAS_PATH="$DEPS/deps/$LIBDIR"
+        LAPACK_PATH="$DEPS/deps/$LIBDIR"
         PYTHON_INTERFACE="true"
         SHARED_STATIC="shared"
         CUTEST_SINGLE="cutest_single"
         CUTEST_DOUBLE="cutest_double"
+        MUMPS_SINGLE="smumps"
+        MUMPS_DOUBLE="dmumps"
         HSL="hsl_subset"
         HSL_PATH="$DEPS/deps/$LIBDIR"
         LD_CLASSIC=""
@@ -190,19 +211,15 @@ runs:
         fi
         if [[ "${{ inputs.int }}" == "64" ]]; then
           INT64="true"
-          BLAS="openblas64_"
-          LAPACK="openblas64_"
-          BLAS_PATH="$DEPS/deps/$LIBDIR"
-          LAPACK_PATH="$DEPS/deps/$LIBDIR"
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
+          MUMPS_SINGLE="smumps_64"
+          MUMPS_DOUBLE="dmumps_64"
           HSL="hsl_subset_64"
         fi
         if [[ "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ]]; then
           BLAS="mkl_rt"
           LAPACK="mkl_rt"
-          BLAS_PATH="$DEPS/deps/${LIBDIR}"
-          LAPACK_PATH="$DEPS/deps/${LIBDIR}"
         fi
         if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SHARED_STATIC="static"
@@ -230,6 +247,10 @@ runs:
                              -Dliblapack=${LAPACK} \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
+                             -Dlibsmumps=${MUMPS_SINGLE} \
+                             -Dlibdmumps=${MUMPS_DOUBLE} \
+                             -Dlibsmumps_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibdmumps_path=$DEPS/deps/${LIBDIR} \
                              -Dlibcutest_single=${CUTEST_SINGLE} \
                              -Dlibcutest_double=${CUTEST_DOUBLE} \
                              -Dlibcutest_single_path=$CUTEST/${LIBDIR} \
