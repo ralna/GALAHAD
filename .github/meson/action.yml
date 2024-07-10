@@ -230,10 +230,13 @@ runs:
         mkdir -p deps
         VERSION_SCOTCH="7.0.4"
         VERSION_PASTIX="6.3.0"
+        VERSION_HWLOC="2.11.0"
         wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
         tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
         wget https://github.com/JuliaBinaryWrappers/PaStiX_jll.jl/releases/download/PaStiX-v${VERSION_PASTIX}%2B0/PaStiX.v${VERSION_PASTIX}.$PLATFORM-libgfortran5.tar.gz
         tar -xzvf PaStiX.v${VERSION_PASTIX}.$PLATFORM-libgfortran5.tar.gz -C deps
+        wget https://github.com/JuliaBinaryWrappers/Hwloc_jll.jl/releases/download/Hwloc-v${VERSION_HWLOC}%2B0/Hwloc.v${VERSION_HWLOC}.$PLATFORM.tar.gz
+        tar -xzvf Hwloc.v${VERSION_HWLOC}.$PLATFORM.tar.gz -C deps
 
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
