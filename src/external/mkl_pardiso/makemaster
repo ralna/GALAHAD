@@ -68,8 +68,9 @@ mkl_pardisost: $(MKL_PARDISOST)
 	echo " Exhaustive test of subroutine interface to mkl_pardiso"
 	cd ../mkl_pardiso ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o \
                               run_mkl_pardiso $(RMKL_PARDISOST)
+#	- ../mkl_pardiso/run_mkl_pardiso
 	- ../mkl_pardiso/run_mkl_pardiso > \
-             ../mkl_pardiso_pardiso/mkl_pardisot.output 2>&1
+              ../mkl_pardiso/mkl_pardisot.output 2>&1
 	cat ../mkl_pardiso/mkl_pardisot.output
 	rm ../mkl_pardiso/run_mkl_pardiso
 

@@ -21,6 +21,8 @@ PROGRAM TEST_PARDISO
   INTEGER ( KIND = ip_ ) :: i, j, l, idum( 1 )
   REAL( KIND = rp_ ) :: ddum( 1 ), ddum_out( 1 )
   LOGICAL :: all_in_one = .FALSE.
+! LOGICAL :: all_in_one = .TRUE.
+! LOGICAL :: easy_problem = .TRUE.
   LOGICAL :: easy_problem = .FALSE.
 
   ALLOCATE( IPARM( 64 ), PT( 64 ) )
@@ -71,35 +73,39 @@ PROGRAM TEST_PARDISO
 
 !  set up PARDISO control parameters
 
-  IPARM = 0  ! this sets all input parameters to defaul values
-! IPARM( 1 ) = 1 ! no solver default
-! IPARM( 2 ) = 0 ! minimum degree
-!!IPARM( 2 ) = 2 ! fill-in reordering from METIS
-! IPARM( 3 ) = 1 ! numbers of processors
-! IPARM( 4 ) = 0 ! no iterative-direct algorithm
-! IPARM( 5 ) = 0 ! no user fill-in reducing permutation
-! IPARM( 6 ) = 0 ! =0 solution on the first n compoments of x
-! IPARM( 7 ) = 0 ! not in use
-! IPARM( 8 ) = 2 ! numbers of iterative refinement steps
-! IPARM( 9 ) = 0 ! not in use
-! IPARM( 10 ) = 13 ! perturbe the pivot elements with 1E-13
-! IPARM( 11 ) = 1 ! use nonsymmetric permutation and scaling MPS
-! IPARM( 12 ) = 0 ! not in use
-! IPARM( 13 ) = 0 ! maximum weighted matching algorithm is switched-off
-! IPARM( 14 ) = 0 ! Output: number of perturbed pivots
-! IPARM( 15 ) = 0 ! not in use
-! IPARM( 16 ) = 0 ! not in use
-! IPARM( 17 ) = 0 ! not in use
-! IPARM( 18 ) = -1 ! Output: number of nonzeros in the factor LU
-! IPARM( 19 ) = -1 ! Output: Mflops for LU factorization
-! IPARM( 20 ) = 0 ! Output: Numbers of CG Iterations
-! IPARM( 27 ) = 1 ! check matrix
-! IPARM( 28 ) = 0 ! double precision, = 1 is single precision
+  IPARM = 0  ! 0 sets all input parameters to defaul values
+  IPARM( 1 ) = 1 ! no solver default
+  IPARM( 2 ) = 0 ! minimum degree
+  IPARM( 2 ) = 2 ! fill-in reordering from METIS
+  IPARM( 3 ) = 1 ! numbers of processors
+  IPARM( 4 ) = 0 ! no iterative-direct algorithm
+  IPARM( 5 ) = 0 ! no user fill-in reducing permutation
+  IPARM( 6 ) = 0 ! =0 solution on the first n compoments of x
+  IPARM( 7 ) = 0 ! not in use
+  IPARM( 8 ) = 2 ! numbers of iterative refinement steps
+  IPARM( 9 ) = 0 ! not in use
+  IPARM( 10 ) = 13 ! perturbe the pivot elements with 1E-13
+  IPARM( 11 ) = 1 ! use nonsymmetric permutation and scaling MPS
+  IPARM( 12 ) = 0 ! not in use
+  IPARM( 13 ) = 1 ! maximum weighted matching algorithm is switched on
+  IPARM( 14 ) = 0 ! Output: number of perturbed pivots
+  IPARM( 15 ) = 0 ! not in use
+  IPARM( 16 ) = 0 ! not in use
+  IPARM( 17 ) = 0 ! not in use
+  IPARM( 18 ) = -1 ! Output: number of nonzeros in the factor LU
+  IPARM( 19 ) = -1 ! Output: Mflops for LU factorization
+  IPARM( 20 ) = 0 ! Output: Numbers of CG Iterations
+  IPARM( 21 ) = 1 ! Apply 1x1 and 2x2 Bunch and Kaufman pivoting
+  IPARM( 24 ) = 0 ! Use the previous algorithm for factorization
+  IPARM( 27 ) = 0 ! =1 check matrix
 #ifdef REAL_32
-  IPARM( 28 ) = 1
+  IPARM( 28 ) = 1 ! single precision
 #else
-  IPARM( 28 ) = 0
+  IPARM( 28 ) = 0 ! double precision
 #endif
+  IPARM( 31 ) = 0 ! > 0 Enables partial or sparse RHS solution
+  IPARM( 35 ) = 0 ! Fortran-style indexing.
+  IPARM( 60 ) = 0 ! in-core factorization
 
   maxfct = 1
   mnum = 1
@@ -165,8 +171,12 @@ PROGRAM TEST_PARDISO
     phase = 33 ! only solution
     CALL MKL_PARDISO_SOLVE( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,      &
                             idum, nrhs, IPARM, msglvl, B, X, error )
-
-    WRITE( 6, * ) ' solve completed ... '
+    IF ( error /= 0 ) THEN
+      WRITE( 6, "( ' the following ERROR was detected: ', I0 )" ) error
+      GO TO 1
+    ELSE
+      WRITE( 6, * ) ' solve completed ... '
+    END IF
   END IF
 
   WRITE( 6, "( ' the solution of the system is X =' )" )
