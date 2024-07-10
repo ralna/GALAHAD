@@ -115,6 +115,8 @@ libhwloc_path = get_option('libhwloc_path')
 libhwloc_include = include_directories(get_option('libhwloc_include'))
 libhsl_modules = include_directories(get_option('libhsl_modules'))
 libcutest_modules = include_directories(get_option('libcutest_modules'))
+libspmf_modules = include_directories(get_option('libspmf_modules'))
+libpastixf_modules = include_directories(get_option('libpastixf_modules'))
 
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
@@ -245,10 +247,10 @@ galahad_c_tests = []
 galahad_python_tests = []
 
 # Folders that contain headers and Fortran modules
-libgalahad_include = [include_directories('include'),
-                      include_directories('src/dum/include'),
-                      include_directories('src/metis/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libcutest_modules + libhwloc_include
+libgalahad_include = [include_directories('include'), include_directories('src/dum/include'),
+                      include_directories('src/metis/include'), include_directories('src/ampl')]
+libgalahad_include = libgalahad_include + libhwloc_include + libhsl_modules +
+                     libcutest_modules + libspmf_modules + libpastixf_modules
 
 if host_machine.system() == 'linux'
   add_global_arguments('-DSPRAL_HAVE_SCHED_GETCPU', language : 'cpp')
