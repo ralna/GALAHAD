@@ -145,6 +145,18 @@ runs:
         meson compile -C builddir
         meson install -C builddir
 
+    - name: Install MKL
+      if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_MKL="2024.2.0"
+        wget https://github.com/JuliaBinaryWrappers/MKL_jll.jl/releases/download/MKL-v${VERSION_MKL}%2B0/MKL.v${VERSION_MKL}.$PLATFORM.tar.gz
+        tar -xzvf MKL.v${VERSION_MKL}.$PLATFORM.tar.gz -C deps
+        # wget https://github.com/JuliaBinaryWrappers/IntelOpenMP_jll.jl/releases/download/IntelOpenMP-v${VERSION_MKL}%2B0/IntelOpenMP.v${VERSION_MKL}.$PLATFORM.tar.gz
+        # tar -xzvf IntelOpenMP.v${VERSION_MKL}.$PLATFORM.tar.gz -C deps
+
     - name: Setup GALAHAD
       shell: bash
       run: |
@@ -185,6 +197,12 @@ runs:
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
           HSL="hsl_subset_64"
+        fi
+        if [[ "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ]]; then
+          BLAS="mkl_rt"
+          LAPACK="mkl_rt"
+          BLAS_PATH="$DEPS/deps/${LIBDIR}"
+          LAPACK_PATH="$DEPS/deps/${LIBDIR}"
         fi
         if [[ ( "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "windows-latest" ) ]]; then
           SHARED_STATIC="static"
