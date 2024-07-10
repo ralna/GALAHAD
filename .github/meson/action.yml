@@ -28,7 +28,9 @@ runs:
 
     - name: Install Meson and Ninja
       shell: bash
-      run: pip install meson ninja numpy
+      run: |
+        pip install meson==1.4.1
+        pip install ninja numpy
 
     - name: Set the environment variables
       shell: bash
@@ -214,8 +216,8 @@ runs:
           INT64="true"
           CUTEST_SINGLE="cutest_single_64"
           CUTEST_DOUBLE="cutest_double_64"
-          MUMPS_SINGLE="smumps_64"
-          MUMPS_DOUBLE="dmumps_64"
+          MUMPS_SINGLE="smumps64"
+          MUMPS_DOUBLE="dmumps64"
           HSL="hsl_subset_64"
         fi
         if [[ "${{ inputs.compiler }}" == "intel" && "${{ inputs.os }}" == "ubuntu-latest" ]]; then
