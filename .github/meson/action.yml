@@ -228,7 +228,7 @@ runs:
       run: |
         cd ..
         mkdir -p deps
-        VERSION_SCOTCH="7.4.0"
+        VERSION_SCOTCH="7.0.4"
         VERSION_PASTIX="6.3.0"
         wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
         tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
