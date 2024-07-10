@@ -340,7 +340,9 @@ runs:
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
                              -Dlibspmf_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibspmf_modules=../deps/include/spm \
                              -Dlibpastixf_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibpastixf_modules=../deps/include/pastix \
                              -Dlibsmumps=${MUMPS_SINGLE} \
                              -Dlibdmumps=${MUMPS_DOUBLE} \
                              -Dlibmumps_path=$DEPS/deps/${LIBDIR} \

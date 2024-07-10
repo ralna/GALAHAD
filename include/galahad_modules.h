@@ -153,7 +153,7 @@
 #define WSSFREE GALAHAD_WSSFREE
 #endif
 
-#ifdef DUMMY_SPMF
+#ifdef DUMMY_SPM
 #define spmInit_f08 GALAHAD_spmInit_f08
 #define spmUpdateComputedFields_f08 GALAHAD_spmUpdateComputedFields_f08
 #define spmAlloc_f08 GALAHAD_spmAlloc_f08
@@ -163,7 +163,7 @@
 #define spmExit_f08 GALAHAD_spmExit_f08
 #endif
 
-#ifdef DUMMY_PASTIXF
+#ifdef DUMMY_PASTIX
 #define pastixInitParam_f08 GALAHAD_pastixInitParam_f08
 #define pastixInit_f08 GALAHAD_pastixInit_f08
 #define pastix_task_analyze_f08 GALAHAD_pastix_task_analyze_f08
