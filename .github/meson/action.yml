@@ -179,6 +179,7 @@ runs:
     - name: Setup GALAHAD
       shell: bash
       run: |
+        mkdir -p ../deps/${LIBDIR}
         mkdir -p ../deps/modules
         mkdir -p ../CUTEst/modules
         CSTD="c99"

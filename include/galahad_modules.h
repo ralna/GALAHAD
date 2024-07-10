@@ -16,10 +16,12 @@
 #define LANCELOT_HSL_routines LANCELOT_HSL_routines_64
 #define MKL_PARDISO_PRIVATE MKL_PARDISO_PRIVATE_64
 #define MKL_PARDISO MKL_PARDISO_64
+#ifndef DUMMY_MKL_PARDISO
 #define PARDISO_S PARDISO_S_64
 #define PARDISO_D PARDISO_D_64
 #define PARDISO_S_2D PARDISO_S_64_2D
 #define PARDISO_D_2D PARDISO_D_64_2D
+#endif
 #define galahad_metis galahad_metis_64
 #define spmf_interfaces spmf_interfaces_64
 #define spmf_enums spmf_enums_64
