@@ -287,17 +287,17 @@
 
        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
-!  the norm of the primal infeasibility at the best estimate of the solution 
+!  the norm of the primal infeasibility at the best estimate of the solution
 !    determined by EPF_solve
 
        REAL ( KIND = rp_ ) :: primal_infeasibility = HUGE( one )
 
-!  the norm of the dual infeasibility at the best estimate of the solution 
+!  the norm of the dual infeasibility at the best estimate of the solution
 !    determined by EPF_solve
 
        REAL ( KIND = rp_ ) :: dual_infeasibility = HUGE( one )
 
-!  the norm of the complementary slackness at the best estimate of the solution 
+!  the norm of the complementary slackness at the best estimate of the solution
 !    determined by EPF_solve
 
        REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
@@ -700,8 +700,8 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  EPF_solve, an exponential penalty function algorithm to find a local 
-!    minimizer of a given objective where the variables are required to 
+!  EPF_solve, an exponential penalty function algorithm to find a local
+!    minimizer of a given objective where the variables are required to
 !    satisfy (nonlinear) constraints
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -798,7 +798,7 @@
 ! inform is a scalar variable of type EPF_inform_type. See EPF_inform_type
 !  in the module specification statements above for details.
 !
-!  On initial entry, inform%status should be set to 1. On exit, the following 
+!  On initial entry, inform%status should be set to 1. On exit, the following
 !   inform%status will have been set as follows:
 !
 !     0. The run was succesful
@@ -987,23 +987,21 @@
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
 
-       SUBROUTINE eval_HL( status, X, Y, userdata, H_val, no_f )
+       SUBROUTINE eval_HL( status, X, Y, userdata, H_val )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) ::H_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
 
-       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, no_f, got_h )
+       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, got_h )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HLPROD
 
@@ -1021,7 +1019,7 @@
 !-----------------------------------------------
 
      INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l
-     REAL ( KIND = rp_ ) :: c_norm, penalty_term
+     REAL ( KIND = rp_ ) :: penalty_term
      LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1380,7 +1378,7 @@
 
      nlp%H%m = nlp%n ; nlp%H%n = nlp%n ; nlp%H%ne = data%h_ne
 
-!  set up data structure to record the assembled Hessian of the penalty 
+!  set up data structure to record the assembled Hessian of the penalty
 !  function, if required. Firstly, compute the number of nonzeros in J(x)
 
      IF ( data%control%subproblem_direct ) THEN
@@ -1423,7 +1421,7 @@
               bad_alloc = inform%bad_alloc, out = data%control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-!  assign the row and column indices of JT, leaving the values of JT ordered 
+!  assign the row and column indices of JT, leaving the values of JT ordered
 !  as in J
 
        SELECT CASE ( SMT_get( nlp%J%type ) )
@@ -1458,7 +1456,7 @@
        data%control%BSC_control%new_a = 1
        data%jtdzj_ne =  data%epf%H%ne
 
-!   if required, find a mapping for the entries of H(x,y) and D_z into the 
+!   if required, find a mapping for the entries of H(x,y) and D_z into the
 !   existing structure in data%epf%H for J^T D_y J, expanding the structure
 !   as necessary
 
@@ -1491,6 +1489,9 @@
                            inform%status, inform%alloc_status )
          IF ( inform%status /= 0 ) GO TO 980
        END IF
+     ELSE
+write(6,*) ' No indirect subproblem option as yet'
+stop
      END IF
 
 !  ensure that the initial point is feasible
@@ -1512,7 +1513,7 @@
          data%V_status( i ) = 2
        ELSE
          data%V_status( i ) = 0
-       END IF    
+       END IF
      END DO
 
 !  set initial estimates of the dual variables ...
@@ -1536,6 +1537,7 @@
 !  initialize control parameters
 
     data%control%tru_control%hessian_available = .TRUE.
+!   data%initialize_munu = .FALSE.
     data%initialize_munu = .TRUE.
 
     data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
@@ -1600,7 +1602,7 @@
        data%print_iteration_header = data%print_level > 1
 
 !  -----------------------------------------------------------------
-!  2. start the inner-iteration (minimize the penalty function) loop 
+!  2. start the inner-iteration (minimize the penalty function) loop
 !  -----------------------------------------------------------------
 
        inform%tru_inform%status = 1
@@ -1647,7 +1649,7 @@
 !  obtain the values of Hessian of the Lagrangian
 !  ..............................................
 
-         CASE ( 4 ) 
+         CASE ( 4 )
            IF ( data%eval_hl .AND. data%control%subproblem_direct ) THEN
              IF ( data%reverse_hl ) THEN
                nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
@@ -1662,7 +1664,7 @@
 !  error exit from inner-iteration loop
 !  ....................................
 
-         CASE ( : - 1 ) 
+         CASE ( : - 1 )
            nlp%X( : nlp%n ) = data%epf%X( : nlp%n )
            GO TO 300
 
@@ -1697,14 +1699,15 @@
 
 !  compute the (infinity-) norm of the infeasibility
 
-             c_norm = MAX( EPF_infeasibility( nlp%n, nlp%X, nlp%X_l, nlp%X_u,  &
-                                              control%infinity ),              &
-                           EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,  &
-                                              control%infinity ) )
+             inform%primal_infeasibility                                       &
+               = MAX( EPF_infeasibility( nlp%n, nlp%X, nlp%X_l, nlp%X_u,       &
+                                         control%infinity ),                   &
+                      EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,       &
+                                         control%infinity ) )
            ELSE
              data%eval_fc = .TRUE.
            END IF
-!          WRITE( 6, * ) ' f, ||c|| = ', inform%obj, c_norm
+!          WRITE( 6, * ) ' f, ||c|| = ', inform%obj, inform%primal_infeasibility
 
 !  initialize the penalty parameters at the start of the first major iteration
 
@@ -1740,25 +1743,61 @@
                  data%MU_u( i ) = zero
                END IF
              END DO
+
+!  initialize the penalty parameters to the default value
+
+           ELSE
+
+!  for the simple bound constraints
+
+             DO j = 1, nlp%n
+               IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+                 data%NU_l( j ) = control%initial_mu
+               ELSE
+                 data%NU_l( j ) = zero
+               END IF
+               IF ( nlp%X_u( j ) <= control%infinity ) THEN
+                 data%NU_u( j ) = control%initial_mu
+               ELSE
+                 data%NU_u( j ) = zero
+               END IF
+             END DO
+
+!  for the general constraints
+
+             DO i = 1, nlp%m
+               IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+                 data%MU_l( i ) = control%initial_mu
+               ELSE
+                 data%MU_l( i ) = zero
+               END IF
+               IF ( nlp%C_u( i ) <= control%infinity ) THEN
+                 data%MU_u( i ) = control%initial_mu
+               ELSE
+                 data%MU_u( i ) = zero
+               END IF
+             END DO
+
+
            END IF
 
-!  compute the individual and combined dual-variable 
+!  compute the individual and combined dual-variable
 
 !    z_j^l(x,nu) = v_j^l e^((x_j^l-x_j)/nu^l_j)
 !    z_j^u(x,uu) = v_j^u e^((x_j-x_j^u)/nu^u_j)
-!    z_j(x,nu) = - z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)
+!    z_j(x,nu) = z_j^l(x,nu^l_j) - z_j^u(x,nu^u_j)
 !    Dz_jj(x,nu) = z_j^l(x,nu^l_j)/nu^l_j + z_j^u(x,nu^u_j)/nu^u_j
 
-!  & Lagrange-multiplier estimates, 
+!  & Lagrange-multiplier estimates,
 
 !    y_i^l(x,mu) = w_i^l e^((c_i^l-c_i(x))/mu^l_i)
 !    y_i^u(x,mu) = w_i^u e^((c_i(x)-c_i^u)/mu^u_i)
-!    y_i(x,mu) = - y_i^l(x,mu^l_i) + y_i^u(x,mu^u_i)
+!    y_i(x,mu) = y_i^l(x,mu^l_i) - y_i^u(x,mu^u_i)
 !    Dy_ii(x,mu) = y_i^l(x,mu^l_i)/mu^l_i + y_i^u(x,mu^u_i)/mu^u_i
 
 !  and the total penalty term
 
-!    sum_j=1^n [z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)] + 
+!    sum_j=1^n [z_j^l(x,nu^l_j) + z_j^u(x,nu^u_j)] +
 !    sum_i=1^m [y_i^l(x,mu^l_i) + y_i^u(x,mu^u_i)]
 
 !  for the dual variables:
@@ -1768,9 +1807,9 @@
              IF ( nlp%X_l( j ) >= - control%infinity ) THEN
                data%Z_l( j ) = data%V_l( j ) *                                 &
                  EXP( ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j ) )
-               nlp%Z( j ) = - data%Z_l( j )
+               nlp%Z( j ) = data%Z_l( j )
                data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
-               penalty_term = penalty_term + data%Z_l( j )
+               penalty_term = penalty_term + data%NU_l( j ) * data%Z_l( j )
              ELSE
                nlp%Z( j ) = zero
                data%Dz( j ) = zero
@@ -1778,9 +1817,9 @@
              IF ( nlp%X_u( j ) <= control%infinity ) THEN
                data%Z_u( j ) = data%V_u( j ) *                                 &
                  EXP( ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j ) )
-               nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
+               nlp%Z( j ) = nlp%Z( j ) - data%Z_u( j )
                data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
-               penalty_term = penalty_term + data%Z_u( j )
+               penalty_term = penalty_term + data%NU_u( j ) * data%Z_u( j )
              END IF
            END DO
 
@@ -1790,9 +1829,9 @@
              IF ( nlp%C_l( i ) >= - control%infinity ) THEN
                data%Y_l( i ) = data%W_l( i ) *                                 &
                  EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i ) )
-               nlp%Y( i ) = - data%Y_l( i )
+               nlp%Y( i ) = data%Y_l( i )
                data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
-               penalty_term = penalty_term + data%Y_l( i )
+               penalty_term = penalty_term + data%MU_l( i ) * data%Y_l( i )
              ELSE
                nlp%Y( i ) = zero
                data%Dy( i ) = zero
@@ -1800,9 +1839,9 @@
              IF ( nlp%C_u( i ) <= control%infinity ) THEN
                data%Y_u( i ) = data%W_u( i ) *                                 &
                  EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i ) )
-               nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
+               nlp%Y( i ) = nlp%Y( i ) - data%Y_u( i )
                data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
-               penalty_term = penalty_term + data%Y_u( i )
+               penalty_term = penalty_term + data%MU_u( i ) * data%Y_u( i )
              END IF
            END DO
 
@@ -1811,7 +1850,7 @@
 !    phi(x,mu) = f(x) + sum_j=1^n [ nu^y_i z_j^l(x,nu) + nu^u_i z_j^u(x,nu) ] +
 !                     + sum_i=1^m [ mu^l_i w_i^l(x,mu) + mu^u_i w_i^u(x,mu) ]
 
-           data%epf%f = nlp%f + data%mu * penalty_term
+           data%epf%f = nlp%f + penalty_term
            IF ( data%printd )                                                  &
              WRITE( data%out, "( ' penalty value =', ES22.14 )" ) data%epf%f
 
@@ -1833,10 +1872,10 @@
 
 !  compute the gradient of the penalty function:
 
-!    nabla phi(x,mu,nu) = g(x) + z(x,nu) + J^T(x) y(x,mu)
+!    nabla phi(x,mu,nu) = g(x) - z(x,nu) - J^T(x) y(x,mu)
 
-           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
-           CALL MOP_Ax( one, nlp%J, nlp%Y( : nlp%m ), one,                     &
+           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) - nlp%Z( : nlp%n )
+           CALL MOP_Ax( - one, nlp%J, nlp%Y( : nlp%m ), one,                   &
                         data%epf%G( : nlp%n ), transpose = .TRUE.,             &
                         m_matrix = nlp%m, n_matrix = nlp%n )
            IF ( data%printd ) WRITE( data%out,                                 &
@@ -1866,7 +1905,7 @@
            IF ( data%control%subproblem_direct ) THEN
              IF ( data%eval_hl ) THEN
                inform%h_eval = inform%h_eval + 1
-             ELSE 
+             ELSE
                data%eval_hl = .TRUE.
              END IF
 
@@ -1915,7 +1954,7 @@
 !  record successful evaluation
 
          data%tru_data%eval_status = 0
-         GO TO 200 
+         GO TO 200
 
 !  ---------------------------
 !  end of inner-iteration loop
@@ -1923,7 +1962,8 @@
 
  300   CONTINUE
 
-!  compute the 
+!  compute the dual infeasibility
+
        data%W( : data%epf%n ) = EPF_projection( nlp%n,                         &
           nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
        inform%dual_infeasibility                                               &
@@ -1950,7 +1990,23 @@
          IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = data%Y_u( i )
        END DO
 
-       IF ( inform%dual_infeasibility <= data%stop_d ) THEN
+!  compute the complemntary slackness
+
+       inform%complementary_slackness                                          &
+         = MAX( EPF_complementarity( nlp%n, nlp%X, nlp%X_l, nlp%X_u,           &
+                                     data%Z_l, data%Z_u, control%infinity ),   &
+                EPF_complementarity( nlp%m, nlp%C, nlp%C_l, nlp%C_u,           &
+                                     data%Y_l, data%Y_u, control%infinity ) )
+
+        WRITE( 6, "( ' primal infeasibility = ', ES12.4, /,                    &
+       &             ' dual infeasibility   = ', ES12.4, /,                    &
+       &             ' complementarity      = ', ES12.4 )" )                   &
+         inform%primal_infeasibility, inform%dual_infeasibility,               &
+         inform%complementary_slackness
+
+       IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
+            inform%dual_infeasibility <= data%stop_d .AND.                     &
+            inform%complementary_slackness <= data%stop_c ) THEN
          GO TO 800
        END IF
 
@@ -1971,7 +2027,7 @@
 
          DO i = 1, nlp%m
            IF ( nlp%C_l( i ) >= - control%infinity )                           &
-             data%MU_l( i ) = control%mu_reduce * data%MU_l( i ) 
+             data%MU_l( i ) = control%mu_reduce * data%MU_l( i )
            IF ( nlp%C_u( i ) <= control%infinity )                             &
              data%MU_u( i ) = control%mu_reduce * data%MU_u( i )
          END DO
@@ -2074,9 +2130,9 @@
 !              nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
 !         END DO
 !      END DO
-       WRITE( data%out, "( /, A, '  Problem: ', A,                             &
-      &   ' (n = ', I0, '): EPF stopping tolerance =', ES11.4 )" )            &
-         prefix, TRIM( nlp%pname ), nlp%n, data%stop_d
+       WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ',     &
+      &  I0, '): EPF stopping tolerance =', ES11.4 )" )            &
+         prefix, TRIM( nlp%pname ), nlp%n, nlp%m, data%stop_d
 !!$       IF ( .NOT. data%monotone ) WRITE( data%out,                             &
 !!$           "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
 !!$         data%non_monotone_history
@@ -2451,7 +2507,6 @@
 
      END FUNCTION EPF_projection
 
-
 !-*-  G A L A H A D -  E P F _ i n f e a s i b i l i t y   F U N C T I O N -*-
 
      FUNCTION EPF_infeasibility( n, X, X_l, X_u, infinity )
@@ -2459,7 +2514,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  Compute the infinity norm of the infeasiblity of x wrt the set 
+!  Compute the infinity norm of the infeasiblity of x wrt the set
 !  x_l <= x <= x_u, where any bound with absolute value > infinity is absent
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -2492,6 +2547,50 @@
  !  End of function EPF_infeasibility
 
      END FUNCTION EPF_infeasibility
+
+!-  G A L A H A D -  E P F _ c o m p l e m e n t a r i t y   F U N C T I O N -
+
+     FUNCTION EPF_complementarity( n, X, X_l, X_u, Z_l, Z_u, infinity )
+     REAL ( KIND = rp_ ) :: EPF_complementarity
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!  Compute the complementarity of (x,z) wrt the set x_l <= x <= x_u,
+!  where any bound with absolute value > infinity is absent
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: infinity
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: Z_l, Z_u
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER ( KIND = ip_ ) :: j
+
+!  compute the infeasibility
+
+     EPF_complementarity = zero
+     DO j = 1, n
+       IF ( X_l( j ) >= - infinity )                                           &
+         EPF_complementarity = MAX( EPF_complementarity,                       &
+                                    ( X( j ) - X_l( j ) ) * Z_l( j ) )
+       IF ( X_u( j ) <= infinity )                                             &
+         EPF_complementarity = MAX( EPF_complementarity,                       &
+                                    - ( X( j ) - X_u( j ) ) * Z_u( j ) )
+     END DO
+     RETURN
+
+ !  End of function EPF_complementarity
+
+     END FUNCTION EPF_complementarity
 
 !-*-*-  E P F _ r e d u c e d  _ g r a d i e n t _ n o r m  F U C T I O N  -*-
 
@@ -2577,7 +2676,7 @@
      SUBROUTINE EPF_map_set( A, B, MAP_D, MAP_B, status, alloc_status )
 
 !  find a mapping of the entries of the matrix B and the diagonal matrix D
-!  into A. A should be stored by columns (either as a sparse or dense matrix) 
+!  into A. A should be stored by columns (either as a sparse or dense matrix)
 !  while B can be in any supported GALAHAD format. The entries of MAP_D(i)
 !  should be set to 0 (entry i is a zero) or 1 (it isn't a zero); on exit
 !  the 1s will be replaced by the position in A, and A will have been expanded
@@ -2703,7 +2802,7 @@
 
          diagonal = MAP_D( j ) == 1
 
-!  march through the entries in the j-th column of B and D trying to match 
+!  march through the entries in the j-th column of B and D trying to match
 !  them to A; record the number that do not occur in A
 
          DO l = PTR( j ), PTR( j + 1 ) - 1
@@ -2798,7 +2897,7 @@
                MAP_D( j ) = a_ne
              END IF
            END IF
-         END DO 
+         END DO
          IF ( diagonal ) THEN
            new_entries = new_entries + 1
            a_ne = a_ne + 1
@@ -2827,5 +2926,3 @@
 !  End of module GALAHAD_EPF
 
    END MODULE GALAHAD_EPF_precision
-
-

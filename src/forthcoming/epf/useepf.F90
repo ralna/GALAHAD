@@ -238,30 +238,22 @@
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        IF ( control%subproblem_direct ) THEN
-          IF ( inform%status == 0 ) THEN
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%dual_infeasibility, inform%iter, inform%g_eval,           &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%dual_infeasibility, - inform%iter, - inform%g_eval,       &
-              - inform%time%clock_total, inform%status
-          END IF
+        IF ( inform%status == 0 ) THEN
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%primal_infeasibility, inform%dual_infeasibility,            &
+            inform%complementary_slackness, inform%iter, inform%g_eval,        &
+            inform%time%clock_total, inform%status
         ELSE
-          IF ( inform%status == 0 ) THEN
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%dual_infeasibility, inform%iter, inform%g_eval,           &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%dual_infeasibility, - inform%iter, - inform%g_eval,       &
-              - inform%time%clock_total, inform%status
-          END IF
+          WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%primal_infeasibility, inform%dual_infeasibility,            &
+            inform%complementary_slackness, - inform%iter, - inform%g_eval,    &
+            - inform%time%clock_total, inform%status
         END IF
       END IF
 
 !  If required, write the solution
+
+      WRITE( errout, 2050 ) inform%obj
 
       l = 2
       IF ( fulsol ) l = nlp%n
@@ -281,30 +273,36 @@
         END DO
       END DO
 
-      IF ( control%subproblem_direct ) THEN
-        WRITE( errout, "( /, 'name           n  f               du-feas ',     &
-       &  '   its     #g   av fac     time stat' )" )
-        IF ( inform%status == 0 ) THEN
-          WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%dual_infeasibility, inform%iter, inform%g_eval,             &
-            inform%time%clock_total, inform%status
-        ELSE
-          WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%dual_infeasibility, - inform%iter, - inform%g_eval,         &
-            - inform%time%clock_total, inform%status
-        END IF
+      l = 2
+      IF ( fulsol ) l = nlp%m
+      IF ( nlp%m > 0 ) THEN
+        WRITE( errout, 2060 )
+        DO j = 1, 2
+          IF ( j == 1 ) THEN
+            ir = 1 ; ic = MIN( l, nlp%m )
+          ELSE
+            IF ( ic < nlp%m - l ) WRITE( errout, 2010 )
+            ir = MAX( ic + 1, nlp%m - ic + 1 ) ; ic = nlp%m
+          END IF
+          DO i = ir, ic
+            WRITE( errout, 2020 ) i, nlp%CNAMES( i ), nlp%C( i ),              &
+              nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
+          END DO
+        END DO
+      END IF
+
+      WRITE( errout, "( /, 'name           n  f        pr-feas  du-feas ',    &
+     &  ' cmp-slk    its     #g     time stat' )" )
+      IF ( inform%status == 0 ) THEN
+        WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                    &
+          inform%primal_infeasibility, inform%dual_infeasibility,              &
+          inform%complementary_slackness, inform%iter, inform%g_eval,          &
+          inform%time%clock_total, inform%status
       ELSE
-        WRITE( errout, "( /, 'name           n  f               du-feas ',     &
-       &  '   its     #g      #cg       time stat' )" )
-        IF ( inform%status == 0 ) THEN
-          WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%dual_infeasibility, inform%iter, inform%g_eval,             &
-            inform%time%clock_total, inform%status
-        ELSE
-          WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%dual_infeasibility, - inform%iter, - inform%g_eval,         &
-            - inform%time%clock_total, inform%status
-        END IF
+        WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj,                    &
+          inform%primal_infeasibility, inform%dual_infeasibility,              &
+          inform%complementary_slackness, - inform%iter, - inform%g_eval,      &
+          - inform%time%clock_total, inform%status
       END IF
 
       IF ( write_solution .AND.                                                &
@@ -326,16 +324,20 @@
         WRITE( sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ', A,  &
        &       /, ' Objective:', ES24.16 )" ) nlp%pname, solv, inform%obj
 
+        WRITE( sfiledevice, 2050 ) inform%obj
         WRITE( sfiledevice, 2000 )
         DO i = 1, nlp%n
           WRITE( sfiledevice, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ),           &
             nlp%X_l( i ), nlp%X_u( i ), nlp%G( i )
         END DO
 
+        WRITE( sfiledevice, 2060 )
+        DO i = 1, nlp%m
+          WRITE( sfiledevice, 2020 ) i, nlp%CNAMES( i ), nlp%C( i ),           &
+            nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
+        END DO
+
      END IF
-!do i = 1, nlp%n
-!write(6,*)  nlp%X( i )
-!end do
 
 !  Close any opened files and deallocate arrays
 
@@ -345,15 +347,21 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' Solution: ', /,'                        ',                     &
+ 2000 FORMAT( /, ' Solution: ', /, '                        ',                 &
               '        <------ Bounds ------> ', /                             &
               '      # name          value   ',                                &
-              '    Lower       Upper       Dual ' )
+              '    Lower       Upper       Dual' )
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F9.2, I5 )
- 2050 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F9.2, I5 )
+ 2040 FORMAT( A10, I6, 4ES9.1, bn, 2I7, F9.2, I5 )
+ 2050 FORMAT( /, ' Objective value: ', ES16.8 )
+ 2060 FORMAT( /, ' Constraints: ', /, '                        ',              &
+              '        <------ Bounds ------> ', /                             &
+              '      # name          value   ',                                &
+              '    Lower       Upper     Multiplier' )
+
+
 
 !  End of subroutine USE_EPF
 

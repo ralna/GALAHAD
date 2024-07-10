@@ -24,7 +24,7 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_mop make_ir make_trs make_rqs \
                make_userdata make_nlpt make_dps make_icfs \
                make_lancelot_psls make_psls make_sec make_sha \
-               make_tru
+               make_tru make_bsc
 
 #  other packages that depend on package
 

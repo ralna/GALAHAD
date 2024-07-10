@@ -29,6 +29,8 @@
    p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
 ! problem data complete
    CALL EQP_initialize( data, control, inform ) ! Initialize control parameters
+   control%SBLS_control%symmetric_linear_solver = 'sytr'
+   control%FDC_control%symmetric_linear_solver = 'sytr'
    CALL EQP_solve( p, data, control, inform )   !  Solve problem
    IF ( inform%status == 0 ) THEN               !  Successful return
      WRITE( 6, "( ' EQP: ', I0, ' CG iteration(s). Optimal objective value =', &

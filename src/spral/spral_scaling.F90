@@ -680,7 +680,7 @@ contains
        end if
     end if
 
-    if ((.not. sym) .or. (inform%matched .eq. n)) then 
+    if ((.not. sym) .or. (inform%matched .eq. n)) then
        ! Unsymmetric or symmetric and full rank. Note that in this case m=n
        rscaling(1:m) = dualu(1:m)
        cscaling(1:n) = dualv(1:n) - cmax(1:n)
@@ -974,7 +974,7 @@ contains
       ! Koster paper)
 
     integer(ip_) :: i,j,jj,jord,q0,qlen,jdum,jsp
-    integer(ip_) :: kk,up,low,lpos,k
+    integer(ip_) :: kk,up,low,lpos
     integer(long_) :: klong, isp
     real(rp_) :: csp,di,dmin,dnew,dq0,vj
 
