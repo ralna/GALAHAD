@@ -272,7 +272,8 @@ runs:
         mkdir -p ../deps/${LIBDIR}
         mkdir -p ../deps/modules
         mkdir -p ../CUTEst/modules
-        mkdir -p ../deps/include
+        mkdir -p ../deps/include/spm
+        mkdir -p ../deps/include/pastix
         CSTD="c99"
         CPPSTD="c++11"
         INT64="false"
