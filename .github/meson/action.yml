@@ -193,7 +193,7 @@ runs:
           -DCMAKE_INSTALL_PREFIX=$DEPS/deps \
           -DCMAKE_BUILD_TYPE=Release \
           -DPASTIX_INT64=OFF \
-          -DPASTIX_ORDERING_SCOTCH=ON \
+          -DPASTIX_ORDERING_SCOTCH=OFF \
           -DPASTIX_ORDERING_METIS=ON
         make -j4
         make install
