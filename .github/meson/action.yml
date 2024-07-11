@@ -237,7 +237,7 @@ runs:
         # tar -xzvf Hwloc.v${VERSION_HWLOC}.$PLATFORM.tar.gz -C deps
         # wget https://github.com/JuliaBinaryWrappers/PaStiX_jll.jl/releases/download/PaStiX-v${VERSION_PASTIX}%2B0/PaStiX.v${VERSION_PASTIX}.$PLATFORM-libgfortran5.tar.gz
         # tar -xzvf PaStiX.v${VERSION_PASTIX}.$PLATFORM-libgfortran5.tar.gz -C deps
-        brew install hwloc
+        sudo apt-get -y install libhwloc-dev
         git clone https://gitlab.inria.fr/solverstack/pastix.git
         cd pastix
         git submodule update --init --recursive
