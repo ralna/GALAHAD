@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-07-11 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -110,10 +110,10 @@
    INTERFACE spmCheckAxb
      SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,  &
                                  ldx, info )
-       USE GALAHAD_KINDS_precision, ONLY : ipc_, rpc_
+       USE GALAHAD_KINDS_precision, ONLY : ipc_, dpc_
        USE spmf_enums, ONLY : spmatrix_t, spm_int_t
        IMPLICIT NONE
-       REAL ( KIND = rpc_ ), INTENT( IN ) :: eps
+       REAL ( KIND = dpc_ ), INTENT( IN ) :: eps
        INTEGER ( KIND = spm_int_t ),INTENT( IN ) :: nrhs
        TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
        CLASS( * ), INTENT( INOUT ), TARGET, DIMENSION( :, : ),                 &

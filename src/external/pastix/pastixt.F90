@@ -27,7 +27,12 @@ PROGRAM test_pastix
   INTEGER ( ipc_ ) :: info
   INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
-
+#ifdef REAL_32
+  REAL ( kind = dp_ ) :: eps = 0.001_rp_
+#else
+  REAL ( kind = dp_ ) :: eps = 0.000000000001_rp_
+#endif
+write(6,*) ' eps ', eps
   DO store = 1, 3
 
 ! Initialize the parameters and the solver
@@ -57,7 +62,11 @@ PROGRAM test_pastix
     IF ( store == 1 ) THEN
       spm%baseval = 1
       spm%mtxtype = SpmSymmetric
+#ifdef REAL_32
+      spm%flttype = SpmFloat
+#else
       spm%flttype = SpmDouble
+#endif
       spm%fmttype = SpmIJV
       spm%n = n
       spm%nnz = ne
@@ -65,13 +74,16 @@ PROGRAM test_pastix
       CALL spmUpdateComputedFields( spm )
       CALL spmAlloc( spm )
 #ifdef REAL_32
+write(6,"('single')")
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, svalues = VAL )
 #else
+write(6,"('double')")
       CALL spmGetArray( spm, colptr = COL, rowptr = ROW, dvalues = VAL )
 #endif
 
 !   set the matrix
 
+write(6,*) ' size of row, col, val = ', SIZE( ROW ), SIZE( COL ), SIZE( VAL )
       ROW( : ne ) = (/ 1, 2, 3, 3, 4, 5, 5 /)
       COL( : ne ) = (/ 1, 1, 2, 3, 3, 2, 5 /)
       VAL( : ne ) = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_, 6.0_rp_,   &
@@ -91,7 +103,11 @@ PROGRAM test_pastix
     ELSE IF ( store == 2 ) THEN
       spm%baseval = 1
       spm%mtxtype = SpmSymmetric
+#ifdef REAL_32
+      spm%flttype = SpmFloat
+#else
       spm%flttype = SpmDouble
+#endif
       spm%fmttype = SpmCSC
       spm%n = n
       spm%nnz = ne
@@ -127,7 +143,11 @@ PROGRAM test_pastix
     ELSE IF ( store == 3 ) THEN
       spm%baseval = 1
       spm%mtxtype = SpmGeneral
+#ifdef REAL_32
+      spm%flttype = SpmFloat
+#else
       spm%flttype = SpmDouble
+#endif
       spm%fmttype = SpmCSC
       spm%n = n
       spm%nnz = neu
@@ -198,8 +218,8 @@ PROGRAM test_pastix
 
 !   Check the solution
 
-    CALL spmCheckAxb( dparm( DPARM_EPSILON_REFINEMENT ), nrhs, spm, X0,        &
-                      spm%nexp, B, spm%nexp, X, spm%nexp, info )
+    CALL spmCheckAxb( eps, nrhs, spm, X0, spm%nexp, B, spm%nexp, X, spm%nexp, &
+                      info )
 
     CALL spmExit( spm )
     DEALLOCATE( spm )

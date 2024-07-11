@@ -74,9 +74,9 @@ will override the BLAS variable set in ./galahad/bin/sys/* when using
 (sd)gal, dgal and rbgal. See the man pages for these scripts for
 further details.
 
-----
-BLAS
-----
+    ----
+    BLAS
+    ----
 
  If there are compiled, library versions of the blas
  (basic linear algebra subprograms), set BLAS to a list of
@@ -88,9 +88,9 @@ BLAS
  If the user wishes not to link blas separately, set BLAS to
  "-galahad_dummy"
 
-------
-LAPACK
-------
+    ------
+    LAPACK
+    ------
 
  If there are compiled, library versions of the LAPACK library
  set LAPACK to a list of names of the object library suffix -lx,
@@ -101,19 +101,20 @@ LAPACK
  If the user wishes not to link lapack separately, set LAPACK to
  "-galahad_dummy"
 
----
-HSL
----
+    ---
+    HSL
+    ---
 
  If you already have a compiled, library version of HSL (formerly, the
  Harwell Subroutine Library), set HSL to -lx, where the object library
  libx.a contains the relevant HSL packages. For instance if the HSL
  is in the object library libhsl.a, HSL should be set to "-lhsl".
+
  N.B. HSL is only optionally required but will improve performance.
 
------
-METIS
------
+    -----
+    METIS
+    -----
 
  If there is a compiled, library version of the MeTiS (version 4) graph
  partitioning package (see http://www-users.cs.umn.edu/~karypis/metis/ )
@@ -130,11 +131,12 @@ METIS
  "-L/mylibrary -lgalahad_metis4 -lmetis"
  The same is true for the more modern MeTiS 5, with all mentions of
  metis4 becoing metis5.
+
  N.B. MeTiS is only optionally required but may improve performance.
 
--------
-PARDISO
--------
+    -------
+    PARDISO
+    -------
 
  If there is a compiled, library version of the PARDISO sparse factorization
  package (http://www.pardiso-project.org/) , set PARDISO to -lx,
@@ -144,11 +146,12 @@ PARDISO
  also point to the full path to the library. For example, if libpardiso.so
  is in the directory /mylibrary, PARDISO should be set to
  "-L/mylibrary -lpardiso"
+
  N.B. PARDISO is only optionally required but may improve performance.
 
------------
-MKL PARDISO
------------
+    -----------
+    MKL PARDISO
+    -----------
 
  If there is a compiled, library version of the MKL version of the PARDISO
  sparse factorization package (http://www.pardiso-project.org/) , set
@@ -158,13 +161,20 @@ MKL PARDISO
  "non-standard place", MKL_PARDISO should also point to the full path to the
  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
- f a compiled version of the MKL version of PARDISO is unavailable,
+ if a compiled version of the MKL version of PARDISO is unavailable,
  MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
+
+ There is a very useful webpage
+
+  https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-link-line-advisor.html
+
+ that provides link syntax for a variety of systems.
+
  N.B. PARDISO is only optionally required but may improve performance.
 
-----
-WSMP
-----
+    ----
+    WSMP
+    ----
 
  If there is a compiled, library version of the WSMP sparse factorization
  package (http://www.wsmp-project.org/) , set WSMP to -lx,
@@ -174,11 +184,15 @@ WSMP
  also point to the full path to the library. For example, if libwsmp.so
  is in the directory /mylibrary, WSMP should be set to
  "-L/mylibrary -lwsmp"
+
+ Unfortunately, at present WSMP has vanished from the web, and we are
+ unaware of its future prospects. Fingers crossed that it makes a safe return.
+
  N.B. WSMP is only optionally required but may improve performance.
 
-------
-PaStiX
-------
+    ------
+    PaStiX
+    ------
 
  PaStix should be installed into a suitable directory via
 
@@ -274,14 +288,14 @@ MUMPS
           -L/usr/lib/x86_64-linux-gnu -lesmumps -lscotch -lscotcherr \
           -lmetis -lscotcherr -lpthread
 
- with an additional 
+ with an additional
 
            -lscalapack-openmpi
-           
+
  if MPI is enabled when compiling MUMPS.
 
-  N.B. MUMPS is only optionally required but may improve performance.
+ N.B. MUMPS is only optionally required but may improve performance.
 
 Nick Gould
 For GALAHAD productions
-2024-06-21
+2024-07-11

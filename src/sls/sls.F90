@@ -3977,7 +3977,11 @@
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          data%spm%baseval = 1
          data%spm%mtxtype = SpmSymmetric
+#ifdef REAL_32
+         data%spm%flttype = SpmFloat
+#else
          data%spm%flttype = SpmDouble
+#endif
          data%spm%fmttype = SpmCSC
          data%spm%n = data%matrix%n
          data%spm%nnz = data%ne

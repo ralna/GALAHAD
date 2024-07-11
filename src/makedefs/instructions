@@ -1141,9 +1141,9 @@ $(package)st: $($(PACKAGE)ST)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_$(package) $(R$(PACKAGE)ST)
 	$(RMOOC)
-#	- ./run_$(package)
-	- ./run_$(package) > $(package)st.output 2>&1
-	cat $(package)st.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)st.output 2>&1
+#	cat $(package)st.output
 	rm ./run_$(package)
 
 $(package)st2: $($(PACKAGE)ST2)
