@@ -1,3 +1,46 @@
+/* bnlstf.c */
+/* Full test for the BNLS interface using Fortran sparse matrix indexing */
+/* Jari Fowkes  Nick Gould, STFC-Rutherford Appleton Laboratory, 2024 */
+
+#include <stdio.h>
+#include <math.h>
+#include "galahad_precision.h"
+#include "galahad_cfunctions.h"
+#include "galahad_bnls.h"
+
+# Define imax
+int imax(int a, int b) {
+return (a > b) ? a : b
+]
+
+# Custom userdata struct
+struct userdata_type {
+   real_wp_ p
+]
+
+# Function prototypes
+
+int res(int n, int m, var::Vector{Float64}, real_wp_ c[], const void *)
+int jac(int n, int m, int jne, var::Vector{Float64}, real_wp_ jval[],
+ const void *)
+int hess(int n, int m, int hne, var::Vector{Float64}, const real_wp_ y[],
+  hval::Vector{Float64}, const void *)
+int jacprod(int n, int m, var::Vector{Float64}, const bool transpose,
+ u::Vector{Float64}, var::Vector{Float64}, bool got_j, const void *)
+int hessprod(int n, int m, var::Vector{Float64}, const real_wp_ y[],
+  u::Vector{Float64}, var::Vector{Float64}, bool got_h, const void *)
+int rhessprods(int n, int m, int pne, var::Vector{Float64}, var::Vector{Float64},
+real_wp_ pval[], bool got_h, const void *)
+int scale(int n, int m, var::Vector{Float64}, u::Vector{Float64},
+   var::Vector{Float64}, const void *)
+int jac_dense(int n, int m, int jne, var::Vector{Float64}, real_wp_ jval[],
+   const void *)
+int hess_dense(int n, int m, int hne, var::Vector{Float64}, const real_wp_ y[],
+hval::Vector{Float64}, const void *)
+int rhessprods_dense(int n, int m, int pne, var::Vector{Float64},
+  var::Vector{Float64}, real_wp_ pval[], bool got_h,
+  const void *)
+
 # test_bnls.jl
 # Simple code to test the Julia interface to BNLS
 
@@ -6,453 +49,607 @@ using Test
 using Printf
 using Accessors
 
-# Custom userdata struct
-struct userdata_bnls
-  p::Float64
-end
-
 function test_bnls()
-  # compute the residuals
-  function res(n::Int, m::Int, x::Vector{Float64}, c::Vector{Float64},
-               userdata::userdata_bnls)
-    c[1] = x[1]^2 + userdata.p
-    c[2] = x[1] + x[2]^2
-    c[3] = x[1] - x[2]
-    return 0
+# Derived types
+data = Ref{Ptr{Cvoid}}()
+control = Ref{bnls_control_type{Float64}}()
+inform = Ref{bnls_inform_type{Float64}}()
+
+# Set user data
+struct userdata_type userdata
+userdata.p = 1.0
+
+# Set problem data
+n = 2 # # variables
+m = 3 # # residuals
+j_ne = 5 # Jacobian elements
+h_ne = 2 # Hesssian elements
+p_ne = 2 # residual-Hessians-vector products elements
+J_row = Cint[1, 2, 2, 3, 3]  # Jacobian J
+J_col = Cint[1, 1, 2, 1, 2]  #
+J_ptr = Cint[1, 2, 4, 6]  # row pointers
+H_row = Cint[1, 2]  # Hessian H
+H_col = Cint[1, 2]  # NB lower triangle
+H_ptr = Cint[1, 2, 3]  # row pointers
+P_row = Cint[1, 2]  # residual-Hessians-vector product matrix
+P_ptr = Cint[1, 2, 3, 3]  # column pointers
+
+# Set storage
+g = zeros(Float64, n) # gradient
+c = zeros(Float64, m) # residual
+real_wp_ y[m] # multipliers
+st = ' ' = ' '
+status = Ref{Cint}()
+
+@printf(" Fortran sparse matrix indexing\n\n")
+
+@printf(" tests options for all-in-one storage format\n\n")
+
+for d = 1:5
+#  for(int d=5 d <= 5 d++)
+
+# Initialize BNLS
+bnls_initialize(data, control, inform)
+
+# Set user-defined control options
+control[].f_indexing = true # Fortran sparse matrix indexing
+# control[].print_level = 1
+control[].jacobian_available = 2
+control[].hessian_available = 2
+control[].model = 6
+x = Float64[1.5,1.5]  # starting point
+W = Float64[1.0, 1.0, 1.0]  # weights
+
+# sparse co-ordinate storage
+if d == 1
+st = 'C'
+bnls_import(control, data, status, n, m,
+"coordinate", j_ne, J_row, J_col, C_NULL,
+"coordinate", h_ne, H_row, H_col, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_solve_with_mat(data, userdata, status,
+n, m, x, c, g, res, j_ne, jac,
+h_ne, hess, p_ne, rhessprods)
+end
+# sparse by rows
+if d == 2
+st = 'R'
+bnls_import(control, data, status, n, m,
+"sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+"sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_solve_with_mat(data, userdata, status,
+n, m, x, c, g, res, j_ne, jac,
+h_ne, hess, p_ne, rhessprods)
+end
+# dense
+if d == 3
+st = 'D'
+bnls_import(control, data, status, n, m,
+"dense", j_ne, C_NULL, C_NULL, C_NULL,
+"dense", h_ne, C_NULL, C_NULL, C_NULL,
+"dense", p_ne, C_NULL, C_NULL, C_NULL, W)
+bnls_solve_with_mat(data, userdata, status,
+n, m, x, c, g, res, j_ne, jac_dense,
+h_ne, hess_dense, p_ne, rhessprods_dense)
+end
+# diagonal
+if d == 4
+st = 'I'
+bnls_import(control, data, status, n, m,
+"sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+"diagonal", h_ne, C_NULL, C_NULL, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_solve_with_mat(data, userdata, status,
+n, m, x, c, g, res, j_ne, jac,
+h_ne, hess, p_ne, rhessprods)
+end
+case 5: # access by products
+st = 'P'
+bnls_import(control, data, status, n, m,
+"absent", j_ne, C_NULL, C_NULL, C_NULL,
+"absent", h_ne, C_NULL, C_NULL, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_solve_without_mat(data, userdata, status,
+   n, m, x, c, g, res, jacprod,
+   hessprod, p_ne, rhessprods)
+end
+]
+
+bnls_information(data, inform, status)
+
+if inform[].status == 0
+@printf("%c:%6i iterations. Optimal objective value = %5.2f"
+   " status = %1i\n",
+   st, inform[].iter, inform[].obj, inform[].status)
+else
+@printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
+
+# Delete internal workspace
+bnls_terminate(data, control, inform)
+@printf("\n tests reverse-communication options\n\n")
+
+# reverse-communication input/output
+int eval_status
+real_wp_ u[imax(m,n)], v[imax(m,n)]
+real_wp_ J_val[j_ne], J_dense[m*n]
+real_wp_ H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n]
+real_wp_ P_val[p_ne], P_dense[m*n]
+bool transpose
+bool got_j = false
+bool got_h = false
+
+for d = 1:5
+#  for(int d=1 d <= 4 d++)
+
+# Initialize BNLS
+bnls_initialize(data, control, inform)
+
+# Set user-defined control options
+control[].f_indexing = true # Fortran sparse matrix indexing
+#control[].print_level = 1
+control[].jacobian_available = 2
+control[].hessian_available = 2
+control[].model = 6
+x = Float64[1.5,1.5]  # starting point
+W = Float64[1.0, 1.0, 1.0]  # weights
+
+# sparse co-ordinate storage
+if d == 1
+st = 'C'
+bnls_import(control, data, status, n, m,
+"coordinate", j_ne, J_row, J_col, C_NULL,
+"coordinate", h_ne, H_row, H_col, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_with_mat(data, status, eval_status,
+  n, m, x, c, g, j_ne, J_val, y,
+  h_ne, H_val, v, p_ne, P_val)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
-
-  # compute the Jacobian
-  function jac(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64},
-               userdata::userdata_bnls)
-    jval[1] = 2.0 * x[1]
-    jval[2] = 1.0
-    jval[3] = 2.0 * x[2]
-    jval[4] = 1.0
-    jval[5] = -1.0
-    return 0
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 3) # evaluate J
+  eval_status = jac(n, m, j_ne, x, J_val, userdata)
+  elseif status == 4) # evaluate H
+  eval_status = hess(n, m, h_ne, x, y, H_val, userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods(n, m, p_ne, x, v, P_val,
+got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
   end
-
-  # compute the Hessian
-  function hess(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64},
-                hval::Vector{Float64}, userdata::userdata_bnls)
-    hval[1] = 2.0 * y[1]
-    hval[2] = 2.0 * y[2]
-    return 0
+ ]
+]
+end
+# sparse by rows
+if d == 2
+st = 'R'
+bnls_import(control, data, status, n, m,
+"sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+"sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_with_mat(data, status, eval_status,
+  n, m, x, c, g, j_ne, J_val, y,
+  h_ne, H_val, v, p_ne, P_val)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
-
-  # compute Jacobian-vector products
-  function jacprod(n::Int, m::Int, x::Vector{Float64}, trans::Bool, u::Vector{Float64},
-                   v::Vector{Float64}, got_j::Bool, userdata::userdata_bnls)
-    if trans
-      u[1] = u[1] + 2.0 * x[1] * v[1] + v[2] + v[3]
-      u[2] = u[2] + 2.0 * x[2] * v[2] - v[3]
-    else
-      u[1] = u[1] + 2.0 * x[1] * v[1]
-      u[2] = u[2] + v[1] + 2.0 * x[2] * v[2]
-      u[3] = u[3] + v[1] - v[2]
-    end
-    return 0
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 3) # evaluate J
+  eval_status = jac(n, m, j_ne, x, J_val, userdata)
+  elseif status == 4) # evaluate H
+  eval_status = hess(n, m, h_ne, x, y, H_val, userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods(n, m, p_ne, x, v, P_val,
+got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
   end
-
-  # compute Hessian-vector products
-  function hessprod(n::Int, m::Int, x::Vector{Float64}, y::Vector{Float64},
-                    u::Vector{Float64}, v::Vector{Float64}, got_h::Bool,
-                    userdata::userdata_bnls)
-    u[1] = u[1] + 2.0 * y[1] * v[1]
-    u[2] = u[2] + 2.0 * y[2] * v[2]
-    return 0
+ ]
+]
+end
+# dense
+if d == 3
+st = 'D'
+bnls_import(control, data, status, n, m,
+"dense", j_ne, C_NULL, C_NULL, C_NULL,
+"dense", h_ne, C_NULL, C_NULL, C_NULL,
+"dense", p_ne, C_NULL, C_NULL, C_NULL, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_with_mat(data, status, eval_status,
+  n, m, x, c, g, m*n, J_dense, y,
+  n*(n+1)/2, H_dense, v, m*n,
+  P_dense)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
-
-  # compute residual-Hessians-vector products
-  function rhessprods(n::Int, m::Int, pne::Int, x::Vector{Float64}, v::Vector{Float64},
-                      pval::Vector{Float64}, got_h::Bool, userdata::userdata_bnls)
-    pval[1] = 2.0 * v[1]
-    pval[2] = 2.0 * v[2]
-    return 0
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 3) # evaluate J
+  eval_status = jac_dense(n, m, j_ne, x, J_dense,
+   userdata)
+  elseif status == 4) # evaluate H
+  eval_status = hess_dense(n, m, h_ne, x, y, H_dense,
+userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods_dense(n, m, p_ne, x, v, P_dense,
+  got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
   end
-
-  # # scale v
-  function scale(n::Int, m::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
-                 userdata::userdata_bnls)
-    u[1] = v[1]
-    u[2] = v[2]
-    return 0
+ ]
+]
+end
+# diagonal
+if d == 4
+st = 'I'
+bnls_import(control, data, status, n, m,
+"sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+"diagonal", h_ne, C_NULL, C_NULL, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_with_mat(data, status, eval_status,
+  n, m, x, c, g, j_ne, J_val, y,
+  n, H_diag, v, p_ne, P_val)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
-
-  # compute the dense Jacobian
-  function jac_dense(n::Int, m::Int, jne::Int, x::Vector{Float64}, jval::Vector{Float64},
-                     userdata::userdata_bnls)
-    jval[1] = 2.0 * x[1]
-    jval[2] = 0.0
-    jval[3] = 1.0
-    jval[4] = 2.0 * x[2]
-    jval[5] = 1.0
-    jval[6] = -1.0
-    return 0
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 3) # evaluate J
+  eval_status = jac(n, m, j_ne, x, J_val, userdata)
+  elseif status == 4) # evaluate H
+  eval_status = hess(n, m, h_ne, x, y, H_diag, userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods(n, m, p_ne, x, v, P_val,
+got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
   end
-
-  # compute the dense Hessian
-  function hess_dense(n::Int, m::Int, hne::Int, x::Vector{Float64}, y::Vector{Float64},
-                      hval::Vector{Float64}, userdata::userdata_bnls)
-    hval[1] = 2.0 * y[1]
-    hval[2] = 0.0
-    hval[3] = 2.0 * y[2]
-    return 0
+ ]
+]
+end
+case 5: # access by products
+st = 'P'
+#  control[].print_level = 1
+bnls_import(control, data, status, n, m,
+"absent", j_ne, C_NULL, C_NULL, C_NULL,
+"absent", h_ne, C_NULL, C_NULL, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_without_mat(data, status, eval_status,
+ n, m, x, c, g, transpose,
+ u, v, y, p_ne, P_val)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
-
-  # compute dense residual-Hessians-vector products
-  function rhessprods_dense(n::Int, m::Int, pne::Int, x::Vector{Float64},
-                            v::Vector{Float64}, pval::Vector{Float64}, got_h::Bool,
-                            userdata::userdata_bnls)
-    pval[1] = 2.0 * v[1]
-    pval[2] = 0.0
-    pval[3] = 0.0
-    pval[4] = 2.0 * v[2]
-    pval[5] = 0.0
-    pval[6] = 0.0
-    return 0
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 5) # evaluate u + J v or u + J'v
+  eval_status = jacprod(n, m, x, transpose, u, v, got_j,
+ userdata)
+  elseif status == 6) # evaluate u + H v
+  eval_status = hessprod(n, m, x, y, u, v, got_h,
+  userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods(n, m, p_ne, x, v, P_val,
+got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
   end
+ ]
+]
+end
+]
 
-  # Derived types
-  data = Ref{Ptr{Cvoid}}()
-  control = Ref{bnls_control_type{Float64}}()
-  inform = Ref{bnls_inform_type{Float64}}()
+bnls_information(data, inform, status)
 
-  # Set user data
-  userdata = userdata_bnls(1.0)
+if inform[].status == 0
+@printf("%c:%6i iterations. Optimal objective value = %5.2f"
+   " status = %1i\n",
+   st, inform[].iter, inform[].obj, inform[].status)
+else
+@printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
 
-  # Set problem data
-  n = 2 # # variables
-  m = 3 # # residuals
-  j_ne = 5 # Jacobian elements
-  h_ne = 2 # Hesssian elements
-  p_ne = 2 # residual-Hessians-vector products elements
-  J_row = Cint[1, 2, 2, 3, 3]  # Jacobian J
-  J_col = Cint[1, 1, 2, 1, 2]  #
-  J_ptr = Cint[1, 2, 4, 6]  # row pointers
-  H_row = Cint[1, 2]  # Hessian H
-  H_col = Cint[1, 2]  # NB lower triangle
-  H_ptr = Cint[1, 2, 3]  # row pointers
-  P_row = Cint[1, 2]  # residual-Hessians-vector product matrix
-  P_ptr = Cint[1, 2, 3, 3]  # column pointers
+# Delete internal workspace
+bnls_terminate(data, control, inform)
+@printf("\n basic tests of models used, direct access\n\n")
 
-  # Set storage
-  g = zeros(Float64, n) # gradient
-  c = zeros(Float64, m) # residual
-  y = zeros(Float64, m) # multipliers
-  W = Float64[1.0, 1.0, 1.0]  # weights
-  st = ' '
-  status = Ref{Cint}()
+for(int model=3 model <= 8 model++)
 
-  @printf(" Fortran sparse matrix indexing\n\n")
-  @printf(" tests reverse-communication options\n\n")
+# Initialize BNLS
+bnls_initialize(data, control, inform)
 
-  # reverse-communication input/output
-  eval_status = Ref{Cint}()
-  u = zeros(Float64, max(m, n))
-  v = zeros(Float64, max(m, n))
-  J_val = zeros(Float64, j_ne)
-  J_dense = zeros(Float64, m * n)
-  H_val = zeros(Float64, h_ne)
-  H_dense = zeros(Float64, div(n * (n + 1), 2))
-  H_diag = zeros(Float64, n)
-  P_val = zeros(Float64, p_ne)
-  P_dense = zeros(Float64, m * n)
-  trans = Ref{Bool}()
-  got_j = false
-  got_h = false
+# Set user-defined control options
+control[].f_indexing = true # Fortran sparse matrix indexing
+#control[].print_level = 1
+control[].jacobian_available = 2
+control[].hessian_available = 2
+control[].model = model
+x = Float64[1.5,1.5]  # starting point
+W = Float64[1.0, 1.0, 1.0]  # weights
 
-  for d in 1:5
-    # Initialize BNLS
-    bnls_initialize(data, control, inform)
+bnls_import(control, data, status, n, m,
+"sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+"sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_solve_with_mat(data, userdata, status,
+n, m, x, c, g, res, j_ne, jac,
+h_ne, hess, p_ne, rhessprods)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    # @reset control[].print_level = Cint(1)
-    @reset control[].jacobian_available = Cint(2)
-    @reset control[].hessian_available = Cint(2)
-    @reset control[].model = Cint(6)
-    x = Float64[1.5, 1.5]  # starting point
-    W = Float64[1.0, 1.0, 1.0]  # weights
+bnls_information(data, inform, status)
 
-    # sparse co-ordinate storage
-    if d == 1
-      st = 'C'
-      bnls_import(control, data, status, n, m,
-                 "coordinate", j_ne, J_row, J_col, C_NULL,
-                 "coordinate", h_ne, H_row, H_col, C_NULL,
-                 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_with_mat(data, status, eval_status,
-                                   n, m, x, c, g, j_ne, J_val, y,
-                                   h_ne, H_val, v, p_ne, P_val)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate c
-          eval_status[] = res(n, m, x, c, userdata)
-        elseif status[] == 3 # evaluate J
-          eval_status[] = jac(n, m, j_ne, x, J_val, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess(n, m, h_ne, x, y, H_val, userdata)
-        elseif status[] == 7 # evaluate P
-          eval_status[] = rhessprods(n, m, p_ne, x, v, P_val, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-    end
+if inform[].status == 0
+@printf(" %1i:%6" i_int 
+   " iterations. Optimal objective value = %5.2f"
+   " status = %1i\n",
+   model, inform[].iter, inform[].obj, inform[].status)
+else
+@printf(" %i: BNLS_solve exit status = %1" i_int 
+   "\n", model, inform[].status)
 
-    # sparse by rows
-    if d == 2
-      st = 'R'
-      bnls_import(control, data, status, n, m,
-                 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                 "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
-                 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+# Delete internal workspace
+bnls_terminate(data, control, inform)
+@printf("\n basic tests of models used, access by products\n\n")
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_with_mat(data, status, eval_status,
-                                   n, m, x, c, g, j_ne, J_val, y,
-                                   h_ne, H_val, v, p_ne, P_val)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate c
-          eval_status[] = res(n, m, x, c, userdata)
-        elseif status[] == 3 # evaluate J
-          eval_status[] = jac(n, m, j_ne, x, J_val, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess(n, m, h_ne, x, y, H_val, userdata)
-        elseif status[] == 7 # evaluate P
-          eval_status[] = rhessprods(n, m, p_ne, x, v, P_val, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-    end
+for(int model=3 model <= 8 model++)
 
-    # dense
-    if d == 3
-      st = 'D'
-      bnls_import(control, data, status, n, m,
-                 "dense", j_ne, C_NULL, C_NULL, C_NULL,
-                 "dense", h_ne, C_NULL, C_NULL, C_NULL,
-                 "dense", p_ne, C_NULL, C_NULL, C_NULL, W)
+# Initialize BNLS
+bnls_initialize(data, control, inform)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_with_mat(data, status, eval_status,
-                                   n, m, x, c, g, m * n, J_dense, y,
-                                   n * (n + 1) / 2, H_dense, v, m * n,
-                                   P_dense)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate c
-          eval_status[] = res(n, m, x, c, userdata)
-        elseif status[] == 3 # evaluate J
-          eval_status[] = jac_dense(n, m, j_ne, x, J_dense, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess_dense(n, m, h_ne, x, y, H_dense, userdata)
-        elseif status[] == 7 # evaluate P
-          eval_status[] = rhessprods_dense(n, m, p_ne, x, v, P_dense, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-    end
+# Set user-defined control options
+control[].f_indexing = true # Fortran sparse matrix indexing
+#control[].print_level = 1
+control[].jacobian_available = 2
+control[].hessian_available = 2
+control[].model = model
+x = Float64[1.5,1.5]  # starting point
+W = Float64[1.0, 1.0, 1.0]  # weights
 
-    # diagonal
-    if d == 4
-      st = 'I'
-      bnls_import(control, data, status, n, m,
-                 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-                 "diagonal", h_ne, C_NULL, C_NULL, C_NULL,
-                 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_import(control, data, status, n, m,
+"absent", j_ne, C_NULL, C_NULL, C_NULL,
+"absent", h_ne, C_NULL, C_NULL, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+bnls_solve_without_mat(data, userdata, status,
+   n, m, x, c, g, res, jacprod,
+   hessprod, p_ne, rhessprods)
+bnls_information(data, inform, status)
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_with_mat(data, status, eval_status,
-                                   n, m, x, c, g, j_ne, J_val, y,
-                                   n, H_diag, v, p_ne, P_val)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate c
-          eval_status[] = res(n, m, x, c, userdata)
-        elseif status[] == 3 # evaluate J
-          eval_status[] = jac(n, m, j_ne, x, J_val, userdata)
-        elseif status[] == 4 # evaluate H
-          eval_status[] = hess(n, m, h_ne, x, y, H_diag, userdata)
-        elseif status[] == 7 # evaluate P
-          eval_status[] = rhessprods(n, m, p_ne, x, v, P_val, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-    end
+if inform[].status == 0
+@printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
+   " status = %1i\n",
+   model, inform[].iter, inform[].obj, inform[].status)
+else
+@printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
 
-    # access by products
-    if d == 5
-      st = 'P'
-      # @reset control[].print_level = Cint(1)
-      bnls_import(control, data, status, n, m,
-                 "absent", j_ne, C_NULL, C_NULL, C_NULL,
-                 "absent", h_ne, C_NULL, C_NULL, C_NULL,
-                 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+# Delete internal workspace
+bnls_terminate(data, control, inform)
+@printf("\n basic tests of models used, reverse access\n\n")
 
-      terminated = false
-      while !terminated # reverse-communication loop
-        bnls_solve_reverse_without_mat(data, status, eval_status,
-                                      n, m, x, c, g, trans,
-                                      u, v, y, p_ne, P_val)
-        if status[] == 0 # successful termination
-          terminated = true
-        elseif status[] < 0 # error exit
-          terminated = true
-        elseif status[] == 2 # evaluate c
-          eval_status[] = res(n, m, x, c, userdata)
-        elseif status[] == 5 # evaluate u + J v or u + J'v
-          eval_status[] = jacprod(n, m, x, trans[], u, v, got_j, userdata)
-        elseif status[] == 6 # evaluate u + H v
-          eval_status[] = hessprod(n, m, x, y, u, v, got_h, userdata)
-        elseif status[] == 7 # evaluate P
-          eval_status[] = rhessprods(n, m, p_ne, x, v, P_val, got_h, userdata)
-        else
-          @printf(" the value %1i of status should not occur\n", status)
-        end
-      end
-    end
+for(int model=3 model <= 8 model++)
 
-    bnls_information(data, inform, status)
+# Initialize BNLS
+bnls_initialize(data, control, inform)
 
-    if inform[].status == 0
-      @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              st, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
-    end
+# Set user-defined control options
+control[].f_indexing = true # Fortran sparse matrix indexing
+#control[].print_level = 1
+control[].jacobian_available = 2
+control[].hessian_available = 2
+control[].model = model
+x = Float64[1.5,1.5]  # starting point
+W = Float64[1.0, 1.0, 1.0]  # weights
 
-    # Delete internal workspace
-    bnls_terminate(data, control, inform)
+bnls_import(control, data, status, n, m,
+"sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
+"sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_with_mat(data, status, eval_status,
+  n, m, x, c, g, j_ne, J_val, y,
+  h_ne, H_val, v, p_ne, P_val)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
-
-  @printf("\n basic tests of models used, reverse access\n\n")
-  for model in 3:8
-    # Initialize BNLS
-    bnls_initialize(data, control, inform)
-
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    # @reset control[].print_level = Cint(1)
-    @reset control[].jacobian_available = Cint(2)
-    @reset control[].hessian_available = Cint(2)
-    @reset control[].model = Cint(model)
-    x = Float64[1.5, 1.5]  # starting point
-    W = Float64[1.0, 1.0, 1.0]  # weights
-
-    bnls_import(control, data, status, n, m,
-               "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
-               "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
-               "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-
-    terminated = false
-    while !terminated # reverse-communication loop
-      bnls_solve_reverse_with_mat(data, status, eval_status,
-                                 n, m, x, c, g, j_ne, J_val, y,
-                                 h_ne, H_val, v, p_ne, P_val)
-      if status[] == 0 # successful termination
-        terminated = true
-      elseif status[] < 0 # error exit
-        terminated = true
-      elseif status[] == 2 # evaluate c
-        eval_status[] = res(n, m, x, c, userdata)
-      elseif status[] == 3 # evaluate J
-        eval_status[] = jac(n, m, j_ne, x, J_val, userdata)
-      elseif status[] == 4 # evaluate H
-        eval_status[] = hess(n, m, h_ne, x, y, H_val, userdata)
-      elseif status[] == 7 # evaluate P
-        eval_status[] = rhessprods(n, m, p_ne, x, v, P_val, got_h, userdata)
-      else
-        @printf(" the value %1i of status should not occur\n", status)
-      end
-    end
-
-    bnls_information(data, inform, status)
-
-    if inform[].status == 0
-      @printf("P%1i:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              model, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf(" %i: BNLS_solve exit status = %1i\n", model, inform[].status)
-    end
-
-    # Delete internal workspace
-    bnls_terminate(data, control, inform)
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 3) # evaluate J
+  eval_status = jac(n, m, j_ne, x, J_val, userdata)
+  elseif status == 4) # evaluate H
+  eval_status = hess(n, m, h_ne, x, y, H_val, userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods(n, m, p_ne, x, v, P_val,
+got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
   end
+ ]
+]
 
-  @printf("\n basic tests of models used, reverse access by products\n\n")
-  for model in 3:8
-    # Initialize BNLS
-    bnls_initialize(data, control, inform)
+bnls_information(data, inform, status)
 
-    # Set user-defined control options
-    @reset control[].f_indexing = true # Fortran sparse matrix indexing
-    # @reset control[].print_level = 1
-    @reset control[].jacobian_available = Cint(2)
-    @reset control[].hessian_available = Cint(2)
-    @reset control[].model = Cint(model)
-    x = Float64[1.5, 1.5]  # starting point
-    W = Float64[1.0, 1.0, 1.0]  # weights
+if inform[].status == 0
+@printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
+   " status = %1i\n",
+   model, inform[].iter, inform[].obj, inform[].status)
+else
+@printf(" %i: BNLS_solve exit status = %1i\n", model, inform[].status)
 
-    bnls_import(control, data, status, n, m,
-               "absent", j_ne, C_NULL, C_NULL, C_NULL,
-               "absent", h_ne, C_NULL, C_NULL, C_NULL,
-               "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+# Delete internal workspace
+bnls_terminate(data, control, inform)
+@printf("\n basic tests of models used, reverse access by products\n\n")
 
-    terminated = false
-    while !terminated # reverse-communication loop
-      bnls_solve_reverse_without_mat(data, status, eval_status,
-                                    n, m, x, c, g, trans,
-                                    u, v, y, p_ne, P_val)
-      if status[] == 0 # successful termination
-        terminated = true
-      elseif status[] < 0 # error exit
-        terminated = true
-      elseif status[] == 2 # evaluate c
-        eval_status[] = res(n, m, x, c, userdata)
-      elseif status[] == 5 # evaluate u + J v or u + J'v
-        eval_status[] = jacprod(n, m, x, trans[], u, v, got_j, userdata)
-      elseif status[] == 6 # evaluate u + H v
-        eval_status[] = hessprod(n, m, x, y, u, v, got_h, userdata)
-      elseif status[] == 7 # evaluate P
-        eval_status[] = rhessprods(n, m, p_ne, x, v, P_val, got_h, userdata)
-      else
-        @printf(" the value %1i of status should not occur\n", status)
-      end
-    end
+for(int model=3 model <= 8 model++)
 
-    bnls_information(data, inform, status)
+# Initialize BNLS
+bnls_initialize(data, control, inform)
 
-    if inform[].status == 0
-      @printf("P%1i:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
-              model, inform[].iter, inform[].obj, inform[].status)
-    else
-      @printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
-    end
+# Set user-defined control options
+control[].f_indexing = true # Fortran sparse matrix indexing
+#control[].print_level = 1
+control[].jacobian_available = 2
+control[].hessian_available = 2
+control[].model = model
+x = Float64[1.5,1.5]  # starting point
+W = Float64[1.0, 1.0, 1.0]  # weights
 
-    # Delete internal workspace
-    bnls_terminate(data, control, inform)
+bnls_import(control, data, status, n, m,
+"absent", j_ne, C_NULL, C_NULL, C_NULL,
+"absent", h_ne, C_NULL, C_NULL, C_NULL,
+"sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
+while true # reverse-communication loop
+  bnls_solve_reverse_without_mat(data, status, eval_status,
+ n, m, x, c, g, transpose,
+ u, v, y, p_ne, P_val)
+  if status == 0 # successful termination
+end
+  elseif status < 0) # error exit
   end
+  elseif status == 2) # evaluate c
+  eval_status = res(n, m, x, c, userdata)
+  elseif status == 5) # evaluate u + J v or u + J'v
+  eval_status = jacprod(n, m, x, transpose, u, v, got_j,
+ userdata)
+  elseif status == 6) # evaluate u + H v
+  eval_status = hessprod(n, m, x, y, u, v, got_h,
+  userdata)
+  elseif status == 7) # evaluate P
+  eval_status = rhessprods(n, m, p_ne, x, v, P_val,
+got_h, userdata)
+  else
+  @printf(" the value %1i of status should not occur\n",
+status)
+  end
+ ]
+]
 
-  return 0
+bnls_information(data, inform, status)
+
+if inform[].status == 0
+@printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
+   " status = %1i\n",
+   model, inform[].iter, inform[].obj, inform[].status)
+else
+@printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
+
+# Delete internal workspace
+bnls_terminate(data, control, inform)
+# compute the residuals
+int res(int n, int m, var::Vector{Float64}, real_wp_ c[], const void *userdata)
+struct userdata_type *myuserdata = (struct userdata_type *) userdata
+real_wp_ p = myuserdata->p
+c[0] = pow(x[0],2.0) + p
+c[1] = x[0] + pow(x[1],2.0)
+c[2] = x[0] - x[1]
+return 0
+]
+
+# compute the Jacobian
+int jac(int n, int m, int jne, var::Vector{Float64}, real_wp_ jval[],
+ const void *userdata)
+jval[0] = 2.0 * x[0]
+jval[1] = 1.0
+jval[2] = 2.0 * x[1]
+jval[3] = 1.0
+jval[4] = - 1.0
+return 0
+]
+
+# compute the Hessian
+int hess(int n, int m, int hne, var::Vector{Float64}, const real_wp_ y[],
+   hval::Vector{Float64}, const void *userdata)
+hval[0] = 2.0 * y[0]
+hval[1] = 2.0 * y[1]
+return 0
+]
+
+# compute Jacobian-vector products
+int jacprod(int n, int m, var::Vector{Float64}, const bool transpose, u::Vector{Float64},
+ var::Vector{Float64}, bool got_j, const void *userdata)
+if (transpose) {
+  u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2]
+  u[1] = u[1] + 2.0 * x[1] * v[1] - v[2]
+else
+  u[0] = u[0] + 2.0 * x[0] * v[0]
+  u[1] = u[1] + v[0]  + 2.0 * x[1] * v[1]
+  u[2] = u[2] + v[0] - v[1]
+]
+return 0
+]
+
+# compute Hessian-vector products
+int hessprod(int n, int m, var::Vector{Float64}, const real_wp_ y[], u::Vector{Float64},
+  var::Vector{Float64}, bool got_h, const void *userdata)
+u[0] = u[0] + 2.0 * y[0] * v[0]
+u[1] = u[1] + 2.0 * y[1] * v[1]
+return 0
+]
+
+# compute residual-Hessians-vector products
+int rhessprods(int n, int m, int pne, var::Vector{Float64}, var::Vector{Float64},
+real_wp_ pval[], bool got_h, const void *userdata)
+pval[0] = 2.0 * v[0]
+pval[1] = 2.0 * v[1]
+return 0
+]
+
+# scale v
+int scale(int n, int m, var::Vector{Float64}, u::Vector{Float64},
+   var::Vector{Float64}, const void *userdata)
+u[0] = v[0]
+u[1] = v[1]
+return 0
+]
+
+# compute the dense Jacobian
+int jac_dense(int n, int m, int jne, var::Vector{Float64}, real_wp_ jval[],
+   const void *userdata)
+jval[0] = 2.0 * x[0]
+jval[1] = 0.0
+jval[2] = 1.0
+jval[3] = 2.0 * x[1]
+jval[4] = 1.0
+jval[5] = - 1.0
+return 0
+]
+
+# compute the dense Hessian
+int hess_dense(int n, int m, int hne, var::Vector{Float64}, const real_wp_ y[],
+hval::Vector{Float64}, const void *userdata)
+hval[0] = 2.0 * y[0]
+hval[1] = 0.0
+hval[2] = 2.0 * y[1]
+return 0
+]
+
+# compute dense residual-Hessians-vector products
+int rhessprods_dense(int n, int m, int pne, var::Vector{Float64},
+  var::Vector{Float64}, real_wp_ pval[], bool got_h,
+  const void *userdata)
+pval[0] = 2.0 * v[0]
+pval[1] = 0.0
+pval[2] = 0.0
+pval[3] = 2.0 * v[1]
+pval[4] = 0.0
+pval[5] = 0.0
+return 0
+]
 end
 
 @testset "BNLS" begin

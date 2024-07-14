@@ -4,7 +4,7 @@ packages = ("arc", "bgo", "blls", "bllsb", "bqp", "bqpb", "bsc", "ccqp",
             "llsr", "llst", "lms", "lpa", "lpb", "lsqp", "lsrt", "lstr",
             "nls", "presolve", "psls", "qpa", "qpb", "roots", "rpd", "rqs",
             "sbls", "scu", "sec", "sha", "sils", "slls", "sls", "trb", "trs",
-            "tru", "ugo", "uls", "wcp")
+            "tru", "ugo", "uls", "wcp", "bnls")
 
 types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 

@@ -12,6 +12,7 @@ libgalahad_cutest_src += files('usebnls.F90')
 galahad_cutest_binaries += [['runbnls_sif', files('runbnls_sif.F90')]]
 
 galahad_tests += [['bnls', 'bnlst', files('bnlst.F90')],
+                  ['bnls', 'bnlst2', files('bnlst2.F90')],
                   ['bnls', 'bnlsti', files('bnlsti.F90')]]
 
 galahad_c_tests += [['bnls', 'bnlst_c', files('C/bnlst.c')],

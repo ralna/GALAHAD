@@ -32,6 +32,18 @@ Ref{bllsb_time_type{Float64}}()
 Ref{bllsb_inform_type{Float32}}()
 Ref{bllsb_inform_type{Float64}}()
 
+# Structures for bnls
+Ref{bnls_subproblem_control_type{Float32}}()
+Ref{bnls_subproblem_control_type{Float64}}()
+Ref{bnls_control_type{Float32}}()
+Ref{bnls_control_type{Float64}}()
+Ref{bnls_time_type{Float32}}()
+Ref{bnls_time_type{Float64}}()
+Ref{bnls_subproblem_inform_type{Float32}}()
+Ref{bnls_subproblem_inform_type{Float64}}()
+Ref{bnls_inform_type{Float32}}()
+Ref{bnls_inform_type{Float64}}()
+
 # Structures for bqp
 Ref{bqp_control_type{Float32}}()
 Ref{bqp_control_type{Float64}}()
@@ -444,4 +456,3 @@ Ref{wcp_time_type{Float32}}()
 Ref{wcp_time_type{Float64}}()
 Ref{wcp_inform_type{Float32}}()
 Ref{wcp_inform_type{Float64}}()
-
