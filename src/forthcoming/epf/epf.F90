@@ -139,9 +139,10 @@
 
        REAL ( KIND = rp_ ) :: stop_s = epsmch
 
-!   the initial value of the penalty parameter
+!   the initial value of the penalty parameter (non-positive sets automatically)
 
-       REAL ( KIND = rp_ ) :: initial_mu = point1
+!      REAL ( KIND = rp_ ) :: initial_mu = point1
+       REAL ( KIND = rp_ ) :: initial_mu = - one 
 
 !   the amount by which the penalty parameter is decreased
 
@@ -339,7 +340,7 @@
        LOGICAL :: set_printi, set_printt, set_printm, set_printw, set_printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl
        LOGICAL :: reverse_hprod, reverse_prec
-       LOGICAL :: constrained, map_h_to_jtj, no_bounds
+       LOGICAL :: constrained, map_h_to_jtj, no_bounds, header
        LOGICAL :: eval_fc, eval_gj, eval_hl, initialize_munu, update_munu
 
        CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard
@@ -996,13 +997,14 @@
        LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
 
-       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, got_h )
+       SUBROUTINE eval_HLPROD( status, X, Y, userdata, U, V, no_f, got_h )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HLPROD
 
@@ -1557,6 +1559,10 @@ stop
     data%stop_d = control%stop_abs_d
     data%stop_c = control%stop_abs_c
 
+!   IF ( data%printi .AND. data%print_iteration_header )                       &
+!      WRITE( data%out, 2010) prefix
+!   IF ( data%print_iteration_header ) data%print_1st_header = .FALSE.
+
 !  ---------------------------------------------------------
 !  1. outer iteration (set and adjust penalty function) loop
 !  ---------------------------------------------------------
@@ -1600,13 +1606,15 @@ stop
 !         data%control%GLTR_control%print_level = 0
 !         data%control%TRS_control%print_level = 0
        END IF
-       data%print_iteration_header = data%print_level > 1
+       data%print_iteration_header                                             &
+         = data%print_level > 1 .OR. data%print_1st_header
 
 !  -----------------------------------------------------------------
 !  2. start the inner-iteration (minimize the penalty function) loop
 !  -----------------------------------------------------------------
 
        inform%tru_inform%status = 1
+       inform%tru_inform%iter = 0
  200   CONTINUE
 
 !  solve the problem using a trust-region method
@@ -1715,71 +1723,76 @@ stop
            IF ( data%initialize_munu ) THEN
              data%initialize_munu = .FALSE.
 
+!  initialize the penalty parameters to equilibrate the constraints 
+
+             IF ( control%initial_mu <= zero ) THEN
+
 !  for the simple bound constraints
 
-             DO j = 1, nlp%n
-               IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-                 data%NU_l( j ) = MAX( one, ( nlp%X_l( j ) - data%epf%X( j ) ) )
-               ELSE
-                 data%NU_l( j ) = zero
-               END IF
-               IF ( nlp%X_u( j ) <= control%infinity ) THEN
-                 data%NU_u( j ) = MAX( one, ( nlp%X_u( j ) - data%epf%X( j ) ) )
-               ELSE
-                 data%NU_u( j ) = zero
-               END IF
-             END DO
+               DO j = 1, nlp%n
+                 IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+                   data%NU_l( j )                                              &
+                     = MAX( one, ( nlp%X_l( j ) - data%epf%X( j ) ) )
+                 ELSE
+                   data%NU_l( j ) = zero
+                 END IF
+                 IF ( nlp%X_u( j ) <= control%infinity ) THEN
+                   data%NU_u( j )                                              &
+                     = MAX( one, ( nlp%X_u( j ) - data%epf%X( j ) ) )
+                 ELSE
+                   data%NU_u( j ) = zero
+                 END IF
+               END DO
 
 !  for the general constraints
 
-             DO i = 1, nlp%m
-               IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-                 data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
-               ELSE
-                 data%MU_l( i ) = zero
-               END IF
-               IF ( nlp%C_u( i ) <= control%infinity ) THEN
-                 data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
-               ELSE
-                 data%MU_u( i ) = zero
-               END IF
-             END DO
+               DO i = 1, nlp%m
+                 IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+                   data%MU_l( i ) = MAX( one, ABS( nlp%C_l( i ) - nlp%C( i ) ) )
+                 ELSE
+                   data%MU_l( i ) = zero
+                 END IF
+                 IF ( nlp%C_u( i ) <= control%infinity ) THEN
+                   data%MU_u( i ) = MAX( one, ABS( nlp%C_u( i ) - nlp%C( i ) ) )
+                 ELSE
+                   data%MU_u( i ) = zero
+                 END IF
+               END DO
 
 !  initialize the penalty parameters to the default value
 
-           ELSE
+             ELSE
 
 !  for the simple bound constraints
 
-             DO j = 1, nlp%n
-               IF ( nlp%X_l( j ) >= - control%infinity ) THEN
-                 data%NU_l( j ) = control%initial_mu
-               ELSE
-                 data%NU_l( j ) = zero
-               END IF
-               IF ( nlp%X_u( j ) <= control%infinity ) THEN
-                 data%NU_u( j ) = control%initial_mu
-               ELSE
-                 data%NU_u( j ) = zero
-               END IF
-             END DO
+               DO j = 1, nlp%n
+                 IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+                   data%NU_l( j ) = control%initial_mu
+                 ELSE
+                   data%NU_l( j ) = zero
+                 END IF
+                 IF ( nlp%X_u( j ) <= control%infinity ) THEN
+                   data%NU_u( j ) = control%initial_mu
+                 ELSE
+                   data%NU_u( j ) = zero
+                 END IF
+               END DO
 
 !  for the general constraints
 
-             DO i = 1, nlp%m
-               IF ( nlp%C_l( i ) >= - control%infinity ) THEN
-                 data%MU_l( i ) = control%initial_mu
-               ELSE
-                 data%MU_l( i ) = zero
-               END IF
-               IF ( nlp%C_u( i ) <= control%infinity ) THEN
-                 data%MU_u( i ) = control%initial_mu
-               ELSE
-                 data%MU_u( i ) = zero
-               END IF
-             END DO
-
-
+               DO i = 1, nlp%m
+                 IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+                   data%MU_l( i ) = control%initial_mu
+                 ELSE
+                   data%MU_l( i ) = zero
+                 END IF
+                 IF ( nlp%C_u( i ) <= control%infinity ) THEN
+                   data%MU_u( i ) = control%initial_mu
+                 ELSE
+                   data%MU_u( i ) = zero
+                 END IF
+               END DO
+             END IF
            END IF
 
 !  compute the individual and combined dual-variable
@@ -1970,11 +1983,6 @@ stop
        inform%dual_infeasibility                                               &
          = TWO_NORM( nlp%X( : nlp%n ) - data%W( : nlp%n ) )
 
-        IF ( data%printi ) WRITE ( data%out,                                   &
-              "( A, ' Current objective value = ', ES22.14,                    &
-       &      /, A, ' Current gradient norm   = ', ES12.4, / )" )              &
-          prefix, inform%obj, prefix, inform%dual_infeasibility
-
 !  update the Lagrange multipliers and dual variables
 
 !  for the dual variables:
@@ -1999,11 +2007,27 @@ stop
                 EPF_complementarity( nlp%m, nlp%C, nlp%C_l, nlp%C_u,           &
                                      data%Y_l, data%Y_u, control%infinity ) )
 
-        WRITE( 6, "( ' primal infeasibility = ', ES12.4, /,                    &
-       &             ' dual infeasibility   = ', ES12.4, /,                    &
-       &             ' complementarity      = ', ES12.4 )" )                   &
-         inform%primal_infeasibility, inform%dual_infeasibility,               &
-         inform%complementary_slackness
+!  if required, print details of the latest major iteration
+
+       IF ( data%printi .AND. data%print_iteration_header )                    &
+          WRITE( data%out, 2010) prefix
+       IF ( data%print_iteration_header ) data%print_1st_header = .FALSE.
+
+       IF ( data%printi ) WRITE( data%out, "( A, I6, ES16.8, 3ES9.1, I6 )" )   &
+         prefix, inform%iter, inform%obj, inform%primal_infeasibility,         &
+         inform%dual_infeasibility, inform%complementary_slackness,            &
+         inform%tru_inform%iter
+
+       IF ( data%printm )                                                      &
+         WRITE( data%out, "( ' objective value      = ', ES22.14, /,           &
+        &                    ' current gradient     = ', ES12.4, /,            &
+        &                    ' primal infeasibility = ', ES12.4, /,            &
+        &                    ' dual infeasibility   = ', ES12.4, /,            &
+        &                    ' complementarity      = ', ES12.4 )" )           &
+            prefix, inform%obj, prefix, inform%dual_infeasibility,             &
+            prefix, inform%primal_infeasibility,                               &
+            prefix, inform%dual_infeasibility,                                 &
+            prefix, inform%complementary_slackness
 
        IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
             inform%dual_infeasibility <= data%stop_d .AND.                     &
@@ -2038,6 +2062,7 @@ stop
 !  end of outer-iteration loop
 !  ---------------------------
 
+       inform%tru_inform%status = 1
        GO TO 100
 
  800 CONTINUE
@@ -2259,6 +2284,7 @@ stop
 !  Non-executable statements
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
+ 2010 FORMAT( A, '  iter  f               pr-feas  du-feas  cmp-slk inner' )
  2200 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
               /, A, ' # gradient evaluations  = ', I10,                        &
               /, A, ' # Hessian evaluations   = ', I10,                        &

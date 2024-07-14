@@ -3,10 +3,12 @@
 # sdgal: generic script to decode an SIF file and then run package
 #        on architecture on the output
 #  * version for Bourne/bash shell
-#  This version October 21st, 2015
+#  This version July 13th, 2024
 
 # Use: sdgal architecture package [-s] [-h] [-k] [-f] [-b] [-st j]
-#                          [-c] [-m] [-p] [-u] [-o j] [-l secs] probname[.SIF]
+#                          [-c] [-m] [-p] [-u] [-o j] [-l secs] 
+#                          [-param name=value[,name=value...]]
+#                          [-force] probname[.SIF]
 #
 # where: options -s : run the single precision version
 #                     (Default: run the double precision version)
@@ -25,6 +27,14 @@
 #                     (Default: -o 0)
 #                -l : limit the cputime used to secs seconds
 #                     (Default: 99999999 seconds)
+#            -param : cast probname[.SIF] against explicit
+#                     parameter settings. Several parameter
+#                     settings may be given as a comma-separated
+#                     list following -param or using several -param flags.
+#            -force : forces setting of a parameter to the given
+#                      value even if this value is not specified
+#                      in the file. This option should be used
+#                      with care.(Default: do not enforce).
 #
 #       probname      probname[.SIF] is the name of the file containing
 #                     the SIF file for the problem of interest.
@@ -56,7 +66,9 @@ fi
 
 if [[ "$stop_early" == "true" ]]; then
     echo ' Use: sdgal architecture package [-s] [-h] [-k] [-f] [-b] [-st j]'
-    echo '                 [-c] [-m] [-p] [-u] [-o j] [-l secs] probname[.SIF]'
+    echo '                 [-c] [-m] [-p] [-u] [-o j] [-l secs]'
+    echo '                 [-param name=value[,name=value...]]'
+    echo '                 [-force] probname[.SIF]'
     exit 1
 fi
 
@@ -119,7 +131,8 @@ do
 #  echo " opt = $opt"
   if [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
     echo ' Use: sdgal architecture package [-s] [-h|--help] [-k] [-f] [-b]'
-    echo '          [-st start] [-m] [-p] [-u] [-o j] [-l secs] probname[.SIF]'
+    echo '          [-st start] [-m] [-p] [-u] [-o j] [-l secs]'
+    echo '          [-param name=value[,name=value...]] [-force] probname[.SIF]'
     echo ' '
     echo ' where: options -s : run the single precision version'
     echo '                     (Default: run the double precision version)'
@@ -130,8 +143,8 @@ do
     echo "                     differences (default: do not check)"
     echo '                -f : use automatic differentiation in forward mode'
     echo '                -b : use automatic differentiation in backward mode'
-    echo "               -st : starting point vector to be used"
-    echo "                   (Default: -st 1)"
+    echo "                -st : starting point vector to be used"
+    echo "                    (Default: -st 1)"
     echo '                -m : check for memory leaks (when possible) using valgrind'
     echo '                -p : profile the code (when possible)'
     echo '                -u : update the specfile to include the latest options'
@@ -140,6 +153,15 @@ do
     echo '                     (Default: -o 0)'
     echo '                -l : limits the cputime to secs seconds'
     echo '                     (Default: unlimited cputime)'
+    echo "                -param : cast probname[.SIF] against explicit"
+    echo "                         parameter settings. Several parameter"
+    echo "                         settings may be given as a comma-separated"
+    echo "                         list following -param or using several"
+    echo "                         -param flags."
+    echo "                -force : forces setting of a parameter to the given"
+    echo "                          value even if this value is not specified"
+    echo "                          in the file. This option should be used"
+    echo "                          with care.(Default: do not enforce)."
     echo ' '
     echo '       probname      probname.SIF is the name of the file containing'
     echo '                     the SIF file for the problem of interest.'
@@ -177,6 +199,12 @@ do
     (( i++ ))
     AD0=${!i}
     METHARG="$METHARG -a 2"
+  elif [[ "$opt" == '-param' ]]; then
+    (( i++ ))
+    PARAM=${!i}
+    METHARG="$METHARG -param $PARAM"
+  elif [[ "$opt" == '-force' ]]; then
+    METHARG="$METHARG -force"
   fi
   (( i++ ))
 done

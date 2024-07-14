@@ -41,7 +41,7 @@
    control%stop_abs_d = 1.0D-5
    control%stop_abs_c = 1.0D-5
 
-   control%tru_control%print_level = 1
+!  control%tru_control%print_level = 1
    inform%status = 1                            ! set for initial entry
    CALL EPF_solve( nlp, control, inform, data, userdata, eval_FC = FC,         &
                    eval_GJ = GJ, eval_HL = HL ) ! Solve problem
@@ -58,47 +58,6 @@
    DEALLOCATE( nlp%J%val, nlp%J%col, nlp%J%ptr )
    DEALLOCATE( nlp%C, nlp%X_l, nlp%X_u, nlp%C_l, nlp%C_u )
    END PROGRAM GALAHAD_EPF_EXAMPLE
-
-   SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = rp ), INTENT( OUT ) :: f
-   REAL ( KIND = rp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   RETURN
-   END SUBROUTINE FUN
-
-   SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   G( 1 ) = 2.0_rp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
-   G( 2 ) = 2.0_rp * ( X( 2 ) + X( 3 ) )
-   G( 3 ) = 2.0_rp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +                &
-            2.0_rp * ( X( 2 ) + X( 3 ) )
-   status = 0
-   RETURN
-   END SUBROUTINE GRAD
-
-   SUBROUTINE HESS( status, X, userdata, Hval ) ! Hessian of the objective
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: rp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = rp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = rp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   Hval( 1 ) = 2.0_rp - COS( X( 1 ) )
-   Hval( 2 ) = 2.0_rp
-   Hval( 3 ) = 2.0_rp
-   Hval( 4 ) = 2.0_rp
-   Hval( 5 ) = 4.0_rp
-   status = 0
-   RETURN
-   END SUBROUTINE HESS
 
    SUBROUTINE FC( status, X, userdata, F, C )
    USE GALAHAD_USERDATA_double

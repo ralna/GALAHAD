@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-26 AT 11:15 GMT.
+! THIS VERSION: GALAHAD 5.0 - 2024-07-13 AT 10:15 GMT.
 
 #include "galahad_modules.h"
 
@@ -55,13 +55,13 @@
            //, ' - Use of this code is restricted to those who agree to abide',&
            /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
            /,  ' - distributed with the source of the  GALAHAD  codes or from',&
-           /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
+           /,  ' - the  WWW  at  http://galahad.rl.ac.uk/download',            &
            / )
 2010 FORMAT( /, ' Copyright GALAHAD productions, ', A4, '-', A4                &
            //, ' - Use of this code is restricted to those who agree to abide',&
            /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
            /,  ' - distributed with the source of the  GALAHAD  codes or from',&
-           /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
+           /,  ' - the  WWW  at  http://galahad.rl.ac.uk/download',            &
            / )
 
 

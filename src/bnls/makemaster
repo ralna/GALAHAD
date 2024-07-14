@@ -1,0 +1,85 @@
+#  Main body of the installation makefile for the GALAHAD BNLS package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2024-07-14
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = bnls
+PACKAGE = BNLS
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_rand make_gltr \
+               make_glrt make_tools make_scu make_mi28 \
+               make_mop make_ir make_rqs make_userdata \
+               make_nlpt make_bsc make_icfs make_lancelot_psls \
+               make_psls
+
+#  other packages that depend on package
+
+DEPENDS = colt
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common make_ciface_sls_deps make_ciface_sls \
+                make_ciface_ir make_ciface_gltr make_ciface_glrt \
+                make_ciface_rqs make_ciface_psls make_ciface_bsc \
+                make_ciface_roots
+
+#  other C interface packages that depend on current interface package
+
+CDEPENDS =
+
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_pyiface_sls make_pyiface_ir make_pyiface_gltr \
+                 make_pyiface_glrt make_pyiface_rqs make_pyiface_psls \
+                 make_pyiface_bsc make_pyiface_roots
+
+#  other python interface packages that depend on current interface package
+
+PYDEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = GAUSS1.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries

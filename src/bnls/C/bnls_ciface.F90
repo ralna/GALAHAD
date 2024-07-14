@@ -1,0 +1,1708 @@
+! THIS VERSION: GALAHAD 5.1 - 2024-07-14 AT 14:15 GMT.
+
+#include "galahad_modules.h"
+#include "galahad_cfunctions.h"
+
+!-*-*-*-*-*-*-*-  G A L A H A D _  B N L S    C   I N T E R F A C E  -*-*-*-*-*-
+
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal authors: Jaroslav Fowkes & Nick Gould
+
+!  History -
+!    originally released GALAHAD Version 3.3. August 22nd 2021
+
+!  For full documentation, see
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+  MODULE GALAHAD_BNLS_precision_ciface
+    USE GALAHAD_KINDS_precision
+    USE GALAHAD_common_ciface
+    USE GALAHAD_BNLS_precision, ONLY:                                          &
+        f_bnls_subproblem_control_type   => BNLS_subproblem_control_type,      &
+        f_bnls_control_type              => BNLS_control_type,                 &
+        f_bnls_time_type                 => BNLS_time_type,                    &
+        f_bnls_subproblem_inform_type    => BNLS_subproblem_inform_type,       &
+        f_bnls_inform_type               => BNLS_inform_type,                  &
+        f_bnls_full_data_type            => BNLS_full_data_type,               &
+        f_bnls_initialize                => BNLS_initialize,                   &
+        f_bnls_read_specfile             => BNLS_read_specfile,                &
+        f_bnls_import                    => BNLS_import,                       &
+        f_bnls_reset_control             => BNLS_reset_control,                &
+        f_bnls_solve_with_mat            => BNLS_solve_with_mat,               &
+        f_bnls_solve_without_mat         => BNLS_solve_without_mat,            &
+        f_bnls_solve_reverse_with_mat    => BNLS_solve_reverse_with_mat,       &
+        f_bnls_solve_reverse_without_mat => BNLS_solve_reverse_without_mat,    &
+        f_bnls_information               => BNLS_information,                  &
+        f_bnls_terminate                 => BNLS_terminate
+    USE GALAHAD_USERDATA_precision, ONLY:                                      &
+        f_galahad_userdata_type => GALAHAD_userdata_type
+
+    USE GALAHAD_RQS_precision_ciface, ONLY:                                    &
+        rqs_inform_type,                                                       &
+        rqs_control_type,                                                      &
+        copy_rqs_inform_in   => copy_inform_in,                                &
+        copy_rqs_inform_out  => copy_inform_out,                               &
+        copy_rqs_control_in  => copy_control_in,                               &
+        copy_rqs_control_out => copy_control_out
+
+    USE GALAHAD_GLRT_precision_ciface, ONLY:                                   &
+        glrt_inform_type,                                                      &
+        glrt_control_type,                                                     &
+        copy_glrt_inform_in   => copy_inform_in,                               &
+        copy_glrt_inform_out  => copy_inform_out,                              &
+        copy_glrt_control_in  => copy_control_in,                              &
+        copy_glrt_control_out => copy_control_out
+
+    USE GALAHAD_PSLS_precision_ciface, ONLY:                                   &
+        psls_inform_type,                                                      &
+        psls_control_type,                                                     &
+        copy_psls_inform_in   => copy_inform_in,                               &
+        copy_psls_inform_out  => copy_inform_out,                              &
+        copy_psls_control_in  => copy_control_in,                              &
+        copy_psls_control_out => copy_control_out
+
+    USE GALAHAD_BSC_precision_ciface, ONLY:                                    &
+        bsc_inform_type,                                                       &
+        bsc_control_type,                                                      &
+        copy_bsc_inform_in   => copy_inform_in,                                &
+        copy_bsc_inform_out  => copy_inform_out,                               &
+        copy_bsc_control_in  => copy_control_in,                               &
+        copy_bsc_control_out => copy_control_out
+
+    USE GALAHAD_ROOTS_precision_ciface, ONLY:                                  &
+        roots_inform_type,                                                     &
+        roots_control_type,                                                    &
+        copy_roots_inform_in   => copy_inform_in,                              &
+        copy_roots_inform_out  => copy_inform_out,                             &
+        copy_roots_control_in  => copy_control_in,                             &
+        copy_roots_control_out => copy_control_out
+
+    IMPLICIT NONE
+
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
+
+    TYPE, BIND( C ) :: bnls_subproblem_control_type
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: alive_unit
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
+      INTEGER ( KIND = ipc_ ) :: jacobian_available
+      INTEGER ( KIND = ipc_ ) :: hessian_available
+      INTEGER ( KIND = ipc_ ) :: model
+      INTEGER ( KIND = ipc_ ) :: norm
+      INTEGER ( KIND = ipc_ ) :: non_monotone
+      INTEGER ( KIND = ipc_ ) :: weight_update_strategy
+      REAL ( KIND = rpc_ ) :: stop_c_absolute
+      REAL ( KIND = rpc_ ) :: stop_c_relative
+      REAL ( KIND = rpc_ ) :: stop_g_absolute
+      REAL ( KIND = rpc_ ) :: stop_g_relative
+      REAL ( KIND = rpc_ ) :: stop_s
+      REAL ( KIND = rpc_ ) :: power
+      REAL ( KIND = rpc_ ) :: initial_weight
+      REAL ( KIND = rpc_ ) :: minimum_weight
+      REAL ( KIND = rpc_ ) :: initial_inner_weight
+      REAL ( KIND = rpc_ ) :: eta_successful
+      REAL ( KIND = rpc_ ) :: eta_very_successful
+      REAL ( KIND = rpc_ ) :: eta_too_successful
+      REAL ( KIND = rpc_ ) :: weight_decrease_min
+      REAL ( KIND = rpc_ ) :: weight_decrease
+      REAL ( KIND = rpc_ ) :: weight_increase
+      REAL ( KIND = rpc_ ) :: weight_increase_max
+      REAL ( KIND = rpc_ ) :: reduce_gap
+      REAL ( KIND = rpc_ ) :: tiny_gap
+      REAL ( KIND = rpc_ ) :: large_root
+      REAL ( KIND = rpc_ ) :: switch_to_newton
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: clock_time_limit
+      LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
+      LOGICAL ( KIND = C_BOOL ) :: renormalize_weight
+      LOGICAL ( KIND = C_BOOL ) :: magic_step
+      LOGICAL ( KIND = C_BOOL ) :: print_obj
+      LOGICAL ( KIND = C_BOOL ) :: space_critical
+      LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
+      TYPE ( rqs_control_type ) :: rqs_control
+      TYPE ( glrt_control_type ) :: glrt_control
+      TYPE ( psls_control_type ) :: psls_control
+      TYPE ( bsc_control_type ) :: bsc_control
+      TYPE ( roots_control_type ) :: roots_control
+    END TYPE bnls_subproblem_control_type
+
+    TYPE, BIND( C ) :: bnls_control_type
+      LOGICAL ( KIND = C_BOOL ) :: f_indexing
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: alive_unit
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
+      INTEGER ( KIND = ipc_ ) :: jacobian_available
+      INTEGER ( KIND = ipc_ ) :: hessian_available
+      INTEGER ( KIND = ipc_ ) :: model
+      INTEGER ( KIND = ipc_ ) :: norm
+      INTEGER ( KIND = ipc_ ) :: non_monotone
+      INTEGER ( KIND = ipc_ ) :: weight_update_strategy
+      REAL ( KIND = rpc_ ) :: stop_c_absolute
+      REAL ( KIND = rpc_ ) :: stop_c_relative
+      REAL ( KIND = rpc_ ) :: stop_g_absolute
+      REAL ( KIND = rpc_ ) :: stop_g_relative
+      REAL ( KIND = rpc_ ) :: stop_s
+      REAL ( KIND = rpc_ ) :: power
+      REAL ( KIND = rpc_ ) :: initial_weight
+      REAL ( KIND = rpc_ ) :: minimum_weight
+      REAL ( KIND = rpc_ ) :: initial_inner_weight
+      REAL ( KIND = rpc_ ) :: eta_successful
+      REAL ( KIND = rpc_ ) :: eta_very_successful
+      REAL ( KIND = rpc_ ) :: eta_too_successful
+      REAL ( KIND = rpc_ ) :: weight_decrease_min
+      REAL ( KIND = rpc_ ) :: weight_decrease
+      REAL ( KIND = rpc_ ) :: weight_increase
+      REAL ( KIND = rpc_ ) :: weight_increase_max
+      REAL ( KIND = rpc_ ) :: reduce_gap
+      REAL ( KIND = rpc_ ) :: tiny_gap
+      REAL ( KIND = rpc_ ) :: large_root
+      REAL ( KIND = rpc_ ) :: switch_to_newton
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: clock_time_limit
+      LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
+      LOGICAL ( KIND = C_BOOL ) :: renormalize_weight
+      LOGICAL ( KIND = C_BOOL ) :: magic_step
+      LOGICAL ( KIND = C_BOOL ) :: print_obj
+      LOGICAL ( KIND = C_BOOL ) :: space_critical
+      LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
+      TYPE ( rqs_control_type ) :: rqs_control
+      TYPE ( glrt_control_type ) :: glrt_control
+      TYPE ( psls_control_type ) :: psls_control
+      TYPE ( bsc_control_type ) :: bsc_control
+      TYPE ( roots_control_type ) :: roots_control
+      TYPE ( bnls_subproblem_control_type ) :: subproblem_control
+    END TYPE bnls_control_type
+
+    TYPE, BIND( C ) :: bnls_time_type
+      REAL ( KIND = spc_ ) :: total
+      REAL ( KIND = spc_ ) :: preprocess
+      REAL ( KIND = spc_ ) :: analyse
+      REAL ( KIND = spc_ ) :: factorize
+      REAL ( KIND = spc_ ) :: solve
+      REAL ( KIND = rpc_ ) :: clock_total
+      REAL ( KIND = rpc_ ) :: clock_preprocess
+      REAL ( KIND = rpc_ ) :: clock_analyse
+      REAL ( KIND = rpc_ ) :: clock_factorize
+      REAL ( KIND = rpc_ ) :: clock_solve
+    END TYPE bnls_time_type
+
+    TYPE, BIND( C ) :: bnls_subproblem_inform_type
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 13 ) :: bad_eval
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      INTEGER ( KIND = ipc_ ) :: c_eval
+      INTEGER ( KIND = ipc_ ) :: j_eval
+      INTEGER ( KIND = ipc_ ) :: h_eval
+      INTEGER ( KIND = ipc_ ) :: factorization_max
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = longc_ ) :: max_entries_factors
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
+      REAL ( KIND = rpc_ ) :: factorization_average
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: norm_c
+      REAL ( KIND = rpc_ ) :: norm_g
+      REAL ( KIND = rpc_ ) :: weight
+      TYPE ( bnls_time_type ) :: time
+      TYPE ( rqs_inform_type ) :: rqs_inform
+      TYPE ( glrt_inform_type ) :: glrt_inform
+      TYPE ( psls_inform_type ) :: psls_inform
+      TYPE ( bsc_inform_type ) :: bsc_inform
+      TYPE ( roots_inform_type ) :: roots_inform
+    END TYPE bnls_subproblem_inform_type
+
+    TYPE, BIND( C ) :: bnls_inform_type
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 13 ) :: bad_eval
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: cg_iter
+      INTEGER ( KIND = ipc_ ) :: c_eval
+      INTEGER ( KIND = ipc_ ) :: j_eval
+      INTEGER ( KIND = ipc_ ) :: h_eval
+      INTEGER ( KIND = ipc_ ) :: factorization_max
+      INTEGER ( KIND = ipc_ ) :: factorization_status
+      INTEGER ( KIND = longc_ ) :: max_entries_factors
+      INTEGER ( KIND = longc_ ) :: factorization_integer
+      INTEGER ( KIND = longc_ ) :: factorization_real
+      REAL ( KIND = rpc_ ) :: factorization_average
+      REAL ( KIND = rpc_ ) :: obj
+      REAL ( KIND = rpc_ ) :: norm_c
+      REAL ( KIND = rpc_ ) :: norm_g
+      REAL ( KIND = rpc_ ) :: weight
+      TYPE ( bnls_time_type ) :: time
+      TYPE ( rqs_inform_type ) :: rqs_inform
+      TYPE ( glrt_inform_type ) :: glrt_inform
+      TYPE ( psls_inform_type ) :: psls_inform
+      TYPE ( bsc_inform_type ) :: bsc_inform
+      TYPE ( roots_inform_type ) :: roots_inform
+      TYPE ( bnls_subproblem_inform_type ) :: subproblem_inform
+    END TYPE bnls_inform_type
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_C( n, m, x, c, userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = rpc_ ), DIMENSION( n ),INTENT( IN ) :: x
+        REAL ( KIND = rpc_ ), DIMENSION( m ),INTENT( OUT ) :: c
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_C
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_J( n, m, jne, x, jval, userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rpc_ ), DIMENSION( jne ),INTENT( OUT ) :: jval
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_J
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_H( n, m, hne, x, y, hval,                                  &
+                       userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, hne
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: y
+        REAL ( KIND = rpc_ ), DIMENSION( hne ), INTENT( OUT ) :: hval
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_H
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_JPROD( n, m, x, transpose, u, v, got_j,                    &
+                           userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: transpose
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rpc_ ), DIMENSION( MAX( n, m ) ), INTENT( INOUT ) :: u
+        REAL ( KIND = rpc_ ), DIMENSION( MAX( n, m ) ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_j
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_JPROD
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_HPROD( n, m, x, y, u, v, got_h,                            &
+                           userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: y
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( INOUT ) :: u
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_HPROD
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_HPRODS( n, m, pne, x, v, pval, got_h,                      &
+                            userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = rpc_ ), DIMENSION( m ), INTENT( IN ) :: v
+        REAL ( KIND = rpc_ ), DIMENSION( pne ), INTENT( INOUT ) :: pval
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_HPRODS
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_SCALE( n, m, x, u, v,                                      &
+                           userdata ) RESULT( status ) BIND( C )
+        USE GALAHAD_KINDS_precision
+        INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( IN ) :: x, v
+        REAL ( KIND = rpc_ ), DIMENSION( n ), INTENT( OUT ) :: u
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = ipc_ ) :: status
+      END FUNCTION eval_SCALE
+    END INTERFACE
+
+!----------------------
+!   P r o c e d u r e s
+!----------------------
+
+  CONTAINS
+
+!  copy C control parameters to fortran
+
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
+    TYPE ( bnls_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_bnls_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
+
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
+
+    ! Integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%start_print = ccontrol%start_print
+    fcontrol%stop_print = ccontrol%stop_print
+    fcontrol%print_gap = ccontrol%print_gap
+    fcontrol%maxit = ccontrol%maxit
+    fcontrol%alive_unit = ccontrol%alive_unit
+    fcontrol%jacobian_available = ccontrol%jacobian_available
+    fcontrol%hessian_available = ccontrol%hessian_available
+    fcontrol%model = ccontrol%model
+    fcontrol%norm = ccontrol%norm
+    fcontrol%non_monotone = ccontrol%non_monotone
+    fcontrol%weight_update_strategy = ccontrol%weight_update_strategy
+
+    ! Reals
+    fcontrol%stop_c_absolute = ccontrol%stop_c_absolute
+    fcontrol%stop_c_relative = ccontrol%stop_c_relative
+    fcontrol%stop_g_absolute = ccontrol%stop_g_absolute
+    fcontrol%stop_g_relative = ccontrol%stop_g_relative
+    fcontrol%stop_s = ccontrol%stop_s
+    fcontrol%power = ccontrol%power
+    fcontrol%initial_weight = ccontrol%initial_weight
+    fcontrol%minimum_weight = ccontrol%minimum_weight
+    fcontrol%initial_inner_weight = ccontrol%initial_inner_weight
+    fcontrol%eta_successful = ccontrol%eta_successful
+    fcontrol%eta_very_successful = ccontrol%eta_very_successful
+    fcontrol%eta_too_successful = ccontrol%eta_too_successful
+    fcontrol%weight_decrease_min = ccontrol%weight_decrease_min
+    fcontrol%weight_decrease = ccontrol%weight_decrease
+    fcontrol%weight_increase = ccontrol%weight_increase
+    fcontrol%weight_increase_max = ccontrol%weight_increase_max
+    fcontrol%reduce_gap = ccontrol%reduce_gap
+    fcontrol%tiny_gap = ccontrol%tiny_gap
+    fcontrol%large_root = ccontrol%large_root
+    fcontrol%switch_to_newton = ccontrol%switch_to_newton
+    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit
+
+    ! Logicals
+    fcontrol%subproblem_direct = ccontrol%subproblem_direct
+    fcontrol%renormalize_weight = ccontrol%renormalize_weight
+    fcontrol%magic_step = ccontrol%magic_step
+    fcontrol%print_obj = ccontrol%print_obj
+    fcontrol%space_critical = ccontrol%space_critical
+    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
+
+    ! Derived types
+    CALL copy_rqs_control_in( ccontrol%rqs_control, fcontrol%rqs_control )
+    CALL copy_glrt_control_in( ccontrol%glrt_control, fcontrol%glrt_control )
+    CALL copy_psls_control_in( ccontrol%psls_control, fcontrol%psls_control )
+    CALL copy_bsc_control_in( ccontrol%bsc_control, fcontrol%bsc_control )
+    CALL copy_roots_control_in( ccontrol%roots_control,                        &
+                               fcontrol%roots_control )
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
+    END DO
+    DO i = 1, 31
+      IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+
+    ! subproblem_control parameters
+
+    ! Integers
+    fcontrol%subproblem_control%error = &
+      ccontrol%subproblem_control%error
+    fcontrol%subproblem_control%out = &
+      ccontrol%subproblem_control%out
+    fcontrol%subproblem_control%print_level = &
+      ccontrol%subproblem_control%print_level
+    fcontrol%subproblem_control%start_print = &
+      ccontrol%subproblem_control%start_print
+    fcontrol%subproblem_control%stop_print = &
+      ccontrol%subproblem_control%stop_print
+    fcontrol%subproblem_control%print_gap = &
+      ccontrol%subproblem_control%print_gap
+    fcontrol%subproblem_control%maxit = &
+      ccontrol%subproblem_control%maxit
+    fcontrol%subproblem_control%alive_unit = &
+      ccontrol%subproblem_control%alive_unit
+    fcontrol%subproblem_control%jacobian_available = &
+      ccontrol%subproblem_control%jacobian_available
+    fcontrol%subproblem_control%hessian_available = &
+      ccontrol%subproblem_control%hessian_available
+    fcontrol%subproblem_control%model = &
+      ccontrol%subproblem_control%model
+    fcontrol%subproblem_control%norm = &
+      ccontrol%subproblem_control%norm
+    fcontrol%subproblem_control%non_monotone = &
+      ccontrol%subproblem_control%non_monotone
+    fcontrol%subproblem_control%weight_update_strategy = &
+      ccontrol%subproblem_control%weight_update_strategy
+
+    ! Reals
+    fcontrol%subproblem_control%stop_c_absolute = &
+      ccontrol%subproblem_control%stop_c_absolute
+    fcontrol%subproblem_control%stop_c_relative = &
+      ccontrol%subproblem_control%stop_c_relative
+    fcontrol%subproblem_control%stop_g_absolute = &
+      ccontrol%subproblem_control%stop_g_absolute
+    fcontrol%subproblem_control%stop_g_relative = &
+      ccontrol%subproblem_control%stop_g_relative
+    fcontrol%subproblem_control%stop_s = &
+      ccontrol%subproblem_control%stop_s
+    fcontrol%subproblem_control%power = &
+      ccontrol%subproblem_control%power
+    fcontrol%subproblem_control%initial_weight = &
+      ccontrol%subproblem_control%initial_weight
+    fcontrol%subproblem_control%minimum_weight = &
+      ccontrol%subproblem_control%minimum_weight
+    fcontrol%subproblem_control%initial_inner_weight = &
+      ccontrol%subproblem_control%initial_inner_weight
+    fcontrol%subproblem_control%eta_successful = &
+      ccontrol%subproblem_control%eta_successful
+    fcontrol%subproblem_control%eta_very_successful = &
+      ccontrol%subproblem_control%eta_very_successful
+    fcontrol%subproblem_control%eta_too_successful = &
+      ccontrol%subproblem_control%eta_too_successful
+    fcontrol%subproblem_control%weight_decrease_min = &
+      ccontrol%subproblem_control%weight_decrease_min
+    fcontrol%subproblem_control%weight_decrease = &
+      ccontrol%subproblem_control%weight_decrease
+    fcontrol%subproblem_control%weight_increase = &
+      ccontrol%subproblem_control%weight_increase
+    fcontrol%subproblem_control%weight_increase_max = &
+      ccontrol%subproblem_control%weight_increase_max
+    fcontrol%subproblem_control%reduce_gap = &
+      ccontrol%subproblem_control%reduce_gap
+    fcontrol%subproblem_control%tiny_gap = &
+      ccontrol%subproblem_control%tiny_gap
+    fcontrol%subproblem_control%large_root = &
+      ccontrol%subproblem_control%large_root
+    fcontrol%subproblem_control%switch_to_newton = &
+      ccontrol%subproblem_control%switch_to_newton
+    fcontrol%subproblem_control%cpu_time_limit = &
+      ccontrol%subproblem_control%cpu_time_limit
+    fcontrol%subproblem_control%clock_time_limit = &
+      ccontrol%subproblem_control%clock_time_limit
+
+    ! Logicals
+    fcontrol%subproblem_control%subproblem_direct = &
+      ccontrol%subproblem_control%subproblem_direct
+    fcontrol%subproblem_control%renormalize_weight = &
+      ccontrol%subproblem_control%renormalize_weight
+    fcontrol%subproblem_control%magic_step = &
+      ccontrol%subproblem_control%magic_step
+    fcontrol%subproblem_control%print_obj = &
+      ccontrol%subproblem_control%print_obj
+    fcontrol%subproblem_control%space_critical = &
+      ccontrol%subproblem_control%space_critical
+    fcontrol%subproblem_control%deallocate_error_fatal = &
+      ccontrol%subproblem_control%deallocate_error_fatal
+
+    ! Derived types
+    CALL copy_rqs_control_in( ccontrol%subproblem_control%rqs_control,         &
+                              fcontrol%subproblem_control%rqs_control )
+    CALL copy_glrt_control_in( ccontrol%subproblem_control%glrt_control,       &
+                               fcontrol%subproblem_control%glrt_control )
+    CALL copy_psls_control_in( ccontrol%subproblem_control%psls_control,       &
+                               fcontrol%subproblem_control%psls_control )
+    CALL copy_bsc_control_in( ccontrol%subproblem_control%bsc_control,         &
+                              fcontrol%subproblem_control%bsc_control )
+    CALL copy_roots_control_in( ccontrol%subproblem_control%roots_control,     &
+                                fcontrol%subproblem_control%roots_control )
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%subproblem_control%alive_file( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%subproblem_control%alive_file( i : i ) =                        &
+        ccontrol%subproblem_control%alive_file( i )
+    END DO
+    DO i = 1, 31
+      IF ( ccontrol%subproblem_control%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%subproblem_control%prefix( i : i ) =                            &
+        ccontrol%prefix( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
+    TYPE ( f_bnls_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( bnls_control_type ), INTENT( OUT ) :: ccontrol
+    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
+    INTEGER ( KIND = ip_ ) :: i
+
+    ! C or Fortran sparse matrix indexing
+
+    IF ( PRESENT( f_indexing ) )  ccontrol%f_indexing = f_indexing
+
+    ! Integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%start_print = fcontrol%start_print
+    ccontrol%stop_print = fcontrol%stop_print
+    ccontrol%print_gap = fcontrol%print_gap
+    ccontrol%maxit = fcontrol%maxit
+    ccontrol%alive_unit = fcontrol%alive_unit
+    ccontrol%jacobian_available = fcontrol%jacobian_available
+    ccontrol%hessian_available = fcontrol%hessian_available
+    ccontrol%model = fcontrol%model
+    ccontrol%norm = fcontrol%norm
+    ccontrol%non_monotone = fcontrol%non_monotone
+    ccontrol%weight_update_strategy = fcontrol%weight_update_strategy
+
+    ! Reals
+    ccontrol%stop_c_absolute = fcontrol%stop_c_absolute
+    ccontrol%stop_c_relative = fcontrol%stop_c_relative
+    ccontrol%stop_g_absolute = fcontrol%stop_g_absolute
+    ccontrol%stop_g_relative = fcontrol%stop_g_relative
+    ccontrol%stop_s = fcontrol%stop_s
+    ccontrol%power = fcontrol%power
+    ccontrol%initial_weight = fcontrol%initial_weight
+    ccontrol%minimum_weight = fcontrol%minimum_weight
+    ccontrol%initial_inner_weight = fcontrol%initial_inner_weight
+    ccontrol%eta_successful = fcontrol%eta_successful
+    ccontrol%eta_very_successful = fcontrol%eta_very_successful
+    ccontrol%eta_too_successful = fcontrol%eta_too_successful
+    ccontrol%weight_decrease_min = fcontrol%weight_decrease_min
+    ccontrol%weight_decrease = fcontrol%weight_decrease
+    ccontrol%weight_increase = fcontrol%weight_increase
+    ccontrol%weight_increase_max = fcontrol%weight_increase_max
+    ccontrol%reduce_gap = fcontrol%reduce_gap
+    ccontrol%tiny_gap = fcontrol%tiny_gap
+    ccontrol%large_root = fcontrol%large_root
+    ccontrol%switch_to_newton = fcontrol%switch_to_newton
+    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit
+
+    ! Logicals
+    ccontrol%subproblem_direct = fcontrol%subproblem_direct
+    ccontrol%renormalize_weight = fcontrol%renormalize_weight
+    ccontrol%magic_step = fcontrol%magic_step
+    ccontrol%print_obj = fcontrol%print_obj
+    ccontrol%space_critical = fcontrol%space_critical
+    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
+
+    ! Derived types
+    CALL copy_rqs_control_out( fcontrol%rqs_control,                           &
+                               ccontrol%rqs_control )
+    CALL copy_glrt_control_out( fcontrol%glrt_control,                         &
+                                ccontrol%glrt_control )
+    CALL copy_psls_control_out( fcontrol%psls_control,                         &
+                                ccontrol%psls_control )
+    CALL copy_bsc_control_out( fcontrol%bsc_control,                           &
+                               ccontrol%bsc_control )
+    CALL copy_roots_control_out( fcontrol%roots_control,                       &
+                                 ccontrol%roots_control )
+
+    ! Strings
+    DO i = 1, LEN( fcontrol%alive_file )
+      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
+    END DO
+    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%prefix )
+      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
+    END DO
+    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+
+    ! subproblem_control parameters
+
+    ! Integers
+    ccontrol%subproblem_control%error = &
+      fcontrol%subproblem_control%error
+    ccontrol%subproblem_control%out = &
+      fcontrol%subproblem_control%out
+    ccontrol%subproblem_control%print_level = &
+      fcontrol%subproblem_control%print_level
+    ccontrol%subproblem_control%start_print = &
+      fcontrol%subproblem_control%start_print
+    ccontrol%subproblem_control%stop_print = &
+      fcontrol%subproblem_control%stop_print
+    ccontrol%subproblem_control%print_gap = &
+      fcontrol%subproblem_control%print_gap
+    ccontrol%subproblem_control%maxit = &
+      fcontrol%subproblem_control%maxit
+    ccontrol%subproblem_control%alive_unit = &
+      fcontrol%subproblem_control%alive_unit
+    ccontrol%subproblem_control%jacobian_available = &
+      fcontrol%subproblem_control%jacobian_available
+    ccontrol%subproblem_control%hessian_available = &
+      fcontrol%subproblem_control%hessian_available
+    ccontrol%subproblem_control%model = &
+      fcontrol%subproblem_control%model
+    ccontrol%subproblem_control%norm = &
+      fcontrol%subproblem_control%norm
+    ccontrol%subproblem_control%non_monotone = &
+      fcontrol%subproblem_control%non_monotone
+    ccontrol%subproblem_control%weight_update_strategy = &
+      fcontrol%subproblem_control%weight_update_strategy
+
+    ! Reals
+    ccontrol%subproblem_control%stop_c_absolute = &
+      fcontrol%subproblem_control%stop_c_absolute
+    ccontrol%subproblem_control%stop_c_relative = &
+      fcontrol%subproblem_control%stop_c_relative
+    ccontrol%subproblem_control%stop_g_absolute = &
+      fcontrol%subproblem_control%stop_g_absolute
+    ccontrol%subproblem_control%stop_g_relative = &
+      fcontrol%subproblem_control%stop_g_relative
+    ccontrol%subproblem_control%stop_s = &
+      fcontrol%subproblem_control%stop_s
+    ccontrol%subproblem_control%power = &
+      fcontrol%subproblem_control%power
+    ccontrol%subproblem_control%initial_weight = &
+      fcontrol%subproblem_control%initial_weight
+    ccontrol%subproblem_control%minimum_weight = &
+      fcontrol%subproblem_control%minimum_weight
+    ccontrol%subproblem_control%initial_inner_weight = &
+      fcontrol%subproblem_control%initial_inner_weight
+    ccontrol%subproblem_control%eta_successful = &
+      fcontrol%subproblem_control%eta_successful
+    ccontrol%subproblem_control%eta_very_successful = &
+      fcontrol%subproblem_control%eta_very_successful
+    ccontrol%subproblem_control%eta_too_successful = &
+      fcontrol%subproblem_control%eta_too_successful
+    ccontrol%subproblem_control%weight_decrease_min = &
+      fcontrol%subproblem_control%weight_decrease_min
+    ccontrol%subproblem_control%weight_decrease = &
+      fcontrol%subproblem_control%weight_decrease
+    ccontrol%subproblem_control%weight_increase = &
+      fcontrol%subproblem_control%weight_increase
+    ccontrol%subproblem_control%weight_increase_max = &
+      fcontrol%subproblem_control%weight_increase_max
+    ccontrol%subproblem_control%reduce_gap = &
+      fcontrol%subproblem_control%reduce_gap
+    ccontrol%subproblem_control%tiny_gap = &
+      fcontrol%subproblem_control%tiny_gap
+    ccontrol%subproblem_control%large_root = &
+      fcontrol%subproblem_control%large_root
+    ccontrol%subproblem_control%switch_to_newton = &
+      fcontrol%subproblem_control%switch_to_newton
+    ccontrol%subproblem_control%cpu_time_limit = &
+      fcontrol%subproblem_control%cpu_time_limit
+    ccontrol%subproblem_control%clock_time_limit = &
+      fcontrol%subproblem_control%clock_time_limit
+
+    ! Logicals
+    ccontrol%subproblem_control%subproblem_direct = &
+      fcontrol%subproblem_control%subproblem_direct
+    ccontrol%subproblem_control%renormalize_weight = &
+      fcontrol%subproblem_control%renormalize_weight
+    ccontrol%subproblem_control%magic_step = &
+      fcontrol%subproblem_control%magic_step
+    ccontrol%subproblem_control%print_obj = &
+      fcontrol%subproblem_control%print_obj
+    ccontrol%subproblem_control%space_critical = &
+      fcontrol%subproblem_control%space_critical
+    ccontrol%subproblem_control%deallocate_error_fatal = &
+      fcontrol%subproblem_control%deallocate_error_fatal
+
+    ! Derived types
+    CALL copy_rqs_control_out( fcontrol%subproblem_control%rqs_control,        &
+                               ccontrol%subproblem_control%rqs_control )
+    CALL copy_glrt_control_out( fcontrol%subproblem_control%glrt_control,      &
+                                ccontrol%subproblem_control%glrt_control )
+    CALL copy_psls_control_out( fcontrol%subproblem_control%psls_control,      &
+                                ccontrol%subproblem_control%psls_control )
+    CALL copy_bsc_control_out( fcontrol%subproblem_control%bsc_control,        &
+                               ccontrol%subproblem_control%bsc_control )
+    CALL copy_roots_control_out( fcontrol%subproblem_control%roots_control,    &
+                                 ccontrol%subproblem_control%roots_control )
+    ! Strings
+    DO i = 1, LEN( fcontrol%subproblem_control%alive_file )
+      ccontrol%subproblem_control%alive_file( i ) =                            &
+        fcontrol%subproblem_control%alive_file( i : i )
+    END DO
+    ccontrol%subproblem_control%alive_file(                                    &
+      LEN( fcontrol%subproblem_control%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%subproblem_control%prefix )
+      ccontrol%subproblem_control%prefix( i ) =                                &
+        fcontrol%subproblem_control%prefix( i : i )
+    END DO
+    ccontrol%subproblem_control%prefix(                                        &
+      LEN( fcontrol%subproblem_control%prefix ) + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_control_out
+
+!  copy C time parameters to fortran
+
+    SUBROUTINE copy_time_in( ctime, ftime )
+    TYPE ( bnls_time_type ), INTENT( IN ) :: ctime
+    TYPE ( f_bnls_time_type ), INTENT( OUT ) :: ftime
+
+    ! Reals
+    ftime%clock_total = ctime%clock_total
+    ftime%clock_preprocess = ctime%clock_preprocess
+    ftime%clock_analyse = ctime%clock_analyse
+    ftime%clock_factorize = ctime%clock_factorize
+    ftime%clock_solve = ctime%clock_solve
+    ftime%total = ctime%total
+    ftime%preprocess = ctime%preprocess
+    ftime%analyse = ctime%analyse
+    ftime%factorize = ctime%factorize
+    ftime%solve = ctime%solve
+    RETURN
+
+    END SUBROUTINE copy_time_in
+
+!  copy fortran time parameters to C
+
+    SUBROUTINE copy_time_out( ftime, ctime )
+    TYPE ( f_bnls_time_type ), INTENT( IN ) :: ftime
+    TYPE ( bnls_time_type ), INTENT( OUT ) :: ctime
+
+    ! Reals
+    ctime%clock_total = ftime%clock_total
+    ctime%clock_preprocess = ftime%clock_preprocess
+    ctime%clock_analyse = ftime%clock_analyse
+    ctime%clock_factorize = ftime%clock_factorize
+    ctime%clock_solve = ftime%clock_solve
+    ctime%total = ftime%total
+    ctime%preprocess = ftime%preprocess
+    ctime%analyse = ftime%analyse
+    ctime%factorize = ftime%factorize
+    ctime%solve = ftime%solve
+    RETURN
+
+    END SUBROUTINE copy_time_out
+
+!  copy C inform parameters to fortran
+
+    SUBROUTINE copy_inform_in( cinform, finform )
+    TYPE ( bnls_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_bnls_inform_type ), INTENT( OUT ) :: finform
+    INTEGER ( KIND = ip_ ) :: i
+
+    ! Integers
+    finform%status = cinform%status
+    finform%alloc_status = cinform%alloc_status
+    finform%iter = cinform%iter
+    finform%cg_iter = cinform%cg_iter
+    finform%c_eval = cinform%c_eval
+    finform%j_eval = cinform%j_eval
+    finform%h_eval = cinform%h_eval
+    finform%factorization_max = cinform%factorization_max
+    finform%factorization_status = cinform%factorization_status
+    finform%max_entries_factors = cinform%max_entries_factors
+    finform%factorization_integer = cinform%factorization_integer
+    finform%factorization_real = cinform%factorization_real
+
+    ! Reals
+    finform%factorization_average = cinform%factorization_average
+    finform%obj = cinform%obj
+    finform%norm_c = cinform%norm_c
+    finform%norm_g = cinform%norm_g
+    finform%weight = cinform%weight
+
+    ! Derived types
+    CALL copy_time_in( cinform%time, finform%time )
+    CALL copy_rqs_inform_in( cinform%rqs_inform, finform%rqs_inform )
+    CALL copy_glrt_inform_in( cinform%glrt_inform, finform%glrt_inform )
+    CALL copy_psls_inform_in( cinform%psls_inform, finform%psls_inform )
+    CALL copy_bsc_inform_in( cinform%bsc_inform, finform%bsc_inform )
+    CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
+
+    ! Strings
+    DO i = 1, 81
+      IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    DO i = 1, 13
+      IF ( cinform%bad_eval( i ) == C_NULL_CHAR ) EXIT
+      finform%bad_eval( i : i ) = cinform%bad_eval( i )
+    END DO
+
+    ! subproblem_inform parameters
+
+    ! Integers
+    finform%subproblem_inform%status = &
+      cinform%subproblem_inform%status
+    finform%subproblem_inform%alloc_status = &
+      cinform%subproblem_inform%alloc_status
+    finform%subproblem_inform%iter = &
+      cinform%subproblem_inform%iter
+    finform%subproblem_inform%cg_iter = &
+      cinform%subproblem_inform%cg_iter
+    finform%subproblem_inform%c_eval = &
+      cinform%subproblem_inform%c_eval
+    finform%subproblem_inform%j_eval = &
+      cinform%subproblem_inform%j_eval
+    finform%subproblem_inform%h_eval = &
+      cinform%subproblem_inform%h_eval
+    finform%subproblem_inform%factorization_max = &
+      cinform%subproblem_inform%factorization_max
+    finform%subproblem_inform%factorization_status = &
+      cinform%subproblem_inform%factorization_status
+    finform%subproblem_inform%max_entries_factors = &
+      cinform%subproblem_inform%max_entries_factors
+    finform%subproblem_inform%factorization_integer = &
+      cinform%subproblem_inform%factorization_integer
+    finform%subproblem_inform%factorization_real = &
+      cinform%subproblem_inform%factorization_real
+
+    ! Reals
+    finform%subproblem_inform%factorization_average = &
+      cinform%subproblem_inform%factorization_average
+    finform%subproblem_inform%obj = &
+      cinform%subproblem_inform%obj
+    finform%subproblem_inform%norm_c = &
+      cinform%subproblem_inform%norm_c
+    finform%subproblem_inform%norm_g = &
+      cinform%subproblem_inform%norm_g
+    finform%subproblem_inform%weight = &
+      cinform%subproblem_inform%weight
+
+    ! Derived types
+    CALL copy_time_in( cinform%subproblem_inform%time,                         &
+                       finform%subproblem_inform%time )
+    CALL copy_rqs_inform_in( cinform%subproblem_inform%rqs_inform,             &
+                             finform%subproblem_inform%rqs_inform )
+    CALL copy_glrt_inform_in( cinform%subproblem_inform%glrt_inform,           &
+                              finform%subproblem_inform%glrt_inform )
+    CALL copy_psls_inform_in( cinform%subproblem_inform%psls_inform,           &
+                              finform%subproblem_inform%psls_inform )
+    CALL copy_bsc_inform_in( cinform%subproblem_inform%bsc_inform,             &
+                             finform%subproblem_inform%bsc_inform )
+    CALL copy_roots_inform_in( cinform%subproblem_inform%roots_inform,         &
+                               finform%subproblem_inform%roots_inform )
+
+    ! Strings
+    DO i = 1, 81
+      IF ( cinform%subproblem_inform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%subproblem_inform%bad_alloc( i : i ) =                           &
+        cinform%subproblem_inform%bad_alloc( i )
+    END DO
+    DO i = 1, 13
+      IF ( cinform%subproblem_inform%bad_eval( i ) == C_NULL_CHAR ) EXIT
+      finform%subproblem_inform%bad_eval( i : i ) =                            &
+        cinform%subproblem_inform%bad_eval( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_inform_in
+
+!  copy fortran inform parameters to C
+
+    SUBROUTINE copy_inform_out( finform, cinform )
+    TYPE ( f_bnls_inform_type ), INTENT( IN ) :: finform
+    TYPE ( bnls_inform_type ), INTENT( OUT ) :: cinform
+    INTEGER ( KIND = ip_ ) :: i
+
+    ! Integers
+    cinform%status = finform%status
+    cinform%alloc_status = finform%alloc_status
+    cinform%iter = finform%iter
+    cinform%cg_iter = finform%cg_iter
+    cinform%c_eval = finform%c_eval
+    cinform%j_eval = finform%j_eval
+    cinform%h_eval = finform%h_eval
+    cinform%factorization_max = finform%factorization_max
+    cinform%factorization_status = finform%factorization_status
+    cinform%max_entries_factors = finform%max_entries_factors
+    cinform%factorization_integer = finform%factorization_integer
+    cinform%factorization_real = finform%factorization_real
+
+    ! Reals
+    cinform%factorization_average = finform%factorization_average
+    cinform%obj = finform%obj
+    cinform%norm_c = finform%norm_c
+    cinform%norm_g = finform%norm_g
+    cinform%weight = finform%weight
+
+    ! Derived types
+    CALL copy_time_out( finform%time, cinform%time )
+    CALL copy_rqs_inform_out( finform%rqs_inform, cinform%rqs_inform )
+    CALL copy_glrt_inform_out( finform%glrt_inform, cinform%glrt_inform )
+    CALL copy_psls_inform_out( finform%psls_inform, cinform%psls_inform )
+    CALL copy_bsc_inform_out( finform%bsc_inform, cinform%bsc_inform )
+    CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
+
+    ! Strings
+    DO i = 1, LEN( finform%bad_alloc )
+      cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+    END DO
+    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( finform%bad_eval )
+      cinform%bad_eval( i ) = finform%bad_eval( i : i )
+    END DO
+    cinform%bad_eval( LEN( finform%bad_eval ) + 1 ) = C_NULL_CHAR
+
+    ! subproblem_inform parameters
+
+    ! Integers
+    cinform%subproblem_inform%status = &
+      finform%subproblem_inform%status
+    cinform%subproblem_inform%alloc_status = &
+      finform%subproblem_inform%alloc_status
+    cinform%subproblem_inform%iter = &
+      finform%subproblem_inform%iter
+    cinform%subproblem_inform%cg_iter = &
+      finform%subproblem_inform%cg_iter
+    cinform%subproblem_inform%c_eval = &
+      finform%subproblem_inform%c_eval
+    cinform%subproblem_inform%j_eval = &
+      finform%subproblem_inform%j_eval
+    cinform%subproblem_inform%h_eval = &
+      finform%subproblem_inform%h_eval
+    cinform%subproblem_inform%factorization_max = &
+      finform%subproblem_inform%factorization_max
+    cinform%subproblem_inform%factorization_status = &
+      finform%subproblem_inform%factorization_status
+    cinform%subproblem_inform%max_entries_factors = &
+      finform%subproblem_inform%max_entries_factors
+    cinform%subproblem_inform%factorization_integer = &
+      finform%subproblem_inform%factorization_integer
+    cinform%subproblem_inform%factorization_real = &
+      finform%subproblem_inform%factorization_real
+
+    ! Reals
+    cinform%subproblem_inform%factorization_average = &
+      finform%subproblem_inform%factorization_average
+    cinform%subproblem_inform%obj = &
+      finform%subproblem_inform%obj
+    cinform%subproblem_inform%norm_c = &
+      finform%subproblem_inform%norm_c
+    cinform%subproblem_inform%norm_g = &
+      finform%subproblem_inform%norm_g
+    cinform%subproblem_inform%weight = &
+      finform%subproblem_inform%weight
+
+    ! Derived types
+    CALL copy_time_out( finform%subproblem_inform%time,                        &
+                        cinform%subproblem_inform%time )
+    CALL copy_rqs_inform_out( finform%subproblem_inform%rqs_inform,            &
+                              cinform%subproblem_inform%rqs_inform )
+    CALL copy_glrt_inform_out( finform%subproblem_inform%glrt_inform,          &
+                               cinform%subproblem_inform%glrt_inform )
+    CALL copy_psls_inform_out( finform%subproblem_inform%psls_inform,          &
+                               cinform%subproblem_inform%psls_inform )
+    CALL copy_bsc_inform_out( finform%subproblem_inform%bsc_inform,            &
+                               cinform%subproblem_inform%bsc_inform )
+    CALL copy_roots_inform_out( finform%subproblem_inform%roots_inform,        &
+                                cinform%subproblem_inform%roots_inform )
+
+    ! Strings
+    DO i = 1, LEN( finform%subproblem_inform%bad_alloc )
+      cinform%subproblem_inform%bad_alloc( i ) =                               &
+        finform%subproblem_inform%bad_alloc( i : i )
+    END DO
+    cinform%subproblem_inform%bad_alloc(                                       &
+      LEN( finform%subproblem_inform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( finform%subproblem_inform%bad_eval )
+      cinform%subproblem_inform%bad_eval( i ) =                                &
+        finform%subproblem_inform%bad_eval( i : i )
+    END DO
+    cinform%subproblem_inform%bad_eval(                                        &
+      LEN( finform%subproblem_inform%bad_eval ) + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_inform_out
+
+  END MODULE GALAHAD_BNLS_precision_ciface
+
+!  -------------------------------------
+!  C interface to fortran bnls_initialize
+!  -------------------------------------
+
+  SUBROUTINE bnls_initialize( cdata, ccontrol, cinform ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( bnls_control_type ), INTENT( OUT ) :: ccontrol
+  TYPE ( bnls_inform_type ), INTENT( OUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  TYPE ( f_bnls_control_type ) :: fcontrol
+  TYPE ( f_bnls_inform_type ) :: finform
+  LOGICAL :: f_indexing
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  initialize required fortran types
+
+  CALL f_bnls_initialize( fdata, fcontrol, finform )
+
+!  C sparse matrix indexing by default
+
+  f_indexing = .FALSE.
+  fdata%f_indexing = f_indexing
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE bnls_initialize
+
+!  ----------------------------------------
+!  C interface to fortran bnls_read_specfile
+!  ----------------------------------------
+
+  SUBROUTINE bnls_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( bnls_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cspecfile
+
+!  local variables
+
+  TYPE ( f_bnls_control_type ) :: fcontrol
+  CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
+  LOGICAL :: f_indexing
+
+!  device unit number for specfile
+
+  INTEGER ( KIND = ipc_ ), PARAMETER :: device = 10
+
+!  convert C string to Fortran string
+
+  fspecfile = cstr_to_fchar( cspecfile )
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  open specfile for reading
+
+  OPEN( UNIT = device, FILE = fspecfile )
+
+!  read control parameters from the specfile
+
+  CALL f_bnls_read_specfile( fcontrol, device )
+
+!  close specfile
+
+  CLOSE( device )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE bnls_read_specfile
+
+!  ---------------------------------
+!  C interface to fortran bnls_inport
+!  ---------------------------------
+
+  SUBROUTINE bnls_import( ccontrol, cdata, status, n, m,                       &
+                          cjtype, jne, jrow, jcol, jptr,                       &
+                          chtype, hne, hrow, hcol, hptr,                       &
+                          cptype, pne, prow, pcol, pptr, w ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( bnls_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: jptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cjtype
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: prow
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: pcol
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: pptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cptype
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: w
+
+!  local variables
+
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cjtype ) ) :: fjtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cptype ) ) :: fptype
+  TYPE ( f_bnls_control_type ) :: fcontrol
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+! IF ( PRESENT( w ) ) WRITE( 6, * ) ' w ', w
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  convert C string to Fortran string
+
+  fjtype = cstr_to_fchar( cjtype )
+  fhtype = cstr_to_fchar( chtype )
+  fptype = cstr_to_fchar( cptype )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  handle C sparse matrix indexing
+
+!  import the problem data into the required BNLS structure
+
+  CALL f_bnls_import( fcontrol, fdata, status, n, m,                           &
+                      fjtype, jne, jrow, jcol, jptr,                           &
+                      fhtype, hne, hrow, hcol, hptr,                           &
+                      fptype, pne, prow, pcol, pptr, w )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE bnls_import
+
+!  ----------------------------------------
+!  C interface to fortran bnls_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE bnls_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  TYPE ( bnls_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_bnls_control_type ) :: fcontrol
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_bnls_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE bnls_reset_control
+
+!  -----------------------------------------
+!  C interface to fortran bnls_solve_with_mat
+!  -----------------------------------------
+
+  SUBROUTINE bnls_solve_with_mat( cdata, cuserdata, status, n, m, x, xl, xu,   &
+                                  c, g, ceval_c, jne, ceval_j, hne, ceval_h,   &
+                                  pne, ceval_hprods ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: g
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_j
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_h, ceval_hprods
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_c ), POINTER :: feval_c
+  PROCEDURE( eval_j ), POINTER :: feval_j
+  PROCEDURE( eval_h ), POINTER :: feval_h
+  PROCEDURE( eval_hprods ), POINTER :: feval_hprods
+
+!  ignore Fortran userdata type (not interoperable)
+
+! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_galahad_userdata_type ) :: fuserdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  associate procedure pointers
+
+  CALL C_F_PROCPOINTER( ceval_c, feval_c )
+  CALL C_F_PROCPOINTER( ceval_j, feval_j )
+  IF ( C_ASSOCIATED( ceval_h ) ) THEN
+    CALL C_F_PROCPOINTER( ceval_h, feval_h )
+  ELSE
+    NULLIFY( feval_h )
+  END IF
+  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN
+    CALL C_F_PROCPOINTER( ceval_hprods, feval_hprods )
+  ELSE
+    NULLIFY( feval_hprods )
+  END IF
+
+!  solve the problem when the Hessian is explicitly available
+
+  CALL f_bnls_solve_with_mat( fdata, fuserdata, status, x, xl, xu, c, g,       &
+                              wrap_eval_c, wrap_eval_j, wrap_eval_h,           &
+                              wrap_eval_hprods )
+
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_c wrapper
+
+    SUBROUTINE wrap_eval_c( status, x, userdata, c )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
+
+!  call C interoperable eval_c
+
+!   write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
+    status = feval_c( n, m, x, c, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_c
+
+!  eval_j wrapper
+
+    SUBROUTINE wrap_eval_j( status, x, userdata, jval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: jval
+
+!  Call C interoperable eval_j
+    status = feval_j( n, m, jne, x, jval, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_j
+
+!  eval_H wrapper
+
+    SUBROUTINE wrap_eval_h( status, x, y, userdata, hval )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, y
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: hval
+
+!  Call C interoperable eval_h
+    status = feval_h( n, m, hne, x, y, hval, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_h
+
+!  eval_hprods wrapper
+
+    SUBROUTINE wrap_eval_hprods( status, x, v, userdata, pval, fgot_h )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, v
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: pval
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprods
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+
+    status = feval_hprods( n, m, pne, x, v, pval, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprods
+
+  END SUBROUTINE bnls_solve_with_mat
+
+!  --------------------------------------------
+!  C interface to fortran bnls_solve_without_mat
+!  --------------------------------------------
+
+  SUBROUTINE bnls_solve_without_mat( cdata, cuserdata, status, n, m, x,        &
+                                     xl, xu, c, g, ceval_c, ceval_jprod,       &
+                                     ceval_hprod, pne, ceval_hprods ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: g
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_jprod
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_hprod, ceval_hprods
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_c ), POINTER :: feval_c
+  PROCEDURE( eval_jprod ), POINTER :: feval_jprod
+  PROCEDURE( eval_hprod ), POINTER :: feval_hprod
+  PROCEDURE( eval_hprods ), POINTER :: feval_hprods
+
+!  ignore Fortran userdata type (not interoperable)
+
+! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_galahad_userdata_type ) :: fuserdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER(cdata, fdata)
+
+!  associate procedure pointers
+
+  CALL C_F_PROCPOINTER( ceval_c, feval_c )
+  CALL C_F_PROCPOINTER( ceval_jprod, feval_jprod )
+  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN
+    CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  ELSE
+    NULLIFY( feval_hprod )
+  END IF
+  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN
+    CALL C_F_PROCPOINTER( ceval_hprods, feval_hprods )
+  ELSE
+    NULLIFY( feval_hprods )
+  END IF
+
+!  solve the problem when the Hessian is only available via products
+
+  CALL f_bnls_solve_without_mat( fdata, fuserdata, status, x, xl, xu, c, g,    &
+                                 wrap_eval_c, wrap_eval_jprod,                 &
+                                 wrap_eval_hprod, wrap_eval_hprods )
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_c wrapper
+
+    SUBROUTINE wrap_eval_c( status, x, userdata, c )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: c
+
+!  call C interoperable eval_c
+
+    status = feval_c( n, m, x, c, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_c
+
+!  eval_jprod wrapper
+
+    SUBROUTINE wrap_eval_jprod( status, x, userdata, ftranspose, u, v, fgot_j )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, INTENT( IN ) :: ftranspose
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_j
+    LOGICAL ( KIND = C_BOOL ) :: cgot_j, ctranspose
+
+!  call C interoperable eval_jprod
+
+    ctranspose = ftranspose
+!   IF ( ftranspose ) THEN
+!     t = 1
+!     ctranspose = .TRUE.
+!   ELSE
+!     t = 0
+!     ctranspose = .FALSE.
+!   END IF
+!   write(6,*) 'ctranspose, ftranspose', ctranspose, ftranspose
+    IF ( PRESENT( fgot_j ) ) THEN
+      cgot_j = fgot_j
+    ELSE
+      cgot_j = .FALSE.
+    END IF
+    status = feval_jprod( n, m, x, ctranspose, u, v, cgot_j, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_jprod
+
+!  eval_hprod wrapper
+
+    SUBROUTINE wrap_eval_hprod( status, x, y, userdata, u, v, fgot_h )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, y
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprod
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+    status = feval_hprod( n, m, x, y, u, v, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprod
+
+!  eval_hprods wrapper
+
+    SUBROUTINE wrap_eval_hprods( status, x, v, userdata, pval, fgot_h )
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( IN ) :: x, v
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = rpc_ ), DIMENSION( : ), INTENT( OUT ) :: pval
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprods
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+
+    status = feval_hprods( n, m, pne, x, v, pval, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprods
+
+  END SUBROUTINE bnls_solve_without_mat
+
+!  -------------------------------------------------
+!  C interface to fortran bnls_solve_reverse_with_mat
+!  -------------------------------------------------
+
+  SUBROUTINE bnls_solve_reverse_with_mat( cdata, status, eval_status,          &
+                                          n, m, x, xl, xu, c, g, jne, jval, y, &
+                                          hne, hval, v, pne, pval ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: c
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( jne ) :: jval
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( hne ) :: hval
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( pne ) :: pval
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( m ) :: y
+  REAL ( KIND = rpc_ ), INTENT( OUT ), DIMENSION( n ) :: v
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the problem when the Hessian is available by reverse communication
+
+  CALL f_bnls_solve_reverse_with_mat( fdata, status, eval_status, x, xl, xu,   &
+                                      c, g, jval, y, hval, v, pval )
+  RETURN
+
+  END SUBROUTINE bnls_solve_reverse_with_mat
+
+!  ----------------------------------------------------
+!  C interface to fortran bnls_solve_reverse_without_mat
+!  ----------------------------------------------------
+
+  SUBROUTINE bnls_solve_reverse_without_mat( cdata, status, eval_status,       &
+                                             n, m, x, xl, xu, c, g,            &
+                                             ctranspose, u, v, y,              &
+                                             pne, pval ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = ipc_ ), INTENT( IN ), VALUE :: n, m, pne
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( n ) :: x, g
+  REAL ( KIND = rpc_ ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( m ) :: c, y
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( MAX( n, m ) ) :: u, v
+  REAL ( KIND = rpc_ ), INTENT( INOUT ), DIMENSION( pne ) :: pval
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  LOGICAL ( KIND = C_BOOL ), INTENT( INOUT )  :: ctranspose
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), POINTER :: fdata
+  LOGICAL :: ftranspose
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the problem when Hessian products are available by reverse
+!  communication
+
+  CALL f_bnls_solve_reverse_without_mat( fdata, status, eval_status, x,        &
+                                          xl, xu, c, g,                        &
+                                          ftranspose, u, v, y, pval )
+  IF ( status == 5 ) ctranspose = ftranspose
+  RETURN
+
+  END SUBROUTINE bnls_solve_reverse_without_mat
+
+!  --------------------------------------
+!  C interface to fortran bnls_information
+!  --------------------------------------
+
+  SUBROUTINE bnls_information( cdata, cinform, status ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( bnls_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), pointer :: fdata
+  TYPE ( f_bnls_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain BNLS solution information
+
+  CALL f_bnls_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE bnls_information
+
+!  ------------------------------------
+!  C interface to fortran bnls_terminate
+!  ------------------------------------
+
+  SUBROUTINE bnls_terminate( cdata, ccontrol, cinform ) BIND( C )
+  USE GALAHAD_BNLS_precision_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( bnls_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( bnls_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_bnls_full_data_type ), pointer :: fdata
+  TYPE ( f_bnls_control_type ) :: fcontrol
+  TYPE ( f_bnls_inform_type ) :: finform
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  copy inform in
+
+  CALL copy_inform_in( cinform, finform )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  deallocate workspace
+
+  CALL f_bnls_terminate( fdata, fcontrol, finform )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+
+!  deallocate data
+
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
+  RETURN
+
+  END SUBROUTINE bnls_terminate
