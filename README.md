@@ -14,7 +14,12 @@ All major GALAHAD packages are documented in Fortran, C, Python and Julia:
 Help files are provided for MATLAB functions.
 
 ## Installation
-GALAHAD can be installed using the [Meson build system](https://mesonbuild.com) (all commands below are to be run from the top of the source tree):
+
+### Precompiled Library
+We provide a precompiled GALAHAD library in the [releases tab](https://github.com/ralna/galahad/releases/latest/) for Linux, macOS (Intel & Silicon) and Windows. 
+
+### Installation from Source 
+GALAHAD can be installed from source using the [Meson build system](https://mesonbuild.com) (all commands below are to be run from the top of the source tree):
 
 ```
 meson setup builddir -Dtests=true
