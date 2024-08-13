@@ -433,6 +433,7 @@ subdir('src/tru')
 subdir('src/ugo')
 subdir('src/uls')
 subdir('src/userdata')
+subdir('src/version')
 subdir('src/warm')
 subdir('src/wcp')
 
