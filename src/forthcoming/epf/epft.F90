@@ -76,7 +76,7 @@
        control%preconditioner = - 3               ! User's preconditioner
      ELSE IF ( s == - GALAHAD_error_unbounded ) THEN
      ELSE IF ( s == - GALAHAD_error_max_iterations ) THEN
-       control%maxit = 0
+       control%max_it = 0
      ELSE IF ( s == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0_rp_
      END IF
@@ -193,30 +193,30 @@
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        control%preconditioner = 3
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
                         eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%preconditioner = 5
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
        control%preconditioner = - 2
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
                         eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 6 ) THEN
        control%model = 1
-       control%maxit = 1000
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       control%max_it = 1000
+       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
                         eval_F = FUN, eval_G = GRAD )
      ELSE IF ( i == 7 ) THEN
        control%model = 3
-       control%maxit = 1000
-       CALL EPF_solve( nlp, control, inform, data, userdata,                  &
+       control%max_it = 1000
+       CALL EPF_solve( nlp, control, inform, data, userdata,                   &
                         eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN

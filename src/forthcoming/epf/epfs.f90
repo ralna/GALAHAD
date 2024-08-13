@@ -35,7 +35,8 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
    CALL EPF_initialize( data, control, inform ) ! Initialize control parameters
    control%subproblem_direct = .TRUE.
-   control%maxit = 20
+   control%max_it = 20
+   control%max_eval = 100
    control%print_level = 1
    control%stop_abs_p = 1.0D-5
    control%stop_abs_d = 1.0D-5
@@ -46,7 +47,7 @@
    CALL EPF_solve( nlp, control, inform, data, userdata, eval_FC = FC,         &
                    eval_GJ = GJ, eval_HL = HL ) ! Solve problem
    IF ( inform%status == 0 ) THEN               ! Successful return
-     WRITE( 6, "( ' EPF: ', I0, ' iterations -',                               &
+     WRITE( 6, "( ' EPF: ', I0, ' major iterations -',                         &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%iter, inform%obj, nlp%X

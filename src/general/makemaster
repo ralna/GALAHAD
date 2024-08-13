@@ -15,7 +15,7 @@ DUMMYS = kinds_silent clock_silent extend_silent symbols_silent \
          lapack_interface_silent metis_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          pastix_silent mpi_silent mumps_silent umfpack_silent \
-         string_silent buildspec_silent
+         string_silent version_silent buildspec_silent
 
 BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
          specfile_silent sort_silent norms_silent
@@ -86,6 +86,13 @@ string_silent:
 	( cd $(GALAHAD)/src/string ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+#  version package
+
+version_silent:
+	( cd $(GALAHAD)/src/version ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) version_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/version )
 
 #  space package
 
@@ -619,6 +626,9 @@ clean:
 	( cd $(GALAHAD)/src/string ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+	( cd $(GALAHAD)/src/version ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/version )
 	( cd $(GALAHAD)/src/space ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/space )

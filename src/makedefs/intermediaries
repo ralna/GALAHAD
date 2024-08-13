@@ -592,6 +592,11 @@ make_userdata:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) userdata.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/userdata )
 
+make_version:
+	( cd $(GALAHAD)/src/version ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) version.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/version )
+
 make_wcp:
 	( cd $(GALAHAD)/src/wcp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp.o \
@@ -1228,6 +1233,11 @@ make_all_userdata:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) userdata_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/userdata )
 
+make_all_version:
+	( cd $(GALAHAD)/src/version ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) version_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/version )
+
 make_all_wcp:
 	( cd $(GALAHAD)/src/wcp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp_silent \
@@ -1851,6 +1861,11 @@ make_ciface_userdata:
 	( cd $(GALAHAD)/src/userdata ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) userdata_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/userdata )
+
+make_ciface_version:
+	( cd $(GALAHAD)/src/version ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) version_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/version )
 
 make_ciface_wcp:
 	( cd $(GALAHAD)/src/wcp ; \
@@ -2508,6 +2523,11 @@ make_pyiface_userdata:
 	( cd $(GALAHAD)/src/userdata ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) userdata_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/userdata )
+
+make_pyiface_version:
+	( cd $(GALAHAD)/src/version ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) version_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/version )
 
 make_pyiface_wcp:
 	( cd $(GALAHAD)/src/wcp ; \

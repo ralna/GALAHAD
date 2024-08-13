@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-07-10 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-08-08 AT 09:40 GMT.
 
 #include "galahad_modules.h"
 
@@ -107,14 +107,25 @@
 
        INTEGER ( KIND = ip_ ) :: print_gap = 1
 
-!   the maximum number of iterations performed
+!   the maximum number of iterations permitted
 
-       INTEGER ( KIND = ip_ ) :: maxit = 100
+       INTEGER ( KIND = ip_ ) :: max_it = 100
+
+!   the maximum number of function evaluations permitted
+
+       INTEGER ( KIND = ip_ ) :: max_eval = 10000
 
 !   removal of the file alive_file from unit alive_unit terminates execution
 
        INTEGER ( KIND = ip_ ) :: alive_unit = 40
        CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
+
+!   update the Lagrange multipliers/dual variables from iteration 
+!    update_multipliers_itmin (<0 means never) and once the primal 
+!    infeasibility is below update_multipliers_tol
+
+       INTEGER ( KIND = ip_ ) :: update_multipliers_itmin = 0
+       REAL ( KIND = rp_ ) :: update_multipliers_tol = infinity
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
@@ -142,7 +153,7 @@
 !   the initial value of the penalty parameter (non-positive sets automatically)
 
 !      REAL ( KIND = rp_ ) :: initial_mu = point1
-       REAL ( KIND = rp_ ) :: initial_mu = - one 
+       REAL ( KIND = rp_ ) :: initial_mu = - one
 
 !   the amount by which the penalty parameter is decreased
 
@@ -169,7 +180,7 @@
 !   use a direct (factorization) or (preconditioned) iterative method to
 !    find the search direction
 
-       LOGICAL :: subproblem_direct = .FALSE.
+       LOGICAL :: subproblem_direct = .TRUE.
 
 !   if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
@@ -333,14 +344,15 @@
 
        REAL :: time_start, time_record, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
-       REAL ( KIND = rp_ ) :: mu, stop_p, stop_d, stop_c
+       REAL ( KIND = rp_ ) :: mu, max_mu, stop_p, stop_d, stop_c
+       REAL ( KIND = rp_ ) :: old_primal_infeasibility
 
        LOGICAL :: printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printm, set_printw, set_printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl
        LOGICAL :: reverse_hprod, reverse_prec
-       LOGICAL :: constrained, map_h_to_jtj, no_bounds, header
+       LOGICAL :: constrained, map_h_to_jtj, no_bounds, header, update_vw
        LOGICAL :: eval_fc, eval_gj, eval_hl, initialize_munu, update_munu
 
        CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard
@@ -461,6 +473,8 @@
 !  stop-print                                      -1
 !  iterations-between-printing                     1
 !  maximum-number-of-iterations                    100
+!  maximum-number-of-evaluations                   10000
+!  update-multipliers-from-iteration               0
 !  infinity-value                                  1.0D+19
 !  absolute-primal-accuracy                        1.0D-5
 !  relative-primal-accuracy                        1.0D-5
@@ -471,6 +485,7 @@
 !  minimum-step-allowed                            2.0D-16
 !  initial-penalty-parameter                       1.0D-1
 !  penalty-parameter-reduction-factor              0.5
+!  update-multipliers-feasibility-tolerance        1.0D+20
 !  minimum-objective-before-unbounded              -1.0D+32
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
@@ -501,8 +516,12 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_it = print_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_eval = max_it + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: update_multipliers_itmin             &
+                                            = max_eval + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit                           &
+                                            = update_multipliers_itmin + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = alive_unit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_p = infinity + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_p = stop_abs_p + 1
@@ -513,7 +532,10 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: stop_s = stop_rel_c + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: initial_mu = stop_s + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: mu_reduce = initial_mu + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = mu_reduce + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: update_multipliers_tol               &
+                                            = mu_reduce + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded                        &
+                                            = update_multipliers_tol + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = obj_unbounded + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
@@ -542,7 +564,10 @@
      spec( start_print )%keyword = 'start-print'
      spec( stop_print )%keyword = 'stop-print'
      spec( print_gap )%keyword = 'iterations-between-printing'
-     spec( maxit )%keyword = 'maximum-number-of-iterations'
+     spec( max_it )%keyword = 'maximum-number-of-iterations'
+     spec( max_eval )%keyword = 'maximum-number-of-evaluations'
+     spec( update_multipliers_itmin )%keyword                                  &
+       = 'update-multipliers-from-iteration'
      spec( alive_unit )%keyword = 'alive-device'
 
 !  Real key-words
@@ -557,6 +582,8 @@
      spec( stop_s )%keyword = 'minimum-steplength-allowed'
      spec( initial_mu )%keyword = 'initial-penalty-parameter'
      spec( mu_reduce )%keyword = 'penalty-parameter-reduction-factor'
+     spec( update_multipliers_tol )%keyword                                    &
+       = 'update-multipliers-feasibility-tolerance'
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
@@ -603,8 +630,14 @@
      CALL SPECFILE_assign_value( spec( print_gap ),                            &
                                  control%print_gap,                            &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( maxit ),                                &
-                                 control%maxit,                                &
+     CALL SPECFILE_assign_value( spec( max_it ),                               &
+                                 control%max_it,                               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( max_eval ),                             &
+                                 control%max_eval,                             &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( update_multipliers_itmin ),             &
+                                 control%update_multipliers_itmin,             &
                                  control%error )
      CALL SPECFILE_assign_value( spec( alive_unit ),                           &
                                  control%alive_unit,                           &
@@ -641,6 +674,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( mu_reduce ),                            &
                                  control%mu_reduce,                            &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( update_multipliers_tol ),               &
+                                 control%update_multipliers_tol,               &
                                  control%error )
      CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
                                  control%obj_unbounded,                        &
@@ -828,13 +864,16 @@
 !        package is given in the component inform%factor_status.
 !   -16. The problem is so ill-conditioned that further progress is impossible.
 !   -18. Too many iterations have been performed. This may happen if
-!        control%maxit is too small, but may also be symptomatic of
+!        control%max_it is too small, but may also be symptomatic of
 !        a badly scaled problem.
 !   -19. The CPU time limit has been reached. This may happen if
 !        control%cpu_time_limit is too small, but may also be symptomatic of
 !        a badly scaled problem.
 !   -40. The user has forced termination of solver by removing the file named
 !        control%alive_file from unit unit control%alive_unit.
+!   -84. Too many evaluations have been performed. This may happen if
+!        control%max_it is too small, but may also be symptomatic of
+!        a badly scaled problem.
 !
 !     2. The user should compute the objective function value f(x) and the
 !        constraint function values c(x) at the point x indicated in nlp%X
@@ -1089,14 +1128,15 @@
 
 !  has the problem bounds?
 
-    data%no_bounds = COUNT( nlp%X_l >= - control%infinity ) +                  &
-                     COUNT( nlp%X_u <= control%infinity ) +                    &
-                     COUNT( nlp%C_l >= - control%infinity ) +                  &
-                     COUNT( nlp%C_u <= control%infinity ) == 0
+     data%no_bounds = COUNT( nlp%X_l >= - control%infinity ) +                 &
+                      COUNT( nlp%X_u <= control%infinity ) +                   &
+                      COUNT( nlp%C_l >= - control%infinity ) +                 &
+                      COUNT( nlp%C_u <= control%infinity ) == 0
 
 !  allocate workspace for the problem:
 
      data%epf%n = nlp%n
+     data%epf%pname = 'EPF       '
 
 !  dual variable estimates for the simple-bound constraints
 
@@ -1303,7 +1343,7 @@
      END IF
 
      IF ( data%control%stop_print < 0 ) THEN
-       data%stop_print = data%control%maxit + 1
+       data%stop_print = data%control%max_it + 1
      ELSE
        data%stop_print = data%control%stop_print
      END IF
@@ -1457,7 +1497,7 @@
        CALL BSC_form( nlp%n, nlp%m, data%JT, data%epf%H, data%BSC_data,        &
                       data%control%BSC_control, inform%BSC_inform )
        data%control%BSC_control%new_a = 1
-       data%jtdzj_ne =  data%epf%H%ne
+       data%jtdzj_ne = data%epf%H%ne
 
 !   if required, find a mapping for the entries of H(x,y) and D_z into the
 !   existing structure in data%epf%H for J^T D_y J, expanding the structure
@@ -1521,6 +1561,7 @@ stop
 
 !  set initial estimates of the dual variables ...
 
+     data%V_l = zero ; data%V_u = zero
      DO j = 1, nlp%n
        IF ( nlp%X_l( j ) >= - control%infinity ) data%V_l( j ) = one
        IF ( nlp%X_u( j ) <= control%infinity )  data%V_u( j ) = one
@@ -1528,6 +1569,7 @@ stop
 
 !  ... and Lagrange multipliers
 
+     data%W_l = zero ; data%W_u = zero
      DO i = 1, nlp%m
        IF ( nlp%C_l( i ) >= - control%infinity ) data%W_l( i ) = one
        IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = one
@@ -1542,6 +1584,8 @@ stop
     data%control%tru_control%hessian_available = .TRUE.
 !   data%initialize_munu = .FALSE.
     data%initialize_munu = .TRUE.
+    IF ( data%control%update_multipliers_itmin < 0 )                           &
+      data%control%update_multipliers_itmin = data%control%max_it + 1
 
     data%epf%X( : nlp%n ) = nlp%X( : nlp%n )
     inform%iter = 0
@@ -1583,7 +1627,7 @@ stop
 !  check to see if the iteration limit has been exceeded
 
        inform%iter = inform%iter + 1
-       IF ( inform%iter > data%control%maxit ) THEN
+       IF ( inform%iter > data%control%max_it ) THEN
          inform%status = GALAHAD_error_max_iterations ; GO TO 800
        END IF
 
@@ -1598,23 +1642,28 @@ stop
          data%printd = data%set_printd
          data%print_level = data%control%print_level
 !         data%control%GLTR_control%print_level = data%print_level_gltr
-!         data%control%TRS_control%print_level = data%print_level_trs
+         data%control%TRU_control%print_level = control%TRU_control%print_level
        ELSE
          data%printi = .FALSE. ; data%printt = .FALSE.
          data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
          data%print_level = 0
 !         data%control%GLTR_control%print_level = 0
-!         data%control%TRS_control%print_level = 0
+         data%control%TRU_control%print_level = 0
        END IF
        data%print_iteration_header                                             &
-         = data%print_level > 1 .OR. data%print_1st_header
-
+         = data%print_level > 1 .OR. data%print_1st_header .OR.                &
+           data%control%TRU_control%print_level > 0
+           
 !  -----------------------------------------------------------------
 !  2. start the inner-iteration (minimize the penalty function) loop
 !  -----------------------------------------------------------------
 
        inform%tru_inform%status = 1
        inform%tru_inform%iter = 0
+       data%control%tru_control%maxit = MIN( control%tru_control%maxit,        &
+         data%control%max_eval - inform%f_eval )
+       IF (data%printi .AND.  data%control%TRU_control%print_level > 0 )       &
+         WRITE( data%out, "( '' )" )
  200   CONTINUE
 
 !  solve the problem using a trust-region method
@@ -1723,7 +1772,7 @@ stop
            IF ( data%initialize_munu ) THEN
              data%initialize_munu = .FALSE.
 
-!  initialize the penalty parameters to equilibrate the constraints 
+!  initialize the penalty parameters to equilibrate the constraints
 
              IF ( control%initial_mu <= zero ) THEN
 
@@ -1793,6 +1842,14 @@ stop
                  END IF
                END DO
              END IF
+
+!  record the largest value
+
+             data%max_mu = MAX( MAXVAL( data%NU_l( : nlp%n ) ),                &
+                                MAXVAL( data%NU_u( : nlp%n ) ) )
+             IF ( nlp%m > 0 ) data%max_mu = MAX( data%max_mu,                  &
+                                MAXVAL( data%MU_l( : nlp%m ) ),                &
+                                MAXVAL( data%MU_u( : nlp%m ) ) )
            END IF
 
 !  compute the individual and combined dual-variable
@@ -1982,22 +2039,50 @@ stop
           nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
        inform%dual_infeasibility                                               &
          = TWO_NORM( nlp%X( : nlp%n ) - data%W( : nlp%n ) )
+!      IF ( inform%iter > 2 ) WRITE(6, "( ' feas / old_feas =', ES12.4 ) ")    &
+!        inform%primal_infeasibility /  data%old_primal_infeasibility
+       data%old_primal_infeasibility = inform%primal_infeasibility
 
 !  update the Lagrange multipliers and dual variables
 
+       data%update_vw =                                                        &
+         inform%primal_infeasibility <= data%control%update_multipliers_tol    &
+         .AND. inform%iter > data%control%update_multipliers_itmin
+
+!      data%update_vw = .TRUE.
+!      data%update_vw = .FALSE.
+       IF ( data%update_vw ) THEN
+
 !  for the dual variables:
 
-       DO j = 1, nlp%n
-         IF ( nlp%X_l( j ) >= - control%infinity ) data%V_l( j ) = data%Z_l( j )
-         IF ( nlp%X_u( j ) <= control%infinity ) data%V_u( j ) = data%Z_u( j )
-       END DO
+         DO j = 1, nlp%n
+           IF ( nlp%X_l( j ) >= - control%infinity )                           &
+             data%V_l( j ) = data%Z_l( j )
+           IF ( nlp%X_u( j ) <= control%infinity )                             &
+             data%V_u( j ) = data%Z_u( j )
+         END DO
 
 !  for the Lagrange multipliers:
 
-       DO i = 1, nlp%m
-         IF ( nlp%C_l( i ) >= - control%infinity ) data%W_l( i ) = data%Y_l( i )
-         IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = data%Y_u( i )
-       END DO
+         DO i = 1, nlp%m
+           IF ( nlp%C_l( i ) >= - control%infinity )                           &
+             data%W_l( i ) = data%Y_l( i )
+           IF ( nlp%C_u( i ) <= control%infinity )                             &
+             data%W_u( i ) = data%Y_u( i )
+         END DO
+
+!  if required, print the new Lagrange multiplier and dual variable estimates
+
+         IF ( data%printd ) THEN
+           WRITE( data%out, 2250 ) 'X  ', nlp%X
+           WRITE( data%out, 2250 ) 'V_l', data%V_l
+           WRITE( data%out, 2250 ) 'V_u', data%V_u
+           IF ( nlp%m > 0 ) THEN
+             WRITE( data%out, 2250 ) 'W_l', data%W_l
+             WRITE( data%out, 2250 ) 'W_u', data%W_u
+           END IF
+         END IF
+       END IF
 
 !  compute the complemntary slackness
 
@@ -2009,25 +2094,35 @@ stop
 
 !  if required, print details of the latest major iteration
 
-       IF ( data%printi .AND. data%print_iteration_header )                    &
-          WRITE( data%out, 2010) prefix
-       IF ( data%print_iteration_header ) data%print_1st_header = .FALSE.
+       IF ( data%printi ) THEN
+         IF ( inform%iter == 1 )                                               &
+           WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', &
+          &  I0, '): EPF stopping tolerance =', ES11.4 )" )                    &
+             prefix, TRIM( nlp%pname ), nlp%n, nlp%m, data%stop_d
+         IF ( data%print_iteration_header ) THEN
+           WRITE( data%out, 2010 ) prefix
+           data%print_1st_header = .FALSE.
+         END IF
 
-       IF ( data%printi ) WRITE( data%out, "( A, I6, ES16.8, 3ES9.1, I6 )" )   &
-         prefix, inform%iter, inform%obj, inform%primal_infeasibility,         &
-         inform%dual_infeasibility, inform%complementary_slackness,            &
-         inform%tru_inform%iter
+         CALL CLOCK_time( data%clock_now )
+         data%clock_now = data%clock_now - data%clock_start
+         IF ( data%printi ) WRITE( data%out,                                   &
+           "( A, I6, ES16.8, 4ES9.1, I6, F9.2 )" )                             &
+             prefix, inform%iter, inform%obj, inform%primal_infeasibility,     &
+             inform%dual_infeasibility, inform%complementary_slackness,        &
+             data%max_mu, inform%tru_inform%iter, data%clock_now
 
-       IF ( data%printm )                                                      &
-         WRITE( data%out, "( ' objective value      = ', ES22.14, /,           &
-        &                    ' current gradient     = ', ES12.4, /,            &
-        &                    ' primal infeasibility = ', ES12.4, /,            &
-        &                    ' dual infeasibility   = ', ES12.4, /,            &
-        &                    ' complementarity      = ', ES12.4 )" )           &
+         IF ( data%printm )WRITE( data%out,                                    &
+           "( ' objective value      = ', ES22.14, /,                          &
+          &   ' current gradient     = ', ES12.4, /,                           &
+          &   ' primal infeasibility = ', ES12.4, /,                           &
+          &   ' dual infeasibility   = ', ES12.4, /,                           &
+          &   ' complementarity      = ', ES12.4 )" )                          &
             prefix, inform%obj, prefix, inform%dual_infeasibility,             &
             prefix, inform%primal_infeasibility,                               &
             prefix, inform%dual_infeasibility,                                 &
             prefix, inform%complementary_slackness
+       END IF
 
        IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
             inform%dual_infeasibility <= data%stop_d .AND.                     &
@@ -2037,10 +2132,11 @@ stop
 
 !  update the penalty parameters
 
-!  for the simple-bound constraints:
-
        data%update_munu = .TRUE.
        IF ( data%update_munu ) THEN
+
+!  for the simple-bound constraints:
+
          DO j = 1, nlp%n
            IF ( nlp%X_l( j ) >= - control%infinity )                           &
              data%NU_l( j ) = control%mu_reduce * data%NU_l( j )
@@ -2056,6 +2152,14 @@ stop
            IF ( nlp%C_u( i ) <= control%infinity )                             &
              data%MU_u( i ) = control%mu_reduce * data%MU_u( i )
          END DO
+
+!  record the largest value
+
+         data%max_mu = MAX( MAXVAL( data%NU_l( : nlp%n ) ),                    &
+                            MAXVAL( data%NU_u( : nlp%n ) ) )
+         IF ( nlp%m > 0 ) data%max_mu = MAX( data%max_mu,                      &
+                            MAXVAL( data%MU_l( : nlp%m ) ),                    &
+                            MAXVAL( data%MU_u( : nlp%m ) ) )
        END IF
 
 !  ---------------------------
@@ -2119,7 +2223,6 @@ stop
        inform%status = GALAHAD_error_cpu_limit ; GO TO 900
      END IF
 
-
 !  =========================
 !  End of the main iteration
 !  =========================
@@ -2156,9 +2259,6 @@ stop
 !              nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
 !         END DO
 !      END DO
-       WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ',     &
-      &  I0, '): EPF stopping tolerance =', ES11.4 )" )            &
-         prefix, TRIM( nlp%pname ), nlp%n, nlp%m, data%stop_d
 !!$       IF ( .NOT. data%monotone ) WRITE( data%out,                             &
 !!$           "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
 !!$         data%non_monotone_history
@@ -2255,7 +2355,7 @@ stop
 !!$         IF ( data%control%renormalize_radius ) WRITE( data%out,               &
 !!$            "( A, '  Radius renormalized' )" ) prefix
        END IF
-       WRITE ( data%out, "( A, '  Total time = ', 0P, F0.2, ' seconds', / )" ) &
+       WRITE ( data%out, "( A, ' Total time = ', 0P, F0.2, ' seconds', / )" )  &
          prefix, inform%time%clock_total
      END IF
      IF ( inform%status /= GALAHAD_OK ) GO TO 990
@@ -2284,17 +2384,19 @@ stop
 !  Non-executable statements
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
- 2010 FORMAT( A, '  iter  f               pr-feas  du-feas  cmp-slk inner' )
- 2200 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
-              /, A, ' # gradient evaluations  = ', I10,                        &
-              /, A, ' # Hessian evaluations   = ', I10,                        &
-              /, A, ' # major  iterations     = ', I10,                        &
-             //, A, ' Current objective value = ', ES22.14,                    &
-              /, A, ' Current gradient norm   = ', ES12.4 )
+ 2010 FORMAT( A, '  iter  f               pr-feas  du-feas  cmp-slk  ',        &
+              ' max mu inner cpu time' )
+ 2200 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
+              /, A, ' # gradient evaluations  = ', I0,                         &
+              /, A, ' # Hessian evaluations   = ', I0,                         &
+              /, A, ' # major iterations      = ', I0,                         &
+             //, A, ' Terminal objective value =', ES22.14,                    &
+              /, A, ' Terminal gradient norm   =', ES12.4 )
  2210 FORMAT( /, A, ' name             X_l        X         X_u         G ' )
  2220 FORMAT(  A, 1X, A10, 4ES12.4 )
  2230 FORMAT(  A, 1X, I10, 4ES12.4 )
  2240 FORMAT( A, ' .          ........... ...........' )
+ 2250 FORMAT( ' ', A3, ' =      ', 5ES12.4, / ( 6ES12.4 ) )
 
  !  End of subroutine EPF_solve
 
