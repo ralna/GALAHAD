@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-08-13 AT 13:15 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-08-14 AT 09:45 GMT.
 
 #include "galahad_modules.h"
 
@@ -23,21 +23,20 @@
       PRIVATE
       PUBLIC :: VERSION
 
-      CHARACTER ( LEN = 3 ) :: major = '5  '
-      CHARACTER ( LEN = 3 ) :: minor = '0  '
-      CHARACTER ( LEN = 5 ) :: patch = '0    '
+      INTEGER, PARAMETER :: major = 5
+      INTEGER, PARAMETER :: minor = 0
+      INTEGER, PARAMETER :: patch = 0
 
     CONTAINS
 
 !-*-*-*-*-*-*-  G A L A H A D   V E R S I O N   F U N C T I O N   -*-*-*-*-*-*-
 
       FUNCTION VERSION(  )
-      CHARACTER ( LEN = 13 ) :: version
+      INTEGER, DIMENSION( 3 ) :: version
 
 !  return the current GALAHAD version number (major.minor.patch)
 
-      version = REPEAT( ' ', 13 )
-      version = TRIM( major ) // '.' // TRIM( minor ) // '.' // TRIM( patch ) 
+      version = (/ major, minor, patch /)
 
 !  End of subroutine VERSION
 
