@@ -1,6 +1,7 @@
 using GALAHAD
 
 @info("GALAHAD_INSTALLATION : $(GALAHAD.GALAHAD_INSTALLATION)")
+@info("GALAHAD_VERSION : $(galahad_version())")
 include("test_structures.jl")
 
 include("test_arc.jl")

@@ -5,8 +5,11 @@
    PROGRAM GALAHAD_VERSION_TEST
    USE GALAHAD_VERSION
    IMPLICIT NONE
-   INTEGER, DIMENSION( 3 ) :: current
-   current = VERSION( )
+
+   INTEGER :: major, minor, patch
+   CALL VERSION( major, minor, patch )
+
    WRITE( 6, "(' current GALAHAD version is ', I0, '.',  I0, '.',  I0 )" )     &
-     current
+     major, minor, patch
+
    END PROGRAM GALAHAD_VERSION_TEST
