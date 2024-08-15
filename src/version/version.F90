@@ -31,18 +31,19 @@
 
 !-*-*-*-*-*-*-  G A L A H A D   V E R S I O N   F U N C T I O N   -*-*-*-*-*-*-
 
-      FUNCTION VERSION(  )
-      INTEGER, DIMENSION( 3 ) :: version
+      SUBROUTINE VERSION(major_version, minor_version, patch_version) BIND(C, NAME="version_galahad")
+      INTEGER :: major_version, minor_version, patch_version
 
 !  return the current GALAHAD version number (major.minor.patch)
-
-      version = (/ major, minor, patch /)
+      major_version = major
+      minor_version = minor
+      patch_version = patch
+      RETURN
 
 !  End of subroutine VERSION
 
-      END FUNCTION VERSION
+      END SUBROUTINE VERSION
 
 !  End of module GALAHAD_VERSION
 
     END MODULE GALAHAD_VERSION
-

@@ -49,6 +49,7 @@ include("wrappers/sha.jl")
 include("wrappers/sils.jl")
 include("wrappers/ugo.jl")
 include("wrappers/ssids.jl")
+include("wrappers/version.jl")
 
 # sls requires sils.
 include("wrappers/sls.jl")
