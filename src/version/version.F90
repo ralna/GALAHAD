@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-08-14 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-08-16 AT 09:45 GMT.
 
 #include "galahad_modules.h"
 
@@ -16,12 +16,10 @@
 
     MODULE GALAHAD_VERSION
 
-      USE GALAHAD_KINDS_precision
-
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: VERSION
+      PUBLIC :: VERSION_galahad
 
       INTEGER, PARAMETER :: major = 5
       INTEGER, PARAMETER :: minor = 0
@@ -29,20 +27,21 @@
 
     CONTAINS
 
-!-*-*-*-*-*-*-  G A L A H A D   V E R S I O N   F U N C T I O N   -*-*-*-*-*-*-
+!-*-  G A L A H A D   V E R S I O N _ G A L A H A D   S U B R O U T I N E   -*-
 
-      SUBROUTINE VERSION(major_version, minor_version, patch_version) BIND(C, NAME="version_galahad")
+      SUBROUTINE VERSION_galahad( major_version, minor_version, patch_version ) 
       INTEGER :: major_version, minor_version, patch_version
 
 !  return the current GALAHAD version number (major.minor.patch)
+
       major_version = major
       minor_version = minor
       patch_version = patch
       RETURN
 
-!  End of subroutine VERSION
+!  End of subroutine VERSION_galahad
 
-      END SUBROUTINE VERSION
+      END SUBROUTINE VERSION_galahad
 
 !  End of module GALAHAD_VERSION
 
