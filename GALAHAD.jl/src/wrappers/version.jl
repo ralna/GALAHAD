@@ -1,6 +1,6 @@
-export galahad_version
+export version_galahad
 
-function galahad_version()
+function version_galahad()
   major = Ref{Cint}(0)
   minor = Ref{Cint}(0)
   patch = Ref{Cint}(0)
