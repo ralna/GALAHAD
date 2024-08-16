@@ -15,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_VERSION_ciface
-
+    USE GALAHAD_KINDS
     USE GALAHAD_VERSION, ONLY: f_version_galahad => version_galahad
 
   CONTAINS
@@ -26,12 +26,11 @@
 
     SUBROUTINE version_galahad( major_version, minor_version, patch_version )  &
                                 BIND( C )
-    USE ISO_C_BINDING, ONLY : C_int
     IMPLICIT NONE
 
 !  dummy arguments
 
-    INTEGER ( KIND = C_int ) :: major_version, minor_version, patch_version
+    INTEGER ( KIND = ipc_ ) :: major_version, minor_version, patch_version
     CALL f_VERSION_galahad( major_version, minor_version, patch_version )
 
     RETURN

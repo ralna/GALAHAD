@@ -1,12 +1,13 @@
-! THIS VERSION: GALAHAD 5.1  - 2024-08-14 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 5.1  - 2024-08-14 AT 14:45 GMT.
 
 #include "galahad_modules.h"
 
    PROGRAM GALAHAD_VERSION_TEST
+   USE GALAHAD_KINDS
    USE GALAHAD_VERSION
    IMPLICIT NONE
 
-   INTEGER :: major, minor, patch
+   INTEGER ( KIND = ip_ ) :: major, minor, patch
    CALL VERSION_galahad( major, minor, patch )
 
    WRITE( 6, "(' current GALAHAD version is ', I0, '.',  I0, '.',  I0 )" )     &
