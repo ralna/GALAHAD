@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-08-16 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-08-16 AT 14:45 GMT.
 
 #include "galahad_modules.h"
 
@@ -15,22 +15,22 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_VERSION
-
+      USE GALAHAD_KINDS
       IMPLICIT NONE
 
       PRIVATE
       PUBLIC :: VERSION_galahad
 
-      INTEGER, PARAMETER :: major = 5
-      INTEGER, PARAMETER :: minor = 0
-      INTEGER, PARAMETER :: patch = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: major = 5
+      INTEGER ( KIND = ip_ ), PARAMETER :: minor = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: patch = 0
 
     CONTAINS
 
 !-*-  G A L A H A D   V E R S I O N _ G A L A H A D   S U B R O U T I N E   -*-
 
       SUBROUTINE VERSION_galahad( major_version, minor_version, patch_version ) 
-      INTEGER :: major_version, minor_version, patch_version
+      INTEGER ( KIND = ip_ ) :: major_version, minor_version, patch_version
 
 !  return the current GALAHAD version number (major.minor.patch)
 
