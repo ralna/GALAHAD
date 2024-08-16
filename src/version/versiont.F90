@@ -7,7 +7,7 @@
    IMPLICIT NONE
 
    INTEGER :: major, minor, patch
-   CALL VERSION( major, minor, patch )
+   CALL VERSION_galahad( major, minor, patch )
 
    WRITE( 6, "(' current GALAHAD version is ', I0, '.',  I0, '.',  I0 )" )     &
      major, minor, patch
