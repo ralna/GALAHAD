@@ -52,131 +52,115 @@ struct ugo_inform_type{T}
   time::ugo_time_type{T}
 end
 
-export ugo_initialize_s
+export ugo_initialize
 
-function ugo_initialize_s(data, control, status)
+function ugo_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.ugo_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{ugo_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export ugo_initialize
-
-function ugo_initialize(data, control, status)
+function ugo_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.ugo_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{ugo_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export ugo_read_specfile_s
+export ugo_read_specfile
 
-function ugo_read_specfile_s(control, specfile)
+function ugo_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.ugo_read_specfile_s(control::Ptr{ugo_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export ugo_read_specfile
-
-function ugo_read_specfile(control, specfile)
+function ugo_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.ugo_read_specfile(control::Ptr{ugo_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export ugo_import_s
+export ugo_import
 
-function ugo_import_s(control, data, status, x_l, x_u)
+function ugo_import(::Type{Float32}, control, data, status, x_l, x_u)
   @ccall libgalahad_single.ugo_import_s(control::Ptr{ugo_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                         x_l::Ptr{Float32}, x_u::Ptr{Float32})::Cvoid
 end
 
-export ugo_import
-
-function ugo_import(control, data, status, x_l, x_u)
+function ugo_import(::Type{Float64}, control, data, status, x_l, x_u)
   @ccall libgalahad_double.ugo_import(control::Ptr{ugo_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                       x_l::Ptr{Float64}, x_u::Ptr{Float64})::Cvoid
 end
 
-export ugo_reset_control_s
+export ugo_reset_control
 
-function ugo_reset_control_s(control, data, status)
+function ugo_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.ugo_reset_control_s(control::Ptr{ugo_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export ugo_reset_control
-
-function ugo_reset_control(control, data, status)
+function ugo_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.ugo_reset_control(control::Ptr{ugo_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export ugo_solve_direct_s
+export ugo_solve_direct
 
-function ugo_solve_direct_s(data, userdata, status, x, f, g, h, eval_fgh)
+function ugo_solve_direct(::Type{Float32}, data, userdata, status, x, f, g, h, eval_fgh)
   @ccall libgalahad_single.ugo_solve_direct_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                               status::Ptr{Cint}, x::Ptr{Float32},
                                               f::Ptr{Float32}, g::Ptr{Float32},
                                               h::Ptr{Float32}, eval_fgh::Ptr{Cvoid})::Cvoid
 end
 
-export ugo_solve_direct
-
-function ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
+function ugo_solve_direct(::Type{Float64}, data, userdata, status, x, f, g, h, eval_fgh)
   @ccall libgalahad_double.ugo_solve_direct(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                             status::Ptr{Cint}, x::Ptr{Float64},
                                             f::Ptr{Float64}, g::Ptr{Float64},
                                             h::Ptr{Float64}, eval_fgh::Ptr{Cvoid})::Cvoid
 end
 
-export ugo_solve_reverse_s
+export ugo_solve_reverse
 
-function ugo_solve_reverse_s(data, status, eval_status, x, f, g, h)
+function ugo_solve_reverse(::Type{Float32}, data, status, eval_status, x, f, g, h)
   @ccall libgalahad_single.ugo_solve_reverse_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                eval_status::Ptr{Cint}, x::Ptr{Float32},
                                                f::Ptr{Float32}, g::Ptr{Float32},
                                                h::Ptr{Float32})::Cvoid
 end
 
-export ugo_solve_reverse
-
-function ugo_solve_reverse(data, status, eval_status, x, f, g, h)
+function ugo_solve_reverse(::Type{Float64}, data, status, eval_status, x, f, g, h)
   @ccall libgalahad_double.ugo_solve_reverse(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              eval_status::Ptr{Cint}, x::Ptr{Float64},
                                              f::Ptr{Float64}, g::Ptr{Float64},
                                              h::Ptr{Float64})::Cvoid
 end
 
-export ugo_information_s
+export ugo_information
 
-function ugo_information_s(data, inform, status)
+function ugo_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.ugo_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{ugo_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export ugo_information
-
-function ugo_information(data, inform, status)
+function ugo_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.ugo_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{ugo_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export ugo_terminate_s
+export ugo_terminate
 
-function ugo_terminate_s(data, control, inform)
+function ugo_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.ugo_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{ugo_control_type{Float32}},
                                            inform::Ptr{ugo_inform_type{Float32}})::Cvoid
 end
 
-export ugo_terminate
-
-function ugo_terminate(data, control, inform)
+function ugo_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.ugo_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{ugo_control_type{Float64}},
                                          inform::Ptr{ugo_inform_type{Float64}})::Cvoid

@@ -113,39 +113,36 @@ struct lpb_inform_type{T}
   rpd_inform::rpd_inform_type
 end
 
-export lpb_initialize_s
+export lpb_initialize
 
-function lpb_initialize_s(data, control, status)
+function lpb_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.lpb_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{lpb_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export lpb_initialize
-
-function lpb_initialize(data, control, status)
+function lpb_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.lpb_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{lpb_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export lpb_read_specfile_s
+export lpb_read_specfile
 
-function lpb_read_specfile_s(control, specfile)
+function lpb_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.lpb_read_specfile_s(control::Ptr{lpb_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export lpb_read_specfile
-
-function lpb_read_specfile(control, specfile)
+function lpb_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.lpb_read_specfile(control::Ptr{lpb_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export lpb_import_s
+export lpb_import
 
-function lpb_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function lpb_import(::Type{Float32}, control, data, status, n, m, A_type, A_ne, A_row,
+                    A_col, A_ptr)
   @ccall libgalahad_single.lpb_import_s(control::Ptr{lpb_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -153,9 +150,8 @@ function lpb_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A
                                         A_ptr::Ptr{Cint})::Cvoid
 end
 
-export lpb_import
-
-function lpb_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function lpb_import(::Type{Float64}, control, data, status, n, m, A_type, A_ne, A_row,
+                    A_col, A_ptr)
   @ccall libgalahad_double.lpb_import(control::Ptr{lpb_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -163,26 +159,24 @@ function lpb_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_p
                                       A_ptr::Ptr{Cint})::Cvoid
 end
 
-export lpb_reset_control_s
+export lpb_reset_control
 
-function lpb_reset_control_s(control, data, status)
+function lpb_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.lpb_reset_control_s(control::Ptr{lpb_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export lpb_reset_control
-
-function lpb_reset_control(control, data, status)
+function lpb_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.lpb_reset_control(control::Ptr{lpb_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export lpb_solve_lp_s
+export lpb_solve_lp
 
-function lpb_solve_lp_s(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y,
-                        z, x_stat, c_stat)
+function lpb_solve_lp(::Type{Float32}, data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l,
+                      x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.lpb_solve_lp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, g::Ptr{Float32}, f::Float32, a_ne::Cint,
                                           A_val::Ptr{Float32}, c_l::Ptr{Float32},
@@ -192,10 +186,8 @@ function lpb_solve_lp_s(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_
                                           x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
-export lpb_solve_lp
-
-function lpb_solve_lp(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
-                      x_stat, c_stat)
+function lpb_solve_lp(::Type{Float64}, data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l,
+                      x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_double.lpb_solve_lp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, g::Ptr{Float64}, f::Float64, a_ne::Cint,
                                         A_val::Ptr{Float64}, c_l::Ptr{Float64},
@@ -205,33 +197,29 @@ function lpb_solve_lp(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_u,
                                         c_stat::Ptr{Cint})::Cvoid
 end
 
-export lpb_information_s
+export lpb_information
 
-function lpb_information_s(data, inform, status)
+function lpb_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.lpb_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{lpb_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export lpb_information
-
-function lpb_information(data, inform, status)
+function lpb_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.lpb_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{lpb_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export lpb_terminate_s
+export lpb_terminate
 
-function lpb_terminate_s(data, control, inform)
+function lpb_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.lpb_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{lpb_control_type{Float32}},
                                            inform::Ptr{lpb_inform_type{Float32}})::Cvoid
 end
 
-export lpb_terminate
-
-function lpb_terminate(data, control, inform)
+function lpb_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.lpb_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{lpb_control_type{Float64}},
                                          inform::Ptr{lpb_inform_type{Float64}})::Cvoid

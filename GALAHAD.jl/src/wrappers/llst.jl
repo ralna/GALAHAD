@@ -65,39 +65,36 @@ struct llst_inform_type{T}
   ir_inform::ir_inform_type{T}
 end
 
-export llst_initialize_s
+export llst_initialize
 
-function llst_initialize_s(data, control, status)
+function llst_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.llst_initialize_s(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{llst_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export llst_initialize
-
-function llst_initialize(data, control, status)
+function llst_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.llst_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{llst_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export llst_read_specfile_s
+export llst_read_specfile
 
-function llst_read_specfile_s(control, specfile)
+function llst_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.llst_read_specfile_s(control::Ptr{llst_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
-export llst_read_specfile
-
-function llst_read_specfile(control, specfile)
+function llst_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.llst_read_specfile(control::Ptr{llst_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
-export llst_import_s
+export llst_import
 
-function llst_import_s(control, data, status, m, n, A_type, A_ne, A_row, A_col, A_ptr)
+function llst_import(::Type{Float32}, control, data, status, m, n, A_type, A_ne, A_row,
+                     A_col, A_ptr)
   @ccall libgalahad_single.llst_import_s(control::Ptr{llst_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, m::Cint,
                                          n::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -105,9 +102,8 @@ function llst_import_s(control, data, status, m, n, A_type, A_ne, A_row, A_col, 
                                          A_ptr::Ptr{Cint})::Cvoid
 end
 
-export llst_import
-
-function llst_import(control, data, status, m, n, A_type, A_ne, A_row, A_col, A_ptr)
+function llst_import(::Type{Float64}, control, data, status, m, n, A_type, A_ne, A_row,
+                     A_col, A_ptr)
   @ccall libgalahad_double.llst_import(control::Ptr{llst_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, m::Cint,
                                        n::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -115,9 +111,10 @@ function llst_import(control, data, status, m, n, A_type, A_ne, A_row, A_col, A_
                                        A_ptr::Ptr{Cint})::Cvoid
 end
 
-export llst_import_scaling_s
+export llst_import_scaling
 
-function llst_import_scaling_s(control, data, status, n, S_type, S_ne, S_row, S_col, S_ptr)
+function llst_import_scaling(::Type{Float32}, control, data, status, n, S_type, S_ne, S_row,
+                             S_col, S_ptr)
   @ccall libgalahad_single.llst_import_scaling_s(control::Ptr{llst_control_type{Float32}},
                                                  data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                  n::Cint, S_type::Ptr{Cchar}, S_ne::Cint,
@@ -125,9 +122,8 @@ function llst_import_scaling_s(control, data, status, n, S_type, S_ne, S_row, S_
                                                  S_ptr::Ptr{Cint})::Cvoid
 end
 
-export llst_import_scaling
-
-function llst_import_scaling(control, data, status, n, S_type, S_ne, S_row, S_col, S_ptr)
+function llst_import_scaling(::Type{Float64}, control, data, status, n, S_type, S_ne, S_row,
+                             S_col, S_ptr)
   @ccall libgalahad_double.llst_import_scaling(control::Ptr{llst_control_type{Float64}},
                                                data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                n::Cint, S_type::Ptr{Cchar}, S_ne::Cint,
@@ -135,25 +131,24 @@ function llst_import_scaling(control, data, status, n, S_type, S_ne, S_row, S_co
                                                S_ptr::Ptr{Cint})::Cvoid
 end
 
-export llst_reset_control_s
+export llst_reset_control
 
-function llst_reset_control_s(control, data, status)
+function llst_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.llst_reset_control_s(control::Ptr{llst_control_type{Float32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
 
-export llst_reset_control
-
-function llst_reset_control(control, data, status)
+function llst_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.llst_reset_control(control::Ptr{llst_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export llst_solve_problem_s
+export llst_solve_problem
 
-function llst_solve_problem_s(data, status, m, n, radius, A_ne, A_val, b, x, S_ne, S_val)
+function llst_solve_problem(::Type{Float32}, data, status, m, n, radius, A_ne, A_val, b, x,
+                            S_ne, S_val)
   @ccall libgalahad_single.llst_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 m::Cint, n::Cint, radius::Float32,
                                                 A_ne::Cint, A_val::Ptr{Float32},
@@ -161,9 +156,8 @@ function llst_solve_problem_s(data, status, m, n, radius, A_ne, A_val, b, x, S_n
                                                 S_ne::Cint, S_val::Ptr{Float32})::Cvoid
 end
 
-export llst_solve_problem
-
-function llst_solve_problem(data, status, m, n, radius, A_ne, A_val, b, x, S_ne, S_val)
+function llst_solve_problem(::Type{Float64}, data, status, m, n, radius, A_ne, A_val, b, x,
+                            S_ne, S_val)
   @ccall libgalahad_double.llst_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                               m::Cint, n::Cint, radius::Float64, A_ne::Cint,
                                               A_val::Ptr{Float64}, b::Ptr{Float64},
@@ -171,33 +165,29 @@ function llst_solve_problem(data, status, m, n, radius, A_ne, A_val, b, x, S_ne,
                                               S_val::Ptr{Float64})::Cvoid
 end
 
-export llst_information_s
+export llst_information
 
-function llst_information_s(data, inform, status)
+function llst_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.llst_information_s(data::Ptr{Ptr{Cvoid}},
                                               inform::Ptr{llst_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export llst_information
-
-function llst_information(data, inform, status)
+function llst_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.llst_information(data::Ptr{Ptr{Cvoid}},
                                             inform::Ptr{llst_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export llst_terminate_s
+export llst_terminate
 
-function llst_terminate_s(data, control, inform)
+function llst_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.llst_terminate_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{llst_control_type{Float32}},
                                             inform::Ptr{llst_inform_type{Float32}})::Cvoid
 end
 
-export llst_terminate
-
-function llst_terminate(data, control, inform)
+function llst_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.llst_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{llst_control_type{Float64}},
                                           inform::Ptr{llst_inform_type{Float64}})::Cvoid

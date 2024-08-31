@@ -60,12 +60,14 @@ function rewrite!(path::String, name::String, optimized::Bool)
     text = ""
     for (index, code) in enumerate(blocks)
       if contains(code, "function")
-        function_name = split(split(code, "function ")[2], "(")[1]
+        fname = split(split(code, "function ")[2], "(")[1]
         routine_single = code * "end\n"
         routine_double = code * "end\n"
 
-        routine_single = replace(routine_single, "(" => "_s(")
-        routine_single = replace(routine_single, "libgalahad_double" => "libgalahad_single")
+        routine_single = replace(routine_single, "function $fname(" => "function $fname(::Type{Float32}, ")
+        routine_double = replace(routine_double, "function $fname(" => "function $fname(::Type{Float64}, ")
+
+        routine_single = replace(routine_single, "libgalahad_double.$fname(" => "libgalahad_single.$(fname)_s(")
         routine_single = replace(routine_single, ",\n" => ",\n  ")
 
         routine_single = replace(routine_single, "rpc_" => "Float32")
@@ -87,8 +89,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
         end
 
         if (name ≠ "hsl") && (name ≠ "ssids")
-          text = text * "\n" * "export " * function_name * "_s\n" * routine_single
-          text = text * "\n" * "export " * function_name *   "\n" * routine_double
+          text = text * "\n" * "export " * fname * "\n" * routine_single * "\n" * routine_double
         end
       elseif contains(code, "struct ")
         structure = code * "end\n"
@@ -114,6 +115,7 @@ function rewrite!(path::String, name::String, optimized::Bool)
     isfile("../test/test_structures.jl") || write("../test/test_structures.jl", "using GALAHAD\n\n")
     test = read("../test/test_structures.jl", String)
     structures = structures * "\n"
+    structures = replace(structures, "Ref{wcp_inform_type{Float64}}()\n" => "Ref{wcp_inform_type{Float64}}()")
     write("../test/test_structures.jl", test * structures)
   end
 

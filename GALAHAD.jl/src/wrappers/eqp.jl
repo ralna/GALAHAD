@@ -71,40 +71,36 @@ struct eqp_inform_type{T}
   gltr_inform::gltr_inform_type{T}
 end
 
-export eqp_initialize_s
+export eqp_initialize
 
-function eqp_initialize_s(data, control, status)
+function eqp_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.eqp_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{eqp_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export eqp_initialize
-
-function eqp_initialize(data, control, status)
+function eqp_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.eqp_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{eqp_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export eqp_read_specfile_s
+export eqp_read_specfile
 
-function eqp_read_specfile_s(control, specfile)
+function eqp_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.eqp_read_specfile_s(control::Ptr{eqp_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export eqp_read_specfile
-
-function eqp_read_specfile(control, specfile)
+function eqp_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.eqp_read_specfile(control::Ptr{eqp_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export eqp_import_s
+export eqp_import
 
-function eqp_import_s(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr,
-                      A_type, A_ne, A_row, A_col, A_ptr)
+function eqp_import(::Type{Float32}, control, data, status, n, m, H_type, H_ne, H_row,
+                    H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr)
   @ccall libgalahad_single.eqp_import_s(control::Ptr{eqp_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
@@ -114,10 +110,8 @@ function eqp_import_s(control, data, status, n, m, H_type, H_ne, H_row, H_col, H
                                         A_ptr::Ptr{Cint})::Cvoid
 end
 
-export eqp_import
-
-function eqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
-                    A_ne, A_row, A_col, A_ptr)
+function eqp_import(::Type{Float64}, control, data, status, n, m, H_type, H_ne, H_row,
+                    H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr)
   @ccall libgalahad_double.eqp_import(control::Ptr{eqp_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
@@ -126,25 +120,24 @@ function eqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_p
                                       A_col::Ptr{Cint}, A_ptr::Ptr{Cint})::Cvoid
 end
 
-export eqp_reset_control_s
+export eqp_reset_control
 
-function eqp_reset_control_s(control, data, status)
+function eqp_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.eqp_reset_control_s(control::Ptr{eqp_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export eqp_reset_control
-
-function eqp_reset_control(control, data, status)
+function eqp_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.eqp_reset_control(control::Ptr{eqp_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export eqp_solve_qp_s
+export eqp_solve_qp
 
-function eqp_solve_qp_s(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c, x, y)
+function eqp_solve_qp(::Type{Float32}, data, status, n, m, h_ne, H_val, g, f, a_ne, A_val,
+                      c, x, y)
   @ccall libgalahad_single.eqp_solve_qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, h_ne::Cint, H_val::Ptr{Float32},
                                           g::Ptr{Float32}, f::Float32, a_ne::Cint,
@@ -152,9 +145,8 @@ function eqp_solve_qp_s(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c, x
                                           x::Ptr{Float32}, y::Ptr{Float32})::Cvoid
 end
 
-export eqp_solve_qp
-
-function eqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c, x, y)
+function eqp_solve_qp(::Type{Float64}, data, status, n, m, h_ne, H_val, g, f, a_ne, A_val,
+                      c, x, y)
   @ccall libgalahad_double.eqp_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, h_ne::Cint, H_val::Ptr{Float64},
                                         g::Ptr{Float64}, f::Float64, a_ne::Cint,
@@ -162,9 +154,10 @@ function eqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c, x, 
                                         x::Ptr{Float64}, y::Ptr{Float64})::Cvoid
 end
 
-export eqp_solve_sldqp_s
+export eqp_solve_sldqp
 
-function eqp_solve_sldqp_s(data, status, n, m, w, x0, g, f, a_ne, A_val, c, x, y)
+function eqp_solve_sldqp(::Type{Float32}, data, status, n, m, w, x0, g, f, a_ne, A_val, c,
+                         x, y)
   @ccall libgalahad_single.eqp_solve_sldqp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, m::Cint, w::Ptr{Float32},
                                              x0::Ptr{Float32}, g::Ptr{Float32}, f::Float32,
@@ -173,9 +166,8 @@ function eqp_solve_sldqp_s(data, status, n, m, w, x0, g, f, a_ne, A_val, c, x, y
                                              y::Ptr{Float32})::Cvoid
 end
 
-export eqp_solve_sldqp
-
-function eqp_solve_sldqp(data, status, n, m, w, x0, g, f, a_ne, A_val, c, x, y)
+function eqp_solve_sldqp(::Type{Float64}, data, status, n, m, w, x0, g, f, a_ne, A_val, c,
+                         x, y)
   @ccall libgalahad_double.eqp_solve_sldqp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                            n::Cint, m::Cint, w::Ptr{Float64},
                                            x0::Ptr{Float64}, g::Ptr{Float64}, f::Float64,
@@ -183,51 +175,45 @@ function eqp_solve_sldqp(data, status, n, m, w, x0, g, f, a_ne, A_val, c, x, y)
                                            x::Ptr{Float64}, y::Ptr{Float64})::Cvoid
 end
 
-export eqp_resolve_qp_s
+export eqp_resolve_qp
 
-function eqp_resolve_qp_s(data, status, n, m, g, f, c, x, y)
+function eqp_resolve_qp(::Type{Float32}, data, status, n, m, g, f, c, x, y)
   @ccall libgalahad_single.eqp_resolve_qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                             n::Cint, m::Cint, g::Ptr{Float32}, f::Float32,
                                             c::Ptr{Float32}, x::Ptr{Float32},
                                             y::Ptr{Float32})::Cvoid
 end
 
-export eqp_resolve_qp
-
-function eqp_resolve_qp(data, status, n, m, g, f, c, x, y)
+function eqp_resolve_qp(::Type{Float64}, data, status, n, m, g, f, c, x, y)
   @ccall libgalahad_double.eqp_resolve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, g::Ptr{Float64}, f::Float64,
                                           c::Ptr{Float64}, x::Ptr{Float64},
                                           y::Ptr{Float64})::Cvoid
 end
 
-export eqp_information_s
+export eqp_information
 
-function eqp_information_s(data, inform, status)
+function eqp_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.eqp_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{eqp_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export eqp_information
-
-function eqp_information(data, inform, status)
+function eqp_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.eqp_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{eqp_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export eqp_terminate_s
+export eqp_terminate
 
-function eqp_terminate_s(data, control, inform)
+function eqp_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.eqp_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{eqp_control_type{Float32}},
                                            inform::Ptr{eqp_inform_type{Float32}})::Cvoid
 end
 
-export eqp_terminate
-
-function eqp_terminate(data, control, inform)
+function eqp_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.eqp_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{eqp_control_type{Float64}},
                                          inform::Ptr{eqp_inform_type{Float64}})::Cvoid

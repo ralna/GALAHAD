@@ -37,49 +37,43 @@ struct lms_inform_type{T}
   time::lms_time_type{T}
 end
 
-export lms_initialize_s
+export lms_initialize
 
-function lms_initialize_s(data, control, status)
+function lms_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.lms_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{lms_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export lms_initialize
-
-function lms_initialize(data, control, status)
+function lms_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.lms_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{lms_control_type},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export lms_information_s
+export lms_information
 
-function lms_information_s(data, inform, status)
+function lms_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.lms_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{lms_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export lms_information
-
-function lms_information(data, inform, status)
+function lms_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.lms_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{lms_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export lms_terminate_s
+export lms_terminate
 
-function lms_terminate_s(data, control, inform)
+function lms_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.lms_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{lms_control_type},
                                            inform::Ptr{lms_inform_type{Float32}})::Cvoid
 end
 
-export lms_terminate
-
-function lms_terminate(data, control, inform)
+function lms_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.lms_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{lms_control_type},
                                          inform::Ptr{lms_inform_type{Float64}})::Cvoid
