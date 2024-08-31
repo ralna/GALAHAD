@@ -10,9 +10,9 @@ function test_fit(::Type{T}) where T
   inform = Ref{fit_inform_type}()
 
   status = Ref{Cint}()
-  fit_initialize(Float64, data, control, status)
-  fit_information(Float64, data, inform, status)
-  fit_terminate(Float64, data, control, inform)
+  fit_initialize(T, data, control, status)
+  fit_information(T, data, inform, status)
+  fit_terminate(T, data, control, inform)
 
   return 0
 end

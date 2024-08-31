@@ -6,15 +6,15 @@ using Test
 
 function test_gls(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{gls_control_type{Float64}}()
-  ainfo = Ref{gls_ainfo_type{Float64}}()
-  finfo = Ref{gls_finfo_type{Float64}}()
+  control = Ref{gls_control_type{T}}()
+  ainfo = Ref{gls_ainfo_type{T}}()
+  finfo = Ref{gls_finfo_type{T}}()
   sinfo = Ref{gls_sinfo_type}()
 
   status = Ref{Cint}()
-  gls_initialize(Float64, data, control)
-  gls_information(Float64, data, ainfo, finfo, sinfo, status)
-  gls_finalize(Float64, data, control, status)
+  gls_initialize(T, data, control)
+  gls_information(T, data, ainfo, finfo, sinfo, status)
+  gls_finalize(T, data, control, status)
 
   return 0
 end

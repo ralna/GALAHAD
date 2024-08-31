@@ -7,24 +7,25 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-mutable struct userdata_blls
-  scale::Float64
-end
-
-# Apply preconditioner
-function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_blls)
-  scale = userdata.scale
-  for i in 1:n
-    p[i] = scale * x[i]
-  end
-  return 0
+mutable struct userdata_blls{T}
+  scale::T
 end
 
 function test_blls(::Type{T}) where T
+
+  # Apply preconditioner
+  function prec(n::Int, x::Vector{T}, p::Vector{T}, userdata::userdata_blls)
+    scale = userdata.scale
+    for i in 1:n
+      p[i] = scale * x[i]
+    end
+    return 0
+  end
+
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{blls_control_type{Float64}}()
-  inform = Ref{blls_inform_type{Float64}}()
+  control = Ref{blls_control_type{T}}()
+  inform = Ref{blls_inform_type{T}}()
 
   # Set user data
   userdata = userdata_blls(1.0)
@@ -39,22 +40,22 @@ function test_blls(::Type{T}) where T
   Ao_col = zeros(Cint, Ao_ne) # column indices
   Ao_ptr_ne = o + 1 # number of row pointers
   Ao_ptr = zeros(Cint, Ao_ptr_ne)  # row pointers
-  Ao_val = zeros(Float64, Ao_ne) # values
-  Ao_dense = zeros(Float64, Ao_dense_ne) # dense values
+  Ao_val = zeros(T, Ao_ne) # values
+  Ao_dense = zeros(T, Ao_dense_ne) # dense values
   # column-wise storage
   Ao_by_col_row = zeros(Cint, Ao_ne) # row indices,
   Ao_by_col_ptr_ne = n + 1 # number of column pointers
   Ao_by_col_ptr = zeros(Cint, Ao_by_col_ptr_ne)  # column pointers
-  Ao_by_col_val = zeros(Float64, Ao_ne) # values
-  Ao_by_col_dense = zeros(Float64, Ao_dense_ne) # dense values
-  b = zeros(Float64, o)  # linear term in the objective
-  x_l = zeros(Float64, n) # variable lower bound
-  x_u = zeros(Float64, n) # variable upper bound
-  x = zeros(Float64, n) # variables
-  z = zeros(Float64, n) # dual variables
-  r = zeros(Float64, o) # residual
-  g = zeros(Float64, n) # gradient
-  w = zeros(Float64, o) # weights
+  Ao_by_col_val = zeros(T, Ao_ne) # values
+  Ao_by_col_dense = zeros(T, Ao_dense_ne) # dense values
+  b = zeros(T, o)  # linear term in the objective
+  x_l = zeros(T, n) # variable lower bound
+  x_u = zeros(T, n) # variable upper bound
+  x = zeros(T, n) # variables
+  z = zeros(T, n) # dual variables
+  r = zeros(T, o) # residual
+  g = zeros(T, n) # gradient
+  w = zeros(T, o) # weights
 
   # Set output storage
   x_stat = zeros(Cint, n) # variable status
@@ -152,12 +153,12 @@ function test_blls(::Type{T}) where T
   nz_v = zeros(Cint, on)
   nz_p = zeros(Cint, o)
   mask = zeros(Cint, o)
-  v = zeros(Float64, on)
-  p = zeros(Float64, on)
+  v = zeros(T, on)
+  p = zeros(T, on)
   nz_p_end = 1
 
   # Initialize BLLS
-  blls_initialize(Float64, data, control, status)
+  blls_initialize(T, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -172,11 +173,11 @@ function test_blls(::Type{T}) where T
   for i in 1:o
     mask[i] = 0
   end
-  blls_import_without_a(Float64, control, data, status, n, o)
+  blls_import_without_a(T, control, data, status, n, o)
 
   terminated = false
   while !terminated # reverse-communication loop
-    blls_solve_reverse_a_prod(Float64, data, status, eval_status, n, o, b,
+    blls_solve_reverse_a_prod(T, data, status, eval_status, n, o, b,
                               x_l, x_u, x, z, r, g, x_stat, v, p,
                               nz_v, nz_v_start, nz_v_end,
                               nz_p, nz_p_end, w)
@@ -239,7 +240,7 @@ function test_blls(::Type{T}) where T
   end
 
   # Record solution information
-  blls_information(Float64, data, inform, status)
+  blls_information(T, data, inform, status)
 
   # Print solution details
   if inform[].status == 0
@@ -259,7 +260,7 @@ function test_blls(::Type{T}) where T
   # @printf("\n")
 
   # Delete internal workspace
-  blls_terminate(Float64, data, control, inform)
+  blls_terminate(T, data, control, inform)
 
   return 0
 end

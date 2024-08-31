@@ -9,21 +9,21 @@ using Accessors
 function test_gltr(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{gltr_control_type{Float64}}()
-  inform = Ref{gltr_inform_type{Float64}}()
+  control = Ref{gltr_control_type{T}}()
+  inform = Ref{gltr_inform_type{T}}()
 
   # Set problem data
   n = 100 # dimension
 
   status = Ref{Cint}()
-  radius = Ref{Float64}()
-  x = zeros(Float64, n)
-  r = zeros(Float64, n)
-  vector = zeros(Float64, n)
-  h_vector = zeros(Float64, n)
+  radius = Ref{T}()
+  x = zeros(T, n)
+  r = zeros(T, n)
+  vector = zeros(T, n)
+  h_vector = zeros(T, n)
 
   # Initialize gltr
-  gltr_initialize(Float64, data, control, status)
+  gltr_initialize(T, data, control, status)
 
   # use a unit M ?
   for unit_m in 0:1
@@ -33,7 +33,7 @@ function test_gltr(::Type{T}) where T
       @reset control[].unitm = true
     end
 
-    gltr_import_control(Float64, control, data, status)
+    gltr_import_control(T, control, data, status)
 
     # resolve with a smaller radius ?
     for new_radius in 0:1
@@ -52,7 +52,7 @@ function test_gltr(::Type{T}) where T
       # iteration loop to find the minimizer
       terminated = false
       while !terminated # reverse-communication loop
-        gltr_solve_problem(Float64, data, status, n, radius[], x, r, vector)
+        gltr_solve_problem(T, data, status, n, radius[], x, r, vector)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -79,14 +79,14 @@ function test_gltr(::Type{T}) where T
         end
       end
 
-      gltr_information(Float64, data, inform, status)
+      gltr_information(T, data, inform, status)
       @printf("MR = %1i%1i gltr_solve_problem exit status = %i, f = %.2f\n", unit_m,
               new_radius, inform[].status, inform[].obj)
     end
   end
 
   # Delete internal workspace
-  gltr_terminate(Float64, data, control, inform)
+  gltr_terminate(T, data, control, inform)
 
   return 0
 end

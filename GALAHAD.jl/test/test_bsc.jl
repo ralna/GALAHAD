@@ -7,12 +7,12 @@ using Test
 function test_bsc(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bsc_control_type}()
-  inform = Ref{bsc_inform_type{Float64}}()
+  inform = Ref{bsc_inform_type{T}}()
 
   status = Ref{Cint}()
-  bsc_initialize(Float64, data, control, status)
-  bsc_information(Float64, data, inform, status)
-  bsc_terminate(Float64, data, control, inform)
+  bsc_initialize(T, data, control, status)
+  bsc_information(T, data, inform, status)
+  bsc_terminate(T, data, control, inform)
 
   return 0
 end

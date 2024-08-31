@@ -7,25 +7,25 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-mutable struct userdata_slls
-  scale::Float64
-end
-
-# Apply preconditioner
-function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata_slls)
-  scale = userdata.scale
-  for i in 1:n
-    p[i] = scale * x[i]
-  end
-  return 0
+mutable struct userdata_slls{T}
+  scale::T
 end
 
 function test_slls(::Type{T}) where T
 
+  # Apply preconditioner
+  function prec(n::Int, x::Vector{T}, p::Vector{T}, userdata::userdata_slls)
+    scale = userdata.scale
+    for i in 1:n
+      p[i] = scale * x[i]
+    end
+    return 0
+  end
+
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{slls_control_type{Float64}}()
-  inform = Ref{slls_inform_type{Float64}}()
+  control = Ref{slls_control_type{T}}()
+  inform = Ref{slls_inform_type{T}}()
 
   # Set user data
   userdata = userdata_slls(1.0)
@@ -40,19 +40,19 @@ function test_slls(::Type{T}) where T
   Ao_col = zeros(Cint, Ao_ne) # column indices
   Ao_ptr_ne = o + 1 # row pointer length
   Ao_ptr = zeros(Cint, Ao_ptr_ne) # row pointers
-  Ao_val = zeros(Float64, Ao_ne) # values
-  Ao_dense = zeros(Float64, Ao_dense_ne) # dense values
+  Ao_val = zeros(T, Ao_ne) # values
+  Ao_dense = zeros(T, Ao_dense_ne) # dense values
   # column-wise storage
   Ao_by_col_row = zeros(Cint, Ao_ne) # row indices,
   Ao_by_col_ptr_ne = n + 1 # column pointer length
   Ao_by_col_ptr = zeros(Cint, Ao_by_col_ptr_ne) # column pointers
-  Ao_by_col_val = zeros(Float64, Ao_ne) # values
-  Ao_by_col_dense = zeros(Float64, Ao_dense_ne) # dense values
-  b = zeros(Float64, o)  # linear term in the objective
-  x = zeros(Float64, n) # variables
-  z = zeros(Float64, n) # dual variables
-  r = zeros(Float64, o) # residual
-  g = zeros(Float64, n) # gradient
+  Ao_by_col_val = zeros(T, Ao_ne) # values
+  Ao_by_col_dense = zeros(T, Ao_dense_ne) # dense values
+  b = zeros(T, o)  # linear term in the objective
+  x = zeros(T, n) # variables
+  z = zeros(T, n) # dual variables
+  r = zeros(T, o) # residual
+  g = zeros(T, n) # gradient
 
   # Set output storage
   x_stat = zeros(Cint, n) # variable status
@@ -134,12 +134,12 @@ function test_slls(::Type{T}) where T
   nz_v = zeros(Cint, on)
   nz_p = zeros(Cint, o)
   mask = zeros(Cint, o)
-  v = zeros(Float64, on)
-  p = zeros(Float64, on)
+  v = zeros(T, on)
+  p = zeros(T, on)
   nz_p_end = 1
 
   # Initialize SLLS
-  slls_initialize(Float64, data, control, status)
+  slls_initialize(T, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -155,11 +155,11 @@ function test_slls(::Type{T}) where T
     mask[i] = 0
   end
 
-  slls_import_without_a(Float64, control, data, status, n, o)
+  slls_import_without_a(T, control, data, status, n, o)
 
   terminated = false
   while !terminated # reverse-communication loop
-    slls_solve_reverse_a_prod(Float64, data, status, eval_status, n, o, b,
+    slls_solve_reverse_a_prod(T, data, status, eval_status, n, o, b,
                               x, z, r, g, x_stat, v, p,
                               nz_v, nz_v_start, nz_v_end,
                               nz_p, nz_p_end)
@@ -222,7 +222,7 @@ function test_slls(::Type{T}) where T
   end
 
   # Record solution information
-  slls_information(Float64, data, inform, status)
+  slls_information(T, data, inform, status)
 
   # Print solution details
   if inform[].status == 0
@@ -244,7 +244,7 @@ function test_slls(::Type{T}) where T
   # @printf("\n")
 
   # Delete internal workspace
-  slls_terminate(Float64, data, control, inform)
+  slls_terminate(T, data, control, inform)
 
   return 0
 end

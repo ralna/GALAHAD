@@ -8,21 +8,21 @@ using Accessors
 
 function test_ugo(::Type{T}) where T
   # Test problem objective
-  function objf(x::Float64)
+  function objf(x::T)
     a = 10.0
     res = x * x * cos(a * x)
     return res
   end
 
   # Test problem first derivative
-  function gradf(x::Float64)
+  function gradf(x::T)
     a = 10.0
     res = -a * x * x * sin(a * x) + 2.0 * x * cos(a * x)
     return res
   end
 
   # Test problem second derivative
-  function hessf(x::Float64)
+  function hessf(x::T)
     a = 10.0
     res = -a * a * x * x * cos(a * x) - 4.0 * a * x * sin(a * x) + 2.0 * cos(a * x)
     return res
@@ -30,29 +30,29 @@ function test_ugo(::Type{T}) where T
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{ugo_control_type{Float64}}()
-  inform = Ref{ugo_inform_type{Float64}}()
+  control = Ref{ugo_control_type{T}}()
+  inform = Ref{ugo_inform_type{T}}()
 
   # Initialize UGO
   status = Ref{Cint}()
   eval_status = Ref{Cint}()
-  ugo_initialize(Float64, data, control, status)
+  ugo_initialize(T, data, control, status)
 
   # Set user-defined control options
   @reset control[].print_level = Cint(1)
 
   # Test problem bounds
-  x_l = Ref{Float64}(-1.0)
-  x_u = Ref{Float64}(2.0)
+  x_l = Ref{T}(-1.0)
+  x_u = Ref{T}(2.0)
 
   # Test problem objective, gradient, Hessian values
-  x = Ref{Float64}(0.0)
-  f = Ref{Float64}(objf(x[]))
-  g = Ref{Float64}(gradf(x[]))
-  h = Ref{Float64}(hessf(x[]))
+  x = Ref{T}(0.0)
+  f = Ref{T}(objf(x[]))
+  g = Ref{T}(gradf(x[]))
+  h = Ref{T}(hessf(x[]))
 
   # import problem data
-  ugo_import(Float64, control, data, status, x_l, x_u)
+  ugo_import(T, control, data, status, x_l, x_u)
 
   # Set for initial entry
   status[] = 1
@@ -61,7 +61,7 @@ function test_ugo(::Type{T}) where T
   terminated = false
   while !terminated
     # Call UGO_solve
-    ugo_solve_reverse(Float64, data, status, eval_status, x, f, g, h)
+    ugo_solve_reverse(T, data, status, eval_status, x, f, g, h)
 
     # Evaluate f(x) and its derivatives as required
     if (status[] ≥ 2)  # need objective
@@ -78,7 +78,7 @@ function test_ugo(::Type{T}) where T
   end
 
   # Record solution information
-  ugo_information(Float64, data, inform, status)
+  ugo_information(T, data, inform, status)
 
   if inform[].status == 0
     @printf("%i evaluations. Optimal objective value = %5.2f status = %1i\n",
@@ -88,7 +88,7 @@ function test_ugo(::Type{T}) where T
   end
 
   # Delete internal workspace
-  ugo_terminate(Float64, data, control, inform)
+  ugo_terminate(T, data, control, inform)
 
   return 0
 end

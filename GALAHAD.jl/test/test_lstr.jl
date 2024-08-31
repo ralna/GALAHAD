@@ -9,21 +9,21 @@ using Accessors
 function test_lstr(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{lstr_control_type{Float64}}()
-  inform = Ref{lstr_inform_type{Float64}}()
+  control = Ref{lstr_control_type{T}}()
+  inform = Ref{lstr_inform_type{T}}()
 
   # Set problem data
   n = 50 # dimensions
   m = 2 * n
 
   status = Ref{Cint}()
-  radius = Ref{Float64}()
-  x = zeros(Float64, n)
-  u = zeros(Float64, m)
-  v = zeros(Float64, n)
+  radius = Ref{T}()
+  x = zeros(T, n)
+  u = zeros(T, m)
+  v = zeros(T, n)
 
   # Initialize lstr
-  lstr_initialize(Float64, data, control, status)
+  lstr_initialize(T, data, control, status)
 
   # resolve with a smaller radius ?
   for new_radius in 0:1
@@ -36,7 +36,7 @@ function test_lstr(::Type{T}) where T
     end
 
     @reset control[].print_level = Cint(0)
-    lstr_import_control(Float64, control, data, status)
+    lstr_import_control(T, control, data, status)
 
     for i in 1:m
       u[i] = 1.0 # b = 1
@@ -45,7 +45,7 @@ function test_lstr(::Type{T}) where T
     # iteration loop to find the minimizer with A^T = (I:diag(1:n))
     terminated = false
     while !terminated # reverse-communication loop
-      lstr_solve_problem(Float64, data, status, m, n, radius[], x, u, v)
+      lstr_solve_problem(T, data, status, m, n, radius[], x, u, v)
       if status[] == 0 # successful termination
         terminated = true
       elseif status[] < 0 # error exit
@@ -69,13 +69,13 @@ function test_lstr(::Type{T}) where T
       end
     end
 
-    lstr_information(Float64, data, inform, status)
+    lstr_information(T, data, inform, status)
     @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
             inform[].status, inform[].r_norm)
   end
 
   # Delete internal workspace
-  lstr_terminate(Float64, data, control, inform)
+  lstr_terminate(T, data, control, inform)
 
   return 0
 end

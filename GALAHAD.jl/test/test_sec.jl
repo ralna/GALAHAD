@@ -6,13 +6,13 @@ using Test
 
 function test_sec(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{sec_control_type{Float64}}()
+  control = Ref{sec_control_type{T}}()
   inform = Ref{sec_inform_type}()
 
   status = Ref{Cint}()
-  sec_initialize(Float64, control, status)
-  sec_information(Float64, data, inform, status)
-  sec_terminate(Float64, data, control, inform)
+  sec_initialize(T, control, status)
+  sec_information(T, data, inform, status)
+  sec_terminate(T, data, control, inform)
 
   return 0
 end

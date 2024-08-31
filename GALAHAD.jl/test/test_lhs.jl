@@ -13,7 +13,7 @@ function test_lhs(::Type{T}) where T
   inform = Ref{lhs_inform_type}()
 
   # Initialize LHS
-  lhs_initialize(Float64, data, control, inform)
+  lhs_initialize(T, data, control, inform)
 
   # Parameters
   n_dimen = Cint(7) # dimension
@@ -22,10 +22,10 @@ function test_lhs(::Type{T}) where T
   seed = Ref{Cint}()
 
   # Set a random seed
-  lhs_get_seed(Float64, seed)
+  lhs_get_seed(T, seed)
 
   # Generate points
-  lhs_ihs(Float64, n_dimen, n_points, seed, X, control, inform, data)
+  lhs_ihs(T, n_dimen, n_points, seed, X, control, inform, data)
 
   if inform[].status == 0 # successful return
     @printf("LHS successful\n")
@@ -41,7 +41,7 @@ function test_lhs(::Type{T}) where T
   end
 
   # Delete internal workspace
-  lhs_terminate(Float64, data, control, inform)
+  lhs_terminate(T, data, control, inform)
 
   return 0
 end

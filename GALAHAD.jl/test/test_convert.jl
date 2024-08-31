@@ -7,12 +7,12 @@ using Test
 function test_convert(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{convert_control_type}()
-  inform = Ref{convert_inform_type{Float64}}()
+  inform = Ref{convert_inform_type{T}}()
 
   status = Ref{Cint}()
-  convert_initialize(Float64, data, control, status)
-  convert_information(Float64, data, inform, status)
-  convert_terminate(Float64, data, control, inform)
+  convert_initialize(T, data, control, status)
+  convert_information(T, data, inform, status)
+  convert_terminate(T, data, control, inform)
 
   return 0
 end

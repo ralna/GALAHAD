@@ -11,8 +11,8 @@ function test_sls(::Type{T}) where T
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{sls_control_type{Float64}}()
-  inform = Ref{sls_inform_type{Float64}}()
+  control = Ref{sls_control_type{T}}()
+  inform = Ref{sls_inform_type{T}}()
 
   # Set problem data
   n = 5 # dimension of A
@@ -21,16 +21,16 @@ function test_sls(::Type{T}) where T
   row = Cint[1, 2, 2, 3, 3, 4, 5]  # row indices, NB lower triangle
   col = Cint[1, 1, 5, 2, 3, 3, 5]  # column indices
   ptr = Cint[1, 2, 4, 6, 7, 8]  # pointers to indices
-  val = Float64[2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0]  # values
-  dense = Float64[2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
+  val = T[2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0]  # values
+  dense = T[2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                   0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0]
-  rhs = Float64[8.0, 45.0, 31.0, 15.0, 17.0]
-  sol = Float64[1.0, 2.0, 3.0, 4.0, 5.0]
+  rhs = T[8.0, 45.0, 31.0, 15.0, 17.0]
+  sol = T[1.0, 2.0, 3.0, 4.0, 5.0]
   status = Ref{Cint}()
-  x = zeros(Float64, n)
-  error = zeros(Float64, n)
+  x = zeros(T, n)
+  error = zeros(T, n)
 
-  norm_residual = Ref{Float64}()
+  norm_residual = Ref{T}()
   good_x = eps(Float64)^(1 / 3)
 
   @printf(" Fortran sparse matrix indexing\n\n")
@@ -39,7 +39,7 @@ function test_sls(::Type{T}) where T
 
   for d in 1:3
     # Initialize SLS - use the sytr solver
-    sls_initialize(Float64, "sytr", data, control, status)
+    sls_initialize(T, "sytr", data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -47,25 +47,25 @@ function test_sls(::Type{T}) where T
     # sparse co-ordinate storage
     if d == 1
       @printf(" coordinate ")
-      sls_analyse_matrix(Float64, control, data, status, n,
+      sls_analyse_matrix(T, control, data, status, n,
                          "coordinate", ne, row, col, C_NULL)
-      sls_factorize_matrix(Float64, data, status, ne, val)
+      sls_factorize_matrix(T, data, status, ne, val)
     end
 
     # sparse by rows
     if d == 2
       @printf(" sparse by rows ")
-      sls_analyse_matrix(Float64, control, data, status, n,
+      sls_analyse_matrix(T, control, data, status, n,
                          "sparse_by_rows", ne, C_NULL, col, ptr)
-      sls_factorize_matrix(Float64, data, status, ne, val)
+      sls_factorize_matrix(T, data, status, ne, val)
     end
 
     # dense
     if d == 3
       @printf(" dense  ")
-      sls_analyse_matrix(Float64, control, data, status, n,
+      sls_analyse_matrix(T, control, data, status, n,
                          "dense", ne, C_NULL, C_NULL, C_NULL)
-      sls_factorize_matrix(Float64, data, status, dense_ne, dense)
+      sls_factorize_matrix(T, data, status, dense_ne, dense)
     end
 
     # Set right-hand side and solve the system
@@ -73,8 +73,8 @@ function test_sls(::Type{T}) where T
       x[i] = rhs[i]
     end
 
-    sls_solve_system(Float64, data, status, n, x)
-    sls_information(Float64, data, inform, status)
+    sls_solve_system(T, data, status, n, x)
+    sls_information(T, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -99,14 +99,14 @@ function test_sls(::Type{T}) where T
 
     # resolve, this time using iterative refinement
     @reset control[].max_iterative_refinements = Cint(1)
-    sls_reset_control(Float64, control, data, status)
+    sls_reset_control(T, control, data, status)
 
     for i in 1:n
       x[i] = rhs[i]
     end
 
-    sls_solve_system(Float64, data, status, n, x)
-    sls_information(Float64, data, inform, status)
+    sls_solve_system(T, data, status, n, x)
+    sls_information(T, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -129,10 +129,10 @@ function test_sls(::Type{T}) where T
       x[i] = rhs[i]
     end
 
-    sls_partial_solve_system(Float64, "L", data, status, n, x)
-    sls_partial_solve_system(Float64, "D", data, status, n, x)
-    sls_partial_solve_system(Float64, "U", data, status, n, x)
-    sls_information(Float64, data, inform, status)
+    sls_partial_solve_system(T, "L", data, status, n, x)
+    sls_partial_solve_system(T, "D", data, status, n, x)
+    sls_partial_solve_system(T, "U", data, status, n, x)
+    sls_information(T, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -151,7 +151,7 @@ function test_sls(::Type{T}) where T
     end
 
     # Delete internal workspace
-    sls_terminate(Float64, data, control, inform)
+    sls_terminate(T, data, control, inform)
   end
 
   return 0
