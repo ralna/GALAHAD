@@ -68,7 +68,6 @@ function rewrite!(path::String, name::String, optimized::Bool)
         routine_double = replace(routine_double, "function $fname(" => "function $fname(::Type{Float64}, ")
 
         routine_single = replace(routine_single, "libgalahad_double.$fname(" => "libgalahad_single.$(fname)_s(")
-        routine_single = replace(routine_single, ",\n" => ",\n  ")
 
         routine_single = replace(routine_single, "rpc_" => "Float32")
         routine_double = replace(routine_double, "rpc_" => "Float64")
