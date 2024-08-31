@@ -11,7 +11,7 @@ struct userdata_nls
   p::Float64
 end
 
-function test_nls()
+function test_nls(::Type{T}) where T
   # compute the residuals
   function res(n::Int, m::Int, x::Vector{Float64}, c::Vector{Float64},
                userdata::userdata_nls)
@@ -456,5 +456,6 @@ function test_nls()
 end
 
 @testset "NLS" begin
-  @test test_nls() == 0
+  @test test_nls(Float32) == 0
+  @test test_nls(Float64) == 0
 end

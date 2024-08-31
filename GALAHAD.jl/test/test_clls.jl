@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_clls()
+function test_clls(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{clls_control_type{Float64}}()
@@ -183,5 +183,6 @@ function test_clls()
 end
 
 @testset "CLLS" begin
-  @test test_clls() == 0
+  @test test_clls(Float32) == 0
+  @test test_clls(Float64) == 0
 end

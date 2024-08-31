@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_hash()
+function test_hash(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{hash_control_type}()
   inform = Ref{hash_inform_type}()
@@ -20,5 +20,6 @@ function test_hash()
 end
 
 @testset "HASH" begin
-  @test test_hash() == 0
+  @test test_hash(Float32) == 0
+  @test test_hash(Float64) == 0
 end

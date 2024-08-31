@@ -13,7 +13,7 @@ struct userdata_dgo
   mag::Float64
 end
 
-function test_dgo()
+function test_dgo(::Type{T}) where T
 
   # Objective function
   function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_dgo)
@@ -507,5 +507,6 @@ function test_dgo()
 end
 
 @testset "DGO" begin
-  @test test_dgo() == 0
+  @test test_dgo(Float32) == 0
+  @test test_dgo(Float64) == 0
 end

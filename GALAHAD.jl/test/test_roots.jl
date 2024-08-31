@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_roots()
+function test_roots(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{roots_control_type{Float64}}()
   inform = Ref{roots_inform_type}()
@@ -18,5 +18,6 @@ function test_roots()
 end
 
 @testset "ROOTS" begin
-  @test test_roots() == 0
+  @test test_roots(Float32) == 0
+  @test test_roots(Float64) == 0
 end

@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_lsqp()
+function test_lsqp(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lsqp_control_type{Float64}}()
@@ -112,5 +112,6 @@ function test_lsqp()
 end
 
 @testset "LSQP" begin
-  @test test_lsqp() == 0
+  @test test_lsqp(Float32) == 0
+  @test test_lsqp(Float64) == 0
 end

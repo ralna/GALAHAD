@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_lsrt()
+function test_lsrt(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lsrt_control_type{Float64}}()
@@ -71,5 +71,6 @@ function test_lsrt()
 end
 
 @testset "LSRT" begin
-  @test test_lsrt() == 0
+  @test test_lsrt(Float32) == 0
+  @test test_lsrt(Float64) == 0
 end

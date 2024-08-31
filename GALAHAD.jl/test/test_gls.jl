@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_gls()
+function test_gls(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{gls_control_type{Float64}}()
   ainfo = Ref{gls_ainfo_type{Float64}}()
@@ -20,5 +20,6 @@ function test_gls()
 end
 
 @testset "GLS" begin
-  @test test_gls() == 0
+  @test test_gls(Float32) == 0
+  @test test_gls(Float64) == 0
 end

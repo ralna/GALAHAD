@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_gltr()
+function test_gltr(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{gltr_control_type{Float64}}()
@@ -92,5 +92,6 @@ function test_gltr()
 end
 
 @testset "GLTR" begin
-  @test test_gltr() == 0
+  @test test_gltr(Float32) == 0
+  @test test_gltr(Float64) == 0
 end

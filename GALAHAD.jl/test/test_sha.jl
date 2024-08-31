@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_sha()
+function test_sha(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sha_control_type}()
   inform = Ref{sha_inform_type}()
@@ -18,5 +18,6 @@ function test_sha()
 end
 
 @testset "SHA" begin
-  @test test_sha() == 0
+  @test test_sha(Float32) == 0
+  @test test_sha(Float64) == 0
 end

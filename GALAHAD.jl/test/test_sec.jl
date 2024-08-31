@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_sec()
+function test_sec(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sec_control_type{Float64}}()
   inform = Ref{sec_inform_type}()
@@ -18,5 +18,6 @@ function test_sec()
 end
 
 @testset "SEC" begin
-  @test test_sec() == 0
+  @test test_sec(Float32) == 0
+  @test test_sec(Float64) == 0
 end

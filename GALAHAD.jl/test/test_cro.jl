@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_cro()
+function test_cro(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{cro_control_type{Float64}}()
@@ -73,5 +73,6 @@ function test_cro()
 end
 
 @testset "CRO" begin
-  @test test_cro() == 0
+  @test test_cro(Float32) == 0
+  @test test_cro(Float64) == 0
 end

@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_uls()
+function test_uls(::Type{T}) where T
   maxabsarray(a) = maximum(abs.(a))
 
   # Derived types
@@ -180,5 +180,6 @@ function test_uls()
 end
 
 @testset "ULS" begin
-  @test test_uls() == 0
+  @test test_uls(Float32) == 0
+  @test test_uls(Float64) == 0
 end

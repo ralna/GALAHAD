@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_l2rt()
+function test_l2rt(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{l2rt_control_type{Float64}}()
@@ -72,5 +72,6 @@ function test_l2rt()
 end
 
 @testset "L2RT" begin
-  @test test_l2rt() == 0
+  @test test_l2rt(Float32) == 0
+  @test test_l2rt(Float64) == 0
 end

@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_sls()
+function test_sls(::Type{T}) where T
   maxabsarray(a) = abs.(a) |> maximum
 
   # Derived types
@@ -158,5 +158,6 @@ function test_sls()
 end
 
 @testset "SLS" begin
-  @test test_sls() == 0
+  @test test_sls(Float32) == 0
+  @test test_sls(Float64) == 0
 end

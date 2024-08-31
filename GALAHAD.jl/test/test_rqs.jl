@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_rqs()
+function test_rqs(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{rqs_control_type{Float64}}()
@@ -227,5 +227,6 @@ function test_rqs()
 end
 
 @testset "RQS" begin
-  @test test_rqs() == 0
+  @test test_rqs(Float32) == 0
+  @test test_rqs(Float64) == 0
 end

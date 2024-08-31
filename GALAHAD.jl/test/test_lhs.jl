@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_lhs()
+function test_lhs(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lhs_control_type}()
@@ -47,5 +47,6 @@ function test_lhs()
 end
 
 @testset "LHS" begin
-  @test test_lhs() == 0
+  @test test_lhs(Float32) == 0
+  @test test_lhs(Float64) == 0
 end
