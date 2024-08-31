@@ -10,9 +10,9 @@ function test_sha()
   inform = Ref{sha_inform_type}()
 
   status = Ref{Cint}()
-  sha_initialize(data, control, status)
-  sha_information(data, inform, status)
-  sha_terminate(data, control, inform)
+  sha_initialize(Float64, data, control, status)
+  sha_information(Float64, data, inform, status)
+  sha_terminate(Float64, data, control, inform)
 
   return 0
 end

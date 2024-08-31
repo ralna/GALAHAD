@@ -23,7 +23,7 @@ function test_gltr()
   h_vector = zeros(Float64, n)
 
   # Initialize gltr
-  gltr_initialize(data, control, status)
+  gltr_initialize(Float64, data, control, status)
 
   # use a unit M ?
   for unit_m in 0:1
@@ -33,7 +33,7 @@ function test_gltr()
       @reset control[].unitm = true
     end
 
-    gltr_import_control(control, data, status)
+    gltr_import_control(Float64, control, data, status)
 
     # resolve with a smaller radius ?
     for new_radius in 0:1
@@ -52,7 +52,7 @@ function test_gltr()
       # iteration loop to find the minimizer
       terminated = false
       while !terminated # reverse-communication loop
-        gltr_solve_problem(data, status, n, radius[], x, r, vector)
+        gltr_solve_problem(Float64, data, status, n, radius[], x, r, vector)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -79,14 +79,14 @@ function test_gltr()
         end
       end
 
-      gltr_information(data, inform, status)
+      gltr_information(Float64, data, inform, status)
       @printf("MR = %1i%1i gltr_solve_problem exit status = %i, f = %.2f\n", unit_m,
               new_radius, inform[].status, inform[].obj)
     end
   end
 
   # Delete internal workspace
-  gltr_terminate(data, control, inform)
+  gltr_terminate(Float64, data, control, inform)
 
   return 0
 end

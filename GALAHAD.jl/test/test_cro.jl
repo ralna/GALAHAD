@@ -54,20 +54,20 @@ function test_cro()
   @printf(" Fortran sparse matrix indexing\n\n")
 
   # Initialize CRO
-  cro_initialize(data, control, status)
+  cro_initialize(Float64, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # Fortran sparse matrix indexing
 
   # crossover the solution
-  cro_crossover_solution(data, control, inform, n, m, m_equal, H_ne, H_val, H_col, H_ptr,
+  cro_crossover_solution(Float64, data, control, inform, n, m, m_equal, H_ne, H_val, H_col, H_ptr,
                          A_ne, A_val, A_col, A_ptr, g, c_l, c_u, x_l, x_u, x, c, y, z,
                          x_stat, c_stat)
 
   @printf(" CRO_crossover exit status = %1i\n", inform[].status)
 
   # Delete internal workspace
-  cro_terminate(data, control, inform)
+  cro_terminate(Float64, data, control, inform)
 
   return 0
 end

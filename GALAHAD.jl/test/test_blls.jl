@@ -157,7 +157,7 @@ function test_blls()
   nz_p_end = 1
 
   # Initialize BLLS
-  blls_initialize(data, control, status)
+  blls_initialize(Float64, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -172,11 +172,11 @@ function test_blls()
   for i in 1:o
     mask[i] = 0
   end
-  blls_import_without_a(control, data, status, n, o)
+  blls_import_without_a(Float64, control, data, status, n, o)
 
   terminated = false
   while !terminated # reverse-communication loop
-    blls_solve_reverse_a_prod(data, status, eval_status, n, o, b,
+    blls_solve_reverse_a_prod(Float64, data, status, eval_status, n, o, b,
                               x_l, x_u, x, z, r, g, x_stat, v, p,
                               nz_v, nz_v_start, nz_v_end,
                               nz_p, nz_p_end, w)
@@ -239,7 +239,7 @@ function test_blls()
   end
 
   # Record solution information
-  blls_information(data, inform, status)
+  blls_information(Float64, data, inform, status)
 
   # Print solution details
   if inform[].status == 0
@@ -259,7 +259,7 @@ function test_blls()
   # @printf("\n")
 
   # Delete internal workspace
-  blls_terminate(data, control, inform)
+  blls_terminate(Float64, data, control, inform)
 
   return 0
 end

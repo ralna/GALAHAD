@@ -10,9 +10,9 @@ function test_roots()
   inform = Ref{roots_inform_type}()
 
   status = Ref{Cint}()
-  roots_initialize(data, control, status)
-  roots_information(data, inform, status)
-  roots_terminate(data, control, inform)
+  roots_initialize(Float64, data, control, status)
+  roots_information(Float64, data, inform, status)
+  roots_terminate(Float64, data, control, inform)
 
   return 0
 end

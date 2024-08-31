@@ -139,7 +139,7 @@ function test_slls()
   nz_p_end = 1
 
   # Initialize SLLS
-  slls_initialize(data, control, status)
+  slls_initialize(Float64, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -155,11 +155,11 @@ function test_slls()
     mask[i] = 0
   end
 
-  slls_import_without_a(control, data, status, n, o)
+  slls_import_without_a(Float64, control, data, status, n, o)
 
   terminated = false
   while !terminated # reverse-communication loop
-    slls_solve_reverse_a_prod(data, status, eval_status, n, o, b,
+    slls_solve_reverse_a_prod(Float64, data, status, eval_status, n, o, b,
                               x, z, r, g, x_stat, v, p,
                               nz_v, nz_v_start, nz_v_end,
                               nz_p, nz_p_end)
@@ -222,7 +222,7 @@ function test_slls()
   end
 
   # Record solution information
-  slls_information(data, inform, status)
+  slls_information(Float64, data, inform, status)
 
   # Print solution details
   if inform[].status == 0
@@ -244,7 +244,7 @@ function test_slls()
   # @printf("\n")
 
   # Delete internal workspace
-  slls_terminate(data, control, inform)
+  slls_terminate(Float64, data, control, inform)
 
   return 0
 end

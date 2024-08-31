@@ -35,7 +35,7 @@ function test_bqpb()
   for d in 1:7
 
     # Initialize BQPB
-    bqpb_initialize(data, control, status)
+    bqpb_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -47,20 +47,20 @@ function test_bqpb()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "coordinate", H_ne, H_row, H_col, C_NULL)
 
-      bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
     # sparse by rows
     if d == 2
       st = 'R'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
-      bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
@@ -69,54 +69,54 @@ function test_bqpb()
       st = 'D'
       H_dense_ne = 6 # number of elements of H
       H_dense = Float64[1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "dense", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqpb_solve_qp(data, status, n, H_dense_ne, H_dense, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_dense_ne, H_dense, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
     # diagonal
     if d == 4
       st = 'L'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
     # scaled identity
     if d == 5
       st = 'S'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "scaled_identity", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
     # identity
     if d == 6
       st = 'I'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "identity", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
     # zero
     if d == 7
       st = 'Z'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "zero", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqpb_solve_qp(data, status, n, H_ne, H_val, g, f,
+      bqpb_solve_qp(Float64, data, status, n, H_ne, H_val, g, f,
                     x_l, x_u, x, z, x_stat)
     end
 
-    bqpb_information(data, inform, status)
+    bqpb_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -137,14 +137,14 @@ function test_bqpb()
     # @printf("\n")
 
     # Delete internal workspace
-    bqpb_terminate(data, control, inform)
+    bqpb_terminate(Float64, data, control, inform)
   end
 
   # test shifted least-distance interface
   for d in 1:1
 
     # Initialize BQPB
-    bqpb_initialize(data, control, status)
+    bqpb_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -161,14 +161,14 @@ function test_bqpb()
     # sparse co-ordinate storage
     if d == 1
       st = 'W'
-      bqpb_import(control, data, status, n,
+      bqpb_import(Float64, control, data, status, n,
                   "shifted_least_distance", H_ne, C_NULL, C_NULL, C_NULL)
 
-      bqpb_solve_sldqp(data, status, n, w, x_0, g, f,
+      bqpb_solve_sldqp(Float64, data, status, n, w, x_0, g, f,
                        x_l, x_u, x, z, x_stat)
     end
 
-    bqpb_information(data, inform, status)
+    bqpb_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -189,7 +189,7 @@ function test_bqpb()
     # @printf("\n")
 
     # Delete internal workspace
-    bqpb_terminate(data, control, inform)
+    bqpb_terminate(Float64, data, control, inform)
   end
 
   return 0

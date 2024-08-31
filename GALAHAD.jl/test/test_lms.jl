@@ -10,9 +10,9 @@ function test_lms()
   inform = Ref{lms_inform_type{Float64}}()
 
   status = Ref{Cint}()
-  lms_initialize(data, control, status)
-  lms_information(data, inform, status)
-  lms_terminate(data, control, inform)
+  lms_initialize(Float64, data, control, status)
+  lms_information(Float64, data, inform, status)
+  lms_terminate(Float64, data, control, inform)
 
   return 0
 end

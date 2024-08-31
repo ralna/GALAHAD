@@ -39,7 +39,7 @@ function test_uls()
 
   for d in 1:3
     # Initialize ULS - use the gls solver
-    uls_initialize("getr", data, control, status)
+    uls_initialize(Float64, "getr", data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -47,21 +47,21 @@ function test_uls()
     # sparse co-ordinate storage
     if d == 1
       @printf(" coordinate ")
-      uls_factorize_matrix(control, data, status, m, n,
+      uls_factorize_matrix(Float64, control, data, status, m, n,
                            "coordinate", ne, val, row, col, C_NULL)
     end
 
     # sparse by rows
     if d == 2
       @printf(" sparse by rows ")
-      uls_factorize_matrix(control, data, status, m, n,
+      uls_factorize_matrix(Float64, control, data, status, m, n,
                            "sparse_by_rows", ne, val, C_NULL, col, ptr)
     end
 
     # dense
     if d == 3
       @printf(" dense  ")
-      uls_factorize_matrix(control, data, status, m, n,
+      uls_factorize_matrix(Float64, control, data, status, m, n,
                            "dense", dense_ne, dense, C_NULL, C_NULL, C_NULL)
     end
 
@@ -71,8 +71,8 @@ function test_uls()
     end
 
     trans = false
-    uls_solve_system(data, status, m, n, x, trans)
-    uls_information(data, inform, status)
+    uls_solve_system(Float64, data, status, m, n, x, trans)
+    uls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -95,14 +95,14 @@ function test_uls()
 
     # resolve, this time using iterative refinement
     @reset control[].max_iterative_refinements = Cint(1)
-    uls_reset_control(control, data, status)
+    uls_reset_control(Float64, control, data, status)
 
     for i in 1:n
       x[i] = rhs[i]
     end
 
-    uls_solve_system(data, status, m, n, x, trans)
-    uls_information(data, inform, status)
+    uls_solve_system(Float64, data, status, m, n, x, trans)
+    uls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -124,8 +124,8 @@ function test_uls()
     end
 
     trans = true
-    uls_solve_system(data, status, m, n, x, trans)
-    uls_information(data, inform, status)
+    uls_solve_system(Float64, data, status, m, n, x, trans)
+    uls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -149,13 +149,13 @@ function test_uls()
     # resolve, this time using iterative refinement
     @reset control[].max_iterative_refinements = Cint(1)
 
-    uls_reset_control(control, data, status)
+    uls_reset_control(Float64, control, data, status)
     for i in 1:n
       x[i] = rhst[i]
     end
 
-    uls_solve_system(data, status, m, n, x, trans)
-    uls_information(data, inform, status)
+    uls_solve_system(Float64, data, status, m, n, x, trans)
+    uls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -172,7 +172,7 @@ function test_uls()
     end
 
     # Delete internal workspace
-    uls_terminate(data, control, inform)
+    uls_terminate(Float64, data, control, inform)
     @printf("\n")
   end
 

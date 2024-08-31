@@ -62,7 +62,7 @@ function test_trs()
 
       for storage_type in 1:4
         # Initialize TRS
-        trs_initialize(data, control, status)
+        trs_initialize(Float64, data, control, status)
 
         # Set user-defined control options
         @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -71,34 +71,34 @@ function test_trs()
         if storage_type == 1
           st = 'C'
           # import the control parameters and structural data
-          trs_import(control, data, status, n,
+          trs_import(Float64, control, data, status, n,
                      "coordinate", H_ne, H_row, H_col, C_NULL)
 
           if m_is == 1
-            trs_import_m(data, status, n,
+            trs_import_m(Float64, data, status, n,
                          "coordinate", M_ne, M_row, M_col, C_NULL)
           end
 
           if a_is == 1
-            trs_import_a(data, status, m,
+            trs_import_a(Float64, data, status, m,
                          "coordinate", A_ne, A_row, A_col, C_NULL)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               M_ne, M_val, m, A_ne, A_val, C_NULL)
           elseif a_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               M_ne, M_val, 0, 0, C_NULL, C_NULL)
           else
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
@@ -108,34 +108,34 @@ function test_trs()
         if storage_type == 2
           st = 'R'
           # import the control parameters and structural data
-          trs_import(control, data, status, n,
+          trs_import(Float64, control, data, status, n,
                      "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
           if m_is == 1
-            trs_import_m(data, status, n,
+            trs_import_m(Float64, data, status, n,
                          "sparse_by_rows", M_ne, C_NULL, M_col, M_ptr)
           end
 
           if a_is == 1
-            trs_import_a(data, status, m,
+            trs_import_a(Float64, data, status, m,
                          "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               M_ne, M_val, m, A_ne, A_val, C_NULL)
           elseif a_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               M_ne, M_val, 0, 0, C_NULL, C_NULL)
           else
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_ne, H_val, x,
                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
@@ -145,35 +145,35 @@ function test_trs()
         if storage_type == 3
           st = 'D'
           # import the control parameters and structural data
-          trs_import(control, data, status, n,
+          trs_import(Float64, control, data, status, n,
                      "dense", H_ne, C_NULL, C_NULL, C_NULL)
 
           if m_is == 1
-            trs_import_m(data, status, n,
+            trs_import_m(Float64, data, status, n,
                          "dense", M_ne, C_NULL, C_NULL, C_NULL)
           end
 
           if a_is == 1
-            trs_import_a(data, status, m,
+            trs_import_a(Float64, data, status, m,
                          "dense", A_ne, C_NULL, C_NULL, C_NULL)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_dense_ne, H_dense, x,
                               M_dense_ne, M_dense, m, A_ne, A_val,
                               C_NULL)
           elseif a_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_dense_ne, H_dense, x,
                               0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_dense_ne, H_dense, x,
                               M_dense_ne, M_dense, 0, 0, C_NULL, C_NULL)
           else
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, H_dense_ne, H_dense, x,
                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
@@ -183,40 +183,40 @@ function test_trs()
         if storage_type == 4
           st = 'L'
           # import the control parameters and structural data
-          trs_import(control, data, status, n,
+          trs_import(Float64, control, data, status, n,
                      "diagonal", H_ne, C_NULL, C_NULL, C_NULL)
 
           if m_is == 1
-            trs_import_m(data, status, n,
+            trs_import_m(Float64, data, status, n,
                          "diagonal", M_ne, C_NULL, C_NULL, C_NULL)
           end
 
           if a_is == 1
-            trs_import_a(data, status, m,
+            trs_import_a(Float64, data, status, m,
                          "dense", A_ne, C_NULL, C_NULL, C_NULL)
           end
 
           # solve the problem
           if (a_is == 1) && (m_is == 1)
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, n, H_diag, x,
                               n, M_diag, m, A_ne, A_val, C_NULL)
           elseif a_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, n, H_diag, x,
                               0, C_NULL, m, A_ne, A_val, C_NULL)
           elseif m_is == 1
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, n, H_diag, x,
                               n, M_diag, 0, 0, C_NULL, C_NULL)
           else
-            trs_solve_problem(data, status, n,
+            trs_solve_problem(Float64, data, status, n,
                               radius, f, c, n, H_diag, x,
                               0, C_NULL, 0, 0, C_NULL, C_NULL)
           end
         end
 
-        trs_information(data, inform, status)
+        trs_information(Float64, data, inform, status)
 
         @printf("format %c%s: TRS_solve_problem exit status = %1i, f = %.2f\n", st, ma,
                 inform[].status, inform[].obj)
@@ -227,7 +227,7 @@ function test_trs()
         # end
 
         # Delete internal workspace
-        trs_terminate(data, control, inform)
+        trs_terminate(Float64, data, control, inform)
       end
     end
   end

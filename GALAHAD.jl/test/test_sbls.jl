@@ -50,7 +50,7 @@ function test_sbls()
   for d in 1:7
 
     # Initialize SBLS
-    sbls_initialize(data, control, status)
+    sbls_initialize(Float64, data, control, status)
     @reset control[].preconditioner = Cint(2)
     @reset control[].factorization = Cint(2)
     @reset control[].get_norm_residual = true
@@ -61,12 +61,12 @@ function test_sbls()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "coordinate", H_ne, H_row, H_col, C_NULL,
                   "coordinate", A_ne, A_row, A_col, C_NULL,
                   "coordinate", C_ne, C_row, C_col, C_NULL)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             H_ne, H_val,
                             A_ne, A_val,
                             C_ne, C_val, C_NULL)
@@ -75,12 +75,12 @@ function test_sbls()
     # sparse by rows
     if d == 2
       st = 'R'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr,
                   "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr,
                   "sparse_by_rows", C_ne, C_NULL, C_col, C_ptr)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             H_ne, H_val,
                             A_ne, A_val,
                             C_ne, C_val, C_NULL)
@@ -89,12 +89,12 @@ function test_sbls()
     # dense
     if d == 3
       st = 'D'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "dense", H_ne, C_NULL, C_NULL, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, C_NULL,
                   "dense", C_ne, C_NULL, C_NULL, C_NULL)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             H_dense_ne, H_dense,
                             A_dense_ne, A_dense,
                             C_dense_ne, C_dense,
@@ -104,12 +104,12 @@ function test_sbls()
     # diagonal
     if d == 4
       st = 'L'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "diagonal", H_ne, C_NULL, C_NULL, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, C_NULL,
                   "diagonal", C_ne, C_NULL, C_NULL, C_NULL)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             n, H_diag,
                             A_dense_ne, A_dense,
                             m, C_diag,
@@ -119,12 +119,12 @@ function test_sbls()
     # scaled identity
     if d == 5
       st = 'S'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "scaled_identity", H_ne, C_NULL, C_NULL, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, C_NULL,
                   "scaled_identity", C_ne, C_NULL, C_NULL, C_NULL)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             1, H_scid,
                             A_dense_ne, A_dense,
                             1, C_scid,
@@ -134,12 +134,12 @@ function test_sbls()
     # identity
     if d == 6
       st = 'I'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "identity", H_ne, C_NULL, C_NULL, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, C_NULL,
                   "identity", C_ne, C_NULL, C_NULL, C_NULL)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             0, H_val,
                             A_dense_ne, A_dense,
                             0, C_val, C_NULL)
@@ -148,12 +148,12 @@ function test_sbls()
     # zero
     if d == 7
       st = 'Z'
-      sbls_import(control, data, status, n, m,
+      sbls_import(Float64, control, data, status, n, m,
                   "identity", H_ne, C_NULL, C_NULL, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, C_NULL,
                   "zero", C_ne, C_NULL, C_NULL, C_NULL)
 
-      sbls_factorize_matrix(data, status, n,
+      sbls_factorize_matrix(Float64, data, status, n,
                             0, H_val,
                             A_dense_ne, A_dense,
                             0, C_NULL, C_NULL)
@@ -162,9 +162,9 @@ function test_sbls()
     # Set right-hand side (a, b)
     sol = Float64[3.0, 2.0, 4.0, 2.0, 0.0]  # values
 
-    sbls_solve_system(data, status, n, m, sol)
+    sbls_solve_system(Float64, data, status, n, m, sol)
 
-    sbls_information(data, inform, status)
+    sbls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c: residual = %9.1e status = %1i\n",
@@ -179,7 +179,7 @@ function test_sbls()
     # end
 
     # Delete internal workspace
-    sbls_terminate(data, control, inform)
+    sbls_terminate(Float64, data, control, inform)
   end
 
   return 0

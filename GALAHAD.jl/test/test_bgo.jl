@@ -244,7 +244,7 @@ function test_bgo()
   for d in 1:5
 
     # Initialize BGO
-    bgo_initialize(data, control, status)
+    bgo_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -260,12 +260,12 @@ function test_bgo()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      bgo_import(control, data, status, n, x_l, x_u,
+      bgo_import(Float64, control, data, status, n, x_l, x_u,
                  "coordinate", ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        bgo_solve_reverse_with_mat(data, status, eval_status,
+        bgo_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -304,12 +304,12 @@ function test_bgo()
     # sparse by rows
     if d == 2
       st = 'R'
-      bgo_import(control, data, status, n, x_l, x_u,
+      bgo_import(Float64, control, data, status, n, x_l, x_u,
                  "sparse_by_rows", ne, C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
-        bgo_solve_reverse_with_mat(data, status, eval_status,
+        bgo_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -347,12 +347,12 @@ function test_bgo()
     # dense
     if d == 3
       st = 'D'
-      bgo_import(control, data, status, n, x_l, x_u,
+      bgo_import(Float64, control, data, status, n, x_l, x_u,
                  "dense", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        bgo_solve_reverse_with_mat(data, status, eval_status,
+        bgo_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, div(n * (n + 1), 2),
                                    H_dense, u, v)
         if status[] == 0 # successful termination
@@ -391,12 +391,12 @@ function test_bgo()
     # diagonal
     if d == 4
       st = 'I'
-      bgo_import(control, data, status, n, x_l, x_u,
+      bgo_import(Float64, control, data, status, n, x_l, x_u,
                  "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        bgo_solve_reverse_with_mat(data, status, eval_status,
+        bgo_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -437,13 +437,13 @@ function test_bgo()
     # access by products
     if d == 5
       st = 'P'
-      bgo_import(control, data, status, n, x_l, x_u,
+      bgo_import(Float64, control, data, status, n, x_l, x_u,
                  "absent", ne, C_NULL, C_NULL, C_NULL)
 
       nnz_u = Ref{Cint}(0)
       terminated = false
       while !terminated # reverse-communication loop
-        bgo_solve_reverse_without_mat(data, status, eval_status,
+        bgo_solve_reverse_without_mat(Float64, data, status, eval_status,
                                       n, x, f[], g, u, v, index_nz_v,
                                       nnz_v, index_nz_u, nnz_u[])
         if status[] == 0 # successful termination
@@ -483,7 +483,7 @@ function test_bgo()
     end
 
     # Record solution information
-    bgo_information(data, inform, status)
+    bgo_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i evaluations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -504,7 +504,7 @@ function test_bgo()
     # @printf("\n")
 
     # Delete internal workspace
-    bgo_terminate(data, control, inform)
+    bgo_terminate(Float64, data, control, inform)
   end
   return 0
 end

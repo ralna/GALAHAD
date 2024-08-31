@@ -10,9 +10,9 @@ function test_bsc()
   inform = Ref{bsc_inform_type{Float64}}()
 
   status = Ref{Cint}()
-  bsc_initialize(data, control, status)
-  bsc_information(data, inform, status)
-  bsc_terminate(data, control, inform)
+  bsc_initialize(Float64, data, control, status)
+  bsc_information(Float64, data, inform, status)
+  bsc_terminate(Float64, data, control, inform)
 
   return 0
 end

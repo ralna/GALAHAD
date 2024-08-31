@@ -140,7 +140,7 @@ function test_tru()
 
   for d in 1:5
     # Initialize TRU
-    tru_initialize(data, control, status)
+    tru_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -153,12 +153,12 @@ function test_tru()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      tru_import(control, data, status, n, "coordinate",
+      tru_import(Float64, control, data, status, n, "coordinate",
                  ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -180,12 +180,12 @@ function test_tru()
     # sparse by rows
     if d == 2
       st = 'R'
-      tru_import(control, data, status, n, "sparse_by_rows", ne,
+      tru_import(Float64, control, data, status, n, "sparse_by_rows", ne,
                  C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -207,12 +207,12 @@ function test_tru()
     # dense
     if d == 3
       st = 'D'
-      tru_import(control, data, status, n, "dense",
+      tru_import(Float64, control, data, status, n, "dense",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g,
+        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g,
                                    div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -235,11 +235,11 @@ function test_tru()
     # diagonal
     if d == 4
       st = 'I'
-      tru_import(control, data, status, n, "diagonal", ne, C_NULL, C_NULL, C_NULL)
+      tru_import(Float64, control, data, status, n, "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
+        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -261,12 +261,12 @@ function test_tru()
     # access by products
     if d == 5
       st = 'P'
-      tru_import(control, data, status, n, "absent",
+      tru_import(Float64, control, data, status, n, "absent",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_without_mat(data, status, eval_status, n, x, f[], g, u, v)
+        tru_solve_reverse_without_mat(Float64, data, status, eval_status, n, x, f[], g, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -285,7 +285,7 @@ function test_tru()
       end
     end
 
-    tru_information(data, inform, status)
+    tru_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -306,7 +306,7 @@ function test_tru()
     # @printf("\n")
 
     # Delete internal workspace
-    tru_terminate(data, control, inform)
+    tru_terminate(Float64, data, control, inform)
   end
 
   return 0

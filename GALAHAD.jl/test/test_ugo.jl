@@ -36,7 +36,7 @@ function test_ugo()
   # Initialize UGO
   status = Ref{Cint}()
   eval_status = Ref{Cint}()
-  ugo_initialize(data, control, status)
+  ugo_initialize(Float64, data, control, status)
 
   # Set user-defined control options
   @reset control[].print_level = Cint(1)
@@ -52,7 +52,7 @@ function test_ugo()
   h = Ref{Float64}(hessf(x[]))
 
   # import problem data
-  ugo_import(control, data, status, x_l, x_u)
+  ugo_import(Float64, control, data, status, x_l, x_u)
 
   # Set for initial entry
   status[] = 1
@@ -61,7 +61,7 @@ function test_ugo()
   terminated = false
   while !terminated
     # Call UGO_solve
-    ugo_solve_reverse(data, status, eval_status, x, f, g, h)
+    ugo_solve_reverse(Float64, data, status, eval_status, x, f, g, h)
 
     # Evaluate f(x) and its derivatives as required
     if (status[] ≥ 2)  # need objective
@@ -78,7 +78,7 @@ function test_ugo()
   end
 
   # Record solution information
-  ugo_information(data, inform, status)
+  ugo_information(Float64, data, inform, status)
 
   if inform[].status == 0
     @printf("%i evaluations. Optimal objective value = %5.2f status = %1i\n",
@@ -88,7 +88,7 @@ function test_ugo()
   end
 
   # Delete internal workspace
-  ugo_terminate(data, control, inform)
+  ugo_terminate(Float64, data, control, inform)
 
   return 0
 end

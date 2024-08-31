@@ -32,7 +32,7 @@ function test_bllsb()
 
   for d in 1:5
     # Initialize BLLSB
-    bllsb_initialize(data, control, status)
+    bllsb_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -53,10 +53,10 @@ function test_bllsb()
       Ao_col = Cint[1, 2, 2, 3, 1, 3, 2]  # column indices
       Ao_val = Float64[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
-      bllsb_import(control, data, status, n, o,
+      bllsb_import(Float64, control, data, status, n, o,
                    "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL)
 
-      bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_val, b,
+      bllsb_solve_blls(Float64, data, status, n, o, Ao_ne, Ao_val, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
     end
 
@@ -70,11 +70,11 @@ function test_bllsb()
       Ao_ptr = Cint[1, 3, 5, 7, 8]  # row pointers
       Ao_val = Float64[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
-      bllsb_import(control, data, status, n, o,
+      bllsb_import(Float64, control, data, status, n, o,
                    "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                    Ao_ptr_ne, Ao_ptr)
 
-      bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_val, b,
+      bllsb_solve_blls(Float64, data, status, n, o, Ao_ne, Ao_val, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
     end
 
@@ -87,11 +87,11 @@ function test_bllsb()
       Ao_ptr = Cint[1, 3, 6, 8]  # column pointers
       Ao_val = Float64[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  # vals
 
-      bllsb_import(control, data, status, n, o,
+      bllsb_import(Float64, control, data, status, n, o,
                    "sparse_by_columns", Ao_ne, Ao_row, C_NULL,
                    Ao_ptr_ne, Ao_ptr)
 
-      bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_val, b,
+      bllsb_solve_blls(Float64, data, status, n, o, Ao_ne, Ao_val, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
     end
 
@@ -100,10 +100,10 @@ function test_bllsb()
       Ao_ne = 12 # objective Jacobian elements
       Ao_dense = Float64[1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0]
 
-      bllsb_import(control, data, status, n, o,
+      bllsb_import(Float64, control, data, status, n, o,
                    "dense", Ao_ne, C_NULL, C_NULL, 0, C_NULL)
 
-      bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_dense, b,
+      bllsb_solve_blls(Float64, data, status, n, o, Ao_ne, Ao_dense, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
     end
 
@@ -112,14 +112,14 @@ function test_bllsb()
       Ao_ne = 12 # objective Jacobian elements
       Ao_dense = Float64[1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0]
 
-      bllsb_import(control, data, status, n, o,
+      bllsb_import(Float64, control, data, status, n, o,
                    "dense_by_columns", Ao_ne, C_NULL, C_NULL, 0, C_NULL)
 
-      bllsb_solve_blls(data, status, n, o, Ao_ne, Ao_dense, b,
+      bllsb_solve_blls(Float64, data, status, n, o, Ao_ne, Ao_dense, b,
                        sigma, x_l, x_u, x, r, z, x_stat, w)
     end
 
-    bllsb_information(data, inform, status)
+    bllsb_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -140,7 +140,7 @@ function test_bllsb()
     # @printf("\n")
 
     # Delete internal workspace
-    bllsb_terminate(data, control, inform)
+    bllsb_terminate(Float64, data, control, inform)
   end
 
   return 0

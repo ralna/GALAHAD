@@ -37,7 +37,7 @@ function test_clls()
 
   for d in 1:5
     # Initialize CLLS
-    clls_initialize(data, control, status)
+    clls_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -62,11 +62,11 @@ function test_clls()
       A_col = Cint[1, 2, 2, 3]  # column indices
       A_val = Float64[2.0, 1.0, 1.0, 1.0]  # values
 
-      clls_import(control, data, status, n, o, m,
+      clls_import(Float64, control, data, status, n, o, m,
                   "coordinate", Ao_ne, Ao_row, Ao_col, 0, C_NULL,
                   "coordinate", A_ne, A_row, A_col, 0, C_NULL)
 
-      clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b,
+      clls_solve_clls(Float64, data, status, n, o, m, Ao_ne, Ao_val, b,
                       sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
                       x, r, c, y, z, x_stat, c_stat, w)
     end
@@ -85,13 +85,13 @@ function test_clls()
       A_ptr = Cint[1, 3, 5]  # row pointers
       A_val = Float64[2.0, 1.0, 1.0, 1.0]  # values
 
-      clls_import(control, data, status, n, o, m,
+      clls_import(Float64, control, data, status, n, o, m,
                   "sparse_by_rows", Ao_ne, C_NULL, Ao_col,
                   Ao_ptr_ne, Ao_ptr,
                   "sparse_by_rows", A_ne, C_NULL, A_col,
                   A_ptr_ne, A_ptr)
 
-      clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b,
+      clls_solve_clls(Float64, data, status, n, o, m, Ao_ne, Ao_val, b,
                       sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
                       x, r, c, y, z, x_stat, c_stat, w)
     end
@@ -110,13 +110,13 @@ function test_clls()
       A_ptr = Cint[1, 2, 4, 5]  # column pointers
       A_val = Float64[2.0, 1.0, 1.0, 1.0]  # values
 
-      clls_import(control, data, status, n, o, m,
+      clls_import(Float64, control, data, status, n, o, m,
                   "sparse_by_columns", Ao_ne, Ao_row, C_NULL,
                   Ao_ptr_ne, Ao_ptr,
                   "sparse_by_columns", A_ne, A_row, C_NULL,
                   A_ptr_ne, A_ptr)
 
-      clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b,
+      clls_solve_clls(Float64, data, status, n, o, m, Ao_ne, Ao_val, b,
                       sigma, A_ne, A_val, c_l, c_u, x_l, x_u,
                       x, r, c, y, z, x_stat, c_stat, w)
     end
@@ -129,11 +129,11 @@ function test_clls()
       A_ne = 6 # constraint Jacobian elements
       A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
-      clls_import(control, data, status, n, o, m,
+      clls_import(Float64, control, data, status, n, o, m,
                   "dense", Ao_ne, C_NULL, C_NULL, 0, C_NULL,
                   "dense", A_ne, C_NULL, C_NULL, 0, C_NULL)
 
-      clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_dense, b,
+      clls_solve_clls(Float64, data, status, n, o, m, Ao_ne, Ao_dense, b,
                       sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
                       x, r, c, y, z, x_stat, c_stat, w)
     end
@@ -146,16 +146,16 @@ function test_clls()
       A_ne = 6 # constraint Jacobian elements
       A_dense = Float64[2.0, 0.0, 1.0, 1.0, 0.0, 1.0]
 
-      clls_import(control, data, status, n, o, m,
+      clls_import(Float64, control, data, status, n, o, m,
                   "dense_by_columns", Ao_ne, C_NULL, C_NULL, 0, C_NULL,
                   "dense_by_columns", A_ne, C_NULL, C_NULL, 0, C_NULL)
 
-      clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_dense, b,
+      clls_solve_clls(Float64, data, status, n, o, m, Ao_ne, Ao_dense, b,
                       sigma, A_ne, A_dense, c_l, c_u, x_l, x_u,
                       x, r, c, y, z, x_stat, c_stat, w)
     end
 
-    clls_information(data, inform, status)
+    clls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%s:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -176,7 +176,7 @@ function test_clls()
     # @printf("\n")
 
     # Delete internal workspace
-    clls_terminate(data, control, inform)
+    clls_terminate(Float64, data, control, inform)
   end
 
   return 0

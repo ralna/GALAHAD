@@ -98,7 +98,7 @@ function test_llsr()
   for d in 1:4
 
     # Initialize LLSR
-    llsr_initialize(data, control, status)
+    llsr_initialize(Float64, data, control, status)
     @reset control[].definite_linear_solver = galahad_linear_solver("potr")
     @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
@@ -113,18 +113,18 @@ function test_llsr()
       # sparse co-ordinate storage
       if d == 1
         st = 'C'
-        llsr_import(control, data, status, m, n,
+        llsr_import(Float64, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
 
         if use_s == 0
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llsr_import_scaling(control, data, status, n,
+          llsr_import_scaling(Float64, control, data, status, n,
                               "coordinate", S_ne, S_row,
                               S_col, C_NULL)
 
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -132,18 +132,18 @@ function test_llsr()
       # sparse by rows
       if d == 2
         st = 'R'
-        llsr_import(control, data, status, m, n,
+        llsr_import(Float64, control, data, status, m, n,
                     "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
         if use_s == 0
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llsr_import_scaling(control, data, status, n,
+          llsr_import_scaling(Float64, control, data, status, n,
                               "sparse_by_rows", S_ne, C_NULL,
                               S_col, S_ptr)
 
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -151,18 +151,18 @@ function test_llsr()
       # dense
       if d == 3
         st = 'D'
-        llsr_import(control, data, status, m, n,
+        llsr_import(Float64, control, data, status, m, n,
                     "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
         if use_s == 0
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_dense_ne, A_dense_val, b, x,
                              0, C_NULL)
         else
-          llsr_import_scaling(control, data, status, n,
+          llsr_import_scaling(Float64, control, data, status, n,
                               "dense", S_dense_ne,
                               C_NULL, C_NULL, C_NULL)
 
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_dense_ne, A_dense_val, b, x,
                              S_dense_ne, S_dense_val)
         end
@@ -171,21 +171,21 @@ function test_llsr()
       # diagonal
       if d == 4
         st = 'I'
-        llsr_import(control, data, status, m, n,
+        llsr_import(Float64, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llsr_import_scaling(control, data, status, n,
+          llsr_import_scaling(Float64, control, data, status, n,
                               "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
 
-          llsr_solve_problem(data, status, m, n, power, weight,
+          llsr_solve_problem(Float64, data, status, m, n, power, weight,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
 
-      llsr_information(data, inform, status)
+      llsr_information(Float64, data, inform, status)
 
       if inform[].status == 0
         @printf("storage type %c%1i:  status = %1i, ||r|| = %5.2f\n", st, use_s,
@@ -203,7 +203,7 @@ function test_llsr()
     # @printf("\n")
 
     # Delete internal workspace
-    llsr_terminate(data, control, inform)
+    llsr_terminate(Float64, data, control, inform)
   end
   return 0
 end

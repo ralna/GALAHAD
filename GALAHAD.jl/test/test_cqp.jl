@@ -44,7 +44,7 @@ function test_cqp()
 
   for d in 1:7
     # Initialize CQP
-    cqp_initialize(data, control, status)
+    cqp_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -57,11 +57,11 @@ function test_cqp()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "coordinate", H_ne, H_row, H_col, C_NULL,
                  "coordinate", A_ne, A_row, A_col, C_NULL)
 
-      cqp_solve_qp(data, status, n, m, H_ne, H_val, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -69,11 +69,11 @@ function test_cqp()
     # sparse by rows
     if d == 2
       st = 'R'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
-      cqp_solve_qp(data, status, n, m, H_ne, H_val, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -85,11 +85,11 @@ function test_cqp()
       H_dense = Float64[1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
       A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
 
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "dense", H_ne, C_NULL, C_NULL, C_NULL,
                  "dense", A_ne, C_NULL, C_NULL, C_NULL)
 
-      cqp_solve_qp(data, status, n, m, H_dense_ne, H_dense, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_dense_ne, H_dense, g, f,
                    A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                    x, c, y, z, x_stat, c_stat)
     end
@@ -97,11 +97,11 @@ function test_cqp()
     # diagonal
     if d == 4
       st = 'L'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "diagonal", H_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
-      cqp_solve_qp(data, status, n, m, H_ne, H_val, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -109,11 +109,11 @@ function test_cqp()
     # scaled identity
     if d == 5
       st = 'S'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "scaled_identity", H_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
-      cqp_solve_qp(data, status, n, m, H_ne, H_val, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -121,11 +121,11 @@ function test_cqp()
     # identity
     if d == 6
       st = 'I'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "identity", H_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
-      cqp_solve_qp(data, status, n, m, H_ne, H_val, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -133,16 +133,16 @@ function test_cqp()
     # zero
     if d == 7
       st = 'Z'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "zero", H_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
-      cqp_solve_qp(data, status, n, m, H_ne, H_val, g, f,
+      cqp_solve_qp(Float64, data, status, n, m, H_ne, H_val, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
 
-    cqp_information(data, inform, status)
+    cqp_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -163,13 +163,13 @@ function test_cqp()
     # @printf("\n")
 
     # Delete internal workspace
-    cqp_terminate(data, control, inform)
+    cqp_terminate(Float64, data, control, inform)
   end
 
   # test shifted least-distance interface
   for d in 1:1
     # Initialize CQP
-    cqp_initialize(data, control, status)
+    cqp_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -187,16 +187,16 @@ function test_cqp()
     # sparse co-ordinate storage
     if d == 1
       st = 'W'
-      cqp_import(control, data, status, n, m,
+      cqp_import(Float64, control, data, status, n, m,
                  "shifted_least_distance", H_ne, C_NULL, C_NULL, C_NULL,
                  "coordinate", A_ne, A_row, A_col, C_NULL)
 
-      cqp_solve_sldqp(data, status, n, m, w, x_0, g, f,
+      cqp_solve_sldqp(Float64, data, status, n, m, w, x_0, g, f,
                       A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                       x_stat, c_stat)
     end
 
-    cqp_information(data, inform, status)
+    cqp_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -217,7 +217,7 @@ function test_cqp()
     # @printf("\n")
 
     # Delete internal workspace
-    cqp_terminate(data, control, inform)
+    cqp_terminate(Float64, data, control, inform)
   end
 
   return 0

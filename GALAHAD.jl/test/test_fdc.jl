@@ -29,13 +29,13 @@ function test_fdc()
   @printf(" Fortran sparse matrix indexing\n")
 
   # Initialize FDC
-  fdc_initialize(data, control, status)
+  fdc_initialize(Float64, data, control, status)
 
   # Set user-defined control options
   @reset control[].f_indexing = true # Fortran sparse matrix indexing
 
   # Start from 0
-  fdc_find_dependent_rows(control, data, inform, status, m, n, A_ne, A_col, A_ptr, A_val, b,
+  fdc_find_dependent_rows(Float64, control, data, inform, status, m, n, A_ne, A_col, A_ptr, A_val, b,
                           n_depen, depen)
 
   if status[] == 0
@@ -53,7 +53,7 @@ function test_fdc()
   end
 
   # Delete internal workspace
-  fdc_terminate(data, control, inform)
+  fdc_terminate(Float64, data, control, inform)
   return 0
 end
 
