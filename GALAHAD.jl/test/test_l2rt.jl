@@ -9,8 +9,8 @@ using Accessors
 function test_l2rt(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{l2rt_control_type{Float64}}()
-  inform = Ref{l2rt_inform_type{Float64}}()
+  control = Ref{l2rt_control_type{T}}()
+  inform = Ref{l2rt_inform_type{T}}()
 
   # Set problem data
   n = 50 # dimensions
@@ -20,16 +20,16 @@ function test_l2rt(::Type{T}) where T
   power = 3.0
   weight = 1.0
   shift = 1.0
-  x = zeros(Float64, n)
-  u = zeros(Float64, m)
-  v = zeros(Float64, n)
+  x = zeros(T, n)
+  u = zeros(T, m)
+  v = zeros(T, n)
 
   # Initialize l2rt
-  l2rt_initialize(Float64, data, control, status)
+  l2rt_initialize(T, data, control, status)
 
   status[] = 1
   @reset control[].print_level = Cint(0)
-  l2rt_import_control(Float64, control, data, status)
+  l2rt_import_control(T, control, data, status)
 
   for i in 1:m
     u[i] = 1.0 # b = 1
@@ -38,7 +38,7 @@ function test_l2rt(::Type{T}) where T
   # iteration loop to find the minimizer with A^T = (I:diag(1:n))
   terminated = false
   while !terminated # reverse-communication loop
-    l2rt_solve_problem(Float64, data, status, m, n, power, weight, shift, x, u, v)
+    l2rt_solve_problem(T, data, status, m, n, power, weight, shift, x, u, v)
     if status[] == 0 # successful termination
       terminated = true
     elseif status[] < 0 # error exit
@@ -61,12 +61,12 @@ function test_l2rt(::Type{T}) where T
     end
   end
 
-  l2rt_information(Float64, data, inform, status)
+  l2rt_information(T, data, inform, status)
 
   @printf("l2rt_solve_problem exit status = %i, f = %.2f\n", inform[].status, inform[].obj)
 
   # Delete internal workspace
-  l2rt_terminate(Float64, data, control, inform)
+  l2rt_terminate(T, data, control, inform)
 
   return 0
 end

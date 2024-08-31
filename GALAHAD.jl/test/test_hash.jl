@@ -12,9 +12,9 @@ function test_hash(::Type{T}) where T
   status = Ref{Cint}()
   nchar = Cint(10)
   length = Cint(100)
-  hash_initialize(Float64, nchar, length, data, control, inform)
-  hash_information(Float64, data, inform, status)
-  hash_terminate(Float64, data, control, inform)
+  hash_initialize(T, nchar, length, data, control, inform)
+  hash_information(T, data, inform, status)
+  hash_terminate(T, data, control, inform)
 
   return 0
 end

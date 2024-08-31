@@ -6,13 +6,13 @@ using Test
 
 function test_ir(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{ir_control_type{Float64}}()
-  inform = Ref{ir_inform_type{Float64}}()
+  control = Ref{ir_control_type{T}}()
+  inform = Ref{ir_inform_type{T}}()
 
   status = Ref{Cint}()
-  ir_initialize(Float64, data, control, status)
-  ir_information(Float64, data, inform, status)
-  ir_terminate(Float64, data, control, inform)
+  ir_initialize(T, data, control, status)
+  ir_information(T, data, inform, status)
+  ir_terminate(T, data, control, inform)
 
   return 0
 end

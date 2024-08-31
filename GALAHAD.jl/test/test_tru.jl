@@ -7,21 +7,21 @@ using Printf
 using Accessors
 
 # Custom userdata struct
-mutable struct userdata_tru
-  p::Float64
+mutable struct userdata_tru{T}
+  p::T
 end
 
 function test_tru(::Type{T}) where T
 
   # Objective function
-  function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_tru)
+  function fun(n::Int, x::Vector{T}, f::Ref{T}, userdata::userdata_tru)
     p = userdata.p
     f[] = (x[1] + x[3] + p)^2 + (x[2] + x[3])^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_tru)
+  function grad(n::Int, x::Vector{T}, g::Vector{T}, userdata::userdata_tru)
     p = userdata.p
     g[1] = 2.0 * (x[1] + x[3] + p) - sin(x[1])
     g[2] = 2.0 * (x[2] + x[3])
@@ -30,7 +30,7 @@ function test_tru(::Type{T}) where T
   end
 
   # Hessian of the objective
-  function hess(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+  function hess(n::Int, ne::Int, x::Vector{T}, hval::Vector{T},
                 userdata::userdata_tru)
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 2.0
@@ -41,7 +41,7 @@ function test_tru(::Type{T}) where T
   end
 
   # Dense Hessian
-  function hess_dense(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+  function hess_dense(n::Int, ne::Int, x::Vector{T}, hval::Vector{T},
                       userdata::userdata_tru)
     hval[1] = 2.0 - cos(x[1])
     hval[2] = 0.0
@@ -53,7 +53,7 @@ function test_tru(::Type{T}) where T
   end
 
   # Hessian-vector product
-  function hessprod(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+  function hessprod(n::Int, x::Vector{T}, u::Vector{T}, v::Vector{T},
                     got_h::Bool, userdata::userdata_tru)
     u[1] = u[1] + 2.0 * (v[1] + v[3]) - cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * (v[2] + v[3])
@@ -62,7 +62,7 @@ function test_tru(::Type{T}) where T
   end
 
   # Apply preconditioner
-  function prec(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+  function prec(n::Int, x::Vector{T}, u::Vector{T}, v::Vector{T},
                 userdata::userdata_tru)
     u[1] = 0.5 * v[1]
     u[2] = 0.5 * v[2]
@@ -71,14 +71,14 @@ function test_tru(::Type{T}) where T
   end
 
   # Objective function
-  function fun_diag(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_tru)
+  function fun_diag(n::Int, x::Vector{T}, f::Ref{T}, userdata::userdata_tru)
     p = userdata.p
     f[] = (x[3] + p)^2 + x[2]^2 + cos(x[1])
     return 0
   end
 
   # Gradient of the objective
-  function grad_diag(n::Int, x::Vector{Float64}, g::Vector{Float64}, userdata::userdata_tru)
+  function grad_diag(n::Int, x::Vector{T}, g::Vector{T}, userdata::userdata_tru)
     p = userdata.p
     g[1] = -sin(x[1])
     g[2] = 2.0 * x[2]
@@ -87,7 +87,7 @@ function test_tru(::Type{T}) where T
   end
 
   # Hessian of the objective
-  function hess_diag(n::Int, ne::Int, x::Vector{Float64}, hval::Vector{Float64},
+  function hess_diag(n::Int, ne::Int, x::Vector{T}, hval::Vector{T},
                      userdata::userdata_tru)
     hval[1] = -cos(x[1])
     hval[2] = 2.0
@@ -96,7 +96,7 @@ function test_tru(::Type{T}) where T
   end
 
   # Hessian-vector product
-  function hessprod_diag(n::Int, x::Vector{Float64}, u::Vector{Float64}, v::Vector{Float64},
+  function hessprod_diag(n::Int, x::Vector{T}, u::Vector{T}, v::Vector{T},
                          got_h::Bool, userdata::userdata_tru)
     u[1] = u[1] + -cos(x[1]) * v[1]
     u[2] = u[2] + 2.0 * v[2]
@@ -106,8 +106,8 @@ function test_tru(::Type{T}) where T
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{tru_control_type{Float64}}()
-  inform = Ref{tru_inform_type{Float64}}()
+  control = Ref{tru_control_type{T}}()
+  inform = Ref{tru_inform_type{T}}()
 
   # Set user data
   userdata = userdata_tru(4.0)
@@ -120,7 +120,7 @@ function test_tru(::Type{T}) where T
   H_ptr = Cint[1, 2, 3, 6]  # row pointers
 
   # Set storage
-  g = zeros(Float64, n) # gradient
+  g = zeros(T, n) # gradient
   st = ' '
   status = Ref{Cint}()
 
@@ -129,18 +129,18 @@ function test_tru(::Type{T}) where T
 
   # reverse-communication input/output
   eval_status = Ref{Cint}()
-  f = Ref{Float64}(0.0)
-  u = zeros(Float64, n)
-  v = zeros(Float64, n)
+  f = Ref{T}(0.0)
+  u = zeros(T, n)
+  v = zeros(T, n)
   index_nz_u = zeros(Cint, n)
   index_nz_v = zeros(Cint, n)
-  H_val = zeros(Float64, ne)
-  H_dense = zeros(Float64, div(n * (n + 1), 2))
-  H_diag = zeros(Float64, n)
+  H_val = zeros(T, ne)
+  H_dense = zeros(T, div(n * (n + 1), 2))
+  H_diag = zeros(T, n)
 
   for d in 1:5
     # Initialize TRU
-    tru_initialize(Float64, data, control, status)
+    tru_initialize(T, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -148,17 +148,17 @@ function test_tru(::Type{T}) where T
     # @reset control[].maxit = Cint(1)
 
     # Start from 1.5
-    x = Float64[1.5, 1.5, 1.5]
+    x = T[1.5, 1.5, 1.5]
 
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      tru_import(Float64, control, data, status, n, "coordinate",
+      tru_import(T, control, data, status, n, "coordinate",
                  ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        tru_solve_reverse_with_mat(T, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -180,12 +180,12 @@ function test_tru(::Type{T}) where T
     # sparse by rows
     if d == 2
       st = 'R'
-      tru_import(Float64, control, data, status, n, "sparse_by_rows", ne,
+      tru_import(T, control, data, status, n, "sparse_by_rows", ne,
                  C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        tru_solve_reverse_with_mat(T, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -207,12 +207,12 @@ function test_tru(::Type{T}) where T
     # dense
     if d == 3
       st = 'D'
-      tru_import(Float64, control, data, status, n, "dense",
+      tru_import(T, control, data, status, n, "dense",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g,
+        tru_solve_reverse_with_mat(T, data, status, eval_status, n, x, f[], g,
                                    div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -235,11 +235,11 @@ function test_tru(::Type{T}) where T
     # diagonal
     if d == 4
       st = 'I'
-      tru_import(Float64, control, data, status, n, "diagonal", ne, C_NULL, C_NULL, C_NULL)
+      tru_import(T, control, data, status, n, "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
+        tru_solve_reverse_with_mat(T, data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -261,12 +261,12 @@ function test_tru(::Type{T}) where T
     # access by products
     if d == 5
       st = 'P'
-      tru_import(Float64, control, data, status, n, "absent",
+      tru_import(T, control, data, status, n, "absent",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        tru_solve_reverse_without_mat(Float64, data, status, eval_status, n, x, f[], g, u, v)
+        tru_solve_reverse_without_mat(T, data, status, eval_status, n, x, f[], g, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -285,7 +285,7 @@ function test_tru(::Type{T}) where T
       end
     end
 
-    tru_information(Float64, data, inform, status)
+    tru_information(T, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -306,7 +306,7 @@ function test_tru(::Type{T}) where T
     # @printf("\n")
 
     # Delete internal workspace
-    tru_terminate(Float64, data, control, inform)
+    tru_terminate(T, data, control, inform)
   end
 
   return 0

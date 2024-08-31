@@ -9,22 +9,22 @@ using Accessors
 function test_glrt(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{glrt_control_type{Float64}}()
-  inform = Ref{glrt_inform_type{Float64}}()
+  control = Ref{glrt_control_type{T}}()
+  inform = Ref{glrt_inform_type{T}}()
 
   # Set problem data
   n = 100 # dimension
 
   status = Ref{Cint}()
-  weight = Ref{Float64}()
+  weight = Ref{T}()
   power = 3.0
-  x = zeros(Float64, n)
-  r = zeros(Float64, n)
-  vector = zeros(Float64, n)
-  h_vector = zeros(Float64, n)
+  x = zeros(T, n)
+  r = zeros(T, n)
+  vector = zeros(T, n)
+  h_vector = zeros(T, n)
 
   # Initialize glrt
-  glrt_initialize(Float64, data, control, status)
+  glrt_initialize(T, data, control, status)
 
   # use a unit M ?
   for unit_m in 0:1
@@ -34,7 +34,7 @@ function test_glrt(::Type{T}) where T
       @reset control[].unitm = true
     end
 
-    glrt_import_control(Float64, control, data, status)
+    glrt_import_control(T, control, data, status)
 
     # resolve with a larger weight ?
     for new_weight in 0:1
@@ -53,7 +53,7 @@ function test_glrt(::Type{T}) where T
       # iteration loop to find the minimizer
       terminated = false
       while !terminated # reverse-communication loop
-        glrt_solve_problem(Float64, data, status, n, power, weight[], x, r, vector)
+        glrt_solve_problem(T, data, status, n, power, weight[], x, r, vector)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -80,7 +80,7 @@ function test_glrt(::Type{T}) where T
         end
       end
 
-      glrt_information(Float64, data, inform, status)
+      glrt_information(T, data, inform, status)
       @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
               new_weight, inform[].status,
               inform[].obj_regularized)
@@ -88,7 +88,7 @@ function test_glrt(::Type{T}) where T
   end
 
   # Delete internal workspace
-  glrt_terminate(Float64, data, control, inform)
+  glrt_terminate(T, data, control, inform)
 
   return 0
 end

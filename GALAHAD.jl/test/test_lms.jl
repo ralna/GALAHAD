@@ -7,12 +7,12 @@ using Test
 function test_lms(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lms_control_type}()
-  inform = Ref{lms_inform_type{Float64}}()
+  inform = Ref{lms_inform_type{T}}()
 
   status = Ref{Cint}()
-  lms_initialize(Float64, data, control, status)
-  lms_information(Float64, data, inform, status)
-  lms_terminate(Float64, data, control, inform)
+  lms_initialize(T, data, control, status)
+  lms_information(T, data, inform, status)
+  lms_terminate(T, data, control, inform)
 
   return 0
 end
