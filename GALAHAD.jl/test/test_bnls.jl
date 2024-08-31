@@ -89,7 +89,7 @@ for d = 1:5
 #  for(int d=5 d <= 5 d++)
 
 # Initialize BNLS
-bnls_initialize(data, control, inform)
+bnls_initialize(Float64, data, control, inform)
 
 # Set user-defined control options
 control[].f_indexing = true # Fortran sparse matrix indexing
@@ -103,60 +103,60 @@ W = Float64[1.0, 1.0, 1.0]  # weights
 # sparse co-ordinate storage
 if d == 1
 st = 'C'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "coordinate", j_ne, J_row, J_col, C_NULL,
 "coordinate", h_ne, H_row, H_col, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-bnls_solve_with_mat(data, userdata, status,
+bnls_solve_with_mat(Float64, data, userdata, status,
 n, m, x, c, g, res, j_ne, jac,
 h_ne, hess, p_ne, rhessprods)
 end
 # sparse by rows
 if d == 2
 st = 'R'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
 "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-bnls_solve_with_mat(data, userdata, status,
+bnls_solve_with_mat(Float64, data, userdata, status,
 n, m, x, c, g, res, j_ne, jac,
 h_ne, hess, p_ne, rhessprods)
 end
 # dense
 if d == 3
 st = 'D'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "dense", j_ne, C_NULL, C_NULL, C_NULL,
 "dense", h_ne, C_NULL, C_NULL, C_NULL,
 "dense", p_ne, C_NULL, C_NULL, C_NULL, W)
-bnls_solve_with_mat(data, userdata, status,
+bnls_solve_with_mat(Float64, data, userdata, status,
 n, m, x, c, g, res, j_ne, jac_dense,
 h_ne, hess_dense, p_ne, rhessprods_dense)
 end
 # diagonal
 if d == 4
 st = 'I'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
 "diagonal", h_ne, C_NULL, C_NULL, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-bnls_solve_with_mat(data, userdata, status,
+bnls_solve_with_mat(Float64, data, userdata, status,
 n, m, x, c, g, res, j_ne, jac,
 h_ne, hess, p_ne, rhessprods)
 end
 case 5: # access by products
 st = 'P'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "absent", j_ne, C_NULL, C_NULL, C_NULL,
 "absent", h_ne, C_NULL, C_NULL, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-bnls_solve_without_mat(data, userdata, status,
+bnls_solve_without_mat(Float64, data, userdata, status,
    n, m, x, c, g, res, jacprod,
    hessprod, p_ne, rhessprods)
 end
 ]
 
-bnls_information(data, inform, status)
+bnls_information(Float64, data, inform, status)
 
 if inform[].status == 0
 @printf("%c:%6i iterations. Optimal objective value = %5.2f"
@@ -166,7 +166,7 @@ else
 @printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
 
 # Delete internal workspace
-bnls_terminate(data, control, inform)
+bnls_terminate(Float64, data, control, inform)
 @printf("\n tests reverse-communication options\n\n")
 
 # reverse-communication input/output
@@ -183,7 +183,7 @@ for d = 1:5
 #  for(int d=1 d <= 4 d++)
 
 # Initialize BNLS
-bnls_initialize(data, control, inform)
+bnls_initialize(Float64, data, control, inform)
 
 # Set user-defined control options
 control[].f_indexing = true # Fortran sparse matrix indexing
@@ -197,12 +197,12 @@ W = Float64[1.0, 1.0, 1.0]  # weights
 # sparse co-ordinate storage
 if d == 1
 st = 'C'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "coordinate", j_ne, J_row, J_col, C_NULL,
 "coordinate", h_ne, H_row, H_col, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_with_mat(data, status, eval_status,
+  bnls_solve_reverse_with_mat(Float64, data, status, eval_status,
   n, m, x, c, g, j_ne, J_val, y,
   h_ne, H_val, v, p_ne, P_val)
   if status == 0 # successful termination
@@ -228,12 +228,12 @@ end
 # sparse by rows
 if d == 2
 st = 'R'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
 "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_with_mat(data, status, eval_status,
+  bnls_solve_reverse_with_mat(Float64, data, status, eval_status,
   n, m, x, c, g, j_ne, J_val, y,
   h_ne, H_val, v, p_ne, P_val)
   if status == 0 # successful termination
@@ -259,12 +259,12 @@ end
 # dense
 if d == 3
 st = 'D'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "dense", j_ne, C_NULL, C_NULL, C_NULL,
 "dense", h_ne, C_NULL, C_NULL, C_NULL,
 "dense", p_ne, C_NULL, C_NULL, C_NULL, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_with_mat(data, status, eval_status,
+  bnls_solve_reverse_with_mat(Float64, data, status, eval_status,
   n, m, x, c, g, m*n, J_dense, y,
   n*(n+1)/2, H_dense, v, m*n,
   P_dense)
@@ -293,12 +293,12 @@ end
 # diagonal
 if d == 4
 st = 'I'
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
 "diagonal", h_ne, C_NULL, C_NULL, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_with_mat(data, status, eval_status,
+  bnls_solve_reverse_with_mat(Float64, data, status, eval_status,
   n, m, x, c, g, j_ne, J_val, y,
   n, H_diag, v, p_ne, P_val)
   if status == 0 # successful termination
@@ -324,12 +324,12 @@ end
 case 5: # access by products
 st = 'P'
 #  control[].print_level = 1
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "absent", j_ne, C_NULL, C_NULL, C_NULL,
 "absent", h_ne, C_NULL, C_NULL, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_without_mat(data, status, eval_status,
+  bnls_solve_reverse_without_mat(Float64, data, status, eval_status,
  n, m, x, c, g, transpose,
  u, v, y, p_ne, P_val)
   if status == 0 # successful termination
@@ -356,7 +356,7 @@ status)
 end
 ]
 
-bnls_information(data, inform, status)
+bnls_information(Float64, data, inform, status)
 
 if inform[].status == 0
 @printf("%c:%6i iterations. Optimal objective value = %5.2f"
@@ -366,13 +366,13 @@ else
 @printf("%c: BNLS_solve exit status = %1i\n", st, inform[].status)
 
 # Delete internal workspace
-bnls_terminate(data, control, inform)
+bnls_terminate(Float64, data, control, inform)
 @printf("\n basic tests of models used, direct access\n\n")
 
 for(int model=3 model <= 8 model++)
 
 # Initialize BNLS
-bnls_initialize(data, control, inform)
+bnls_initialize(Float64, data, control, inform)
 
 # Set user-defined control options
 control[].f_indexing = true # Fortran sparse matrix indexing
@@ -383,15 +383,15 @@ control[].model = model
 x = Float64[1.5,1.5]  # starting point
 W = Float64[1.0, 1.0, 1.0]  # weights
 
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
 "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-bnls_solve_with_mat(data, userdata, status,
+bnls_solve_with_mat(Float64, data, userdata, status,
 n, m, x, c, g, res, j_ne, jac,
 h_ne, hess, p_ne, rhessprods)
 
-bnls_information(data, inform, status)
+bnls_information(Float64, data, inform, status)
 
 if inform[].status == 0
 @printf(" %1i:%6" i_int 
@@ -403,13 +403,13 @@ else
    "\n", model, inform[].status)
 
 # Delete internal workspace
-bnls_terminate(data, control, inform)
+bnls_terminate(Float64, data, control, inform)
 @printf("\n basic tests of models used, access by products\n\n")
 
 for(int model=3 model <= 8 model++)
 
 # Initialize BNLS
-bnls_initialize(data, control, inform)
+bnls_initialize(Float64, data, control, inform)
 
 # Set user-defined control options
 control[].f_indexing = true # Fortran sparse matrix indexing
@@ -420,14 +420,14 @@ control[].model = model
 x = Float64[1.5,1.5]  # starting point
 W = Float64[1.0, 1.0, 1.0]  # weights
 
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "absent", j_ne, C_NULL, C_NULL, C_NULL,
 "absent", h_ne, C_NULL, C_NULL, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
-bnls_solve_without_mat(data, userdata, status,
+bnls_solve_without_mat(Float64, data, userdata, status,
    n, m, x, c, g, res, jacprod,
    hessprod, p_ne, rhessprods)
-bnls_information(data, inform, status)
+bnls_information(Float64, data, inform, status)
 
 if inform[].status == 0
 @printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
@@ -437,13 +437,13 @@ else
 @printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
 
 # Delete internal workspace
-bnls_terminate(data, control, inform)
+bnls_terminate(Float64, data, control, inform)
 @printf("\n basic tests of models used, reverse access\n\n")
 
 for(int model=3 model <= 8 model++)
 
 # Initialize BNLS
-bnls_initialize(data, control, inform)
+bnls_initialize(Float64, data, control, inform)
 
 # Set user-defined control options
 control[].f_indexing = true # Fortran sparse matrix indexing
@@ -454,12 +454,12 @@ control[].model = model
 x = Float64[1.5,1.5]  # starting point
 W = Float64[1.0, 1.0, 1.0]  # weights
 
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
 "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_with_mat(data, status, eval_status,
+  bnls_solve_reverse_with_mat(Float64, data, status, eval_status,
   n, m, x, c, g, j_ne, J_val, y,
   h_ne, H_val, v, p_ne, P_val)
   if status == 0 # successful termination
@@ -482,7 +482,7 @@ status)
  ]
 ]
 
-bnls_information(data, inform, status)
+bnls_information(Float64, data, inform, status)
 
 if inform[].status == 0
 @printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
@@ -492,13 +492,13 @@ else
 @printf(" %i: BNLS_solve exit status = %1i\n", model, inform[].status)
 
 # Delete internal workspace
-bnls_terminate(data, control, inform)
+bnls_terminate(Float64, data, control, inform)
 @printf("\n basic tests of models used, reverse access by products\n\n")
 
 for(int model=3 model <= 8 model++)
 
 # Initialize BNLS
-bnls_initialize(data, control, inform)
+bnls_initialize(Float64, data, control, inform)
 
 # Set user-defined control options
 control[].f_indexing = true # Fortran sparse matrix indexing
@@ -509,12 +509,12 @@ control[].model = model
 x = Float64[1.5,1.5]  # starting point
 W = Float64[1.0, 1.0, 1.0]  # weights
 
-bnls_import(control, data, status, n, m,
+bnls_import(Float64, control, data, status, n, m,
 "absent", j_ne, C_NULL, C_NULL, C_NULL,
 "absent", h_ne, C_NULL, C_NULL, C_NULL,
 "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 while true # reverse-communication loop
-  bnls_solve_reverse_without_mat(data, status, eval_status,
+  bnls_solve_reverse_without_mat(Float64, data, status, eval_status,
  n, m, x, c, g, transpose,
  u, v, y, p_ne, P_val)
   if status == 0 # successful termination
@@ -539,7 +539,7 @@ status)
  ]
 ]
 
-bnls_information(data, inform, status)
+bnls_information(Float64, data, inform, status)
 
 if inform[].status == 0
 @printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
@@ -549,7 +549,7 @@ else
 @printf("P%i: BNLS_solve exit status = %1i\n", model, inform[].status)
 
 # Delete internal workspace
-bnls_terminate(data, control, inform)
+bnls_terminate(Float64, data, control, inform)
 # compute the residuals
 int res(int n, int m, var::Vector{Float64}, real_wp_ c[], const void *userdata)
 struct userdata_type *myuserdata = (struct userdata_type *) userdata

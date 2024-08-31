@@ -25,11 +25,11 @@ function test_l2rt()
   v = zeros(Float64, n)
 
   # Initialize l2rt
-  l2rt_initialize(data, control, status)
+  l2rt_initialize(Float64, data, control, status)
 
   status[] = 1
   @reset control[].print_level = Cint(0)
-  l2rt_import_control(control, data, status)
+  l2rt_import_control(Float64, control, data, status)
 
   for i in 1:m
     u[i] = 1.0 # b = 1
@@ -38,7 +38,7 @@ function test_l2rt()
   # iteration loop to find the minimizer with A^T = (I:diag(1:n))
   terminated = false
   while !terminated # reverse-communication loop
-    l2rt_solve_problem(data, status, m, n, power, weight, shift, x, u, v)
+    l2rt_solve_problem(Float64, data, status, m, n, power, weight, shift, x, u, v)
     if status[] == 0 # successful termination
       terminated = true
     elseif status[] < 0 # error exit
@@ -61,12 +61,12 @@ function test_l2rt()
     end
   end
 
-  l2rt_information(data, inform, status)
+  l2rt_information(Float64, data, inform, status)
 
   @printf("l2rt_solve_problem exit status = %i, f = %.2f\n", inform[].status, inform[].obj)
 
   # Delete internal workspace
-  l2rt_terminate(data, control, inform)
+  l2rt_terminate(Float64, data, control, inform)
 
   return 0
 end

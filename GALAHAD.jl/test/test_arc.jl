@@ -138,7 +138,7 @@ function test_arc()
   for d in 1:5
 
     # Initialize ARC
-    arc_initialize(data, control, status)
+    arc_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -150,12 +150,12 @@ function test_arc()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      arc_import(control, data, status, n, "coordinate",
+      arc_import(Float64, control, data, status, n, "coordinate",
                  ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        arc_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        arc_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -177,12 +177,12 @@ function test_arc()
     # sparse by rows
     if d == 2
       st = 'R'
-      arc_import(control, data, status, n, "sparse_by_rows", ne,
+      arc_import(Float64, control, data, status, n, "sparse_by_rows", ne,
                  C_NULL, H_col, H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
-        arc_solve_reverse_with_mat(data, status, eval_status,
+        arc_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -205,12 +205,12 @@ function test_arc()
     # dense
     if d == 3
       st = 'D'
-      arc_import(control, data, status, n, "dense",
+      arc_import(Float64, control, data, status, n, "dense",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        arc_solve_reverse_with_mat(data, status, eval_status,
+        arc_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -233,12 +233,12 @@ function test_arc()
     # diagonal
     if d == 4
       st = 'I'
-      arc_import(control, data, status, n, "diagonal",
+      arc_import(Float64, control, data, status, n, "diagonal",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        arc_solve_reverse_with_mat(data, status, eval_status,
+        arc_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -261,12 +261,12 @@ function test_arc()
     # access by products
     if d == 5
       st = 'P'
-      arc_import(control, data, status, n, "absent",
+      arc_import(Float64, control, data, status, n, "absent",
                  ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        arc_solve_reverse_without_mat(data, status, eval_status,
+        arc_solve_reverse_without_mat(Float64, data, status, eval_status,
                                       n, x, f[], g, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -286,7 +286,7 @@ function test_arc()
       end
     end
 
-    arc_information(data, inform, status)
+    arc_information(Float64, data, inform, status)
 
     if inform[].status[] == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -307,7 +307,7 @@ function test_arc()
     # @printf("\n")
 
     # Delete internal workspace
-    arc_terminate(data, control, inform)
+    arc_terminate(Float64, data, control, inform)
   end
   return 0
 end

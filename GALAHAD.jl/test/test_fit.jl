@@ -10,9 +10,9 @@ function test_fit()
   inform = Ref{fit_inform_type}()
 
   status = Ref{Cint}()
-  fit_initialize(data, control, status)
-  fit_information(data, inform, status)
-  fit_terminate(data, control, inform)
+  fit_initialize(Float64, data, control, status)
+  fit_information(Float64, data, inform, status)
+  fit_terminate(Float64, data, control, inform)
 
   return 0
 end

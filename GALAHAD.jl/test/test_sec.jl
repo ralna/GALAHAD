@@ -10,9 +10,9 @@ function test_sec()
   inform = Ref{sec_inform_type}()
 
   status = Ref{Cint}()
-  sec_initialize(control, status)
-  sec_information(data, inform, status)
-  sec_terminate(data, control, inform)
+  sec_initialize(Float64, control, status)
+  sec_information(Float64, data, inform, status)
+  sec_terminate(Float64, data, control, inform)
 
   return 0
 end

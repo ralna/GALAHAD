@@ -36,7 +36,7 @@ function test_dps()
 
   for storage_type in 1:3
     # Initialize DPS
-    dps_initialize(data, control, status)
+    dps_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # fortran sparse matrix indexing
@@ -46,11 +46,11 @@ function test_dps()
     if storage_type == 1
       st = 'C'
       # import the control parameters and structural data
-      dps_import(control, data, status, n,
+      dps_import(Float64, control, data, status, n,
                  "coordinate", H_ne, H_row, H_col, C_NULL)
 
       # solve the problem
-      dps_solve_tr_problem(data, status, n, H_ne, H_val,
+      dps_solve_tr_problem(Float64, data, status, n, H_ne, H_val,
                            c, f, radius, x)
     end
 
@@ -58,10 +58,10 @@ function test_dps()
     if storage_type == 2
       st = 'R'
       # import the control parameters and structural data
-      dps_import(control, data, status, n,
+      dps_import(Float64, control, data, status, n,
                  "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr)
 
-      dps_solve_tr_problem(data, status, n, H_ne, H_val,
+      dps_solve_tr_problem(Float64, data, status, n, H_ne, H_val,
                            c, f, radius, x)
     end
 
@@ -69,14 +69,14 @@ function test_dps()
     if storage_type == 3
       st = 'D'
       # import the control parameters and structural data
-      dps_import(control, data, status, n,
+      dps_import(Float64, control, data, status, n,
                  "dense", H_ne, C_NULL, C_NULL, C_NULL)
 
-      dps_solve_tr_problem(data, status, n, H_dense_ne, H_dense,
+      dps_solve_tr_problem(Float64, data, status, n, H_dense_ne, H_dense,
                            c, f, radius, x)
     end
 
-    dps_information(data, inform, status)
+    dps_information(Float64, data, inform, status)
     @printf("format %c: DPS_solve_problem exit status   = %1i, f = %.2f\n",
             st, inform[].status, inform[].obj)
 
@@ -84,25 +84,25 @@ function test_dps()
     if storage_type == 1
       st = 'C'
       # solve the problem
-      dps_resolve_tr_problem(data, status, n,
+      dps_resolve_tr_problem(Float64, data, status, n,
                              c, f, half_radius, x)
     end
 
     # sparse by rows
     if storage_type == 2
       st = 'R'
-      dps_resolve_tr_problem(data, status, n,
+      dps_resolve_tr_problem(Float64, data, status, n,
                              c, f, half_radius, x)
     end
 
     # dense
     if storage_type == 3
       st = 'D'
-      dps_resolve_tr_problem(data, status, n,
+      dps_resolve_tr_problem(Float64, data, status, n,
                              c, f, half_radius, x)
     end
 
-    dps_information(data, inform, status)
+    dps_information(Float64, data, inform, status)
     @printf("format %c: DPS_resolve_problem exit status = %1i, f = %.2f\n",
             st, inform[].status, inform[].obj)
 
@@ -112,7 +112,7 @@ function test_dps()
     # end
 
     # Delete internal workspace
-    dps_terminate(data, control, inform)
+    dps_terminate(Float64, data, control, inform)
   end
 
   return 0

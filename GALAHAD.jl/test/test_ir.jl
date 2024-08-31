@@ -10,9 +10,9 @@ function test_ir()
   inform = Ref{ir_inform_type{Float64}}()
 
   status = Ref{Cint}()
-  ir_initialize(data, control, status)
-  ir_information(data, inform, status)
-  ir_terminate(data, control, inform)
+  ir_initialize(Float64, data, control, status)
+  ir_information(Float64, data, inform, status)
+  ir_terminate(Float64, data, control, inform)
 
   return 0
 end

@@ -164,7 +164,7 @@ function test_nls()
 
   for d in 1:5
     # Initialize NLS
-    nls_initialize(data, control, inform)
+    nls_initialize(Float64, data, control, inform)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -178,13 +178,13 @@ function test_nls()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      nls_import(control, data, status, n, m,
+      nls_import(Float64, control, data, status, n, m,
                  "coordinate", j_ne, J_row, J_col, C_NULL,
                  "coordinate", h_ne, H_row, H_col, C_NULL,
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
       terminated = false
       while !terminated # reverse-communication loop
-        nls_solve_reverse_with_mat(data, status, eval_status,
+        nls_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, m, x, c, g, j_ne, J_val, y,
                                    h_ne, H_val, v, p_ne, P_val)
         if status[] == 0 # successful termination
@@ -208,14 +208,14 @@ function test_nls()
     # sparse by rows
     if d == 2
       st = 'R'
-      nls_import(control, data, status, n, m,
+      nls_import(Float64, control, data, status, n, m,
                  "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
                  "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
       terminated = false
       while !terminated # reverse-communication loop
-        nls_solve_reverse_with_mat(data, status, eval_status,
+        nls_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, m, x, c, g, j_ne, J_val, y,
                                    h_ne, H_val, v, p_ne, P_val)
         if status[] == 0 # successful termination
@@ -239,14 +239,14 @@ function test_nls()
     # dense
     if d == 3
       st = 'D'
-      nls_import(control, data, status, n, m,
+      nls_import(Float64, control, data, status, n, m,
                  "dense", j_ne, C_NULL, C_NULL, C_NULL,
                  "dense", h_ne, C_NULL, C_NULL, C_NULL,
                  "dense", p_ne, C_NULL, C_NULL, C_NULL, W)
 
       terminated = false
       while !terminated # reverse-communication loop
-        nls_solve_reverse_with_mat(data, status, eval_status,
+        nls_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, m, x, c, g, m * n, J_dense, y,
                                    n * (n + 1) / 2, H_dense, v, m * n,
                                    P_dense)
@@ -271,14 +271,14 @@ function test_nls()
     # diagonal
     if d == 4
       st = 'I'
-      nls_import(control, data, status, n, m,
+      nls_import(Float64, control, data, status, n, m,
                  "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
                  "diagonal", h_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
       terminated = false
       while !terminated # reverse-communication loop
-        nls_solve_reverse_with_mat(data, status, eval_status,
+        nls_solve_reverse_with_mat(Float64, data, status, eval_status,
                                    n, m, x, c, g, j_ne, J_val, y,
                                    n, H_diag, v, p_ne, P_val)
         if status[] == 0 # successful termination
@@ -303,14 +303,14 @@ function test_nls()
     if d == 5
       st = 'P'
       # @reset control[].print_level = Cint(1)
-      nls_import(control, data, status, n, m,
+      nls_import(Float64, control, data, status, n, m,
                  "absent", j_ne, C_NULL, C_NULL, C_NULL,
                  "absent", h_ne, C_NULL, C_NULL, C_NULL,
                  "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
       terminated = false
       while !terminated # reverse-communication loop
-        nls_solve_reverse_without_mat(data, status, eval_status,
+        nls_solve_reverse_without_mat(Float64, data, status, eval_status,
                                       n, m, x, c, g, trans,
                                       u, v, y, p_ne, P_val)
         if status[] == 0 # successful termination
@@ -331,7 +331,7 @@ function test_nls()
       end
     end
 
-    nls_information(data, inform, status)
+    nls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -341,13 +341,13 @@ function test_nls()
     end
 
     # Delete internal workspace
-    nls_terminate(data, control, inform)
+    nls_terminate(Float64, data, control, inform)
   end
 
   @printf("\n basic tests of models used, reverse access\n\n")
   for model in 3:8
     # Initialize NLS
-    nls_initialize(data, control, inform)
+    nls_initialize(Float64, data, control, inform)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -358,14 +358,14 @@ function test_nls()
     x = Float64[1.5, 1.5]  # starting point
     W = Float64[1.0, 1.0, 1.0]  # weights
 
-    nls_import(control, data, status, n, m,
+    nls_import(Float64, control, data, status, n, m,
                "sparse_by_rows", j_ne, C_NULL, J_col, J_ptr,
                "sparse_by_rows", h_ne, C_NULL, H_col, H_ptr,
                "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
     terminated = false
     while !terminated # reverse-communication loop
-      nls_solve_reverse_with_mat(data, status, eval_status,
+      nls_solve_reverse_with_mat(Float64, data, status, eval_status,
                                  n, m, x, c, g, j_ne, J_val, y,
                                  h_ne, H_val, v, p_ne, P_val)
       if status[] == 0 # successful termination
@@ -385,7 +385,7 @@ function test_nls()
       end
     end
 
-    nls_information(data, inform, status)
+    nls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("P%1i:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -395,13 +395,13 @@ function test_nls()
     end
 
     # Delete internal workspace
-    nls_terminate(data, control, inform)
+    nls_terminate(Float64, data, control, inform)
   end
 
   @printf("\n basic tests of models used, reverse access by products\n\n")
   for model in 3:8
     # Initialize NLS
-    nls_initialize(data, control, inform)
+    nls_initialize(Float64, data, control, inform)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -412,14 +412,14 @@ function test_nls()
     x = Float64[1.5, 1.5]  # starting point
     W = Float64[1.0, 1.0, 1.0]  # weights
 
-    nls_import(control, data, status, n, m,
+    nls_import(Float64, control, data, status, n, m,
                "absent", j_ne, C_NULL, C_NULL, C_NULL,
                "absent", h_ne, C_NULL, C_NULL, C_NULL,
                "sparse_by_columns", p_ne, P_row, C_NULL, P_ptr, W)
 
     terminated = false
     while !terminated # reverse-communication loop
-      nls_solve_reverse_without_mat(data, status, eval_status,
+      nls_solve_reverse_without_mat(Float64, data, status, eval_status,
                                     n, m, x, c, g, trans,
                                     u, v, y, p_ne, P_val)
       if status[] == 0 # successful termination
@@ -439,7 +439,7 @@ function test_nls()
       end
     end
 
-    nls_information(data, inform, status)
+    nls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("P%1i:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
@@ -449,7 +449,7 @@ function test_nls()
     end
 
     # Delete internal workspace
-    nls_terminate(data, control, inform)
+    nls_terminate(Float64, data, control, inform)
   end
 
   return 0

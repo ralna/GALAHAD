@@ -96,7 +96,7 @@ function test_llst()
   for d in 1:4
 
     # Initialize LLST
-    llst_initialize(data, control, status)
+    llst_initialize(Float64, data, control, status)
     @reset control[].definite_linear_solver = galahad_linear_solver("potr")
     @reset control[].sbls_control.symmetric_linear_solver = galahad_linear_solver("sytr")
     @reset control[].sbls_control.definite_linear_solver = galahad_linear_solver("potr")
@@ -110,18 +110,18 @@ function test_llst()
       # sparse co-ordinate storage
       if d == 1
         st = 'C'
-        llst_import(control, data, status, m, n,
+        llst_import(Float64, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
 
         if use_s == 0
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llst_import_scaling(control, data, status, n,
+          llst_import_scaling(Float64, control, data, status, n,
                               "coordinate", S_ne, S_row,
                               S_col, C_NULL)
 
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -129,17 +129,17 @@ function test_llst()
       # sparse by rows
       if d == 2
         st = 'R'
-        llst_import(control, data, status, m, n,
+        llst_import(Float64, control, data, status, m, n,
                     "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
         if use_s == 0
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llst_import_scaling(control, data, status, n,
+          llst_import_scaling(Float64, control, data, status, n,
                               "sparse_by_rows", S_ne, C_NULL,
                               S_col, S_ptr)
 
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
@@ -147,19 +147,19 @@ function test_llst()
       # dense
       if d == 3
         st = 'D'
-        llst_import(control, data, status, m, n,
+        llst_import(Float64, control, data, status, m, n,
                     "dense", A_dense_ne, C_NULL, C_NULL, C_NULL)
 
         if use_s == 0
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_dense_ne, A_dense_val, b, x,
                              0, C_NULL)
         else
-          llst_import_scaling(control, data, status, n,
+          llst_import_scaling(Float64, control, data, status, n,
                               "dense", S_dense_ne,
                               C_NULL, C_NULL, C_NULL)
 
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_dense_ne, A_dense_val, b, x,
                              S_dense_ne, S_dense_val)
         end
@@ -168,21 +168,21 @@ function test_llst()
       # diagonal
       if d == 4
         st = 'I'
-        llst_import(control, data, status, m, n,
+        llst_import(Float64, control, data, status, m, n,
                     "coordinate", A_ne, A_row, A_col, C_NULL)
         if use_s == 0
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_ne, A_val, b, x, 0, C_NULL)
         else
-          llst_import_scaling(control, data, status, n,
+          llst_import_scaling(Float64, control, data, status, n,
                               "diagonal", S_ne, C_NULL, C_NULL, C_NULL)
 
-          llst_solve_problem(data, status, m, n, radius,
+          llst_solve_problem(Float64, data, status, m, n, radius,
                              A_ne, A_val, b, x, S_ne, S_val)
         end
       end
 
-      llst_information(data, inform, status)
+      llst_information(Float64, data, inform, status)
 
       if inform[].status == 0
         @printf("storage type %c%1i:  status = %1i, ||r|| = %5.2f\n", st, use_s,
@@ -200,7 +200,7 @@ function test_llst()
     # @printf("\n")
 
     # Delete internal workspace
-    llst_terminate(data, control, inform)
+    llst_terminate(Float64, data, control, inform)
   end
 
   return 0

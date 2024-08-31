@@ -10,9 +10,9 @@ function test_scu()
   inform = Ref{scu_inform_type}()
 
   status = Ref{Cint}()
-  scu_initialize(data, control, status)
-  scu_information(data, inform, status)
-  scu_terminate(data, control, inform)
+  scu_initialize(Float64, data, control, status)
+  scu_information(Float64, data, inform, status)
+  scu_terminate(Float64, data, control, inform)
 
   return 0
 end

@@ -12,9 +12,9 @@ function test_gls()
   sinfo = Ref{gls_sinfo_type}()
 
   status = Ref{Cint}()
-  gls_initialize(data, control)
-  gls_information(data, ainfo, finfo, sinfo, status)
-  gls_finalize(data, control, status)
+  gls_initialize(Float64, data, control)
+  gls_information(Float64, data, ainfo, finfo, sinfo, status)
+  gls_finalize(Float64, data, control, status)
 
   return 0
 end

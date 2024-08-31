@@ -45,7 +45,7 @@ function test_presolve()
     A_ne_trans = Ref{Cint}()
 
     # Initialize PRESOLVE
-    presolve_initialize(data, control, status)
+    presolve_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -53,7 +53,7 @@ function test_presolve()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "coordinate", H_ne, H_row, H_col, C_NULL, H_val, g, f,
                               "coordinate", A_ne, A_row, A_col, C_NULL, A_val,
                               c_l, c_u, x_l, x_u,
@@ -63,7 +63,7 @@ function test_presolve()
     # sparse by rows
     if d == 2
       st = 'R'
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "sparse_by_rows", H_ne, C_NULL, H_col, H_ptr, H_val, g, f,
                               "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
@@ -80,7 +80,7 @@ function test_presolve()
       A_dense = Float64[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                         0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
                         0.0, 1.0, 1.0, 1.0]
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "dense", H_dense_ne, C_NULL, C_NULL, C_NULL, H_dense, g,
                               f, "dense", A_dense_ne, C_NULL, C_NULL, C_NULL, A_dense,
                               c_l, c_u, x_l, x_u,
@@ -90,7 +90,7 @@ function test_presolve()
     # diagonal
     if d == 4
       st = 'L'
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "diagonal", n, C_NULL, C_NULL, C_NULL, H_val, g, f,
                               "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
@@ -100,7 +100,7 @@ function test_presolve()
     # scaled identity
     if d == 5
       st = 'S'
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "scaled_identity", 1, C_NULL, C_NULL, C_NULL, H_val, g, f,
                               "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
@@ -110,7 +110,7 @@ function test_presolve()
     # identity
     if d == 6
       st = 'I'
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "identity", 0, C_NULL, C_NULL, C_NULL, C_NULL, g, f,
                               "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
@@ -120,7 +120,7 @@ function test_presolve()
     # zero
     if d == 7
       st = 'Z'
-      presolve_import_problem(control, data, status, n, m,
+      presolve_import_problem(Float64, control, data, status, n, m,
                               "zero", 0, C_NULL, C_NULL, C_NULL, C_NULL, g, f,
                               "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr, A_val,
                               c_l, c_u, x_l, x_u,
@@ -145,7 +145,7 @@ function test_presolve()
     z_l_trans = zeros(Float64, n_trans[]) # transformed lower dual variable bounds
     z_u_trans = zeros(Float64, n_trans[]) # transformed upper dual variable bounds
 
-    presolve_transform_problem(data, status, n_trans[], m_trans[],
+    presolve_transform_problem(Float64, data, status, n_trans[], m_trans[],
                                H_ne_trans[], H_col_trans, H_ptr_trans,
                                H_val_trans, g_trans, f_trans, A_ne_trans[],
                                A_col_trans, A_ptr_trans, A_val_trans,
@@ -175,10 +175,10 @@ function test_presolve()
     z = zeros(Float64, n) # dual variables
 
     # @printf("%c: n_trans, m_trans, n, m = %2i, %2i, %2i, %2i\n", st, n_trans, m_trans, n, m)
-    presolve_restore_solution(data, status, n_trans[], m_trans[],
+    presolve_restore_solution(Float64, data, status, n_trans[], m_trans[],
                               x_trans, c_trans, y_trans, z_trans, n, m, x, c, y, z)
 
-    presolve_information(data, inform, status)
+    presolve_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i transformations, n, m = %2i, %2i, status = %1i\n", st,
@@ -199,7 +199,7 @@ function test_presolve()
     # @printf("\n")
 
     # Delete internal workspace
-    presolve_terminate(data, control, inform)
+    presolve_terminate(Float64, data, control, inform)
   end
 
   return 0

@@ -12,9 +12,9 @@ function test_hash()
   status = Ref{Cint}()
   nchar = Cint(10)
   length = Cint(100)
-  hash_initialize(nchar, length, data, control, inform)
-  hash_information(data, inform, status)
-  hash_terminate(data, control, inform)
+  hash_initialize(Float64, nchar, length, data, control, inform)
+  hash_information(Float64, data, inform, status)
+  hash_terminate(Float64, data, control, inform)
 
   return 0
 end

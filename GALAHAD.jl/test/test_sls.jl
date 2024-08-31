@@ -39,7 +39,7 @@ function test_sls()
 
   for d in 1:3
     # Initialize SLS - use the sytr solver
-    sls_initialize("sytr", data, control, status)
+    sls_initialize(Float64, "sytr", data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -47,25 +47,25 @@ function test_sls()
     # sparse co-ordinate storage
     if d == 1
       @printf(" coordinate ")
-      sls_analyse_matrix(control, data, status, n,
+      sls_analyse_matrix(Float64, control, data, status, n,
                          "coordinate", ne, row, col, C_NULL)
-      sls_factorize_matrix(data, status, ne, val)
+      sls_factorize_matrix(Float64, data, status, ne, val)
     end
 
     # sparse by rows
     if d == 2
       @printf(" sparse by rows ")
-      sls_analyse_matrix(control, data, status, n,
+      sls_analyse_matrix(Float64, control, data, status, n,
                          "sparse_by_rows", ne, C_NULL, col, ptr)
-      sls_factorize_matrix(data, status, ne, val)
+      sls_factorize_matrix(Float64, data, status, ne, val)
     end
 
     # dense
     if d == 3
       @printf(" dense  ")
-      sls_analyse_matrix(control, data, status, n,
+      sls_analyse_matrix(Float64, control, data, status, n,
                          "dense", ne, C_NULL, C_NULL, C_NULL)
-      sls_factorize_matrix(data, status, dense_ne, dense)
+      sls_factorize_matrix(Float64, data, status, dense_ne, dense)
     end
 
     # Set right-hand side and solve the system
@@ -73,8 +73,8 @@ function test_sls()
       x[i] = rhs[i]
     end
 
-    sls_solve_system(data, status, n, x)
-    sls_information(data, inform, status)
+    sls_solve_system(Float64, data, status, n, x)
+    sls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -99,14 +99,14 @@ function test_sls()
 
     # resolve, this time using iterative refinement
     @reset control[].max_iterative_refinements = Cint(1)
-    sls_reset_control(control, data, status)
+    sls_reset_control(Float64, control, data, status)
 
     for i in 1:n
       x[i] = rhs[i]
     end
 
-    sls_solve_system(data, status, n, x)
-    sls_information(data, inform, status)
+    sls_solve_system(Float64, data, status, n, x)
+    sls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -129,10 +129,10 @@ function test_sls()
       x[i] = rhs[i]
     end
 
-    sls_partial_solve_system("L", data, status, n, x)
-    sls_partial_solve_system("D", data, status, n, x)
-    sls_partial_solve_system("U", data, status, n, x)
-    sls_information(data, inform, status)
+    sls_partial_solve_system(Float64, "L", data, status, n, x)
+    sls_partial_solve_system(Float64, "D", data, status, n, x)
+    sls_partial_solve_system(Float64, "U", data, status, n, x)
+    sls_information(Float64, data, inform, status)
 
     if inform[].status == 0
       for i in 1:n
@@ -151,7 +151,7 @@ function test_sls()
     end
 
     # Delete internal workspace
-    sls_terminate(data, control, inform)
+    sls_terminate(Float64, data, control, inform)
   end
 
   return 0

@@ -23,7 +23,7 @@ function test_lstr()
   v = zeros(Float64, n)
 
   # Initialize lstr
-  lstr_initialize(data, control, status)
+  lstr_initialize(Float64, data, control, status)
 
   # resolve with a smaller radius ?
   for new_radius in 0:1
@@ -36,7 +36,7 @@ function test_lstr()
     end
 
     @reset control[].print_level = Cint(0)
-    lstr_import_control(control, data, status)
+    lstr_import_control(Float64, control, data, status)
 
     for i in 1:m
       u[i] = 1.0 # b = 1
@@ -45,7 +45,7 @@ function test_lstr()
     # iteration loop to find the minimizer with A^T = (I:diag(1:n))
     terminated = false
     while !terminated # reverse-communication loop
-      lstr_solve_problem(data, status, m, n, radius[], x, u, v)
+      lstr_solve_problem(Float64, data, status, m, n, radius[], x, u, v)
       if status[] == 0 # successful termination
         terminated = true
       elseif status[] < 0 # error exit
@@ -69,13 +69,13 @@ function test_lstr()
       end
     end
 
-    lstr_information(data, inform, status)
+    lstr_information(Float64, data, inform, status)
     @printf("%1i lstr_solve_problem exit status = %i, f = %.2f\n", new_radius,
             inform[].status, inform[].r_norm)
   end
 
   # Delete internal workspace
-  lstr_terminate(data, control, inform)
+  lstr_terminate(Float64, data, control, inform)
 
   return 0
 end

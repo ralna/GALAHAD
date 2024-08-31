@@ -24,7 +24,7 @@ function test_glrt()
   h_vector = zeros(Float64, n)
 
   # Initialize glrt
-  glrt_initialize(data, control, status)
+  glrt_initialize(Float64, data, control, status)
 
   # use a unit M ?
   for unit_m in 0:1
@@ -34,7 +34,7 @@ function test_glrt()
       @reset control[].unitm = true
     end
 
-    glrt_import_control(control, data, status)
+    glrt_import_control(Float64, control, data, status)
 
     # resolve with a larger weight ?
     for new_weight in 0:1
@@ -53,7 +53,7 @@ function test_glrt()
       # iteration loop to find the minimizer
       terminated = false
       while !terminated # reverse-communication loop
-        glrt_solve_problem(data, status, n, power, weight[], x, r, vector)
+        glrt_solve_problem(Float64, data, status, n, power, weight[], x, r, vector)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -80,7 +80,7 @@ function test_glrt()
         end
       end
 
-      glrt_information(data, inform, status)
+      glrt_information(Float64, data, inform, status)
       @printf("MR = %1i%1i glrt_solve_problem exit status = %i, f = %.2f\n", unit_m,
               new_weight, inform[].status,
               inform[].obj_regularized)
@@ -88,7 +88,7 @@ function test_glrt()
   end
 
   # Delete internal workspace
-  glrt_terminate(data, control, inform)
+  glrt_terminate(Float64, data, control, inform)
 
   return 0
 end

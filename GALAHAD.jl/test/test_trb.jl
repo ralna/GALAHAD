@@ -215,7 +215,7 @@ function test_trb()
 
   for d in 1:5
     # Initialize TRB
-    trb_initialize(data, control, status)
+    trb_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -227,11 +227,11 @@ function test_trb()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      trb_import(control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, C_NULL)
+      trb_import(Float64, control, data, status, n, x_l, x_u, "coordinate", ne, H_row, H_col, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        trb_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -253,12 +253,12 @@ function test_trb()
     # sparse by rows
     if d == 2
       st = 'R'
-      trb_import(control, data, status, n, x_l, x_u, "sparse_by_rows", ne, C_NULL, H_col,
+      trb_import(Float64, control, data, status, n, x_l, x_u, "sparse_by_rows", ne, C_NULL, H_col,
                  H_ptr)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
+        trb_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, ne, H_val, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -280,12 +280,12 @@ function test_trb()
     # dense
     if d == 3
       st = 'D'
-      trb_import(control, data, status, n, x_l, x_u,
+      trb_import(Float64, control, data, status, n, x_l, x_u,
                  "dense", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g,
+        trb_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g,
                                    div(n * (n + 1), 2), H_dense, u, v)
         if status[] == 0 # successful termination
           terminated = true
@@ -308,11 +308,11 @@ function test_trb()
     # diagonal
     if d == 4
       st = 'I'
-      trb_import(control, data, status, n, x_l, x_u, "diagonal", ne, C_NULL, C_NULL, C_NULL)
+      trb_import(Float64, control, data, status, n, x_l, x_u, "diagonal", ne, C_NULL, C_NULL, C_NULL)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_with_mat(data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
+        trb_solve_reverse_with_mat(Float64, data, status, eval_status, n, x, f[], g, n, H_diag, u, v)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -334,12 +334,12 @@ function test_trb()
     # access by products
     if d == 5
       st = 'P'
-      trb_import(control, data, status, n, x_l, x_u, "absent", ne, C_NULL, C_NULL, C_NULL)
+      trb_import(Float64, control, data, status, n, x_l, x_u, "absent", ne, C_NULL, C_NULL, C_NULL)
       nnz_u = Ref{Cint}(0)
 
       terminated = false
       while !terminated # reverse-communication loop
-        trb_solve_reverse_without_mat(data, status, eval_status, n, x, f[], g, u, v,
+        trb_solve_reverse_without_mat(Float64, data, status, eval_status, n, x, f[], g, u, v,
                                       index_nz_v, nnz_v, index_nz_u, nnz_u[])
         if status[] == 0 # successful termination
           terminated = true
@@ -364,7 +364,7 @@ function test_trb()
     end
 
     # Record solution information
-    trb_information(data, inform, status)
+    trb_information(Float64, data, inform, status)
 
     # Print solution details
     if inform[].status[] == 0
@@ -386,7 +386,7 @@ function test_trb()
     # @printf("\n")
 
     # Delete internal workspace
-    trb_terminate(data, control, inform)
+    trb_terminate(Float64, data, control, inform)
   end
   return 0
 end

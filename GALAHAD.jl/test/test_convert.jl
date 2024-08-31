@@ -10,9 +10,9 @@ function test_convert()
   inform = Ref{convert_inform_type{Float64}}()
 
   status = Ref{Cint}()
-  convert_initialize(data, control, status)
-  convert_information(data, inform, status)
-  convert_terminate(data, control, inform)
+  convert_initialize(Float64, data, control, status)
+  convert_information(Float64, data, inform, status)
+  convert_terminate(Float64, data, control, inform)
 
   return 0
 end

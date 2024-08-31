@@ -39,7 +39,7 @@ function test_lpa()
 
   for d in 1:3
     # Initialize LPA
-    lpa_initialize(data, control, status)
+    lpa_initialize(Float64, data, control, status)
 
     # Set user-defined control options
     @reset control[].f_indexing = true # Fortran sparse matrix indexing
@@ -52,10 +52,10 @@ function test_lpa()
     # sparse co-ordinate storage
     if d == 1
       st = 'C'
-      lpa_import(control, data, status, n, m,
+      lpa_import(Float64, control, data, status, n, m,
                  "coordinate", A_ne, A_row, A_col, C_NULL)
 
-      lpa_solve_lp(data, status, n, m, g, f,
+      lpa_solve_lp(Float64, data, status, n, m, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -63,10 +63,10 @@ function test_lpa()
     # sparse by rows
     if d == 2
       st = 'R'
-      lpa_import(control, data, status, n, m,
+      lpa_import(Float64, control, data, status, n, m,
                  "sparse_by_rows", A_ne, C_NULL, A_col, A_ptr)
 
-      lpa_solve_lp(data, status, n, m, g, f,
+      lpa_solve_lp(Float64, data, status, n, m, g, f,
                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                    x_stat, c_stat)
     end
@@ -76,15 +76,15 @@ function test_lpa()
       st = 'D'
       A_dense_ne = 6 # number of elements of A
       A_dense = Float64[2.0, 1.0, 0.0, 0.0, 1.0, 1.0]
-      lpa_import(control, data, status, n, m,
+      lpa_import(Float64, control, data, status, n, m,
                  "dense", A_ne, C_NULL, C_NULL, C_NULL)
 
-      lpa_solve_lp(data, status, n, m, g, f,
+      lpa_solve_lp(Float64, data, status, n, m, g, f,
                    A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                    x, c, y, z, x_stat, c_stat)
     end
 
-    lpa_information(data, inform, status)
+    lpa_information(Float64, data, inform, status)
 
     if inform[].status == 0
       @printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", st,
@@ -105,7 +105,7 @@ function test_lpa()
     # @printf("\n")
 
     # Delete internal workspace
-    lpa_terminate(data, control, inform)
+    lpa_terminate(Float64, data, control, inform)
   end
 
   return 0

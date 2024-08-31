@@ -24,11 +24,11 @@ function test_lsrt()
   v = zeros(Float64, n)
 
   # Initialize lsrt
-  lsrt_initialize(data, control, status)
+  lsrt_initialize(Float64, data, control, status)
 
   status[] = 1
   @reset control[].print_level = Cint(0)
-  lsrt_import_control(control, data, status)
+  lsrt_import_control(Float64, control, data, status)
 
   for i in 1:m
     u[i] = 1.0 # b = 1
@@ -37,7 +37,7 @@ function test_lsrt()
   # iteration loop to find the minimizer with A^T = (I:diag(1:n))
   terminated = false
   while !terminated # reverse-communication loop
-    lsrt_solve_problem(data, status, m, n, power, weight, x, u, v)
+    lsrt_solve_problem(Float64, data, status, m, n, power, weight, x, u, v)
     if status[] == 0 # successful termination
       terminated = true
     elseif status[] < 0 # error exit
@@ -61,11 +61,11 @@ function test_lsrt()
     end
   end
 
-  lsrt_information(data, inform, status)
+  lsrt_information(Float64, data, inform, status)
   @printf("lsrt_solve_problem exit status = %i, f = %.2f\n", inform[].status, inform[].obj)
 
   # Delete internal workspace
-  lsrt_terminate(data, control, inform)
+  lsrt_terminate(Float64, data, control, inform)
 
   return 0
 end

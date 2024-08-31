@@ -12,9 +12,9 @@ function test_sils()
   sinfo = Ref{sils_sinfo_type{Float64}}()
 
   status = Ref{Cint}()
-  sils_initialize(data, control, status)
-  sils_information(data, ainfo, finfo, sinfo, status)
-  sils_finalize(data, control, status)
+  sils_initialize(Float64, data, control, status)
+  sils_information(Float64, data, ainfo, finfo, sinfo, status)
+  sils_finalize(Float64, data, control, status)
 
   return 0
 end
