@@ -109,40 +109,36 @@ struct dqp_inform_type{T}
   rpd_inform::rpd_inform_type
 end
 
-export dqp_initialize_s
+export dqp_initialize
 
-function dqp_initialize_s(data, control, status)
+function dqp_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.dqp_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{dqp_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export dqp_initialize
-
-function dqp_initialize(data, control, status)
+function dqp_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.dqp_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{dqp_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export dqp_read_specfile_s
+export dqp_read_specfile
 
-function dqp_read_specfile_s(control, specfile)
+function dqp_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.dqp_read_specfile_s(control::Ptr{dqp_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export dqp_read_specfile
-
-function dqp_read_specfile(control, specfile)
+function dqp_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.dqp_read_specfile(control::Ptr{dqp_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export dqp_import_s
+export dqp_import
 
-function dqp_import_s(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr,
-                      A_type, A_ne, A_row, A_col, A_ptr)
+function dqp_import(::Type{Float32}, control, data, status, n, m, H_type, H_ne, H_row,
+                    H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr)
   @ccall libgalahad_single.dqp_import_s(control::Ptr{dqp_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
@@ -152,10 +148,8 @@ function dqp_import_s(control, data, status, n, m, H_type, H_ne, H_row, H_col, H
                                         A_ptr::Ptr{Cint})::Cvoid
 end
 
-export dqp_import
-
-function dqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_ptr, A_type,
-                    A_ne, A_row, A_col, A_ptr)
+function dqp_import(::Type{Float64}, control, data, status, n, m, H_type, H_ne, H_row,
+                    H_col, H_ptr, A_type, A_ne, A_row, A_col, A_ptr)
   @ccall libgalahad_double.dqp_import(control::Ptr{dqp_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       m::Cint, H_type::Ptr{Cchar}, H_ne::Cint,
@@ -164,26 +158,24 @@ function dqp_import(control, data, status, n, m, H_type, H_ne, H_row, H_col, H_p
                                       A_col::Ptr{Cint}, A_ptr::Ptr{Cint})::Cvoid
 end
 
-export dqp_reset_control_s
+export dqp_reset_control
 
-function dqp_reset_control_s(control, data, status)
+function dqp_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.dqp_reset_control_s(control::Ptr{dqp_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export dqp_reset_control
-
-function dqp_reset_control(control, data, status)
+function dqp_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.dqp_reset_control(control::Ptr{dqp_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export dqp_solve_qp_s
+export dqp_solve_qp
 
-function dqp_solve_qp_s(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c_l, c_u, x_l,
-                        x_u, x, c, y, z, x_stat, c_stat)
+function dqp_solve_qp(::Type{Float32}, data, status, n, m, h_ne, H_val, g, f, a_ne, A_val,
+                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.dqp_solve_qp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, h_ne::Cint, H_val::Ptr{Float32},
                                           g::Ptr{Float32}, f::Float32, a_ne::Cint,
@@ -194,10 +186,8 @@ function dqp_solve_qp_s(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c_l,
                                           x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
-export dqp_solve_qp
-
-function dqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c_l, c_u, x_l,
-                      x_u, x, c, y, z, x_stat, c_stat)
+function dqp_solve_qp(::Type{Float64}, data, status, n, m, h_ne, H_val, g, f, a_ne, A_val,
+                      c_l, c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_double.dqp_solve_qp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, h_ne::Cint, H_val::Ptr{Float64},
                                         g::Ptr{Float64}, f::Float64, a_ne::Cint,
@@ -208,10 +198,10 @@ function dqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, a_ne, A_val, c_l, c
                                         c_stat::Ptr{Cint})::Cvoid
 end
 
-export dqp_solve_sldqp_s
+export dqp_solve_sldqp
 
-function dqp_solve_sldqp_s(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_u, x_l, x_u,
-                           x, c, y, z, x_stat, c_stat)
+function dqp_solve_sldqp(::Type{Float32}, data, status, n, m, w, x0, g, f, a_ne, A_val, c_l,
+                         c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.dqp_solve_sldqp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, m::Cint, w::Ptr{Float32},
                                              x0::Ptr{Float32}, g::Ptr{Float32}, f::Float32,
@@ -223,10 +213,8 @@ function dqp_solve_sldqp_s(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_
                                              x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
-export dqp_solve_sldqp
-
-function dqp_solve_sldqp(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_u, x_l, x_u,
-                         x, c, y, z, x_stat, c_stat)
+function dqp_solve_sldqp(::Type{Float64}, data, status, n, m, w, x0, g, f, a_ne, A_val, c_l,
+                         c_u, x_l, x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_double.dqp_solve_sldqp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                            n::Cint, m::Cint, w::Ptr{Float64},
                                            x0::Ptr{Float64}, g::Ptr{Float64}, f::Float64,
@@ -238,33 +226,29 @@ function dqp_solve_sldqp(data, status, n, m, w, x0, g, f, a_ne, A_val, c_l, c_u,
                                            x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
-export dqp_information_s
+export dqp_information
 
-function dqp_information_s(data, inform, status)
+function dqp_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.dqp_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{dqp_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export dqp_information
-
-function dqp_information(data, inform, status)
+function dqp_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.dqp_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{dqp_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export dqp_terminate_s
+export dqp_terminate
 
-function dqp_terminate_s(data, control, inform)
+function dqp_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.dqp_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{dqp_control_type{Float32}},
                                            inform::Ptr{dqp_inform_type{Float32}})::Cvoid
 end
 
-export dqp_terminate
-
-function dqp_terminate(data, control, inform)
+function dqp_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.dqp_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{dqp_control_type{Float64}},
                                          inform::Ptr{dqp_inform_type{Float64}})::Cvoid

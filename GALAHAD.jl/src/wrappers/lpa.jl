@@ -63,39 +63,36 @@ struct lpa_inform_type{T}
   rpd_inform::rpd_inform_type
 end
 
-export lpa_initialize_s
+export lpa_initialize
 
-function lpa_initialize_s(data, control, status)
+function lpa_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.lpa_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{lpa_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export lpa_initialize
-
-function lpa_initialize(data, control, status)
+function lpa_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.lpa_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{lpa_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export lpa_read_specfile_s
+export lpa_read_specfile
 
-function lpa_read_specfile_s(control, specfile)
+function lpa_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.lpa_read_specfile_s(control::Ptr{lpa_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export lpa_read_specfile
-
-function lpa_read_specfile(control, specfile)
+function lpa_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.lpa_read_specfile(control::Ptr{lpa_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export lpa_import_s
+export lpa_import
 
-function lpa_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function lpa_import(::Type{Float32}, control, data, status, n, m, A_type, A_ne, A_row,
+                    A_col, A_ptr)
   @ccall libgalahad_single.lpa_import_s(control::Ptr{lpa_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -103,9 +100,8 @@ function lpa_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A
                                         A_ptr::Ptr{Cint})::Cvoid
 end
 
-export lpa_import
-
-function lpa_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function lpa_import(::Type{Float64}, control, data, status, n, m, A_type, A_ne, A_row,
+                    A_col, A_ptr)
   @ccall libgalahad_double.lpa_import(control::Ptr{lpa_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -113,26 +109,24 @@ function lpa_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_p
                                       A_ptr::Ptr{Cint})::Cvoid
 end
 
-export lpa_reset_control_s
+export lpa_reset_control
 
-function lpa_reset_control_s(control, data, status)
+function lpa_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.lpa_reset_control_s(control::Ptr{lpa_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export lpa_reset_control
-
-function lpa_reset_control(control, data, status)
+function lpa_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.lpa_reset_control(control::Ptr{lpa_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export lpa_solve_lp_s
+export lpa_solve_lp
 
-function lpa_solve_lp_s(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y,
-                        z, x_stat, c_stat)
+function lpa_solve_lp(::Type{Float32}, data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l,
+                      x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_single.lpa_solve_lp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, g::Ptr{Float32}, f::Float32, a_ne::Cint,
                                           A_val::Ptr{Float32}, c_l::Ptr{Float32},
@@ -142,10 +136,8 @@ function lpa_solve_lp_s(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_
                                           x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
-export lpa_solve_lp
-
-function lpa_solve_lp(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
-                      x_stat, c_stat)
+function lpa_solve_lp(::Type{Float64}, data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l,
+                      x_u, x, c, y, z, x_stat, c_stat)
   @ccall libgalahad_double.lpa_solve_lp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, g::Ptr{Float64}, f::Float64, a_ne::Cint,
                                         A_val::Ptr{Float64}, c_l::Ptr{Float64},
@@ -155,33 +147,29 @@ function lpa_solve_lp(data, status, n, m, g, f, a_ne, A_val, c_l, c_u, x_l, x_u,
                                         c_stat::Ptr{Cint})::Cvoid
 end
 
-export lpa_information_s
+export lpa_information
 
-function lpa_information_s(data, inform, status)
+function lpa_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.lpa_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{lpa_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export lpa_information
-
-function lpa_information(data, inform, status)
+function lpa_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.lpa_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{lpa_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export lpa_terminate_s
+export lpa_terminate
 
-function lpa_terminate_s(data, control, inform)
+function lpa_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.lpa_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{lpa_control_type{Float32}},
                                            inform::Ptr{lpa_inform_type{Float32}})::Cvoid
 end
 
-export lpa_terminate
-
-function lpa_terminate(data, control, inform)
+function lpa_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.lpa_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{lpa_control_type{Float64}},
                                          inform::Ptr{lpa_inform_type{Float64}})::Cvoid

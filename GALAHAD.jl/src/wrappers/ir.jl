@@ -25,49 +25,43 @@ struct ir_inform_type{T}
   norm_final_residual::T
 end
 
-export ir_initialize_s
+export ir_initialize
 
-function ir_initialize_s(data, control, status)
+function ir_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.ir_initialize_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{ir_control_type{Float32}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export ir_initialize
-
-function ir_initialize(data, control, status)
+function ir_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.ir_initialize(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{ir_control_type{Float64}},
                                          status::Ptr{Cint})::Cvoid
 end
 
-export ir_information_s
+export ir_information
 
-function ir_information_s(data, inform, status)
+function ir_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.ir_information_s(data::Ptr{Ptr{Cvoid}},
                                             inform::Ptr{ir_inform_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export ir_information
-
-function ir_information(data, inform, status)
+function ir_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.ir_information(data::Ptr{Ptr{Cvoid}},
                                           inform::Ptr{ir_inform_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export ir_terminate_s
+export ir_terminate
 
-function ir_terminate_s(data, control, inform)
+function ir_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.ir_terminate_s(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{ir_control_type{Float32}},
                                           inform::Ptr{ir_inform_type{Float32}})::Cvoid
 end
 
-export ir_terminate
-
-function ir_terminate(data, control, inform)
+function ir_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.ir_terminate(data::Ptr{Ptr{Cvoid}},
                                         control::Ptr{ir_control_type{Float64}},
                                         inform::Ptr{ir_inform_type{Float64}})::Cvoid

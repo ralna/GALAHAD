@@ -185,41 +185,37 @@ struct bnls_inform_type{T}
   subproblem_inform::bnls_subproblem_inform_type{T}
 end
 
-export bnls_initialize_s
+export bnls_initialize
 
-function bnls_initialize_s(data, control, inform)
+function bnls_initialize(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.bnls_initialize_s(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{bnls_control_type{Float32}},
                                              inform::Ptr{bnls_inform_type{Float32}})::Cvoid
 end
 
-export bnls_initialize
-
-function bnls_initialize(data, control, inform)
+function bnls_initialize(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bnls_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{bnls_control_type{Float64}},
                                            inform::Ptr{bnls_inform_type{Float64}})::Cvoid
 end
 
-export bnls_read_specfile_s
+export bnls_read_specfile
 
-function bnls_read_specfile_s(control, specfile)
+function bnls_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.bnls_read_specfile_s(control::Ptr{bnls_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
-export bnls_read_specfile
-
-function bnls_read_specfile(control, specfile)
+function bnls_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.bnls_read_specfile(control::Ptr{bnls_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
-export bnls_import_s
+export bnls_import
 
-function bnls_import_s(control, data, status, n, m, x_l, x_u, J_type, J_ne, J_row, J_col,
-                       J_ptr, H_type, H_ne, H_row, H_col, H_ptr, P_type, P_ne, P_row, P_col,
-                       P_ptr, w)
+function bnls_import(::Type{Float32}, control, data, status, n, m, x_l, x_u, J_type, J_ne,
+                     J_row, J_col, J_ptr, H_type, H_ne, H_row, H_col, H_ptr, P_type, P_ne,
+                     P_row, P_col, P_ptr, w)
   @ccall libgalahad_single.bnls_import_s(control::Ptr{bnls_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          m::Cint, x_l::Ptr{Float32}, x_u::Ptr{Float32},
@@ -232,11 +228,9 @@ function bnls_import_s(control, data, status, n, m, x_l, x_u, J_type, J_ne, J_ro
                                          w::Ptr{Float32})::Cvoid
 end
 
-export bnls_import
-
-function bnls_import(control, data, status, n, m, x_l, x_u, J_type, J_ne, J_row, J_col,
-                     J_ptr, H_type, H_ne, H_row, H_col, H_ptr, P_type, P_ne, P_row, P_col,
-                     P_ptr, w)
+function bnls_import(::Type{Float64}, control, data, status, n, m, x_l, x_u, J_type, J_ne,
+                     J_row, J_col, J_ptr, H_type, H_ne, H_row, H_col, H_ptr, P_type, P_ne,
+                     P_row, P_col, P_ptr, w)
   @ccall libgalahad_double.bnls_import(control::Ptr{bnls_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                        m::Cint, x_l::Ptr{Float64}, x_u::Ptr{Float64},
@@ -249,26 +243,24 @@ function bnls_import(control, data, status, n, m, x_l, x_u, J_type, J_ne, J_row,
                                        w::Ptr{Float64})::Cvoid
 end
 
-export bnls_reset_control_s
+export bnls_reset_control
 
-function bnls_reset_control_s(control, data, status)
+function bnls_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.bnls_reset_control_s(control::Ptr{bnls_control_type{Float32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
 
-export bnls_reset_control
-
-function bnls_reset_control(control, data, status)
+function bnls_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.bnls_reset_control(control::Ptr{bnls_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export bnls_solve_with_mat_s
+export bnls_solve_with_mat
 
-function bnls_solve_with_mat_s(data, userdata, status, n, m, x, c, g, eval_c, j_ne, eval_j,
-                               h_ne, eval_h, p_ne, eval_hprods)
+function bnls_solve_with_mat(::Type{Float32}, data, userdata, status, n, m, x, c, g, eval_c,
+                             j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
   @ccall libgalahad_single.bnls_solve_with_mat_s(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                  n::Cint, m::Cint, x::Ptr{Float32},
@@ -279,10 +271,8 @@ function bnls_solve_with_mat_s(data, userdata, status, n, m, x, c, g, eval_c, j_
                                                  eval_hprods::Ptr{Cvoid})::Cvoid
 end
 
-export bnls_solve_with_mat
-
-function bnls_solve_with_mat(data, userdata, status, n, m, x, c, g, eval_c, j_ne, eval_j,
-                             h_ne, eval_h, p_ne, eval_hprods)
+function bnls_solve_with_mat(::Type{Float64}, data, userdata, status, n, m, x, c, g, eval_c,
+                             j_ne, eval_j, h_ne, eval_h, p_ne, eval_hprods)
   @ccall libgalahad_double.bnls_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                                status::Ptr{Cint}, n::Cint, m::Cint,
                                                x::Ptr{Float64}, c::Ptr{Float64},
@@ -292,10 +282,10 @@ function bnls_solve_with_mat(data, userdata, status, n, m, x, c, g, eval_c, j_ne
                                                eval_hprods::Ptr{Cvoid})::Cvoid
 end
 
-export bnls_solve_without_mat_s
+export bnls_solve_without_mat
 
-function bnls_solve_without_mat_s(data, userdata, status, n, m, x, c, g, eval_c, eval_jprod,
-                                  eval_hprod, p_ne, eval_hprods)
+function bnls_solve_without_mat(::Type{Float32}, data, userdata, status, n, m, x, c, g,
+                                eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
   @ccall libgalahad_single.bnls_solve_without_mat_s(data::Ptr{Ptr{Cvoid}},
                                                     userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                     n::Cint, m::Cint, x::Ptr{Float32},
@@ -306,10 +296,8 @@ function bnls_solve_without_mat_s(data, userdata, status, n, m, x, c, g, eval_c,
                                                     eval_hprods::Ptr{Cvoid})::Cvoid
 end
 
-export bnls_solve_without_mat
-
-function bnls_solve_without_mat(data, userdata, status, n, m, x, c, g, eval_c, eval_jprod,
-                                eval_hprod, p_ne, eval_hprods)
+function bnls_solve_without_mat(::Type{Float64}, data, userdata, status, n, m, x, c, g,
+                                eval_c, eval_jprod, eval_hprod, p_ne, eval_hprods)
   @ccall libgalahad_double.bnls_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                   userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                   n::Cint, m::Cint, x::Ptr{Float64},
@@ -320,10 +308,10 @@ function bnls_solve_without_mat(data, userdata, status, n, m, x, c, g, eval_c, e
                                                   eval_hprods::Ptr{Cvoid})::Cvoid
 end
 
-export bnls_solve_reverse_with_mat_s
+export bnls_solve_reverse_with_mat
 
-function bnls_solve_reverse_with_mat_s(data, status, eval_status, n, m, x, c, g, j_ne,
-                                       J_val, y, h_ne, H_val, v, p_ne, P_val)
+function bnls_solve_reverse_with_mat(::Type{Float32}, data, status, eval_status, n, m, x, c,
+                                     g, j_ne, J_val, y, h_ne, H_val, v, p_ne, P_val)
   @ccall libgalahad_single.bnls_solve_reverse_with_mat_s(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Cint},
                                                          eval_status::Ptr{Cint}, n::Cint,
@@ -336,10 +324,8 @@ function bnls_solve_reverse_with_mat_s(data, status, eval_status, n, m, x, c, g,
                                                          P_val::Ptr{Float32})::Cvoid
 end
 
-export bnls_solve_reverse_with_mat
-
-function bnls_solve_reverse_with_mat(data, status, eval_status, n, m, x, c, g, j_ne, J_val,
-                                     y, h_ne, H_val, v, p_ne, P_val)
+function bnls_solve_reverse_with_mat(::Type{Float64}, data, status, eval_status, n, m, x, c,
+                                     g, j_ne, J_val, y, h_ne, H_val, v, p_ne, P_val)
   @ccall libgalahad_double.bnls_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Cint},
                                                        eval_status::Ptr{Cint}, n::Cint,
@@ -352,10 +338,10 @@ function bnls_solve_reverse_with_mat(data, status, eval_status, n, m, x, c, g, j
                                                        P_val::Ptr{Float64})::Cvoid
 end
 
-export bnls_solve_reverse_without_mat_s
+export bnls_solve_reverse_without_mat
 
-function bnls_solve_reverse_without_mat_s(data, status, eval_status, n, m, x, c, g,
-                                          transpose, u, v, y, p_ne, P_val)
+function bnls_solve_reverse_without_mat(::Type{Float32}, data, status, eval_status, n, m, x,
+                                        c, g, transpose, u, v, y, p_ne, P_val)
   @ccall libgalahad_single.bnls_solve_reverse_without_mat_s(data::Ptr{Ptr{Cvoid}},
                                                             status::Ptr{Cint},
                                                             eval_status::Ptr{Cint}, n::Cint,
@@ -369,10 +355,8 @@ function bnls_solve_reverse_without_mat_s(data, status, eval_status, n, m, x, c,
                                                             P_val::Ptr{Float32})::Cvoid
 end
 
-export bnls_solve_reverse_without_mat
-
-function bnls_solve_reverse_without_mat(data, status, eval_status, n, m, x, c, g, transpose,
-                                        u, v, y, p_ne, P_val)
+function bnls_solve_reverse_without_mat(::Type{Float64}, data, status, eval_status, n, m, x,
+                                        c, g, transpose, u, v, y, p_ne, P_val)
   @ccall libgalahad_double.bnls_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                           status::Ptr{Cint},
                                                           eval_status::Ptr{Cint}, n::Cint,
@@ -384,33 +368,29 @@ function bnls_solve_reverse_without_mat(data, status, eval_status, n, m, x, c, g
                                                           P_val::Ptr{Float64})::Cvoid
 end
 
-export bnls_information_s
+export bnls_information
 
-function bnls_information_s(data, inform, status)
+function bnls_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.bnls_information_s(data::Ptr{Ptr{Cvoid}},
                                               inform::Ptr{bnls_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export bnls_information
-
-function bnls_information(data, inform, status)
+function bnls_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.bnls_information(data::Ptr{Ptr{Cvoid}},
                                             inform::Ptr{bnls_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export bnls_terminate_s
+export bnls_terminate
 
-function bnls_terminate_s(data, control, inform)
+function bnls_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.bnls_terminate_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{bnls_control_type{Float32}},
                                             inform::Ptr{bnls_inform_type{Float32}})::Cvoid
 end
 
-export bnls_terminate
-
-function bnls_terminate(data, control, inform)
+function bnls_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bnls_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{bnls_control_type{Float64}},
                                           inform::Ptr{bnls_inform_type{Float64}})::Cvoid

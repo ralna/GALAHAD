@@ -12,49 +12,43 @@ struct scu_inform_type
   inertia::NTuple{3,Cint}
 end
 
-export scu_initialize_s
+export scu_initialize
 
-function scu_initialize_s(data, control, status)
+function scu_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.scu_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{scu_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export scu_initialize
-
-function scu_initialize(data, control, status)
+function scu_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.scu_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{scu_control_type},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export scu_information_s
+export scu_information
 
-function scu_information_s(data, inform, status)
+function scu_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.scu_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{scu_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export scu_information
-
-function scu_information(data, inform, status)
+function scu_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.scu_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{scu_inform_type},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export scu_terminate_s
+export scu_terminate
 
-function scu_terminate_s(data, control, inform)
+function scu_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.scu_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{scu_control_type},
                                            inform::Ptr{scu_inform_type})::Cvoid
 end
 
-export scu_terminate
-
-function scu_terminate(data, control, inform)
+function scu_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.scu_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{scu_control_type},
                                          inform::Ptr{scu_inform_type})::Cvoid

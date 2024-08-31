@@ -95,39 +95,36 @@ struct wcp_inform_type{T}
   sbls_inform::sbls_inform_type{T}
 end
 
-export wcp_initialize_s
+export wcp_initialize
 
-function wcp_initialize_s(data, control, status)
+function wcp_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.wcp_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{wcp_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export wcp_initialize
-
-function wcp_initialize(data, control, status)
+function wcp_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.wcp_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{wcp_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export wcp_read_specfile_s
+export wcp_read_specfile
 
-function wcp_read_specfile_s(control, specfile)
+function wcp_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.wcp_read_specfile_s(control::Ptr{wcp_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export wcp_read_specfile
-
-function wcp_read_specfile(control, specfile)
+function wcp_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.wcp_read_specfile(control::Ptr{wcp_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export wcp_import_s
+export wcp_import
 
-function wcp_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function wcp_import(::Type{Float32}, control, data, status, n, m, A_type, A_ne, A_row,
+                    A_col, A_ptr)
   @ccall libgalahad_single.wcp_import_s(control::Ptr{wcp_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -135,9 +132,8 @@ function wcp_import_s(control, data, status, n, m, A_type, A_ne, A_row, A_col, A
                                         A_ptr::Ptr{Cint})::Cvoid
 end
 
-export wcp_import
-
-function wcp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+function wcp_import(::Type{Float64}, control, data, status, n, m, A_type, A_ne, A_row,
+                    A_col, A_ptr)
   @ccall libgalahad_double.wcp_import(control::Ptr{wcp_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       m::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -145,26 +141,24 @@ function wcp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_p
                                       A_ptr::Ptr{Cint})::Cvoid
 end
 
-export wcp_reset_control_s
+export wcp_reset_control
 
-function wcp_reset_control_s(control, data, status)
+function wcp_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.wcp_reset_control_s(control::Ptr{wcp_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export wcp_reset_control
-
-function wcp_reset_control(control, data, status)
+function wcp_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.wcp_reset_control(control::Ptr{wcp_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export wcp_find_wcp_s
+export wcp_find_wcp
 
-function wcp_find_wcp_s(data, status, n, m, g, a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y_l,
-                        y_u, z_l, z_u, x_stat, c_stat)
+function wcp_find_wcp(::Type{Float32}, data, status, n, m, g, a_ne, A_val, c_l, c_u, x_l,
+                      x_u, x, c, y_l, y_u, z_l, z_u, x_stat, c_stat)
   @ccall libgalahad_single.wcp_find_wcp_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                           m::Cint, g::Ptr{Float32}, a_ne::Cint,
                                           A_val::Ptr{Float32}, c_l::Ptr{Float32},
@@ -176,10 +170,8 @@ function wcp_find_wcp_s(data, status, n, m, g, a_ne, A_val, c_l, c_u, x_l, x_u, 
                                           c_stat::Ptr{Cint})::Cvoid
 end
 
-export wcp_find_wcp
-
-function wcp_find_wcp(data, status, n, m, g, a_ne, A_val, c_l, c_u, x_l, x_u, x, c, y_l,
-                      y_u, z_l, z_u, x_stat, c_stat)
+function wcp_find_wcp(::Type{Float64}, data, status, n, m, g, a_ne, A_val, c_l, c_u, x_l,
+                      x_u, x, c, y_l, y_u, z_l, z_u, x_stat, c_stat)
   @ccall libgalahad_double.wcp_find_wcp(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         m::Cint, g::Ptr{Float64}, a_ne::Cint,
                                         A_val::Ptr{Float64}, c_l::Ptr{Float64},
@@ -190,33 +182,29 @@ function wcp_find_wcp(data, status, n, m, g, a_ne, A_val, c_l, c_u, x_l, x_u, x,
                                         x_stat::Ptr{Cint}, c_stat::Ptr{Cint})::Cvoid
 end
 
-export wcp_information_s
+export wcp_information
 
-function wcp_information_s(data, inform, status)
+function wcp_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.wcp_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{wcp_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export wcp_information
-
-function wcp_information(data, inform, status)
+function wcp_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.wcp_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{wcp_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export wcp_terminate_s
+export wcp_terminate
 
-function wcp_terminate_s(data, control, inform)
+function wcp_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.wcp_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{wcp_control_type{Float32}},
                                            inform::Ptr{wcp_inform_type{Float32}})::Cvoid
 end
 
-export wcp_terminate
-
-function wcp_terminate(data, control, inform)
+function wcp_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.wcp_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{wcp_control_type{Float64}},
                                          inform::Ptr{wcp_inform_type{Float64}})::Cvoid

@@ -18,49 +18,43 @@ struct fit_inform_type
   bad_alloc::NTuple{81,Cchar}
 end
 
-export fit_initialize_s
+export fit_initialize
 
-function fit_initialize_s(data, control, status)
+function fit_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.fit_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{fit_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export fit_initialize
-
-function fit_initialize(data, control, status)
+function fit_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.fit_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{fit_control_type},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export fit_information_s
+export fit_information
 
-function fit_information_s(data, inform, status)
+function fit_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.fit_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{fit_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export fit_information
-
-function fit_information(data, inform, status)
+function fit_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.fit_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{fit_inform_type},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export fit_terminate_s
+export fit_terminate
 
-function fit_terminate_s(data, control, inform)
+function fit_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.fit_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{fit_control_type},
                                            inform::Ptr{fit_inform_type})::Cvoid
 end
 
-export fit_terminate
-
-function fit_terminate(data, control, inform)
+function fit_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.fit_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{fit_control_type},
                                          inform::Ptr{fit_inform_type})::Cvoid

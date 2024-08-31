@@ -26,49 +26,43 @@ struct bsc_inform_type{T}
   clock_time::T
 end
 
-export bsc_initialize_s
+export bsc_initialize
 
-function bsc_initialize_s(data, control, status)
+function bsc_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.bsc_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{bsc_control_type},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export bsc_initialize
-
-function bsc_initialize(data, control, status)
+function bsc_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.bsc_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{bsc_control_type},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export bsc_information_s
+export bsc_information
 
-function bsc_information_s(data, inform, status)
+function bsc_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.bsc_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{bsc_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export bsc_information
-
-function bsc_information(data, inform, status)
+function bsc_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.bsc_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{bsc_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export bsc_terminate_s
+export bsc_terminate
 
-function bsc_terminate_s(data, control, inform)
+function bsc_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.bsc_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{bsc_control_type},
                                            inform::Ptr{bsc_inform_type{Float32}})::Cvoid
 end
 
-export bsc_terminate
-
-function bsc_terminate(data, control, inform)
+function bsc_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bsc_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{bsc_control_type},
                                          inform::Ptr{bsc_inform_type{Float64}})::Cvoid
