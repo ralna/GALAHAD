@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_ir()
+function test_ir(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{ir_control_type{Float64}}()
   inform = Ref{ir_inform_type{Float64}}()
@@ -18,5 +18,6 @@ function test_ir()
 end
 
 @testset "IR" begin
-  @test test_ir() == 0
+  @test test_ir(Float32) == 0
+  @test test_ir(Float64) == 0
 end

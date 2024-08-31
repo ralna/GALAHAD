@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_trs()
+function test_trs(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{trs_control_type{Float64}}()
@@ -236,5 +236,6 @@ function test_trs()
 end
 
 @testset "TRS" begin
-  @test test_trs() == 0
+  @test test_trs(Float32) == 0
+  @test test_trs(Float64) == 0
 end

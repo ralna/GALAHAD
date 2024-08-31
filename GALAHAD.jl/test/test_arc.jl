@@ -11,7 +11,7 @@ struct userdata_arc
   p::Float64
 end
 
-function test_arc()
+function test_arc(::Type{T}) where T
   # Objective function
   function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_arc)
     p = userdata.p
@@ -313,5 +313,6 @@ function test_arc()
 end
 
 @testset "ARC" begin
-  @test test_arc() == 0
+  @test test_arc(Float32) == 0
+  @test test_arc(Float64) == 0
 end

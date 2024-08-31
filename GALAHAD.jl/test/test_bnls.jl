@@ -49,7 +49,7 @@ using Test
 using Printf
 using Accessors
 
-function test_bnls()
+function test_bnls(::Type{T}) where T
 # Derived types
 data = Ref{Ptr{Cvoid}}()
 control = Ref{bnls_control_type{Float64}}()
@@ -653,5 +653,6 @@ return 0
 end
 
 @testset "BNLS" begin
-  @test test_bnls() == 0
+  @test test_bnls(Float32) == 0
+  @test test_bnls(Float64) == 0
 end

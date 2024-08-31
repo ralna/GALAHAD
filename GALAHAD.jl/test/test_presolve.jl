@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_presolve()
+function test_presolve(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{presolve_control_type{Float64}}()
@@ -206,5 +206,6 @@ function test_presolve()
 end
 
 @testset "PRESOLVE" begin
-  @test test_presolve() == 0
+  @test test_presolve(Float32) == 0
+  @test test_presolve(Float64) == 0
 end

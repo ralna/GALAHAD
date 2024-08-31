@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_lms()
+function test_lms(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lms_control_type}()
   inform = Ref{lms_inform_type{Float64}}()
@@ -18,5 +18,6 @@ function test_lms()
 end
 
 @testset "LMS" begin
-  @test test_lms() == 0
+  @test test_lms(Float32) == 0
+  @test test_lms(Float64) == 0
 end

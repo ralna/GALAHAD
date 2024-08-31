@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_eqp()
+function test_eqp(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{eqp_control_type{Float64}}()
@@ -222,5 +222,6 @@ function test_eqp()
 end
 
 @testset "EQP" begin
-  @test test_eqp() == 0
+  @test test_eqp(Float32) == 0
+  @test test_eqp(Float64) == 0
 end

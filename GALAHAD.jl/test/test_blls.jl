@@ -20,7 +20,7 @@ function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata
   return 0
 end
 
-function test_blls()
+function test_blls(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{blls_control_type{Float64}}()
@@ -265,5 +265,6 @@ function test_blls()
 end
 
 @testset "BLLS" begin
-  @test test_blls() == 0
+  @test test_blls(Float32) == 0
+  @test test_blls(Float64) == 0
 end

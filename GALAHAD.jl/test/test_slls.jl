@@ -20,7 +20,7 @@ function prec(n::Int, x::Vector{Float64}, p::Vector{Float64}, userdata::userdata
   return 0
 end
 
-function test_slls()
+function test_slls(::Type{T}) where T
 
   # Derived types
   data = Ref{Ptr{Cvoid}}()
@@ -250,5 +250,6 @@ function test_slls()
 end
 
 @testset "SLLS" begin
-  @test test_slls() == 0
+  @test test_slls(Float32) == 0
+  @test test_slls(Float64) == 0
 end

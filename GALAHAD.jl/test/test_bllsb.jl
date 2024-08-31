@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_bllsb()
+function test_bllsb(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bllsb_control_type{Float64}}()
@@ -147,5 +147,6 @@ function test_bllsb()
 end
 
 @testset "BLLSB" begin
-  @test test_bllsb() == 0
+  @test test_bllsb(Float32) == 0
+  @test test_bllsb(Float64) == 0
 end

@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_rpd()
+function test_rpd(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{rpd_control_type}()
@@ -124,6 +124,7 @@ end
 
 @testset "RPD" begin
   if haskey(ENV, "GALAHAD")
-    @test test_rpd() == 0
+    @test test_rpd(Float32) == 0
+  @test test_rpd(Float64) == 0
   end
 end

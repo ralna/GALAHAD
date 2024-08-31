@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_bqpb()
+function test_bqpb(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bqpb_control_type{Float64}}()
@@ -196,5 +196,6 @@ function test_bqpb()
 end
 
 @testset "BQPB" begin
-  @test test_bqpb() == 0
+  @test test_bqpb(Float32) == 0
+  @test test_bqpb(Float64) == 0
 end

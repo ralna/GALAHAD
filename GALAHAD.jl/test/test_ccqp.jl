@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_ccqp()
+function test_ccqp(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{ccqp_control_type{Float64}}()
@@ -226,5 +226,6 @@ function test_ccqp()
 end
 
 @testset "CCQP" begin
-  @test test_ccqp() == 0
+  @test test_ccqp(Float32) == 0
+  @test test_ccqp(Float64) == 0
 end

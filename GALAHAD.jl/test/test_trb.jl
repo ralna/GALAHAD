@@ -11,7 +11,7 @@ struct userdata_trb
   p::Float64
 end
 
-function test_trb()
+function test_trb(::Type{T}) where T
   # Objective function
   function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_trb)
     p = userdata.p
@@ -392,5 +392,6 @@ function test_trb()
 end
 
 @testset "TRB" begin
-  @test test_trb() == 0
+  @test test_trb(Float32) == 0
+  @test test_trb(Float64) == 0
 end

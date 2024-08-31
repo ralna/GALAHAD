@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_qpb()
+function test_qpb(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{qpb_control_type{Float64}}()
@@ -171,5 +171,6 @@ function test_qpb()
 end
 
 @testset "QPB" begin
-  @test test_qpb() == 0
+  @test test_qpb(Float32) == 0
+  @test test_qpb(Float64) == 0
 end

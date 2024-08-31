@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_dps()
+function test_dps(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{dps_control_type{Float64}}()
@@ -119,5 +119,6 @@ function test_dps()
 end
 
 @testset "DPS" begin
-  @test test_dps() == 0
+  @test test_dps(Float32) == 0
+  @test test_dps(Float64) == 0
 end

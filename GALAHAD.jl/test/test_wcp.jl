@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_wcp()
+function test_wcp(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{wcp_control_type{Float64}}()
@@ -114,5 +114,6 @@ function test_wcp()
 end
 
 @testset "WCP" begin
-  @test test_wcp() == 0
+  @test test_wcp(Float32) == 0
+  @test test_wcp(Float64) == 0
 end

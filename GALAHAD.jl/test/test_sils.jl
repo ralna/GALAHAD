@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_sils()
+function test_sils(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sils_control_type{Float64}}()
   ainfo = Ref{sils_ainfo_type{Float64}}()
@@ -20,5 +20,6 @@ function test_sils()
 end
 
 @testset "SILS" begin
-  @test test_sils() == 0
+  @test test_sils(Float32) == 0
+  @test test_sils(Float64) == 0
 end

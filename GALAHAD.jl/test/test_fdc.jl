@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_fdc()
+function test_fdc(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{fdc_control_type{Float64}}()
@@ -58,5 +58,6 @@ function test_fdc()
 end
 
 @testset "FDC" begin
-  @test test_fdc() == 0
+  @test test_fdc(Float32) == 0
+  @test test_fdc(Float64) == 0
 end

@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_psls()
+function test_psls(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{psls_control_type{Float64}}()
@@ -96,5 +96,6 @@ function test_psls()
 end
 
 @testset "PSLS" begin
-  @test test_psls() == 0
+  @test test_psls(Float32) == 0
+  @test test_psls(Float64) == 0
 end

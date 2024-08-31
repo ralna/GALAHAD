@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_ugo()
+function test_ugo(::Type{T}) where T
   # Test problem objective
   function objf(x::Float64)
     a = 10.0
@@ -94,5 +94,6 @@ function test_ugo()
 end
 
 @testset "UGO" begin
-  @test test_ugo() == 0
+  @test test_ugo(Float32) == 0
+  @test test_ugo(Float64) == 0
 end

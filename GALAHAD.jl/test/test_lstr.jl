@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_lstr()
+function test_lstr(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lstr_control_type{Float64}}()
@@ -81,5 +81,6 @@ function test_lstr()
 end
 
 @testset "LSTR" begin
-  @test test_lstr() == 0
+  @test test_lstr(Float32) == 0
+  @test test_lstr(Float64) == 0
 end

@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_sbls()
+function test_sbls(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sbls_control_type{Float64}}()
@@ -186,5 +186,6 @@ function test_sbls()
 end
 
 @testset "SBLS" begin
-  @test test_sbls() == 0
+  @test test_sbls(Float32) == 0
+  @test test_sbls(Float64) == 0
 end

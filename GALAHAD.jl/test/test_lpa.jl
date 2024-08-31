@@ -6,7 +6,7 @@ using Test
 using Printf
 using Accessors
 
-function test_lpa()
+function test_lpa(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lpa_control_type{Float64}}()
@@ -112,5 +112,6 @@ function test_lpa()
 end
 
 @testset "LPA" begin
-  @test test_lpa() == 0
+  @test test_lpa(Float32) == 0
+  @test test_lpa(Float64) == 0
 end

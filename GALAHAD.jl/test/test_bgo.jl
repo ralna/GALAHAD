@@ -13,7 +13,7 @@ struct userdata_bgo
   mag::Float64
 end
 
-function test_bgo()
+function test_bgo(::Type{T}) where T
   # Objective function
   function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_bgo)
     p = userdata.p
@@ -510,5 +510,6 @@ function test_bgo()
 end
 
 @testset "BGO" begin
-  @test test_bgo() == 0
+  @test test_bgo(Float32) == 0
+  @test test_bgo(Float64) == 0
 end

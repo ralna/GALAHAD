@@ -4,7 +4,7 @@
 using GALAHAD
 using Test
 
-function test_bsc()
+function test_bsc(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{bsc_control_type}()
   inform = Ref{bsc_inform_type{Float64}}()
@@ -18,5 +18,6 @@ function test_bsc()
 end
 
 @testset "BSC" begin
-  @test test_bsc() == 0
+  @test test_bsc(Float32) == 0
+  @test test_bsc(Float64) == 0
 end

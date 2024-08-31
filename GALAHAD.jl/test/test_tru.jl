@@ -11,7 +11,7 @@ mutable struct userdata_tru
   p::Float64
 end
 
-function test_tru()
+function test_tru(::Type{T}) where T
 
   # Objective function
   function fun(n::Int, x::Vector{Float64}, f::Ref{Float64}, userdata::userdata_tru)
@@ -313,5 +313,6 @@ function test_tru()
 end
 
 @testset "TRU" begin
-  @test test_tru() == 0
+  @test test_tru(Float32) == 0
+  @test test_tru(Float64) == 0
 end
