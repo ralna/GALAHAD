@@ -54,4 +54,28 @@ REPLACE
 ! maximum-number-of-iterations                      50
 ! print-objective                                   yes
 
+INCLUDE RQS
+
+INCLUDE RQS NLS-INNER-RQS
+
+INCLUDE GLRT
+
+INCLUDE GLRT NLS-INNER-GLRT
+
+INCLUDE PSLS
+
+INCLUDE PSLS NLS-INNER-PSLS
+
+INCLUDE LMS PREC-LMS
+
+INCLUDE SHA
+
+INCLUDE LMS
+
 INCLUDE SLS
+
+INCLUDE IR
+
+INCLUDE BSC
+
+INCLUDE ROOTS

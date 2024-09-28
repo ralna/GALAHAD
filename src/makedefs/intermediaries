@@ -472,6 +472,13 @@ make_slls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
+make_ssls_deps: make_sls_deps make_sls
+
+make_ssls:
+	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
+
 make_scale:
 	( cd $(GALAHAD)/src/scale ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale.o \
@@ -1128,6 +1135,11 @@ make_all_slls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
+make_all_ssls:
+	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
+
 make_all_scale:
 	( cd $(GALAHAD)/src/scale ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale_silent \
@@ -1741,6 +1753,13 @@ make_ciface_sbls:
 	( cd $(GALAHAD)/src/sbls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
+
+make_ciface_ssls_deps: make_ciface_sls_deps make_ciface_sls
+
+make_ciface_ssls:
+	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
 
 make_ciface_scale:
 	( cd $(GALAHAD)/src/scale ; \
@@ -2408,6 +2427,13 @@ make_pyiface_sbls:
 	( cd $(GALAHAD)/src/sbls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
+
+make_pyiface_ssls_deps: make_pyiface_sls_deps make_pyiface_sls
+
+make_pyiface_ssls:
+	( cd $(GALAHAD)/src/forthcoming/ssls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ssls )
 
 make_pyiface_scale:
 	( cd $(GALAHAD)/src/scale ; \

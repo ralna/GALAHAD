@@ -49,6 +49,7 @@
      USE GALAHAD_BSC_precision
      USE GALAHAD_MOP_precision, ONLY: MOP_Ax
      USE GALAHAD_TRU_precision
+     USE GALAHAD_SSLS_precision
 !    USE GALAHAD_PSLS_precision
 
      IMPLICIT NONE
@@ -164,6 +165,15 @@
 
        REAL ( KIND = rp_ ) :: obj_unbounded = - epsmch ** ( - 2 )
 
+!   perform an advanced start at the end of every iteration when the KKT 
+!   residuals are smaller than %advanced_start (-ve means never)
+
+       REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
+
+!  stop the advanced start search once the residuals sufficientl small
+
+       REAL ( KIND = rp_ ) :: advanced_stop = ten ** ( - 8 )
+
 !   the maximum CPU time allowed (-ve means infinite)
 
        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
@@ -205,6 +215,10 @@
 !  control parameters for TRU
 
        TYPE ( TRU_control_type ) :: TRU_control
+
+!  control parameters for SSLS
+
+       TYPE ( SSLS_control_type ) :: SSLS_control
 
      END TYPE EPF_control_type
 
@@ -330,6 +344,10 @@
 
        TYPE ( TRU_inform_type ) :: TRU_inform
 
+!  inform parameters for SSLS
+
+       TYPE ( SSLS_inform_type ) :: SSLS_inform
+
      END TYPE EPF_inform_type
 
 !  - - - - - - - - - -
@@ -341,6 +359,7 @@
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
        INTEGER ( KIND = ip_ ) :: print_level, print_gap, jumpto
        INTEGER ( KIND = ip_ ) :: h_ne, jtdzj_ne
+       INTEGER ( KIND = ip_ ) :: n_c_l, n_c_u, n_x_l, n_c_u, n_c
 
        REAL :: time_start, time_record, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
@@ -397,6 +416,12 @@
 !  data for TRU
 
        TYPE ( TRU_data_type ) :: TRU_data
+
+!  SSLS_data
+
+       TYPE ( SMT_type ) :: B_ssls
+       TYPE ( SMT_type ) :: C_ssls
+       TYPE ( SSLS_data_type ) :: SSLS_data
 
      END TYPE EPF_data_type
 
@@ -487,6 +512,8 @@
 !  penalty-parameter-reduction-factor              0.5
 !  update-multipliers-feasibility-tolerance        1.0D+20
 !  minimum-objective-before-unbounded              -1.0D+32
+!  advanced-start                                   1.0D-2
+!  advanced-stop                                    1.0D-8
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
 !  hessian-available                               yes
@@ -536,7 +563,10 @@
                                             = mu_reduce + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded                        &
                                             = update_multipliers_tol + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = obj_unbounded + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_start                       &
+                                            = obj_unbounded + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_stop = advanced_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = advanced_stop + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
                                             = clock_time_limit + 1
@@ -585,6 +615,8 @@
      spec( update_multipliers_tol )%keyword                                    &
        = 'update-multipliers-feasibility-tolerance'
      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
+     spec( advanced_start )%keyword = 'advanced-start'
+     spec( advanced_stop )%keyword = 'advanced-stop'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
@@ -719,9 +751,12 @@
               alt_specname = TRIM( alt_specname ) // '-BSC' )
        CALL TRU_read_specfile( control%TRU_control, device,                    &
               alt_specname = TRIM( alt_specname ) // '-TRU' )
+       CALL SSLS_read_specfile( control%SSLS_control, device,                  &
+             alt_specname = TRIM( alt_specname ) // '-SSLS' )
      ELSE
        CALL BSC_read_specfile( control%BSC_control, device )
        CALL TRU_read_specfile( control%TRU_control, device )
+       CALL SSLS_read_specfile( control%SSLS_control, device )
      END IF
 
      RETURN
@@ -1128,10 +1163,12 @@
 
 !  has the problem bounds?
 
-     data%no_bounds = COUNT( nlp%X_l >= - control%infinity ) +                 &
-                      COUNT( nlp%X_u <= control%infinity ) +                   &
-                      COUNT( nlp%C_l >= - control%infinity ) +                 &
-                      COUNT( nlp%C_u <= control%infinity ) == 0
+     data%n_c_l = COUNT( nlp%C_l >= - control%infinity )
+     data%n_c_u = COUNT( nlp%C_u <= control%infinity )
+     data%n_x_l = COUNT( nlp%X_l >= - control%infinity )
+     data%n_x_u = COUNT( nlp%X_u <= control%infinity )
+     data%n_c = data%n_c_l + data%n_c_u + data%n_x_l + data%n_x_u
+     data%no_bounds = daat%n_c == 0
 
 !  allocate workspace for the problem:
 
@@ -1574,6 +1611,86 @@ stop
        IF ( nlp%C_l( i ) >= - control%infinity ) data%W_l( i ) = one
        IF ( nlp%C_u( i ) <= control%infinity ) data%W_u( i ) = one
      END DO
+
+!  set space for matrices and vectors required for advanced start if necessary
+
+     IF ( data%control%advanced_start > zero ) THEN
+       data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
+
+       data%C_ssls%n = nlp%m ; data%C_ssls%m = nlp%m ; data%C_ssls%ne = 1
+       CALL SMT_put( data%C_ssls%type, 'DIAGONAL', inform%alloc_status )
+
+       array_name = 'colt: data%C%val'
+       CALL SPACE_resize_array( data%C_ssls%ne, data%C_ssls%val,               &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%V'
+       CALL SPACE_resize_array( data%npm, data%V,                              &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%V2'
+       CALL SPACE_resize_array( data%npm, data%V2,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%X_old'
+       CALL SPACE_resize_array( nlp%n, data%X_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%Y_old'
+       CALL SPACE_resize_array( nlp%m, data%Y_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%C_old'
+       CALL SPACE_resize_array( nlp%m, data%C_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%G_old'
+       CALL SPACE_resize_array( nlp%Go%ne, data%G_old,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%J_old'
+       CALL SPACE_resize_array( data%J_ne, data%J_old,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+!  set up and analyse the data structures for the matrix required for the
+!  advanced start
+
+       CALL SSLS_analyse( nlp%n, nlp%m, nlp%H, nlp%J, data%C_ssls,             &
+                          data%SSLS_data, data%control%SSLS_control,           &
+                          inform%SSLS_inform )
+     END IF
 
 !  ensure that the function values and derivatives are evaluated initially
 
@@ -2161,6 +2278,170 @@ stop
                             MAXVAL( data%MU_l( : nlp%m ) ),                    &
                             MAXVAL( data%MU_u( : nlp%m ) ) )
        END IF
+
+!  check whether to attempt an advanced starting point
+
+       IF ( data%rnorm > data%control%advanced_start ) GO TO 500
+
+!  loop to search for an advanced starting point
+
+       data%iter_advanced = 0
+  410  CONTINUE
+!write(6,*) ' iter = ', data%iter_advanced
+!  obtain the Hessian of the Lagrangian H(x,y)
+
+       IF ( data%reverse_hl ) THEN
+         data%branch = 420 ; inform%status = 9 ; RETURN
+       ELSE
+         CALL eval_HL( data%eval_status, nlp%X, - nlp%Y, userdata, nlp%H%val )
+         IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )   &
+          ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
+       END IF
+
+!  form and factorize the matrix 
+
+!    ( H(x,y)    J^T(x)    )
+!    (  J(x)  - (f(x)-t) I ) 
+
+  420  CONTINUE
+       data%C_ssls%val( 1 ) = data%discrepancy
+       CALL SSLS_factorize( nlp%n, nlp%m, nlp%H, nlp%J, data%C_ssls,           &
+                            data%SSLS_data, data%control%SSLS_control,         &
+                            inform%SSLS_inform )
+!write(6,*) ' ssls status ', inform%SSLS_inform%status
+
+!write(6,"( 'K = ')" )
+do i = 1, data%SSLS_data%K%ne
+! write(6,"( 2I7, ES12.4 )" ) data%SSLS_data%K%row(i),data%SSLS_data%K%col(i), &
+!                             data%SSLS_data%K%val(i)
+end do
+
+!  find v = ( dx1, dy1 )
+
+       CALL SSLS_solve( nlp%n, nlp%m, data%V, data%SSLS_data,                  &
+                        data%control%SSLS_control,inform%SSLS_inform )
+!write(6,*) ' ||v|| ', TWO_NORM( data%V( : nlp%n ) )
+!write(6,*) ' ||g|| ', TWO_NORM( nlp%Go%val( : nlp%Go%ne ) )
+
+!  find v2 = ( dx2, dy2 )
+
+       data%V2( : nlp%n ) = zero
+       data%V2( data%np1 : data%npm ) = nlp%Y
+       CALL SSLS_solve( nlp%n, nlp%m, data%V2, data%SSLS_data,                 &
+                        data%control%SSLS_control, inform%SSLS_inform )
+!write(6,*) ' ||v2|| ', TWO_NORM( data%V2( : nlp%n ) )
+
+!write(6,*) ' v ', data%V( : nlp%n )
+!write(6,*) ' v2 ',data%V2( : nlp%n )
+!write(6,*) ' g ', nlp%Go%val( : nlp%Go%ne )
+
+
+!  compute alpha 
+
+       IF ( nlp%Go%sparse ) THEN ! from g(x)
+         num = zero ; den = one
+         DO i = 1, nlp%Go%ne
+           j = nlp%Go%ind( i )
+           num = num + nlp%Go%val( i ) * data%V( j )
+           den = den - nlp%Go%val( i ) * data%V2( j )
+         END DO
+       ELSE
+         num = DOT_PRODUCT( data%V( : nlp%n ), nlp%Go%val( : nlp%n ) )
+         den = one - DOT_PRODUCT( data%V2( : nlp%n ), nlp%Go%val( : nlp%n ) )
+       END IF
+       alpha = num / den
+
+!write(6,*) ' alpha ', alpha
+!  recover v = ( dx, dy )
+
+       data%V( : data%npm )                                                    &
+         = data%V( : data%npm ) + alpha * data%V2( : data%npm )
+
+!  make a copy of x, y, c, g and J in case the advanced starting point is poor
+
+       data%f_old = nlp%f
+       data%X_old( : nlp%n ) = nlp%X( : nlp%n )
+       data%Y_old( : nlp%m ) = nlp%Y( : nlp%m )
+       data%C_old( : nlp%m ) = nlp%C( : nlp%m )
+       data%G_old( : nlp%Go%ne ) = nlp%Go%val( : nlp%Go%ne )
+       data%J_old( : data%J_ne ) = nlp%J%val( : data%J_ne )
+
+!  compute the trial x and y
+
+       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%V( : nlp%n ) 
+       nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) + data%V( data%np1 : data%npm )
+!write(6,*) ' new x ',  nlp%X( : nlp%n )
+!write(6,*) ' new y ',  nlp%Y( : nlp%m )
+
+!  compute the new objective and constraint values
+
+       IF ( data%reverse_fc ) THEN
+         data%branch = 430 ; inform%status = 2 ; RETURN
+       ELSE
+         CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
+       END IF
+
+!  compute the new gradient and Jacobian values
+
+  430  CONTINUE
+       IF ( data%reverse_gj ) THEN
+         data%branch = 440 ; inform%status = 4 ; RETURN
+       ELSE
+         CALL eval_SGJ( data%eval_status, nlp%X, userdata,                     &
+                        nlp%Go%val, nlp%J%val )
+       END IF
+
+!  compute the gradient of the Lagrangian
+
+  440  CONTINUE
+       nlp%gL( : nlp%n ) = nlp%Z( : nlp%n )
+       DO i = 1, nlp%Go%ne
+         j = nlp%Go%ind( i )
+         nlp%gL( j ) = nlp%gL( j ) + nlp%Go%val( i )
+       END DO
+       CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
+                    m_matrix = nlp%m, n_matrix = nlp%n )
+
+!  compute the new discrepamcy f(x)- t and residual r(x,y,t)
+
+       data%discrepancy = nlp%f - inform%target
+!write(6,*) ' discrepancy, t ', data%discrepancy, inform%target
+       data%V( : nlp%n ) = - nlp%Gl( : nlp%n )
+       data%V( data%np1 : data%npm )                                           &
+         = data%discrepancy * nlp%Y( : nlp%m ) - nlp%C( : nlp%m )
+       data%rnorm_old = data%rnorm
+       data%rnorm = TWO_NORM( data%V( : data%npm ) )
+!write(6,*) ' ||r|| = ', data%rnorm
+
+!  check to see if the residuals are sufficiently small
+
+       IF ( data%rnorm < data%control%advanced_stop ) GO TO 500
+
+!  check to see if the residuals have increased
+
+       IF ( data%rnorm_old < data%rnorm ) THEN
+
+!  make a copy of f, x, y, c, g & J in case the advanced starting point is poor
+
+         nlp%f = data%f_old
+         nlp%X( : nlp%n ) = data%X_old( : nlp%n )
+         nlp%Y( : nlp%m ) = data%Y_old( : nlp%m )
+         nlp%C( : nlp%m ) = data%C_old( : nlp%m )
+         nlp%Go%val( : nlp%Go%ne ) = data%G_old( : nlp%Go%ne )
+         nlp%J%val( : data%J_ne ) = data%J_old( : data%J_ne )
+         GO TO 500
+
+!  check to see if the advanced start iteration limit has been reasched
+
+       ELSE
+          IF ( data%iter_advanced > iter_advanced_max ) GO TO 500
+       END IF
+       data%iter_advanced = data%iter_advanced + 1
+       GO TO 410
+
+!  end of advanced starting point search
+
+  500 CONTINUE
 
 !  ---------------------------
 !  end of outer-iteration loop

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.2 - 2023-11-07 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-09-11 AT 15:20 GMT.
 
 #include "galahad_modules.h"
 
@@ -43,8 +43,10 @@
      USE GALAHAD_USERDATA_precision
      USE GALAHAD_OPT_precision
      USE GALAHAD_NLS_precision
+     USE GALAHAD_SSLS_precision
      USE GALAHAD_MOP_precision
      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+     USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic
 
      IMPLICIT NONE
 
@@ -64,10 +66,10 @@
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one ) / two
-
+     REAL ( KIND = rp_ ), PARAMETER :: root_tol = epsmch ** 0.75
 !    LOGICAL, PARAMETER :: print_debug = .TRUE.
      LOGICAL, PARAMETER :: print_debug = .FALSE.
-
+     INTEGER ( KIND = ip_ ), PARAMETER :: iter_advanced_max = 5
      INTEGER ( KIND = ip_ ), PARAMETER :: track_out = 29
 
 !-------------------------------------------------
@@ -179,10 +181,24 @@
 
        REAL ( KIND = rp_ ) :: target_fraction = 0.999_rp_
 
+!   the algorithm will terminate if the bracket [target_lower,target_upper]
+!   is smaller than small_bracket_tol
+
+       REAL ( KIND = rp_ ) :: small_bracket_tol = ten ** ( - 7 )
+
 !  if an inital target is sought, sets its value and weight
 
        REAL ( KIND = rp_ ) :: initial_target = - ten ** 4
        REAL ( KIND = rp_ ) :: initial_target_weight = ten ** ( - 8 )
+
+!   perform an advanced start at the end of every iteration when the KKT 
+!   residuals are smaller than %advanced_start (-ve means never)
+
+       REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
+
+!  stop the advanced start search once the residuals sufficientl small
+
+       REAL ( KIND = rp_ ) :: advanced_stop = ten ** ( - 8 )
 
 !   the maximum CPU time allowed (-ve means infinite)
 
@@ -217,6 +233,10 @@
 
        TYPE ( NLS_control_type ) :: NLS_initial_control
        TYPE ( NLS_control_type ) :: NLS_control
+
+!  control parameters for SSLS
+
+       TYPE ( SSLS_control_type ) :: SSLS_control
 
      END TYPE COLT_control_type
 
@@ -338,6 +358,10 @@
 
        TYPE ( NLS_inform_type ) :: NLS_inform
 
+!  inform parameters for SSLS
+
+       TYPE ( SSLS_inform_type ) :: SSLS_inform
+
      END TYPE COLT_inform_type
 
 !  - - - - - - - - - -
@@ -352,20 +376,25 @@
      TYPE, PUBLIC :: COLT_data_type
        INTEGER ( KIND = ip_ ) :: branch, eval_status, out, error
        INTEGER ( KIND = ip_ ) :: print_level, start_print, stop_print
-       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, n_slacks, nt, i_point
+       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, n_slacks, nt, i_point, np1, npm
+       INTEGER ( KIND = ip_ ) :: iter_advanced
        REAL :: time_start, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_now
        REAL ( KIND = rp_ ) :: stop_p, stop_d, stop_c, stop_i, s_norm
-       REAL ( KIND = rp_ ) :: target_lower, target_upper
-       REAL ( KIND = rp_ ) :: tl, tu, cl, cu
+       REAL ( KIND = rp_ ) :: discrepancy, rnorm, rnorm_old
+       REAL ( KIND = rp_ ) :: target_lower, target_upper, f_old
+       REAL ( KIND = rp_ ) :: tl, tm, tu, cl, cm, cu, phil, phim, phiu
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header, accepted
-       LOGICAL :: reverse_fc, reverse_gj, reverse_hj, reverse_hocprods
-       LOGICAL :: target_bounded, converged, got_fc, got_gj
+       LOGICAL :: reverse_fc, reverse_gj, reverse_hl
+       LOGICAL :: reverse_hj, reverse_hocprods
+       LOGICAL :: target_bracketed, from_left, converged, got_fc, got_gj
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SLACKS
-       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale, W
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale, W, V, V2
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: t, f, c, phi
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_old, Y_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_old, G_old, J_old
 
 !  copy of controls
 
@@ -377,6 +406,11 @@
        TYPE ( NLPT_problem_type ) :: nls
        TYPE ( NLS_data_type ) :: NLS_data
        TYPE ( GALAHAD_userdata_type ) :: nls_userdata
+
+!  SSLS_data
+
+       TYPE ( SMT_type ) :: C_ssls
+       TYPE ( SSLS_data_type ) :: SSLS_data
 
      END TYPE COLT_data_type
 
@@ -449,8 +483,11 @@
 ! minimum-constraint-scaling-factor                 1.0D-5
 ! maximum-constraint-scaling-factor                 1.0D+5
 ! target-fraction                                   0.999
+! small-bracket-tolerance                           1.0D-7
 ! initial-target                                    -1.0D+4
 ! initial-target-weight                             1.0D-8
+! advanced-start                                    1.0D-2
+! advanced-stop                                     1.0D-8
 ! maximum-cpu-time-limit                            -1.0
 ! maximum-clock-time-limit                          -1.0
 ! print-full-solution                               no
@@ -501,12 +538,16 @@
                                             = min_constraint_scaling + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: target_fraction                      &
                                             = max_constraint_scaling + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: initial_target                       &
+     INTEGER ( KIND = ip_ ), PARAMETER :: small_bracket_tol                    &
                                             = target_fraction + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_target                       &
+                                            = small_bracket_tol + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: initial_target_weight                &
                                             = initial_target + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_start                       &
                                             = initial_target_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: advanced_stop = advanced_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = advanced_stop + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: full_solution                        &
                                             = clock_time_limit + 1
@@ -554,8 +595,11 @@
      spec( max_constraint_scaling )%keyword                                    &
        = 'maximum-constraint-scaling-factor'
      spec( target_fraction )%keyword = 'target-fraction'
+     spec( small_bracket_tol )%keyword = 'small-bracket-tolerance'
      spec( initial_target )%keyword = 'initial-target'
      spec( initial_target_weight )%keyword = 'initial-target-weight'
+     spec( advanced_start )%keyword = 'advanced-start'
+     spec( advanced_stop )%keyword = 'advanced-stop'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
@@ -651,11 +695,20 @@
      CALL SPECFILE_assign_value( spec( target_fraction ),                      &
                                  control%target_fraction,                      &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( small_bracket_tol ),                    &
+                                 control%small_bracket_tol,                    &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( initial_target ),                       &
                                  control%initial_target,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( initial_target_weight ),                &
                                  control%initial_target_weight,                &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( advanced_start ),                       &
+                                 control%advanced_start,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( advanced_stop ),                        &
+                                 control%advanced_stop,                        &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -693,6 +746,8 @@
              alt_specname = TRIM( alt_specname ) // '-NLS' )
        CALL NLS_read_specfile( control%NLS_initial_control, device,            &
              alt_specname = TRIM( alt_specname ) // '-NLS-INITIAL' )
+       CALL SSLS_read_specfile( control%SSLS_control, device,                  &
+             alt_specname = TRIM( alt_specname ) // '-SSLS' )
 
      ELSE
 
@@ -701,6 +756,7 @@
        CALL NLS_read_specfile( control%NLS_control, device )
        CALL NLS_read_specfile( control%NLS_initial_control, device,            &
              alt_specname = 'NLS-INITIAL' )
+       CALL SSLS_read_specfile( control%SSLS_control, device )
      END IF
 
      RETURN
@@ -712,8 +768,8 @@
 !-*-*-*-  G A L A H A D -  C O L T _ s o l v e  S U B R O U T I N E  -*-*-*-
 
      SUBROUTINE COLT_solve( nlp, control, inform, data, userdata,              &
-                            eval_FC, eval_J, eval_GJ, eval_HC, eval_HJ,        &
-                            eval_HOCPRODS, eval_HCPRODS )
+                            eval_FC, eval_J, eval_SGJ, eval_HL, eval_HLC,      &
+                            eval_HJ, eval_HOCPRODS, eval_HCPRODS )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -934,7 +990,7 @@
 !        is undefined at x - the user need not set nlp%G or nlp%J%val, but
 !        should then set data%eval_status to a non-zero value.
 !     4. The user should compute the Hessian of the Lagrangian function
-!        nabla_xx f(x) - sum_i=1^m y_i c_i(x) at the point x indicated in nlp%X
+!        nabla_xx f(x) + sum_i=1^m y_i c_i(x) at the point x indicated in nlp%X
 !        and y in nlp%Y and then re-enter the subroutine. The nonzeros of the
 !        Hessian should be set in nlp%H%val in the same order as in the storage
 !        scheme already established in nlp%H, and data%eval_status should be
@@ -968,6 +1024,8 @@
 !        for instance, if a component of H_i(x) is undefined at x - the
 !        user need not assign nlp%P%val, but should then set
 !        data%eval_status to a non-zero value.
+!     8. ...
+!     9. ...
 !
 !  alloc_status is a scalar variable of type default integer, that gives
 !   the status of the last attempted array allocation or deallocation.
@@ -1063,7 +1121,7 @@
 !   nonzero value. If eval_J is not present, COLT_solve will return to the
 !   user with inform%status = 3 each time an evaluation is required.
 !
-!  eval_GJ is an optional subroutine which if present must have the arguments
+!  eval_SGJ is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). If G is present, the components of
 !   the nonzeros of the gradient nabla_x f(x) of the objective function
 !   evaluated at x=X in the same order as presented in nlp%GO,
@@ -1071,15 +1129,24 @@
 !   nabla_x c(x) evaluated at x=X must be returned in J_val in the same
 !   order as presented in nlp%J, and the status variable set to 0.
 !   If the evaluation is impossible at x=X, status should be set to a
-!   nonzero value. If eval_GJ is not present, COLT_solve will return to the
+!   nonzero value. If eval_SGJ is not present, COLT_solve will return to the
 !   user with inform%status = 4 each time an evaluation is required.
 !
-!  eval_HC is an optional subroutine which if present must have the arguments
+!  eval_HL is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The nonzeros of the Hessian
+!   nabla_xx f(x) - sum_i=1^m y_i c_i(x) of the Lagrangian function evaluated
+!   at x=X and y=Y must be returned in H_val in the same order as
+!   presented in nlp%H, and the status variable set to 0. If the evaluation is
+!   impossible at X, status should be set to a nonzero value. If eval_HL is
+!   not present, COLT_solve will return to the user with inform%status = 9
+!   each time an evaluation is required.
+!
+!  eval_HLC is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the weighted Hessian
 !   H(x,y) = sum_i y_i nabla_xx c_i(x) of the residual function evaluated at
 !   x=X and y=Y must be returned in H_val in the same order as presented in
 !   nlp%H, and the status variable set to 0. If the evaluation is impossible
-!   at X, status should be set to a nonzero value. If eval_HC is not present,
+!   at X, status should be set to a nonzero value. If eval_HLC is not present,
 !   COLT_solve will return to the user with inform%status = 5 each time an
 !   evaluation is required.
 !
@@ -1127,7 +1194,7 @@
      TYPE ( COLT_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( COLT_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     OPTIONAL :: eval_FC, eval_J, eval_GJ, eval_HC, eval_HJ,                   &
+     OPTIONAL :: eval_FC, eval_J, eval_SGJ, eval_HL, eval_HLC, eval_HJ,        &
                  eval_HOCPRODS, eval_HCPRODS
 
 !----------------------------------
@@ -1156,24 +1223,35 @@
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_GJ( status, X, userdata, G, J )
+       SUBROUTINE eval_SGJ( status, X, userdata, G, J )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_GJ
+       END SUBROUTINE eval_SGJ
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_HC( status, X, Y, userdata, Hval )
+       SUBROUTINE eval_HL( status, X, Y, userdata, Hval, no_f )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_HC
+       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
+       END SUBROUTINE eval_HL
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_HLC( status, X, Y, userdata, Hval )
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_HLC
      END INTERFACE
 
      INTERFACE
@@ -1228,8 +1306,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, ir, ic, j, j_ne, l
-     REAL ( KIND = rp_ ) :: y0, multiplier_norm, t_star
+     INTEGER ( KIND = ip_ ) :: i, ir, ic, j, j_ne, l, nroots
+     REAL ( KIND = rp_ ) :: y0, multiplier_norm, t_phi, t_c, frac, num, den
+     REAL ( KIND = rp_ ) :: dl, dm, a0, a1, a2, root1, root2, alpha
      LOGICAL :: names
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1264,6 +1343,12 @@
 !      GO TO 340
      CASE ( 400 ) ! various evaluations
        GO TO 400
+     CASE ( 420 ) ! Hessian evaluation
+       GO TO 420
+     CASE ( 430 ) ! objective and constraint evaluation
+       GO TO 430
+     CASE ( 440 ) ! gradient and Jacobian evaluation
+       GO TO 440
      END SELECT
 
 !  =================
@@ -1288,7 +1373,8 @@
 !  decide how much reverse communication is required
 
      data%reverse_fc = .NOT. PRESENT( eval_FC )
-     data%reverse_gj = .NOT. PRESENT( eval_GJ )
+     data%reverse_gj = .NOT. PRESENT( eval_SGJ )
+     data%reverse_hl = .NOT. PRESENT( eval_HL )
      data%reverse_hj = .NOT. PRESENT( eval_HJ )
      data%reverse_hocprods = .NOT. PRESENT( eval_HOCPRODS )
 
@@ -1448,6 +1534,7 @@
 
      data%accepted = .TRUE.
      data%s_norm = zero
+     data%from_left = .FALSE.
 
 !  set scale factors if required
 
@@ -1460,6 +1547,86 @@
               bad_alloc = inform%bad_alloc, out = data%error )
        IF ( inform%status /= 0 ) GO TO 910
        data%C_scale( : nlp%m ) = one
+     END IF
+
+!  set space for matrices and vectors required for advanced start if necessary
+
+     IF ( data%control%advanced_start > zero ) THEN
+       data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
+
+       data%C_ssls%n = nlp%m ; data%C_ssls%m = nlp%m ; data%C_ssls%ne = 1
+       CALL SMT_put( data%C_ssls%type, 'SCALED_IDENTITY', inform%alloc_status )
+
+       array_name = 'colt: data%C%val'
+       CALL SPACE_resize_array( data%C_ssls%ne, data%C_ssls%val,               &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%V'
+       CALL SPACE_resize_array( data%npm, data%V,                              &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%V2'
+       CALL SPACE_resize_array( data%npm, data%V2,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%X_old'
+       CALL SPACE_resize_array( nlp%n, data%X_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%Y_old'
+       CALL SPACE_resize_array( nlp%m, data%Y_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%C_old'
+       CALL SPACE_resize_array( nlp%m, data%C_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%G_old'
+       CALL SPACE_resize_array( nlp%Go%ne, data%G_old,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+       array_name = 'colt: data%J_old'
+       CALL SPACE_resize_array( data%J_ne, data%J_old,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+
+!  set up and analyse the data structures for the matrix required for the
+!  advanced start
+
+       CALL SSLS_analyse( nlp%n, nlp%m, nlp%H, nlp%J, data%C_ssls,             &
+                          data%SSLS_data, data%control%SSLS_control,           &
+                          inform%SSLS_inform )
      END IF
 
 !  compute norms of the primal and dual feasibility and the complemntary
@@ -1582,9 +1749,9 @@
            nlp%X = data%nls%X( : data%nls%n )
            data%branch = 100 ; inform%status = 5 ; RETURN
          ELSE
-           CALL eval_HC( data%eval_status, data%nls%X,                         &
-                         data%NLS_data%Y( 1 : nlp%m ),                         &
-                         userdata, data%nls%H%val )
+           CALL eval_HLC( data%eval_status, data%nls%X,                        &
+                          data%NLS_data%Y( 1 : nlp%m ),                        &
+                          userdata, data%nls%H%val )
            IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )   &
             ( data%nls%H%row( i ), data%nls%H%col( i ),                        &
               data%nls%H%val( i ), i = 1, data%nls%H%ne )
@@ -1615,8 +1782,8 @@
            data%branch = 100 ; inform%status = 7 ; RETURN
          ELSE
            CALL eval_HCPRODS( data%eval_status, data%nls%X,                    &
-                               data%nls_data%V, userdata,                      &
-                               data%nls%P%val( 1 : nlp%P%ne ) )
+                              data%nls_data%V, userdata,                       &
+                              data%nls%P%val( 1 : nlp%P%ne ) )
            IF ( print_debug ) THEN
              WRITE(6,"( ' nls%P' )" )
              DO j = 1, nlp%m
@@ -1670,7 +1837,14 @@
      data%target_upper = inform%obj
      data%target_lower = - infinity
      inform%target = data%target_upper - one
-     data%target_bounded = .FALSE.
+
+!!!! remove
+
+write(6,*) ' fixed initial value ... remove!!'
+     inform%target = -10.0_rp_
+     
+
+     data%target_bracketed = .FALSE.
      data%converged = .FALSE.
 !    WRITE( data%out, 2070 ) data%target_lower, inform%target, data%target_upper
      data%nt = 0
@@ -1739,8 +1913,9 @@
              CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
                            nlp%f, nlp%C )
            END IF
+           data%discrepancy = nlp%f - inform%target
            data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
-           data%nls%C( data%nls%m ) = nlp%f - inform%target
+           data%nls%C( data%nls%m ) = data%discrepancy
            IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )      &
              data%nls%C( : data%nls%m )
          END IF
@@ -1752,8 +1927,8 @@
            nlp%X = data%nls%X( : data%nls%n )
            data%branch = 200 ; inform%status = 4 ; RETURN
          ELSE
-           CALL eval_GJ( data%eval_status, data%nls%X, userdata,               &
-                         nlp%Go%val, nlp%J%val )
+           CALL eval_SGJ( data%eval_status, data%nls%X, userdata,              &
+                          nlp%Go%val, nlp%J%val )
            SELECT CASE ( SMT_get( data%nls%J%type ) )
            CASE ( 'DENSE' )
              j_ne = 0 ; l = 0
@@ -1870,25 +2045,28 @@
 
  280 CONTINUE
 
+     inform%obj = nlp%f
      inform%primal_infeasibility = TWO_NORM( nlp%C )
      WRITE( data%out, "( /, ' f, ||c||, evals = ', 2ES13.5, 1X, I0 )" )        &
        nlp%f, inform%primal_infeasibility, inform%NLS_inform%iter
 
+!  with luck :) we arrive at a target well below the minimizer
+
+     inform%target = inform%obj
+     data%target_upper = infinity
+     data%target_lower = inform%target
+
 stop
-
-
-
-
-
-
-
-
-
 
 
 !  ----------------------------------------------------------------------------
 !                  START OF MAIN LOOP OVER EVOLVING TARGETS
 !  ----------------------------------------------------------------------------
+
+!  starting from an initial target (target_upper) at a feasible point, the 
+!  aim is to move left (i.e., decrease the target) until an infeasible target 
+!  is found (target_lower). This then brackets the optimal target. Thereafter
+!  a sequence of targets is chosen to shrink the bracket 
 
  290 CONTINUE
      IF ( data%printt ) WRITE( data%out, 2070 ) data%target_lower,             &
@@ -1898,7 +2076,6 @@ stop
 !  solve the target problem: min 1/2||c(x),f(x)-t||^2 for a given target t
 
      IF ( data%printd ) WRITE( data%out, "( A, ' (A1:3)' )" ) prefix
-
 !    DO
  300   CONTINUE
 !      IF ( inform%status == GALAHAD_ok ) GO TO 900
@@ -1918,10 +2095,10 @@ stop
          IF ( data%reverse_gj ) THEN
            data%branch = 310 ; inform%status = 3 ; RETURN
          ELSE
-           CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%Go%val,        &
-                         nlp%J%val )
+           CALL eval_SGJ( data%eval_status, nlp%X, userdata, nlp%Go%val,       &
+                          nlp%J%val )
            IF ( data%eval_status /= 0 ) THEN
-             inform%bad_eval = 'eval_GJ'
+             inform%bad_eval = 'eval_SGJ'
              inform%status = GALAHAD_error_evaluation ; GO TO 900
            END IF
          END IF
@@ -1935,22 +2112,25 @@ stop
 
 !  compute the gradient of the Lagrangian
 
-       nlp%gL( : nlp%n ) = - nlp%Z( : nlp%n )
+       nlp%gL( : nlp%n ) = nlp%Z( : nlp%n )
        DO i = 1, nlp%Go%ne
          j = nlp%Go%ind( i )
          nlp%gL( j ) = nlp%gL( j ) + nlp%Go%val( i )
        END DO
-       CALL mop_AX( - one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,      &
+       CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
                     m_matrix = nlp%m, n_matrix = nlp%n )
 !                   out = data%out, error = data%error,                        &
 !                   print_level = data%print_level,                            &
 
+
 !      WRITE(6,*) ' gl, y ', maxval( nlp%gL ), maxval( nlp%Y )
 !      WRITE( data%out, "(A, /, ( 4ES20.12 ) )" ) ' gl_after ',  nlp%gl
 
+!write(6,*) ' y ', nlp%Y( : nlp%m )
        inform%obj = nlp%f
        inform%dual_infeasibility =                                             &
          OPT_dual_infeasibility( nlp%n, nlp%gL( : nlp%n ) ) / multiplier_norm
+!write(6,*) ' gl ', nlp%gL( : nlp%n )
 
 !  ---------------------
 !  check for termination
@@ -2062,6 +2242,9 @@ stop
        data%control%NLS_control%hessian_available = 2
        data%got_fc = .TRUE. ; data%got_gj = .TRUE.
 
+write(6,*) ' t ', inform%target
+write(6,*) ' X ', nlp%X( : nlp%n )
+
 !      DO        ! loop to solve problem
    400 CONTINUE  ! mock loop to solve problem
 
@@ -2087,8 +2270,9 @@ stop
                CALL eval_FC( data%eval_status, data%nls%X, userdata,           &
                              nlp%f, nlp%C )
              END IF
+             data%discrepancy = nlp%f - inform%target
              data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
-             data%nls%C( data%nls%m ) = nlp%f - inform%target
+             data%nls%C( data%nls%m ) = data%discrepancy
              IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )    &
                data%nls%C( : data%nls%m )
            END IF
@@ -2100,11 +2284,11 @@ stop
              nlp%X = data%nls%X( : data%nls%n )
              data%branch = 400 ; inform%status = 4 ; RETURN
            ELSE
-             IF ( data%got_gj ) THEN ! skip eval_gj if g and j are already known
+             IF ( data%got_gj ) THEN ! skip eval_SGJ if g & j are already known
                data%got_gj = .FALSE.
              ELSE
-               CALL eval_GJ( data%eval_status, data%nls%X, userdata,           &
-                             nlp%Go%val, nlp%J%val )
+               CALL eval_SGJ( data%eval_status, data%nls%X, userdata,          &
+                              nlp%Go%val, nlp%J%val )
              END IF
              SELECT CASE ( SMT_get( data%nls%J%type ) )
              CASE ( 'DENSE' )
@@ -2222,49 +2406,204 @@ stop
 
    390  CONTINUE
         inform%primal_infeasibility = TWO_NORM( nlp%C )
+!write(6,*) ' t - f_t', inform%target - nlp%f
+!write(6,*) ' c/(f-t) ', nlp%C( : nlp%m ) / ( nlp%f - inform%target )
 
+!write(6,*) ' t, Phi ', inform%target, SQRT( two * inform%NLS_inform%obj )
+
+       data%discrepancy = nlp%f - inform%target
+       data%V( : nlp%n ) = - nlp%Gl( : nlp%n )
+       data%V( data%np1 : data%npm ) = data%discrepancy - nlp%C( : nlp%m )
+       data%rnorm = TWO_NORM( data%V( : data%npm ) )
+!write(6,*) ' old discrepancy, t ', data%discrepancy, inform%target
+!write(6,*) ' old ||r|| = ', data%rnorm
+
+
+!  -----------------
 !  adjust the target
+!  -----------------
 
-       IF ( inform%primal_infeasibility <= ten ** ( - 5 ) ) THEN
-         IF ( data%target_bounded ) THEN
-            data%target_upper = inform%target
-            IF ( data%target_upper - data%target_lower < ten ** ( - 5 ) ) THEN
-              data%converged = .TRUE.
-            ELSE
-              inform%target = half * ( data%target_upper + data%target_lower )
-            END IF
+!  the current target point is feasible
+
+       IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
+            inform%target <= nlp%f ) THEN
+!      IF ( inform%primal_infeasibility <= ten ** ( - 5 ) ) THEN
+!write(6,*) ' infeas, bracket t - f_t', inform%primal_infeasibility, data%target_bracketed,  inform%target - nlp%f
+
+!  the target is already bracketed, improve the upper bound
+
+         IF ( data%target_bracketed ) THEN
+           data%target_upper = inform%target
+
+!  if the target interval is small enough, stop
+
+           IF ( data%target_upper - data%target_lower <                        &
+                  data%control%small_bracket_tol ) THEN
+             WRITE( 6, "( ' bracket, tol ', 2ES12.4 )" ) data%target_upper -   &
+               data%target_lower, data%control%small_bracket_tol
+             data%converged = .TRUE.
+
+!  otherwise try the mid point of the interval as the next target
+
+           ELSE
+             frac = 0.9_rp_
+             inform%target = data%target_lower + frac *                        &
+                              ( data%target_upper - data%target_lower )
+           END IF
+
+!  the target is not yet bracketed, so continue to move left
+
          ELSE
            inform%target = inform%target - two ** ( inform%iter - 1 )
          END IF
+
+!  the target point is infeasible
+
        ELSE
+
+!  set the multiplier estimates
+
+         data%discrepancy = nlp%f - inform%target
+         nlp%Y( : nlp%m ) = nlp%C( : nlp%m ) / data%discrepancy
+!write(6,*) ' x ',  nlp%X( : nlp%n )
+!write(6,*) ' y ',  nlp%Y( : nlp%m )
+!write(6,*) ' discrepancy ', data%discrepancy 
+
+!  the new target gives a lower bound, and thus the target is now bounded
+
          data%target_lower = inform%target
-         data%target_bounded = .TRUE.
-!write(6,*) ' l, u ', data%target_lower, data%target_upper
-!        IF ( data%target_upper - data%target_lower < ten ** ( - 5 ) ) THEN
-         IF ( data%target_upper - data%target_lower < ten ** ( - 8 ) ) THEN
-!        IF ( data%target_upper - data%target_lower < ten ** ( - 12 ) ) THEN
+         data%target_bracketed = .TRUE.
+         data%from_left = .TRUE.
+
+!  if the target interval is small enough, stop
+
+         IF ( data%target_upper - data%target_lower <                          &
+                data%control%small_bracket_tol ) THEN
+           WRITE( 6, "( ' bracket, tol ', 2ES12.4 )" ) data%target_upper -     &
+             data%target_lower, data%control%small_bracket_tol
            data%converged = .TRUE.
+
+!  move the target right, towwards the minimizer
+
          ELSE
-
            data%nt = MIN( data%nt + 1, 2 )
-           IF ( data%nt == 1 ) THEN
-             data%tu = inform%target ; data%cu = inform%primal_infeasibility
-             inform%target = half * ( data%target_upper + data%target_lower )
-           ELSE
-             data%tl = data%tu ; data%cl = data%cu
-             data%tu = inform%target ; data%cu = inform%primal_infeasibility
-!write(6,*) ' tu, slope ', (data%cu -  data%cl) / (data%tu -  data%tl), data%tu
-             t_star = ( data%tu * data%cl - data%tl * data%cu ) /              &
-                      ( data%cl - data%cu )
-!            WRITE( 6, "( ' t_* = ', ES16.8 )" ) t_star
-!            inform%target                                                     &
-!              = MIN( inform%target + 0.999_rp_ *                              &
-!                       ( data%target_upper - inform%target ),                 &
-!                     inform%target + 0.999_rp_ * ( t_star - inform%target ) )
-             inform%target = inform%target + control%target_fraction *         &
-               ( MIN( data%target_upper, t_star ) - inform%target )
+!          data%nt = MIN( data%nt + 1, 3 )
 
+!  single point to the left of the minimizer
+
+           IF ( data%nt == 1 ) THEN
+             data%tu = inform%target
+             data%phiu = SQRT( two * inform%NLS_inform%obj )
+             data%cu = inform%primal_infeasibility
+!            inform%target = half * ( data%target_upper + data%target_lower )
+             inform%target = inform%target + 0.001_rp_
+
+!  two points to the left of the minimizer, linear interpolate to get next 
+!  target: find where linear fit through (tm,vm) and (tu,vu) intersects the 
+!  t axis
+
+!  fit l(t) = ao + a1 t
+!   vm = ao + a1 tm
+!   vu = ao + a1 tu
+!  =>
+!   a1 = (vu - vm ) / ( tu - t1 )
+!   a0 = vm - a1 tm
+!
+!   l(t*) = 0 =>
+!   t* = - a0 / a1 = tm - vm / a1
+!      = ( tm (vu - vm ) - ( tu - t1 ) vm ) / (vu - vm )
+!      = ( tm vu - tu vm ) / (vu - vm )
+
+           ELSE IF ( data%nt == 2 ) THEN
+             data%tm = data%tu ; data%phim = data%phiu ; data%cm = data%cu
+             data%tu = inform%target
+             data%phiu = SQRT( two * inform%NLS_inform%obj )
+             data%cu = inform%primal_infeasibility
+             t_phi = ( data%tm * data%phiu - data%tu * data%phim ) /          &
+                     ( data%phiu - data%phim )
+             t_c = ( data%tm * data%cu - data%tu * data%cm ) /                &
+                   ( data%cu - data%cm )
+
+!            inform%target = inform%target + control%target_fraction *         &
+!              ( MIN( data%target_upper, t_phi ) - inform%target )
+             IF ( t_phi <= t_c ) THEN
+               WRITE(6,"( ' t_* in [', ES22.14, ',', ES22.14, ']' )" )         &
+                 t_phi, t_c
+               inform%target = t_phi
+               data%target_upper = t_c
+             ELSE
+               WRITE(6,"( ' t_* in [', ES22.14, ',', ES22.14, ']' )" )         &
+                 t_c, t_phi
+               inform%target = t_c
+               data%target_upper = t_phi
+             END IF
+
+!  three (or more) points to the left of the minimizer, quadratic interpolate
+!  to get the next target: find where quadatic fit through (tl,vl), (tm,vm) 
+!  and (tu,vu) intersects the t axis
+
+!  fit q(t) = ao + a1 t + a2 t^2 given
+!   vl = ao + a1 tl + a2 tl^2
+!   vm = ao + a1 tm + a2 tm^2
+!   vu = ao + a1 tu + a2 tu^2
+!  =>
+!   dl = ( vm - vl ) / ( tm - tl ) = a1 + a2 ( tm + t1 )
+!   dm = ( vu - vm ) / ( tu - tm ) = a1 + a2 ( tu + tm )
+!   a2 = ( dm - dl ) / ( tu - t1 )
+!   a1 = dl - a2 ( tm + t1 )
+!   a0 = vl - tl ( a1 + a2 tl )
+
+!  solve q(t*) = 0, t* = largest root
+
+           ELSE
+             data%tl = data%tm ; data%phil = data%phim ; data%cl = data%cm
+             data%tm = data%tu ; data%phim = data%phiu ; data%cm = data%cu
+             data%tu = inform%target
+             data%phiu = SQRT( two * inform%NLS_inform%obj )
+             data%cu = inform%primal_infeasibility
+
+             dl = ( data%phim - data%phil ) / ( data%tm - data%tl )
+             dm = ( data%phiu - data%phim ) / ( data%tu - data%tm )
+             a2 = ( dm - dl ) / ( data%tu - data%tl )
+             a1 = dl - a2 * ( data%tm + data%tl )
+             a0 = data%phil - data%tl * ( a1 + a2 * data%tl) 
+
+!write(6,*) ' a0, a1, a2 ', a0, a1, a2
+!write(6,"(A, 2ES24.16)") 'l', data%tl, data%phil
+!write(6,"(A, 2ES24.16)") 'm', data%tm, data%phim
+!write(6,"(A, 2ES24.16)") 'u', data%tu, data%phiu
+
+             CALL ROOTS_quadratic( a0, a1, a2, root_tol,                       &
+                                   nroots, root1, root2, debug = .FALSE. )
+             t_phi = root2
+             write(6,*) ' q t_phi, nroots ', t_phi, nroots
+
+             inform%target = inform%target + control%target_fraction *         &
+               ( MIN( data%target_upper, t_phi ) - inform%target )
            END IF
+
+!  two points to the left of the minimizer, quadratic interpolate to get next 
+!  target: find where quadratic fit through (tm,vm) and (tu,vu) with vurvature
+!  -sigma at tu intersects the t axis
+
+!  fit q(t) = a + b t - sigma ( t -tu )^2 given
+!   vm = a + b tm - sigma ( tm - tu )^2
+!   vu = a + b tu 
+!  =>
+!   vu - vm = b ( tu - tm ) + sigma ( tm - tu )( tu + tm )^2
+!   b = (vu - vm ) / ( tu - tm ) - sigma( tm + tu )
+!   a = vu - b tu
+
+!  q(t) = ao + a1 t + a2 t^2
+!       = ( a - sigma tu^2 ) + ( b + 2 sigma tu ) t - sigma t^2
+
+!  a1 = b + 2 sigma tu = (vu - vm ) / ( tu - tm ) + sigma( tu - tm )
+!  a0 = vu - tu [ (vu - vm ) / ( tu - tm ) - sigma( tm + tu ) ]
+!     = [ vu ( tu - tm ) - tu (vu - vm ) ] / ( tu - tm ) + sigma( tm + tu ) tu 
+!     = ( tu vm - vu tm ) / ( tu - tm ) + sigma( tm + tu ) tu 
+
+!  solve q(t*) = 0, t* = largest root
+
          END IF
        END IF
 
@@ -2302,6 +2641,201 @@ stop
          WRITE( data%out,"( 3ES12.4 )" ) nlp%X_l(i), nlp%X(i), nlp%X_u(i)
          END DO
        END IF
+
+!  obtain a better starting point:
+
+!  find 
+!
+!    ( dx, dy ) = ( dx_1, dy_1 ) + alpha ( dx_2, dy_2 ) 
+!
+!  where
+!
+!    alpha = dx_1^T g(x) / ( 1 - dx_2^T g(x) ),
+!
+!  ( H(x,y)    J^T(x)    ) ( dx_1 ) = - (   g(x) + J^T(x) y   ) = r(x,y,t) and
+!  (  J(x)  - (f(x)-t) I ) ( dy_1 )     ( c(x) - (f(x) - t) y )
+!
+!  ( H(x,y)    J^T(x)    ) ( dx_2 ) = ( 0 )
+!  (  J(x)  - (f(x)-t) I ) ( dy_2 )   ( y )
+
+!! ** TO DO
+
+!  compute the discrepamcy f(x)- t and residual r(x,y,t)
+
+!write(6,*) ' -------start------------'
+       data%discrepancy = nlp%f - inform%target
+!write(6,*) ' discrepancy, t ', data%discrepancy, inform%target
+!write(6,*) ' x ',  nlp%X( : nlp%n )
+!write(6,*) ' y ',  nlp%Y( : nlp%m )
+       data%V( : nlp%n ) = - nlp%Gl( : nlp%n )
+       data%V( data%np1 : data%npm )                                           &
+         = data%discrepancy * nlp%Y( : nlp%m ) - nlp%C( : nlp%m )
+       data%rnorm = TWO_NORM( data%V( : data%npm ) )
+!write(6,*) ' ||r||, r_start = ', data%rnorm, data%control%advanced_start
+!  check whether to attempt an advanced starting point
+
+       IF ( data%rnorm > data%control%advanced_start ) GO TO 500
+
+!  loop to search for an advanced starting point
+
+       data%iter_advanced = 0
+  410  CONTINUE
+!write(6,*) ' iter = ', data%iter_advanced
+!  obtain the Hessian of the Lagrangian H(x,y)
+
+       IF ( data%reverse_hl ) THEN
+         data%branch = 420 ; inform%status = 9 ; RETURN
+       ELSE
+         CALL eval_HL( data%eval_status, nlp%X, - nlp%Y, userdata, nlp%H%val )
+         IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )   &
+          ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
+       END IF
+
+!  form and factorize the matrix 
+
+!    ( H(x,y)    J^T(x)    )
+!    (  J(x)  - (f(x)-t) I ) 
+
+  420  CONTINUE
+       data%C_ssls%val( 1 ) = data%discrepancy
+       CALL SSLS_factorize( nlp%n, nlp%m, nlp%H, nlp%J, data%C_ssls,           &
+                            data%SSLS_data, data%control%SSLS_control,         &
+                            inform%SSLS_inform )
+!write(6,*) ' ssls status ', inform%SSLS_inform%status
+
+!write(6,"( 'K = ')" )
+do i = 1, data%SSLS_data%K%ne
+! write(6,"( 2I7, ES12.4 )" ) data%SSLS_data%K%row(i),data%SSLS_data%K%col(i), &
+!                             data%SSLS_data%K%val(i)
+end do
+
+!  find v = ( dx1, dy1 )
+
+       CALL SSLS_solve( nlp%n, nlp%m, data%V, data%SSLS_data,                  &
+                        data%control%SSLS_control,inform%SSLS_inform )
+!write(6,*) ' ||v|| ', TWO_NORM( data%V( : nlp%n ) )
+!write(6,*) ' ||g|| ', TWO_NORM( nlp%Go%val( : nlp%Go%ne ) )
+
+!  find v2 = ( dx2, dy2 )
+
+       data%V2( : nlp%n ) = zero
+       data%V2( data%np1 : data%npm ) = nlp%Y
+       CALL SSLS_solve( nlp%n, nlp%m, data%V2, data%SSLS_data,                 &
+                        data%control%SSLS_control, inform%SSLS_inform )
+!write(6,*) ' ||v2|| ', TWO_NORM( data%V2( : nlp%n ) )
+
+!write(6,*) ' v ', data%V( : nlp%n )
+!write(6,*) ' v2 ',data%V2( : nlp%n )
+!write(6,*) ' g ', nlp%Go%val( : nlp%Go%ne )
+
+
+!  compute alpha 
+
+       IF ( nlp%Go%sparse ) THEN ! from g(x)
+         num = zero ; den = one
+         DO i = 1, nlp%Go%ne
+           j = nlp%Go%ind( i )
+           num = num + nlp%Go%val( i ) * data%V( j )
+           den = den - nlp%Go%val( i ) * data%V2( j )
+         END DO
+       ELSE
+         num = DOT_PRODUCT( data%V( : nlp%n ), nlp%Go%val( : nlp%n ) )
+         den = one - DOT_PRODUCT( data%V2( : nlp%n ), nlp%Go%val( : nlp%n ) )
+       END IF
+       alpha = num / den
+
+!write(6,*) ' alpha ', alpha
+!  recover v = ( dx, dy )
+
+       data%V( : data%npm )                                                    &
+         = data%V( : data%npm ) + alpha * data%V2( : data%npm )
+
+!  make a copy of x, y, c, g and J in case the advanced starting point is poor
+
+       data%f_old = nlp%f
+       data%X_old( : nlp%n ) = nlp%X( : nlp%n )
+       data%Y_old( : nlp%m ) = nlp%Y( : nlp%m )
+       data%C_old( : nlp%m ) = nlp%C( : nlp%m )
+       data%G_old( : nlp%Go%ne ) = nlp%Go%val( : nlp%Go%ne )
+       data%J_old( : data%J_ne ) = nlp%J%val( : data%J_ne )
+
+!  compute the trial x and y
+
+       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%V( : nlp%n ) 
+       nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) + data%V( data%np1 : data%npm )
+!write(6,*) ' new x ',  nlp%X( : nlp%n )
+!write(6,*) ' new y ',  nlp%Y( : nlp%m )
+
+!  compute the new objective and constraint values
+
+       IF ( data%reverse_fc ) THEN
+         data%branch = 430 ; inform%status = 2 ; RETURN
+       ELSE
+         CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
+       END IF
+
+!  compute the new gradient and Jacobian values
+
+  430  CONTINUE
+       IF ( data%reverse_gj ) THEN
+         data%branch = 440 ; inform%status = 4 ; RETURN
+       ELSE
+         CALL eval_SGJ( data%eval_status, nlp%X, userdata,                     &
+                        nlp%Go%val, nlp%J%val )
+       END IF
+
+!  compute the gradient of the Lagrangian
+
+  440  CONTINUE
+       nlp%gL( : nlp%n ) = nlp%Z( : nlp%n )
+       DO i = 1, nlp%Go%ne
+         j = nlp%Go%ind( i )
+         nlp%gL( j ) = nlp%gL( j ) + nlp%Go%val( i )
+       END DO
+       CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
+                    m_matrix = nlp%m, n_matrix = nlp%n )
+
+!  compute the new discrepamcy f(x)- t and residual r(x,y,t)
+
+       data%discrepancy = nlp%f - inform%target
+!write(6,*) ' discrepancy, t ', data%discrepancy, inform%target
+       data%V( : nlp%n ) = - nlp%Gl( : nlp%n )
+       data%V( data%np1 : data%npm )                                           &
+         = data%discrepancy * nlp%Y( : nlp%m ) - nlp%C( : nlp%m )
+       data%rnorm_old = data%rnorm
+       data%rnorm = TWO_NORM( data%V( : data%npm ) )
+!write(6,*) ' ||r|| = ', data%rnorm
+
+!  check to see if the residuals are sufficiently small
+
+       IF ( data%rnorm < data%control%advanced_stop ) GO TO 500
+
+!  check to see if the residuals have increased
+
+       IF ( data%rnorm_old < data%rnorm ) THEN
+
+!  make a copy of f, x, y, c, g & J in case the advanced starting point is poor
+
+         nlp%f = data%f_old
+         nlp%X( : nlp%n ) = data%X_old( : nlp%n )
+         nlp%Y( : nlp%m ) = data%Y_old( : nlp%m )
+         nlp%C( : nlp%m ) = data%C_old( : nlp%m )
+         nlp%Go%val( : nlp%Go%ne ) = data%G_old( : nlp%Go%ne )
+         nlp%J%val( : data%J_ne ) = data%J_old( : data%J_ne )
+         GO TO 500
+
+!  check to see if the advanced start iteration limit has been reasched
+
+       ELSE
+          IF ( data%iter_advanced > iter_advanced_max ) GO TO 500
+       END IF
+       data%iter_advanced = data%iter_advanced + 1
+       GO TO 410
+
+!  end of advanced starting point search
+
+  500 CONTINUE
+!write(6,*) ' --------end-------------'
 
 !  ----------------------------------------------------------------------------
 !                      END OF MAIN LOOP TARGET LOOP
@@ -2503,7 +3037,7 @@ stop
 !  non-executable statements
 
  2000 FORMAT( /, A, ' iter     obj fun   pr_feas du_feas cmp_slk ',            &
-                    '  step      target      its  time' )
+                    '  step      target     its   time' )
  2010 FORMAT( A, I5, ES14.6, 3ES8.1, ES8.1, ES14.6, I4, F8.1 )
  2020 FORMAT( A, I5, ES14.6, 3ES8.1, '     -  ', ES14.6, I4, F8.1 )
  2030 FORMAT( A, I7, 1X, A10, 4ES12.4 )
@@ -2975,7 +3509,7 @@ stop
 
      SUBROUTINE COLT_track( nlp, control, inform, data, userdata,              &
                             n_points, t_lower, t_upper,                        &
-                            eval_FC, eval_J, eval_GJ, eval_HC, eval_HJ,        &
+                            eval_FC, eval_J, eval_SGJ, eval_HLC, eval_HJ,      &
                             eval_HOCPRODS, eval_HCPRODS )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -3012,7 +3546,7 @@ stop
      REAL ( KIND = rp_ ), INTENT( IN ) :: t_lower, t_upper
      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_points
 
-     OPTIONAL :: eval_FC, eval_J, eval_GJ, eval_HC, eval_HJ,                   &
+     OPTIONAL :: eval_FC, eval_J, eval_SGJ, eval_HLC, eval_HJ,                 &
                  eval_HOCPRODS, eval_HCPRODS
 
 !----------------------------------
@@ -3041,24 +3575,24 @@ stop
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_GJ( status, X, userdata, G, J )
+       SUBROUTINE eval_SGJ( status, X, userdata, G, J )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_GJ
+       END SUBROUTINE eval_SGJ
      END INTERFACE
 
      INTERFACE
-       SUBROUTINE eval_HC( status, X, Y, userdata, Hval )
+       SUBROUTINE eval_HLC( status, X, Y, userdata, Hval )
        USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Hval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_HC
+       END SUBROUTINE eval_HLC
      END INTERFACE
 
      INTERFACE
@@ -3154,7 +3688,7 @@ stop
 !  decide how much reverse communication is required
 
      data%reverse_fc = .NOT. PRESENT( eval_FC )
-     data%reverse_gj = .NOT. PRESENT( eval_GJ )
+     data%reverse_gj = .NOT. PRESENT( eval_SGJ )
      data%reverse_hj = .NOT. PRESENT( eval_HJ )
      data%reverse_hocprods = .NOT. PRESENT( eval_HOCPRODS )
 
@@ -3399,9 +3933,6 @@ stop
      data%target_lower = - infinity
      inform%target = t_lower
      data%i_point = 1
-     data%target_bounded = .FALSE.
-     data%converged = .FALSE.
-     data%nt = 0
 
 !  restore dimensions for target problem
 
@@ -3440,10 +3971,10 @@ stop
          IF ( data%reverse_gj ) THEN
            data%branch = 210 ; inform%status = 3 ; RETURN
          ELSE
-           CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%Go%val,        &
-                         nlp%J%val )
+           CALL eval_SGJ( data%eval_status, nlp%X, userdata, nlp%Go%val,       &
+                          nlp%J%val )
            IF ( data%eval_status /= 0 ) THEN
-             inform%bad_eval = 'eval_GJ'
+             inform%bad_eval = 'eval_SGJ'
              inform%status = GALAHAD_error_evaluation ; GO TO 900
            END IF
          END IF
@@ -3457,12 +3988,12 @@ stop
 
 !  compute the gradient of the Lagrangian
 
-       nlp%gL( : nlp%n ) = - nlp%Z( : nlp%n )
+       nlp%gL( : nlp%n ) = nlp%Z( : nlp%n )
        DO i = 1, nlp%Go%ne
          j = nlp%Go%ind( i )
          nlp%gL( j ) = nlp%gL( j ) + nlp%Go%val( i )
        END DO
-       CALL mop_AX( - one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,      &
+       CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,      &
                     m_matrix = nlp%m, n_matrix = nlp%n )
 !                   out = data%out, error = data%error,                        &
 !                   print_level = data%print_level,                            &
@@ -3521,8 +4052,9 @@ stop
            ELSE
              CALL eval_FC( data%eval_status, data%nls%X, userdata,             &
                            nlp%f, nlp%C )
+             data%discrepancy = nlp%f - inform%target
              data%nls%C( : nlp%m ) = nlp%C( : nlp%m )
-             data%nls%C( data%nls%m ) = nlp%f - inform%target
+             data%nls%C( data%nls%m ) = data%discrepancy
              IF ( print_debug ) WRITE(6,"( ' nls%C = ', /, ( 5ES12.4 ) )" )    &
                data%nls%C( : data%nls%m )
            END IF
@@ -3534,8 +4066,8 @@ stop
              nlp%X = data%nls%X( : data%nls%n )
              data%branch = 300 ; inform%status = 4 ; RETURN
            ELSE
-             CALL eval_GJ( data%eval_status, data%nls%X, userdata,             &
-                           nlp%Go%val, nlp%J%val )
+             CALL eval_SGJ( data%eval_status, data%nls%X, userdata,            &
+                            nlp%Go%val, nlp%J%val )
              SELECT CASE ( SMT_get( data%nls%J%type ) )
              CASE ( 'DENSE' )
                j_ne = 0 ; l = 0
@@ -3787,6 +4319,48 @@ stop
 
      array_name = 'colt: data%W'
      CALL SPACE_dealloc_array( data%W,                                         &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%V'
+     CALL SPACE_dealloc_array( data%V,                                         &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%V2'
+     CALL SPACE_dealloc_array( data%V2,                                        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%X_old'
+     CALL SPACE_dealloc_array( data%X_old,                                     &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%Y_old'
+     CALL SPACE_dealloc_array( data%Y_old,                                     &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%C_old'
+     CALL SPACE_dealloc_array( data%C_old,                                     &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%G_old'
+     CALL SPACE_dealloc_array( data%G_old,                                     &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            bad_alloc = inform%bad_alloc, out = data%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'colt: data%J_old'
+     CALL SPACE_dealloc_array( data%J_old,                                     &
             inform%status, inform%alloc_status, array_name = array_name,       &
             bad_alloc = inform%bad_alloc, out = data%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

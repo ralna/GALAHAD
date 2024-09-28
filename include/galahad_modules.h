@@ -134,6 +134,7 @@
 #define GALAHAD_RQS_precision GALAHAD_RQS_single_64
 #define GALAHAD_S2QP_precision GALAHAD_S2QP_single_64
 #define GALAHAD_SBLS_precision GALAHAD_SBLS_single_64
+#define GALAHAD_SSLS_precision GALAHAD_SSLS_single_64
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_single_64
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_single_64
 #define GALAHAD_SCU_precision GALAHAD_SCU_single_64
@@ -224,6 +225,7 @@
 #define GALAHAD_USERQS_precision GALAHAD_USERQS_single_64
 #define GALAHAD_USES2QP_precision GALAHAD_USES2QP_single_64
 #define GALAHAD_USESBLS_precision GALAHAD_USESBLS_single_64
+#define GALAHAD_USESSLS_precision GALAHAD_USESSLS_single_64
 #define GALAHAD_USESHA_precision GALAHAD_USESHA_single_64
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_single_64
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_single_64
@@ -299,6 +301,7 @@
 #define GALAHAD_RPD_precision_ciface GALAHAD_RPD_single_ciface_64
 #define GALAHAD_RQS_precision_ciface GALAHAD_RQS_single_ciface_64
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_single_ciface_64
+#define GALAHAD_SSLS_precision_ciface GALAHAD_SSLS_single_ciface_64
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_single_ciface_64
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_single_ciface_64
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_single_ciface_64
@@ -365,6 +368,7 @@
 #define RUNQP_SIF_precision RUNQP_SIF_single_64
 #define RUNRQS_SIF_precision RUNRQS_SIF_single_64
 #define RUNSBLS_SIF_precision RUNSBLS_SIF_single_64
+#define RUNSSLS_SIF_precision RUNSSLS_SIF_single_64
 #define RUNSHA_SIF_precision RUNSHA_SIF_single_64
 #define RUNSILS_SIF_precision RUNSILS_SIF_single_64
 #define RUNSLLS_SIF_precision RUNSLLS_SIF_single_64
@@ -519,6 +523,7 @@
 #define GALAHAD_RQS_precision GALAHAD_RQS_single
 #define GALAHAD_S2QP_precision GALAHAD_S2QP_single
 #define GALAHAD_SBLS_precision GALAHAD_SBLS_single
+#define GALAHAD_SSLS_precision GALAHAD_SSLS_single
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_single
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_single
 #define GALAHAD_SCU_precision GALAHAD_SCU_single
@@ -609,6 +614,7 @@
 #define GALAHAD_USERQS_precision GALAHAD_USERQS_single
 #define GALAHAD_USES2QP_precision GALAHAD_USES2QP_single
 #define GALAHAD_USESBLS_precision GALAHAD_USESBLS_single
+#define GALAHAD_USESSLS_precision GALAHAD_USESSLS_single
 #define GALAHAD_USESHA_precision GALAHAD_USESHA_single
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_single
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_single
@@ -684,6 +690,7 @@
 #define GALAHAD_RPD_precision_ciface GALAHAD_RPD_single_ciface
 #define GALAHAD_RQS_precision_ciface GALAHAD_RQS_single_ciface
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_single_ciface
+#define GALAHAD_SSLS_precision_ciface GALAHAD_SSLS_single_ciface
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_single_ciface
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_single_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_single_ciface
@@ -750,6 +757,7 @@
 #define RUNQP_SIF_precision RUNQP_SIF_single
 #define RUNRQS_SIF_precision RUNRQS_SIF_single
 #define RUNSBLS_SIF_precision RUNSBLS_SIF_single
+#define RUNSSLS_SIF_precision RUNSSLS_SIF_single
 #define RUNSHA_SIF_precision RUNSHA_SIF_single
 #define RUNSILS_SIF_precision RUNSILS_SIF_single
 #define RUNSLLS_SIF_precision RUNSLLS_SIF_single
@@ -908,6 +916,7 @@
 #define GALAHAD_RQS_precision GALAHAD_RQS_double_64
 #define GALAHAD_S2QP_precision GALAHAD_S2QP_double_64
 #define GALAHAD_SBLS_precision GALAHAD_SBLS_double_64
+#define GALAHAD_SSLS_precision GALAHAD_SSLS_double_64
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_double_64
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_double_64
 #define GALAHAD_SCU_precision GALAHAD_SCU_double_64
@@ -998,6 +1007,7 @@
 #define GALAHAD_USERQS_precision GALAHAD_USERQS_double_64
 #define GALAHAD_USES2QP_precision GALAHAD_USES2QP_double_64
 #define GALAHAD_USESBLS_precision GALAHAD_USESBLS_double_64
+#define GALAHAD_USESSLS_precision GALAHAD_USESSLS_double_64
 #define GALAHAD_USESHA_precision GALAHAD_USESHA_double_64
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_double_64
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_double_64
@@ -1073,6 +1083,7 @@
 #define GALAHAD_RPD_precision_ciface GALAHAD_RPD_double_ciface_64
 #define GALAHAD_RQS_precision_ciface GALAHAD_RQS_double_ciface_64
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_double_ciface_64
+#define GALAHAD_SSLS_precision_ciface GALAHAD_SSLS_double_ciface_64
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_double_ciface_64
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_double_ciface_64
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_double_ciface_64
@@ -1139,6 +1150,7 @@
 #define RUNQP_SIF_precision RUNQP_SIF_double_64
 #define RUNRQS_SIF_precision RUNRQS_SIF_double_64
 #define RUNSBLS_SIF_precision RUNSBLS_SIF_double_64
+#define RUNSSLS_SIF_precision RUNSSLS_SIF_double_64
 #define RUNSHA_SIF_precision RUNSHA_SIF_double_64
 #define RUNSILS_SIF_precision RUNSILS_SIF_double_64
 #define RUNSLLS_SIF_precision RUNSLLS_SIF_double_64
@@ -1293,6 +1305,7 @@
 #define GALAHAD_RQS_precision GALAHAD_RQS_double
 #define GALAHAD_S2QP_precision GALAHAD_S2QP_double
 #define GALAHAD_SBLS_precision GALAHAD_SBLS_double
+#define GALAHAD_SSLS_precision GALAHAD_SSLS_double
 #define GALAHAD_SCALE_precision GALAHAD_SCALE_double
 #define GALAHAD_SCALING_precision GALAHAD_SCALING_double
 #define GALAHAD_SCU_precision GALAHAD_SCU_double
@@ -1383,6 +1396,7 @@
 #define GALAHAD_USERQS_precision GALAHAD_USERQS_double
 #define GALAHAD_USES2QP_precision GALAHAD_USES2QP_double
 #define GALAHAD_USESBLS_precision GALAHAD_USESBLS_double
+#define GALAHAD_USESSLS_precision GALAHAD_USESSLS_double
 #define GALAHAD_USESHA_precision GALAHAD_USESHA_double
 #define GALAHAD_USESILS_precision GALAHAD_USESILS_double
 #define GALAHAD_USESLLS_precision GALAHAD_USESLLS_double
@@ -1458,6 +1472,7 @@
 #define GALAHAD_RPD_precision_ciface GALAHAD_RPD_double_ciface
 #define GALAHAD_RQS_precision_ciface GALAHAD_RQS_double_ciface
 #define GALAHAD_SBLS_precision_ciface GALAHAD_SBLS_double_ciface
+#define GALAHAD_SSLS_precision_ciface GALAHAD_SSLS_double_ciface
 #define GALAHAD_SCU_precision_ciface GALAHAD_SCU_double_ciface
 #define GALAHAD_TR1_precision_ciface GALAHAD_TR1_double_ciface
 #define GALAHAD_SEC_precision_ciface GALAHAD_SEC_double_ciface
@@ -1524,6 +1539,7 @@
 #define RUNQP_SIF_precision RUNQP_SIF_double
 #define RUNRQS_SIF_precision RUNRQS_SIF_double
 #define RUNSBLS_SIF_precision RUNSBLS_SIF_double
+#define RUNSSLS_SIF_precision RUNSSLS_SIF_double
 #define RUNSHA_SIF_precision RUNSHA_SIF_double
 #define RUNSILS_SIF_precision RUNSILS_SIF_double
 #define RUNSLLS_SIF_precision RUNSLLS_SIF_double

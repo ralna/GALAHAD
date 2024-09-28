@@ -531,7 +531,7 @@
       END TYPE SBLS_data_type
 
 !  ====================================
-!  The PSLS_full_data_type derived type
+!  The SBLS_full_data_type derived type
 !  ====================================
 
       TYPE, PUBLIC :: SBLS_full_data_type

@@ -71,17 +71,15 @@
      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      INTEGER ( KIND = ip_ ) :: vfiledevice = 63
-     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: write_problem_data    = .FALSE.
-     LOGICAL :: write_solution        = .FALSE.
      LOGICAL :: write_solution_vector = .FALSE.
+     LOGICAL :: print_solution        = .FALSE.
 !    LOGICAL :: write_result_summary  = .FALSE.
      LOGICAL :: write_result_summary  = .TRUE.
      CHARACTER ( LEN = 30 ) :: dfilename = 'COLT.data'
      CHARACTER ( LEN = 30 ) :: rfilename = 'COLTRES.d'
      CHARACTER ( LEN = 30 ) :: sfilename = 'COLTSOL.d'
      CHARACTER ( LEN = 30 ) :: vfilename = 'COLTSOLVEC.d'
-     CHARACTER ( LEN = 30 ) :: wfilename = 'COLTSAVE.d'
      LOGICAL :: testal = .FALSE.
      LOGICAL :: dechk  = .FALSE.
      LOGICAL :: dechke = .FALSE.
@@ -140,8 +138,8 @@
        spec( 22 )%keyword = 'use-variable-scaling-factors'
        spec( 23 )%keyword = 'maximizer-sought'
        spec( 24 )%keyword = 'restart-from-previous-point'
-       spec( 25 )%keyword = 'restart-data-file-name'
-       spec( 26 )%keyword = 'restart-data-file-device'
+       spec( 25 )%keyword = ''
+       spec( 26 )%keyword = ''
        spec( 27 )%keyword = 'save-data-for-restart-every'
        spec( 28 )%keyword = 'write-solution-vector'
        spec( 29 )%keyword = 'solution-vector-file-name'
@@ -160,7 +158,7 @@
        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
        CALL SPECFILE_assign_integer( spec( 4 ), print_level_override, errout )
-       CALL SPECFILE_assign_logical( spec( 5 ), write_solution, errout )
+       CALL SPECFILE_assign_logical( spec( 5 ), print_solution, errout )
        CALL SPECFILE_assign_string ( spec( 6 ), sfilename, errout )
        CALL SPECFILE_assign_integer( spec( 7 ), sfiledevice, errout )
        CALL SPECFILE_assign_logical( spec( 8 ), write_result_summary, errout )
@@ -180,8 +178,8 @@
        CALL SPECFILE_assign_logical( spec( 22 ), scalev, errout )
        CALL SPECFILE_assign_logical( spec( 23 ), get_max, errout )
        CALL SPECFILE_assign_logical( spec( 24 ), warm_start, errout )
-       CALL SPECFILE_assign_string ( spec( 25 ), wfilename, errout )
-       CALL SPECFILE_assign_integer( spec( 26 ), wfiledevice, errout )
+!      CALL SPECFILE_assign_string ( spec( 25 ), wfilename, errout )
+!      CALL SPECFILE_assign_integer( spec( 26 ), wfiledevice, errout )
        CALL SPECFILE_assign_integer( spec( 27 ), istore, errout )
        CALL SPECFILE_assign_logical( spec( 28 ), write_solution_vector, errout )
        CALL SPECFILE_assign_string ( spec( 29 ), vfilename, errout )
@@ -256,8 +254,9 @@
        CALL COLT_solve( nlp, control, inform, data, userdata,                  &
                         eval_FC = CUTEST_eval_FC,                              &
                         eval_J = CUTEST_eval_J,                                &
-                        eval_GJ = CUTEST_eval_SGJ,                             &
-                        eval_HC = CUTEST_eval_HLC,                             &
+                        eval_SGJ = CUTEST_eval_SGJ,                            &
+                        eval_HL = CUTEST_eval_HL,                              &
+                        eval_HLC = CUTEST_eval_HLC,                            &
                         eval_HJ = CUTEST_eval_HJ,                              &
                         eval_HCPRODS = CUTEST_eval_HCPRODS,                    &
                         eval_HOCPRODS = CUTEST_eval_HOCPRODS )
@@ -266,12 +265,21 @@
                         n_points, t_lower, t_upper,                            &
                         eval_FC = CUTEST_eval_FC,                              &
                         eval_J = CUTEST_eval_J,                                &
-                        eval_GJ = CUTEST_eval_SGJ,                             &
-                        eval_HC = CUTEST_eval_HLC,                             &
+                        eval_SGJ = CUTEST_eval_SGJ,                            &
+                        eval_HLC = CUTEST_eval_HLC,                            &
                         eval_HJ = CUTEST_eval_HJ,                              &
                         eval_HCPRODS = CUTEST_eval_HCPRODS,                    &
                         eval_HOCPRODS = CUTEST_eval_HOCPRODS )
       END IF   
+
+!  Write the solution to standard output
+
+      WRITE( errout, "( 'name        f               pr-feas  du-feas ',       &
+     &                  ' cmp-slk      its        time  stat' )" )
+      WRITE( errout, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )            &
+        nlp%pname, inform%obj, inform%primal_infeasibility,                    &
+        inform%dual_infeasibility, inform%complementary_slackness,             &
+        inform%iter, inform%time%total, inform%status
 
 !  If required, append results to a file
 
@@ -282,43 +290,10 @@
           inform%dual_infeasibility, inform%complementary_slackness,           &
           inform%iter, inform%time%total, inform%status
       END IF
-      WRITE( errout, "( 'name        f               pr-feas  du-feas ',       &
-     &                  ' cmp-slk      its        time  stat' )" )
-      WRITE( errout, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )            &
-        nlp%pname, inform%obj, inform%primal_infeasibility,                    &
-        inform%dual_infeasibility, inform%complementary_slackness,             &
-        inform%iter, inform%time%total, inform%status
 
-!  If required, write the solution vector to a file
+!  If required, write the solution to a file
 
-      IF ( inform%status == GALAHAD_ok .OR.                                    &
-           inform%status == GALAHAD_error_max_iterations .OR.                  &
-           inform%status == GALAHAD_error_cpu_limit ) THEN
-        IF ( write_solution_vector ) THEN
-          INQUIRE( FILE = vfilename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( vfiledevice, FILE = vfilename, FORM = 'FORMATTED',          &
-                 STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( vfiledevice, FILE = vfilename, FORM = 'FORMATTED',          &
-                 STATUS = 'NEW', IOSTAT = iores )
-          END IF
-          IF ( iores /= 0 ) THEN
-            write( out, 2030 ) iores, vfilename
-            STOP
-          END IF
-
-          REWIND( vfiledevice )
-          DO i = 1, nlp%n
-            WRITE( vfiledevice, "( ES22.15 )" ) nlp%X( i )
-          END DO
-          CLOSE( vfiledevice )
-        END IF
-      END IF
-
-!  If required, write the solution
-
-     IF ( write_solution .AND.                                                 &
+     IF ( print_solution .AND.                                                 &
          ( inform%status == GALAHAD_ok .OR.                                    &
            inform%status == GALAHAD_error_factorization ) ) THEN
 
@@ -351,6 +326,34 @@
              nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
          END DO
        END IF
+
+!  If required, write the solution vector to a file
+
+      IF ( inform%status == GALAHAD_ok .OR.                                    &
+           inform%status == GALAHAD_error_max_iterations .OR.                  &
+           inform%status == GALAHAD_error_cpu_limit ) THEN
+        IF ( write_solution_vector ) THEN
+          INQUIRE( FILE = vfilename, EXIST = filexx )
+          IF ( filexx ) THEN
+             OPEN( vfiledevice, FILE = vfilename, FORM = 'FORMATTED',          &
+                 STATUS = 'OLD', IOSTAT = iores )
+          ELSE
+             OPEN( vfiledevice, FILE = vfilename, FORM = 'FORMATTED',          &
+                 STATUS = 'NEW', IOSTAT = iores )
+          END IF
+          IF ( iores /= 0 ) THEN
+            write( out, 2030 ) iores, vfilename
+            STOP
+          END IF
+
+          REWIND( vfiledevice )
+          DO i = 1, nlp%n
+            WRITE( vfiledevice, "( ES22.15 )" ) nlp%X( i )
+          END DO
+          CLOSE( vfiledevice )
+        END IF
+      END IF
+
     END IF
 
 !  Close any opened files
