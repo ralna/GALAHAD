@@ -6,11 +6,11 @@ using Test
 using Printf
 using Accessors
 
-function test_psls()
+function test_psls(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{psls_control_type{Float64}}()
-  inform = Ref{psls_inform_type{Float64}}()
+  control = Ref{psls_control_type{T}}()
+  inform = Ref{psls_inform_type{T}}()
 
   # Set problem data
   n = 5 # dimension of A
@@ -20,8 +20,8 @@ function test_psls()
   row = Cint[1, 2, 2, 3, 3, 4, 5]  # A indices  values, NB lower triangle
   col = Cint[1, 1, 5, 2, 3, 3, 5]
   ptr = Cint[1, 2, 4, 6, 7, 8]
-  val = Float64[2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0]
-  dense = Float64[2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
+  val = T[2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0]
+  dense = T[2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0,
                   0.0, 5.0, 0.0, 0.0, 6.0, 0.0, 0.0, 1.0]
   st = ' '
   status = Ref{Cint}()
@@ -32,7 +32,7 @@ function test_psls()
 
   for d in 1:3
     # Initialize PSLS
-    psls_initialize(data, control, status)
+    psls_initialize(T, data, control, status)
     @reset control[].preconditioner = Cint(2) # band preconditioner
     @reset control[].semi_bandwidth = Cint(1) # semibandwidth
     @reset control[].definite_linear_solver = galahad_linear_solver("sils")
@@ -44,38 +44,38 @@ function test_psls()
     if d == 1
       st = 'C'
 
-      psls_import(control, data, status, n,
+      psls_import(T, control, data, status, n,
                   "coordinate", ne, row, col, C_NULL)
 
-      psls_form_preconditioner(data, status, ne, val)
+      psls_form_preconditioner(T, data, status, ne, val)
     end
 
     # sparse by rows
     if d == 2
       st = 'R'
 
-      psls_import(control, data, status, n,
+      psls_import(T, control, data, status, n,
                   "sparse_by_rows", ne, C_NULL, col, ptr)
 
-      psls_form_preconditioner(data, status, ne, val)
+      psls_form_preconditioner(T, data, status, ne, val)
     end
 
     # dense
     if d == 3
       st = 'D'
 
-      psls_import(control, data, status, n,
+      psls_import(T, control, data, status, n,
                   "dense", ne, C_NULL, C_NULL, C_NULL)
 
-      psls_form_preconditioner(data, status, dense_ne, dense)
+      psls_form_preconditioner(T, data, status, dense_ne, dense)
     end
 
     # Set right-hand side b in x
-    x = Float64[8.0, 45.0, 31.0, 15.0, 17.0]  # values
+    x = T[8.0, 45.0, 31.0, 15.0, 17.0]  # values
 
     if status == 0
-      psls_information(data, inform, status)
-      psls_apply_preconditioner(data, status_apply, n, x)
+      psls_information(T, data, inform, status)
+      psls_apply_preconditioner(T, data, status_apply, n, x)
     else
       status_apply[] = -1
     end
@@ -89,12 +89,13 @@ function test_psls()
     # end
 
     # Delete internal workspace
-    psls_terminate(data, control, inform)
+    psls_terminate(T, data, control, inform)
   end
 
   return 0
 end
 
 @testset "PSLS" begin
-  @test test_psls() == 0
+  @test test_psls(Float32) == 0
+  @test test_psls(Float64) == 0
 end

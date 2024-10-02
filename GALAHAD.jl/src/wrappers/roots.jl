@@ -21,49 +21,43 @@ struct roots_inform_type
   bad_alloc::NTuple{81,Cchar}
 end
 
-export roots_initialize_s
+export roots_initialize
 
-function roots_initialize_s(data, control, status)
+function roots_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.roots_initialize_s(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{roots_control_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export roots_initialize
-
-function roots_initialize(data, control, status)
+function roots_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.roots_initialize(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{roots_control_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export roots_information_s
+export roots_information
 
-function roots_information_s(data, inform, status)
+function roots_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.roots_information_s(data::Ptr{Ptr{Cvoid}},
                                                inform::Ptr{roots_inform_type},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export roots_information
-
-function roots_information(data, inform, status)
+function roots_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.roots_information(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{roots_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export roots_terminate_s
+export roots_terminate
 
-function roots_terminate_s(data, control, inform)
+function roots_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.roots_terminate_s(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{roots_control_type{Float32}},
                                              inform::Ptr{roots_inform_type})::Cvoid
 end
 
-export roots_terminate
-
-function roots_terminate(data, control, inform)
+function roots_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.roots_terminate(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{roots_control_type{Float64}},
                                            inform::Ptr{roots_inform_type})::Cvoid

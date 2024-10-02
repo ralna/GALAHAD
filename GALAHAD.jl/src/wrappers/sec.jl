@@ -16,47 +16,41 @@ struct sec_inform_type
   status::Cint
 end
 
-export sec_initialize_s
+export sec_initialize
 
-function sec_initialize_s(control, status)
+function sec_initialize(::Type{Float32}, control, status)
   @ccall libgalahad_single.sec_initialize_s(control::Ptr{sec_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export sec_initialize
-
-function sec_initialize(control, status)
+function sec_initialize(::Type{Float64}, control, status)
   @ccall libgalahad_double.sec_initialize(control::Ptr{sec_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export sec_information_s
+export sec_information
 
-function sec_information_s(data, inform, status)
+function sec_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.sec_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{sec_inform_type},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export sec_information
-
-function sec_information(data, inform, status)
+function sec_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.sec_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{sec_inform_type},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export sec_terminate_s
+export sec_terminate
 
-function sec_terminate_s(data, control, inform)
+function sec_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.sec_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{sec_control_type{Float32}},
                                            inform::Ptr{sec_inform_type})::Cvoid
 end
 
-export sec_terminate
-
-function sec_terminate(data, control, inform)
+function sec_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.sec_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{sec_control_type{Float64}},
                                          inform::Ptr{sec_inform_type})::Cvoid

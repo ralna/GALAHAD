@@ -30,49 +30,43 @@ struct convert_inform_type{T}
   time::convert_time_type{T}
 end
 
-export convert_initialize_s
+export convert_initialize
 
-function convert_initialize_s(data, control, status)
+function convert_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.convert_initialize_s(data::Ptr{Ptr{Cvoid}},
                                                 control::Ptr{convert_control_type},
                                                 status::Ptr{Cint})::Cvoid
 end
 
-export convert_initialize
-
-function convert_initialize(data, control, status)
+function convert_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.convert_initialize(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{convert_control_type},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export convert_information_s
+export convert_information
 
-function convert_information_s(data, inform, status)
+function convert_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.convert_information_s(data::Ptr{Ptr{Cvoid}},
                                                  inform::Ptr{convert_inform_type{Float32}},
                                                  status::Ptr{Cint})::Cvoid
 end
 
-export convert_information
-
-function convert_information(data, inform, status)
+function convert_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.convert_information(data::Ptr{Ptr{Cvoid}},
                                                inform::Ptr{convert_inform_type{Float64}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export convert_terminate_s
+export convert_terminate
 
-function convert_terminate_s(data, control, inform)
+function convert_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.convert_terminate_s(data::Ptr{Ptr{Cvoid}},
                                                control::Ptr{convert_control_type},
                                                inform::Ptr{convert_inform_type{Float32}})::Cvoid
 end
 
-export convert_terminate
-
-function convert_terminate(data, control, inform)
+function convert_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.convert_terminate(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{convert_control_type},
                                              inform::Ptr{convert_inform_type{Float64}})::Cvoid

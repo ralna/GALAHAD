@@ -6,14 +6,14 @@ using Test
 using Printf
 using Accessors
 
-function test_lhs()
+function test_lhs(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
   control = Ref{lhs_control_type}()
   inform = Ref{lhs_inform_type}()
 
   # Initialize LHS
-  lhs_initialize(data, control, inform)
+  lhs_initialize(T, data, control, inform)
 
   # Parameters
   n_dimen = Cint(7) # dimension
@@ -22,10 +22,10 @@ function test_lhs()
   seed = Ref{Cint}()
 
   # Set a random seed
-  lhs_get_seed(seed)
+  lhs_get_seed(T, seed)
 
   # Generate points
-  lhs_ihs(n_dimen, n_points, seed, X, control, inform, data)
+  lhs_ihs(T, n_dimen, n_points, seed, X, control, inform, data)
 
   if inform[].status == 0 # successful return
     @printf("LHS successful\n")
@@ -41,11 +41,12 @@ function test_lhs()
   end
 
   # Delete internal workspace
-  lhs_terminate(data, control, inform)
+  lhs_terminate(T, data, control, inform)
 
   return 0
 end
 
 @testset "LHS" begin
-  @test test_lhs() == 0
+  @test test_lhs(Float32) == 0
+  @test test_lhs(Float64) == 0
 end

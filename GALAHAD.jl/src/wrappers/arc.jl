@@ -100,74 +100,68 @@ struct arc_inform_type{T}
   sha_inform::sha_inform_type
 end
 
-export arc_initialize_s
+export arc_initialize
 
-function arc_initialize_s(data, control, status)
+function arc_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.arc_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{arc_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export arc_initialize
-
-function arc_initialize(data, control, status)
+function arc_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.arc_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{arc_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export arc_read_specfile_s
+export arc_read_specfile
 
-function arc_read_specfile_s(control, specfile)
+function arc_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.arc_read_specfile_s(control::Ptr{arc_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export arc_read_specfile
-
-function arc_read_specfile(control, specfile)
+function arc_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.arc_read_specfile(control::Ptr{arc_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export arc_import_s
+export arc_import
 
-function arc_import_s(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+function arc_import(::Type{Float32}, control, data, status, n, H_type, ne, H_row, H_col,
+                    H_ptr)
   @ccall libgalahad_single.arc_import_s(control::Ptr{arc_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
                                         H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
-export arc_import
-
-function arc_import(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+function arc_import(::Type{Float64}, control, data, status, n, H_type, ne, H_row, H_col,
+                    H_ptr)
   @ccall libgalahad_double.arc_import(control::Ptr{arc_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
-export arc_reset_control_s
+export arc_reset_control
 
-function arc_reset_control_s(control, data, status)
+function arc_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.arc_reset_control_s(control::Ptr{arc_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export arc_reset_control
-
-function arc_reset_control(control, data, status)
+function arc_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.arc_reset_control(control::Ptr{arc_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export arc_solve_with_mat_s
+export arc_solve_with_mat
 
-function arc_solve_with_mat_s(data, userdata, status, n, x, g, ne, eval_f, eval_g, eval_h,
-                              eval_prec)
+function arc_solve_with_mat(::Type{Float32}, data, userdata, status, n, x, g, ne, eval_f,
+                            eval_g, eval_h, eval_prec)
   @ccall libgalahad_single.arc_solve_with_mat_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                                 status::Ptr{Cint}, n::Cint, x::Ptr{Float32},
                                                 g::Ptr{Float32}, ne::Cint,
@@ -176,10 +170,8 @@ function arc_solve_with_mat_s(data, userdata, status, n, x, g, ne, eval_f, eval_
                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export arc_solve_with_mat
-
-function arc_solve_with_mat(data, userdata, status, n, x, g, ne, eval_f, eval_g, eval_h,
-                            eval_prec)
+function arc_solve_with_mat(::Type{Float64}, data, userdata, status, n, x, g, ne, eval_f,
+                            eval_g, eval_h, eval_prec)
   @ccall libgalahad_double.arc_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                               status::Ptr{Cint}, n::Cint, x::Ptr{Float64},
                                               g::Ptr{Float64}, ne::Cint, eval_f::Ptr{Cvoid},
@@ -187,10 +179,10 @@ function arc_solve_with_mat(data, userdata, status, n, x, g, ne, eval_f, eval_g,
                                               eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export arc_solve_without_mat_s
+export arc_solve_without_mat
 
-function arc_solve_without_mat_s(data, userdata, status, n, x, g, eval_f, eval_g,
-                                 eval_hprod, eval_prec)
+function arc_solve_without_mat(::Type{Float32}, data, userdata, status, n, x, g, eval_f,
+                               eval_g, eval_hprod, eval_prec)
   @ccall libgalahad_single.arc_solve_without_mat_s(data::Ptr{Ptr{Cvoid}},
                                                    userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                    n::Cint, x::Ptr{Float32},
@@ -200,10 +192,8 @@ function arc_solve_without_mat_s(data, userdata, status, n, x, g, eval_f, eval_g
                                                    eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export arc_solve_without_mat
-
-function arc_solve_without_mat(data, userdata, status, n, x, g, eval_f, eval_g, eval_hprod,
-                               eval_prec)
+function arc_solve_without_mat(::Type{Float64}, data, userdata, status, n, x, g, eval_f,
+                               eval_g, eval_hprod, eval_prec)
   @ccall libgalahad_double.arc_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                  n::Cint, x::Ptr{Float64}, g::Ptr{Float64},
@@ -212,10 +202,10 @@ function arc_solve_without_mat(data, userdata, status, n, x, g, eval_f, eval_g, 
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export arc_solve_reverse_with_mat_s
+export arc_solve_reverse_with_mat
 
-function arc_solve_reverse_with_mat_s(data, status, eval_status, n, x, f, g, ne, H_val, u,
-                                      v)
+function arc_solve_reverse_with_mat(::Type{Float32}, data, status, eval_status, n, x, f, g,
+                                    ne, H_val, u, v)
   @ccall libgalahad_single.arc_solve_reverse_with_mat_s(data::Ptr{Ptr{Cvoid}},
                                                         status::Ptr{Cint},
                                                         eval_status::Ptr{Cint}, n::Cint,
@@ -226,9 +216,8 @@ function arc_solve_reverse_with_mat_s(data, status, eval_status, n, x, f, g, ne,
                                                         v::Ptr{Float32})::Cvoid
 end
 
-export arc_solve_reverse_with_mat
-
-function arc_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H_val, u, v)
+function arc_solve_reverse_with_mat(::Type{Float64}, data, status, eval_status, n, x, f, g,
+                                    ne, H_val, u, v)
   @ccall libgalahad_double.arc_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Cint},
                                                       eval_status::Ptr{Cint}, n::Cint,
@@ -238,9 +227,10 @@ function arc_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H
                                                       v::Ptr{Float64})::Cvoid
 end
 
-export arc_solve_reverse_without_mat_s
+export arc_solve_reverse_without_mat
 
-function arc_solve_reverse_without_mat_s(data, status, eval_status, n, x, f, g, u, v)
+function arc_solve_reverse_without_mat(::Type{Float32}, data, status, eval_status, n, x, f,
+                                       g, u, v)
   @ccall libgalahad_single.arc_solve_reverse_without_mat_s(data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Cint},
                                                            eval_status::Ptr{Cint}, n::Cint,
@@ -249,9 +239,8 @@ function arc_solve_reverse_without_mat_s(data, status, eval_status, n, x, f, g, 
                                                            v::Ptr{Float32})::Cvoid
 end
 
-export arc_solve_reverse_without_mat
-
-function arc_solve_reverse_without_mat(data, status, eval_status, n, x, f, g, u, v)
+function arc_solve_reverse_without_mat(::Type{Float64}, data, status, eval_status, n, x, f,
+                                       g, u, v)
   @ccall libgalahad_double.arc_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Cint},
                                                          eval_status::Ptr{Cint}, n::Cint,
@@ -260,33 +249,29 @@ function arc_solve_reverse_without_mat(data, status, eval_status, n, x, f, g, u,
                                                          v::Ptr{Float64})::Cvoid
 end
 
-export arc_information_s
+export arc_information
 
-function arc_information_s(data, inform, status)
+function arc_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.arc_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{arc_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export arc_information
-
-function arc_information(data, inform, status)
+function arc_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.arc_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{arc_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export arc_terminate_s
+export arc_terminate
 
-function arc_terminate_s(data, control, inform)
+function arc_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.arc_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{arc_control_type{Float32}},
                                            inform::Ptr{arc_inform_type{Float32}})::Cvoid
 end
 
-export arc_terminate
-
-function arc_terminate(data, control, inform)
+function arc_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.arc_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{arc_control_type{Float64}},
                                          inform::Ptr{arc_inform_type{Float64}})::Cvoid

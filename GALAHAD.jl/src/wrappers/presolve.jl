@@ -50,42 +50,38 @@ struct presolve_inform_type
   message::NTuple{3,NTuple{81,Cchar}}
 end
 
-export presolve_initialize_s
+export presolve_initialize
 
-function presolve_initialize_s(data, control, status)
+function presolve_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.presolve_initialize_s(data::Ptr{Ptr{Cvoid}},
                                                  control::Ptr{presolve_control_type{Float32}},
                                                  status::Ptr{Cint})::Cvoid
 end
 
-export presolve_initialize
-
-function presolve_initialize(data, control, status)
+function presolve_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.presolve_initialize(data::Ptr{Ptr{Cvoid}},
                                                control::Ptr{presolve_control_type{Float64}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export presolve_read_specfile_s
+export presolve_read_specfile
 
-function presolve_read_specfile_s(control, specfile)
+function presolve_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.presolve_read_specfile_s(control::Ptr{presolve_control_type{Float32}},
                                                     specfile::Ptr{Cchar})::Cvoid
 end
 
-export presolve_read_specfile
-
-function presolve_read_specfile(control, specfile)
+function presolve_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.presolve_read_specfile(control::Ptr{presolve_control_type{Float64}},
                                                   specfile::Ptr{Cchar})::Cvoid
 end
 
-export presolve_import_problem_s
+export presolve_import_problem
 
-function presolve_import_problem_s(control, data, status, n, m, H_type, H_ne, H_row, H_col,
-                                   H_ptr, H_val, g, f, A_type, A_ne, A_row, A_col, A_ptr,
-                                   A_val, c_l, c_u, x_l, x_u, n_out, m_out, H_ne_out,
-                                   A_ne_out)
+function presolve_import_problem(::Type{Float32}, control, data, status, n, m, H_type, H_ne,
+                                 H_row, H_col, H_ptr, H_val, g, f, A_type, A_ne, A_row,
+                                 A_col, A_ptr, A_val, c_l, c_u, x_l, x_u, n_out, m_out,
+                                 H_ne_out, A_ne_out)
   @ccall libgalahad_single.presolve_import_problem_s(control::Ptr{presolve_control_type{Float32}},
                                                      data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Cint}, n::Cint, m::Cint,
@@ -103,12 +99,10 @@ function presolve_import_problem_s(control, data, status, n, m, H_type, H_ne, H_
                                                      A_ne_out::Ptr{Cint})::Cvoid
 end
 
-export presolve_import_problem
-
-function presolve_import_problem(control, data, status, n, m, H_type, H_ne, H_row, H_col,
-                                 H_ptr, H_val, g, f, A_type, A_ne, A_row, A_col, A_ptr,
-                                 A_val, c_l, c_u, x_l, x_u, n_out, m_out, H_ne_out,
-                                 A_ne_out)
+function presolve_import_problem(::Type{Float64}, control, data, status, n, m, H_type, H_ne,
+                                 H_row, H_col, H_ptr, H_val, g, f, A_type, A_ne, A_row,
+                                 A_col, A_ptr, A_val, c_l, c_u, x_l, x_u, n_out, m_out,
+                                 H_ne_out, A_ne_out)
   @ccall libgalahad_double.presolve_import_problem(control::Ptr{presolve_control_type{Float64}},
                                                    data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                    n::Cint, m::Cint, H_type::Ptr{Cchar},
@@ -125,11 +119,11 @@ function presolve_import_problem(control, data, status, n, m, H_type, H_ne, H_ro
                                                    A_ne_out::Ptr{Cint})::Cvoid
 end
 
-export presolve_transform_problem_s
+export presolve_transform_problem
 
-function presolve_transform_problem_s(data, status, n, m, H_ne, H_col, H_ptr, H_val, g, f,
-                                      A_ne, A_col, A_ptr, A_val, c_l, c_u, x_l, x_u, y_l,
-                                      y_u, z_l, z_u)
+function presolve_transform_problem(::Type{Float32}, data, status, n, m, H_ne, H_col, H_ptr,
+                                    H_val, g, f, A_ne, A_col, A_ptr, A_val, c_l, c_u, x_l,
+                                    x_u, y_l, y_u, z_l, z_u)
   @ccall libgalahad_single.presolve_transform_problem_s(data::Ptr{Ptr{Cvoid}},
                                                         status::Ptr{Cint}, n::Cint, m::Cint,
                                                         H_ne::Cint, H_col::Ptr{Cint},
@@ -149,11 +143,9 @@ function presolve_transform_problem_s(data, status, n, m, H_ne, H_col, H_ptr, H_
                                                         z_u::Ptr{Float32})::Cvoid
 end
 
-export presolve_transform_problem
-
-function presolve_transform_problem(data, status, n, m, H_ne, H_col, H_ptr, H_val, g, f,
-                                    A_ne, A_col, A_ptr, A_val, c_l, c_u, x_l, x_u, y_l, y_u,
-                                    z_l, z_u)
+function presolve_transform_problem(::Type{Float64}, data, status, n, m, H_ne, H_col, H_ptr,
+                                    H_val, g, f, A_ne, A_col, A_ptr, A_val, c_l, c_u, x_l,
+                                    x_u, y_l, y_u, z_l, z_u)
   @ccall libgalahad_double.presolve_transform_problem(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Cint}, n::Cint, m::Cint,
                                                       H_ne::Cint, H_col::Ptr{Cint},
@@ -168,10 +160,10 @@ function presolve_transform_problem(data, status, n, m, H_ne, H_col, H_ptr, H_va
                                                       z_u::Ptr{Float64})::Cvoid
 end
 
-export presolve_restore_solution_s
+export presolve_restore_solution
 
-function presolve_restore_solution_s(data, status, n_in, m_in, x_in, c_in, y_in, z_in, n, m,
-                                     x, c, y, z)
+function presolve_restore_solution(::Type{Float32}, data, status, n_in, m_in, x_in, c_in,
+                                   y_in, z_in, n, m, x, c, y, z)
   @ccall libgalahad_single.presolve_restore_solution_s(data::Ptr{Ptr{Cvoid}},
                                                        status::Ptr{Cint}, n_in::Cint,
                                                        m_in::Cint, x_in::Ptr{Float32},
@@ -183,10 +175,8 @@ function presolve_restore_solution_s(data, status, n_in, m_in, x_in, c_in, y_in,
                                                        z::Ptr{Float32})::Cvoid
 end
 
-export presolve_restore_solution
-
-function presolve_restore_solution(data, status, n_in, m_in, x_in, c_in, y_in, z_in, n, m,
-                                   x, c, y, z)
+function presolve_restore_solution(::Type{Float64}, data, status, n_in, m_in, x_in, c_in,
+                                   y_in, z_in, n, m, x, c, y, z)
   @ccall libgalahad_double.presolve_restore_solution(data::Ptr{Ptr{Cvoid}},
                                                      status::Ptr{Cint}, n_in::Cint,
                                                      m_in::Cint, x_in::Ptr{Float64},
@@ -197,33 +187,29 @@ function presolve_restore_solution(data, status, n_in, m_in, x_in, c_in, y_in, z
                                                      z::Ptr{Float64})::Cvoid
 end
 
-export presolve_information_s
+export presolve_information
 
-function presolve_information_s(data, inform, status)
+function presolve_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.presolve_information_s(data::Ptr{Ptr{Cvoid}},
                                                   inform::Ptr{presolve_inform_type},
                                                   status::Ptr{Cint})::Cvoid
 end
 
-export presolve_information
-
-function presolve_information(data, inform, status)
+function presolve_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.presolve_information(data::Ptr{Ptr{Cvoid}},
                                                 inform::Ptr{presolve_inform_type},
                                                 status::Ptr{Cint})::Cvoid
 end
 
-export presolve_terminate_s
+export presolve_terminate
 
-function presolve_terminate_s(data, control, inform)
+function presolve_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.presolve_terminate_s(data::Ptr{Ptr{Cvoid}},
                                                 control::Ptr{presolve_control_type{Float32}},
                                                 inform::Ptr{presolve_inform_type})::Cvoid
 end
 
-export presolve_terminate
-
-function presolve_terminate(data, control, inform)
+function presolve_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.presolve_terminate(data::Ptr{Ptr{Cvoid}},
                                               control::Ptr{presolve_control_type{Float64}},
                                               inform::Ptr{presolve_inform_type})::Cvoid

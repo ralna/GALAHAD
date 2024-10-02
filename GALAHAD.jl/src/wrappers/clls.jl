@@ -112,40 +112,37 @@ struct clls_inform_type{T}
   rpd_inform::rpd_inform_type
 end
 
-export clls_initialize_s
+export clls_initialize
 
-function clls_initialize_s(data, control, status)
+function clls_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.clls_initialize_s(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{clls_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export clls_initialize
-
-function clls_initialize(data, control, status)
+function clls_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.clls_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{clls_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export clls_read_specfile_s
+export clls_read_specfile
 
-function clls_read_specfile_s(control, specfile)
+function clls_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.clls_read_specfile_s(control::Ptr{clls_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
-export clls_read_specfile
-
-function clls_read_specfile(control, specfile)
+function clls_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.clls_read_specfile(control::Ptr{clls_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
-export clls_import_s
+export clls_import
 
-function clls_import_s(control, data, status, n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col,
-                       Ao_ptr_ne, Ao_ptr, A_type, A_ne, A_row, A_col, A_ptr_ne, A_ptr)
+function clls_import(::Type{Float32}, control, data, status, n, o, m, Ao_type, Ao_ne,
+                     Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, A_type, A_ne, A_row, A_col,
+                     A_ptr_ne, A_ptr)
   @ccall libgalahad_single.clls_import_s(control::Ptr{clls_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                          o::Cint, m::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
@@ -156,10 +153,9 @@ function clls_import_s(control, data, status, n, o, m, Ao_type, Ao_ne, Ao_row, A
                                          A_ptr::Ptr{Cint})::Cvoid
 end
 
-export clls_import
-
-function clls_import(control, data, status, n, o, m, Ao_type, Ao_ne, Ao_row, Ao_col,
-                     Ao_ptr_ne, Ao_ptr, A_type, A_ne, A_row, A_col, A_ptr_ne, A_ptr)
+function clls_import(::Type{Float64}, control, data, status, n, o, m, Ao_type, Ao_ne,
+                     Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, A_type, A_ne, A_row, A_col,
+                     A_ptr_ne, A_ptr)
   @ccall libgalahad_double.clls_import(control::Ptr{clls_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                        o::Cint, m::Cint, Ao_type::Ptr{Cchar}, Ao_ne::Cint,
@@ -170,27 +166,25 @@ function clls_import(control, data, status, n, o, m, Ao_type, Ao_ne, Ao_row, Ao_
                                        A_ptr::Ptr{Cint})::Cvoid
 end
 
-export clls_reset_control_s
+export clls_reset_control
 
-function clls_reset_control_s(control, data, status)
+function clls_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.clls_reset_control_s(control::Ptr{clls_control_type{Float32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
 
-export clls_reset_control
-
-function clls_reset_control(control, data, status)
+function clls_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.clls_reset_control(control::Ptr{clls_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export clls_solve_clls_s
+export clls_solve_clls
 
-function clls_solve_clls_s(data, status, n, o, m, Ao_ne, Ao_val, b, regularization_weight,
-                           A_ne, A_val, c_l, c_u, x_l, x_u, x, r, c, y, z, x_stat, c_stat,
-                           w)
+function clls_solve_clls(::Type{Float32}, data, status, n, o, m, Ao_ne, Ao_val, b,
+                         regularization_weight, A_ne, A_val, c_l, c_u, x_l, x_u, x, r, c, y,
+                         z, x_stat, c_stat, w)
   @ccall libgalahad_single.clls_solve_clls_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, o::Cint, m::Cint, Ao_ne::Cint,
                                              Ao_val::Ptr{Float32}, b::Ptr{Float32},
@@ -204,10 +198,9 @@ function clls_solve_clls_s(data, status, n, o, m, Ao_ne, Ao_val, b, regularizati
                                              w::Ptr{Float32})::Cvoid
 end
 
-export clls_solve_clls
-
-function clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b, regularization_weight,
-                         A_ne, A_val, c_l, c_u, x_l, x_u, x, r, c, y, z, x_stat, c_stat, w)
+function clls_solve_clls(::Type{Float64}, data, status, n, o, m, Ao_ne, Ao_val, b,
+                         regularization_weight, A_ne, A_val, c_l, c_u, x_l, x_u, x, r, c, y,
+                         z, x_stat, c_stat, w)
   @ccall libgalahad_double.clls_solve_clls(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                            n::Cint, o::Cint, m::Cint, Ao_ne::Cint,
                                            Ao_val::Ptr{Float64}, b::Ptr{Float64},
@@ -221,33 +214,29 @@ function clls_solve_clls(data, status, n, o, m, Ao_ne, Ao_val, b, regularization
                                            w::Ptr{Float64})::Cvoid
 end
 
-export clls_information_s
+export clls_information
 
-function clls_information_s(data, inform, status)
+function clls_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.clls_information_s(data::Ptr{Ptr{Cvoid}},
                                               inform::Ptr{clls_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export clls_information
-
-function clls_information(data, inform, status)
+function clls_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.clls_information(data::Ptr{Ptr{Cvoid}},
                                             inform::Ptr{clls_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export clls_terminate_s
+export clls_terminate
 
-function clls_terminate_s(data, control, inform)
+function clls_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.clls_terminate_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{clls_control_type{Float32}},
                                             inform::Ptr{clls_inform_type{Float32}})::Cvoid
 end
 
-export clls_terminate
-
-function clls_terminate(data, control, inform)
+function clls_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.clls_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{clls_control_type{Float64}},
                                           inform::Ptr{clls_inform_type{Float64}})::Cvoid

@@ -56,89 +56,82 @@ struct bqp_inform_type{T}
   sbls_inform::sbls_inform_type{T}
 end
 
-export bqp_initialize_s
+export bqp_initialize
 
-function bqp_initialize_s(data, control, status)
+function bqp_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.bqp_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{bqp_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export bqp_initialize
-
-function bqp_initialize(data, control, status)
+function bqp_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.bqp_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{bqp_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export bqp_read_specfile_s
+export bqp_read_specfile
 
-function bqp_read_specfile_s(control, specfile)
+function bqp_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.bqp_read_specfile_s(control::Ptr{bqp_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export bqp_read_specfile
-
-function bqp_read_specfile(control, specfile)
+function bqp_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.bqp_read_specfile(control::Ptr{bqp_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export bqp_import_s
+export bqp_import
 
-function bqp_import_s(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+function bqp_import(::Type{Float32}, control, data, status, n, H_type, ne, H_row, H_col,
+                    H_ptr)
   @ccall libgalahad_single.bqp_import_s(control::Ptr{bqp_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
                                         H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
-export bqp_import
-
-function bqp_import(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+function bqp_import(::Type{Float64}, control, data, status, n, H_type, ne, H_row, H_col,
+                    H_ptr)
   @ccall libgalahad_double.bqp_import(control::Ptr{bqp_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       H_type::Ptr{Cchar}, ne::Cint, H_row::Ptr{Cint},
                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
-export bqp_import_without_h_s
+export bqp_import_without_h
 
-function bqp_import_without_h_s(control, data, status, n)
+function bqp_import_without_h(::Type{Float32}, control, data, status, n)
   @ccall libgalahad_single.bqp_import_without_h_s(control::Ptr{bqp_control_type{Float32}},
                                                   data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                   n::Cint)::Cvoid
 end
 
-export bqp_import_without_h
-
-function bqp_import_without_h(control, data, status, n)
+function bqp_import_without_h(::Type{Float64}, control, data, status, n)
   @ccall libgalahad_double.bqp_import_without_h(control::Ptr{bqp_control_type{Float64}},
                                                 data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 n::Cint)::Cvoid
 end
 
-export bqp_reset_control_s
+export bqp_reset_control
 
-function bqp_reset_control_s(control, data, status)
+function bqp_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.bqp_reset_control_s(control::Ptr{bqp_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export bqp_reset_control
-
-function bqp_reset_control(control, data, status)
+function bqp_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.bqp_reset_control(control::Ptr{bqp_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export bqp_solve_given_h_s
+export bqp_solve_given_h
 
-function bqp_solve_given_h_s(data, status, n, h_ne, H_val, g, f, x_l, x_u, x, z, x_stat)
+function bqp_solve_given_h(::Type{Float32}, data, status, n, h_ne, H_val, g, f, x_l, x_u, x,
+                           z, x_stat)
   @ccall libgalahad_single.bqp_solve_given_h_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                n::Cint, h_ne::Cint, H_val::Ptr{Float32},
                                                g::Ptr{Float32}, f::Float32,
@@ -147,9 +140,8 @@ function bqp_solve_given_h_s(data, status, n, h_ne, H_val, g, f, x_l, x_u, x, z,
                                                x_stat::Ptr{Cint})::Cvoid
 end
 
-export bqp_solve_given_h
-
-function bqp_solve_given_h(data, status, n, h_ne, H_val, g, f, x_l, x_u, x, z, x_stat)
+function bqp_solve_given_h(::Type{Float64}, data, status, n, h_ne, H_val, g, f, x_l, x_u, x,
+                           z, x_stat)
   @ccall libgalahad_double.bqp_solve_given_h(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                              n::Cint, h_ne::Cint, H_val::Ptr{Float64},
                                              g::Ptr{Float64}, f::Float64, x_l::Ptr{Float64},
@@ -157,10 +149,11 @@ function bqp_solve_given_h(data, status, n, h_ne, H_val, g, f, x_l, x_u, x, z, x
                                              z::Ptr{Float64}, x_stat::Ptr{Cint})::Cvoid
 end
 
-export bqp_solve_reverse_h_prod_s
+export bqp_solve_reverse_h_prod
 
-function bqp_solve_reverse_h_prod_s(data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod,
-                                    nz_v, nz_v_start, nz_v_end, nz_prod, nz_prod_end)
+function bqp_solve_reverse_h_prod(::Type{Float32}, data, status, n, g, f, x_l, x_u, x, z,
+                                  x_stat, v, prod, nz_v, nz_v_start, nz_v_end, nz_prod,
+                                  nz_prod_end)
   @ccall libgalahad_single.bqp_solve_reverse_h_prod_s(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Cint}, n::Cint,
                                                       g::Ptr{Float32}, f::Float32,
@@ -174,10 +167,9 @@ function bqp_solve_reverse_h_prod_s(data, status, n, g, f, x_l, x_u, x, z, x_sta
                                                       nz_prod_end::Cint)::Cvoid
 end
 
-export bqp_solve_reverse_h_prod
-
-function bqp_solve_reverse_h_prod(data, status, n, g, f, x_l, x_u, x, z, x_stat, v, prod,
-                                  nz_v, nz_v_start, nz_v_end, nz_prod, nz_prod_end)
+function bqp_solve_reverse_h_prod(::Type{Float64}, data, status, n, g, f, x_l, x_u, x, z,
+                                  x_stat, v, prod, nz_v, nz_v_start, nz_v_end, nz_prod,
+                                  nz_prod_end)
   @ccall libgalahad_double.bqp_solve_reverse_h_prod(data::Ptr{Ptr{Cvoid}},
                                                     status::Ptr{Cint}, n::Cint,
                                                     g::Ptr{Float64}, f::Float64,
@@ -190,33 +182,29 @@ function bqp_solve_reverse_h_prod(data, status, n, g, f, x_l, x_u, x, z, x_stat,
                                                     nz_prod_end::Cint)::Cvoid
 end
 
-export bqp_information_s
+export bqp_information
 
-function bqp_information_s(data, inform, status)
+function bqp_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.bqp_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{bqp_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export bqp_information
-
-function bqp_information(data, inform, status)
+function bqp_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.bqp_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{bqp_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export bqp_terminate_s
+export bqp_terminate
 
-function bqp_terminate_s(data, control, inform)
+function bqp_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.bqp_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{bqp_control_type{Float32}},
                                            inform::Ptr{bqp_inform_type{Float32}})::Cvoid
 end
 
-export bqp_terminate
-
-function bqp_terminate(data, control, inform)
+function bqp_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bqp_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{bqp_control_type{Float64}},
                                          inform::Ptr{bqp_inform_type{Float64}})::Cvoid

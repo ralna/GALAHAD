@@ -53,39 +53,36 @@ struct bgo_inform_type{T}
   trb_inform::trb_inform_type{T}
 end
 
-export bgo_initialize_s
+export bgo_initialize
 
-function bgo_initialize_s(data, control, status)
+function bgo_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.bgo_initialize_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{bgo_control_type{Float32}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export bgo_initialize
-
-function bgo_initialize(data, control, status)
+function bgo_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.bgo_initialize(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{bgo_control_type{Float64}},
                                           status::Ptr{Cint})::Cvoid
 end
 
-export bgo_read_specfile_s
+export bgo_read_specfile
 
-function bgo_read_specfile_s(control, specfile)
+function bgo_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.bgo_read_specfile_s(control::Ptr{bgo_control_type{Float32}},
                                                specfile::Ptr{Cchar})::Cvoid
 end
 
-export bgo_read_specfile
-
-function bgo_read_specfile(control, specfile)
+function bgo_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.bgo_read_specfile(control::Ptr{bgo_control_type{Float64}},
                                              specfile::Ptr{Cchar})::Cvoid
 end
 
-export bgo_import_s
+export bgo_import
 
-function bgo_import_s(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr)
+function bgo_import(::Type{Float32}, control, data, status, n, x_l, x_u, H_type, ne, H_row,
+                    H_col, H_ptr)
   @ccall libgalahad_single.bgo_import_s(control::Ptr{bgo_control_type{Float32}},
                                         data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                         x_l::Ptr{Float32}, x_u::Ptr{Float32},
@@ -93,9 +90,8 @@ function bgo_import_s(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_c
                                         H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
-export bgo_import
-
-function bgo_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr)
+function bgo_import(::Type{Float64}, control, data, status, n, x_l, x_u, H_type, ne, H_row,
+                    H_col, H_ptr)
   @ccall libgalahad_double.bgo_import(control::Ptr{bgo_control_type{Float64}},
                                       data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, n::Cint,
                                       x_l::Ptr{Float64}, x_u::Ptr{Float64},
@@ -103,26 +99,24 @@ function bgo_import(control, data, status, n, x_l, x_u, H_type, ne, H_row, H_col
                                       H_col::Ptr{Cint}, H_ptr::Ptr{Cint})::Cvoid
 end
 
-export bgo_reset_control_s
+export bgo_reset_control
 
-function bgo_reset_control_s(control, data, status)
+function bgo_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.bgo_reset_control_s(control::Ptr{bgo_control_type{Float32}},
                                                data::Ptr{Ptr{Cvoid}},
                                                status::Ptr{Cint})::Cvoid
 end
 
-export bgo_reset_control
-
-function bgo_reset_control(control, data, status)
+function bgo_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.bgo_reset_control(control::Ptr{bgo_control_type{Float64}},
                                              data::Ptr{Ptr{Cvoid}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export bgo_solve_with_mat_s
+export bgo_solve_with_mat
 
-function bgo_solve_with_mat_s(data, userdata, status, n, x, g, ne, eval_f, eval_g, eval_h,
-                              eval_hprod, eval_prec)
+function bgo_solve_with_mat(::Type{Float32}, data, userdata, status, n, x, g, ne, eval_f,
+                            eval_g, eval_h, eval_hprod, eval_prec)
   @ccall libgalahad_single.bgo_solve_with_mat_s(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                                 status::Ptr{Cint}, n::Cint, x::Ptr{Float32},
                                                 g::Ptr{Float32}, ne::Cint,
@@ -131,10 +125,8 @@ function bgo_solve_with_mat_s(data, userdata, status, n, x, g, ne, eval_f, eval_
                                                 eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export bgo_solve_with_mat
-
-function bgo_solve_with_mat(data, userdata, status, n, x, g, ne, eval_f, eval_g, eval_h,
-                            eval_hprod, eval_prec)
+function bgo_solve_with_mat(::Type{Float64}, data, userdata, status, n, x, g, ne, eval_f,
+                            eval_g, eval_h, eval_hprod, eval_prec)
   @ccall libgalahad_double.bgo_solve_with_mat(data::Ptr{Ptr{Cvoid}}, userdata::Ptr{Cvoid},
                                               status::Ptr{Cint}, n::Cint, x::Ptr{Float64},
                                               g::Ptr{Float64}, ne::Cint, eval_f::Ptr{Cvoid},
@@ -143,10 +135,10 @@ function bgo_solve_with_mat(data, userdata, status, n, x, g, ne, eval_f, eval_g,
                                               eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export bgo_solve_without_mat_s
+export bgo_solve_without_mat
 
-function bgo_solve_without_mat_s(data, userdata, status, n, x, g, eval_f, eval_g,
-                                 eval_hprod, eval_shprod, eval_prec)
+function bgo_solve_without_mat(::Type{Float32}, data, userdata, status, n, x, g, eval_f,
+                               eval_g, eval_hprod, eval_shprod, eval_prec)
   @ccall libgalahad_single.bgo_solve_without_mat_s(data::Ptr{Ptr{Cvoid}},
                                                    userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                    n::Cint, x::Ptr{Float32},
@@ -157,10 +149,8 @@ function bgo_solve_without_mat_s(data, userdata, status, n, x, g, eval_f, eval_g
                                                    eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export bgo_solve_without_mat
-
-function bgo_solve_without_mat(data, userdata, status, n, x, g, eval_f, eval_g, eval_hprod,
-                               eval_shprod, eval_prec)
+function bgo_solve_without_mat(::Type{Float64}, data, userdata, status, n, x, g, eval_f,
+                               eval_g, eval_hprod, eval_shprod, eval_prec)
   @ccall libgalahad_double.bgo_solve_without_mat(data::Ptr{Ptr{Cvoid}},
                                                  userdata::Ptr{Cvoid}, status::Ptr{Cint},
                                                  n::Cint, x::Ptr{Float64}, g::Ptr{Float64},
@@ -170,10 +160,10 @@ function bgo_solve_without_mat(data, userdata, status, n, x, g, eval_f, eval_g, 
                                                  eval_prec::Ptr{Cvoid})::Cvoid
 end
 
-export bgo_solve_reverse_with_mat_s
+export bgo_solve_reverse_with_mat
 
-function bgo_solve_reverse_with_mat_s(data, status, eval_status, n, x, f, g, ne, H_val, u,
-                                      v)
+function bgo_solve_reverse_with_mat(::Type{Float32}, data, status, eval_status, n, x, f, g,
+                                    ne, H_val, u, v)
   @ccall libgalahad_single.bgo_solve_reverse_with_mat_s(data::Ptr{Ptr{Cvoid}},
                                                         status::Ptr{Cint},
                                                         eval_status::Ptr{Cint}, n::Cint,
@@ -184,9 +174,8 @@ function bgo_solve_reverse_with_mat_s(data, status, eval_status, n, x, f, g, ne,
                                                         v::Ptr{Float32})::Cvoid
 end
 
-export bgo_solve_reverse_with_mat
-
-function bgo_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H_val, u, v)
+function bgo_solve_reverse_with_mat(::Type{Float64}, data, status, eval_status, n, x, f, g,
+                                    ne, H_val, u, v)
   @ccall libgalahad_double.bgo_solve_reverse_with_mat(data::Ptr{Ptr{Cvoid}},
                                                       status::Ptr{Cint},
                                                       eval_status::Ptr{Cint}, n::Cint,
@@ -196,10 +185,10 @@ function bgo_solve_reverse_with_mat(data, status, eval_status, n, x, f, g, ne, H
                                                       v::Ptr{Float64})::Cvoid
 end
 
-export bgo_solve_reverse_without_mat_s
+export bgo_solve_reverse_without_mat
 
-function bgo_solve_reverse_without_mat_s(data, status, eval_status, n, x, f, g, u, v,
-                                         index_nz_v, nnz_v, index_nz_u, nnz_u)
+function bgo_solve_reverse_without_mat(::Type{Float32}, data, status, eval_status, n, x, f,
+                                       g, u, v, index_nz_v, nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_single.bgo_solve_reverse_without_mat_s(data::Ptr{Ptr{Cvoid}},
                                                            status::Ptr{Cint},
                                                            eval_status::Ptr{Cint}, n::Cint,
@@ -212,10 +201,8 @@ function bgo_solve_reverse_without_mat_s(data, status, eval_status, n, x, f, g, 
                                                            nnz_u::Cint)::Cvoid
 end
 
-export bgo_solve_reverse_without_mat
-
-function bgo_solve_reverse_without_mat(data, status, eval_status, n, x, f, g, u, v,
-                                       index_nz_v, nnz_v, index_nz_u, nnz_u)
+function bgo_solve_reverse_without_mat(::Type{Float64}, data, status, eval_status, n, x, f,
+                                       g, u, v, index_nz_v, nnz_v, index_nz_u, nnz_u)
   @ccall libgalahad_double.bgo_solve_reverse_without_mat(data::Ptr{Ptr{Cvoid}},
                                                          status::Ptr{Cint},
                                                          eval_status::Ptr{Cint}, n::Cint,
@@ -228,33 +215,29 @@ function bgo_solve_reverse_without_mat(data, status, eval_status, n, x, f, g, u,
                                                          nnz_u::Cint)::Cvoid
 end
 
-export bgo_information_s
+export bgo_information
 
-function bgo_information_s(data, inform, status)
+function bgo_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.bgo_information_s(data::Ptr{Ptr{Cvoid}},
                                              inform::Ptr{bgo_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export bgo_information
-
-function bgo_information(data, inform, status)
+function bgo_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.bgo_information(data::Ptr{Ptr{Cvoid}},
                                            inform::Ptr{bgo_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export bgo_terminate_s
+export bgo_terminate
 
-function bgo_terminate_s(data, control, inform)
+function bgo_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.bgo_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{bgo_control_type{Float32}},
                                            inform::Ptr{bgo_inform_type{Float32}})::Cvoid
 end
 
-export bgo_terminate
-
-function bgo_terminate(data, control, inform)
+function bgo_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.bgo_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{bgo_control_type{Float64}},
                                          inform::Ptr{bgo_inform_type{Float64}})::Cvoid

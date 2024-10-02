@@ -4,19 +4,20 @@
 using GALAHAD
 using Test
 
-function test_roots()
+function test_roots(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{roots_control_type{Float64}}()
+  control = Ref{roots_control_type{T}}()
   inform = Ref{roots_inform_type}()
 
   status = Ref{Cint}()
-  roots_initialize(data, control, status)
-  roots_information(data, inform, status)
-  roots_terminate(data, control, inform)
+  roots_initialize(T, data, control, status)
+  roots_information(T, data, inform, status)
+  roots_terminate(T, data, control, inform)
 
   return 0
 end
 
 @testset "ROOTS" begin
-  @test test_roots() == 0
+  @test test_roots(Float32) == 0
+  @test test_roots(Float64) == 0
 end

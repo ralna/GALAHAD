@@ -64,39 +64,36 @@ struct llsr_inform_type{T}
   ir_inform::ir_inform_type{T}
 end
 
-export llsr_initialize_s
+export llsr_initialize
 
-function llsr_initialize_s(data, control, status)
+function llsr_initialize(::Type{Float32}, data, control, status)
   @ccall libgalahad_single.llsr_initialize_s(data::Ptr{Ptr{Cvoid}},
                                              control::Ptr{llsr_control_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
-export llsr_initialize
-
-function llsr_initialize(data, control, status)
+function llsr_initialize(::Type{Float64}, data, control, status)
   @ccall libgalahad_double.llsr_initialize(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{llsr_control_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
-export llsr_read_specfile_s
+export llsr_read_specfile
 
-function llsr_read_specfile_s(control, specfile)
+function llsr_read_specfile(::Type{Float32}, control, specfile)
   @ccall libgalahad_single.llsr_read_specfile_s(control::Ptr{llsr_control_type{Float32}},
                                                 specfile::Ptr{Cchar})::Cvoid
 end
 
-export llsr_read_specfile
-
-function llsr_read_specfile(control, specfile)
+function llsr_read_specfile(::Type{Float64}, control, specfile)
   @ccall libgalahad_double.llsr_read_specfile(control::Ptr{llsr_control_type{Float64}},
                                               specfile::Ptr{Cchar})::Cvoid
 end
 
-export llsr_import_s
+export llsr_import
 
-function llsr_import_s(control, data, status, m, n, A_type, A_ne, A_row, A_col, A_ptr)
+function llsr_import(::Type{Float32}, control, data, status, m, n, A_type, A_ne, A_row,
+                     A_col, A_ptr)
   @ccall libgalahad_single.llsr_import_s(control::Ptr{llsr_control_type{Float32}},
                                          data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, m::Cint,
                                          n::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -104,9 +101,8 @@ function llsr_import_s(control, data, status, m, n, A_type, A_ne, A_row, A_col, 
                                          A_ptr::Ptr{Cint})::Cvoid
 end
 
-export llsr_import
-
-function llsr_import(control, data, status, m, n, A_type, A_ne, A_row, A_col, A_ptr)
+function llsr_import(::Type{Float64}, control, data, status, m, n, A_type, A_ne, A_row,
+                     A_col, A_ptr)
   @ccall libgalahad_double.llsr_import(control::Ptr{llsr_control_type{Float64}},
                                        data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint}, m::Cint,
                                        n::Cint, A_type::Ptr{Cchar}, A_ne::Cint,
@@ -114,9 +110,10 @@ function llsr_import(control, data, status, m, n, A_type, A_ne, A_row, A_col, A_
                                        A_ptr::Ptr{Cint})::Cvoid
 end
 
-export llsr_import_scaling_s
+export llsr_import_scaling
 
-function llsr_import_scaling_s(control, data, status, n, S_type, S_ne, S_row, S_col, S_ptr)
+function llsr_import_scaling(::Type{Float32}, control, data, status, n, S_type, S_ne, S_row,
+                             S_col, S_ptr)
   @ccall libgalahad_single.llsr_import_scaling_s(control::Ptr{llsr_control_type{Float32}},
                                                  data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                  n::Cint, S_type::Ptr{Cchar}, S_ne::Cint,
@@ -124,9 +121,8 @@ function llsr_import_scaling_s(control, data, status, n, S_type, S_ne, S_row, S_
                                                  S_ptr::Ptr{Cint})::Cvoid
 end
 
-export llsr_import_scaling
-
-function llsr_import_scaling(control, data, status, n, S_type, S_ne, S_row, S_col, S_ptr)
+function llsr_import_scaling(::Type{Float64}, control, data, status, n, S_type, S_ne, S_row,
+                             S_col, S_ptr)
   @ccall libgalahad_double.llsr_import_scaling(control::Ptr{llsr_control_type{Float64}},
                                                data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                n::Cint, S_type::Ptr{Cchar}, S_ne::Cint,
@@ -134,26 +130,24 @@ function llsr_import_scaling(control, data, status, n, S_type, S_ne, S_row, S_co
                                                S_ptr::Ptr{Cint})::Cvoid
 end
 
-export llsr_reset_control_s
+export llsr_reset_control
 
-function llsr_reset_control_s(control, data, status)
+function llsr_reset_control(::Type{Float32}, control, data, status)
   @ccall libgalahad_single.llsr_reset_control_s(control::Ptr{llsr_control_type{Float32}},
                                                 data::Ptr{Ptr{Cvoid}},
                                                 status::Ptr{Cint})::Cvoid
 end
 
-export llsr_reset_control
-
-function llsr_reset_control(control, data, status)
+function llsr_reset_control(::Type{Float64}, control, data, status)
   @ccall libgalahad_double.llsr_reset_control(control::Ptr{llsr_control_type{Float64}},
                                               data::Ptr{Ptr{Cvoid}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export llsr_solve_problem_s
+export llsr_solve_problem
 
-function llsr_solve_problem_s(data, status, m, n, power, weight, A_ne, A_val, b, x, S_ne,
-                              S_val)
+function llsr_solve_problem(::Type{Float32}, data, status, m, n, power, weight, A_ne, A_val,
+                            b, x, S_ne, S_val)
   @ccall libgalahad_single.llsr_solve_problem_s(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                                 m::Cint, n::Cint, power::Float32,
                                                 weight::Float32, A_ne::Cint,
@@ -162,10 +156,8 @@ function llsr_solve_problem_s(data, status, m, n, power, weight, A_ne, A_val, b,
                                                 S_val::Ptr{Float32})::Cvoid
 end
 
-export llsr_solve_problem
-
-function llsr_solve_problem(data, status, m, n, power, weight, A_ne, A_val, b, x, S_ne,
-                            S_val)
+function llsr_solve_problem(::Type{Float64}, data, status, m, n, power, weight, A_ne, A_val,
+                            b, x, S_ne, S_val)
   @ccall libgalahad_double.llsr_solve_problem(data::Ptr{Ptr{Cvoid}}, status::Ptr{Cint},
                                               m::Cint, n::Cint, power::Float64,
                                               weight::Float64, A_ne::Cint,
@@ -174,33 +166,29 @@ function llsr_solve_problem(data, status, m, n, power, weight, A_ne, A_val, b, x
                                               S_val::Ptr{Float64})::Cvoid
 end
 
-export llsr_information_s
+export llsr_information
 
-function llsr_information_s(data, inform, status)
+function llsr_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.llsr_information_s(data::Ptr{Ptr{Cvoid}},
                                               inform::Ptr{llsr_inform_type{Float32}},
                                               status::Ptr{Cint})::Cvoid
 end
 
-export llsr_information
-
-function llsr_information(data, inform, status)
+function llsr_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.llsr_information(data::Ptr{Ptr{Cvoid}},
                                             inform::Ptr{llsr_inform_type{Float64}},
                                             status::Ptr{Cint})::Cvoid
 end
 
-export llsr_terminate_s
+export llsr_terminate
 
-function llsr_terminate_s(data, control, inform)
+function llsr_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.llsr_terminate_s(data::Ptr{Ptr{Cvoid}},
                                             control::Ptr{llsr_control_type{Float32}},
                                             inform::Ptr{llsr_inform_type{Float32}})::Cvoid
 end
 
-export llsr_terminate
-
-function llsr_terminate(data, control, inform)
+function llsr_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.llsr_terminate(data::Ptr{Ptr{Cvoid}},
                                           control::Ptr{llsr_control_type{Float64}},
                                           inform::Ptr{llsr_inform_type{Float64}})::Cvoid

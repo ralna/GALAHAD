@@ -4,19 +4,20 @@
 using GALAHAD
 using Test
 
-function test_convert()
+function test_convert(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{convert_control_type}()
-  inform = Ref{convert_inform_type{Float64}}()
+  inform = Ref{convert_inform_type{T}}()
 
   status = Ref{Cint}()
-  convert_initialize(data, control, status)
-  convert_information(data, inform, status)
-  convert_terminate(data, control, inform)
+  convert_initialize(T, data, control, status)
+  convert_information(T, data, inform, status)
+  convert_terminate(T, data, control, inform)
 
   return 0
 end
 
 @testset "CONVERT" begin
-  @test test_convert() == 0
+  @test test_convert(Float32) == 0
+  @test test_convert(Float64) == 0
 end

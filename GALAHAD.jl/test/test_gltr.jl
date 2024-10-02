@@ -6,24 +6,24 @@ using Test
 using Printf
 using Accessors
 
-function test_gltr()
+function test_gltr(::Type{T}) where T
   # Derived types
   data = Ref{Ptr{Cvoid}}()
-  control = Ref{gltr_control_type{Float64}}()
-  inform = Ref{gltr_inform_type{Float64}}()
+  control = Ref{gltr_control_type{T}}()
+  inform = Ref{gltr_inform_type{T}}()
 
   # Set problem data
   n = 100 # dimension
 
   status = Ref{Cint}()
-  radius = Ref{Float64}()
-  x = zeros(Float64, n)
-  r = zeros(Float64, n)
-  vector = zeros(Float64, n)
-  h_vector = zeros(Float64, n)
+  radius = Ref{T}()
+  x = zeros(T, n)
+  r = zeros(T, n)
+  vector = zeros(T, n)
+  h_vector = zeros(T, n)
 
   # Initialize gltr
-  gltr_initialize(data, control, status)
+  gltr_initialize(T, data, control, status)
 
   # use a unit M ?
   for unit_m in 0:1
@@ -33,7 +33,7 @@ function test_gltr()
       @reset control[].unitm = true
     end
 
-    gltr_import_control(control, data, status)
+    gltr_import_control(T, control, data, status)
 
     # resolve with a smaller radius ?
     for new_radius in 0:1
@@ -52,7 +52,7 @@ function test_gltr()
       # iteration loop to find the minimizer
       terminated = false
       while !terminated # reverse-communication loop
-        gltr_solve_problem(data, status, n, radius[], x, r, vector)
+        gltr_solve_problem(T, data, status, n, radius[], x, r, vector)
         if status[] == 0 # successful termination
           terminated = true
         elseif status[] < 0 # error exit
@@ -79,18 +79,19 @@ function test_gltr()
         end
       end
 
-      gltr_information(data, inform, status)
+      gltr_information(T, data, inform, status)
       @printf("MR = %1i%1i gltr_solve_problem exit status = %i, f = %.2f\n", unit_m,
               new_radius, inform[].status, inform[].obj)
     end
   end
 
   # Delete internal workspace
-  gltr_terminate(data, control, inform)
+  gltr_terminate(T, data, control, inform)
 
   return 0
 end
 
 @testset "GLTR" begin
-  @test test_gltr() == 0
+  @test test_gltr(Float32) == 0
+  @test test_gltr(Float64) == 0
 end

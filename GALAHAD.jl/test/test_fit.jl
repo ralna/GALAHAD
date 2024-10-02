@@ -4,19 +4,20 @@
 using GALAHAD
 using Test
 
-function test_fit()
+function test_fit(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{fit_control_type}()
   inform = Ref{fit_inform_type}()
 
   status = Ref{Cint}()
-  fit_initialize(data, control, status)
-  fit_information(data, inform, status)
-  fit_terminate(data, control, inform)
+  fit_initialize(T, data, control, status)
+  fit_information(T, data, inform, status)
+  fit_terminate(T, data, control, inform)
 
   return 0
 end
 
 @testset "FIT" begin
-  @test test_fit() == 0
+  @test test_fit(Float32) == 0
+  @test test_fit(Float64) == 0
 end
