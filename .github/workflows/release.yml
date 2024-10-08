@@ -14,7 +14,7 @@ jobs:
       - name: Install Julia
         uses: julia-actions/setup-julia@v2
         with:
-          version: 1
+          version: "1.7"
           arch: x64
       - name: Set the environment variables BINARYBUILDER_AUTOMATIC_APPLE, GALAHAD_RELEASE, GALAHAD_COMMIT
         shell: bash
