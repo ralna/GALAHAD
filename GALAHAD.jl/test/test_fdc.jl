@@ -43,7 +43,7 @@ function test_fdc()
       @printf("FDC_find_dependent - no dependent rows, status = %i\n", status[])
     else
       @printf("FDC_find_dependent - dependent rows(s):")
-      for i in 1:n_depen
+      for i in 1:n_depen[]
         @printf(" %i", depen[i])
       end
       @printf(", status = %i\n", status[])
