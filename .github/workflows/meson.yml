@@ -82,7 +82,7 @@ jobs:
         os: ['ubuntu-latest']
         arch: ['x64']
         compiler: ['intel-classic']
-        version: ['2021.10']
+        version: ['2021.12']
         int: ['32', '64']
     steps:
       - name: Checkout repository
