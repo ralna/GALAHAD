@@ -84,7 +84,6 @@ runs:
         fi
 
     - name: Set environment variables for OpenMP
-      if: inputs.os != 'windows-latest'
       shell: bash
       run: |
         echo "OMP_CANCELLATION=TRUE" >> $GITHUB_ENV
