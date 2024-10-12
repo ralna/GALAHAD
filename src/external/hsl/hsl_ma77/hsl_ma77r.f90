@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 15:00 GMT.
 
 #include "hsl_subset.h"
 
@@ -18,6 +18,8 @@ module hsl_ma77_real
   implicit none
 
   private :: ip_, long_, lp_, rp_
+  LOGICAL, PUBLIC, PARAMETER :: ma77_available = .FALSE.
+
   real (rp_), parameter, private :: one = 1.0_rp_
   real (rp_), parameter, private :: zero = 0.0_rp_
   integer(ip_), parameter, private :: nemin_default = 8

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 14:50 GMT.
 
 #include "hsl_subset.h"
 
@@ -15,6 +15,7 @@ module hsl_ma57_real
 #endif
    implicit none
    private :: ip_, rp_
+   LOGICAL, PUBLIC, PARAMETER :: ma57_available = .FALSE.
 
    type ma57_factors
      private

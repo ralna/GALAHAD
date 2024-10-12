@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:15 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 14:50 GMT.
 
 #include "hsl_subset.h"
 
@@ -18,6 +18,7 @@
 
      implicit none
      private :: ip_, lp_, rp_
+     LOGICAL, PUBLIC, PARAMETER :: mi20_available = .FALSE.
 
      type mi20_control
        integer(ip_) :: aggressive = 1

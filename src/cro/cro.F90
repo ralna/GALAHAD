@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -1821,8 +1821,11 @@
 
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL SLS_initialize_solver( data%control%symmetric_linear_solver,      &
-                                    data%SLS_data, inform%SLS_inform,          &
-                                    check = .TRUE. )
+                                    data%SLS_data,                             &
+                                    data%control%SLS_control%error,            &
+                                    inform%SLS_inform, check = .TRUE. )
+        IF ( inform%SLS_inform%status < 0 ) THEN
+          inform%status = inform%SLS_inform%status ; GO TO 900 ; END IF
         CALL SLS_analyse( data%K_r, data%SLS_data, data%control%SLS_control,   &
                           inform%SLS_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
@@ -1840,8 +1843,7 @@
                prefix, inform%SLS_inform%out_of_range,                         &
                STRING_ies( inform%SLS_inform%out_of_range )
         IF ( inform%SLS_inform%status < 0 ) THEN
-           inform%status = GALAHAD_error_analysis ; GO TO 900
-        END IF
+           inform%status = GALAHAD_error_analysis ; GO TO 900 ; END IF
 
 !  factorize the basic sub-block K_r
 

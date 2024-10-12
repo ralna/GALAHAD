@@ -1,8 +1,9 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 15:00 GMT.
 
 #include "hsl_subset.h"
 
     MODULE hsl_ma54_real
+      LOGICAL, PUBLIC, PARAMETER :: ma54_available = .FALSE.
     CONTAINS
       SUBROUTINE ma54r( )
       END SUBROUTINE ma54r

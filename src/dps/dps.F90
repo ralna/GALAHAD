@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-19 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -1099,12 +1099,14 @@
 
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
         CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
-                                    data%SLS_data, inform%SLS_inform,          &
-                                    check = .TRUE. )
-        data%SLS_control = control%SLS_control
+                                    data%SLS_data, data%SLS_control%error,     &
+                                    inform%SLS_inform, check = .TRUE. )
+        IF ( inform%SLS_inform%status < 0 ) THEN
+          inform%status = inform%SLS_inform%status ; GO TO 910 ; END IF
 
 !  perform the analysis
 
+        data%SLS_control = control%SLS_control
         CALL SLS_analyse( H, data%SLS_data, data%SLS_control,                  &
                           inform%SLS_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )

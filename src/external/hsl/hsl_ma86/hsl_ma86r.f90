@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 14:30 GMT.
 
 #include "hsl_subset.h"
 
@@ -17,8 +17,12 @@ module hsl_ma86_real
 #endif
 
    implicit none
-   private :: ip_, long_, lp_, rp_
+   public :: ma86_keep, ma86_control, ma86_info
+   public :: ma86_analyse, ma86_factor, ma86_factor_solve, ma86_solve, &
+             ma86_finalise
    public :: ma86_get_n__
+   LOGICAL, PUBLIC, PARAMETER :: ma86_available = .FALSE.
+   private :: ip_, long_, lp_, rp_
 
    ! Numerical constants
    real(rp_), parameter, private :: one  = 1.0_rp_

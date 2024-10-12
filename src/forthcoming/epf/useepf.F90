@@ -110,6 +110,8 @@
      INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv = 'EPF   '
 
+     write(6, * ) ' EPF_available = ', EPF_available
+
 !  ------------------ Open the specfile for EPF ----------------
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
@@ -269,7 +271,7 @@
         END IF
         DO i = ir, ic
           WRITE( errout, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ), nlp%X_l( i ),  &
-            nlp%X_u( i ), nlp%G( i )
+            nlp%X_u( i ), nlp%Z( i )
         END DO
       END DO
 

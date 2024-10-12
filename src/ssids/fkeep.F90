@@ -447,7 +447,7 @@ subroutine free_fkeep(fkeep, flag)
    integer(ip_) :: i
    integer(ip_) :: st
 
-   flag = 0 ! Not used for basic SSIDS, just zet to zero
+   flag = 0 ! Not used for basic SSIDS, just set to zero
 
    deallocate(fkeep%scaling, stat=st)
    if(allocated(fkeep%subtree)) then

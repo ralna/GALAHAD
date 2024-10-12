@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-01-24 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -718,8 +718,10 @@
 
       data%control = control
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
-                                  data%SLS_data, inform%SLS_inform,            &
-                                  check = .TRUE. )
+                                  data%SLS_data, control%error,                &
+                                  inform%SLS_inform, check = .TRUE. )
+      IF ( inform%SLS_inform%status < 0 ) THEN
+        inform%status = inform%SLS_inform%status ; RETURN ; END IF
       data%control%SLS_control%relative_pivot_tolerance = control%pivot_tol
 !     write(6,*) ' solver ', inform%SLS_inform%solver
 

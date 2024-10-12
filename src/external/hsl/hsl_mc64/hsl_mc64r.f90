@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 15:00 GMT.
 
 #include "hsl_subset.h"
 
@@ -18,6 +18,7 @@ MODULE hsl_mc64_real
 
    private
    public :: mc64_control, mc64_info, mc64_initialize, mc64_matching
+   LOGICAL, PUBLIC, PARAMETER :: mc64_available = .FALSE.
 
    TYPE mc64_control
 !     real(rp_) :: relax = 0.0_rp_   ! Relaxes matching

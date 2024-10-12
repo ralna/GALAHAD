@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-11 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -2955,11 +2955,15 @@
 !  record the required linear solver, and ammend if necessary
 
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
-                                  SLS_data, inform%SLS_inform, check = .TRUE. )
+                                  SLS_data, SLS_control%error,                 &
+                                  inform%SLS_inform, check = .TRUE. )
+      IF ( inform%SLS_inform%status < 0 ) THEN
+        inform%status = inform%SLS_inform%status ; GO TO 600 ; END IF
       IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
         inform%status = GALAHAD_error_unknown_solver ; GO TO 600
       ELSE
         CALL SLS_initialize_solver( inform%SLS_inform%solver, SLS_pounce_data, &
+                                    SLS_control%error,                         &
                                     inform%SLS_pounce_inform )
       END IF
 

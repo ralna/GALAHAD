@@ -18,7 +18,7 @@ PACKAGE = EPF
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+DEPENDENCIES = make_ssls_deps make_ssls make_roots make_norms \
                make_lmt make_qpt make_lms make_rand \
                make_gltr make_tools make_scu make_mi28 \
                make_mop make_ir make_trs make_rqs \

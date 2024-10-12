@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-29 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 
@@ -4236,19 +4236,19 @@
             END IF
 !           efactors%K_control%pivot_control = 1
 !write(6,*) efactors%K_control%pivot_control
-!           CALL SLS_initialize_solver( control%symmetric_linear_solver,       &
+!           CALL SLS_initialize_solxover( control%symmetric_linear_solver,     &
             CALL SLS_initialize_solver( control%definite_linear_solver,        &
-                                        efactors%K_data, inform%SLS_inform,    &
-                                        check = .TRUE. )
+                                        efactors%K_data,                       &
+                                        efactors%K_control%error,              &
+                                        inform%SLS_inform, check = .TRUE. )
           ELSE
             CALL SLS_initialize_solver( control%symmetric_linear_solver,       &
-                                        efactors%K_data, inform%SLS_inform,    &
-                                        check = .TRUE. )
+                                        efactors%K_data,                       &
+                                        efactors%K_control%error,              &
+                                        inform%SLS_inform, check = .TRUE. )
           END IF
-          IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
-            inform%status = GALAHAD_error_unknown_solver
-            GO TO 900
-          END IF
+          IF ( inform%SLS_inform%status < 0 ) THEN
+            inform%status = inform%SLS_inform%status ; GO TO 900 ; END IF
 !         efactors%K_control = control%SLS_control
           CALL SLS_analyse( efactors%K, efactors%K_data,                       &
                             efactors%K_control, inform%SLS_inform )
@@ -4270,8 +4270,7 @@
                prefix, efactors%K%n, efactors%K%ne,                            &
                inform%SLS_inform%entries_in_factors
           IF ( inform%SLS_inform%entries_in_factors < 0 ) THEN
-            inform%status = GALAHAD_error_analysis
-            GO TO 900
+            inform%status = GALAHAD_error_analysis ; GO TO 900
           END IF
         ELSE
           IF ( printi ) WRITE( out,                                            &
@@ -4967,12 +4966,11 @@
           ifactors%B22_control%pivot_control = 4
         CALL SMT_put( ifactors%B22%type, 'COORDINATE', i )
         CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
-                                    ifactors%B22_data, inform%SLS_inform,      &
-                                    check = .TRUE. )
-        IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
-          inform%status = GALAHAD_error_unknown_solver
-          GO TO 900
-        END IF
+                                    ifactors%B22_data,                         &
+                                    ifactors%B22_control%error,                &
+                                    inform%SLS_inform, check = .TRUE. )
+        IF ( inform%SLS_inform%status < 0 ) THEN
+          inform%status = inform%SLS_inform%status ; GO TO 900 ; END IF
         ifactors%B22_control = control%SLS_control
         CALL SLS_analyse( ifactors%B22, ifactors%B22_data,                     &
                           ifactors%B22_control, inform%SLS_inform )

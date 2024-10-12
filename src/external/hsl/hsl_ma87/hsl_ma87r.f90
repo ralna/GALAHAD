@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 10:30 GMT.
 
 #include "hsl_subset.h"
 
@@ -16,9 +16,14 @@ module hsl_ma87_real
 #endif
 
    implicit none
-   private :: ip_, long_, lp_, rp_
-   public :: ma87_get_n__
 
+   public :: ma87_keep, ma87_control, ma87_info
+   public :: ma87_analyse, ma87_factor, ma87_factor_solve, ma87_solve,         &
+             ma87_sparse_fwd_solve, ma87_finalise
+   public :: ma87_get_n__
+   LOGICAL, PUBLIC, PARAMETER :: ma87_available = .FALSE.
+   private :: ip_, long_, lp_, rp_
+ 
    ! Parameters (all private)
    ! Data kinds
    integer(ip_),  parameter, private :: wp   = kind(0d0)
@@ -391,7 +396,7 @@ subroutine MA87_factor_solve_one_real(n, ptr, row, val, order, keep, control,&
   &     ' chosen are not all freely available with GALAHAD.', /,               &
   &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
   &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA87_solve_one with its HSL namesake ', /,               &
+  &     ' subroutine MA87_solve_one with its HSL namesake ', /,                &
   &     ' and dependencies. See ', /,                                          &
   &     '   $GALAHAD/src/makedefs/packages for details.' )" )
 
@@ -511,7 +516,7 @@ subroutine MA87_solve_mult_real(nrhs,lx,x,order,keep, control,info,job)
    info%stat = 0
 end subroutine MA87_solve_mult_real
 
-subroutine MA87_sparse_fwd_solve_real(nbi,bindex,b,order,invp,               &
+subroutine MA87_sparse_fwd_solve_real(nbi,bindex,b,order,invp,                 &
                                         nxi,index,x,w,keep,control,info)
    integer(ip_),  intent(in) :: nbi ! # nonzero entries in the right-hand side
    integer(ip_),  intent(in) :: bindex(:) ! First nbi entries must hold

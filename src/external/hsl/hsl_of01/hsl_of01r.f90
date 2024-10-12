@@ -1,10 +1,11 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 14:30 GMT.
 
 #include "hsl_subset.h"
 
     MODULE hsl_of01_real
       use hsl_kinds, only: ip_, long_, lp_
       private :: ip_, long_, lp_
+      LOGICAL, PUBLIC, PARAMETER :: of01_available = .FALSE.
       integer(ip_), parameter  :: maxpath = 400
       integer(ip_), parameter  :: maxname = 400
       type of01_data_private

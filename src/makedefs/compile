@@ -11,10 +11,10 @@ $(LG)($(package)_$(PRECIS).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
 	$(CP) ../$(package)/$(package).F90 $(OBJ)/$(package).F90
 	cd $(OBJ); $(FORTRAN) -o $(package)_$(PRECIS).o \
-                     $(FFLAGSS) $(package).F90 \
+                     $(FFLAGSOMP) $(package).F90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package)_$(PRECIS).o \
-                     $(FFLAGSN) $(package).F90 )
+                     $(FFLAGSOMPN) $(package).F90 )
 	cd $(OBJ); $(ARR) $(package)_$(PRECIS).o ; \
            $(RM) $(package).F90 $(package)_$(PRECIS).o
 	$(RMARFILES) $(DEPENDS)

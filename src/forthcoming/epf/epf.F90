@@ -69,8 +69,15 @@
      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
 
+     INTEGER ( KIND = ip_ ), PARAMETER :: iter_advanced_max = 5
      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+
+!--------------------------------------
+!   G l o b a l   P a r a m e t e r s
+!--------------------------------------
+
+     LOGICAL, PUBLIC, PARAMETER :: EPF_available = .TRUE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -357,14 +364,15 @@
      TYPE, PUBLIC :: EPF_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
        INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
-       INTEGER ( KIND = ip_ ) :: print_level, print_gap, jumpto
-       INTEGER ( KIND = ip_ ) :: h_ne, jtdzj_ne
-       INTEGER ( KIND = ip_ ) :: n_c_l, n_c_u, n_x_l, n_c_u, n_c
+       INTEGER ( KIND = ip_ ) :: print_level, print_gap, jumpto, iter_advanced
+       INTEGER ( KIND = ip_ ) :: h_ne, j_ne, jtdzj_ne, np1, npm
+       INTEGER ( KIND = ip_ ) :: n_c_l, n_c_u, n_x_l, n_x_u, n_c
+       INTEGER ( KIND = ip_ ) :: n_j_l, n_j_u, n_i_l, n_i_u, n_b
 
        REAL :: time_start, time_record, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
-       REAL ( KIND = rp_ ) :: mu, max_mu, stop_p, stop_d, stop_c
-       REAL ( KIND = rp_ ) :: old_primal_infeasibility
+       REAL ( KIND = rp_ ) :: mu, max_mu, stop_p, stop_d, stop_c, f_old
+       REAL ( KIND = rp_ ) :: old_primal_infeasibility, rnorm, rnorm_old
 
        LOGICAL :: printi, printt, printm, printw, printd
        LOGICAL :: print_iteration_header, print_1st_header
@@ -381,6 +389,7 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: V_status
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_map
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Dz_map
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_rows
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Dy
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Dz
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
@@ -396,6 +405,17 @@
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_u
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU_l
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: NU_u
+
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_l_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_u_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_u_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: J_old
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_old
 
 !  local copy of control parameters
 
@@ -712,6 +732,12 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
                                  control%obj_unbounded,                        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( advanced_start ),                       &
+                                 control%advanced_start,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( advanced_stop ),                        &
+                                 control%advanced_stop,                        &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -1095,7 +1121,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l
+     INTEGER ( KIND = ip_ ) :: i, ii, ic, ir, j, k, l
      REAL ( KIND = rp_ ) :: penalty_term
      LOGICAL :: alive
      CHARACTER ( LEN = 80 ) :: array_name
@@ -1117,8 +1143,14 @@
      SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10
-     CASE ( 210 )  ! function and derivative evaluation
+     CASE ( 210 ) ! function and derivative evaluations
        GO TO 210
+     CASE ( 420 ) ! Hessian evaluation
+       GO TO 420
+     CASE ( 430 ) ! objective and constraint evaluation
+       GO TO 430
+     CASE ( 440 ) ! gradient and Jacobian evaluation
+       GO TO 440
      END SELECT
 
 !  =================
@@ -1168,7 +1200,8 @@
      data%n_x_l = COUNT( nlp%X_l >= - control%infinity )
      data%n_x_u = COUNT( nlp%X_u <= control%infinity )
      data%n_c = data%n_c_l + data%n_c_u + data%n_x_l + data%n_x_u
-     data%no_bounds = daat%n_c == 0
+     data%no_bounds = data%n_c == 0
+     data%np1 = nlp%n + 1 ; data%npm = nlp%n + data%n_c
 
 !  allocate workspace for the problem:
 
@@ -1307,14 +1340,6 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'EPF: data%W'
-     CALL SPACE_resize_array( nlp%n, data%W, inform%status,                    &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
      array_name = 'EPF: data%epf%X'
      CALL SPACE_resize_array( nlp%n, data%epf%X, inform%status,                &
             inform%alloc_status, array_name = array_name,                      &
@@ -1330,6 +1355,14 @@
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'EPF: nlp%gL'
+     CALL SPACE_resize_array( nlp%n, nlp%gL, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) GO TO 900
 
 !  V_status( j ), j = 1, ..., n, will contain the status of the
 !  j-th variable as the current iteration progresses. Possible values
@@ -1454,6 +1487,17 @@
        data%h_ne = nlp%H%n * ( nlp%n + 1 ) / 2
      CASE DEFAULT
        data%h_ne = nlp%n
+     END SELECT
+
+!  record the number of nonzeros in the constraint Jacobian
+
+     SELECT CASE ( SMT_get( nlp%J%type ) )
+     CASE ( 'COORDINATE' )
+       data%J_ne = nlp%J%ne
+     CASE ( 'SPARSE_BY_ROWS' )
+       data%J_ne = nlp%J%ptr( nlp%m + 1 ) - 1
+     CASE ( 'DENSE' )
+       data%J_ne = nlp%m * nlp%n
      END SELECT
 
      nlp%H%m = nlp%n ; nlp%H%n = nlp%n ; nlp%H%ne = data%h_ne
@@ -1615,9 +1659,250 @@ stop
 !  set space for matrices and vectors required for advanced start if necessary
 
      IF ( data%control%advanced_start > zero ) THEN
-       data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
+!      data%np1 = nlp%n + 1 ; data%npm = nlp%n + nlp%m
 
-       data%C_ssls%n = nlp%m ; data%C_ssls%m = nlp%m ; data%C_ssls%ne = 1
+       array_name = 'colt: data%B_rows'
+       CALL SPACE_resize_array( nlp%m, data%B_rows,                            &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%R'
+       CALL SPACE_resize_array( data%npm, data%R,                              &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%X_old'
+       CALL SPACE_resize_array( nlp%n, data%X_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%Y_l_old'
+       CALL SPACE_resize_array( nlp%m, data%Y_l_old,                           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%Y_u_old'
+       CALL SPACE_resize_array( nlp%m, data%Y_u_old,                           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%Z_l_old'
+       CALL SPACE_resize_array( nlp%n, data%Z_l_old,                           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%Z_u_old'
+       CALL SPACE_resize_array( nlp%n, data%Z_u_old,                           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%C_old'
+       CALL SPACE_resize_array( nlp%m, data%C_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%G_old'
+       CALL SPACE_resize_array( nlp%n, data%G_old,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%J_old'
+       CALL SPACE_resize_array( data%J_ne, data%J_old,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%H_old'
+       CALL SPACE_resize_array( data%H_ne, data%H_old,                         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+!  advanced starts will require access to the matrices 
+!
+!   B = ( - J(x) ) (with rows from blocks 1 & 2 and 3 & 4 intertwined) and
+!       (   J(x) )
+!       ( -  I   )
+!       (    I   )
+!
+!   C = diag( - mu Y_l^-1  - mu Y_u^-1  - mu Z_l^-1  - mu Z_u^-1 )
+
+!  assign row numbers for B. For i = 1,...,m, 
+!    B_rows( i ) =  l row i of c occurs in row l of B (single sided bound) or
+!                   in rows l and l+1 of B (double bounds)
+
+       ii = 1
+       DO i = 1, nlp%m
+         data%B_rows( i ) = ii
+         IF ( nlp%C_l( i ) >= - control%infinity ) ii = ii + 1
+         IF ( nlp%C_u( i ) <= control%infinity ) ii = ii + 1
+       END DO
+
+!  discover how much space is needed for the B block
+
+       data%n_j_l = 0 ; data%n_j_u = 0 ; data%n_i_l = 0 ; data%n_i_u = 0
+
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE' )
+         l = 0
+         DO i = 1, nlp%m
+           IF ( nlp%C_l( i ) >= - control%infinity )                           &
+             data%n_j_l = data%n_j_l + nlp%n
+           IF ( nlp%C_u( i ) <= control%infinity )                             &
+             data%n_j_u = data%n_j_u + nlp%n
+         END DO
+       CASE ( 'SPARSE_BY_ROWS' )
+         DO i = 1, nlp%m
+           IF ( nlp%C_l( i ) >= - control%infinity )                           &
+             data%n_j_l = data%n_j_l + nlp%J%ptr( i + 1 ) - nlp%J%ptr( i )
+           IF ( nlp%C_u( i ) <= control%infinity )                             &
+             data%n_j_u = data%n_j_u + nlp%J%ptr( i + 1 ) - nlp%J%ptr( i )
+         END DO
+       CASE ( 'COORDINATE' )
+         DO l = 1, nlp%J%ne
+           i = nlp%J%row( l )
+           IF ( nlp%C_l( i ) >= - control%infinity )                           &
+             data%n_j_l = data%n_j_l + 1
+           IF ( nlp%C_u( i ) <= control%infinity )                             &
+             data%n_j_u = data%n_j_u + 1
+          END DO
+       END SELECT
+
+       data%n_b = data%n_j_l + data%n_j_u + data%n_x_l + data%n_x_u
+
+!  set space for the B block
+
+       data%B_ssls%n = data%n_c ; data%C_ssls%m = nlp%n
+       data%B_ssls%ne = data%n_b
+       CALL SMT_put( data%B_ssls%type, 'COORDINATE', inform%alloc_status )
+
+       array_name = 'colt: data%B%row'
+       CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%row,               &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%B%col'
+       CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%col,               &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+       array_name = 'colt: data%B%val'
+       CALL SPACE_resize_array( data%B_ssls%ne, data%B_ssls%val,               &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
+
+!  set up the structure of the B block. First insert the J(x) blocks
+
+       k = 1
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE' )
+         DO i = 1, nlp%m
+           ir = data%B_rows( i )
+           DO j = 1, nlp%n
+             ii = ir
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+               k = k + 1 ; ii = ii + 1
+             END IF
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+               k = k + 1
+             END IF
+           END DO
+         END DO
+       CASE ( 'SPARSE_BY_ROWS' )
+         DO i = 1, nlp%m
+           ir = data%B_rows( i )
+           DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+             j = nlp%J%col( l ) ; ii = ir
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+               k = k + 1 ; ii = ii + 1
+             END IF
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+               k = k + 1
+             END IF
+           END DO
+         END DO
+       CASE ( 'COORDINATE' )
+         DO l = 1, nlp%J%ne
+           i = nlp%J%row( l ) ; ii = data%B_rows( i ) ; j = nlp%J%col( l )
+           IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+             data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+             k = k + 1 ; ii = ii + 1
+           END IF
+           IF ( nlp%C_u( i ) <= control%infinity ) THEN
+             data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+             k = k + 1
+           END IF
+         END DO
+       END SELECT
+
+!  now insert the I blocks, including their (constant) values
+
+       DO j = 1, nlp%n
+         ir = ii
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+           data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+           data%B_ssls%val( k ) = - one
+           k = k + 1 ; ii = ii + 1
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+           data%B_ssls%row( k ) = ii ; data%B_ssls%col( k ) = j
+           data%B_ssls%val( k ) = one
+           k = k + 1
+         END IF
+       END DO
+write(6,"( ' B ' )" )
+do l = 1, data%B_ssls%ne
+write(6,"( ' row, col ', 2i7 )" ) data%B_ssls%row( l ), data%B_ssls%col( l ) 
+end do
+
+!  set space for the C block
+
+       data%C_ssls%n = data%n_c ; data%C_ssls%m = data%n_c
+       data%C_ssls%ne = data%n_c
        CALL SMT_put( data%C_ssls%type, 'DIAGONAL', inform%alloc_status )
 
        array_name = 'colt: data%C%val'
@@ -1625,72 +1910,17 @@ stop
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%V'
-       CALL SPACE_resize_array( data%npm, data%V,                              &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%V2'
-       CALL SPACE_resize_array( data%npm, data%V2,                             &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%X_old'
-       CALL SPACE_resize_array( nlp%n, data%X_old,                             &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%Y_old'
-       CALL SPACE_resize_array( nlp%m, data%Y_old,                             &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%C_old'
-       CALL SPACE_resize_array( nlp%m, data%C_old,                             &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%G_old'
-       CALL SPACE_resize_array( nlp%Go%ne, data%G_old,                         &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       array_name = 'colt: data%J_old'
-       CALL SPACE_resize_array( data%J_ne, data%J_old,                         &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 900
 
 !  set up and analyse the data structures for the matrix required for the
 !  advanced start
 
-       CALL SSLS_analyse( nlp%n, nlp%m, nlp%H, nlp%J, data%C_ssls,             &
+       CALL SSLS_analyse( nlp%n, data%n_c, nlp%H, data%B_ssls, data%C_ssls,    &
                           data%SSLS_data, data%control%SSLS_control,           &
                           inform%SSLS_inform )
      END IF
+!stop
 
 !  ensure that the function values and derivatives are evaluated initially
 
@@ -1831,7 +2061,7 @@ stop
                data%branch = 210 ; inform%status = 4 ; RETURN
              ELSE
                CALL eval_HL( data%eval_status, data%epf%X( : nlp%n ),          &
-                             nlp%Y( : nlp%m ), userdata,                       &
+                             - nlp%Y( : nlp%m ), userdata,                     &
                              nlp%H%val( : nlp%H%ne ) )
              END IF
            END IF
@@ -1995,7 +2225,7 @@ stop
              IF ( nlp%X_l( j ) >= - control%infinity ) THEN
                data%Z_l( j ) = data%V_l( j ) *                                 &
                  EXP( ( nlp%X_l( j ) - data%epf%X( j ) ) / data%NU_l( j ) )
-               nlp%Z( j ) = data%Z_l( j )
+               nlp%Z( j ) = - data%Z_l( j )
                data%Dz( j ) = data%Z_l( j ) / data%NU_l( j )
                penalty_term = penalty_term + data%NU_l( j ) * data%Z_l( j )
              ELSE
@@ -2005,7 +2235,7 @@ stop
              IF ( nlp%X_u( j ) <= control%infinity ) THEN
                data%Z_u( j ) = data%V_u( j ) *                                 &
                  EXP( ( data%epf%X( j ) - nlp%X_u( j ) ) / data%NU_u( j ) )
-               nlp%Z( j ) = nlp%Z( j ) - data%Z_u( j )
+               nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
                data%Dz( j ) = data%Dz( j ) + data%Z_u( j ) / data%NU_u( j )
                penalty_term = penalty_term + data%NU_u( j ) * data%Z_u( j )
              END IF
@@ -2017,7 +2247,7 @@ stop
              IF ( nlp%C_l( i ) >= - control%infinity ) THEN
                data%Y_l( i ) = data%W_l( i ) *                                 &
                  EXP( ( nlp%C_l( i ) - nlp%C( i ) ) / data%MU_l( i ) )
-               nlp%Y( i ) = data%Y_l( i )
+               nlp%Y( i ) = - data%Y_l( i )
                data%Dy( i ) = data%Y_l( i ) / data%MU_l( i )
                penalty_term = penalty_term + data%MU_l( i ) * data%Y_l( i )
              ELSE
@@ -2027,11 +2257,15 @@ stop
              IF ( nlp%C_u( i ) <= control%infinity ) THEN
                data%Y_u( i ) = data%W_u( i ) *                                 &
                  EXP( ( nlp%C( i ) - nlp%C_u( i ) ) / data%MU_u( i ) )
-               nlp%Y( i ) = nlp%Y( i ) - data%Y_u( i )
+               nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
                data%Dy( i ) = data%Dy( i ) + data%Y_u( i ) / data%MU_u( i )
                penalty_term = penalty_term + data%MU_u( i ) * data%Y_u( i )
              END IF
            END DO
+
+!write(6,*) ' new x ',  nlp%X( : nlp%n )
+!write(6,*) ' new y ',  nlp%Y( : nlp%m )
+!write(6,*) ' new z ',  nlp%Z( : nlp%n )
 
 !  compute the value of the penalty function
 
@@ -2062,8 +2296,8 @@ stop
 
 !    nabla phi(x,mu,nu) = g(x) - z(x,nu) - J^T(x) y(x,mu)
 
-           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) - nlp%Z( : nlp%n )
-           CALL MOP_Ax( - one, nlp%J, nlp%Y( : nlp%m ), one,                   &
+           data%epf%G( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
+           CALL MOP_Ax( one, nlp%J, nlp%Y( : nlp%m ), one,                     &
                         data%epf%G( : nlp%n ), transpose = .TRUE.,             &
                         m_matrix = nlp%m, n_matrix = nlp%n )
            IF ( data%printd ) WRITE( data%out,                                 &
@@ -2152,10 +2386,8 @@ stop
 
 !  compute the dual infeasibility
 
-       data%W( : data%epf%n ) = EPF_projection( nlp%n,                         &
-          nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
-       inform%dual_infeasibility                                               &
-         = TWO_NORM( nlp%X( : nlp%n ) - data%W( : nlp%n ) )
+       inform%dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
+
 !      IF ( inform%iter > 2 ) WRITE(6, "( ' feas / old_feas =', ES12.4 ) ")    &
 !        inform%primal_infeasibility /  data%old_primal_infeasibility
        data%old_primal_infeasibility = inform%primal_infeasibility
@@ -2229,12 +2461,12 @@ stop
              inform%dual_infeasibility, inform%complementary_slackness,        &
              data%max_mu, inform%tru_inform%iter, data%clock_now
 
-         IF ( data%printm )WRITE( data%out,                                    &
-           "( ' objective value      = ', ES22.14, /,                          &
-          &   ' current gradient     = ', ES12.4, /,                           &
-          &   ' primal infeasibility = ', ES12.4, /,                           &
-          &   ' dual infeasibility   = ', ES12.4, /,                           &
-          &   ' complementarity      = ', ES12.4 )" )                          &
+         IF ( data%printm ) WRITE( data%out,                                   &
+           "( A, ' objective value      = ', ES22.14, /,                       &
+          &   A, ' current gradient     = ', ES12.4, /,                        &
+          &   A, ' primal infeasibility = ', ES12.4, /,                        &
+          &   A, ' dual infeasibility   = ', ES12.4, /,                        &
+          &   A, ' complementarity      = ', ES12.4 )" )                       &
             prefix, inform%obj, prefix, inform%dual_infeasibility,             &
             prefix, inform%primal_infeasibility,                               &
             prefix, inform%dual_infeasibility,                                 &
@@ -2279,7 +2511,94 @@ stop
                             MAXVAL( data%MU_u( : nlp%m ) ) )
        END IF
 
-!  check whether to attempt an advanced starting point
+       IF ( data%rnorm <= zero ) GO TO 500
+
+!  To find an "advanced" starting point for the next major iteration, let
+
+!   r(x,y_l,y_u,z_l,z_u) = ( g(x) - J^T (x) y_l + J^T (x) y_u - z_l + z_u )
+!                          (      c_l-c(x) - mu ( log y_l - log w_l )     )
+!                          (      c(x)-c_u - mu ( log y_u - log w_u )     )
+!                          (        x_l-x  - mu ( log z_l - log v_l )     )
+!                          (        x-x_u  - mu ( log z_u - log v_u )     )
+ 
+!  Then apply Newton's method to find a solution to
+
+!   ( H_L(x,y_u-y_l)  - J^T (x)   J^T (x)   - I        I     ) (  dx  )
+!   (    - J(x)    - mu Y_l^-1                               ) ( dy_l )
+!   (      J(x)              - mu Y_u^-1                     ) ( dy_u ) = - r,
+!   (    -  I                          - mu Z_l^-1           ) ( dz_l )
+!   (       I                                    - mu Z_u^-1 ) ( dz_l )
+
+!  update (x,y_l,y_u,z_l,z_u) <- (x,y_l,y_u,z_l,z_u) + (dx,dy_l,dy_u,dz_l,dz_u)
+!  and recur until ||r_+|| > ||r||
+
+!  Note that, in the notation of GALAHAD's SSLS package,
+
+!   A = H_L(x,y_u-y_l)
+!   B = ( - J(x) )
+!       (   J(x) )
+!       ( -  I   )
+!       (    I   )
+
+!  and
+
+!   C = diag( mu Y_l^-1  mu Y_u^-1  mu Z_l^-1  mu Z_u^-1 )
+
+!  compute the gradient of the Lagrangian
+
+       nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
+       CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
+                    m_matrix = nlp%m, n_matrix = nlp%n )
+
+!  compute minus the new residuals, - r(x,y,z)
+
+       data%R( : nlp%n ) = - nlp%Gl( : nlp%n )
+       k = nlp%n + 1
+       DO i = 1, nlp%m
+         IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+           data%R( k ) = nlp%C( i ) - nlp%C_l( i ) +                           &
+             data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
+!write(6,*) k,  data%R( k ), 'c_l'
+
+write(6,"( 'c-c_l, mu(logy-logw)', 2ES12.4 )") nlp%C( i ) - nlp%C_l( i ), &
+             data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
+
+           k = k + 1
+         END IF
+         IF ( nlp%C_u( i ) <= control%infinity ) THEN
+           data%R( k ) = nlp%C_u( i ) - nlp%C( i ) +                           &
+             data%MU_u( i ) * ( LOG( data%Y_u( i ) ) - LOG( data%W_u( i ) ) )
+!write(6,*) k,  data%R( k ), 'c_u'
+           k = k + 1
+         END IF
+       END DO
+
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+           data%R( k ) = nlp%X( j ) - nlp%X_l( j ) +                           &
+            data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ) )
+!write(6,*) k,  data%R( k ), 'x_l'
+!write(6,*) nlp%X( j ), nlp%X_l( j ), &
+!            data%NU_l( j ), LOG( data%Z_l( j ) ), LOG( data%V_l( j ) ), &
+!            data%Z_l( j ), data%V_l( j )
+
+
+write(6,"( 'x-x_l, mu(logz-logv)', 2ES12.4 )") nlp%X( j ) - nlp%X_l( j ), &
+            data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ) )
+write(6,"( 'z_l, ve^(-x/mu), z_l/mu', 3ES12.4 )") data%Z_l( j ), &
+            data%V_l( j ) * EXP( - (nlp%X( j ) - nlp%X_l( j ) )/data%NU_l(j)), &
+            data%Z_l( j ) / data%NU_l( j )
+           k = k + 1
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+           data%R( k ) = nlp%X_u( j )  - nlp%X( j ) +                          &
+            data%NU_u( j ) * ( LOG( data%Z_u( j ) ) - LOG( data%V_u( j ) ) )
+!write(6,*) k,  data%R( k ), 'x_u'
+           k = k + 1
+         END IF
+       END DO
+       data%rnorm = TWO_NORM( data%R( : data%npm ) )
+write(6,"( ' ||r|| = ', ES11.4 )" ) data%rnorm, TWO_NORM( data%R( : nlp%n ) )
 
        IF ( data%rnorm > data%control%advanced_start ) GO TO 500
 
@@ -2294,84 +2613,165 @@ stop
          data%branch = 420 ; inform%status = 9 ; RETURN
        ELSE
          CALL eval_HL( data%eval_status, nlp%X, - nlp%Y, userdata, nlp%H%val )
-         IF ( print_debug ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )   &
+         IF ( data%printd ) WRITE(6,"( ' nls%H', / ( 3( 2I6, ES12.4 )))" )     &
           ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
        END IF
 
-!  form and factorize the matrix 
-
-!    ( H(x,y)    J^T(x)    )
-!    (  J(x)  - (f(x)-t) I ) 
+!  insert the latest values into B and C
 
   420  CONTINUE
-       data%C_ssls%val( 1 ) = data%discrepancy
-       CALL SSLS_factorize( nlp%n, nlp%m, nlp%H, nlp%J, data%C_ssls,           &
+
+!  first insert the values from J(x) into the C block
+
+       k = 1
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE' )
+         l = 1
+         DO i = 1, nlp%m
+           DO j = 1, nlp%n
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%B_ssls%val( k ) = - nlp%J%col( l )
+               k = k + 1
+             END IF
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%B_ssls%val( k ) = nlp%J%col( l )
+               k = k + 1
+             END IF
+             l = l + 1
+           END DO
+         END DO
+       CASE ( 'SPARSE_BY_ROWS' )
+         DO i = 1, nlp%m
+           ir = data%B_rows( i )
+           DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+             j = nlp%J%col( l ) ; ii = ir
+             IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+               data%B_ssls%val( k ) = - nlp%J%col( l )
+               k = k + 1
+             END IF
+             IF ( nlp%C_u( i ) <= control%infinity ) THEN
+               data%B_ssls%val( k ) = nlp%J%col( l )
+               k = k + 1
+             END IF
+           END DO
+         END DO
+       CASE ( 'COORDINATE' )
+         DO l = 1, nlp%J%ne
+           i = nlp%J%row( l )
+           IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+             data%B_ssls%val( k ) = - nlp%J%col( l )
+             k = k + 1
+           END IF
+           IF ( nlp%C_u( i ) <= control%infinity ) THEN
+             data%B_ssls%val( k ) = nlp%J%col( l )
+             k = k + 1
+           END IF
+         END DO
+       END SELECT
+
+!  now insert the values into the C block
+
+       k = 1
+       DO j = 1, nlp%m
+         IF ( nlp%C_l( j ) >= - control%infinity ) THEN
+           data%C_ssls%val( k ) = data%MU_l( j ) / data%Y_l( j )
+           k = k + 1
+         END IF
+         IF ( nlp%C_u( j ) <= control%infinity ) THEN
+           data%C_ssls%val( k ) = data%MU_u( j ) / data%Y_u( j )
+           k = k + 1
+         END IF
+       END DO
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+           data%C_ssls%val( k ) = data%NU_l( j ) / data%Z_l( j )
+           k = k + 1
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+           data%C_ssls%val( k ) = data%NU_u( j ) / data%Z_u( j )
+           k = k + 1
+         END IF
+       END DO
+
+!  form and factorize the matrix 
+
+!    ( H(x,y)  B^T(x) )
+!    (  B(x)  - C(x) ) 
+
+       CALL SSLS_factorize( nlp%n, data%n_c, nlp%H, data%B_ssls, data%C_ssls,  &
                             data%SSLS_data, data%control%SSLS_control,         &
                             inform%SSLS_inform )
 !write(6,*) ' ssls status ', inform%SSLS_inform%status
 
 !write(6,"( 'K = ')" )
-do i = 1, data%SSLS_data%K%ne
+!do i = 1, data%SSLS_data%K%ne
 ! write(6,"( 2I7, ES12.4 )" ) data%SSLS_data%K%row(i),data%SSLS_data%K%col(i), &
 !                             data%SSLS_data%K%val(i)
-end do
+!end do
 
-!  find v = ( dx1, dy1 )
+!  find r = ( dx, dy )
 
-       CALL SSLS_solve( nlp%n, nlp%m, data%V, data%SSLS_data,                  &
+write(6,*) ' r ', data%R
+stop
+write(6,*) ' ||r|| ', TWO_NORM( data%R )
+       CALL SSLS_solve( nlp%n, data%n_c, data%R, data%SSLS_data,               &
                         data%control%SSLS_control,inform%SSLS_inform )
-!write(6,*) ' ||v|| ', TWO_NORM( data%V( : nlp%n ) )
-!write(6,*) ' ||g|| ', TWO_NORM( nlp%Go%val( : nlp%Go%ne ) )
+write(6,*) ' ||r|| ', TWO_NORM( data%R )
+!write(6,*) ' ||v|| ', TWO_NORM( data%R( : nlp%n ) )
+!write(6,*) ' ||g|| ', TWO_NORM( nlp%G( : nlp%n ) )
 
-!  find v2 = ( dx2, dy2 )
-
-       data%V2( : nlp%n ) = zero
-       data%V2( data%np1 : data%npm ) = nlp%Y
-       CALL SSLS_solve( nlp%n, nlp%m, data%V2, data%SSLS_data,                 &
-                        data%control%SSLS_control, inform%SSLS_inform )
-!write(6,*) ' ||v2|| ', TWO_NORM( data%V2( : nlp%n ) )
-
-!write(6,*) ' v ', data%V( : nlp%n )
-!write(6,*) ' v2 ',data%V2( : nlp%n )
-!write(6,*) ' g ', nlp%Go%val( : nlp%Go%ne )
-
-
-!  compute alpha 
-
-       IF ( nlp%Go%sparse ) THEN ! from g(x)
-         num = zero ; den = one
-         DO i = 1, nlp%Go%ne
-           j = nlp%Go%ind( i )
-           num = num + nlp%Go%val( i ) * data%V( j )
-           den = den - nlp%Go%val( i ) * data%V2( j )
-         END DO
-       ELSE
-         num = DOT_PRODUCT( data%V( : nlp%n ), nlp%Go%val( : nlp%n ) )
-         den = one - DOT_PRODUCT( data%V2( : nlp%n ), nlp%Go%val( : nlp%n ) )
-       END IF
-       alpha = num / den
-
-!write(6,*) ' alpha ', alpha
-!  recover v = ( dx, dy )
-
-       data%V( : data%npm )                                                    &
-         = data%V( : data%npm ) + alpha * data%V2( : data%npm )
-
-!  make a copy of x, y, c, g and J in case the advanced starting point is poor
+!  make a copy of x, y, z, c, g, J and H in case the advanced starting point 
+!  is poor
 
        data%f_old = nlp%f
        data%X_old( : nlp%n ) = nlp%X( : nlp%n )
-       data%Y_old( : nlp%m ) = nlp%Y( : nlp%m )
+       data%Y_l_old( : nlp%m ) = data%Y_l( : nlp%m )
+       data%Y_u_old( : nlp%m ) = data%Y_u( : nlp%m )
+       data%Z_l_old( : nlp%n ) = data%Z_l( : nlp%n )
+       data%Z_u_old( : nlp%n ) = data%Z_u( : nlp%n )
        data%C_old( : nlp%m ) = nlp%C( : nlp%m )
-       data%G_old( : nlp%Go%ne ) = nlp%Go%val( : nlp%Go%ne )
+       data%G_old( : nlp%n ) = nlp%G( : nlp%n )
        data%J_old( : data%J_ne ) = nlp%J%val( : data%J_ne )
+       data%H_old( : data%H_ne ) = nlp%H%val( : data%H_ne )
 
 !  compute the trial x and y
 
-       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%V( : nlp%n ) 
-       nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) + data%V( data%np1 : data%npm )
+       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%R( : nlp%n ) 
+
+       k = nlp%n + 1
+       DO i = 1, nlp%m
+         IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+           data%Y_l( i ) = data%Y_l( i ) + data%R( k )
+           nlp%Y( i ) = - data%Y_l( i )
+           k = k + 1
+         ELSE
+           nlp%Y( i ) = zero
+         END IF
+         IF ( nlp%C_u( i ) <= control%infinity ) THEN
+           data%Y_u( i ) = data%Y_u( i ) + data%R( k )
+           nlp%Y( i ) = nlp%Y( i ) + data%Y_u( i )
+           k = k + 1
+         END IF
+       END DO
+
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+           data%Z_l( j ) = data%Z_l( j ) + data%R( k )
+           nlp%Z( j ) = - data%Z_l( j )
+           k = k + 1
+         ELSE
+           nlp%Z( j ) = zero
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+           data%Z_u( j ) = data%Z_u( j ) + data%R( k )
+           nlp%Z( j ) = nlp%Z( j ) + data%Z_u( j )
+           k = k + 1
+         END IF
+       END DO
+
 !write(6,*) ' new x ',  nlp%X( : nlp%n )
 !write(6,*) ' new y ',  nlp%Y( : nlp%m )
+!write(6,*) ' new z ',  nlp%Z( : nlp%n )
 
 !  compute the new objective and constraint values
 
@@ -2387,30 +2787,49 @@ end do
        IF ( data%reverse_gj ) THEN
          data%branch = 440 ; inform%status = 4 ; RETURN
        ELSE
-         CALL eval_SGJ( data%eval_status, nlp%X, userdata,                     &
-                        nlp%Go%val, nlp%J%val )
+         CALL eval_GJ( data%eval_status, nlp%X, userdata,                     &
+                       nlp%G, nlp%J%val )
        END IF
 
 !  compute the gradient of the Lagrangian
 
   440  CONTINUE
-       nlp%gL( : nlp%n ) = nlp%Z( : nlp%n )
-       DO i = 1, nlp%Go%ne
-         j = nlp%Go%ind( i )
-         nlp%gL( j ) = nlp%gL( j ) + nlp%Go%val( i )
-       END DO
+       nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) + nlp%Z( : nlp%n )
        CALL mop_AX( one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,        &
                     m_matrix = nlp%m, n_matrix = nlp%n )
 
-!  compute the new discrepamcy f(x)- t and residual r(x,y,t)
+!  compute minus the new residuals, - r(x,y,z)
 
-       data%discrepancy = nlp%f - inform%target
-!write(6,*) ' discrepancy, t ', data%discrepancy, inform%target
-       data%V( : nlp%n ) = - nlp%Gl( : nlp%n )
-       data%V( data%np1 : data%npm )                                           &
-         = data%discrepancy * nlp%Y( : nlp%m ) - nlp%C( : nlp%m )
+       data%R( : nlp%n ) = - nlp%Gl( : nlp%n )
+       k = nlp%n + 1
+       DO i = 1, nlp%m
+         IF ( nlp%C_l( i ) >= - control%infinity ) THEN
+           data%R( k ) = nlp%C( i ) - nlp%C_l( i ) +                           &
+             data%MU_l( i ) * ( LOG( data%Y_l( i ) ) - LOG( data%W_l( i ) ) )
+           k = k + 1
+         END IF
+         IF ( nlp%C_u( i ) <= control%infinity ) THEN
+           data%R( k ) = nlp%C_u( i ) - nlp%C( i ) +                           &
+             data%MU_u( i ) * ( LOG( data%Y_u( i ) ) - LOG( data%W_u( i ) ) )
+           k = k + 1
+         END IF
+       END DO
+
+       DO j = 1, nlp%n
+         IF ( nlp%X_l( j ) >= - control%infinity ) THEN
+           data%R( k ) = nlp%X( j ) - nlp%X_l( j ) +                           &
+            data%NU_l( j ) * ( LOG( data%Z_l( j ) ) - LOG( data%V_l( j ) ) )
+           k = k + 1
+         END IF
+         IF ( nlp%X_u( j ) <= control%infinity ) THEN
+           data%R( k ) = nlp%X_u( j )  - nlp%X( j ) +                          &
+            data%NU_u( j ) * ( LOG( data%Z_u( j ) ) - LOG( data%V_u( j ) ) )
+           k = k + 1
+         END IF
+       END DO
+
        data%rnorm_old = data%rnorm
-       data%rnorm = TWO_NORM( data%V( : data%npm ) )
+       data%rnorm = TWO_NORM( data%R( : data%npm ) )
 !write(6,*) ' ||r|| = ', data%rnorm
 
 !  check to see if the residuals are sufficiently small
@@ -2425,10 +2844,14 @@ end do
 
          nlp%f = data%f_old
          nlp%X( : nlp%n ) = data%X_old( : nlp%n )
-         nlp%Y( : nlp%m ) = data%Y_old( : nlp%m )
+         data%Y_l( : nlp%m ) = data%Y_l_old( : nlp%m )
+         data%Y_u( : nlp%m ) = data%Y_u_old( : nlp%m )
+         data%Z_l( : nlp%n ) = data%Z_l_old( : nlp%n )
+         data%Z_u( : nlp%n ) = data%Z_u_old( : nlp%n )
          nlp%C( : nlp%m ) = data%C_old( : nlp%m )
-         nlp%Go%val( : nlp%Go%ne ) = data%G_old( : nlp%Go%ne )
+         nlp%G( : nlp%n ) = data%G_old( : nlp%n )
          nlp%J%val( : data%J_ne ) = data%J_old( : data%J_ne )
+         nlp%H%val( : data%H_ne ) = data%H_old( : data%H_ne )
          GO TO 500
 
 !  check to see if the advanced start iteration limit has been reasched
@@ -2441,7 +2864,7 @@ end do
 
 !  end of advanced starting point search
 
-  500 CONTINUE
+  500  CONTINUE
 
 !  ---------------------------
 !  end of outer-iteration loop
@@ -2454,10 +2877,7 @@ end do
 
 !  compute the norm of the projected gradient
 
-     data%W( : data%epf%n ) = EPF_projection( nlp%n,                           &
-        nlp%X( : nlp%n ) - data%epf%G( : nlp%n ), nlp%X_l, nlp%X_u )
-     inform%dual_infeasibility                                                 &
-       = TWO_NORM( nlp%X( : nlp%n ) - data%W( : nlp%n ) )
+    inform%dual_infeasibility = TWO_NORM( data%epf%G( : nlp%n ) )
 
 !  debug printing for X and G
 
@@ -2540,101 +2960,101 @@ end do
 !              nlp%X( i ), nlp%X_u( i ), data%epf%G( i )
 !         END DO
 !      END DO
-!!$       IF ( .NOT. data%monotone ) WRITE( data%out,                             &
-!!$           "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
-!!$         data%non_monotone_history
-       IF ( data%no_bounds .AND. data%control%subproblem_direct ) THEN
-!!$         IF ( inform%TRS_inform%dense_factorization ) THEN
-!!$           WRITE( data%out,                                                    &
-!!$           "( A, '  Direct solution (eigen solver SYSV',                       &
-!!$          &      ') of the trust-region sub-problem' )" ) prefix
-!!$         ELSE
-!!$           WRITE( data%out,                                                    &
-!!$           "( A, '  Direct solution (solver ', A,                              &
-!!$          &      ') of the trust-region sub-problem' )" )                      &
-!!$              prefix, TRIM( data%control%TRS_control%definite_linear_solver )
-!!$         END IF
-!!$         WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
-!!$        &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
-!!$           inform%TRS_inform%factorizations,                                   &
-!!$           inform%TRS_inform%time%clock_factorize
-!!$         IF ( TRIM( data%control%TRS_control%definite_linear_solver ) ==       &
-!!$              'pbtr' ) THEN
-!!$           WRITE( data%out, "( A, '  Max entries in factors = ', I0,           &
-!!$          & ', semi-bandwidth = ', I0  )" ) prefix, inform%max_entries_factors,&
-!!$              inform%TRS_inform%SLS_inform%semi_bandwidth
-!!$         ELSE
-!!$           WRITE( data%out, "( A, '  Max entries in factors = ', I0 )" )       &
-!!$             prefix, inform%max_entries_factors
-!!$         END IF
-!!$       ELSE
-!!$         IF ( data%nprec > 0 )                                                 &
-!!$           WRITE( data%out, "( A, '  Final Hessian semi-bandwidth (original,', &
-!!$          &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &
-!!$             inform%PSLS_inform%semi_bandwidth,                                &
-!!$             inform%PSLS_inform%reordered_semi_bandwidth
-!!$         IF ( data%no_bounds ) THEN
-!!$           SELECT CASE ( data%nprec )
-!!$           CASE ( - 3 )
-!!$             WRITE( data%out, "( A, '  User-defined norm used' )" )            &
-!!$               prefix
-!!$           CASE ( - 2 )
-!!$             WRITE( data%out, "( A, 2X, I0, '-step Limited Memory ',           &
-!!$            &  'norm used' )" ) prefix, data%lbfgs_mem
-!!$           CASE ( - 1 )
-!!$             WRITE( data%out, "( A, '  Two-norm used' )" ) prefix
-!!$           CASE ( 1 )
-!!$             WRITE( data%out, "( A, '  Diagonal norm used' )" ) prefix
-!!$           CASE ( 2 )
-!!$             WRITE( data%out, "( A, '  Band norm (semi-bandwidth ',            &
-!!$            &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-!!$           CASE ( 3 )
-!!$             WRITE( data%out, "( A, '  Re-ordered band norm (semi-bandwidth ', &
-!!$            &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-!!$           CASE ( 4 )
-!!$             WRITE( data%out, "( A, '  SE (solver ', A, ') full norm used' )" )&
-!!$               prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-!!$           CASE ( 5 )
-!!$             WRITE( data%out, "( A, '  GMPS (solver ', A, ') full norm used')")&
-!!$               prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-!!$           CASE ( 6 )
-!!$             WRITE( data%out, "(A,'  Lin-More''(', I0, ') incomplete Cholesky',&
-!!$            &  ' factorization used ' )" ) prefix, data%control%icfs_vectors
-!!$           END SELECT
-!!$         ELSE
-!!$           SELECT CASE ( data%nprec )
-!!$           CASE ( - 3 )
-!!$             WRITE( data%out, "( A, '  User-defined preconditioner used' )" )  &
-!!$               prefix
-!!$           CASE ( - 2 )
-!!$             WRITE( data%out, "( A, 2X, I0, '-step Limited Memory ',           &
-!!$            &  'preconditioner used' )" ) prefix, data%lbfgs_mem
-!!$           CASE ( - 1 )
-!!$             WRITE( data%out, "( A, '  No preconditioner used' )" ) prefix
-!!$           CASE ( 1 )
-!!$             WRITE( data%out, "( A, '  Diagonal preconditioner used' )" ) prefix
-!!$           CASE ( 2 )
-!!$             WRITE( data%out, "( A, '  Band preconditioner (semi-bandwidth ',  &
-!!$            &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-!!$           CASE ( 3 )
-!!$             WRITE( data%out, "( A, '  Re-ordered band preconditioner',        &
-!!$            &   ' (semi-bandwidth ', I0, ') used' )" )                         &
-!!$               prefix, inform%PSLS_inform%semi_bandwidth_used
-!!$           CASE ( 4 )
-!!$             WRITE( data%out, "( A, '  SE (solver ', A,                        &
-!!$            &   ') full preconditioner used' )" )                              &
-!!$               prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-!!$           CASE ( 5 )
-!!$             WRITE( data%out, "( A, '  GMPS (solver ', A,                      &
-!!$            &   ') full preconditioner used' )" )                              &
-!!$               prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-!!$           CASE ( 6 )
-!!$             WRITE( data%out, "(A,'  Lin-More''(', I0, ') incomplete Cholesky',&
-!!$            &  ' factorization used ' )" ) prefix, data%control%icfs_vectors
-!!$           END SELECT
-!!$         END IF
-!!$         IF ( data%control%renormalize_radius ) WRITE( data%out,               &
-!!$            "( A, '  Radius renormalized' )" ) prefix
+!!$    IF ( .NOT. data%monotone ) WRITE( data%out,                             &
+!!$        "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
+!!$      data%non_monotone_history
+    IF ( data%no_bounds .AND. data%control%subproblem_direct ) THEN
+!!$      IF ( inform%TRS_inform%dense_factorization ) THEN
+!!$        WRITE( data%out,                                                    &
+!!$        "( A, '  Direct solution (eigen solver SYSV',                       &
+!!$       &      ') of the trust-region sub-problem' )" ) prefix
+!!$      ELSE
+!!$        WRITE( data%out,                                                    &
+!!$        "( A, '  Direct solution (solver ', A,                              &
+!!$       &      ') of the trust-region sub-problem' )" )                      &
+!!$           prefix, TRIM( data%control%TRS_control%definite_linear_solver )
+!!$      END IF
+!!$      WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
+!!$     &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
+!!$        inform%TRS_inform%factorizations,                                   &
+!!$        inform%TRS_inform%time%clock_factorize
+!!$      IF ( TRIM( data%control%TRS_control%definite_linear_solver ) ==       &
+!!$           'pbtr' ) THEN
+!!$        WRITE( data%out, "( A, '  Max entries in factors = ', I0,           &
+!!$       & ', semi-bandwidth = ', I0  )" ) prefix, inform%max_entries_factors,&
+!!$           inform%TRS_inform%SLS_inform%semi_bandwidth
+!!$      ELSE
+!!$        WRITE( data%out, "( A, '  Max entries in factors = ', I0 )" )       &
+!!$          prefix, inform%max_entries_factors
+!!$      END IF
+!!$    ELSE
+!!$      IF ( data%nprec > 0 )                                                 &
+!!$        WRITE( data%out, "( A, '  Final Hessian semi-bandwidth (original,', &
+!!$       &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &
+!!$          inform%PSLS_inform%semi_bandwidth,                                &
+!!$          inform%PSLS_inform%reordered_semi_bandwidth
+!!$      IF ( data%no_bounds ) THEN
+!!$        SELECT CASE ( data%nprec )
+!!$        CASE ( - 3 )
+!!$          WRITE( data%out, "( A, '  User-defined norm used' )" )            &
+!!$            prefix
+!!$        CASE ( - 2 )
+!!$          WRITE( data%out, "( A, 2X, I0, '-step Limited Memory ',           &
+!!$         &  'norm used' )" ) prefix, data%lbfgs_mem
+!!$        CASE ( - 1 )
+!!$          WRITE( data%out, "( A, '  Two-norm used' )" ) prefix
+!!$        CASE ( 1 )
+!!$          WRITE( data%out, "( A, '  Diagonal norm used' )" ) prefix
+!!$        CASE ( 2 )
+!!$          WRITE( data%out, "( A, '  Band norm (semi-bandwidth ',            &
+!!$         &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
+!!$        CASE ( 3 )
+!!$          WRITE( data%out, "( A, '  Re-ordered band norm (semi-bandwidth ', &
+!!$         &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
+!!$        CASE ( 4 )
+!!$          WRITE( data%out, "( A, '  SE (solver ', A, ') full norm used' )" )&
+!!$            prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+!!$        CASE ( 5 )
+!!$          WRITE( data%out, "( A, '  GMPS (solver ', A, ') full norm used')")&
+!!$            prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+!!$        CASE ( 6 )
+!!$          WRITE( data%out, "(A,'  Lin-More''(', I0, ') incomplete Cholesky',&
+!!$         &  ' factorization used ' )" ) prefix, data%control%icfs_vectors
+!!$        END SELECT
+!!$      ELSE
+!!$        SELECT CASE ( data%nprec )
+!!$        CASE ( - 3 )
+!!$          WRITE( data%out, "( A, '  User-defined preconditioner used' )" )  &
+!!$            prefix
+!!$        CASE ( - 2 )
+!!$          WRITE( data%out, "( A, 2X, I0, '-step Limited Memory ',           &
+!!$         &  'preconditioner used' )" ) prefix, data%lbfgs_mem
+!!$        CASE ( - 1 )
+!!$          WRITE( data%out, "( A, '  No preconditioner used' )" ) prefix
+!!$        CASE ( 1 )
+!!$          WRITE( data%out, "( A, '  Diagonal preconditioner used' )" ) prefix
+!!$        CASE ( 2 )
+!!$          WRITE( data%out, "( A, '  Band preconditioner (semi-bandwidth ',  &
+!!$         &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
+!!$        CASE ( 3 )
+!!$          WRITE( data%out, "( A, '  Re-ordered band preconditioner',        &
+!!$         &   ' (semi-bandwidth ', I0, ') used' )" )                         &
+!!$            prefix, inform%PSLS_inform%semi_bandwidth_used
+!!$        CASE ( 4 )
+!!$          WRITE( data%out, "( A, '  SE (solver ', A,                        &
+!!$         &   ') full preconditioner used' )" )                              &
+!!$            prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+!!$        CASE ( 5 )
+!!$          WRITE( data%out, "( A, '  GMPS (solver ', A,                      &
+!!$         &   ') full preconditioner used' )" )                              &
+!!$            prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
+!!$        CASE ( 6 )
+!!$          WRITE( data%out, "(A,'  Lin-More''(', I0, ') incomplete Cholesky',&
+!!$         &  ' factorization used ' )" ) prefix, data%control%icfs_vectors
+!!$        END SELECT
+!!$      END IF
+!!$      IF ( data%control%renormalize_radius ) WRITE( data%out,               &
+!!$         "( A, '  Radius renormalized' )" ) prefix
        END IF
        WRITE ( data%out, "( A, ' Total time = ', 0P, F0.2, ' seconds', / )" )  &
          prefix, inform%time%clock_total
@@ -2736,12 +3156,6 @@ end do
 
      array_name = 'EPF: data%Dz'
      CALL SPACE_dealloc_array( data%Dz,                                        &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'EPF: data%W'
-     CALL SPACE_dealloc_array( data%W,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2860,6 +3274,59 @@ end do
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'EPF: data%X_old'
+     CALL SPACE_dealloc_array( data%X_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%Y_l_old'
+     CALL SPACE_dealloc_array( data%Y_l_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%Y_u_old'
+     CALL SPACE_dealloc_array( data%Y_u_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%Z_l_old'
+     CALL SPACE_dealloc_array( data%Z_l_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%Z_u_old'
+     CALL SPACE_dealloc_array( data%Z_u_old,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%G_old'
+     CALL SPACE_dealloc_array( data%G_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%C_old'
+     CALL SPACE_dealloc_array( data%C_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%J_old'
+     CALL SPACE_dealloc_array( data%J_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'EPF: data%H_old'
+     CALL SPACE_dealloc_array( data%H_old,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
 !  Deallocate all arrays allocated within BSC
 

@@ -2672,6 +2672,7 @@ write(6,*) ' X ', nlp%X( : nlp%n )
          = data%discrepancy * nlp%Y( : nlp%m ) - nlp%C( : nlp%m )
        data%rnorm = TWO_NORM( data%V( : data%npm ) )
 !write(6,*) ' ||r||, r_start = ', data%rnorm, data%control%advanced_start
+
 !  check whether to attempt an advanced starting point
 
        IF ( data%rnorm > data%control%advanced_start ) GO TO 500

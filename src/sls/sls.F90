@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-21 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 13:30 GMT.
 
 #include "galahad_modules.h"
 #undef METIS_DBG_INFO
@@ -72,6 +72,7 @@
      USE spmf_interfaces_precision
      USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
      USE pastixf_interfaces_precision
+!    USE omp_lib
 
      IMPLICIT NONE
 
@@ -297,7 +298,7 @@
 
 !  any pivot smaller than this is considered to be negative for p-d solvers
 
-       REAL ( KIND = rp_ ) :: negative_pivot_tolerance                        &
+       REAL ( KIND = rp_ ) :: negative_pivot_tolerance                         &
                                 = - 0.5_rp_ * HUGE( 1.0_rp_ )
 
 !  used for setting static pivot level
@@ -991,8 +992,9 @@
 !    write(6,*) ' omp cancellation = ', omp_get_cancellation()
 !  initialize the solver-specific data
 
-     CALL SLS_initialize_solver( solver, data, inform, check )
-     IF ( inform%status == GALAHAD_error_unknown_solver ) RETURN
+     CALL SLS_initialize_solver( solver, data, control%error, inform, check )
+     IF ( inform%status == GALAHAD_error_unknown_solver .OR.                   &
+          inform%status == GALAHAD_error_omp_env ) RETURN
 
 !  check to see if HSL ordering packages are available
 
@@ -1005,9 +1007,9 @@
      CALL galahad_metis_setopt( ICNTL_metis )
      CALL galahad_metis( n_dummy, PTR, ROW, 1_ip_, ICNTL_metis, INVP, PERM )
      metis_available = PERM( 1 ) > 0
-!write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
-!write(6,*) ' solver ', TRIM( inform%solver )
-!stop
+! write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
+! write(6,*) ' solver ', TRIM( inform%solver )
+! stop
 
 !  if required, check to see which ordering options are available
 
@@ -1208,7 +1210,7 @@
 
 !-*-*-   S L S _ I N I T I A L I Z E _ S O L V E R  S U B R O U T I N E   -*-*-
 
-     SUBROUTINE SLS_initialize_solver( solver, data, inform, check )
+     SUBROUTINE SLS_initialize_solver( solver, data, error, inform, check )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1223,6 +1225,7 @@
 
      CHARACTER ( LEN = * ), INTENT( IN ) :: solver
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: error
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
      LOGICAL, OPTIONAL, INTENT( IN ) :: check
 
@@ -1234,6 +1237,8 @@
      REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
      TYPE ( ssids_akeep ) :: akeep_ssids
+!$   LOGICAL :: OMP_GET_CANCELLATION
+!$   INTEGER ( KIND = ip_ ) :: OMP_GET_PROC_BIND
 
 !  record the solver
 
@@ -1247,6 +1252,21 @@
      data%solver = REPEAT( ' ', len_solver )
      data%solver( 1 : data%len_solver ) = solver( 1 : data%len_solver )
      CALL STRING_lower_word( data%solver( 1 : data%len_solver ) )
+
+!  ensure that OpenMP has been correctly initialized
+
+!$   SELECT CASE( data%solver( 1 : data%len_solver ) )
+!$   CASE ( 'ssids', 'mumps' )
+!$     IF ( .NOT. OMP_GET_CANCELLATION( ) .OR.                                 &
+!$          OMP_GET_PROC_BIND( ) /= 1 ) THEN
+!$       IF ( error > 0 ) WRITE( error,                                        &
+!$         "( ' WARNING: To use the requested linear solver ', A,              &
+!$      &     ', the environment variables', /,  '          OMP_CANCELLATION', &
+!$      &     ' and OMP_PROC_BIND must both be set to TRUE' )" )               &
+!$            data%solver( 1 : data%len_solver )
+!$       inform%status = GALAHAD_error_omp_env ; RETURN
+!$     END IF
+!$   END SELECT
 
 !  initialize solver-specific controls
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-03-17 AT 11:25 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-11 AT 14:30 GMT.
 
 #include "hsl_subset.h"
 
@@ -19,6 +19,7 @@ module hsl_ma48_real
              ma48_initialize,ma48_analyse,ma48_factorize,ma48_solve,           &
              ma48_finalize, ma48_get_perm,ma48_special_rows_and_cols,          &
              ma48_determinant
+   LOGICAL, PUBLIC, PARAMETER :: ma48_available = .FALSE.
 
    interface ma48_initialize
       module procedure ma48_initialize_real

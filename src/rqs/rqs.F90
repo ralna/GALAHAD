@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-06 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -1750,18 +1750,22 @@
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
         IF ( constrained ) THEN
           CALL SLS_initialize_solver( control%symmetric_linear_solver,         &
-                                      data%SLS_data, inform%SLS_inform,        &
-                                      check = .TRUE. )
+                                      data%SLS_data,                           &
+                                      data%control%SLS_control%error,          &
+                                      inform%SLS_inform, check = .TRUE. )
         ELSE
           CALL SLS_initialize_solver( control%definite_linear_solver,          &
-                                      data%SLS_data, inform%SLS_inform,        &
-                                      check = .TRUE. )
+                                      data%SLS_data,                           &
+                                      data%control%SLS_control%error,          &
+                                      inform%SLS_inform, check = .TRUE. )
         END IF
-        inform%max_entries_factors = 0
+        IF ( inform%SLS_inform%status < 0 ) THEN
+          inform%status = inform%SLS_inform%status ; GO TO 910 ; END IF
 
 !  Perform an analysis of the spasity pattern to identify a good
 !  ordering for sparse factorization
 
+        inform%max_entries_factors = 0
         CALL SLS_analyse( data%H_lambda, data%SLS_data,                        &
                           data%control%SLS_control, inform%SLS_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )

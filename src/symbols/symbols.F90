@@ -157,6 +157,8 @@
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_technical = - 50
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_omp_env = - 51
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_reformat = - 52
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_ah_unordered = - 53
@@ -744,6 +746,11 @@
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   a technical error has occurred within the linear solver' )" )&
          prefix, routine, prefix
+     CASE( GALAHAD_error_omp_env )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   the environment variables OMP_CANCELLATION and/or', /, A,    &
+      &       '   OMP_PROC_BIND have not been set to TRUE' )" ) &
+         prefix, routine, prefix, prefix
      CASE( GALAHAD_error_reformat )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   the matrix storage format has been changed' )" )             &

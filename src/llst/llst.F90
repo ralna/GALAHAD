@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-06-22 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -1182,7 +1182,11 @@
         IF ( data%control%new_s >= 2 ) THEN
           data%control%SLS_control%pivot_control = 2
           CALL SLS_initialize_solver( control%definite_linear_solver,          &
-                                      data%SLS_data, inform%SLS_inform )
+                                      data%SLS_data,                           &
+                                      data%control%SLS_control%error,          &
+                                      inform%SLS_inform )
+          IF ( inform%SLS_inform%status < 0 ) THEN
+            inform%status = inform%SLS_inform%status ; GO TO 910 ; END IF
           CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
           CALL SLS_analyse( S, data%SLS_data,                                  &
                             data%control%SLS_control, inform%SLS_inform )

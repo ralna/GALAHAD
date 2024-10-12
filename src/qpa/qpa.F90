@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-01-17 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -8088,7 +8088,10 @@
       SLS_control%zero_tolerance = epsmch ** 2
 
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
-                                  SLS_data, inform%SLS_inform, check = .TRUE. )
+                                  SLS_data, SLS_control%error,                 &
+                                  inform%SLS_inform, check = .TRUE. )
+      IF ( inform%SLS_inform%status < 0 ) THEN
+        inform%status = inform%SLS_inform%status ; GO TO 990 ; END IF
 
       CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
       CALL SLS_analyse( K, SLS_data, SLS_control, inform%SLS_inform )
@@ -11224,9 +11227,10 @@ main: DO
 !                                      check = .TRUE. )
 !        ELSE
           CALL SLS_initialize_solver( control%symmetric_linear_solver,         &
-                                      SLS_data, inform%SLS_inform,             &
-                                      check = .TRUE. )
-
+                                      SLS_data, SLS_control%error,             &
+                                      inform%SLS_inform, check = .TRUE. )
+          IF ( inform%SLS_inform%status < 0 ) THEN
+            inform%status = inform%SLS_inform%status ; RETURN ; END IF
 !        END IF
 
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )

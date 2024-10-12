@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-09-10 AT 11:45 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-04 AT 14:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -601,8 +601,10 @@
 !  record the linear solver used
 
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
-                                  data%SLS_data, inform%SLS_inform,            &
-                                  check = .TRUE. )
+                                  data%SLS_data, control%SLS_control%error,    &
+                                  inform%SLS_inform, check = .TRUE. )
+      IF ( inform%SLS_inform%status < 0 ) THEN
+        inform%status = inform%SLS_inform%status ; RETURN ; END IF
 
 !  analyse the structure of K
 
