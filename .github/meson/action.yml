@@ -130,7 +130,7 @@ runs:
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
-        VERSION_LIBHSL="3.0.0"
+        VERSION_LIBHSL="4.0.0"
         cd ..
         if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
           wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
