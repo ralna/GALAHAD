@@ -23,7 +23,7 @@ module hsl_ma87_real
    public :: ma87_get_n__
    LOGICAL, PUBLIC, PARAMETER :: ma87_available = .FALSE.
    private :: ip_, long_, lp_, rp_
- 
+
    ! Parameters (all private)
    ! Data kinds
    integer(ip_),  parameter, private :: wp   = kind(0d0)
