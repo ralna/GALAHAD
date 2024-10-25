@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.3 - 2024-02-01 AT 16:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-25 AT 15:20 GMT.
 
 #include "galahad_modules.h"
 #include "cutest_routines.h"
@@ -25,7 +25,7 @@
      USE GALAHAD_CUTEST_precision
      USE GALAHAD_USERDATA_precision
      USE CUTEST_INTERFACE_precision
-
+     USE GALAHAD_SYMBOLS
      USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
      IMPLICIT NONE
 
@@ -302,6 +302,9 @@
        END IF
      END DO
 
+     i = COUNT( PTR( : n ) == 0 )
+     IF ( i > 0 ) WRITE(6,*) ' null rows = ', i
+
      DIAG_lower( 1 ) = 1
      DO i = 1, n - 1
        DIAG_lower( i + 1 ) = DIAG_lower( i ) + PTR( i )
@@ -316,6 +319,9 @@
 
      PTR( : n ) = DIAG_lower( : n ) + 1
      H_lower( DIAG_lower( : n ) ) = 0.0_rp_
+     DO i = 1, n
+       ROW_lower( DIAG_lower( i ) ) = i
+     END DO
 
      DO l = 1, nnzh
        i = ROW( l ) ; j = COL( l )
@@ -379,7 +385,12 @@
        CALL CLOCK_time( clocke )
        IF ( inform%status /= 0 ) THEN
          WRITE( 6, "( ' return with error status ', I0, ' from FDH_estimate')")&
-           inform%status ; STOP
+           inform%status
+         IF ( inform%status == GALAHAD_error_upper_entry ) THEN
+           WRITE( 6, "( ' entry in the upper triangle in row ', I0 )" )        &
+             inform%bad_row
+         END IF
+         STOP
        END IF
 
 !  compute the error
@@ -391,7 +402,7 @@
          error( 1 ) = 0.0_rp_
        END IF
        clock( 1 ) = clocke - clocks + clocka
-       WRITE( 6, "( ' maximum error = ', ES10.4,                               &
+       WRITE( 6, "( ' maximum relative error = ', ES10.4,                      &
      &  ', clock time = ', F0.3 )" ) error( 1 ), clock( 1 )
 
 !    WRITE( 6, "( ' maximum values (true, estimate) = ', 2ES11.4 )" )          &

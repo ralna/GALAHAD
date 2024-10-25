@@ -363,11 +363,11 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ) :: i, i1, i2, ia, iact, ic, ic1, icons, id2
-      INTEGER ( KIND = ip_ ) :: idum, iend, ihgst, ii, ijmx, ikicon, il
-      INTEGER ( KIND = ip_ ) :: ipass, ipos, ir, ir1, ir2, row_permi, ivic, ivir
-      INTEGER ( KIND = ip_ ) :: iwi, j, j1, j2, jj, jpos, jptr, jsw, lwst
-      INTEGER ( KIND = ip_ ) :: minrow, minum, nshift, ntst, numj
+      INTEGER ( KIND = ip_ ) :: i, i1, i2, ia, iact, ic, ic1, icons, il
+      INTEGER ( KIND = ip_ ) :: istart, iend, ihigh, ii, ijmx, igicons, idum
+      INTEGER ( KIND = ip_ ) :: ipass, ipos, ir, iswap, irpi, row_permi
+      INTEGER ( KIND = ip_ ) :: iwi, j, j1, j2, jj, jpos, jptr, jsw, ilow
+      INTEGER ( KIND = ip_ ) :: minrow, minum, nshift, ntst, numj, iwic, iwir
       INTEGER ( KIND = ip_ ) :: n1, nbmx, nbnd, nga, nm2, nnp1mi, nrl
       CHARACTER ( LEN = 80 ) :: array_name
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -382,6 +382,7 @@
       DO i = 1, n
         IF ( ROW( DIAG( i ) ) /= i ) THEN
           inform%status = GALAHAD_error_upper_entry ; inform%bad_row = i
+!         write(6,*) ' col, row ', i, ROW( DIAG( i ) )
           GO TO 900
         END IF
       END DO
@@ -671,10 +672,10 @@
           ic1 = ic + 1
           IF ( i == DIAG( ic1 ) ) ic = ic1
         END IF
-        ivir = data%IWK( ROW( i ) )
-        ivic = data%IWK( ic )
-        data%OLD( i ) = - i - nshift * MAX( ivir, ivic )
-        row_permi = MIN( ivir, ivic )
+        iwir = data%IWK( ROW( i ) )
+        iwic = data%IWK( ic )
+        data%OLD( i ) = - i - nshift * MAX( iwir, iwic )
+        row_permi = MIN( iwir, iwic )
         data%ROW_perm( i ) = row_permi
         data%GROUP( row_permi ) = data%GROUP( row_permi ) + 1
       END DO
@@ -702,21 +703,21 @@
 
       IF ( ia == data%GROUP( icons ) ) THEN
         data%OLD( ia ) = - data%OLD( ia )
-        data%GROUP( icons ) = IA + 1
+        data%GROUP( icons ) = ia + 1
 
 !  if not, exchange with the right one ...
 
       ELSE
-        ikicon = data%GROUP( icons )
-        ir1 = data%OLD( ikicon )
-        data%OLD( ikicon ) = - data%OLD( ia )
-        data%OLD( ia ) = ir1
-        data%ROW_perm( ia ) = data%ROW_perm( ikicon )
-        data%ROW_perm( ikicon ) = ICONS
+        igicons = data%GROUP( icons )
+        iswap = data%OLD( igicons )
+        data%OLD( igicons ) = - data%OLD( ia )
+        data%OLD( ia ) = iswap
+        data%ROW_perm( ia ) = data%ROW_perm( igicons )
+        data%ROW_perm( igicons ) = icons
 
 !   ... and revise the position of the next element
 
-        data%GROUP( icons ) = ikicon + 1
+        data%GROUP( icons ) = igicons + 1
         GO TO 100
 
       END IF
@@ -756,7 +757,7 @@
 !  of the permuted matrix
 
       DO ic = 1, n
-        ivic = data%IWK( ic )
+        iwic = data%IWK( ic )
         IF ( ic /= n ) THEN
           i2 = DIAG( ic + 1 ) - 1
         ELSE
@@ -764,10 +765,8 @@
         END IF
         DO ii = DIAG( ic ), i2
           ir = ROW( ii )
-          ivir = data%IWK( ir )
-!        data%OLD( i ) = - i - nshift * MAX( ivir, ivic )
-          row_permi = MIN( ivir, ivic )
-!        data%ROW_perm( i ) = row_permi
+          iwir = data%IWK( ir )
+          row_permi = MIN( iwir, iwic )
           data%GROUP( row_permi ) = data%GROUP( row_permi ) + 1
         END DO
       END DO
@@ -782,14 +781,13 @@
       END DO
       i2 = i1 + data%GROUP( n )
       data%GROUP( n ) = i1
-!  check - i2 should be nz
 
       data%DIAG_perm( : n ) = data%GROUP( : n )
 
 !  now set up the permuted matrix
 
       DO ic = 1, n
-        ivic = data%IWK( ic )
+        iwic = data%IWK( ic )
         IF ( ic /= n ) THEN
           i2 = DIAG( ic + 1 ) - 1
         ELSE
@@ -797,17 +795,21 @@
         END IF
         DO ii = DIAG( ic ), i2
           ir = ROW( ii )
-          ivir = data%IWK( ir )
-!        data%OLD( i ) = - i - nshift * MAX( ivir, ivic )
-          row_permi = MIN( ivir, ivic )
+          iwir = data%IWK( ir )
+          row_permi = MIN( iwir, iwic )
           i1 = data%GROUP( row_permi )
-          data%ROW_perm( i1 ) = MAX( ivir, ivic )
+          data%ROW_perm( i1 ) = MAX( iwir, iwic )
           data%OLD( i1 ) = ii
           data%GROUP( row_permi ) = data%GROUP( row_permi ) + 1
         END DO
       END DO
 
     END IF
+
+!  ROW_perm is now equivalent to ROW for the permuted stucture, but the
+!    row numbers are not reordered within ecah column
+!  DIAG_perm is equivalent to DIAG
+!  OLD(i) gives the position in ROW of the i-th element of ROW_perm
 
   200 CONTINUE
 
@@ -885,14 +887,9 @@
 !  |                                                                           |
 !  --------------------------- END OF IGNORED ----------------------------------
 
-!  ROW_perm is now equivalent to ROW for the permuted stucture, but the
-!    row numbers are not reordered in the columns
-!  DIAG_perm is equivalent to DIAG
-!  OLD(i) gives the position in ROW of the i-th element of ROW_perm
-
 !  consider the columns in the permuted order
 
-      ihgst = n + 1 ; lwst = 0 ; ntst = 0
+      ilow = 0 ; ihigh = n + 1 ; ntst = 0
       data%np = 1
       data%GROUP( : n ) = 0
       data%PERM( : n ) = 0
@@ -900,8 +897,7 @@
 !  start a new group
 
   300 CONTINUE
-      nga = 0
-      iact = lwst + 1
+      nga = 0 ; iact = ilow + 1
 
 !  start a new column
 
@@ -914,20 +910,20 @@
 
 !  scan the iact-th column
 
+        istart = data%DIAG_perm( iact )
         IF ( iact < n ) THEN
           iend = data%DIAG_perm( iact + 1 ) - 1
         ELSE
           iend = nz
         END IF
-        id2 = data%DIAG_perm( iact )
-        DO i = id2, iend
-          ir2 = data%ROW_perm( i )
+        DO i = istart, iend
+          irpi = data%ROW_perm( i )
 
 !  has this row already been considered in the current group? If so, abandon
 !  the column
 
-          IF ( data%PERM( ir2 ) > ntst ) THEN
-            DO j = id2, i - 1
+          IF ( data%PERM( irpi ) > ntst ) THEN
+            DO j = istart, i - 1
               data%PERM( data%ROW_perm( j ) ) = 0
             END DO
             GO TO 320
@@ -935,28 +931,28 @@
 
 !  mark the row temporarily
 
-          data%PERM( ir2 ) = nga + 1 + ntst
+          data%PERM( irpi ) = ntst + nga + 1
         END DO
 
 !  include the iact-th column in the np-th group
 
         nga = nga + 1
         data%GROUP( iact ) = data%np
-
-!  if necessary, revise the interval lwst, ihgst of possibly unassigned columns
-
       END IF
-      IF ( iact == lwst + 1 ) lwst = iact
-      IF ( iact == ihgst - 1 ) ihgst = iact
+
+!  if necessary, revise the interval ilow, ihigh of possibly unassigned columns
+
+      IF ( iact == ilow + 1 ) ilow = iact
+      IF ( iact == ihigh - 1 ) ihigh = iact
 
 !  consider the next column
 
   320 CONTINUE
       iact = iact + 1
 
-!  was it the last column? If so, close the group
+!  complete the group if this is the last column
 
-      IF ( iact < ihgst ) GO TO 310
+      IF ( iact < ihigh ) GO TO 310
 
 !   close the np-th group. Compute the number of non assigned columns, and
 !   stop if zero
@@ -1122,8 +1118,8 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ) :: i, j, ic2, ic21, iej, ii, iopa, ip, ip1, iz, lp1
-      INTEGER ( KIND = ip_ ) :: ipath, ipos1, iposs, ir2, ir21, row_permi
+      INTEGER ( KIND = ip_ ) :: i, j, ic, ic1, iej, ii, iopa, ip, ip1, iz, lp1
+      INTEGER ( KIND = ip_ ) :: ipath, ipos1, iposs, ir, ir1, row_permi
       REAL ( KIND = rp_ ) :: ct
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
 
@@ -1239,30 +1235,30 @@
 
 !  loop to define the path of evaluation in the matrix H(i,j) * H(j)
 
-        ic2 = n
+        ic = n
         DO ip1 = 1, nz
           ipath = nz - ip1 + 1
-          IF ( ic2 /= 1 ) THEN
-            IF ( ipath + 1 == data%DIAG_perm( ic2 ) ) ic2 = ic2 - 1
+          IF ( ic /= 1 ) THEN
+            IF ( ipath + 1 == data%DIAG_perm( ic ) ) ic = ic - 1
 
 !  find the group of the column under consideration
 
-            data%ng = data%GROUP( ic2 )
+            data%ng = data%GROUP( ic )
           END IF
 
 !  Find the correction term for the difference by scanning the complementary
 !  row (half-column)
 
-          ir2 = data%ROW_perm( ipath )
-          ir21 = ir2 + 1
+          ir = data%ROW_perm( ipath )
+          ir1 = ir + 1
           iopa = data%OLD( ipath )
-          IF ( ic2 /= ir2 .AND. ir2 /= n ) THEN
-            IF ( data%DIAG_perm( ir2 ) + 1 /= data%DIAG_perm( ir21 ) ) THEN
+          IF ( ic /= ir .AND. ir /= n ) THEN
+            IF ( data%DIAG_perm( ir ) + 1 /= data%DIAG_perm( ir1 ) ) THEN
               ct = 0.0_rp_
-              DO i = data%DIAG_perm( ir2 ), data%DIAG_perm( ir21 ) - 1
+              DO i = data%DIAG_perm( ir ), data%DIAG_perm( ir1 ) - 1
                 row_permi = data%ROW_perm( i )
                 IF ( data%GROUP( row_permi ) == data%ng .AND.                  &
-                     data%ROW_perm( i ) /= ir2 ) THEN
+                     data%ROW_perm( i ) /= ir ) THEN
                   ct = ct                                                      &
                     + H( data%OLD( i ) ) * STEPSIZE( data%PERM( row_permi ) )
                 END IF
@@ -1273,7 +1269,7 @@
               H( iopa ) = H( iopa ) - ct
             END IF
           END IF
-          H( iopa ) = H( iopa ) / STEPSIZE( data%PERM( ic2 ) )
+          H( iopa ) = H( iopa ) / STEPSIZE( data%PERM( ic ) )
         END DO
 
 !   *************************************************
@@ -1285,52 +1281,52 @@
 !  start the backward loop to define the matrix H(i,j) * H(j)
 
       ELSE
-        ic2 = n
+        ic = n
         DO ip1 = 1, nz
           ipath = nz - ip1 + 1
-          IF ( ipath + 1 == DIAG( ic2 ) ) ic2 = ic2 - 1
-          IF ( ic2 < data%istop ) EXIT
+          IF ( ipath + 1 == DIAG( ic ) ) ic = ic - 1
+          IF ( ic < data%istop ) EXIT
 
 !  find the correction term for the difference by scanning the complementary row
 
-          ir2 = ROW( ipath )
+          ir = ROW( ipath )
 
 !  no corrections required for diagonal or last row and column
 
-          IF ( ir2 /= n .AND. ic2 /= ir2 ) THEN
-            iposs = DIAG( ir2 ) + data%ibnd - ir2 + ic2
-            ir21 = ir2 + 1
+          IF ( ir /= n .AND. ic /= ir ) THEN
+            iposs = DIAG( ir ) + data%ibnd - ir + ic
+            ir1 = ir + 1
 
 !  no corrections required for entries H(n-1,(n-ibnd+1)..n-1), ... ,
 !  H(n-2,(n-ibnd)..n-2) etc
 
-            IF ( iposs < DIAG( ir21 ) ) THEN
+            IF ( iposs < DIAG( ir1 ) ) THEN
               H( ipath ) = H( ipath ) - H( iposs ) * STEPSIZE( ROW( iposs ) )
             END IF
           END IF
-          H( ipath ) = H( ipath ) / STEPSIZE( ic2 )
+          H( ipath ) = H( ipath ) / STEPSIZE( ic )
         END DO
 
 !  start the forward loop to define the same matrix
 
-        ic2 = 1
+        ic = 1
         DO ipath = 1, nz
-          ic21 = ic2 + 1
-          IF ( ipath == DIAG( ic21 ) ) ic2 = ic21
-          IF ( ic2 >= data%istop ) EXIT
+          ic1 = ic + 1
+          IF ( ipath == DIAG( ic1 ) ) ic = ic1
+          IF ( ic >= data%istop ) EXIT
 
 !  find again the correction term for the difference
 
-          ir2 = ROW( ipath )
-          IF ( ic2 /= 1 .AND. ic2 /= ir2 ) THEN
-            iz = data%ibnd - ir2 + ic2
-            IF ( ic2 > iz ) THEN
-              ipos1 = ic2 - iz
+          ir = ROW( ipath )
+          IF ( ic /= 1 .AND. ic /= ir ) THEN
+            iz = data%ibnd - ir + ic
+            IF ( ic > iz ) THEN
+              ipos1 = ic - iz
               iposs = DIAG( ipos1 ) + iz
               H( ipath ) = H( ipath ) - H( iposs ) * STEPSIZE( ipos1 )
             END IF
           END IF
-          H( ipath ) = H( ipath ) / STEPSIZE( ir2 )
+          H( ipath ) = H( ipath ) / STEPSIZE( ir )
         END DO
       END IF
 
