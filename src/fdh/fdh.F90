@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-26 AT 10:00 GMT.
 
 #include "galahad_modules.h"
 
@@ -110,12 +110,12 @@
 !  local variables
 
        INTEGER ( KIND = ip_ ) :: branch = 0
-       INTEGER ( KIND = ip_ ) :: eval_status, ibnd, istop, n, ng, nz
+       INTEGER ( KIND = ip_ ) :: eval_status, ibnd, istop, n, ig, nz
 
 !  np is the number of gradient differences that will be needed for one
 !  Hessian estimation
 
-       INTEGER ( KIND = ip_ ) :: np
+       INTEGER ( KIND = ip_ ) :: ng
 
 !  FDH_analyse_called is true once FDH_analyse has been called
 
@@ -145,9 +145,9 @@
 
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: GROUP
 
-!  IWK(i) is integer workspace (i=1,n)
+!  IW(i) is integer workspace (i=1,n)
 
-       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWK
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
 
 !  X(i) and G(i) is real workspace (i=1,n)
 
@@ -357,22 +357,21 @@
       TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
 
 !   Programming: F77 version by Philippe Toint (1980) with mods by
-!   Iain Duff (1980) and rewriten in F2003 by Nick Gould (2012)
+!   Iain Duff (1980) and rewriten in modern fortran by Nick Gould (2012)
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER ( KIND = ip_ ) :: i, i1, i2, ia, iact, ic, ic1, icons, il
-      INTEGER ( KIND = ip_ ) :: istart, iend, ihigh, ii, ijmx, igicons, idum
-      INTEGER ( KIND = ip_ ) :: ipass, ipos, ir, iswap, irpi, row_permi
+      INTEGER ( KIND = ip_ ) :: i, i1, i2, ia, icol, ic, il
+      INTEGER ( KIND = ip_ ) :: istart, iend, ihigh, ii, ijmx, idum
+      INTEGER ( KIND = ip_ ) :: ipass, ipos, ir, irow, row_permi
       INTEGER ( KIND = ip_ ) :: iwi, j, j1, j2, jj, jpos, jptr, jsw, ilow
-      INTEGER ( KIND = ip_ ) :: minrow, minum, nshift, ntst, numj, iwic, iwir
-      INTEGER ( KIND = ip_ ) :: n1, nbmx, nbnd, nga, nm2, nnp1mi, nrl
+      INTEGER ( KIND = ip_ ) :: minrow, minum, ngst, numj, iwic, iwir
+      INTEGER ( KIND = ip_ ) :: n1, nbmx, nbnd, ncing, nm2, nnp1mi, nrl
       CHARACTER ( LEN = 80 ) :: array_name
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
 
-!     logical :: test = .TRUE.
 !  test for errors in the input data
 
       IF ( nz < n .OR. n <= 0 .OR. nz > ( n * ( n + 1 ) ) / 2 ) THEN
@@ -390,11 +389,9 @@
       data%n = n ; data%nz = nz
       inform%status = GALAHAD_ok
 
-!   *******************
-!   *                 *
-!   *   permutation   *
-!   *                 *
-!   *******************
+!   -------------------------------------------------
+!   permute the original matrix to improve estimation
+!   -------------------------------------------------
 
 !  allocate integer workspace
 
@@ -438,54 +435,23 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'fdh: data%IWK'
-      CALL SPACE_resize_array( n, data%IWK,                                    &
+      array_name = 'fdh: data%IW'
+      CALL SPACE_resize_array( n, data%IW,                                     &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-
-      IF ( .FALSE. ) THEN
-        data%GROUP( : n ) = 0
-        DO i = 1, n - 1
-         do j = DIAG( i ),DIAG(i+1)-1
-           if ( data%GROUP( ROW( j ) ) /= 0 ) THEN
-             write(6,*) i, data%GROUP( ROW( j ) ), j
-             write(6,*)  ROW( data%GROUP( ROW( j ) ) ),  ROW( j )
-             WRITE(6,*) ' row ', i, ' entries ', ROW(DIAG( i ):DIAG(i+1)-1)
-             stop
-           end if
-           data%GROUP( ROW( j ) ) = j
-         end do
-         data%GROUP( ROW(DIAG( i ):DIAG(i+1)-1) ) = 0
-        END DO
-
-       do j = DIAG( n ),nz
-         if ( data%GROUP( ROW( j ) ) /= 0 ) THEN
-           write(6,*) i, data%GROUP( ROW( j ) ), j
-           write(6,*)  ROW( data%GROUP( ROW( j ) ) ),  ROW( j )
-           WRITE(6,*) ' row ', n, ' entries ', ROW(DIAG( n ):nz)
-           stop
-         end if
-         data%GROUP( ROW( j ) ) = j
-       end do
-       data%GROUP( ROW(DIAG( n ):nz )) = 0
-      stop
-    END IF
-
 !  initialize
 
-!     nshift = 10 * n
-      nshift = 100 * n
       data%ibnd = 0
       ijmx = 0
       data%PERM( : n ) = 0
       data%GROUP( : n ) = 0
-      data%IWK( : n ) = 0
+      data%IW( : n ) = 0
 
-!  compute the number of unknowns in each row (in IWK) and its maximum
+!  compute the number of unknowns in each row (in IW) and its maximum
 
       DO ic = 1, n
         i1 = DIAG( ic )
@@ -501,45 +467,44 @@
           END IF
           ijmx = MAX( ijmx, ir - ic )
           data%PERM( ir ) = data%PERM( ir ) + 1
-          data%IWK( ir ) = data%IWK( ir ) + 1
+          data%IW( ir ) = data%IW( ir ) + 1
           IF ( ir /= ic ) data%PERM( ic ) = data%PERM( ic ) + 1
         END DO
       END DO
       nbmx = MAXVAL( data%PERM( : n ) )
-      nrl = MAXVAL( data%IWK( : n ) )
+      nrl = MAXVAL( data%IW( : n ) )
 
 !  test for a band matrix. If so, set ibnd to half the bandwidth + 1
 
       nbnd = ( ijmx + 1 ) * ( 2 * n - ijmx ) / 2
       IF ( nz == nbnd ) data%ibnd = ijmx + 1
 
-!  test whether permutation might improve estimation. If not, set up
+!  test whether the permutation might improve the estimation. If not, set up
 !  information about the new structure (identical to the old one) immediately
 !  and branch to group forming
 
       IF ( n * ( nrl - 1 ) < nz .OR. data%ibnd /= 0 ) THEN
-!     IF ( .TRUE. ) THEN
         DO i = 1, nz
           data%ROW_perm( i ) = ROW( i )
           data%OLD( i ) = i
         END DO
         DO i = 1,n
           data%DIAG_perm( i ) = DIAG( i )
-          data%IWK( i ) = i
+          data%IW( i ) = i
         END DO
         GO TO 200
       END IF
 
-!  sort the rows by decreasing order of unknowns. First set up a linked list
+!  sort the rows by decreasing order of unknowns. Firstly set up a linked list
 !  of rows with same number of non-zeros. Header pointers in GROUP, links in
 !  ROW_perm
 
-      data%DIAG_perm( 1 ) = data%IWK( 1 )
+      data%DIAG_perm( 1 ) = data%IW( 1 )
 
 !  if n=1 the matrix is banded and we do not execute this code
 
       DO i = 2, n
-        data%DIAG_perm( i ) = data%DIAG_perm( i - 1 ) + data%IWK( i ) - 1
+        data%DIAG_perm( i ) = data%DIAG_perm( i - 1 ) + data%IW( i ) - 1
       END DO
       DO i = n, 1, - 1
         iwi = data%PERM( i )
@@ -550,7 +515,7 @@
 !  build the list of rows by decreasing number of unknowns. This list is held
 !  in OLD( i ),i=n+1,2*n with a pointer to the position of the last row with i
 !  non-zeros held in OLD(i). The inverse permutation indicating the position
-!  of row i in the list is held in IV
+!  of row i in the list is held in IW
 
       ia = n
       DO i = nbmx, 1, - 1
@@ -559,14 +524,14 @@
           IF ( n1 <= 0 ) EXIT
           ia = ia + 1
           data%OLD( ia ) = n1
-          data%IWK( n1 ) = ia
+          data%IW( n1 ) = ia
           n1 = data%ROW_perm( n1 )
         END DO
         data%OLD( i ) = ia
         IF ( ia >= 2 * n ) EXIT
       END DO
 
-!  Start the loop to build the permutation
+!  start the loop to build the permutation
 
       DO j = 1, n
         IF ( j /= n ) THEN
@@ -581,11 +546,11 @@
           data%DIAG_perm( i ) = ipos
         END DO
       END DO
+
+!  do not execute the loop for any matrix with n = 1 or 2 as such a matrix 
+!  is banded or diagonal
+
       nm2 = n - 2
-
-!  Not executed for any matrix with n = 1 or 2: such a matrix is banded or
-!  diagonal
-
       DO i = 1, nm2
 
 !  choose the row with minimum number of unknowns in the leading (n-i+1)*(n-i+1)
@@ -626,16 +591,16 @@
 
 !  revise the counts of unknowns and the various pointers
 
-            jpos = data%IWK( j )
+            jpos = data%IW( j )
             numj = data%PERM( j )
             data%PERM( j ) = data%PERM( j ) - 1
             jptr = data%OLD( numj )
             IF ( jptr /= jpos ) THEN
               jsw = data%OLD( jptr )
               data%OLD( jpos ) = jsw
-              data%IWK( j ) = jptr
+              data%IW( j ) = jptr
               data%OLD( jptr ) = j
-              data%IWK( jsw ) = jpos
+              data%IW( jsw ) = jpos
             END IF
             data%OLD( numj ) = jptr - 1
             IF ( numj == minum ) data%OLD( numj - 1 ) = nnp1mi - 1
@@ -643,121 +608,26 @@
         END DO
       END DO
 
-!  end of the permutation building loop: the permutation is now available in IWK
+!  end of the permutation building loop: the permutation is now available in IW
 
       DO i = 1, n
-        data%IWK( i ) = data%IWK( i ) - n
+        data%IW( i ) = data%IW( i ) - n
         DIAG( i ) = ABS( DIAG( i ) )
         data%GROUP( i ) = 0
       END DO
 
-!   ********************************************************
-!   *                                                      *
-!   *   set up information about the permuted structure    *
-!   *                                                      *
-!   ********************************************************
+!  -----------------------------------------------
+!  set up information about the permuted structure
+!  -----------------------------------------------
 
 !  build the new column numbers in ROW_perm and the counts of elements by
-!  column in GROUP. Also set OLD(i) to - (old row number + nshift *
-!  (new row number))
-
-!  ---------------------------------- IGNORED ----------------------------------
-!  |                                                                           |
-!  v                                                                           v
-!   IF ( .TRUE. ) THEN
-    IF ( .FALSE. ) THEN
-      ic = 1
-      DO i = 1, nz
-        IF ( i /= 1 .AND. ic /= n ) THEN
-          ic1 = ic + 1
-          IF ( i == DIAG( ic1 ) ) ic = ic1
-        END IF
-        iwir = data%IWK( ROW( i ) )
-        iwic = data%IWK( ic )
-        data%OLD( i ) = - i - nshift * MAX( iwir, iwic )
-        row_permi = MIN( iwir, iwic )
-        data%ROW_perm( i ) = row_permi
-        data%GROUP( row_permi ) = data%GROUP( row_permi ) + 1
-      END DO
-
-!  build the new information on the beginning of each row in DIAG_perm and let
-!  data%GROUP(i) be the position of the next element in the i-th column
-
-      data%DIAG_perm( 1 ) = 1
-      DO i = 2, n
-        data%DIAG_perm( i ) = data%DIAG_perm( i - 1 ) + data%GROUP( i - 1 )
-      END DO
-      data%GROUP( : n ) = data%DIAG_perm( : n )
-
-!  reorder ROW_perm and OLD to gather the elements of the same column ...
-!  start the reordering with the first element in ROW_perm ...
-
-      ia = 1
-
-!  ... and consider the actual element in ROW_perm:
-
-  100 CONTINUE
-      icons = data%ROW_perm( ia )
-
-!   if it is in the right position, move one position further in OLD
-
-      IF ( ia == data%GROUP( icons ) ) THEN
-        data%OLD( ia ) = - data%OLD( ia )
-        data%GROUP( icons ) = ia + 1
-
-!  if not, exchange with the right one ...
-
-      ELSE
-        igicons = data%GROUP( icons )
-        iswap = data%OLD( igicons )
-        data%OLD( igicons ) = - data%OLD( ia )
-        data%OLD( ia ) = iswap
-        data%ROW_perm( ia ) = data%ROW_perm( igicons )
-        data%ROW_perm( igicons ) = icons
-
-!   ... and revise the position of the next element
-
-        data%GROUP( icons ) = igicons + 1
-        GO TO 100
-
-      END IF
-  110 CONTINUE
-      ia = ia + 1
-
-!  once the whole vector has been considered, stop the reordering
-
-      IF ( ia <= nz ) THEN
-
-!  if this position has been considered already, move one position further
-!  in OLD. Otherwise, consider it now
-
-        IF ( data%OLD( ia ) > 0 ) THEN
-          GO TO 110
-        ELSE
-          GO TO 100
-        END IF
-
-!  end of the reordering to gather the columns
-
-      END IF
-
-!  set ROW_perm(i) to the new row number of the i-th element in ROW
-
-      DO i = 1, nz
-        data%ROW_perm( i ) = data%OLD( i ) / nshift
-        data%OLD( i ) = data%OLD( i ) - data%ROW_perm( i ) * nshift
-      END DO
-!  ^                                                                           ^
-!  |                                                                           |
-!  --------------------------- END OF IGNORED ----------------------------------
-
-    ELSE
+!  column in GROUP. 
 
 !  compute the number of nonzeros in the lower triangular part of each row
 !  of the permuted matrix
 
       DO ic = 1, n
-        iwic = data%IWK( ic )
+        iwic = data%IW( ic )
         IF ( ic /= n ) THEN
           i2 = DIAG( ic + 1 ) - 1
         ELSE
@@ -765,7 +635,7 @@
         END IF
         DO ii = DIAG( ic ), i2
           ir = ROW( ii )
-          iwir = data%IWK( ir )
+          iwir = data%IW( ir )
           row_permi = MIN( iwir, iwic )
           data%GROUP( row_permi ) = data%GROUP( row_permi ) + 1
         END DO
@@ -784,10 +654,14 @@
 
       data%DIAG_perm( : n ) = data%GROUP( : n )
 
-!  now set up the permuted matrix
+!  now set up the permuted matrix:
+!  ROW_perm is now equivalent to ROW for the permuted stucture, but the
+!    row numbers are not reordered within ecah column
+!  DIAG_perm is equivalent to DIAG
+!  OLD(i) gives the position in ROW of the i-th element of ROW_perm
 
       DO ic = 1, n
-        iwic = data%IWK( ic )
+        iwic = data%IW( ic )
         IF ( ic /= n ) THEN
           i2 = DIAG( ic + 1 ) - 1
         ELSE
@@ -795,7 +669,7 @@
         END IF
         DO ii = DIAG( ic ), i2
           ir = ROW( ii )
-          iwir = data%IWK( ir )
+          iwir = data%IW( ir )
           row_permi = MIN( iwir, iwic )
           i1 = data%GROUP( row_permi )
           data%ROW_perm( i1 ) = MAX( iwir, iwic )
@@ -804,20 +678,11 @@
         END DO
       END DO
 
-    END IF
-
-!  ROW_perm is now equivalent to ROW for the permuted stucture, but the
-!    row numbers are not reordered within ecah column
-!  DIAG_perm is equivalent to DIAG
-!  OLD(i) gives the position in ROW of the i-th element of ROW_perm
-
   200 CONTINUE
 
-!   *************************************************
-!   *                                               *
-!   *    form the groups for a band matrix          *
-!   *                                               *
-!   *************************************************
+!  -----------------------------------------------
+!  special case: form the groups for a band matrix
+!  -----------------------------------------------
 
       IF ( data%ibnd /= 0 ) THEN
         DO i = 1, data%ibnd
@@ -831,98 +696,50 @@
         DO i = 1, n
           data%PERM( i ) = i
         END DO
-        data%np = data%ibnd
+        data%ng = data%ibnd
         data%DIAG_perm( 1 ) = - data%DIAG_perm( 1 )
         GO TO 900
       END IF
 
-!   **********************************************************
-!   *                                                        *
-!   *   Curtis-Powell-Reid procedure on the lower triangle   *
-!   *                                                        *
-!   **********************************************************
-
-!  ---------------------------------- IGNORED ----------------------------------
-!  |                                                                           |
-!  v                                                                           v
-    IF ( .FALSE. ) THEN
-        DO i = 1, n - 1
-         WRITE(6,*) ' row ', i, ' entries ',                               &
-           data%ROW_perm(data%DIAG_perm( i ):data%DIAG_perm(i+1)-1)
-       END DO
-       WRITE(6,*) ' row ', n, ' entries ',  data%ROW_perm(data%DIAG_perm(n):nz)
-       stop
-    END IF
-
-      IF ( .FALSE. ) THEN
-        data%GROUP( : n ) = 0
-        DO i = 1, n - 1
-         do j = data%DIAG_perm( i ),data%DIAG_perm(i+1)-1
-           if ( data%GROUP( data%ROW_perm( j ) ) /= 0 ) THEN
-             write(6,*) i, data%GROUP( data%ROW_perm( j ) ), j
-             write(6,*)  data%ROW_perm( data%GROUP( data%ROW_perm( j ) ) ),    &
-                         data%ROW_perm( j )
-             WRITE(6,*) ' row ', i, ' entries ',                               &
-               data%ROW_perm(data%DIAG_perm( i ):data%DIAG_perm(i+1)-1)
-             stop
-           end if
-           data%GROUP( data%ROW_perm( j ) ) = j
-         end do
-         data%GROUP( data%ROW_perm(data%DIAG_perm( i ):                        &
-                                   data%DIAG_perm(i+1)-1) ) = 0
-         IF ( COUNT( data%ROW_perm(data%DIAG_perm( i ):                        &
-                                   data%DIAG_perm(i+1)-1) < i ) > 0 ) then
-           WRITE(6,*) ' row ', i, ' entries ',                                 &
-             data%ROW_perm(data%DIAG_perm( i ):data%DIAG_perm(i+1)-1)
-           stop
-           end if
-        END DO
-        IF ( COUNT( data%ROW_perm(data%DIAG_perm( n ):nz) < n ) > 0 ) then
-        WRITE(6,*) ' row ', n, ' entries ',                                    &
-            data%ROW_perm(data%DIAG_perm( n ): nz )
-          stop
-        end if
-      END IF
-!  ^                                                                           ^
-!  |                                                                           |
-!  --------------------------- END OF IGNORED ----------------------------------
+!  --------------------------------------------------------------
+!  perform the Curtis-Powell-Reid procedure on the lower triangle
+!  --------------------------------------------------------------
 
 !  consider the columns in the permuted order
 
-      ilow = 0 ; ihigh = n + 1 ; ntst = 0
-      data%np = 1
+      ilow = 0 ; ihigh = n + 1 ; ngst = 0
+      data%ng = 1
       data%GROUP( : n ) = 0
       data%PERM( : n ) = 0
 
-!  start a new group
+!  start a new (np-th) group
 
   300 CONTINUE
-      nga = 0 ; iact = ilow + 1
+      ncing = 0 ; icol = ilow + 1
 
-!  start a new column
+!  start a new (icol-th) column
 
   310 CONTINUE
 
-!  has this column been included in some previous group already? If so, go to
-!  the next column
+!  if column icol has been included in a previous group, go to the next column
 
-      IF ( data%GROUP( iact ) <= 0 ) THEN
+      IF ( data%GROUP( icol ) <= 0 ) THEN
 
-!  scan the iact-th column
+!  otherwise, scan the rows in the column
 
-        istart = data%DIAG_perm( iact )
-        IF ( iact < n ) THEN
-          iend = data%DIAG_perm( iact + 1 ) - 1
+        istart = data%DIAG_perm( icol )
+        IF ( icol < n ) THEN
+          iend = data%DIAG_perm( icol + 1 ) - 1
         ELSE
           iend = nz
         END IF
         DO i = istart, iend
-          irpi = data%ROW_perm( i )
+          irow = data%ROW_perm( i )
 
-!  has this row already been considered in the current group? If so, abandon
+!  if row irow has already been considered in the current group, ignore
 !  the column
 
-          IF ( data%PERM( irpi ) > ntst ) THEN
+          IF ( data%PERM( irow ) > ngst ) THEN
             DO j = istart, i - 1
               data%PERM( data%ROW_perm( j ) ) = 0
             END DO
@@ -931,53 +748,51 @@
 
 !  mark the row temporarily
 
-          data%PERM( irpi ) = ntst + nga + 1
+          data%PERM( irow ) = ngst + ncing + 1
         END DO
 
-!  include the iact-th column in the np-th group
+!  include the icol-th column in the np-th group
 
-        nga = nga + 1
-        data%GROUP( iact ) = data%np
+        ncing = ncing + 1
+        data%GROUP( icol ) = data%ng
       END IF
 
 !  if necessary, revise the interval ilow, ihigh of possibly unassigned columns
 
-      IF ( iact == ilow + 1 ) ilow = iact
-      IF ( iact == ihigh - 1 ) ihigh = iact
+      IF ( icol == ilow + 1 ) ilow = icol
+      IF ( icol == ihigh - 1 ) ihigh = icol
 
 !  consider the next column
 
   320 CONTINUE
-      iact = iact + 1
+      icol = icol + 1
 
 !  complete the group if this is the last column
 
-      IF ( iact < ihigh ) GO TO 310
+      IF ( icol < ihigh ) GO TO 310
 
-!   close the np-th group. Compute the number of non assigned columns, and
-!   stop if zero
+!  close the np-th group. Compute the number of non assigned columns, and
+!  stop if zero
 
-      ntst = ntst + nga
-      IF ( ntst < n ) THEN
-        data%np = data%np + 1
+      ngst = ngst + ncing
+      IF ( ngst < n ) THEN
+        data%ng = data%ng + 1
         GO TO 300
       END IF
 
-!     ************************************************
-!     *                                              *
-!     *   invert the permutation IWK(i) in PERM(i)   *
-!     *                                              *
-!     ************************************************
+!  ----------------------------------------------
+!  store the inverse permutation IW(i) in PERM(i)
+!  ----------------------------------------------
 
       DO i = 1, n
-        data%PERM( data%IWK( i ) ) = i
+        data%PERM( data%IW( i ) ) = i
       END DO
 
 !  prepare to return
 
  900  CONTINUE
       IF ( inform%status == GALAHAD_ok ) THEN
-        inform%products = data%np
+        inform%products = data%ng
 
 !  allocate real workspace
 
@@ -1112,7 +927,7 @@
       END INTERFACE
 
 !   Programming: F77 version by Philippe Toint (1980) with mods by
-!   Iain Duff (1980) and rewrite in F2003 by Nick Gould (2012)
+!   Iain Duff (1980) and rewrite in modern fortran by Nick Gould (2012)
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
@@ -1135,11 +950,9 @@
         inform%status = GALAHAD_error_call_order ; GO TO 900
       END IF
 
-!   *******************************************************
-!   *                                                     *
-!   *   loop on the groups to evaluate the differences    *
-!   *                                                     *
-!   *******************************************************
+!  ------------------------------------------------
+!  loop over the groups to evaluate the differences
+!  ------------------------------------------------
 
 !  test for band structure
 
@@ -1150,17 +963,17 @@
         data%ibnd = 0
       END IF
 
-!  start the loop on the groups
+!  start the loop over the groups
 
-      data%ng = 0
+      data%ig = 0
   10  CONTINUE
-        data%ng = data%ng + 1
+        data%ig = data%ig + 1
 
 !  build the displacement vector in data%X
 
         DO i = 1, n
           ip = data%PERM( i )
-          IF ( data%GROUP( i ) == data%ng ) THEN
+          IF ( data%GROUP( i ) == data%ig ) THEN
             data%X( ip ) = X( ip ) + STEPSIZE( ip )
           ELSE
             data%X( ip ) = X( ip )
@@ -1175,12 +988,12 @@
           data%branch = 1 ; inform%status = 1 ; RETURN
         END IF
 
-!  evaluate the difference in gradient and store it in H
+!  evaluate the difference in gradients and store it in H
 
  100    CONTINUE
         DO i = 1, n
           IF ( data%ibnd == 0 ) THEN
-            IF ( data%GROUP( i ) /= data%ng ) CYCLE
+            IF ( data%GROUP( i ) /= data%ig ) CYCLE
             IF ( i < n ) THEN
               iej = data%DIAG_perm( i + 1 ) - 1
             ELSE
@@ -1198,7 +1011,7 @@
 
 !  lower half of the structure
 
-              IF ( data%GROUP( i ) /= data%ng ) CYCLE
+              IF ( data%GROUP( i ) /= data%ig ) CYCLE
               IF ( i < n ) THEN
                 iej = DIAG( i + 1 ) - 1
               ELSE
@@ -1212,24 +1025,20 @@
 !  upper half
 
             ELSE
-              ii = MOD( data%ibnd - MOD( i, data%ibnd ) + data%ng, data%ibnd )
+              ii = MOD( data%ibnd - MOD( i, data%ibnd ) + data%ig, data%ibnd )
               H( DIAG( i ) + ii ) = data%G( i ) - G( i )
             END IF
           END IF
         END DO
 
-!  end of the loop on the groups
+!  end of the loop over the groups
 
-      IF ( data%ng < data%np ) GO TO 10
+      IF ( data%ig < data%ng ) GO TO 10
       inform%status = GALAHAD_ok
 
-!   *********************************************************
-!   *                                                       *
-!   *   substitution to obtain an estimate of the hessian   *
-!   *                                                       *
-!   *********************************************************
-
-!  test for band substitution
+!  ------------------------------------------
+!  substitution to estimate a general Hessian
+!  ------------------------------------------
 
       IF ( data%ibnd == 0 ) THEN
 
@@ -1243,7 +1052,7 @@
 
 !  find the group of the column under consideration
 
-            data%ng = data%GROUP( ic )
+            data%ig = data%GROUP( ic )
           END IF
 
 !  Find the correction term for the difference by scanning the complementary
@@ -1257,7 +1066,7 @@
               ct = 0.0_rp_
               DO i = data%DIAG_perm( ir ), data%DIAG_perm( ir1 ) - 1
                 row_permi = data%ROW_perm( i )
-                IF ( data%GROUP( row_permi ) == data%ng .AND.                  &
+                IF ( data%GROUP( row_permi ) == data%ig .AND.                  &
                      data%ROW_perm( i ) /= ir ) THEN
                   ct = ct                                                      &
                     + H( data%OLD( i ) ) * STEPSIZE( data%PERM( row_permi ) )
@@ -1272,15 +1081,14 @@
           H( iopa ) = H( iopa ) / STEPSIZE( data%PERM( ic ) )
         END DO
 
-!   *************************************************
-!   *                                               *
-!   *    special substitution for band structure    *
-!   *                                               *
-!   *************************************************
+!  ---------------------------------------
+!  substitution to estimate a band Hessian
+!  ---------------------------------------
+
+      ELSE
 
 !  start the backward loop to define the matrix H(i,j) * H(j)
 
-      ELSE
         ic = n
         DO ip1 = 1, nz
           ipath = nz - ip1 + 1
@@ -1315,7 +1123,7 @@
           IF ( ipath == DIAG( ic1 ) ) ic = ic1
           IF ( ic >= data%istop ) EXIT
 
-!  find again the correction term for the difference
+!  again, find the correction term for the difference
 
           ir = ROW( ipath )
           IF ( ic /= 1 .AND. ic /= ir ) THEN
@@ -1419,8 +1227,8 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'fdh: data%IWK'
-     CALL SPACE_dealloc_array( data%IWK,                                       &
+     array_name = 'fdh: data%IW'
+     CALL SPACE_dealloc_array( data%IW,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
