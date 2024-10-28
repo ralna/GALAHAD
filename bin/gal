@@ -30,7 +30,7 @@
 #  History -
 #   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
 #   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
-#   this version 2023-05-17
+#   this version 2024-10-28
 
 if [[ -z $GALAHAD ]]; then
   echo ' You have not set the GALAHAD environment variable. '
@@ -867,6 +867,15 @@ elif [[ $2 == 'colt' ]]; then
   [[ ! -e ~/.galahad/specs/RUNCOLT.SPC ]] && $GALOBJ/buildspec colt
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec colt update
   [[ ! -L RUNCOLT.SPC ]] && ln -s ~/.galahad/specs/RUNCOLT.SPC RUNCOLT.SPC
+
+# qpf
+
+elif [[ $2 == 'qpf' ]]; then
+  RUNMAIN=$GALOBJ/runqpf_sif_$PRECIS.o
+# PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNQPF.SPC ]] && $GALOBJ/buildspec qpf
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpf update
+  [[ ! -L RUNQPF.SPC ]] && ln -s ~/.galahad/specs/RUNQPF.SPC RUNQPF.SPC
 
 # epf
 

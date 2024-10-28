@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.1 - 2024-10-26 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-10-28 AT 10:10 GMT.
 
 #include "galahad_modules.h"
 
@@ -374,7 +374,7 @@
 
 !  test for errors in the input data
 
-      IF ( nz < n .OR. n <= 0 .OR. nz > ( n * ( n + 1 ) ) / 2 ) THEN
+      IF ( nz < n .OR. n <= 0 ) THEN
         inform%status = GALAHAD_error_restrictions ; GO TO 900
       END IF
 
@@ -944,7 +944,7 @@
 
 !  test for an error in the input data
 
-      IF ( nz < n .OR. n <= 0 .OR. nz > ( n * ( n + 1 ) ) / 2 ) THEN
+      IF ( nz < n .OR. n <= 0 ) THEN
         inform%status = GALAHAD_error_restrictions ; GO TO 900
       ELSE IF ( .NOT. data%FDH_analyse_called ) THEN
         inform%status = GALAHAD_error_call_order ; GO TO 900
