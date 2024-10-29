@@ -11,14 +11,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['1.9', '1']
+        version: ['1']
         os: [ubuntu-latest, windows-latest, macos-13]
         arch: ['x64']
         allow_failure: [false]
         include:
           - os: macos-latest
             arch: 'arm64'
-            version: '1.9'
+            version: '1'
             allow_failure: false
           - os: macos-latest
             arch: 'arm64'
