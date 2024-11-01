@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_initialize(data, control, status)
+        function presolve_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_read_specfile(control, specfile)
+        function presolve_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_import_problem(control, data, status, n, m, 
+        function presolve_import_problem(T, control, data, status, n, m, 
                                          H_type, H_ne, H_row, H_col, H_ptr, 
                                          H_val,  g, f, A_type, A_ne, A_row, 
                                          A_col, A_ptr, A_val, c_l, c_u, 
@@ -262,7 +262,7 @@ crucial characteristics of the transformed variant
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_transform_problem(data, status, n, m, H_ne, H_col, 
+        function presolve_transform_problem(T, data, status, n, m, H_ne, H_col, 
                                             H_ptr, H_val, g, f, A_ne, A_col, 
                                             A_ptr, A_val, c_l, c_u, x_l, x_u,
                                             y_l, y_u, z_l, z_u)
@@ -416,7 +416,7 @@ the transformed variant
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_restore_solution(data, status, n_in, m_in, x_in, 
+        function presolve_restore_solution(T, data, status, n_in, m_in, x_in, 
                                             c_in, y_in, z_in, n, m, x, c, y, z)
 
 Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to recover the solution (x,c,y,z) to the original
@@ -527,7 +527,7 @@ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_information(data, inform, status)
+        function presolve_information(T, data, inform, status)
 
 Provides output information
 
@@ -562,7 +562,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function presolve_terminate(data, control, inform)
+        function presolve_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

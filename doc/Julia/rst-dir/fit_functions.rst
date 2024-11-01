@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fit_initialize(data, control, status)
+        function fit_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fit_information(data, inform, status)
+        function fit_information(T, data, inform, status)
 
 Provides output information
 
@@ -81,7 +81,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fit_terminate(data, control, inform)
+        function fit_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

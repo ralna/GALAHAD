@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_initialize(data, control, status)
+        function arc_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -40,7 +40,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_read_specfile(control, specfile)
+        function arc_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -72,7 +72,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_import(control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
+        function arc_import(T, control, data, status, n, H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -160,7 +160,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_reset_control(control, data, status)
+        function arc_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -196,7 +196,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_with_mat(data, userdata, status, n, x, g, ne,
+        function arc_solve_with_mat(T, data, userdata, status, n, x, g, ne,
                                     eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function using a regularization
@@ -394,7 +394,7 @@ function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_without_mat(data, userdata, status, n, x, g,
+        function arc_solve_without_mat(T, data, userdata, status, n, x, g,
                                        eval_f, eval_g, eval_hprod, eval_prec)
 
 Find a local minimizer of a given function using a regularization
@@ -587,7 +587,7 @@ information is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_reverse_with_mat(data, status, eval_status,
+        function arc_solve_reverse_with_mat(T, data, status, eval_status,
                                             n, x, f, g, ne, H_val, u, v)
 
 Find a local minimizer of a given function using a regularization
@@ -781,7 +781,7 @@ returning to the calling procedure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_solve_reverse_without_mat(data, status, eval_status,
+        function arc_solve_reverse_without_mat(T, data, status, eval_status,
                                                n, x, f, g, u, v)
 
 Find a local minimizer of a given function using a regularization
@@ -966,7 +966,7 @@ is only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_information(data, inform, status)
+        function arc_information(T, data, inform, status)
 
 Provides output information
 
@@ -999,7 +999,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function arc_terminate(data, control, inform)
+        function arc_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

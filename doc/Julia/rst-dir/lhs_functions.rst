@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lhs_initialize(data, control, inform)
+        function lhs_initialize(T, data, control, inform)
 
 Set default control values and initialize private data
 
@@ -37,7 +37,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lhs_read_specfile(control, specfile)
+        function lhs_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -69,7 +69,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lhs_ihs(n_dimen, n_points, seed, X, control, inform, data)
+        function lhs_ihs(T, n_dimen, n_points, seed, X, control, inform, data)
 
 The improved distributed hyper-cube sampling algorithm.
 
@@ -141,7 +141,7 @@ Brian Beachkofski, Ramana Grandhi, Improved Distributed Hypercube Sampling, Amer
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lhs_get_seed(seed)
+        function lhs_get_seed(T, seed)
 
 Get a seed for the random number generator.
 
@@ -161,7 +161,7 @@ Get a seed for the random number generator.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lhs_information(data, inform, status)
+        function lhs_information(T, data, inform, status)
 
 Provides output information
 
@@ -198,7 +198,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lhs_terminate(data, control, inform)
+        function lhs_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

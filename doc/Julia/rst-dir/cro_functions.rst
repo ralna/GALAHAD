@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_initialize(data, control, status)
+        function cro_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -43,7 +43,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_read_specfile(control, specfile)
+        function cro_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -75,7 +75,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_crossover_solution(data, control, inform, n, m, m_equal, 
+        function cro_crossover_solution(T, data, control, inform, n, m, m_equal, 
                                         h_ne, H_val, H_col, H_ptr, 
                                         a_ne, A_val, A_col, A_ptr, 
                                         g, c_l, c_u, x_l, x_u,
@@ -268,7 +268,7 @@ Crosover the solution from a primal-dual to a basic one.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function cro_terminate(data, control, inform)
+        function cro_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

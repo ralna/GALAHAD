@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_initialize(data, control, status)
+        function fdc_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_read_specfile(control, specfile)
+        function fdc_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_find_dependent_rows(control, data, inform, status, 
+        function fdc_find_dependent_rows(T, control, data, inform, status, 
                                          m, n, A_ne, A_col, A_ptr, A_val, b, 
                                          n_depen, depen)
 
@@ -200,7 +200,7 @@ Find dependent rows and, if any, check if $A x = b$ is consistent
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function fdc_terminate(data, control, inform)
+        function fdc_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

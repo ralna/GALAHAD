@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_initialize(data, control, status)
+        function llsr_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_read_specfile(control, specfile)
+        function llsr_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_import(control, data, status, m, n, 
+        function llsr_import(T, control, data, status, m, n, 
                              A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -171,7 +171,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_import_scaling(control, data, status, n, 
+        function llsr_import_scaling(T, control, data, status, n, 
                                      S_type, S_ne, S_row, S_col, S_ptr)
 
 Import the scaling matrix $S$ into internal storage prior to solution. Thus must have been preceeded by a call to llsr_import.
@@ -260,7 +260,7 @@ Import the scaling matrix $S$ into internal storage prior to solution. Thus must
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_reset_control(control, data, status)
+        function llsr_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -293,7 +293,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_solve_problem(data, status, m, n, power, weight, 
+        function llsr_solve_problem(T, data, status, m, n, power, weight, 
                                     A_ne, A_val, b, x, S_ne, S_val)
 
 Solve the regularization-region problem.
@@ -424,7 +424,7 @@ Solve the regularization-region problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_information(data, inform, status)
+        function llsr_information(T, data, inform, status)
 
 Provides output information
 
@@ -458,7 +458,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function llsr_terminate(data, control, inform)
+        function llsr_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

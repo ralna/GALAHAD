@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lms_initialize(data, control, status)
+        function lms_initialize(T, data, control, status)
 
 .. rubric:: Parameters:
 
@@ -40,7 +40,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lms_information(data, inform, status)
+        function lms_information(T, data, inform, status)
 
 Provides output information
 
@@ -75,7 +75,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function lms_terminate(data, control, inform)
+        function lms_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

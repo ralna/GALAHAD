@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ir_initialize(data, control, status)
+        function ir_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ir_information(data, inform, status)
+        function ir_information(T, data, inform, status)
 
 Provides output information
 
@@ -79,7 +79,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ir_terminate(data, control, inform)
+        function ir_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

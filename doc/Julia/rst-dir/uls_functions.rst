@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_initialize(solver, data, control, status)
+        function uls_initialize(T, solver, data, control, status)
 
 Set default control values and initialize private data
 
@@ -51,7 +51,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_read_specfile(control, specfile)
+        function uls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -83,7 +83,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_factorize_matrix(control, data, status, 
+        function uls_factorize_matrix(T, control, data, status, 
                                       m, n, type, ne, val, row, col, ptr)
 
 Import matrix data into internal storage prior to solution, analyse the
@@ -203,7 +203,7 @@ sparsity patern, and subsequently factorize the matrix
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_reset_control(control, data, status)
+        function uls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -239,7 +239,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_solve_system(data, status, m, n, sol, trans)
+        function uls_solve_system(T, data, status, m, n, sol, trans)
 
 Solve the linear system $Ax=b$ or $A^Tx=b$.
 
@@ -318,7 +318,7 @@ Solve the linear system $Ax=b$ or $A^Tx=b$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_information(data, inform, status)
+        function uls_information(T, data, inform, status)
 
 Provides output information
 
@@ -352,7 +352,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function uls_terminate(data, control, inform)
+        function uls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_initialize(solver, data, control, status)
+        function sls_initialize(T, solver, data, control, status)
 
 Select solver, set default control values and initialize private data
 
@@ -49,7 +49,7 @@ Select solver, set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_read_specfile(control, specfile)
+        function sls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -81,7 +81,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_analyse_matrix(control, data, status, n, type, ne, row, col, ptr)
+        function sls_analyse_matrix(T, control, data, status, n, type, ne, row, col, ptr)
 
 Import structural matrix data into internal storage prior to solution
 
@@ -218,7 +218,7 @@ Import structural matrix data into internal storage prior to solution
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_reset_control(control, data, status)
+        function sls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -251,7 +251,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_factorize_matrix(data, status, ne, val)
+        function sls_factorize_matrix(T, data, status, ne, val)
 
 Form and factorize the symmetric matrix $A$.
 
@@ -363,7 +363,7 @@ Form and factorize the symmetric matrix $A$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_solve_system(data, status, n, sol)
+        function sls_solve_system(T, data, status, n, sol)
 
 Solve the linear system $Ax=b$.
 
@@ -432,7 +432,7 @@ Solve the linear system $Ax=b$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_partial_solve_system(part, data, status, n, sol)
+        function sls_partial_solve_system(T, part, data, status, n, sol)
 
 Given the factorization $A = L D U$ with $U = L^T$, solve the linear
 system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
@@ -509,7 +509,7 @@ system $$Mx=b,$$ where $M$ is one of $L$, $D$, $U$ or $S = L \sqrt{D}$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_information(data, inform, status)
+        function sls_information(T, data, inform, status)
 
 Provide output information
 
@@ -546,7 +546,7 @@ Provide output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sls_terminate(data, control, inform)
+        function sls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

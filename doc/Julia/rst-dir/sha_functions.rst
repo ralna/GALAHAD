@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_initialize(data, control, status)
+        function sha_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -82,7 +82,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_analyse_matrix(control, data, status, n, ne, row, col, m)
+        function sha_analyse_matrix(T, control, data, status, n, ne, row, col, m)
 
 Analsyse the sparsity structure of $H$ to generate information that will be
 used when estimating its values.
@@ -185,7 +185,7 @@ used when estimating its values.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_recover_matrix(data, status, ne, m, ls1, ls2, strans,
+        function sha_recover_matrix(T, data, status, ne, m, ls1, ls2, strans,
                                     ly1, ly2, ytrans, val, order)
 
 Estimate the nonzero entries of the Hessian $H$ by component-wise secant
@@ -333,7 +333,7 @@ approximation.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_information(data, inform, status)
+        function sha_information(T, data, inform, status)
 
 Provides output information
 
@@ -371,7 +371,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sha_terminate(data, control, inform)
+        function sha_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

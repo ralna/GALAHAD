@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function l2rt_initialize(data, control, status)
+        function l2rt_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function l2rt_read_specfile(control, specfile)
+        function l2rt_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function l2rt_import_control(control, data, status)
+        function l2rt_import_control(T, control, data, status)
 
 Import control parameters prior to solution.
 
@@ -110,7 +110,7 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function l2rt_solve_problem(data, status, m, n, power, weight, shift, 
+        function l2rt_solve_problem(T, data, status, m, n, power, weight, shift, 
                                     x, u, v)
 
 Solve the regularized-least-squares problem using reverse communication.
@@ -227,7 +227,7 @@ Solve the regularized-least-squares problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function l2rt_information(data, inform, status)
+        function l2rt_information(T, data, inform, status)
 
 Provides output information
 
@@ -264,7 +264,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function l2rt_terminate(data, control, inform)
+        function l2rt_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

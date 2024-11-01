@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_initialize(data, control, status)
+        function qpb_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_read_specfile(control, specfile)
+        function qpb_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_import(control, data, status, n, m, 
+        function qpb_import(T, control, data, status, n, m, 
                             H_type, H_ne, H_row, H_col, H_ptr, 
                             A_type, A_ne, A_row, A_col, A_ptr)
 
@@ -197,7 +197,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_reset_control(control, data, status)
+        function qpb_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -231,7 +231,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_solve_qp(data, status, n, m, h_ne, H_val, g, f, 
+        function qpb_solve_qp(T, data, status, n, m, h_ne, H_val, g, f, 
                               a_ne, A_val, c_l, c_u, x_l, x_u, 
                               x, c, y, z, x_stat, c_stat)
 
@@ -420,7 +420,7 @@ Solve the quadratic program when the Hessian $H$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_information(data, inform, status)
+        function qpb_information(T, data, inform, status)
 
 Provides output information
 
@@ -455,7 +455,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function qpb_terminate(data, control, inform)
+        function qpb_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

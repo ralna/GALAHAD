@@ -9,7 +9,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_initialize(data, control, inform)
+        function nls_initialize(T, data, control, inform)
 
 Set default control values and initialize private data
 
@@ -39,7 +39,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_read_specfile(control, specfile)
+        function nls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -71,7 +71,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_import(control, data, status, n, m,
+        function nls_import(T, control, data, status, n, m,
                             J_type, J_ne, J_row, J_col, J_ptr,
                             H_type, H_ne, H_row, H_col, H_ptr,
                             P_type, P_ne, P_row, P_col, P_ptr, w)
@@ -222,7 +222,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_reset_control(control, data, status)
+        function nls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -257,7 +257,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_with_mat(data, userdata, status, n, m, x, c, g,
+        function nls_solve_with_mat(T, data, userdata, status, n, m, x, c, g,
                                     eval_c, j_ne, eval_j, h_ne, eval_h,
                                     p_ne, eval_hprods)
 
@@ -474,7 +474,7 @@ function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_without_mat(data, userdata, status, n, m, x, c, g,
+        function nls_solve_without_mat(T, data, userdata, status, n, m, x, c, g,
                                        eval_c, eval_jprod, eval_hprod,
                                        p_ne, eval_hprods)
 
@@ -688,7 +688,7 @@ information is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_reverse_with_mat(data, status, eval_status,
+        function nls_solve_reverse_with_mat(T, data, status, eval_status,
                                             n, m, x, c, g, j_ne, J_val,
                                             y, h_ne, H_val, v, p_ne, P_val)
 
@@ -915,7 +915,7 @@ returning to the calling procedure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_solve_reverse_without_mat(data, status, eval_status,
+        function nls_solve_reverse_without_mat(T, data, status, eval_status,
                                                n, m, x, c, g, transpose,
                                                u, v, y, p_ne, P_val)
 
@@ -1128,7 +1128,7 @@ is only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_information(data, inform, status)
+        function nls_information(T, data, inform, status)
 
 Provides output information
 
@@ -1163,7 +1163,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function nls_terminate(data, control, inform)
+        function nls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function wcp_initialize(data, control, status)
+        function wcp_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function wcp_read_specfile(control, specfile)
+        function wcp_read_specfile(T, control, specfile)
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
 in-depth discussion of specification files is
@@ -72,7 +72,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function wcp_import(control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
+        function wcp_import(T, control, data, status, n, m, A_type, A_ne, A_row, A_col, A_ptr)
 
 Import problem data into internal storage prior to solution.
 
@@ -157,7 +157,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function wcp_reset_control(control, data, status)
+        function wcp_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -191,7 +191,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-         function wcp_find_wcp(data, status, n, m, g, a_ne, A_val, c_l, c_u,
+         function wcp_find_wcp(T, data, status, n, m, g, a_ne, A_val, c_l, c_u,
                                x_l, x_u, x, c, y_l, y_u, z_l, z_u, x_stat, c_stat)
 
 Find a well-centered point in the feasible region
@@ -368,7 +368,7 @@ Find a well-centered point in the feasible region
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function wcp_information(data, inform, status)
+        function wcp_information(T, data, inform, status)
 
 Provides output information.
 

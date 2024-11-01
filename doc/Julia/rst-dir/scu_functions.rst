@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function scu_information(data, inform, status)
+        function scu_information(T, data, inform, status)
 
 Provides output information
 
@@ -42,7 +42,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function scu_terminate(data, control, inform)
+        function scu_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 
