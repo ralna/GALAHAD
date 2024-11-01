@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_initialize(data, control, status)
+        function eqp_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_read_specfile(control, specfile)
+        function eqp_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_import(control, data, status, n, m, 
+        function eqp_import(T, control, data, status, n, m, 
                             H_type, H_ne, H_row, H_col, H_ptr, 
                             A_type, A_ne, A_row, A_col, A_ptr)
 
@@ -201,7 +201,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_reset_control(control, data, status)
+        function eqp_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -237,7 +237,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_solve_qp(data, status, n, m, h_ne, H_val, g, f, 
+        function eqp_solve_qp(T, data, status, n, m, h_ne, H_val, g, f, 
                               a_ne, A_val, c, x, y)
 
 Solve the quadratic program when the Hessian $H$ is available.
@@ -389,7 +389,7 @@ Solve the quadratic program when the Hessian $H$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_solve_sldqp(data, status, n, m, w, x0, g, f, 
+        function eqp_solve_sldqp(T, data, status, n, m, w, x0, g, f, 
                                  a_ne, A_val, c, x, y)
 
 Solve the shifted least-distance quadratic program
@@ -539,7 +539,7 @@ Solve the shifted least-distance quadratic program
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_resolve_qp(data, status, n, m, g, f, c, x, y)
+        function eqp_resolve_qp(T, data, status, n, m, g, f, c, x, y)
 
 Resolve the quadratic program or shifted least-distance quadratic program when some or all of the data $g$, $f$ and $c$ has changed
 
@@ -660,7 +660,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_information(data, inform, status)
+        function eqp_information(T, data, inform, status)
 
 Provides output information
 
@@ -697,7 +697,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function eqp_terminate(data, control, inform)
+        function eqp_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

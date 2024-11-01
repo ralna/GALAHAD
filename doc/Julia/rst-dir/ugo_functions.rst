@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_initialize(data, control, status)
+        function ugo_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -43,7 +43,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_read_specfile(control, specfile)
+        function ugo_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -75,7 +75,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_import(control, data, status, x_l, x_u)
+        function ugo_import(T, control, data, status, x_l, x_u)
 
 Import problem data into internal storage prior to solution.
 
@@ -139,7 +139,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_reset_control(control, data, status)
+        function ugo_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -174,7 +174,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_solve_direct(data, userdata, status, x, f, g, h, eval_fgh)
+        function ugo_solve_direct(T, data, userdata, status, x, f, g, h, eval_fgh)
 
 Find an approximation to the global minimizer of a given univariate
 function with a Lipschitz gradient in an interval.
@@ -294,7 +294,7 @@ is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_solve_reverse(data, status, eval_status, x, f, g, h)
+        function ugo_solve_reverse(T, data, status, eval_status, x, f, g, h)
 
 Find an approximation to the global minimizer of a given univariate
 function with a Lipschitz gradient in an interval.
@@ -421,7 +421,7 @@ only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_information(data, inform, status)
+        function ugo_information(T, data, inform, status)
 
 Provides output information
 
@@ -458,7 +458,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function ugo_terminate(data, control, inform)
+        function ugo_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

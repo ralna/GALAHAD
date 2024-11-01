@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_initialize(data, control, status)
+        function bqp_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -41,7 +41,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_read_specfile(control, specfile)
+        function bqp_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -73,7 +73,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_import(control, data, status, n, H_type, ne, 
+        function bqp_import(T, control, data, status, n, H_type, ne, 
                             H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -160,7 +160,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_import_without_h(control, data, status, n)
+        function bqp_import_without_h(T, control, data, status, n)
 
 Import problem data into internal storage prior to solution.
 
@@ -218,7 +218,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_reset_control(control, data, status)
+        function bqp_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -255,7 +255,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_solve_given_h(data, status, n, h_ne, H_val, g, f, 
+        function bqp_solve_given_h(T, data, status, n, h_ne, H_val, g, f, 
                                    x_l, x_u, x, z, x_stat)
 
 Solve the bound-constrained quadratic program when the Hessian $H$ is available.
@@ -406,7 +406,7 @@ Solve the bound-constrained quadratic program when the Hessian $H$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_solve_reverse_h_prod(data, status, n, g, f, 
+        function bqp_solve_reverse_h_prod(T, data, status, n, g, f, 
                                           x_l, x_u, x, z, x_stat, v,
                                           prod, nz_v, nz_v_start, 
                                           nz_v_end, nz_prod, nz_prod_end)
@@ -613,7 +613,7 @@ program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_information(data, inform, status)
+        function bqp_information(T, data, inform, status)
 
 Provides output information
 
@@ -648,7 +648,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqp_terminate(data, control, inform)
+        function bqp_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

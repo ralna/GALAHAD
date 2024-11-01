@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_initialize(data, control, status)
+        function sbls_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_read_specfile(control, specfile)
+        function sbls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_import(control, data, status, n, m, 
+        function sbls_import(T, control, data, status, n, m, 
                              H_type, H_ne, H_row, H_col, H_ptr, 
                              A_type, A_ne, A_row, A_col, A_ptr, 
                              C_type, C_ne, C_row, C_col, C_ptr)
@@ -221,7 +221,7 @@ Import structural matrix data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_reset_control(control, data, status)
+        function sbls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -255,7 +255,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_factorize_matrix(data, status, n, h_ne, H_val, 
+        function sbls_factorize_matrix(T, data, status, n, h_ne, H_val, 
 	                               a_ne, A_val, c_ne, C_val, D)
 
 Form and factorize the block matrix
@@ -385,7 +385,7 @@ for some appropriate matrix $G$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_solve_system(data, status, n, m, sol)
+        function sbls_solve_system(T, data, status, n, m, sol)
 
 Solve the block linear system
 $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix} 
@@ -462,7 +462,7 @@ $$\begin{pmatrix}G & A^T \\ A  & - C\end{pmatrix}
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_information(data, inform, status)
+        function sbls_information(T, data, inform, status)
 
 Provides output information
 
@@ -499,7 +499,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sbls_terminate(data, control, inform)
+        function sbls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

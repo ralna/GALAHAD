@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gltr_initialize(data, control, status)
+        function gltr_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gltr_read_specfile(control, specfile)
+        function gltr_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gltr_import_control(control, data, status)
+        function gltr_import_control(T, control, data, status)
 
 Import control parameters prior to solution.
 
@@ -114,7 +114,7 @@ Import control parameters prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gltr_solve_problem(data, status, n, radius, x, r, vector)
+        function gltr_solve_problem(T, data, status, n, radius, x, r, vector)
 
 Solve the trust-region problem using reverse communication.
 
@@ -221,7 +221,7 @@ Solve the trust-region problem using reverse communication.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gltr_information(data, inform, status)
+        function gltr_information(T, data, inform, status)
 
 Provides output information
 
@@ -256,7 +256,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function gltr_terminate(data, control, inform)
+        function gltr_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

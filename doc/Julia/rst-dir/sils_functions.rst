@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sils_initialize(data, control, status)
+        function sils_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sils_read_specfile(control, specfile)
+        function sils_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sils_import(control, data, status)
+        function sils_import(T, control, data, status)
 
 Import problem data into internal storage prior to solution.
 
@@ -131,7 +131,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sils_reset_control(control, data, status)
+        function sils_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -166,7 +166,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sils_information(data, ainfo, finfo, sinfo, status)
+        function sils_information(T, data, ainfo, finfo, sinfo, status)
 
 Provides output information
 
@@ -211,7 +211,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function sils_finalize(data, control, status)
+        function sils_finalize(T, data, control, status)
 
 Deallocate all internal private storage
 

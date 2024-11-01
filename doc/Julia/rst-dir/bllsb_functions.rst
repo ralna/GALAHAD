@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bllsb_initialize(data, control, status)
+        function bllsb_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bllsb_read_specfile(control, specfile)
+        function bllsb_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.
@@ -74,7 +74,7 @@ components of the control structure.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function bllsb_import(control, data, status, n, o, 
+        function bllsb_import(T, control, data, status, n, o, 
                               Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr )
 
 Import problem data into internal storage prior to solution.
@@ -174,7 +174,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function bllsb_reset_control(control, data, status)
+        function bllsb_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -208,7 +208,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function bllsb_solve_blls(data, status, n, o,
+        function bllsb_solve_blls(T, data, status, n, o,
                                   Ao_ne, Ao_val, b, sigma, 
                                   x_l, x_u, x, r, z, x_stat, w)
 
@@ -366,7 +366,7 @@ Solve the linearly-constrained regularized linear least-squares problem.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function bllsb_information(data, inform, status)
+        function bllsb_information(T, data, inform, status)
 
 Provides output information
 
@@ -401,7 +401,7 @@ Provides output information
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function bllsb_terminate(data, control, inform)
+        function bllsb_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

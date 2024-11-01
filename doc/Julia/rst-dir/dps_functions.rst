@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_initialize(data, control, status)
+        function dps_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_read_specfile(control, specfile)
+        function dps_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_import(control, data, status, n, 
+        function dps_import(T, control, data, status, n, 
                             H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -163,7 +163,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_reset_control(control, data, status)
+        function dps_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -200,7 +200,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_solve_tr_problem(data, status, n, ne, H_val, c, f, 
+        function dps_solve_tr_problem(T, data, status, n, ne, H_val, c, f, 
                                       radius, x)
 
 Find the global minimizer of the trust-region problem (1).
@@ -308,7 +308,7 @@ Find the global minimizer of the trust-region problem (1).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_solve_rq_problem(data, status, n, ne, H_val, c, f, 
+        function dps_solve_rq_problem(T, data, status, n, ne, H_val, c, f, 
                                       power, weight, x)
 
 Find the global minimizer of the regularized-quadartic problem (2).
@@ -421,7 +421,7 @@ Find the global minimizer of the regularized-quadartic problem (2).
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_resolve_tr_problem(data, status, n, c, f, radius, x)
+        function dps_resolve_tr_problem(T, data, status, n, c, f, radius, x)
 
 Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem.
 
@@ -504,7 +504,7 @@ Find the global minimizer of the trust-region problem (1) if some non-matrix com
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_resolve_rq_problem(data, status, n, c, f, power, weight, x)
+        function dps_resolve_rq_problem(T, data, status, n, c, f, power, weight, x)
 
 Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem.
 
@@ -587,7 +587,7 @@ Find the global minimizer of the regularized-quadartic problem (2) if some non-m
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_information(data, inform, status)
+        function dps_information(T, data, inform, status)
 
 Provides output information
 
@@ -624,7 +624,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function dps_terminate(data, control, inform)
+        function dps_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

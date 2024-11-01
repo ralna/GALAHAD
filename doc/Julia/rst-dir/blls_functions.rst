@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_initialize(data, control, status)
+        function blls_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_read_specfile(control, specfile)
+        function blls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_import(control, data, status, n, o, 
+        function blls_import(T, control, data, status, n, o, 
                              Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -173,7 +173,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_import_without_a(control, data, status, n, o)
+        function blls_import_without_a(T, control, data, status, n, o)
 
 Import problem data into internal storage prior to solution when $A_o$ is
 not explicitly available.
@@ -238,7 +238,7 @@ not explicitly available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_reset_control(control, data, status)
+        function blls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -273,7 +273,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_solve_given_a(data, userdata, status, n, o, 
+        function blls_solve_given_a(T, data, userdata, status, n, o, 
                                     Ao_ne, Ao_val, b, x_l, x_u, x, z, r, g, 
                                     x_stat, w, eval_prec)
 
@@ -445,7 +445,7 @@ Jacobian $A$ is available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_solve_reverse_a_prod(data, status, eval_status, n, o, b,
+        function blls_solve_reverse_a_prod(T, data, status, eval_status, n, o, b,
                                            x_l, x_u, x, z, r, g, x_stat, v, p,
                                            nz_v, nz_v_start, nz_v_end, nz_p, 
                                            nz_p_end, w)
@@ -712,7 +712,7 @@ may be computed by the calling program.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_information(data, inform, status)
+        function blls_information(T, data, inform, status)
 
 Provides output information
 
@@ -746,7 +746,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function blls_terminate(data, control, inform)
+        function blls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

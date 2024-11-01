@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function clls_initialize(data, control, status)
+        function clls_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function clls_read_specfile(control, specfile)
+        function clls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.
@@ -74,7 +74,7 @@ components of the control structure.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_import(control, data, status, n, o, m, 
+        function clls_import(T, control, data, status, n, o, m, 
                              Ao_type, Ao_ne, Ao_row, Ao_col, Ao_ptr_ne, Ao_ptr, 
                              A_type, A_ne, A_row, A_col, A_ptr_ne, A_ptr)
 
@@ -213,7 +213,7 @@ that holds the starting position of each row of $A$, as well as the total number
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_reset_control(control, data, status)
+        function clls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -247,7 +247,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_solve_clls(data, status, n, o, m, 
+        function clls_solve_clls(T, data, status, n, o, m, 
                                  Ao_ne, Ao_val, b, sigma, a_ne, A_val, 
                                  c_l, c_u, x_l, x_u, x, r, c, y, z, 
                                  x_stat, c_stat, w)
@@ -449,7 +449,7 @@ Solve the linearly-constrained regularized linear least-squares problem.
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_information(data, inform, status)
+        function clls_information(T, data, inform, status)
 
 Provides output information
 
@@ -484,7 +484,7 @@ Provides output information
 .. ref-code-block:: julia
         :class: doxyrest-title-code-block
 
-        function clls_terminate(data, control, inform)
+        function clls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

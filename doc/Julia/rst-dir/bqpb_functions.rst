@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_initialize(data, control, status)
+        function bqpb_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_read_specfile(control, specfile)
+        function bqpb_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_import(control, data, status, n, 
+        function bqpb_import(T, control, data, status, n, 
                              H_type, H_ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -172,7 +172,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_reset_control(control, data, status)
+        function bqpb_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -208,7 +208,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_solve_qp(data, status, n, h_ne, H_val, g, f, 
+        function bqpb_solve_qp(T, data, status, n, h_ne, H_val, g, f, 
                                 x_l, x_u, x, z, x_stat)
 
 Solve the bound-constrained quadratic program when the Hessian $H$ is
@@ -353,7 +353,7 @@ available.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_solve_sldqp(data, status, n, w, x0, g, f, x_l, x_u, 
+        function bqpb_solve_sldqp(T, data, status, n, w, x0, g, f, x_l, x_u, 
                                   x, z, x_stat)
 
 Solve the shifted least-distance quadratic program
@@ -506,7 +506,7 @@ Solve the shifted least-distance quadratic program
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_information(data, inform, status)
+        function bqpb_information(T, data, inform, status)
 
 Provides output information
 
@@ -542,7 +542,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function bqpb_terminate(data, control, inform)
+        function bqpb_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

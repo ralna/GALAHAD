@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_initialize(data, control, status)
+        function rqs_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_read_specfile(control, specfile)
+        function rqs_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -74,7 +74,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_import(control, data, status, n, 
+        function rqs_import(T, control, data, status, n, 
                             H_type, H_ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -161,7 +161,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_import_m(data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
+        function rqs_import_m(T, data, status, n, M_type, M_ne, M_row, M_col, M_ptr)
 
 Import data for the scaling matrix M into internal storage prior to solution.
 
@@ -242,7 +242,7 @@ Import data for the scaling matrix M into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_import_a(data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
+        function rqs_import_a(T, data, status, m, A_type, A_ne, A_row, A_col, A_ptr)
 
 Import data for the constraint matrix A into internal storage prior to solution.
 
@@ -322,7 +322,7 @@ Import data for the constraint matrix A into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_reset_control(control, data, status)
+        function rqs_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -356,7 +356,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_solve_problem(data, status, n, power, weight, f, c, 
+        function rqs_solve_problem(T, data, status, n, power, weight, f, c, 
                                   H_ne, H_val, x, M_ne, M_val, m, A_ne, A_val, y)
 
 Solve the regularised quadratic problem.
@@ -502,7 +502,7 @@ Solve the regularised quadratic problem.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_information(data, inform, status)
+        function rqs_information(T, data, inform, status)
 
 Provides output information
 
@@ -537,7 +537,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rqs_terminate(data, control, inform)
+        function rqs_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

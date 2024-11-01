@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_initialize(data, control, status)
+        function trb_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_read_specfile(control, specfile)
+        function trb_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_import(control, data, status, n, x_l, x_u,
+        function trb_import(T, control, data, status, n, x_l, x_u,
                             H_type, ne, H_row, H_col, H_ptr)
 
 Import problem data into internal storage prior to solution.
@@ -174,7 +174,7 @@ Import problem data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_reset_control(control, data, status)
+        function trb_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -209,7 +209,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_with_mat(data, userdata, status, n, x, g, ne,
+        function trb_solve_with_mat(T, data, userdata, status, n, x, g, ne,
                                     eval_f, eval_g, eval_h, eval_prec)
 
 Find a local minimizer of a given function subject to simple bounds on
@@ -405,7 +405,7 @@ function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_without_mat(data, userdata, status, n, x, g,
+        function trb_solve_without_mat(T, data, userdata, status, n, x, g,
                                        eval_f, eval_g, eval_hprod,
                                        eval_shprod, eval_prec)
 
@@ -625,7 +625,7 @@ information is available by function calls.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_reverse_with_mat(data, status, eval_status, n, x,
+        function trb_solve_reverse_with_mat(T, data, status, eval_status, n, x,
                                             f, g, ne, H_val, u, v)
 
 Find a local minimizer of a given function subject to simple bounds on
@@ -817,7 +817,7 @@ returning to the calling procedure
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_solve_reverse_without_mat(data, status, eval_status,
+        function trb_solve_reverse_without_mat(T, data, status, eval_status,
                                                n, x, f, g, u, v, index_nz_v,
                                                nnz_v, index_nz_u, nnz_u)
 
@@ -1037,7 +1037,7 @@ is only available by returning to the calling procedure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_information(data, inform, status)
+        function trb_information(T, data, inform, status)
 
 Provides output information
 
@@ -1070,7 +1070,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function trb_terminate(data, control, inform)
+        function trb_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

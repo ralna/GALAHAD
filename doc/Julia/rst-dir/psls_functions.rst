@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_initialize(data, control, status)
+        function psls_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -44,7 +44,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_read_specfile(control, specfile)
+        function psls_read_specfile(T, control, specfile)
 
 Read the content of a specification file, and assign values associated
 with given keywords to the corresponding control parameters.  An
@@ -76,7 +76,7 @@ keywords relate to the components of the control structure.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_import(control, data, status, n, type, ne, row, col, ptr)
+        function psls_import(T, control, data, status, n, type, ne, row, col, ptr)
 
 Import structural matrix data into internal storage prior to solution.
 
@@ -164,7 +164,7 @@ Import structural matrix data into internal storage prior to solution.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_reset_control(control, data, status)
+        function psls_reset_control(T, control, data, status)
 
 Reset control parameters after import if required.
 
@@ -201,7 +201,7 @@ Reset control parameters after import if required.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_form_preconditioner(data, status, ne, val)
+        function psls_form_preconditioner(T, data, status, ne, val)
 
 Form and factorize a preconditioner $P$ of the matrix $A$.
 
@@ -266,7 +266,7 @@ Form and factorize a preconditioner $P$ of the matrix $A$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_form_subset_preconditioner(data, status, ne, val, n_sub, sub)
+        function psls_form_subset_preconditioner(T, data, status, ne, val, n_sub, sub)
 
 Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $A$.
 
@@ -341,7 +341,7 @@ Form and factorize a $P$ preconditioner of a symmetric submatrix of the matrix $
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_update_preconditioner(data, status, ne, val, n_del, del)
+        function psls_update_preconditioner(T, data, status, ne, val, n_del, del)
 
 Update the preconditioner $P$ when rows (amd columns) are removed.
 
@@ -416,7 +416,7 @@ Update the preconditioner $P$ when rows (amd columns) are removed.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_apply_preconditioner(data, status, n, sol)
+        function psls_apply_preconditioner(T, data, status, n, sol)
 
 Solve the linear system $Px=b$.
 
@@ -473,7 +473,7 @@ Solve the linear system $Px=b$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_information(data, inform, status)
+        function psls_information(T, data, inform, status)
 
 Provide output information
 
@@ -508,7 +508,7 @@ Provide output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function psls_terminate(data, control, inform)
+        function psls_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

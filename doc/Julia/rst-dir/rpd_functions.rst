@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_initialize(data, control, status)
+        function rpd_initialize(T, data, control, status)
 
 Set default control values and initialize private data
 
@@ -42,7 +42,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_stats(qplib_file, qplib_file_len, control, data, 
+        function rpd_get_stats(T, qplib_file, qplib_file_len, control, data, 
                                status, p_type, n, m, h_ne, a_ne, h_c_ne)
 
 Read the data from a specified QPLIB file into internal storage, and report the type of problem encoded, along with problem-specific dimensions.
@@ -190,7 +190,7 @@ Read the data from a specified QPLIB file into internal storage, and report the 
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_g(data, status, n, g)
+        function rpd_get_g(T, data, status, n, g)
 
 Recover the linear term $g$ from in objective function
 
@@ -232,7 +232,7 @@ Recover the linear term $g$ from in objective function
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_f(data, status, f)
+        function rpd_get_f(T, data, status, f)
 
 Recover the constant term $f$ in the objective function.
 
@@ -269,7 +269,7 @@ Recover the constant term $f$ in the objective function.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_xlu(data, status, n, x_l, x_u)
+        function rpd_get_xlu(T, data, status, n, x_l, x_u)
 
 Recover the variable lower and upper bounds $x_l$ and $x_u$.
 
@@ -316,7 +316,7 @@ Recover the variable lower and upper bounds $x_l$ and $x_u$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_clu(data, status, m, c_l, c_u)
+        function rpd_get_clu(T, data, status, m, c_l, c_u)
 
 Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 
@@ -363,7 +363,7 @@ Recover the constraint lower and upper bounds $c_l$ and $c_u$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_h(data, status, h_ne, h_row, h_col, h_val)
+        function rpd_get_h(T, data, status, h_ne, h_row, h_col, h_val)
 
 Recover the Hessian term $H$ in the objective function.
 
@@ -415,7 +415,7 @@ Recover the Hessian term $H$ in the objective function.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_a(data, status, a_ne, a_row, a_col, a_val)
+        function rpd_get_a(T, data, status, a_ne, a_row, a_col, a_val)
 
 Recover the Jacobian term $A$ in the constraints.
 
@@ -467,7 +467,7 @@ Recover the Jacobian term $A$ in the constraints.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_h_c(data, status, h_c_ne, 
+        function rpd_get_h_c(T, data, status, h_c_ne, 
                              h_c_ptr, h_c_row, h_c_col, h_c_val)
 
 Recover the Hessian terms $H_c$ in the constraints.
@@ -525,7 +525,7 @@ Recover the Hessian terms $H_c$ in the constraints.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_x_type(data, status, n, x_type)
+        function rpd_get_x_type(T, data, status, n, x_type)
 
 Recover the types of the variables $x$.
 
@@ -574,7 +574,7 @@ Recover the types of the variables $x$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_x(data, status, n,
+        function rpd_get_x(T, data, status, n,
 
 Recover the initial values of the variables $x$.
 
@@ -616,7 +616,7 @@ Recover the initial values of the variables $x$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_y(data, status, m, y)
+        function rpd_get_y(T, data, status, m, y)
 
 Recover the initial values of the Lagrange multipliers $y$.
 
@@ -658,7 +658,7 @@ Recover the initial values of the Lagrange multipliers $y$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_get_z(data, status, n, z)
+        function rpd_get_z(T, data, status, n, z)
 
 Recover the initial values of the dual variables $z$.
 
@@ -700,7 +700,7 @@ Recover the initial values of the dual variables $z$.
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_information(data, inform, status)
+        function rpd_information(T, data, inform, status)
 
 Provides output information
 
@@ -735,7 +735,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function rpd_terminate(data, control, inform)
+        function rpd_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 

@@ -7,7 +7,7 @@ callable functions
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function hash_initialize(nchar, length, data, control, inform)
+        function hash_initialize(T, nchar, length, data, control, inform)
 
 Set default control values and initialize private data
 
@@ -49,7 +49,7 @@ Set default control values and initialize private data
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function hash_information(data, inform, status)
+        function hash_information(T, data, inform, status)
 
 Provides output information
 
@@ -86,7 +86,7 @@ Provides output information
 .. ref-code-block:: julia
 	:class: doxyrest-title-code-block
 
-        function hash_terminate(data, control, inform)
+        function hash_terminate(T, data, control, inform)
 
 Deallocate all internal private storage
 
