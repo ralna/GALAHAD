@@ -128,8 +128,8 @@
        INTEGER ( KIND = ip_ ) :: alive_unit = 40
        CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
 
-!   update the Lagrange multipliers/dual variables from iteration 
-!    update_multipliers_itmin (<0 means never) and once the primal 
+!   update the Lagrange multipliers/dual variables from iteration
+!    update_multipliers_itmin (<0 means never) and once the primal
 !    infeasibility is below update_multipliers_tol
 
        INTEGER ( KIND = ip_ ) :: update_multipliers_itmin = 0
@@ -172,7 +172,7 @@
 
        REAL ( KIND = rp_ ) :: obj_unbounded = - epsmch ** ( - 2 )
 
-!   perform an advanced start at the end of every iteration when the KKT 
+!   perform an advanced start at the end of every iteration when the KKT
 !   residuals are smaller than %advanced_start (-ve means never)
 
        REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
@@ -1749,7 +1749,7 @@ stop
               bad_alloc = inform%bad_alloc, out = data%control%error )
        IF ( inform%status /= 0 ) GO TO 900
 
-!  advanced starts will require access to the matrices 
+!  advanced starts will require access to the matrices
 !
 !   B = ( - J(x) ) (with rows from blocks 1 & 2 and 3 & 4 intertwined) and
 !       (   J(x) )
@@ -1758,7 +1758,7 @@ stop
 !
 !   C = diag( - mu Y_l^-1  - mu Y_u^-1  - mu Z_l^-1  - mu Z_u^-1 )
 
-!  assign row numbers for B. For i = 1,...,m, 
+!  assign row numbers for B. For i = 1,...,m,
 !    B_rows( i ) =  l row i of c occurs in row l of B (single sided bound) or
 !                   in rows l and l+1 of B (double bounds)
 
@@ -1896,7 +1896,7 @@ stop
        END DO
 write(6,"( ' B ' )" )
 do l = 1, data%B_ssls%ne
-write(6,"( ' row, col ', 2i7 )" ) data%B_ssls%row( l ), data%B_ssls%col( l ) 
+write(6,"( ' row, col ', 2i7 )" ) data%B_ssls%row( l ), data%B_ssls%col( l )
 end do
 
 !  set space for the C block
@@ -2000,7 +2000,7 @@ end do
        data%print_iteration_header                                             &
          = data%print_level > 1 .OR. data%print_1st_header .OR.                &
            data%control%TRU_control%print_level > 0
-           
+
 !  -----------------------------------------------------------------
 !  2. start the inner-iteration (minimize the penalty function) loop
 !  -----------------------------------------------------------------
@@ -2520,7 +2520,7 @@ end do
 !                          (      c(x)-c_u - mu ( log y_u - log w_u )     )
 !                          (        x_l-x  - mu ( log z_l - log v_l )     )
 !                          (        x-x_u  - mu ( log z_u - log v_u )     )
- 
+
 !  Then apply Newton's method to find a solution to
 
 !   ( H_L(x,y_u-y_l)  - J^T (x)   J^T (x)   - I        I     ) (  dx  )
@@ -2693,10 +2693,10 @@ write(6,"( ' ||r|| = ', ES11.4 )" ) data%rnorm, TWO_NORM( data%R( : nlp%n ) )
          END IF
        END DO
 
-!  form and factorize the matrix 
+!  form and factorize the matrix
 
 !    ( H(x,y)  B^T(x) )
-!    (  B(x)  - C(x) ) 
+!    (  B(x)  - C(x) )
 
        CALL SSLS_factorize( nlp%n, data%n_c, nlp%H, data%B_ssls, data%C_ssls,  &
                             data%SSLS_data, data%control%SSLS_control,         &
@@ -2720,7 +2720,7 @@ write(6,*) ' ||r|| ', TWO_NORM( data%R )
 !write(6,*) ' ||v|| ', TWO_NORM( data%R( : nlp%n ) )
 !write(6,*) ' ||g|| ', TWO_NORM( nlp%G( : nlp%n ) )
 
-!  make a copy of x, y, z, c, g, J and H in case the advanced starting point 
+!  make a copy of x, y, z, c, g, J and H in case the advanced starting point
 !  is poor
 
        data%f_old = nlp%f
@@ -2736,7 +2736,7 @@ write(6,*) ' ||r|| ', TWO_NORM( data%R )
 
 !  compute the trial x and y
 
-       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%R( : nlp%n ) 
+       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%R( : nlp%n )
 
        k = nlp%n + 1
        DO i = 1, nlp%m

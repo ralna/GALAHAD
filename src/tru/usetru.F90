@@ -59,6 +59,9 @@
 
      INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l
      LOGICAL :: filexx, is_specfile, hessian_pattern_required
+!    LOGICAL, PARAMETER :: timings = .TRUE.
+     LOGICAL, PARAMETER :: timings = .FALSE.
+     REAL :: time
 !    REAL :: timeo, timet
 !    REAL ( KIND = rp_ ) :: clocko, clockt
      CHARACTER ( LEN = 10 ) :: name
@@ -226,6 +229,7 @@
      cutest_control%input = input ; cutest_control%error = control%error
      CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata,     &
                              no_hessian = .NOT. hessian_pattern_required )
+     IF ( timings ) CALL CUTEST_timings( i, 'start', time )
 
 !  Read a previous solution file for a re-entry
 
@@ -433,6 +437,14 @@
 
 !  Close any opened files and deallocate arrays
 
+     IF ( timings ) THEN
+       CALL CUTEST_timings( i, 'cutest_ufn', time )
+       WRITE( 6, "( ' time ufn = ', F8.2 )" ) time
+       CALL CUTEST_timings( i, 'cutest_ugr', time )
+       WRITE( 6, "( ' time ugr = ', F8.2 )" ) time
+       CALL CUTEST_timings( i, 'cutest_ush', time )
+       WRITE( 6, "( ' time ush = ', F8.2 )" ) time
+     END IF
      IF ( is_specfile ) CLOSE( input_specfile )
      CALL CUTEST_terminate( nlp, cutest_inform, userdata )
      RETURN

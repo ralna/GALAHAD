@@ -191,7 +191,7 @@
        REAL ( KIND = rp_ ) :: initial_target = - ten ** 4
        REAL ( KIND = rp_ ) :: initial_target_weight = ten ** ( - 8 )
 
-!   perform an advanced start at the end of every iteration when the KKT 
+!   perform an advanced start at the end of every iteration when the KKT
 !   residuals are smaller than %advanced_start (-ve means never)
 
        REAL ( KIND = rp_ ) :: advanced_start = ten ** ( - 2 )
@@ -1842,7 +1842,7 @@
 
 write(6,*) ' fixed initial value ... remove!!'
      inform%target = -10.0_rp_
-     
+
 
      data%target_bracketed = .FALSE.
      data%converged = .FALSE.
@@ -2063,10 +2063,10 @@ stop
 !                  START OF MAIN LOOP OVER EVOLVING TARGETS
 !  ----------------------------------------------------------------------------
 
-!  starting from an initial target (target_upper) at a feasible point, the 
-!  aim is to move left (i.e., decrease the target) until an infeasible target 
+!  starting from an initial target (target_upper) at a feasible point, the
+!  aim is to move left (i.e., decrease the target) until an infeasible target
 !  is found (target_lower). This then brackets the optimal target. Thereafter
-!  a sequence of targets is chosen to shrink the bracket 
+!  a sequence of targets is chosen to shrink the bracket
 
  290 CONTINUE
      IF ( data%printt ) WRITE( data%out, 2070 ) data%target_lower,             &
@@ -2467,7 +2467,7 @@ write(6,*) ' X ', nlp%X( : nlp%n )
          nlp%Y( : nlp%m ) = nlp%C( : nlp%m ) / data%discrepancy
 !write(6,*) ' x ',  nlp%X( : nlp%n )
 !write(6,*) ' y ',  nlp%Y( : nlp%m )
-!write(6,*) ' discrepancy ', data%discrepancy 
+!write(6,*) ' discrepancy ', data%discrepancy
 
 !  the new target gives a lower bound, and thus the target is now bounded
 
@@ -2498,8 +2498,8 @@ write(6,*) ' X ', nlp%X( : nlp%n )
 !            inform%target = half * ( data%target_upper + data%target_lower )
              inform%target = inform%target + 0.001_rp_
 
-!  two points to the left of the minimizer, linear interpolate to get next 
-!  target: find where linear fit through (tm,vm) and (tu,vu) intersects the 
+!  two points to the left of the minimizer, linear interpolate to get next
+!  target: find where linear fit through (tm,vm) and (tu,vu) intersects the
 !  t axis
 
 !  fit l(t) = ao + a1 t
@@ -2539,7 +2539,7 @@ write(6,*) ' X ', nlp%X( : nlp%n )
              END IF
 
 !  three (or more) points to the left of the minimizer, quadratic interpolate
-!  to get the next target: find where quadatic fit through (tl,vl), (tm,vm) 
+!  to get the next target: find where quadatic fit through (tl,vl), (tm,vm)
 !  and (tu,vu) intersects the t axis
 
 !  fit q(t) = ao + a1 t + a2 t^2 given
@@ -2566,7 +2566,7 @@ write(6,*) ' X ', nlp%X( : nlp%n )
              dm = ( data%phiu - data%phim ) / ( data%tu - data%tm )
              a2 = ( dm - dl ) / ( data%tu - data%tl )
              a1 = dl - a2 * ( data%tm + data%tl )
-             a0 = data%phil - data%tl * ( a1 + a2 * data%tl) 
+             a0 = data%phil - data%tl * ( a1 + a2 * data%tl)
 
 !write(6,*) ' a0, a1, a2 ', a0, a1, a2
 !write(6,"(A, 2ES24.16)") 'l', data%tl, data%phil
@@ -2582,13 +2582,13 @@ write(6,*) ' X ', nlp%X( : nlp%n )
                ( MIN( data%target_upper, t_phi ) - inform%target )
            END IF
 
-!  two points to the left of the minimizer, quadratic interpolate to get next 
+!  two points to the left of the minimizer, quadratic interpolate to get next
 !  target: find where quadratic fit through (tm,vm) and (tu,vu) with vurvature
 !  -sigma at tu intersects the t axis
 
 !  fit q(t) = a + b t - sigma ( t -tu )^2 given
 !   vm = a + b tm - sigma ( tm - tu )^2
-!   vu = a + b tu 
+!   vu = a + b tu
 !  =>
 !   vu - vm = b ( tu - tm ) + sigma ( tm - tu )( tu + tm )^2
 !   b = (vu - vm ) / ( tu - tm ) - sigma( tm + tu )
@@ -2599,8 +2599,8 @@ write(6,*) ' X ', nlp%X( : nlp%n )
 
 !  a1 = b + 2 sigma tu = (vu - vm ) / ( tu - tm ) + sigma( tu - tm )
 !  a0 = vu - tu [ (vu - vm ) / ( tu - tm ) - sigma( tm + tu ) ]
-!     = [ vu ( tu - tm ) - tu (vu - vm ) ] / ( tu - tm ) + sigma( tm + tu ) tu 
-!     = ( tu vm - vu tm ) / ( tu - tm ) + sigma( tm + tu ) tu 
+!     = [ vu ( tu - tm ) - tu (vu - vm ) ] / ( tu - tm ) + sigma( tm + tu ) tu
+!     = ( tu vm - vu tm ) / ( tu - tm ) + sigma( tm + tu ) tu
 
 !  solve q(t*) = 0, t* = largest root
 
@@ -2644,9 +2644,9 @@ write(6,*) ' X ', nlp%X( : nlp%n )
 
 !  obtain a better starting point:
 
-!  find 
+!  find
 !
-!    ( dx, dy ) = ( dx_1, dy_1 ) + alpha ( dx_2, dy_2 ) 
+!    ( dx, dy ) = ( dx_1, dy_1 ) + alpha ( dx_2, dy_2 )
 !
 !  where
 !
@@ -2692,10 +2692,10 @@ write(6,*) ' X ', nlp%X( : nlp%n )
           ( nlp%H%row( i ), nlp%H%col( i ), nlp%H%val( i ), i = 1, nlp%H%ne )
        END IF
 
-!  form and factorize the matrix 
+!  form and factorize the matrix
 
 !    ( H(x,y)    J^T(x)    )
-!    (  J(x)  - (f(x)-t) I ) 
+!    (  J(x)  - (f(x)-t) I )
 
   420  CONTINUE
        data%C_ssls%val( 1 ) = data%discrepancy
@@ -2730,7 +2730,7 @@ end do
 !write(6,*) ' g ', nlp%Go%val( : nlp%Go%ne )
 
 
-!  compute alpha 
+!  compute alpha
 
        IF ( nlp%Go%sparse ) THEN ! from g(x)
          num = zero ; den = one
@@ -2762,7 +2762,7 @@ end do
 
 !  compute the trial x and y
 
-       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%V( : nlp%n ) 
+       nlp%X( : nlp%n ) = nlp%X( : nlp%n ) + data%V( : nlp%n )
        nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) + data%V( data%np1 : data%npm )
 !write(6,*) ' new x ',  nlp%X( : nlp%n )
 !write(6,*) ' new y ',  nlp%Y( : nlp%m )
