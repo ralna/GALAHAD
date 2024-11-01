@@ -121,7 +121,7 @@ runs:
         meson setup builddir --buildtype=debug \
                              --prefix=$CUTEST \
                              -Ddefault_library=shared \
-                             -Dquadruple=true \
+                             -Dquadruple=false \
                              -Dint64=${INT64}
         meson compile -C builddir
         meson install -C builddir
