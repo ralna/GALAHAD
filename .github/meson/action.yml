@@ -104,7 +104,7 @@ runs:
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
-        VERSION_CUTEST="2.2.0"
+        VERSION_CUTEST="2.4.0"
         INT64="false"
         if [[ "${{ inputs.int }}" == "64" ]]; then
           INT64="true"
