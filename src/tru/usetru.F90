@@ -61,7 +61,7 @@
      LOGICAL :: filexx, is_specfile, hessian_pattern_required
 !    LOGICAL, PARAMETER :: timings = .TRUE.
      LOGICAL, PARAMETER :: timings = .FALSE.
-     REAL :: time
+     REAL ( KIND = rp_ ) :: time
 !    REAL :: timeo, timet
 !    REAL ( KIND = rp_ ) :: clocko, clockt
      CHARACTER ( LEN = 10 ) :: name
@@ -438,11 +438,11 @@
 !  Close any opened files and deallocate arrays
 
      IF ( timings ) THEN
-       CALL CUTEST_timings( i, 'cutest_ufn', time )
+       CALL CUTEST_timing( i, userdata, 'cutest_eval_f', time )
        WRITE( 6, "( ' time ufn = ', F8.2 )" ) time
-       CALL CUTEST_timings( i, 'cutest_ugr', time )
+       CALL CUTEST_timing( i, userdata, 'cutest_eval_g', time )
        WRITE( 6, "( ' time ugr = ', F8.2 )" ) time
-       CALL CUTEST_timings( i, 'cutest_ush', time )
+       CALL CUTEST_timing( i, userdata, 'cutest_uval_h', time )
        WRITE( 6, "( ' time ush = ', F8.2 )" ) time
      END IF
      IF ( is_specfile ) CLOSE( input_specfile )
