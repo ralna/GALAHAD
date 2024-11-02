@@ -29,7 +29,7 @@ runs:
     - name: Install Meson and Ninja
       shell: bash
       run: |
-        pip install meson==1.5.1
+        pip install meson==1.4.1
         pip install ninja numpy
 
     - name: Set the environment variables
