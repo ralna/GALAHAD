@@ -229,7 +229,7 @@
      cutest_control%input = input ; cutest_control%error = control%error
      CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata,     &
                              no_hessian = .NOT. hessian_pattern_required )
-     IF ( timings ) CALL CUTEST_timings( i, 'start', time )
+     IF ( timings ) CALL CUTEST_timing( i, userdata, 'start', time )
 
 !  Read a previous solution file for a re-entry
 
