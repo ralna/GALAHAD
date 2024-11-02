@@ -29,7 +29,7 @@ runs:
     - name: Install Meson and Ninja
       shell: bash
       run: |
-        pip install meson==1.4.1
+        pip install meson
         pip install ninja numpy
 
     - name: Set the environment variables
@@ -130,7 +130,7 @@ runs:
       if: inputs.os != 'windows-latest'
       shell: bash
       run: |
-        VERSION_LIBHSL="4.0.0"
+        VERSION_LIBHSL="4.0.1"
         cd ..
         if [[ "${{ inputs.os }}" == "windows-latest" ]]; then
           wget https://github.com/ralna/libHSL/archive/refs/tags/v${VERSION_LIBHSL}.zip
