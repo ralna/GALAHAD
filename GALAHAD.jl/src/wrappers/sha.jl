@@ -11,6 +11,7 @@ struct sha_control_type
   extra_differences::Cint
   recursion_max::Cint
   recursion_entries_required::Cint
+  average_off_diagonals::Bool
   space_critical::Bool
   deallocate_error_fatal::Bool
   prefix::NTuple{31,Cchar}
@@ -18,7 +19,7 @@ end
 
 export sha_inform_type
 
-struct sha_inform_type
+struct sha_inform_type{T}
   status::Cint
   alloc_status::Cint
   max_degree::Cint
@@ -26,6 +27,7 @@ struct sha_inform_type
   max_reduced_degree::Cint
   approximation_algorithm_used::Cint
   bad_row::Cint
+  max_off_diagonal_difference::T
   bad_alloc::NTuple{81,Cchar}
 end
 

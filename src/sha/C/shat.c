@@ -23,7 +23,7 @@ int main(void) {
     ipc_ row[] = {0, 0, 0, 0, 0, 1, 2, 3, 4}; // row indices, NB upper triangle
     ipc_ col[] = {0, 1, 2, 3, 4, 1, 2, 3, 4}; // column indices
     rpc_ val[] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}; // values
-    ipc_ i, j, k, l, m, status;
+    ipc_ i, j, m, status;
     rpc_ rr, v;
     rpc_ val_est[ne];
     ipc_ ls1 = m_max, ls2 = n; // dimensions of s

@@ -25,6 +25,7 @@ sha_control_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`sparse_row<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f0>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`recursion_max<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f1>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`recursion_entries_required<doxid-structsha__control__type_1a22a3fbc66d8826eb54a1708046e3c4f2>`;
+		bool :ref:`average_off_diagonals<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8e>`;
 		bool :ref:`space_critical<doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d>`;
 		bool :ref:`deallocate_error_fatal<doxid-structsha__control__type_1a58a2c67fad6e808e8365eff67700cba5>`;
 		char :ref:`prefix<doxid-structsha__control__type_1a1dc05936393ba705f516a0c275df4ffc>`[31];
@@ -155,6 +156,17 @@ limit on the maximum number of levels of recursion (Alg. 2.4)
 
 the minimum number of entries in a reduced row that are required
 if a further level of recuresion is allowed (Alg. 2.4)
+
+.. index:: pair: variable; average_off_diagonals
+.. _doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	bool average_off_diagonals
+
+select if pairs of off-diagonal Hessian estimates are to be averaged on return.
+Otherwise pick the value from the upper triangle
 
 .. index:: pair: variable; space_critical
 .. _doxid-structsha__control__type_1a957fc1f4f26eeef3b0951791ff972e8d:

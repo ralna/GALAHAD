@@ -22,6 +22,7 @@ sha_inform_type structure
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`max_reduced_degree<doxid-structsha__inform__type_1a389835dfe2e9309431892a98be9beb2c>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`approximation_algorithm_used<doxid-structsha__inform__type_1a962f442a0dd78d06c760ec5df7bf79a0>`;
 		:ref:`ipc_<doxid-galahad__ipc_8h_>` :ref:`bad_row<doxid-structsha__inform__type_1ab9c826769c483d92749a2bad8b0b972b>`;
+		:ref:`rpc_<doxid-galahad__rpc_8h_>` :ref:`max_off_diagonal_difference<doxid-structsha__inform__type_1a42d0c89df887685f68327d07c6e92f04>`;
 		char :ref:`bad_alloc<doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3>`[81];
 	};
 .. _details-structsha__inform__type:
@@ -103,6 +104,18 @@ the approximation algorithm actually used
 	:ref:`ipc_<doxid-galahad__ipc_8h_>` bad_row
 
 a failure occured when forming the bad_row-th row (0 = no failure).
+
+
+.. index:: pair: variable; max_off_diagonal_difference
+.. _doxid-structsha__inform__type_1a42d0c89df887685f68327d07c6e92f04:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`ipc_<doxid-galahad__rpc_8h_>` max_off_diagonal_difference
+
+the maximum difference between estimated Hessian off-diagonal 
+pairs if approximation algorithm 1, 3 or 4 has been employed.
 
 .. index:: pair: variable; bad_alloc
 .. _doxid-structsha__inform__type_1a19ba64e8444ca3672abd157e4f1303a3:

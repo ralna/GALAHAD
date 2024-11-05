@@ -222,6 +222,11 @@ struct sha_control_type {
     ipc_ recursion_entries_required;
 
     /// \brief
+    /// select if pairs of off-diagonal Hessian estimates are to be averaged 
+    /// on return. Otherwise pick the value from the upper triangle
+    bool average_off_diagonals;
+
+    /// \brief
     /// if space is critical, ensure allocated arrays are no bigger than needed
     bool space_critical;
 
@@ -268,6 +273,11 @@ struct sha_inform_type {
     /// \brief
     /// a failure occured when forming the bad_row-th row (0 = no failure).
     ipc_ bad_row;
+
+    /// \brief
+    /// the maximum difference between estimated Hessian off-diagonal 
+    /// pairs if approximation algorithm 1, 3 or 4 has been employed.
+    rpc_ max_off_diagonal_difference;
 
     /// \brief
     /// the name of the array for which an allocation/deallocation error

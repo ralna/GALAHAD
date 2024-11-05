@@ -7,6 +7,7 @@
 ! maximum-degree-considered-sparse                  100
 ! maximum-recursion-levels                          25
 ! recursion-entries-required                        10
+! average-off-diagonals                             no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
 ! output-line-prefix                                ""

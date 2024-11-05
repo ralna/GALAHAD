@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2023-05-05 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2023-11-05 AT 14:30 GMT.
 
 #include "galahad_modules.h"
 #include "galahad_cfunctions.h"
@@ -46,6 +46,7 @@
       INTEGER ( KIND = ipc_ ) :: sparse_row
       INTEGER ( KIND = ipc_ ) :: recursion_max
       INTEGER ( KIND = ipc_ ) :: recursion_entries_required
+      LOGICAL ( KIND = C_BOOL ) :: average_off_diagonals
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
@@ -59,6 +60,7 @@
       INTEGER ( KIND = ipc_ ) :: max_reduced_degree
       INTEGER ( KIND = ipc_ ) :: approximation_algorithm_used
       INTEGER ( KIND = ipc_ ) :: bad_row
+      REAL ( KIND = rpc_ ) :: max_off_diagonal_difference
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
     END TYPE sha_inform_type
 
@@ -91,6 +93,7 @@
     fcontrol%recursion_entries_required = ccontrol%recursion_entries_required
 
     ! Logicals
+    fcontrol%average_off_diagonals = ccontrol%average_off_diagonals
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
@@ -126,6 +129,7 @@
     ccontrol%recursion_entries_required = fcontrol%recursion_entries_required
 
     ! Logicals
+    ccontrol%average_off_diagonals = fcontrol%average_off_diagonals
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
@@ -155,6 +159,9 @@
     finform%approximation_algorithm_used = cinform%approximation_algorithm_used
     finform%bad_row = cinform%bad_row
 
+    ! Reals
+    finform%max_off_diagonal_difference = cinform%max_off_diagonal_difference
+
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
@@ -179,6 +186,9 @@
     cinform%max_reduced_degree = finform%max_reduced_degree
     cinform%approximation_algorithm_used = finform%approximation_algorithm_used
     cinform%bad_row = finform%bad_row
+
+    ! Reals
+    cinform%max_off_diagonal_difference = finform%max_off_diagonal_difference
 
     ! Strings
     l = LEN( finform%bad_alloc )

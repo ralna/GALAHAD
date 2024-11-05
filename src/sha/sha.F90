@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 5.0 - 2024-05-19 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 5.1 - 2024-11-05 AT 14:50 GMT.
 
 #include "galahad_modules.h"
 
@@ -53,6 +53,8 @@
 !   P a r a m e t e r s
 !----------------------
 
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
      REAL ( KIND = rp_ ), PARAMETER :: eps_singular = EPSILON( one )
 
@@ -109,15 +111,20 @@
 
        INTEGER ( KIND = ip_ ) :: sparse_row = 100
 
-!  if a recursive algorithm is used (Alg 2.4), limit on the maximum number 
+!  if a recursive algorithm is used (Alg 2.4), limit on the maximum number
 !    of levels of recursion
 
        INTEGER ( KIND = ip_ ) :: recursion_max = 25
 
-!  if a recursive algorithm is used (Alg 2.4), recursion can only occur for a 
+!  if a recursive algorithm is used (Alg 2.4), recursion can only occur for a
 !   (reduced) row if it has at least %recursion_allowed entries
 
        INTEGER ( KIND = ip_ ) :: recursion_entries_required = 10
+
+!  compute the average value of off diagonal entries rather than those
+!  simply from the upper triangle (when necessary, algorithms 1, 3 & 4 only)
+
+       LOGICAL :: average_off_diagonals = .FALSE.
 
 !  if space is critical, ensure allocated arrays are no bigger than needed
 
@@ -168,6 +175,11 @@
 !  a failure occurred when forming the bad_row-th row or column (0 = no failure)
 
        INTEGER ( KIND = ip_ ) :: bad_row = 0
+
+!  the maximum difference between estimated off-diagonal pairs if
+!  control%average_off_diagonals is .TRUE. and algorithm 1, 3 or 4 employed
+
+       REAL ( KIND = rp_ ) :: max_off_diagonal_difference = zero
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -238,7 +250,7 @@
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DENSE_INDS
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: TMP_INDS
        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NSOLVED
-       REAL ( KIND = rp_), ALLOCATABLE, DIMENSION( : ) :: VAL_unsym
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL_unsym
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B
@@ -351,6 +363,7 @@
 !  maximum-degree-considered-sparse                100
 !  maximum-recursion-levels                        25
 !  recursion-entries-required                      10
+!  average-off-diagonals                           F
 !  space-critical                                  F
 !  deallocate-error-fatal                          F
 !  output-line-prefix                              ""
@@ -384,8 +397,10 @@
      INTEGER ( KIND = ip_ ), PARAMETER :: recursion_max = sparse_row + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: recursion_entries_required           &
                                             = recursion_max + 1
-     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+     INTEGER ( KIND = ip_ ), PARAMETER :: average_off_diagonals                &
                                             = recursion_entries_required + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                       &
+                                            = average_off_diagonals + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
                                             = space_critical + 1
      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
@@ -411,6 +426,7 @@
 
 !  Logical key-words
 
+     spec( average_off_diagonals )%keyword = 'average-off-diagonals'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -460,6 +476,10 @@
 
 !  Set logical values
 
+
+     CALL SPECFILE_assign_value( spec( average_off_diagonals ),                &
+                                 control%average_off_diagonals,                &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
                                  control%space_critical,                       &
                                  control%error )
@@ -628,18 +648,45 @@
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  now fill the column indices into each row of the complete matrix
+!  now fill the column indices into each row of the complete matrix. If
+!  averages of off-diagonal estimated values are required, record the
+!  positions of both upper and lower entries (in MAP and MAP_lower)
 
-        DO l = 1, nz
-          i = ROW( l ) ; j = COL( l )
-          data%MAP( l ) = data%PTR_unsym( i )
-          data%COL_unsym( data%PTR_unsym( i ) ) = j
-          data%PTR_unsym( i ) = data%PTR_unsym( i ) + 1
-          IF ( i /= j ) THEN
-            data%COL_unsym( data%PTR_unsym( j ) ) = i
-            data%PTR_unsym( j ) = data%PTR_unsym( j ) + 1
-          END IF
-        END DO
+        IF ( control%average_off_diagonals ) THEN
+          array_name = 'SHA: data%MAP_lower'
+          CALL SPACE_resize_array( nz, data%MAP_lower,                         &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          DO l = 1, nz
+            i = ROW( l ) ; j = COL( l )
+            data%MAP( l ) = data%PTR_unsym( i )
+            data%COL_unsym( data%PTR_unsym( i ) ) = j
+            IF ( i /= j ) THEN
+              data%MAP_lower( l ) = data%PTR_unsym( j )
+              data%COL_unsym( data%PTR_unsym( j ) ) = i
+              data%PTR_unsym( j ) = data%PTR_unsym( j ) + 1
+            ELSE
+              data%MAP_lower( l ) = data%PTR_unsym( i )
+            END IF
+!write(6,*) data%MAP( l ), data%MAP_lower( l )
+            data%PTR_unsym( i ) = data%PTR_unsym( i ) + 1
+          END DO
+        ELSE
+          DO l = 1, nz
+            i = ROW( l ) ; j = COL( l )
+            data%MAP( l ) = data%PTR_unsym( i )
+            data%COL_unsym( data%PTR_unsym( i ) ) = j
+            data%PTR_unsym( i ) = data%PTR_unsym( i ) + 1
+            IF ( i /= j ) THEN
+              data%COL_unsym( data%PTR_unsym( j ) ) = i
+              data%PTR_unsym( j ) = data%PTR_unsym( j ) + 1
+            END IF
+          END DO
+        END IF
 
 !  restore the row starting positions
 
@@ -647,7 +694,6 @@
           data%PTR_unsym( i + 1 ) = data%PTR_unsym( i )
         END DO
         data%PTR_unsym( 1 ) = 1
-
 
 !  set up workspace
 
@@ -773,7 +819,7 @@
 
         array_name = 'SHA: data%LAST'
         CALL SPACE_resize_array( 0_ip_,                                        &
-               MAX( max_row, control%sparse_row), data%LAST,            &
+               MAX( max_row, control%sparse_row), data%LAST,                   &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -1260,12 +1306,6 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'SHA: data%MAP_lower'
-      CALL SPACE_dealloc_array( data%MAP_lower,                                &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
       RETURN
 
 !  internal subroutine for writing a selective list of nonzeros
@@ -1413,7 +1453,7 @@
                                  inform%status, data%INFO, ORDER )
 
 !  ------------------------------------------------
-!  algorithms 3 (aka paper 2.1)
+!  algorithms 3 (aka paper 2.3)
 !  ------------------------------------------------
 
         CASE ( 3 )
@@ -1426,7 +1466,7 @@
                                  data%DENSE_INDS, data%INFO, ORDER )
 
 !  ------------------------------------------------
-!  algorithms 4 (aka paper 2.1)
+!  algorithms 4 (aka paper 2.4)
 !  ------------------------------------------------
 
         CASE ( 4 )
@@ -1453,9 +1493,21 @@
 
 !  copy the entries from the complete matrix back to its lower triangle
 
-        DO i = 1, nz
-          VAL( i ) = data%VAL_unsym( data%MAP( i ) )
-        END DO
+        IF ( control%average_off_diagonals ) THEN
+          inform%max_off_diagonal_difference = zero
+          DO i = 1, nz
+            inform%max_off_diagonal_difference =                               &
+              MAX( inform%max_off_diagonal_difference,                         &
+                   ABS( data%VAL_unsym( data%MAP( i ) ) -                      &
+                        data%VAL_unsym( data%MAP_lower( i ) ) ) )
+            VAL( i ) = half * ( data%VAL_unsym( data%MAP( i ) ) +              &
+                                data%VAL_unsym( data%MAP_lower( i ) ) )
+          END DO
+        ELSE
+          DO i = 1, nz
+            VAL( i ) = data%VAL_unsym( data%MAP( i ) )
+          END DO
+        END IF
 
 !  ---------------------------------------------------------
 !  algorithm 2, 5-8 (aka paper 2.2, old paper 2.1 & 2.3-2.5)
@@ -1468,7 +1520,7 @@
         m_needed = data%differences_needed
 
 !  warn if there is insufficient data
- 
+
         IF ( m_needed > m_available ) THEN
 !         WRITE( *, * ) ( ' Warning: insufficient data pairs are available')
           warning = GALAHAD_warning_data
@@ -2263,7 +2315,7 @@
 
 !  local variables
 
-    INTEGER ( KIND = ip_ ) :: i, differences_needed 
+    INTEGER ( KIND = ip_ ) :: i, differences_needed
 
     differences_needed = 0
     DO i = 1, n
@@ -2842,7 +2894,7 @@
     DO l = PTR( i ), PTR( i + 1 ) - 1 ! for each dense row entry
       j = COL( l ) ! its column index
       ! only an off-diagonal entry can already exist
-      IF ( j /= i .AND. PTR( j + 1 ) - PTR( j ) <= sparse_row ) THEN 
+      IF ( j /= i .AND. PTR( j + 1 ) - PTR( j ) <= sparse_row ) THEN
         ! row j is sparse so entry exists
         DO ip = PTR( j ), PTR( j + 1 ) - 1 ! for each sparse row entry
           IF ( COL( ip ) == i ) THEN ! dense row index matches sparse
@@ -2976,7 +3028,7 @@
 !  VAL - resulting estimated entries of the COMPLETE sparse Hessian (CSR format)
 !  extra_differences - # extra data values allowed when solving linear systems
 !  recursion_max - maximum number of levels of recursion
-! recursion_entries_required - recursion can only occur for a (reduced) row if 
+! recursion_entries_required - recursion can only occur for a (reduced) row if
 !     it has at least recursion_entries_required entries
 !  status - return status, = 0 for success, < 0 failure
 !  SPARSE_INDS, DENSE_INDS, TMP_INDS, NSOLVED, INFO - wkspace arrays of length n

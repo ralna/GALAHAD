@@ -187,6 +187,13 @@ if a further level of recuresion is allowed in the composite block-parallel
 algorithm ({\tt \%approximation\_algorithm = 4}.
 The default is {\tt  = recursion\_entries\_required = 10}.
 
+\itt{average\_off\_diagonals} is a scalar variable of type default \logical,
+that must be set \true\ if pairs of off-diagonal Hessian estimates are 
+to be averaged on return, and \false\ if the value from the upper triangle
+suffices. Averaging incurs small extra storage and calculation 
+expenses, and rarely offers much advantage.
+The default is {\tt average\_off\_diagonals = .FALSE.}.
+
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
 and  \false\ otherwise. The package may run faster if
@@ -252,6 +259,11 @@ that holds the maximum reduced degree in the adjacency graph.
 \itt{bad\_row} is a scalar variable of type \integer, that holds the
 index of the first row for which a failure occurred when forming its Hessian
 values (or 0 if the data if no failures occurred).
+
+\itt{max\_off\_diagonal\_difference} is a scalar variable of type \realdp, 
+that gives the maximum difference between estimated Hessian off-diagonal 
+pairs if approximation algorithm 1, 3 or 4 has been employed and
+{\tt control\%average\_off\_diagonals} is \true. It will be zero otherwise.
 
 \end{description}
 
@@ -700,6 +712,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt maximum-degree-considered-sparse} & {\tt \%sparse\_row} & integer \\
   {\tt maximum-recursion-levels} & {\tt \%recursion\_max} & integer \\
   {\tt recursion-entries-required} & {\tt \%recursion\_entries\_required} & integer \\
+  {\tt average-off-diagonals} & {\tt \%average\_off\_diagonals} & logical \\
   {\tt space-critical}   & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt output-line-prefix} & {\tt \%prefix} & character \\

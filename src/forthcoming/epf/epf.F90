@@ -1370,7 +1370,7 @@
 !  on its lower or upper bounds (respectively) - these may be problem
 !  bounds or trust-region bounds, and 3 or 4 if the variable is fixed
 
-     array_name = 'TRAL: data%V_status'
+     array_name = 'EPF: data%V_status'
      CALL SPACE_resize_array( nlp%n, data%V_status, inform%status,             &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &

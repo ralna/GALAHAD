@@ -1,7 +1,7 @@
 //* \file sha_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2023-05-12 AT 08:50 GMT.
+ * THIS VERSION: GALAHAD 5.1 - 2024-11-05 AT 14:20 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SHA PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -101,6 +101,12 @@ bool sha_update_control(struct sha_control_type *control,
                 return false;
             continue;
         }
+        if(strcmp(key_name, "average_off_diagonals") == 0){
+            if(!parse_bool_option(value, "average_off_diagonals",
+                                  &control->average_off_diagonals))
+                return false;
+            continue;
+        }
         if(strcmp(key_name, "space_critical") == 0){
             if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
@@ -154,6 +160,8 @@ PyObject* sha_make_options_dict(const struct sha_control_type *control){
                          PyLong_FromLong(control->recursion_max));
     PyDict_SetItemString(py_options, "recursion_entries_required",
                          PyLong_FromLong(control->recursion_entries_required));
+    PyDict_SetItemString(py_options, "average_off_diagonals",
+                         PyBool_FromLong(control->average_off_diagonals));
     PyDict_SetItemString(py_options, "space_critical",
                          PyBool_FromLong(control->space_critical));
     PyDict_SetItemString(py_options, "deallocate_error_fatal",
@@ -184,6 +192,8 @@ PyObject* sha_make_inform_dict(const struct sha_inform_type *inform){
                          PyLong_FromLong(inform->bad_row));
     PyDict_SetItemString(py_inform, "approximation_algorithm_used",
                          PyLong_FromLong(inform->approximation_algorithm_used));
+    PyDict_SetItemString(py_inform, "max_off_diagonal_difference",
+                         PyFloat_FromDouble(inform->max_off_diagonal_difference));
     PyDict_SetItemString(py_inform, "bad_alloc",
                          PyUnicode_FromString(inform->bad_alloc));
     return py_inform;
