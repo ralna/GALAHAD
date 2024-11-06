@@ -7,7 +7,7 @@ using Test
 function test_sha(::Type{T}) where T
   data = Ref{Ptr{Cvoid}}()
   control = Ref{sha_control_type}()
-  inform = Ref{sha_inform_type}()
+  inform = Ref{sha_inform_type{T}}()
 
   status = Ref{Cint}()
   sha_initialize(T, data, control, status)
