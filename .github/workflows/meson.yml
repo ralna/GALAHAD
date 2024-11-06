@@ -7,35 +7,13 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  windows-gcc-build:
+  windows-mac-linux-gcc-build:
     name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-latest']
-        arch: ['x64']
-        compiler: ['gcc']
-        version: ['11']
-        int: ['32', '64']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run common setup
-        uses: ./.github/meson
-        with:
-          os: ${{ matrix.os }}
-          compiler: ${{ matrix.compiler }}
-          version: ${{ matrix.version }}
-          int: ${{ matrix.int }}
-
-  mac-linux-gcc-build:
-    name: ${{ matrix.os }}/${{ matrix.compiler }}-v${{ matrix.version }}/Int${{ matrix.int }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ['ubuntu-latest', 'macos-13']
+        os: ['windows-latest', 'ubuntu-latest', 'macos-13']
         arch: ['x64']
         compiler: ['gcc']
         version: ['13']
