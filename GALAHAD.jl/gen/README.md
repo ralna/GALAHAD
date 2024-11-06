@@ -18,7 +18,8 @@ julia> ]
 
 The `main` function supports the boolean keyword argument `optimized` to
 clear the generated wrappers.  The default value of the argument
-`optimized` is `true`.  You can also call `main(library)` if you want to
+`optimized` is `true`.
+You can also call `main(library)` if you want to
 generate the wrapper for a specific GALAHAD `library`.
 
 The possible values for `library` are:
@@ -97,6 +98,10 @@ package is named `abcd`, insert the following line in `wrapper.jl`:
 ```julia
 (name == "all" || name == "abcd") && wrapper("abcd", ["$galahad/galahad_abcd.h"], optimized)
 ```
+
+Please also check the variable `nonparametric_structures` in `rewriter.jl`
+to specify if a structure should be parameterized or not to work in single
+and double precision (`Float32` and `Float64`).
 
 The final step involves updating `GALAHAD.jl/src/GALAHAD.jl` by
 appending the following two lines at the end of the file:

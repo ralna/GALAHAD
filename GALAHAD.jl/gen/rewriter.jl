@@ -8,7 +8,7 @@ packages = ("arc", "bgo", "blls", "bllsb", "bqp", "bqpb", "bsc", "ccqp",
 
 types = ("control", "time", "inform", "history", "subproblem_control", "subproblem_inform", "ainfo", "finfo", "sinfo")
 
-nonparametric_structures = ("slls_time_type", "sha_control_type", "sha_inform_type", "sec_inform_type",
+nonparametric_structures = ("slls_time_type", "sha_control_type", "sec_inform_type",
                             "scu_control_type", "scu_inform_type", "rpd_control_type",
                             "rpd_inform_type", "roots_inform_type", "presolve_inform_type",
                             "lhs_control_type", "lhs_inform_type", "lms_control_type",

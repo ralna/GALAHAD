@@ -377,7 +377,8 @@ Ref{sec_inform_type}()
 
 # Structures for sha
 Ref{sha_control_type}()
-Ref{sha_inform_type}()
+Ref{sha_inform_type{Float32}}()
+Ref{sha_inform_type{Float64}}()
 
 # Structures for sils
 Ref{sils_control_type{Float32}}()

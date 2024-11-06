@@ -101,13 +101,13 @@ export sha_information
 
 function sha_information(::Type{Float32}, data, inform, status)
   @ccall libgalahad_single.sha_information_s(data::Ptr{Ptr{Cvoid}},
-                                             inform::Ptr{sha_inform_type},
+                                             inform::Ptr{sha_inform_type{Float32}},
                                              status::Ptr{Cint})::Cvoid
 end
 
 function sha_information(::Type{Float64}, data, inform, status)
   @ccall libgalahad_double.sha_information(data::Ptr{Ptr{Cvoid}},
-                                           inform::Ptr{sha_inform_type},
+                                           inform::Ptr{sha_inform_type{Float64}},
                                            status::Ptr{Cint})::Cvoid
 end
 
@@ -116,11 +116,11 @@ export sha_terminate
 function sha_terminate(::Type{Float32}, data, control, inform)
   @ccall libgalahad_single.sha_terminate_s(data::Ptr{Ptr{Cvoid}},
                                            control::Ptr{sha_control_type},
-                                           inform::Ptr{sha_inform_type})::Cvoid
+                                           inform::Ptr{sha_inform_type{Float32}})::Cvoid
 end
 
 function sha_terminate(::Type{Float64}, data, control, inform)
   @ccall libgalahad_double.sha_terminate(data::Ptr{Ptr{Cvoid}},
                                          control::Ptr{sha_control_type},
-                                         inform::Ptr{sha_inform_type})::Cvoid
+                                         inform::Ptr{sha_inform_type{Float64}})::Cvoid
 end

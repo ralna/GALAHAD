@@ -97,7 +97,7 @@ struct arc_inform_type{T}
   psls_inform::psls_inform_type{T}
   lms_inform::lms_inform_type{T}
   lms_inform_prec::lms_inform_type{T}
-  sha_inform::sha_inform_type
+  sha_inform::sha_inform_type{T}
 end
 
 export arc_initialize

@@ -95,7 +95,7 @@ struct tru_inform_type{T}
   lms_inform::lms_inform_type{T}
   lms_inform_prec::lms_inform_type{T}
   sec_inform::sec_inform_type
-  sha_inform::sha_inform_type
+  sha_inform::sha_inform_type{T}
 end
 
 export tru_initialize
