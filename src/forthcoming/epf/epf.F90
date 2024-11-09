@@ -2105,7 +2105,7 @@ end do
 !  compute the (infinity-) norm of the infeasibility
 
              inform%primal_infeasibility                                       &
-               = MAX( EPF_infeasibility( nlp%n, nlp%X, nlp%X_l, nlp%X_u,       &
+               = MAX( EPF_infeasibility( nlp%n, data%qpf%X, nlp%X_l, nlp%X_u,  &
                                          control%infinity ),                   &
                       EPF_infeasibility( nlp%m, nlp%C, nlp%C_l, nlp%C_u,       &
                                          control%infinity ) )
@@ -2459,7 +2459,8 @@ end do
            "( A, I6, ES16.8, 4ES9.1, I6, F9.2 )" )                             &
              prefix, inform%iter, inform%obj, inform%primal_infeasibility,     &
              inform%dual_infeasibility, inform%complementary_slackness,        &
-             data%max_mu, inform%tru_inform%iter, data%clock_now
+             data%max_mu, inform%tru_inform%iter, inform%tru_inform%status,    &
+             data%clock_now
 
          IF ( data%printm ) WRITE( data%out,                                   &
            "( A, ' objective value      = ', ES22.14, /,                       &
@@ -3086,7 +3087,7 @@ write(6,*) ' ||r|| ', TWO_NORM( data%R )
 
  2000 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
  2010 FORMAT( A, '  iter  f               pr-feas  du-feas  cmp-slk  ',        &
-              ' max mu inner cpu time' )
+              ' max mu inner stop cpu time' )
  2200 FORMAT( /, A, ' # function evaluations  = ', I0,                         &
               /, A, ' # gradient evaluations  = ', I0,                         &
               /, A, ' # Hessian evaluations   = ', I0,                         &

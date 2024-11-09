@@ -448,6 +448,17 @@ lancelot_steeringdt: $(OBJECTSSTEERINGD) $(OBJD)/lancelot_steeringt_double.o
 	cat lancelot_steeringdt.output
 	rm ./run_lancelot_steering
 
+lancelot_steeringdt_valgrind: $(OBJECTSSTEERINGD) \
+          $(OBJD)/lancelot_steeringt_double.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
+          $(OBJD)/lancelot_steeringt_double.o -L$(OBJD) $(LIBS)
+	- valgrind $(VALGRIND) run_lancelot_steering \
+           > lancelot_steeringdt_valgrind.output 2>&1
+	cat lancelot_steeringdt_valgrind.output
+	rm ./run_lancelot_steering
+
 lancelot_simpleds: $(OBJECTSD) $(OBJD)/lancelot_simples.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
            $(OBJD)/lancelot_simples.o -L$(OBJD) $(LIBS)
