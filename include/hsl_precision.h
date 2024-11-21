@@ -15,10 +15,15 @@
 
 #ifdef REAL_32
 typedef float rpc_;
-#define f_rpc_ "f" 
+#define f_rpc_ "f"
+#else
+#ifdef REAL_128
+typedef __float128 rpc_;
+#define f_rpc_ "Qf"
 #else
 typedef double rpc_;
 #define f_rpc_ "lf"
+#endif
 #endif
 
 // integer length
