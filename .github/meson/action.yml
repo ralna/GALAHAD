@@ -165,6 +165,38 @@ runs:
         wget https://github.com/JuliaBinaryWrappers/METIS_jll.jl/releases/download/METIS-v${VERSION_METIS}%2B0/METIS.v${VERSION_METIS}.$PLATFORM.tar.gz
         tar -xzvf METIS.v${VERSION_METIS}.$PLATFORM.tar.gz -C deps
 
+    - name: Install PASTIX
+      if: inputs.int == '32' && inputs.os == 'ubuntu-latest' && inputs.compiler == 'gcc'
+      shell: bash
+      run: |
+        cd ..
+        mkdir -p deps
+        VERSION_SCOTCH="7.0.4"
+        VERSION_PASTIX="6.3.0"
+        VERSION_HWLOC="2.11.0"
+        wget https://github.com/JuliaBinaryWrappers/SCOTCH_jll.jl/releases/download/SCOTCH-v${VERSION_SCOTCH}%2B0/SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz
+        tar -xzvf SCOTCH.v${VERSION_SCOTCH}.$PLATFORM.tar.gz -C deps
+        # wget https://github.com/JuliaBinaryWrappers/Hwloc_jll.jl/releases/download/Hwloc-v${VERSION_HWLOC}%2B0/Hwloc.v${VERSION_HWLOC}.$PLATFORM.tar.gz
+        # tar -xzvf Hwloc.v${VERSION_HWLOC}.$PLATFORM.tar.gz -C deps
+        # wget https://github.com/JuliaBinaryWrappers/PaStiX_jll.jl/releases/download/PaStiX-v${VERSION_PASTIX}%2B0/PaStiX.v${VERSION_PASTIX}.$PLATFORM-libgfortran5.tar.gz
+        # tar -xzvf PaStiX.v${VERSION_PASTIX}.$PLATFORM-libgfortran5.tar.gz -C deps
+        sudo apt-get -y install libhwloc-dev
+        git clone https://gitlab.inria.fr/solverstack/pastix.git
+        cd pastix
+        git submodule update --init --recursive
+        mkdir build
+        cd build
+        cmake .. \
+          -DBUILD_SHARED_LIBS=ON \
+          -DBUILD_DOCUMENTATION=OFF \
+          -DCMAKE_INSTALL_PREFIX=$DEPS/deps \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DPASTIX_INT64=OFF \
+          -DPASTIX_ORDERING_SCOTCH=ON \
+          -DPASTIX_ORDERING_METIS=OFF
+        make -j4
+        make install
+
     - name: Install MKL
       if: inputs.os == 'ubuntu-latest' && inputs.compiler == 'intel'
       shell: bash
@@ -183,6 +215,8 @@ runs:
         mkdir -p ../deps/${LIBDIR}
         mkdir -p ../deps/modules
         mkdir -p ../CUTEst/modules
+        mkdir -p ../deps/include/spm
+        mkdir -p ../deps/include/pastix
         CSTD="c99"
         CPPSTD="c++11"
         INT64="false"
@@ -249,6 +283,10 @@ runs:
                              -Dliblapack=${LAPACK} \
                              -Dfortran_link_args=${LD_CLASSIC} \
                              -Dc_link_args=${LD_CLASSIC} \
+                             -Dlibspmf_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibspmf_modules=../deps/include/spm \
+                             -Dlibpastixf_path=$DEPS/deps/${LIBDIR} \
+                             -Dlibpastixf_modules=../deps/include/pastix \
                              -Dlibsmumps=${MUMPS_SINGLE} \
                              -Dlibdmumps=${MUMPS_DOUBLE} \
                              -Dlibmumps_path=$DEPS/deps/${LIBDIR} \

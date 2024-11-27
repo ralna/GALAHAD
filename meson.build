@@ -113,6 +113,8 @@ libhwloc_include = include_directories(get_option('libhwloc_include'))
 libcutest_single_modules = include_directories(get_option('libcutest_single_modules'))
 libcutest_double_modules = include_directories(get_option('libcutest_double_modules'))
 libhsl_modules = include_directories(get_option('libhsl_modules'))
+libspmf_modules = include_directories(get_option('libspmf_modules'))
+libpastixf_modules = include_directories(get_option('libpastixf_modules'))
 
 # Dependencies
 libblas = fc.find_library(libblas_name, dirs : libblas_path, required : false)
@@ -224,10 +226,9 @@ galahad_c_tests = []
 galahad_python_tests = []
 
 # Folders that contain headers and Fortran modules
-libgalahad_include = [include_directories('include'),
-                      include_directories('src/dum/include'),
-                      include_directories('src/metis/include'),
-                      include_directories('src/ampl')] + libhsl_modules + libhwloc_include
+libgalahad_include = [include_directories('include'), include_directories('src/dum/include'),
+                      include_directories('src/metis/include'), include_directories('src/ampl')]
+libgalahad_include = libgalahad_include + libhsl_modules + libspmf_modules + libpastixf_modules + libhwloc_include
 
 libgalahad_single_include = libgalahad_include + libcutest_single_modules
 libgalahad_double_include = libgalahad_include + libcutest_double_modules

@@ -78,12 +78,13 @@ Currently supported options with their default value:
 * `-Dlibblas=openblas`: BLAS library against which to link;
 * `-Dliblapack=openblas`: LAPACK library against which to link;
 * `-Dlibhsl=hsl`: HSL library against which to link;
-* `-Dlibcutest=cutest`: CUTEst library against which to link;
+* `-Dlibcutest_single=cutest_single`: CUTEST library in single precision against which to link
+* `-Dlibcutest_double=cutest_double`: CUTEST library in double precision against which to link
 * `-Dlibwsmp=wsmp`: WSMP library against which to link;
 * `-Dlibumfpack=umfpack`: UMFPACK library against which to link;
 * `-Dlibpardiso=pardiso`: PARDISO library against which to link;
 * `-Dlibspmf=spmf`: SPMF library against which to link;
-* `-Dlibpastix=pastix`: PASTIX library against which to link;
+* `-Dlibpastixf=pastixf`: PASTIXF library against which to link;
 * `-Dlibsmumps=smumps`: Single-precision MUMPS library against which to link;
 * `-Dlibdmumps=dmumps`: Double-precision MUMPS library against which to link;
 * `-Dlibampl=ampl`: AMPL library against which to link;
@@ -91,16 +92,21 @@ Currently supported options with their default value:
 * `-Dlibblas_path=[]`: additional directories to search for the BLAS library;
 * `-Dliblapack_path=[]`: additional directories to search for the LAPACK library;
 * `-Dlibhsl_path=[]`: additional directories to search for the HSL library;
-* `-Dlibcutest_path=[]`: additional directories to search for the CUTEST library;
+* `-Dlibcutest_single_path=[]`: Additional directories to search for the CUTEST library in single precision;
+* `-Dlibcutest_double_path=[]`: Additional directories to search for the CUTEST library in double precision;
 * `-Dlibwsmp_path=[]`: additional directories to search for the WSMP library;
 * `-Dlibpardiso_path=[]`: additional directories to search for the PARDISO library;
 * `-Dlibspmf_path=[]`: additional directories to search for the SPMF library;
-* `-Dlibpastix_path=[]`: additional directories to search for the PASTIX library;
+* `-Dlibpastixf_path=[]`: additional directories to search for the PASTIXF library;
 * `-Dlibmumps_path=[]`: additional directories to search for the MUMPS libraries;
 * `-Dlibampl_path=[]`: additional directories to search for the AMPL library library;
 * `-Dlibhwloc_path=[]`: additional directories to search for the HWLOC library;
 * `-Dlibhwloc_include=[]`: additional directories to search for the HWLOC header files;
-* `-Dlibhsl_modules[]`: additional directories to search for the HSL modules;
+* `-Dlibhsl_modules=[]`: additional directories to search for the HSL modules;
+* `-Dlibspmf_modules=[]`: additional directories to search for the SPMF modules;
+* `-Dlibpastixf_modules=[]`: additional directories to search for the PASTIXF modules;
+* `-Dlibcutest_single_modules=[]`: additional directories to search for the CUTEST modules in single precision;
+* `-Dlibcutest_double_modules=[]`: additional directories to search for the CUTEST modules in double precision;
 * `-Dint64=false`: compile GALAHAD with 64-bit integer.
 
 Non-default compilers can be selected by setting the `CC`, `CXX` and
